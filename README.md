@@ -4,6 +4,11 @@ This is a simple Chrome DevTools extension that adds a "Vue.js Properties" sideb
 
 ![Screenshot](https://github.com/vuejs/vue-devtools/raw/master/screenshots/todomvc.png)
 
+- `$$owner` is the Vue instance that is managing the currently inspected element.
+- All data properties, computed properties & meta properties (e.g. `$index`) on the inspected instance are listed as plain values instead of getter/setters.
+- The inspected instance itself is available from the console as `$vue`, so you can directly modify its state or call methods on it.
+- `$$scope`, if present, means the instance inherits the parent scope. This object will contain all parent scope data properties that the instance has access to.
+
 ## Comptibility
 
 This extension only works with Vue ^0.11.0!
