@@ -1,0 +1,12 @@
+{
+  "name": "Vue.js devtools",
+  "version": "0.0.1",
+  "description": "Chrome devtools extension for debugging Vue.js applications.",
+  "devtools_page": "devtoolsBackground.html",
+  "manifest_version": 2,
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}
