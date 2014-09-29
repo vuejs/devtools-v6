@@ -4,6 +4,10 @@ This is a simple Chrome DevTools extension that adds a "Vue.js Properties" sideb
 
 ![Screenshot](https://github.com/vuejs/vue-devtools/raw/master/screenshots/todomvc.jpg)
 
+## Comptibility
+
+This extension only works with Vue ^0.11.0!
+
 ## Installing from the Web Store
 
 https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd
