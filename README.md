@@ -2,7 +2,7 @@
 
 This is a simple Chrome DevTools extension that adds a "Vue.js Properties" sidebar pane to the inspector:
 
-![Screenshot](https://github.com/vuejs/vue-devtools/raw/master/screenshots/todomvc.jpg)
+![Screenshot](https://github.com/vuejs/vue-devtools/raw/master/screenshots/todomvc.png)
 
 ## Comptibility
 
