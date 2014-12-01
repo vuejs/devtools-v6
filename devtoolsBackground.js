@@ -1,3 +1,9 @@
+/**
+ * Set dev tools panel content by returning an info object.
+ *
+ * @return {Object}
+ */
+
 function setPanelContent () {
   if ($0) {
     var el = $0
@@ -22,7 +28,18 @@ function setPanelContent () {
           (state.$$scope = (state.$$scope || {}))[key] = instance[key]
         }
       }
-      state = JSON.parse(JSON.stringify(state))
+      // convert ES5 getter/setters back to a plain object, and
+      // deal with circular references.
+      var seen = []
+      state = JSON.parse(JSON.stringify(state, function (key, val) {
+        if (val && typeof val === 'object') {
+          if (seen.indexOf(val) > -1) {
+            return '[circular reference]'
+          }
+          seen.push(val)
+        }
+        return val
+      }))
       state.$$owner = instance
       return state
     }
