@@ -8,7 +8,7 @@ function setPanelContent () {
   if ($0) {
     var el = $0
     var instance = el.__vue__
-    while ((!instance || instance._isAnonymous) && el.parentNode) {
+    while ((!instance) && el.parentNode) {
       el = el.parentNode
       instance = el.__vue__
     }
@@ -21,11 +21,21 @@ function setPanelContent () {
       for (var key in instance) {
         if (key.charAt(0) === '_') continue
         if (key.charAt(0) === '$' && meta.indexOf(key) < 0) continue
-        if (typeof instance[key] === 'function') continue
-        if (instance.hasOwnProperty(key)) {
-          state[key] = instance[key]
-        } else {
-          (state.$$scope = (state.$$scope || {}))[key] = instance[key]
+        // computed properties could throw errors!
+        // they are suppressed in watchers but not here
+        try {
+          if (typeof instance[key] === 'function') continue
+          if (instance.hasOwnProperty(key)) {
+            state[key] = instance[key]
+          } else {
+            (state.$$scope = (state.$$scope || {}))[key] = instance[key]
+          }
+        } catch (e) {
+          (state.$$errors = (state.$$errors || [])).push({
+            name: e.name,
+            message: e.message,
+            stack: e.stack.split('\n')
+          })
         }
       }
       // convert ES5 getter/setters back to a plain object, and
