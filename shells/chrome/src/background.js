@@ -24,7 +24,6 @@ chrome.runtime.onConnect.addListener((port) => {
   ports[tab][name] = port
 
   if (ports[tab].devtools && ports[tab].backend) {
-    console.log('pipe established for tab ' + tab)
     doublePipe(tab, ports[tab].devtools, ports[tab].backend)
   }
 })
@@ -60,4 +59,5 @@ function doublePipe(id, one, two) {
   }
   one.onDisconnect.addListener(shutdown)
   two.onDisconnect.addListener(shutdown)
+  console.log('tab ' + id + ' connected.')
 }

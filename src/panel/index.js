@@ -2,11 +2,9 @@ import Vue from 'vue'
 
 /**
  * Create the main devtools app.
- *
- * @param {Bridge} bridge
  */
 
-export function initPanel (bridge) {
+export function initPanel (shell) {
   var vm = new Vue({
     el: '#app',
     data: {
@@ -15,11 +13,13 @@ export function initPanel (bridge) {
     template: '{{ message }}'
   })
 
-  bridge.on('message', message => {
-    vm.message = message
-  })
+  shell.inject(bridge => {
+    bridge.on('message', message => {
+      vm.message = message
+    })
 
-  setTimeout(function () {
-    bridge.message('hello from panel')
-  }, 1000)
+    setTimeout(function () {
+      bridge.message('hello from panel')
+    }, 1000)
+  })
 }
