@@ -1,6 +1,7 @@
 // this script is called when the VueDevtools panel is activated.
 
 import { initPanel } from '../../../src/panel'
+import Bridge from '../../../src/bridge'
 
 // 1. inject backend code into page
 injectScript(chrome.runtime.getURL('build/backend.js'), () => {
@@ -12,8 +13,8 @@ injectScript(chrome.runtime.getURL('build/backend.js'), () => {
   port.onDisconnect.addListener(() => {
     disconnected = true
   })
-  // 3. send a proxy API to the panel
-  initPanel({
+
+  const bridge = new Bridge({
     listen (fn) {
       port.onMessage.addListener(fn)
     },
@@ -21,11 +22,10 @@ injectScript(chrome.runtime.getURL('build/backend.js'), () => {
       if (!disconnected) {
         port.postMessage(data)
       }
-    },
-    disconnect () {
-      port.disconnect()
     }
   })
+  // 3. send a proxy API to the panel
+  initPanel(bridge)
 })
 
 function injectScript (scriptName, cb) {

@@ -3,13 +3,10 @@ import Vue from 'vue'
 /**
  * Create the main devtools app.
  *
- * @param {Object} wall
- *        - listen(fn)
- *        - send(data)
- *        - disconnect
+ * @param {Bridge} bridge
  */
 
-export function initPanel (wall) {
+export function initPanel (bridge) {
   var vm = new Vue({
     el: '#app',
     data: {
@@ -18,11 +15,14 @@ export function initPanel (wall) {
     template: '{{ message }}'
   })
 
-  wall.listen(function (message) {
+  bridge.on('message', message => {
     vm.message = message
   })
 
   setTimeout(function () {
-    wall.send('hello dude')
+    bridge.send({
+      event: 'message',
+      payload: 'hello from panel'
+    })
   }, 1000)
 }
