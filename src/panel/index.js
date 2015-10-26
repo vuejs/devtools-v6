@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import appOptions from './App.vue'
+const App = Vue.extend(appOptions)
 window.app = null
 
 /**
@@ -16,24 +18,14 @@ export function initPanel (shell) {
 }
 
 function buildPanel (shell) {
-  app = new Vue({
-    data: function () {
-      return {
-        message: 'Hello!'
-      }
-    },
-    template: '{{ message }}',
-    ready: function () {
-      shell.inject(bridge => {
-        bridge.on('message', message => {
-          vm.message = message
-        })
+  app = new App().$mount().$appendTo('body')
+  shell.inject(bridge => {
+    bridge.on('message', message => {
+      app.message = message
+    })
 
-        setTimeout(function () {
-          bridge.message('hello from panel')
-        }, 1000)
-      })
-    }
+    setTimeout(function () {
+      bridge.message('hello from panel')
+    }, 1000)
   })
-  app.$mount().$appendTo('body')
 }
