@@ -12,19 +12,20 @@ chrome.runtime.onConnect.addListener((port) => {
     installProxy(+port.name)
   } else {
     tab = port.sender.tab.id
-    name = 'content-script'
+    name = 'backend'
   }
 
   if (!ports[tab]) {
     ports[tab] = {
       devtools: null,
-      'content-script': null,
+      backend: null,
     }
   }
   ports[tab][name] = port
 
-  if (ports[tab].devtools && ports[tab]['content-script']) {
-    doublePipe(ports[tab].devtools, ports[tab]['content-script'])
+  if (ports[tab].devtools && ports[tab].backend) {
+    console.log('pipe established for tab ' + tab)
+    doublePipe(tab, ports[tab].devtools, ports[tab].backend)
   }
 })
 
@@ -39,7 +40,7 @@ function installProxy (tabId) {
   })
 }
 
-function doublePipe(one, two) {
+function doublePipe(id, one, two) {
   one.onMessage.addListener(lOne)
   function lOne(message) {
     console.log('devtools -> backend', message);
@@ -51,6 +52,7 @@ function doublePipe(one, two) {
     one.postMessage(message)
   }
   function shutdown() {
+    console.log('tab ' + id + ' disconnected.')
     one.onMessage.removeListener(lOne)
     two.onMessage.removeListener(lTwo)
     one.disconnect()

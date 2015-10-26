@@ -27,6 +27,6 @@ function sendMessageToDevtools (e) {
 }
 
 function handleDisconnect () {
-  window.removeEventListener('message', handleMessageFromBackend)
+  window.removeEventListener('message', sendMessageToDevtools)
   sendMessageToBackend('shutdown')
 }
