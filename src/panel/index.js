@@ -24,6 +24,10 @@ function buildPanel (shell) {
       app.message = message
     })
 
+    bridge.on('flush', instances => {
+      app.instances = instances
+    })
+
     setTimeout(function () {
       bridge.message('hello from panel')
     }, 1000)
