@@ -1,3 +1,5 @@
+// this script is injected into every page.
+
 /**
  * Install the hook on window, which is an event emitter.
  * Note because Chrome content scripts cannot directly modify the window object,
@@ -65,7 +67,6 @@ export function installHook (window) {
 
   hook.once('init', (Vue) => {
     hook.Vue = Vue
-    console.log('init!')
   })
 
   Object.defineProperty(window, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {

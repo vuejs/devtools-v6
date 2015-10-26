@@ -1,9 +1,11 @@
 module.exports = {
   entry: {
-    inject: './src/inject.js',
+    hook: './src/hook.js',
     devtools: './src/devtools.js',
     panel: './src/panel.js',
-    background: './src/background.js'
+    background: './src/background.js',
+    backend: './src/backend.js',
+    proxy: './src/proxy.js'
   },
   output: {
     path: __dirname + '/build',

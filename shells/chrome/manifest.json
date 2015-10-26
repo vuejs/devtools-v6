@@ -10,7 +10,7 @@
   },
   
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "web_accessible_resources": [ "devtools.html", "panel.html" ],
+  "web_accessible_resources": [ "devtools.html", "panel.html", "build/backend.js" ],
 
   "devtools_page": "devtools.html",
 
@@ -21,13 +21,14 @@
 
   "permissions": [
     "http://*/",
-    "https://*/*"
+    "https://*/*",
+    "file://*/*"
   ],
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["build/inject.js"],
+      "js": ["build/hook.js"],
       "run_at": "document_start"
     }
   ]
