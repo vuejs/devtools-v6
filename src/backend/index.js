@@ -4,19 +4,12 @@
 let rootInstances = []
 let bridge
 
-export function initBackend (b) {
-  console.log('[vue-devtools] backend ready.')
-  bridge = b
+export function initBackend (_bridge) {
+  bridge = _bridge
   const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
-
-  bridge.on('message', message => {
-    console.log(message)
-  })
-
-  bridge.message('yo from backend')
-
   hook.on('flush', flush)
   scan()
+  bridge.message('Ready.')
 }
 
 function flush () {
@@ -50,9 +43,29 @@ function walk (node, fn) {
 function capture (instance) {
   return {
     name: instance.$options.name || 'Component',
-    props: instance._props,
-    state: instance._data,
+    id: instance._uid,
     inactive: !!instance._inactive,
     children: instance.$children.map(capture)
+  }
+}
+
+function processProps (props) {
+  if (!props) {
+    return []
+  } else {
+    return Object.keys(props).map(key => {
+      const prop = props[key]
+      const options = prop.options
+      return {
+        name: prop.name,
+        path: prop.path,
+        raw: prop.raw,
+        mode: prop.mode,
+        required: !!options.required,
+        type: options.type ? options.type.toString() : null,
+        twoWay: !!options.twoWay,
+        default: options.default
+      }
+    })
   }
 }

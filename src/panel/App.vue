@@ -1,8 +1,12 @@
 <template>
 <div class="app">
   <h1>Vue Devtools</h1>
-  <p>{{message}}</p>
-  <instance v-for="i in instances" :instance="i"></instance>
+  <p class="status">{{message}}</p>
+  <div class="buttons">
+    <a @click="forceUpdate">Force Update</a>
+    <a @click="toggleLiveMode">Toggle Live Mode</a>
+  </div>
+  <instance v-for="i in instances" track-by="id" :instance="i"></instance>
 </div>
 </template>
 
@@ -14,7 +18,25 @@ export default {
   data() {
     return {
       message: 'Looking for Vue.js...',
-      instances: [{ name: 'hello' }]
+      selectedInstance: null,
+      instances: []
+    }
+  },
+  events: {
+    selected: function (target) {
+      if (this.selectedInstance) {
+        this.selectedInstance.selected = false
+      }
+      this.selectedInstance = target
+      this.message = 'instance selected: ' + target.instance.name
+    }
+  },
+  methods: {
+    forceUpdate () {
+
+    },
+    toggleLiveMode () {
+
     }
   }
 }
@@ -23,5 +45,8 @@ export default {
 <style scoped>
 h1 {
   color: red;
+}
+.status {
+  color: blue;
 }
 </style>
