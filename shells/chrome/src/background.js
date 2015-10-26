@@ -56,6 +56,7 @@ function doublePipe(id, one, two) {
     two.onMessage.removeListener(lTwo)
     one.disconnect()
     two.disconnect()
+    ports[id] = null
   }
   one.onDisconnect.addListener(shutdown)
   two.onDisconnect.addListener(shutdown)

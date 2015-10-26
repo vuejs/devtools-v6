@@ -4,7 +4,13 @@ import { initPanel } from '../../../src/panel'
 import Bridge from '../../../src/bridge'
 
 initPanel({
-  inject: inject
+  inject: inject,
+  onReload: reloadFn => {
+    chrome.devtools.network.onNavigated.addListener(reloadFn)
+    return () => {
+      chrome.devtools.network.onNavigated.removeListener(reloadFn)
+    }
+  }
 })
 
 function inject (cb) {
