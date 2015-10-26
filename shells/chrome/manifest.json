@@ -1,0 +1,34 @@
+{
+  "name": "Vue.js devtools",
+  "version": "1.0.0",
+  "description": "Chrome devtools extension for debugging Vue.js applications.",
+  "manifest_version": 2,
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "web_accessible_resources": [ "devtools.html", "panel.html" ],
+
+  "devtools_page": "devtools.html",
+
+  "background": {
+    "scripts": [ "build/background.js" ],
+    "persistent": false
+  },
+
+  "permissions": [
+    "http://*/",
+    "https://*/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["build/inject.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

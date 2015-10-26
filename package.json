@@ -1,0 +1,35 @@
+{
+  "name": "vue-devtools",
+  "version": "1.0.0",
+  "description": "devtools for Vue.js!",
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=production webpack -p -c shells/chrome/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/vue-devtools.git"
+  },
+  "keywords": [
+    "vue",
+    "devtools"
+  ],
+  "author": "Evan You",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vuejs/vue-devtools/issues"
+  },
+  "homepage": "https://github.com/vuejs/vue-devtools#readme",
+  "devDependencies": {
+    "babel-core": "^5.8.29",
+    "babel-loader": "^5.3.2",
+    "babel-runtime": "^5.8.29",
+    "css-loader": "^0.21.0",
+    "style-loader": "^0.13.0",
+    "vue": "^0.12.16",
+    "vue-hot-reload-api": "^1.2.1",
+    "vue-html-loader": "^1.0.0",
+    "vue-loader": "^5.0.0",
+    "webpack": "^1.12.2"
+  }
+}
