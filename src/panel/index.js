@@ -20,9 +20,6 @@ export function initPanel (bridge) {
   })
 
   setTimeout(function () {
-    bridge.send({
-      event: 'message',
-      payload: 'hello from panel'
-    })
+    bridge.message('hello from panel')
   }, 1000)
 }

@@ -9,8 +9,5 @@ export function initBackend (bridge) {
     console.log(message)
   })
 
-  bridge.send({
-    event: 'message',
-    payload: 'yo from backend'
-  })
+  bridge.message('yo from backend')
 }

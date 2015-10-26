@@ -13,7 +13,22 @@ export default class Bridge extends EventEmitter {
     })
   }
 
-  send (message) {
-    this.wall.send(message)
+  /**
+   * Send a generic obj in the format of { event: String, payload: * }
+   */
+
+  send (obj) {
+    this.wall.send(obj)
+  }
+
+  /**
+   * Sugar for sending a message
+   */
+
+  message (message) {
+    this.wall.send({
+      event: 'message',
+      payload: message
+    })
   }
 }
