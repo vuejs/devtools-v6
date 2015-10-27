@@ -5,14 +5,10 @@
   <div class="header">
     <h1>Vue Devtools</h1>
     <p class="status">{{message}}</p>
-    <div class="buttons">
-      <button @click="forceUpdate">Force Update</button>
-      <button @click="toggleLiveMode">Toggle Live Mode</button>
-    </div>
   </div>
   <div class="container">
     <tree class="column" :instances="instances"></tree>
-    <inspector class="column" :target="selectedDetails"></inspector>
+    <inspector class="column" :target="inspectedInstance"></inspector>
   </div>
 </div>
 </template>
@@ -27,41 +23,36 @@ export default {
     return {
       message: 'Looking for Vue.js...',
       selected: null,
-      selectedDetails: {},
+      inspectedInstance: {},
       instances: []
     }
   },
+  ready () {
+    bridge.on('message', message => {
+      this.message = message
+    })
+    bridge.on('flush', payload => {
+      this.instances = payload.instances
+      this.inspectedInstance = payload.inspectedInstance
+    })
+    bridge.on('instance-details', details => {
+      this.inspectedInstance = details
+    })
+  },
   events: {
     selected: function (target) {
+      if (this.selected === target) {
+        return
+      }
       if (this.selected) {
         this.selected.selected = false
       }
       this.selected = target
       this.message = 'instance selected: ' + target.instance.name
-      this.bridge.send({
+      bridge.send({
         event: 'select-instance',
         payload: target.instance.id
       })
-    }
-  },
-  methods: {
-    init (bridge) {
-      this.bridge = bridge
-      bridge.on('message', message => {
-        this.message = message
-      })
-      bridge.on('flush', instances => {
-        this.instances = instances
-      })
-      bridge.on('instance-details', details => {
-        this.selectedDetails = details
-      })
-    },
-    forceUpdate () {
-
-    },
-    toggleLiveMode () {
-
     }
   }
 }

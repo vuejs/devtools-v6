@@ -23,6 +23,11 @@ export default {
   props: {
     target: Object
   },
+  watch: {
+    target: function (val) {
+      bridge.log(val)
+    }
+  },
   computed: {
     hasTarget () {
       return this.target.id != null

@@ -3,12 +3,16 @@
 
 let rootInstances = []
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+let currentInspectedId
 let bridge
 
 export function initBackend (_bridge) {
   bridge = _bridge
   const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
-  hook.on('flush', flush)
+  if (!hook.hasFlushListener) {
+    hook.on('flush', flush)
+    hook.hasFlushListener = true
+  }
   scan()
   bridge.on('select-instance', selectInstance)
   bridge.message('Ready.')
@@ -17,7 +21,10 @@ export function initBackend (_bridge) {
 function flush () {
   bridge.send({
     event: 'flush',
-    payload: rootInstances.map(capture)
+    payload: {
+      inspectedInstance: getInstanceDetails(currentInspectedId),
+      instances: rootInstances.map(capture)
+    }
   })
 }
 
@@ -45,9 +52,10 @@ function walk (node, fn) {
 function capture (instance) {
   mark(instance)
   return {
-    name: instance.$options.name || 'Anonymous Component',
     id: instance._uid,
+    name: getInstanceName(instance),
     inactive: !!instance._inactive,
+    isFragment: !!instance._isFragment,
     children: instance.$children.map(capture)
   }
 }
@@ -62,17 +70,30 @@ function mark (instance) {
 }
 
 function selectInstance (id) {
-  let instance = instanceMap.get(id)
+  currentInspectedId = id
   bridge.send({
     event: 'instance-details',
-    payload: {
+    payload: getInstanceDetails(id)
+  })
+}
+
+function getInstanceDetails (id) {
+  let instance = instanceMap.get(id)
+  if (!instance) {
+    return {}
+  } else {
+    return {
       id: id,
-      name: instance.$options.name || 'Anonymous Component',
+      name: getInstanceName(instance),
       props: processProps(instance._props),
       state: JSON.parse(JSON.stringify(instance._data)),
       computed: processComputed(instance)
     }
-  })
+  }
+}
+
+function getInstanceName (instance) {
+  return instance.$options.name || (instance._uid === 0 ? 'Root' : 'Anonymous Component')
 }
 
 function processProps (props) {

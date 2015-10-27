@@ -42,11 +42,17 @@ function installProxy (tabId) {
 function doublePipe(id, one, two) {
   one.onMessage.addListener(lOne)
   function lOne(message) {
+    if (message.event === 'log') {
+      return console.log('log: ', message.payload)
+    }
     console.log('devtools -> backend', message);
     two.postMessage(message)
   }
   two.onMessage.addListener(lTwo)
   function lTwo(message) {
+    if (message.event === 'log') {
+      return console.log('log: ', message.payload)
+    }
     console.log('backend -> devtools', message);
     one.postMessage(message)
   }
