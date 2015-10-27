@@ -18,14 +18,9 @@ export function initPanel (shell) {
 }
 
 function buildPanel (shell) {
-  app = new App().$mount().$appendTo('body')
   shell.inject(bridge => {
-    bridge.on('message', message => {
-      app.message = message
-    })
-
-    bridge.on('flush', instances => {
-      app.instances = instances
-    })
+    app = new App().$mount().$appendTo('body')
+    bridge.message('yo')
+    app.init(bridge)
   })
 }

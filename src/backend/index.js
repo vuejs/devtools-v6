@@ -2,6 +2,7 @@
 // when the Vue Devtools panel is activated.
 
 let rootInstances = []
+let instanceMap = new Map()
 let bridge
 
 export function initBackend (_bridge) {
@@ -9,6 +10,7 @@ export function initBackend (_bridge) {
   const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
   hook.on('flush', flush)
   scan()
+  bridge.on('select-instance', selectInstance)
   bridge.message('Ready.')
 }
 
@@ -41,12 +43,37 @@ function walk (node, fn) {
 }
 
 function capture (instance) {
+  mark(instance)
   return {
-    name: instance.$options.name || 'Component',
+    name: instance.$options.name || 'Anonymous Component',
     id: instance._uid,
     inactive: !!instance._inactive,
     children: instance.$children.map(capture)
   }
+}
+
+function mark (instance) {
+  if (!instance._markedByDevtool) {
+    instanceMap.set(instance._uid, instance)
+    console.log(instance._uid)
+    instance._markedByDevtool = true
+    instance.$on('hook:beforeDestroy', function () {
+      instanceMap.delete(instance._uid)
+    })
+  }
+}
+
+function selectInstance (id) {
+  let instance = instanceMap.get(id)
+  bridge.send({
+    event: 'instance-details',
+    payload: {
+      name: instance.$options.name || 'Anonymous Component',
+      props: processProps(instance._props),
+      state: JSON.parse(JSON.stringify(instance._data)),
+      computed: processComputed(instance)
+    }
+  })
 }
 
 function processProps (props) {
@@ -68,4 +95,13 @@ function processProps (props) {
       }
     })
   }
+}
+
+function processComputed (instance) {
+  return Object.keys(instance.$options.computed || {}).map(key => {
+    return {
+      key,
+      value: instance[key]
+    }
+  })
 }

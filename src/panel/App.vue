@@ -6,32 +6,53 @@
     <a @click="forceUpdate">Force Update</a>
     <a @click="toggleLiveMode">Toggle Live Mode</a>
   </div>
-  <instance v-for="i in instances" track-by="id" :instance="i"></instance>
+  <div class="container">
+    <tree class="column" :instances="instances"></tree>
+    <inspector class="column" :target="selectedDetails"></inspector>
+  </div>
 </div>
 </template>
 
 <script>
-import Instance from './Instance.vue'
+import Tree from './Tree.vue'
+import Inspector from './Inspector.vue'
 
 export default {
-  components: { Instance },
+  components: { Tree, Inspector },
   data() {
     return {
       message: 'Looking for Vue.js...',
-      selectedInstance: null,
+      selected: null,
+      selectedDetails: {},
       instances: []
     }
   },
   events: {
     selected: function (target) {
-      if (this.selectedInstance) {
-        this.selectedInstance.selected = false
+      if (this.selected) {
+        this.selected.selected = false
       }
-      this.selectedInstance = target
+      this.selected = target
       this.message = 'instance selected: ' + target.instance.name
+      this.bridge.send({
+        event: 'select-instance',
+        payload: target.instance.id
+      })
     }
   },
   methods: {
+    init (bridge) {
+      this.bridge = bridge
+      bridge.on('message', message => {
+        this.message = message
+      })
+      bridge.on('flush', instances => {
+        this.instances = instances
+      })
+      bridge.on('instance-details', details => {
+        this.selectedDetails = details
+      })
+    },
     forceUpdate () {
 
     },
@@ -42,11 +63,23 @@ export default {
 }
 </script>
 
-<style scoped>
-h1 {
-  color: red;
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
 }
-.status {
-  color: blue;
-}
+</style>
+
+<style lang="stylus" scoped>
+h1
+  color red
+.status
+  color blue
+.container
+  border-top 1px solid #ccc
+  margin-top 10px
+  display flex
+  .column
+    width 50%
+    padding 10px 20px
 </style>
