@@ -2,14 +2,12 @@
   <div class="instance" :class="classes">
     <span>{{ instance.inactive ? '(inactive)' : '' }}</span>
     <span class="name">{{ instance.name }}</span>
-    <a class="inspect" @click.stop="select">
-      Inspect
-    </a>
-    <a class="toggle"
+    <button class="inspect" @click.stop="select">Inspect</button>
+    <button class="toggle"
       v-if="instance.children.length"
       @click.stop="expanded = !expanded">
       {{ (expanded ? '[-]' : '[+]') + ' ' + instance.children.length }}
-    </a>
+    </button>
     <template v-if="expanded">
       <instance
         v-for="child in instance.children | orderBy 'inactive'"

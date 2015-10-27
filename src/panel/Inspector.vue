@@ -1,11 +1,20 @@
 <template>
-  <div>
+  <div class="inspector" v-show="hasTarget">
     <p>{{ target.name }}</p>
-    <a @click="inspectDOM">Inspect DOM</a>
-    <a @click="sendToConsole">Send to Console</a>
-    <pre>{{ target.state | json }}</pre>
-    <pre>{{ target.props | json }}</pre>
-    <pre>{{ target.computed | json }}</pre>
+    <button @click="inspectDOM">Inspect DOM</button>
+    <button @click="sendToConsole">Send to Console</button>
+    <section>
+      <h3>Props</h3>
+      <pre>{{ target.props | json }}</pre>
+    </section>
+    <section>
+      <h3>State</h3>
+      <pre>{{ target.state | json }}</pre>
+    </section>
+    <section>
+      <h3>Computed</h3>
+      <pre>{{ target.computed | json }}</pre>
+    </section>
   </div>
 </template>
 
@@ -14,17 +23,30 @@ export default {
   props: {
     target: Object
   },
+  computed: {
+    hasTarget () {
+      return this.target.id != null
+    }
+  },
   methods: {
     inspectDOM () {
+      if (!this.hasTarget) return
       chrome.devtools.inspectedWindow.eval(
         `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${ this.target.id }).$el)`
       )
     },
     sendToConsole () {
-      chrome.devtools.inspectedWindow.eval(
-        `$vm = window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${ this.target.id })`
-      )
+      if (!this.hasTarget) return
+      chrome.devtools.inspectedWindow.eval(`
+        $vm = window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${ this.target.id });
+        console.log('%c[vue-dev-tools] ${ this.target.name } is now available in the console as "$vm".', 'color:#42b983')
+      `)
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.inspector
+  padding 10px 20px
+</style>

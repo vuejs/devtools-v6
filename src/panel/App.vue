@@ -1,10 +1,14 @@
+<style lang="stylus" src="./global.styl"></style>
+
 <template>
 <div class="app">
-  <h1>Vue Devtools</h1>
-  <p class="status">{{message}}</p>
-  <div class="buttons">
-    <a @click="forceUpdate">Force Update</a>
-    <a @click="toggleLiveMode">Toggle Live Mode</a>
+  <div class="header">
+    <h1>Vue Devtools</h1>
+    <p class="status">{{message}}</p>
+    <div class="buttons">
+      <button @click="forceUpdate">Force Update</button>
+      <button @click="toggleLiveMode">Toggle Live Mode</button>
+    </div>
   </div>
   <div class="container">
     <tree class="column" :instances="instances"></tree>
@@ -63,23 +67,18 @@ export default {
 }
 </script>
 
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-}
-</style>
-
 <style lang="stylus" scoped>
 h1
-  color red
+  color #42b983
 .status
   color blue
+.header
+  padding 10px 20px
 .container
   border-top 1px solid #ccc
   margin-top 10px
   display flex
   .column
     width 50%
-    padding 10px 20px
+    box-sizing border-box
 </style>
