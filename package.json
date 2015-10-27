@@ -4,7 +4,7 @@
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack -p -c shells/chrome/webpack.config.js"
+    "build": "cd shells/chrome && NODE_ENV=production webpack --progress --hide-modules"
   },
   "repository": {
     "type": "git",
