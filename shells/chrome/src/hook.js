@@ -1,5 +1,5 @@
 // This script is injected into every page.
-import { installHook } from '../../../src/hook'
+import { installHook } from '../../../src/backend/hook'
 
 // inject the hook
 const script = document.createElement('script')
