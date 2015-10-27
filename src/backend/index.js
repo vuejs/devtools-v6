@@ -2,7 +2,7 @@
 // when the Vue Devtools panel is activated.
 
 let rootInstances = []
-let instanceMap = new Map()
+let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let bridge
 
 export function initBackend (_bridge) {
@@ -53,9 +53,8 @@ function capture (instance) {
 }
 
 function mark (instance) {
-  if (!instance._markedByDevtool) {
+  if (!instanceMap.has(instance._uid)) {
     instanceMap.set(instance._uid, instance)
-    instance._markedByDevtool = true
     instance.$on('hook:beforeDestroy', function () {
       instanceMap.delete(instance._uid)
     })
@@ -67,6 +66,7 @@ function selectInstance (id) {
   bridge.send({
     event: 'instance-details',
     payload: {
+      id: id,
       name: instance.$options.name || 'Anonymous Component',
       props: processProps(instance._props),
       state: JSON.parse(JSON.stringify(instance._data)),
