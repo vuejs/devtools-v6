@@ -19,12 +19,9 @@ export function initBackend (_bridge) {
 }
 
 function flush () {
-  bridge.send({
-    event: 'flush',
-    payload: {
-      inspectedInstance: getInstanceDetails(currentInspectedId),
-      instances: rootInstances.map(capture)
-    }
+  bridge.send('flush', {
+    inspectedInstance: getInstanceDetails(currentInspectedId),
+    instances: rootInstances.map(capture)
   })
 }
 
@@ -71,10 +68,7 @@ function mark (instance) {
 
 function selectInstance (id) {
   currentInspectedId = id
-  bridge.send({
-    event: 'instance-details',
-    payload: getInstanceDetails(id)
-  })
+  bridge.send('instance-details', getInstanceDetails(id))
 }
 
 function getInstanceDetails (id) {

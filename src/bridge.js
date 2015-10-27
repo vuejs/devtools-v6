@@ -14,11 +14,17 @@ export default class Bridge extends EventEmitter {
   }
 
   /**
-   * Send a generic obj in the format of { event: String, payload: * }
+   * Send an event.
+   *
+   * @param {String} event
+   * @param {*} payload
    */
 
-  send (obj) {
-    this.wall.send(obj)
+  send (event, payload) {
+    this.wall.send({
+      event,
+      payload
+    })
   }
 
   /**

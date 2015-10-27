@@ -49,10 +49,7 @@ export default {
       }
       this.selected = target
       this.message = 'instance selected: ' + target.instance.name
-      bridge.send({
-        event: 'select-instance',
-        payload: target.instance.id
-      })
+      bridge.send('select-instance', target.instance.id)
     }
   }
 }
