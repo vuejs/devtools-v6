@@ -55,7 +55,6 @@ function capture (instance) {
 function mark (instance) {
   if (!instance._markedByDevtool) {
     instanceMap.set(instance._uid, instance)
-    console.log(instance._uid)
     instance._markedByDevtool = true
     instance.$on('hook:beforeDestroy', function () {
       instanceMap.delete(instance._uid)

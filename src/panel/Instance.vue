@@ -8,7 +8,7 @@
     <a class="toggle"
       v-if="instance.children.length"
       @click.stop="expanded = !expanded">
-      {{ expanded ? '[-]' : '[+] ' + instance.children.length }}
+      {{ (expanded ? '[-]' : '[+]') + ' ' + instance.children.length }}
     </a>
     <template v-if="expanded">
       <instance
