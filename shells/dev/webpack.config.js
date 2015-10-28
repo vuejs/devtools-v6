@@ -1,10 +1,12 @@
 module.exports = {
   entry: {
-    devtool: './src/devtool.js',
-    backend: './src/backend.js'
+    devtools: './src/devtools.js',
+    backend: './src/backend.js',
+    target: './target/index.js'
   },
   output: {
     path: __dirname + '/build',
+    publicPath: '/build/',
     filename: '[name].js',
   },
   module: {

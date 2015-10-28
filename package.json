@@ -4,7 +4,8 @@
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
-    "dev": "cd shells/chrome && webpack --watch --hide-modules",
+    "dev": "cd shells/dev && webpack-dev-server --inline --hot",
+    "dev-chrome": "cd shells/chrome && webpack --watch --hide-modules",
     "build-chrome": "cd shells/chrome && NODE_ENV=production webpack --progress --hide-modules"
   },
   "repository": {
@@ -31,7 +32,8 @@
     "vue-hot-reload-api": "^1.2.1",
     "vue-html-loader": "^1.0.0",
     "vue-loader": "^5.0.0",
-    "webpack": "^1.12.2"
+    "webpack": "^1.12.2",
+    "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
     "vue": "^1.0.0"

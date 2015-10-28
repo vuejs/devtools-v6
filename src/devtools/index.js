@@ -32,6 +32,9 @@ export function initDevTools (shell) {
 function initApp (shell) {
   shell.connect(bridge => {
     window.bridge = bridge
-    app = new App().$mount().$appendTo('body')
+    app = new Vue({
+      template: '<app></app>',
+      components: { App }
+    }).$mount().$appendTo('#container')
   })
 }

@@ -68,6 +68,8 @@ export default {
 <style lang="stylus" scoped>
 h1
   color #42b983
+.app
+  width 100%
 .header
   padding 10px 20px
   position relative
