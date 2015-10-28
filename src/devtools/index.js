@@ -7,19 +7,17 @@ window.app = null
  * Create the main devtools app.
  */
 
-export function initPanel (shell) {
-  buildPanel(shell)
-  shell.onReload(() => {
+export function initDevTools (shell) {
+
+  shell.inject(bridge => {
+    window.bridge = bridge
+    app = new App().$mount().$appendTo('body')
+  })
+
+  shell.registerReloadFn(() => {
     if (app) {
       app.$destroy(true)
     }
     buildPanel(shell)
-  })
-}
-
-function buildPanel (shell) {
-  shell.inject(bridge => {
-    window.bridge = bridge
-    app = new App().$mount().$appendTo('body')
   })
 }

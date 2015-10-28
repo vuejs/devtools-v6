@@ -2,8 +2,8 @@ module.exports = {
   entry: {
     hook: './src/hook.js',
     devtools: './src/devtools.js',
-    panel: './src/panel.js',
     background: './src/background.js',
+    'devtools-background': './src/devtools-background.js',
     backend: './src/backend.js',
     proxy: './src/proxy.js'
   },
