@@ -4,20 +4,29 @@ const App = Vue.extend(appOptions)
 window.app = null
 
 /**
- * Create the main devtools app.
+ * Create the main devtools app. Expects to be called with a shell interface
+ * which implements a connect method.
+ *
+ * @param {Object} shell
+ *        - connect(bridge => {})
+ *        - onReload(reloadFn)
  */
 
 export function initDevTools (shell) {
-
-  shell.inject(bridge => {
+  shell.connect(bridge => {
     window.bridge = bridge
-    app = new App().$mount().$appendTo('body')
+    reload()
   })
+  shell.onReload(reload)
+}
 
-  shell.registerReloadFn(() => {
-    if (app) {
-      app.$destroy(true)
-    }
-    buildPanel(shell)
-  })
+/**
+ * Reload the devtools app.
+ */
+
+function reload () {
+  if (app) {
+    app.$destroy(true)
+  }
+  app = new App().$mount().$appendTo('body')
 }

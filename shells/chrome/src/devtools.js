@@ -4,41 +4,58 @@ import { initDevTools } from '../../../src/devtools'
 import Bridge from '../../../src/bridge'
 
 initDevTools({
-  inject: inject,
-  registerReloadFn: reloadFn => {
+
+  /**
+   * Inject backend, connect to background, and send back the bridge.
+   *
+   * @param {Function} cb
+   */
+
+  connect (cb) {
+    // 1. inject backend code into page
+    injectScript(chrome.runtime.getURL('build/backend.js'), () => {
+      // 2. connect to background to setup proxy
+      const port = chrome.runtime.connect({
+        name: '' + chrome.devtools.inspectedWindow.tabId
+      })
+      let disconnected = false
+      port.onDisconnect.addListener(() => {
+        disconnected = true
+      })
+
+      const bridge = new Bridge({
+        listen (fn) {
+          port.onMessage.addListener(fn)
+        },
+        send (data) {
+          if (!disconnected) {
+            port.postMessage(data)
+          }
+        }
+      })
+      // 3. send a proxy API to the panel
+      cb(bridge)
+    }) 
+  },
+
+  /**
+   * Register a function to reload the devtools app.
+   *
+   * @param {Function} reloadFn
+   */
+
+  onReload (reloadFn) {
     chrome.devtools.network.onNavigated.addListener(reloadFn)
-    return () => {
-      chrome.devtools.network.onNavigated.removeListener(reloadFn)
-    }
   }
 })
 
-function inject (cb) {
-  // 1. inject backend code into page
-  injectScript(chrome.runtime.getURL('build/backend.js'), () => {
-    // 2. connect to background to setup proxy
-    const port = chrome.runtime.connect({
-      name: '' + chrome.devtools.inspectedWindow.tabId
-    })
-    let disconnected = false
-    port.onDisconnect.addListener(() => {
-      disconnected = true
-    })
-
-    const bridge = new Bridge({
-      listen (fn) {
-        port.onMessage.addListener(fn)
-      },
-      send (data) {
-        if (!disconnected) {
-          port.postMessage(data)
-        }
-      }
-    })
-    // 3. send a proxy API to the panel
-    cb(bridge)
-  }) 
-}
+/**
+ * Inject a globally evaluated script, in the same context with the actual
+ * user app.
+ *
+ * @param {String} scriptName
+ * @param {Function} cb
+ */
 
 function injectScript (scriptName, cb) {
   const src = `
