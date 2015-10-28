@@ -4,6 +4,8 @@
 <div class="app">
   <div class="header">
     <h1>Vue Devtools</h1>
+    <button @click="toggleLiveMode">Toggle Live Mode</button>
+    <button @click="refresh">Refresh</button>
     <p class="status">{{message}}</p>
   </div>
   <div class="container">
@@ -19,7 +21,7 @@ import Inspector from './Inspector.vue'
 
 export default {
   components: { Tree, Inspector },
-  data() {
+  data () {
     return {
       message: 'Looking for Vue.js...',
       selected: null,
@@ -40,7 +42,7 @@ export default {
     })
   },
   events: {
-    selected: function (target) {
+    selected (target) {
       if (this.selected === target) {
         return
       }
@@ -50,6 +52,14 @@ export default {
       this.selected = target
       this.message = 'instance selected: ' + target.instance.name
       bridge.send('select-instance', target.instance.id)
+    }
+  },
+  methods: {
+    toggleLiveMode () {
+      // TODO
+    },
+    refresh () {
+      // TODO
     }
   }
 }
