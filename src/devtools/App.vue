@@ -30,8 +30,8 @@ export default {
     }
   },
   ready () {
-    bridge.once('ready', () => {
-      this.message = 'Ready.'
+    bridge.once('ready', version => {
+      this.message = 'Ready. Detected Vue ' + version + '.'
     })
     bridge.on('flush', payload => {
       this.instances = payload.instances

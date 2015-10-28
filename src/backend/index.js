@@ -1,6 +1,9 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
+// hook should have been injected before this executes.
+const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
+
 let rootInstances = []
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
@@ -8,11 +11,17 @@ let bridge
 
 export function initBackend (_bridge) {
   bridge = _bridge
+  if (hook.Vue) {
+    connect()
+  } else {
+    hook.once('init', connect)
+  }
+}
 
+function connect () {
   // the backend may get injected to the same page multiple times
   // if the user closes and reopens the devtools.
   // make sure we hook to Vue only once.
-  const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
   if (!hook.hasFlushListener) {
     hook.on('flush', flush)
     hook.hasFlushListener = true
@@ -29,7 +38,7 @@ export function initBackend (_bridge) {
   })
 
   bridge.log('backend ready.')
-  bridge.send('ready')
+  bridge.send('ready', hook.Vue.version)
   scan()
 }
 
