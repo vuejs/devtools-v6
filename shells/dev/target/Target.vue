@@ -1,5 +1,16 @@
 <template>
   <div id="target">
-    <h1>Hello world!!!!</h1>
+    <h1>{{msg}}</h1>
+    <input v-model="msg">
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      msg: 'hello'
+    }
+  }
+}
+</script>

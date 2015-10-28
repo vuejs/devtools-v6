@@ -1,21 +1,18 @@
 import { initDevTools } from '../../../src/devtools'
-import { installHook } from '../../../src/backend/hook'
 import Bridge from '../../../src/bridge'
 
 const target = document.getElementById('target')
 const targetWindow = target.contentWindow
 
-// 1. install global hook
-installHook(targetWindow)
-
-// 2. inject user app
-inject('./build/target.js', () => {
-  // 3. init devtools
+// 1. load user app
+target.src = 'target.html'
+target.onload = () => {
+  // 2. init devtools
   initDevTools({
     connect (cb) {
-      // 4. called by devtools: inject backend
+      // 3. called by devtools: inject backend
       inject('./build/backend.js', () => {
-        // 5. send back bridge
+        // 4. send back bridge
         cb(new Bridge({
           listen (fn) {
             targetWindow.parent.addEventListener('message', evt => fn(evt.data))
@@ -26,9 +23,11 @@ inject('./build/target.js', () => {
         }))
       })
     },
-    onReload () { /* noop*/ }
+    onReload (reloadFn) {
+      target.onload = reloadFn
+    }
   })
-})
+}
 
 function inject (src, done) {
   if (!src || src === 'false') {

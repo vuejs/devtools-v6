@@ -22,6 +22,7 @@
 const isChrome = typeof chrome !== 'undefined'
 
 export default {
+  name: 'Inspector',
   props: {
     target: Object
   },

@@ -41,6 +41,10 @@ export default {
       this.inspectedInstance = details
     })
   },
+  beforeDestroy () {
+    bridge.removeAllListeners('flush')
+    bridge.removeAllListeners('instance-details')
+  },
   events: {
     selected (target) {
       if (this.selected === target) {

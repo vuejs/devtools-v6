@@ -12,6 +12,7 @@
 import Instance from './Instance.vue'
 
 export default {
+  name: 'Tree',
   components: { Instance },
   props: {
     instances: Array

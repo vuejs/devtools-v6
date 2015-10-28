@@ -2,6 +2,7 @@ module.exports = {
   entry: {
     devtools: './src/devtools.js',
     backend: './src/backend.js',
+    hook: './src/hook.js',
     target: './target/index.js'
   },
   output: {
