@@ -13,9 +13,10 @@ export function initBackend (_bridge) {
     hook.on('flush', flush)
     hook.hasFlushListener = true
   }
-  scan()
   bridge.on('select-instance', selectInstance)
-  bridge.message('Ready.')
+  bridge.log('backend ready.')
+  bridge.send('ready')
+  scan()
 }
 
 function flush () {

@@ -28,8 +28,8 @@ export default {
     }
   },
   ready () {
-    bridge.on('message', message => {
-      this.message = message
+    bridge.once('ready', () => {
+      this.message = 'Ready.'
     })
     bridge.on('flush', payload => {
       this.instances = payload.instances
@@ -58,10 +58,14 @@ export default {
 <style lang="stylus" scoped>
 h1
   color #42b983
-.status
-  color blue
 .header
   padding 10px 20px
+  position relative
+.status
+  color blue
+  position absolute
+  top 10px
+  right 20px
 .container
   border-top 1px solid #ccc
   margin-top 10px

@@ -43,7 +43,7 @@ function doublePipe(id, one, two) {
   one.onMessage.addListener(lOne)
   function lOne(message) {
     if (message.event === 'log') {
-      return console.log('log: ', message.payload)
+      return console.log('tab ' + id, message.payload)
     }
     console.log('devtools -> backend', message);
     two.postMessage(message)
@@ -51,7 +51,7 @@ function doublePipe(id, one, two) {
   two.onMessage.addListener(lTwo)
   function lTwo(message) {
     if (message.event === 'log') {
-      return console.log('log: ', message.payload)
+      return console.log('tab ' + id, message.payload)
     }
     console.log('backend -> devtools', message);
     one.postMessage(message)

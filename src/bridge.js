@@ -28,20 +28,12 @@ export default class Bridge extends EventEmitter {
   }
 
   /**
-   * Sugar for sending a message
+   * Log a message to the devtools background page.
+   *
+   * @param {String} message
    */
 
-  message (message) {
-    this.wall.send({
-      event: 'message',
-      payload: message
-    })
-  }
-
   log (message) {
-    this.wall.send({
-      event: 'log',
-      payload: message
-    })
+    this.send('log', message)
   }
 }
