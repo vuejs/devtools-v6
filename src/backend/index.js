@@ -8,12 +8,26 @@ let bridge
 
 export function initBackend (_bridge) {
   bridge = _bridge
+
+  // the backend may get injected to the same page multiple times
+  // if the user closes and reopens the devtools.
+  // make sure we hook to Vue only once.
   const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
   if (!hook.hasFlushListener) {
     hook.on('flush', flush)
     hook.hasFlushListener = true
   }
-  bridge.on('select-instance', selectInstance)
+
+  bridge.on('select-instance', id => {
+    currentInspectedId = id
+    bridge.send('instance-details', getInstanceDetails(id))
+  })
+
+  bridge.on('send-to-console', id => {
+    window.$vm = instanceMap.get(id)
+    console.log('[vue-dev-tools] ' + getInstanceName($vm) + ' is now availabe in the console as $vm.')
+  })
+
   bridge.log('backend ready.')
   bridge.send('ready')
   scan()
@@ -65,11 +79,6 @@ function mark (instance) {
       instanceMap.delete(instance._uid)
     })
   }
-}
-
-function selectInstance (id) {
-  currentInspectedId = id
-  bridge.send('instance-details', getInstanceDetails(id))
 }
 
 function getInstanceDetails (id) {

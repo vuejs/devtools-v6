@@ -19,6 +19,8 @@
 </template>
 
 <script>
+const isChrome = typeof chrome !== 'undefined'
+
 export default {
   props: {
     target: Object
@@ -31,16 +33,17 @@ export default {
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      chrome.devtools.inspectedWindow.eval(
-        `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${ this.target.id }).$el)`
-      )
+      if (isChrome) {
+        chrome.devtools.inspectedWindow.eval(
+          `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${ this.target.id }).$el)`
+        )
+      } else {
+        alert('DOM inspection is not supported in this shell.')
+      }
     },
     sendToConsole () {
       if (!this.hasTarget) return
-      chrome.devtools.inspectedWindow.eval(`
-        $vm = window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${ this.target.id });
-        console.log('%c[vue-dev-tools] ${ this.target.name } is now available in the console as "$vm".', 'color:#42b983')
-      `)
+      bridge.send('send-to-console', this.target.id)
     }
   }
 }
