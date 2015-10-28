@@ -6,6 +6,7 @@
     <h1>Vue Devtools</h1>
     <button @click="toggleLiveMode">Toggle Live Mode</button>
     <button @click="refresh">Refresh</button>
+    <button @click="takeSnapshot">Take Snapshot</button>
     <p class="status">{{message}}</p>
   </div>
   <div class="container">
@@ -26,7 +27,8 @@ export default {
       message: 'Looking for Vue.js...',
       selected: null,
       inspectedInstance: {},
-      instances: []
+      instances: [],
+      snapshots: []
     }
   },
   ready () {
@@ -36,9 +38,6 @@ export default {
     bridge.on('flush', payload => {
       this.instances = payload.instances
       this.inspectedInstance = payload.inspectedInstance
-    })
-    bridge.on('instance-details', details => {
-      this.inspectedInstance = details
     })
   },
   beforeDestroy () {
@@ -56,6 +55,9 @@ export default {
       this.selected = target
       this.message = 'instance selected: ' + target.instance.name
       bridge.send('select-instance', target.instance.id)
+      bridge.once('instance-details', details => {
+        this.inspectedInstance = details
+      })
     }
   },
   methods: {
@@ -64,6 +66,12 @@ export default {
     },
     refresh () {
       // TODO
+    },
+    takeSnapshot () {
+      bridge.send('take-snapshot')
+      bridge.once('snapshot', snapshot => {
+        this.snapshots.push(snapshot)
+      })
     }
   }
 }

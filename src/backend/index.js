@@ -37,10 +37,21 @@ function connect () {
     console.log('[vue-dev-tools] ' + getInstanceName($vm) + ' is now availabe in the console as $vm.')
   })
 
+  bridge.on('take-snapshot', () => {
+    bridge.send('snapshot', takeSnapshot())
+  })
+
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
   scan()
 }
+
+/**
+ * Called on every Vue.js batcher flush cycle.
+ * Capture current component tree structure and the state
+ * of the current inspected instance (if present) and
+ * send it to the devtools.
+ */
 
 function flush () {
   bridge.send('flush', {
@@ -48,6 +59,10 @@ function flush () {
     instances: rootInstances.map(capture)
   })
 }
+
+/**
+ * Scan the page for root level Vue instances.
+ */
 
 function scan () {
   walk(document.body, function (node) {
@@ -58,6 +73,13 @@ function scan () {
   })
   flush()
 }
+
+/**
+ * DOM walk helper
+ *
+ * @param {NodeList} nodes
+ * @param {Function} fn
+ */
 
 function walk (node, fn) {
   if (node.childNodes) {
@@ -70,6 +92,13 @@ function walk (node, fn) {
   }
 }
 
+/**
+ * Capture the meta information of an instance. (recursive)
+ *
+ * @param {Vue} instance
+ * @return {Object}
+ */
+
 function capture (instance) {
   mark(instance)
   return {
@@ -81,6 +110,12 @@ function capture (instance) {
   }
 }
 
+/**
+ * Mark an instance as captured and store it in the instance map.
+ *
+ * @param {Vue} instance
+ */
+
 function mark (instance) {
   if (!instanceMap.has(instance._uid)) {
     instanceMap.set(instance._uid, instance)
@@ -89,6 +124,12 @@ function mark (instance) {
     })
   }
 }
+
+/**
+ * Get the detailed information of an inspected instance.
+ *
+ * @param {Number} id
+ */
 
 function getInstanceDetails (id) {
   let instance = instanceMap.get(id)
@@ -105,9 +146,24 @@ function getInstanceDetails (id) {
   }
 }
 
+/**
+ * Get the appropriate display name for an instance.
+ *
+ * @param {Vue} instance
+ * @return {String}
+ */
+
 function getInstanceName (instance) {
   return instance.$options.name || (instance._uid === 0 ? 'Root' : 'Anonymous Component')
 }
+
+/**
+ * Process the props of an instance.
+ * Make sure return a plain object because window.postMessage()
+ * will throw an Error if the passed object contains Functions.
+ *
+ * @param {Object} props
+ */
 
 function processProps (props) {
   if (!props) {
@@ -130,6 +186,12 @@ function processProps (props) {
   }
 }
 
+/**
+ * Process the computed properties of an instance.
+ *
+ * @param {Vue} instance
+ */
+
 function processComputed (instance) {
   return Object.keys(instance.$options.computed || {}).map(key => {
     return {
@@ -137,4 +199,26 @@ function processComputed (instance) {
       value: instance[key]
     }
   })
+}
+
+/**
+ * Take a snapshot of the state of the entire application.
+ *
+ * @return {Array}
+ */
+
+function takeSnapshot () {
+  return rootInstances.map(takeInstanceSnapshot)
+}
+
+/**
+ * Take a snapshot of an instance (recursive)
+ *
+ * @return {Object}
+ */
+
+function takeInstanceSnapshot (instance) {
+  const details = getInstanceDetails(instance._uid)
+  details.children = instance.$children.map(takeInstanceSnapshot)
+  return details
 }
