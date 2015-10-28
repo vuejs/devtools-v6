@@ -13,20 +13,25 @@ window.app = null
  */
 
 export function initDevTools (shell) {
-  shell.connect(bridge => {
-    window.bridge = bridge
-    reload()
+  initApp(shell)
+  shell.onReload(() => {
+    if (app) {
+      app.$destroy(true)
+    }
+    initApp(shell)
   })
-  shell.onReload(reload)
 }
 
 /**
- * Reload the devtools app.
+ * Connect then init the app. We need to reconnect on every reload, because a
+ * new backend will be injected.
+ *
+ * @param {Object} shell
  */
 
-function reload () {
-  if (app) {
-    app.$destroy(true)
-  }
-  app = new App().$mount().$appendTo('body')
+function initApp (shell) {
+  shell.connect(bridge => {
+    window.bridge = bridge
+    app = new App().$mount().$appendTo('body')
+  })
 }
