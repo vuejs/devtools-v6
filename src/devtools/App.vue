@@ -6,12 +6,11 @@
     <h1>Vue Devtools</h1>
     <button @click="toggleLiveMode">Toggle Live Mode</button>
     <button @click="refresh">Refresh</button>
-    <button @click="takeSnapshot">Take Snapshot</button>
-    <p class="status">{{message}}</p>
+    <p class="status">{{ message }}</p>
   </div>
   <div class="container">
-    <tree class="column" :instances="instances"></tree>
-    <inspector class="column" :target="inspectedInstance"></inspector>
+    <Tree class="column" :instances="instances"></Tree>
+    <Inspector class="column" :target="inspectedInstance"></Inspector>
   </div>
 </div>
 </template>
@@ -66,12 +65,6 @@ export default {
     },
     refresh () {
       // TODO
-    },
-    takeSnapshot () {
-      bridge.send('take-snapshot')
-      bridge.once('snapshot', snapshot => {
-        this.snapshots.push(snapshot)
-      })
     }
   }
 }

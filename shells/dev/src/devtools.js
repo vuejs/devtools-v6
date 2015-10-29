@@ -18,6 +18,7 @@ target.onload = () => {
             targetWindow.parent.addEventListener('message', evt => fn(evt.data))
           },
           send (data) {
+            console.log('devtools -> backend', data)
             targetWindow.postMessage(data, '*')
           }
         }))

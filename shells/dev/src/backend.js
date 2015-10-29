@@ -6,6 +6,7 @@ const bridge = new Bridge({
     window.addEventListener('message', evt => fn(evt.data));
   },
   send(data) {
+    console.log('backend -> devtools', data)
     window.parent.postMessage(data, '*');
   }
 })

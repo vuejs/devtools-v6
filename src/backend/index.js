@@ -37,10 +37,6 @@ function connect () {
     console.log('[vue-dev-tools] ' + getInstanceName($vm) + ' is now availabe in the console as $vm.')
   })
 
-  bridge.on('take-snapshot', () => {
-    bridge.send('snapshot', takeSnapshot())
-  })
-
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
   scan()
@@ -199,26 +195,4 @@ function processComputed (instance) {
       value: instance[key]
     }
   })
-}
-
-/**
- * Take a snapshot of the state of the entire application.
- *
- * @return {Array}
- */
-
-function takeSnapshot () {
-  return rootInstances.map(takeInstanceSnapshot)
-}
-
-/**
- * Take a snapshot of an instance (recursive)
- *
- * @return {Object}
- */
-
-function takeInstanceSnapshot (instance) {
-  const details = getInstanceDetails(instance._uid)
-  details.children = instance.$children.map(takeInstanceSnapshot)
-  return details
 }

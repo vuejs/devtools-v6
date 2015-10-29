@@ -19,7 +19,7 @@
 </template>
 
 <script>
-const isChrome = typeof chrome !== 'undefined'
+const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 export default {
   name: 'Inspector',
