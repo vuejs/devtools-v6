@@ -62,7 +62,12 @@ function flush () {
 
 function scan () {
   walk(document.body, function (node) {
-    if (node.__vue__) {
+    var prevInstance = rootInstances[rootInstances.length - 1]
+    if (
+      node.__vue__ &&
+      // do not treat fragment instance children as root instance
+      (!prevInstance || prevInstance.$children.indexOf(node.__vue__) === -1)
+    ) {
       rootInstances.push(node.__vue__)
       return true
     }
