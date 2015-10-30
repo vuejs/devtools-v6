@@ -155,7 +155,12 @@ function getInstanceDetails (id) {
  */
 
 function getInstanceName (instance) {
-  return instance.$options.name || (instance._uid === 0 ? 'Root' : 'Anonymous Component')
+  var name = instance.$options.name
+  return name
+    ? hook.Vue.util.classify(name)
+    : instance._uid === 0
+      ? 'Root'
+      : 'Anonymous Component'
 }
 
 /**
