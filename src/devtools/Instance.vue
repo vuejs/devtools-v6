@@ -26,7 +26,7 @@ export default {
   },
   data () {
     return {
-      expanded: false,
+      expanded: this.instance.name === 'Root',
       selected: false
     }
   },
