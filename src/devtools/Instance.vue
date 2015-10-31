@@ -4,7 +4,7 @@
       @click.stop="select"
       :class="{ selected: selected }"
       :style="{ paddingLeft: depth * 15 + 'px' }">
-      <span class="name">
+      <span class="content">
         <span class="arrow right"
           :class="{ rotated: expanded }"
           v-if="instance.children.length"
@@ -48,7 +48,7 @@ export default {
 
 <style lang="stylus" scoped>
 .instance
-  background-color #fff 
+  font-family Menlo, Consolas, monospace
   &.inactive
     opacity .5
 
@@ -72,9 +72,9 @@ export default {
   position relative
   z-index 1
 
-.name
+.content
   position relative
-  padding-left 20px
+  padding-left 22px
 
 .arrow
   transition transform .1s ease-in-out
@@ -90,6 +90,7 @@ export default {
 
 .instance-name
   color #0062C3
+  margin 0 1px
   transition color .1s ease
 
 .slide-transition
