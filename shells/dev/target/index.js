@@ -1,5 +1,7 @@
 import Vue from 'vue'
-import targetOptions from './Target.vue'
+import Target from './Target.vue'
 
-const Target = Vue.extend(targetOptions)
-new Target().$mount().$appendTo('body')
+new Vue({
+  template: '<target></target>',
+  components: { Target }
+}).$mount().$appendTo('body')

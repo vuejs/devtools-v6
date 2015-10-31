@@ -23,6 +23,11 @@ module.exports = {
       }
     ]
   },
+  vue: {
+    autoprefixer: {
+      browsers: ['last 2 Chrome versions']
+    }
+  },
   devtool: process.env.NODE_ENV !== 'production'
     ? 'inline-source-map'
     : false
