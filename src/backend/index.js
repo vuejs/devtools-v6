@@ -61,14 +61,23 @@ function flush () {
  */
 
 function scan () {
+  var inFragment = false
+  var currentFragment = null
   walk(document.body, function (node) {
-    var prevInstance = rootInstances[rootInstances.length - 1]
-    if (
-      node.__vue__ &&
-      // do not treat fragment instance children as root instance
-      (!prevInstance || prevInstance.$children.indexOf(node.__vue__) === -1)
-    ) {
-      rootInstances.push(node.__vue__)
+    if (inFragment) {
+      if (node === currentFragment._fragmentEnd) {
+        inFragment = false
+        currentFragment = null
+      }
+      return true
+    }
+    var instance = node.__vue__
+    if (instance) {
+      if (instance._isFragment) {
+        inFragment = true
+        currentFragment = instance
+      }
+      rootInstances.push(instance)
       return true
     }
   })
