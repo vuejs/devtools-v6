@@ -6,7 +6,6 @@
     <div v-else>
       <p>{{ target.name }}</p>
       <button @click="inspectDOM">Inspect DOM</button>
-      <button @click="sendToConsole">Send to Console</button>
       <section>
         <h3>Props</h3>
         <pre>{{ target.props | json }}</pre>
@@ -36,6 +35,11 @@ export default {
       return this.target.id != null
     }
   },
+  watch: {
+    target: function (target) {
+      bridge.send('send-to-console', target.id)
+    }
+  },
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
@@ -46,10 +50,6 @@ export default {
       } else {
         alert('DOM inspection is not supported in this shell.')
       }
-    },
-    sendToConsole () {
-      if (!this.hasTarget) return
-      bridge.send('send-to-console', this.target.id)
     }
   }
 }

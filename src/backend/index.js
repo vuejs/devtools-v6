@@ -38,7 +38,6 @@ function connect () {
 
   bridge.on('send-to-console', id => {
     window.$vm = instanceMap.get(id)
-    console.log('[vue-dev-tools] ' + getInstanceName($vm) + ' is now availabe in the console as $vm.')
   })
 
   bridge.on('toggle-live-mode', () => {
