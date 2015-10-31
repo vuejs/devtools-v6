@@ -8,6 +8,7 @@ let rootInstances = []
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
 let bridge
+let isLiveMode = true
 
 export function initBackend (_bridge) {
   bridge = _bridge
@@ -21,11 +22,13 @@ export function initBackend (_bridge) {
 function connect () {
   // the backend may get injected to the same page multiple times
   // if the user closes and reopens the devtools.
-  // make sure we hook to Vue only once.
-  if (!hook.hasFlushListener) {
-    hook.on('flush', flush)
-    hook.hasFlushListener = true
-  }
+  // make sure there's only one flush listener.
+  hook.off('flush')
+  hook.on('flush', () => {
+    if (isLiveMode) {
+      flush()
+    }
+  })
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
@@ -36,6 +39,12 @@ function connect () {
     window.$vm = instanceMap.get(id)
     console.log('[vue-dev-tools] ' + getInstanceName($vm) + ' is now availabe in the console as $vm.')
   })
+
+  bridge.on('toggle-live-mode', () => {
+    isLiveMode = !isLiveMode
+  })
+
+  bridge.on('refresh', flush)
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)

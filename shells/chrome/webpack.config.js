@@ -21,6 +21,10 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue'
+      },
+      {
+        test: /\.(png|woff2)$/,
+        loader: 'file'
       }
     ]
   },

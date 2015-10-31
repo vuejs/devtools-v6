@@ -1,11 +1,18 @@
-<style lang="stylus" src="./global.styl"></style>
+<style lang="stylus" src="../global.styl"></style>
 
 <template>
 <div class="app">
   <div class="header">
-    <button @click="toggleLiveMode">Toggle Live Mode</button>
-    <button @click="refresh">Refresh</button>
-    <p class="status">{{ message }}</p>
+    <img class="logo" src="../assets/logo.png">
+    <span class="status">{{ message }}</span>
+    <a class="button toggle" @click="toggleLiveMode">
+      <span class="live-mode-indicator" :class="{ off: !isLiveMode }"></span>
+      <span>Live Mode</span>
+    </a>
+    <a class="button refresh" @click="refresh" v-show="!isLiveMode" transition="fade">
+      <i class="material-icons">autorenew</i>
+      <span>Refresh</span>
+    </a>
   </div>
   <div class="container">
     <Tree class="column" :instances="instances"></Tree>
@@ -23,6 +30,7 @@ export default {
   data () {
     return {
       message: 'Looking for Vue.js...',
+      isLiveMode: true,
       selected: null,
       hovered: null,
       inspectedInstance: {},
@@ -53,7 +61,7 @@ export default {
       }
       target.selected = true
       this.selected = target
-      this.message = 'instance selected: ' + target.instance.name
+      this.message = 'Instance selected: ' + target.instance.name
       bridge.send('select-instance', target.instance.id)
       bridge.once('instance-details', details => {
         this.inspectedInstance = details
@@ -62,16 +70,20 @@ export default {
   },
   methods: {
     toggleLiveMode () {
-      // TODO
+      this.isLiveMode = !this.isLiveMode
+      bridge.send('toggle-live-mode')
     },
     refresh () {
-      // TODO
+      bridge.send('refresh')
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+$header-height = 50px
+$border-color = #e3e3e3
+
 .app
   width 100%
   height 100%
@@ -80,23 +92,50 @@ export default {
     color #42b983
 
 .header
-  padding 10px 20px
   position absolute
   z-index 2
-  box-sizing border-box
   width 100%
-  height 80px
-  border-bottom 1px solid #e3e3e3
+  height $header-height
+  border-bottom 1px solid $border-color
   box-shadow 0 0 8px rgba(0,0,0,.15)
-  .status
-    color blue
-    position absolute
-    top 10px
-    right 20px
+  font-size 13px
+  img, span, a, .material-icons
+    display inline-block
+    vertical-align middle
+  .material-icons
+    margin-right 2px
+    color #333
+  .logo
+    width 30px
+    height 30px
+    margin 10px 15px
+  .button
+    float right
+    cursor pointer
+    height $header-height
+    line-height $header-height
+    border-left 1px solid $border-color
+    border-bottom 1px solid $border-color
+    background-color #fff
+    font-size 12px
+    padding 0 20px 0 18px
+    transition all .25s ease
+    &:hover
+      box-shadow 0 0 16px rgba(0,0,0,.1)
+  .live-mode-indicator
+    width 12px
+    height 12px
+    box-shadow 0 0 12px rgba(51, 204, 51, .25)
+    background-color #85E085
+    transition background-color .2s ease
+    border-radius 50%
+    margin-right 4px
+    &.off
+      background-color #ccc
+      box-shadow none
 
 .container
-  padding-top 80px
-  box-sizing border-box
+  padding-top $header-height
   position relative
   z-index 1
   height 100%
@@ -105,8 +144,10 @@ export default {
 
   .column
     width 50%
-    box-sizing border-box
     overflow scroll
     &:first-child
-      border-right 1px solid #e3e3e3
+      border-right 1px solid $border-color
+
+.fade-enter, .fade-leave
+  opacity 0
 </style>

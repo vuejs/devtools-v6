@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import appOptions from './App.vue'
+import appOptions from './components/App.vue'
 const App = Vue.extend(appOptions)
 window.app = null
 

@@ -17,7 +17,7 @@
     <div class="children"
       v-show="expanded"
       transition="slide"
-      :style="{ height: height + 'px' }">
+      :style="{ height: childrenHeight + 'px' }">
       <instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
@@ -37,7 +37,7 @@ export default {
   },
   data () {
     return {
-      height: 0,
+      childrenHeight: 0,
       expanded: this.instance.name === 'Root',
       selected: false
     }
@@ -51,12 +51,12 @@ export default {
     slide: {
       enter (el) {
         this.$nextTick(() => {
-          this.height = this.$children.reduce((total, child) => {
-            return total + child.height + 22
+          this.childrenHeight = this.$children.reduce((total, child) => {
+            return total + child.childrenHeight + 22
           }, 0)
           let parent = this.$parent
           while (parent && parent.$options.name === 'Instance') {
-            parent.height += this.height
+            parent.childrenHeight += this.childrenHeight
             parent = parent.$parent
           }
         })
@@ -65,10 +65,10 @@ export default {
         this.$nextTick(() => {
           let parent = this.$parent
           while (parent && parent.$options.name === 'Instance') {
-            parent.height -= this.height
+            parent.childrenHeight -= this.childrenHeight
             parent = parent.$parent
           }
-          this.height = 0
+          this.childrenHeight = 0
         })
       }
     }
