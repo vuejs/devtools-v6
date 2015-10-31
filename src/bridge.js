@@ -3,6 +3,7 @@ import { EventEmitter } from 'events'
 export default class Bridge extends EventEmitter {
   constructor (wall) {
     super()
+    this.setMaxListeners(Infinity)
     this.wall = wall
     wall.listen(message => {
       if (typeof message === 'string') {

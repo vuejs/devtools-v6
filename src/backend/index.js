@@ -9,6 +9,7 @@ let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
 let bridge
 let isLiveMode = true
+let filter = ''
 
 export function initBackend (_bridge) {
   bridge = _bridge
