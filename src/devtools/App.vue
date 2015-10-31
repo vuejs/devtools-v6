@@ -25,6 +25,7 @@ export default {
     return {
       message: 'Looking for Vue.js...',
       selected: null,
+      hovered: null,
       inspectedInstance: {},
       instances: [],
       snapshots: []
@@ -51,6 +52,7 @@ export default {
       if (this.selected) {
         this.selected.selected = false
       }
+      target.selected = true
       this.selected = target
       this.message = 'instance selected: ' + target.instance.name
       bridge.send('select-instance', target.instance.id)
@@ -75,6 +77,7 @@ h1
   color #42b983
 .app
   width 100%
+  user-select none
 .header
   padding 10px 20px
   position relative

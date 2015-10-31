@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div class="tree">
     <instance
       v-for="i in instances"
       track-by="id"
-      :instance="i">
+      :instance="i"
+      :depth="0">
     </instance>
   </div>
 </template>

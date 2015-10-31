@@ -1,20 +1,27 @@
 <template>
-  <div class="instance" :class="classes">
-    <span>{{ instance.inactive ? '(inactive)' : '' }}</span>
-    <span class="name">{{ instance.name }}</span>
-    <button class="inspect" @click.stop="select">Inspect</button>
-    <button class="toggle"
-      v-if="instance.children.length"
-      @click.stop="expanded = !expanded">
-      {{ (expanded ? '[-]' : '[+]') + ' ' + instance.children.length }}
-    </button>
-    <template v-if="expanded">
+  <div class="instance" :class="{ inactive: instance.inactive }">
+    <div class="self"
+      @click.stop="select"
+      :class="{ selected: selected }"
+      :style="{ paddingLeft: depth * 15 + 'px' }">
+      <span class="name">
+        <span class="arrow right"
+          :class="{ rotated: expanded }"
+          v-if="instance.children.length"
+          @click.stop="expanded = !expanded">
+        </span>
+        <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
+      </span>
+      <span>{{ instance.inactive ? '(inactive)' : '' }}</span>
+    </div>
+    <div class="children" v-show="expanded" transition="slide">
       <instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
-        :instance="child">
+        :instance="child"
+        :depth="depth + 1">
       </instance>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -22,7 +29,8 @@
 export default {
   name: 'Instance',
   props: {
-    instance: Object
+    instance: Object,
+    depth: Number
   },
   data () {
     return {
@@ -30,17 +38,8 @@ export default {
       selected: false
     }
   },
-  computed: {
-    classes () {
-      return {
-        selected: this.selected,
-        inactive: this.instance.inactive
-      }
-    }
-  },
   methods: {
     select () {
-      this.selected = true
       this.$dispatch('selected', this)
     }
   }
@@ -48,15 +47,58 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.name
-  font-weight: bold
-
 .instance
-  border 1px solid #eee
-  padding 10px 20px
-  cursor pointer
-  &.selected
-    border-color red
+  background-color #fff 
   &.inactive
     opacity .5
+
+.self
+  cursor pointer
+  position relative
+  z-index 2
+  background-color #fff
+  transition background-color .1s ease
+  font-size 14px
+  line-height 22px
+  height 22px
+  &:hover
+    background-color #E5F2FF
+  &.selected
+    background-color #44A1FF
+    .instance-name
+      color #fff
+
+.children
+  position relative
+  z-index 1
+
+.name
+  position relative
+  padding-left 20px
+
+.arrow
+  transition transform .1s ease-in-out
+  display inline-block
+  position absolute
+  top 4px
+  left 8px
+  &.rotated
+    transform rotate(90deg)
+
+.angle-bracket
+  color #ccc
+
+.instance-name
+  color #0062C3
+  transition color .1s ease
+
+.slide-transition
+  transition all .2s ease
+  transform-origin top center
+  transform translate3d(0,0,0)
+  opacity 1
+
+.slide-enter, .slide-leave
+  opacity 0
+  transform translate3d(0, -10px, 0)
 </style>
