@@ -14,7 +14,10 @@
       </span>
       <span>{{ instance.inactive ? '(inactive)' : '' }}</span>
     </div>
-    <div class="children" v-show="expanded" transition="slide">
+    <div class="children"
+      v-show="expanded"
+      transition="slide"
+      :style="{ height: childrenHeight + 'px' }">
       <instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
@@ -34,6 +37,7 @@ export default {
   },
   data () {
     return {
+      childrenHeight: 0,
       expanded: this.instance.name === 'Root',
       selected: false
     }
@@ -41,6 +45,30 @@ export default {
   methods: {
     select () {
       this.$dispatch('selected', this)
+    }
+  },
+  transitions: {
+    slide: {
+      enter (el) {
+        this.$nextTick(() => {
+          this.childrenHeight = this.$children.reduce((total, child) => {
+            return total + child.childrenHeight + 22
+          }, 0)
+          let parent = this.$parent
+          while (parent) {
+            parent.childrenHeight += this.childrenHeight
+            parent = parent.$parent
+          }
+        })
+      },
+      leave (el) {
+        let parent = this.$parent
+        while (parent) {
+          parent.childrenHeight -= this.childrenHeight
+          parent = parent.$parent
+        }
+        this.childrenHeight = 0
+      }
     }
   }
 }
@@ -94,7 +122,7 @@ export default {
   margin 0 1px
   transition color .1s ease
 
-.slide-transition
+.children
   transition all .2s ease
   transform-origin top center
   transform translate3d(0,0,0)

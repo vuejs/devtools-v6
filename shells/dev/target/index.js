@@ -2,6 +2,6 @@ import Vue from 'vue'
 import Target from './Target.vue'
 
 new Vue({
-  template: '<target></target>',
+  template: '<div><target></target><target></target></div>',
   components: { Target }
 }).$mount().$appendTo('body')
