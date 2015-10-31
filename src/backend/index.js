@@ -3,8 +3,8 @@
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
+const rootInstances = []
 
-let rootInstances = []
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
 let bridge
@@ -45,6 +45,11 @@ function connect () {
     isLiveMode = !isLiveMode
   })
 
+  bridge.on('filter-instances', _filter => {
+    filter = _filter.toLowerCase()
+    flush()
+  })
+
   bridge.on('refresh', flush)
 
   bridge.log('backend ready.')
@@ -53,24 +58,11 @@ function connect () {
 }
 
 /**
- * Called on every Vue.js batcher flush cycle.
- * Capture current component tree structure and the state
- * of the current inspected instance (if present) and
- * send it to the devtools.
- */
-
-function flush () {
-  bridge.send('flush', {
-    inspectedInstance: getInstanceDetails(currentInspectedId),
-    instances: rootInstances.map(capture)
-  })
-}
-
-/**
  * Scan the page for root level Vue instances.
  */
 
 function scan () {
+  rootInstances.length = 0
   var inFragment = false
   var currentFragment = null
   walk(document.body, function (node) {
@@ -110,6 +102,65 @@ function walk (node, fn) {
       }
     })
   }
+}
+
+/**
+ * Called on every Vue.js batcher flush cycle.
+ * Capture current component tree structure and the state
+ * of the current inspected instance (if present) and
+ * send it to the devtools.
+ */
+
+function flush () {
+  bridge.send('flush', {
+    inspectedInstance: getInstanceDetails(currentInspectedId),
+    instances: findQualifiedChildrenFromList(rootInstances)
+  })
+}
+
+/**
+ * Iterate through an array of instances and flatten it into
+ * an array of qualified instances. This is a depth-first
+ * traversal - e.g. if an instance is not matched, we will
+ * recursively go deeper until a qualified child is found.
+ *
+ * @param {Array} instances
+ * @return {Array}
+ */
+
+function findQualifiedChildrenFromList (instances) {
+  return !filter
+    ? instances.map(capture)
+    : instances
+      .map(findQualifiedChildren)
+      .reduce((all, qualified) => all.concat(qualified), []) 
+}
+
+/**
+ * Find qualified children from a single instance.
+ * If the instance itself is qualified, just return itself.
+ * This is ok because [].concat works in both cases.
+ *
+ * @param {Vue} instance
+ * @return {Vue|Array}
+ */
+
+function findQualifiedChildren (instance) {
+  return isQualified(instance)
+    ? capture(instance)
+    : findQualifiedChildrenFromList(instance.$children)
+}
+
+/**
+ * Check if an instance is qualified.
+ *
+ * @param {Vue} instance
+ * @return {Boolean}
+ */
+
+function isQualified (instance) {
+  let name = getInstanceName(instance).toLowerCase()
+  return name.indexOf(filter) > -1
 }
 
 /**

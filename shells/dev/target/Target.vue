@@ -3,9 +3,6 @@
     <h1>{{msg}}</h1>
     <input v-model="msg">
     <other></other>
-    <other></other>
-    <other></other>
-    <other></other>
   </div>
 </template>
 

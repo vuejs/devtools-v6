@@ -24,7 +24,7 @@ module.exports = {
       },
       {
         test: /\.(png|woff2)$/,
-        loader: 'file'
+        loader: 'url?limit=0'
       }
     ]
   },

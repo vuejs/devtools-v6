@@ -72,7 +72,7 @@ export default {
   },
   watch: {
     filter (val) {
-      // TODO
+      bridge.send('filter-instances', val)
     }
   },
   methods: {

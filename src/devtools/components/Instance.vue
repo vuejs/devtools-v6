@@ -36,10 +36,9 @@ export default {
     depth: Number
   },
   data () {
-    let isRoot = this.instance.name === 'Root'
     return {
-      height: isRoot ? this.instance.children.length * 22 : 0,
-      expanded: isRoot,
+      height: this.depth === 0 ? this.instance.children.length * 22 : 0,
+      expanded: false,
       selected: false
     }
   },
