@@ -3,7 +3,6 @@
 <template>
 <div class="app">
   <div class="header">
-    <h1>Vue Devtools</h1>
     <button @click="toggleLiveMode">Toggle Live Mode</button>
     <button @click="refresh">Refresh</button>
     <p class="status">{{ message }}</p>
@@ -73,24 +72,41 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-h1
-  color #42b983
 .app
   width 100%
+  height 100%
   user-select none
+  h1
+    color #42b983
+
 .header
   padding 10px 20px
-  position relative
-.status
-  color blue
   position absolute
-  top 10px
-  right 20px
+  z-index 2
+  box-sizing border-box
+  width 100%
+  height 80px
+  border-bottom 1px solid #e3e3e3
+  box-shadow 0 0 8px rgba(0,0,0,.15)
+  .status
+    color blue
+    position absolute
+    top 10px
+    right 20px
+
 .container
-  border-top 1px solid #ccc
-  margin-top 10px
+  padding-top 80px
+  box-sizing border-box
+  position relative
+  z-index 1
+  height 100%
   display flex
+  align-items strech
+
   .column
     width 50%
     box-sizing border-box
+    overflow scroll
+    &:first-child
+      border-right 1px solid #e3e3e3
 </style>

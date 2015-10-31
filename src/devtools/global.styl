@@ -4,22 +4,24 @@ html, body
   font-family Roboto, Menlo, 'Helvetica Neue', Helvetica, Arial, sans-serif
   font-size 16px
 
+$arrow-color = #444
+
 .arrow
   width 0
   height 0
   &.up
     border-left 5px solid transparent
     border-right 5px solid transparent
-    border-bottom 8px solid #333
+    border-bottom 8px solid $arrow-color
   &.down
     border-left 5px solid transparent
     border-right 5px solid transparent
-    border-top 8px solid #333
+    border-top 8px solid $arrow-color
   &.right
     border-top 5px solid transparent
     border-bottom 5px solid transparent
-    border-left 8px solid #333
+    border-left 8px solid $arrow-color
   &.left
     border-top 5px solid transparent
     border-bottom 5px solid transparent
-    border-right 8px solid #333
+    border-right 8px solid $arrow-color

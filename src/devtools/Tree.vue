@@ -20,3 +20,8 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.tree
+  padding 5px
+</style>

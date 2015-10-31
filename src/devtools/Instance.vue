@@ -58,6 +58,7 @@ export default {
   z-index 2
   background-color #fff
   transition background-color .1s ease
+  border-radius 3px
   font-size 14px
   line-height 22px
   height 22px
