@@ -1,8 +1,10 @@
 <template>
   <div id="target">
     <h1>{{msg}}</h1>
+    <button @click="add">Add</button>
+    <button @click="rm">Remove</button>
     <input v-model="msg">
-    <other></other>
+    <other v-for="item in items" track-by="$index"></other>
   </div>
 </template>
 
@@ -13,7 +15,16 @@ export default {
   components: { Other },
   data() {
     return {
-      msg: 'hello'
+      msg: 'hello',
+      items: [1, 2]
+    }
+  },
+  methods: {
+    add () {
+      this.items.push(1, 2, 3)
+    },
+    rm () {
+      this.items.pop()
     }
   }
 }

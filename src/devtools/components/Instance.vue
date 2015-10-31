@@ -16,11 +16,12 @@
     </div>
     <div class="children"
       v-show="expanded"
-      transition="slide"
+      transition="expand"
       :style="{ height: height + 'px' }">
       <instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
+        transition="expand"
         :instance="child"
         :depth="depth + 1">
       </instance>
@@ -45,30 +46,32 @@ export default {
   methods: {
     select () {
       this.$dispatch('selected', this)
+    },
+    getHeight () {
+      return this.$children.reduce((total, child) => {
+        return total + (child.expanded ? child.getHeight() : 0) + 22
+      }, 0)
+    },
+    setHeight (n) {
+      let delta = n - this.height
+      let parent = this.$parent
+      while (parent && parent.$options.name === 'Instance') {
+        parent.height += delta
+        parent = parent.$parent
+      }
+      this.height = n
     }
   },
   transitions: {
-    slide: {
+    expand: {
       enter (el) {
         this.$nextTick(() => {
-          this.height = this.$children.reduce((total, child) => {
-            return total + child.height + 22
-          }, 0)
-          let parent = this.$parent
-          while (parent && parent.$options.name === 'Instance') {
-            parent.height += this.height
-            parent = parent.$parent
-          }
+          this.setHeight(this.getHeight())
         })
       },
       leave (el) {
         this.$nextTick(() => {
-          let parent = this.$parent
-          while (parent && parent.$options.name === 'Instance') {
-            parent.height -= this.height
-            parent = parent.$parent
-          }
-          this.height = 0
+          this.setHeight(0)
         })
       }
     }
@@ -129,12 +132,14 @@ export default {
   transition color .1s ease
 
 .children
-  transition all .2s ease
   transform-origin top center
   transform translate3d(0,0,0)
   opacity 1
 
-.slide-enter, .slide-leave
+.expand-transition
+  transition all .2s ease
+
+.expand-enter, .expand-leave
   opacity 0
   transform translate3d(0, -22px, 0)
 </style>
