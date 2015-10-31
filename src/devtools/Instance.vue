@@ -55,19 +55,21 @@ export default {
             return total + child.childrenHeight + 22
           }, 0)
           let parent = this.$parent
-          while (parent) {
+          while (parent && parent.$options.name === 'Instance') {
             parent.childrenHeight += this.childrenHeight
             parent = parent.$parent
           }
         })
       },
       leave (el) {
-        let parent = this.$parent
-        while (parent) {
-          parent.childrenHeight -= this.childrenHeight
-          parent = parent.$parent
-        }
-        this.childrenHeight = 0
+        this.$nextTick(() => {
+          let parent = this.$parent
+          while (parent && parent.$options.name === 'Instance') {
+            parent.childrenHeight -= this.childrenHeight
+            parent = parent.$parent
+          }
+          this.childrenHeight = 0
+        })
       }
     }
   }
@@ -94,6 +96,8 @@ export default {
     background-color #E5F2FF
   &.selected
     background-color #44A1FF
+    .arrow
+      border-left-color #fff
     .instance-name
       color #fff
 
@@ -106,7 +110,7 @@ export default {
   padding-left 22px
 
 .arrow
-  transition transform .1s ease-in-out
+  transition transform .1s ease, border-left-color .1s ease
   display inline-block
   position absolute
   top 4px
@@ -130,5 +134,5 @@ export default {
 
 .slide-enter, .slide-leave
   opacity 0
-  transform translate3d(0, -10px, 0)
+  transform translate3d(0, -22px, 0)
 </style>
