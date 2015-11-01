@@ -8,7 +8,7 @@
         <span class="arrow right"
           :class="{ rotated: expanded }"
           v-if="instance.children.length"
-          @click.stop="expanded = !expanded">
+          @click.stop="toggle">
         </span>
         <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
@@ -47,33 +47,10 @@ export default {
     select () {
       this.$dispatch('selected', this)
     },
-    getHeight () {
-      return this.$children.reduce((total, child) => {
-        return total + (child.expanded ? child.getHeight() : 0) + 22
-      }, 0)
-    },
-    setHeight (n) {
-      let delta = n - this.height
-      let parent = this.$parent
-      while (parent && parent.$options.name === 'Instance') {
-        parent.height += delta
-        parent = parent.$parent
-      }
-      this.height = n
-    }
-  },
-  transitions: {
-    expand: {
-      enter (el) {
-        this.$nextTick(() => {
-          this.setHeight(this.getHeight())
-        })
-      },
-      leave (el) {
-        this.$nextTick(() => {
-          this.setHeight(0)
-        })
-      }
+    toggle () {
+      this.expanded = !this.expanded
+      // trigger reflow in the tree component
+      this.$dispatch('reflow')
     }
   }
 }

@@ -17,6 +17,28 @@ export default {
   components: { Instance },
   props: {
     instances: Array
+  },
+  events: {
+    reflow: 'reflow'
+  },
+  methods: {
+    reflow () {
+      this.$nextTick(() => {
+        this.$children.forEach(reflow)
+      })
+    }
+  }
+}
+
+function reflow (instance) {
+  if (!instance.expanded) {
+    instance.height = 0
+  } else {
+    instance.height = instance.$children.reduce((total, child) => {
+      // if (!child._frag.inserted) return total
+      reflow(child)
+      return total + child.height + 22
+    }, 0)
   }
 }
 </script>

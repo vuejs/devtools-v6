@@ -42,6 +42,9 @@ function connect () {
 
   bridge.on('toggle-live-mode', () => {
     isLiveMode = !isLiveMode
+    if (isLiveMode) {
+      flush()
+    }
   })
 
   bridge.on('filter-instances', _filter => {

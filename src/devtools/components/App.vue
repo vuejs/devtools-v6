@@ -16,7 +16,7 @@
     </a>
   </div>
   <div class="container">
-    <Tree class="column" :instances="instances"></Tree>
+    <Tree class="column" v-ref:tree :instances="instances"></Tree>
     <Inspector class="column" :target="inspectedInstance"></Inspector>
   </div>
 </div>
@@ -40,13 +40,15 @@ export default {
       snapshots: []
     }
   },
-  ready () {
+  created () {
     bridge.once('ready', version => {
       this.message = 'Ready. Detected Vue ' + version + '.'
     })
     bridge.on('flush', payload => {
       this.instances = payload.instances
       this.inspectedInstance = payload.inspectedInstance
+      // trigger component tree reflow
+      this.$refs.tree.reflow()
     })
     bridge.on('instance-details', details => {
       this.inspectedInstance = details
