@@ -122,6 +122,8 @@ $border-color = #e3e3e3
 
 .button
   float right
+  position relative
+  z-index 1
   cursor pointer
   height $header-height
   line-height $header-height
@@ -130,7 +132,7 @@ $border-color = #e3e3e3
   background-color #fff
   font-size 13px
   color #666
-  padding 0 20px 0 18px
+  padding 0 22px 0 20px
   transition all .25s ease
   &:hover
     box-shadow 0 0 16px rgba(0,0,0,.1)
@@ -153,6 +155,8 @@ $border-color = #e3e3e3
 .search-box
   font-family Roboto
   color #333
+  position relative
+  z-index 0
   height $header-height - 1px
   line-height $header-height - 1px
   font-size 13px
@@ -161,7 +165,8 @@ $border-color = #e3e3e3
   padding-left 50px
   margin-left -50px
   background transparent
-  width calc(100% - 300px)
+  width calc(100% - 200px)
+  margin-right -100px
 
 .container
   padding-top $header-height
