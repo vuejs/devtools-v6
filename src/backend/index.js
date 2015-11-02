@@ -214,9 +214,9 @@ function getInstanceDetails (id) {
     return {
       id: id,
       name: getInstanceName(instance),
-      props: getFullProps(instance),
-      state: JSON.parse(JSON.stringify(instance._data)),
-      computed: processComputed(instance)
+      state: processProps(instance)
+        .concat(processState(instance))
+        .concat(processComputed(instance))
     }
   }
 }
@@ -243,9 +243,10 @@ function getInstanceName (instance) {
  * will throw an Error if the passed object contains Functions.
  *
  * @param {Vue} instance
+ * @return {Array}
  */
 
-function getFullProps (instance) {
+function processProps (instance) {
   const props = instance._props
   if (!props) {
     return []
@@ -254,28 +255,55 @@ function getFullProps (instance) {
       const prop = props[key]
       const options = prop.options
       return {
-        name: prop.name,
-        path: prop.path,
-        raw: prop.raw,
-        mode: prop.mode,
-        required: !!options.required,
-        type: options.type ? options.type.toString() : null,
-        twoWay: !!options.twoWay,
-        default: options.default
+        type: 'prop',
+        key: prop.path,
+        value: instance[prop.path],
+        meta: {
+          name: prop.name,
+          path: prop.path,
+          raw: prop.raw,
+          mode: prop.mode,
+          required: !!options.required,
+          type: options.type ? options.type.toString() : null,
+          twoWay: !!options.twoWay,
+          default: options.default
+        }
       }
     })
   }
 }
 
 /**
+ * Process state, filtering out props and "clean" the result
+ * with a JSON dance. This removes functions which can cause
+ * errors during structured clone used by window.postMessage.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processState (instance) {
+  const props = instance._props
+  const clone = Object.keys(instance._data)
+    .filter(key => !(key in props))
+    .map(key => ({
+      key,
+      value: instance[key]
+    }))
+  return JSON.parse(JSON.stringify(clone))
+}
+
+/**
  * Process the computed properties of an instance.
  *
  * @param {Vue} instance
+ * @return {Array}
  */
 
 function processComputed (instance) {
   return Object.keys(instance.$options.computed || {}).map(key => {
     return {
+      type: 'computed',
       key,
       value: instance[key]
     }

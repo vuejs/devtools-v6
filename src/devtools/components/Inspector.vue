@@ -20,25 +20,21 @@
         </a>
       </section>
       <section class="data">
-        <h3>Data</h3>
-        <div class="data-fields">
-          <template v-for="(key, val) in target.state">
-            {{ key }} {{ val | json }}
-          </template>
-        </div>
-      </section>
-      <section class="data" v-if="target.computed && target.computed.length">
-        <h3>Computed</h3>
-        <pre>{{ target.computed | json }}</pre>
+        <h3>State</h3>
+        <data-field v-for="field in target.state" :field="field">
+        </data-field>
       </section>
     </div>
   </div>
 </template>
 
 <script>
+import DataField from './DataField.vue'
+
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 export default {
+  components: { DataField },
   props: {
     target: Object
   },
