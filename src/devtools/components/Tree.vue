@@ -13,15 +13,11 @@
 import Instance from './Instance.vue'
 
 export default {
-  name: 'Tree',
   components: { Instance },
   props: {
     instances: Array
   },
   events: {
-    reflow: 'reflow'
-  },
-  methods: {
     reflow () {
       this.$nextTick(() => {
         this.$children.forEach(reflow)

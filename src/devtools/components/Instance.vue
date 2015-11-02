@@ -15,7 +15,7 @@
       <span>{{ instance.inactive ? '(inactive)' : '' }}</span>
     </div>
     <div class="children"
-      v-show="expanded"
+      v-if="expanded"
       transition="expand"
       :style="{ height: height + 'px' }">
       <instance
@@ -30,6 +30,9 @@
 </template>
 
 <script>
+const expansionMap = {}
+let selectedInstance = null
+
 export default {
   name: 'Instance',
   props: {
@@ -39,16 +42,27 @@ export default {
   data () {
     return {
       height: this.depth === 0 ? this.instance.children.length * 22 : 0,
-      expanded: false,
-      selected: false
+      expanded: expansionMap[this.instance.id] || false,
+      selected: selectedInstance && this.instance.id === selectedInstance.instance.id
+    }
+  },
+  created () {
+    if (this.selected) {
+      selectedInstance = this
     }
   },
   methods: {
     select () {
+      if (selectedInstance) {
+        selectedInstance.selected = false
+      }
+      selectedInstance = this
+      this.selected = true
       this.$dispatch('selected', this)
     },
     toggle () {
       this.expanded = !this.expanded
+      expansionMap[this.instance.id] = this.expanded
       // trigger reflow in the tree component
       this.$dispatch('reflow')
     }

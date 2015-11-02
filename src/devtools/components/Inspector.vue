@@ -39,7 +39,6 @@
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 export default {
-  name: 'Inspector',
   props: {
     target: Object
   },

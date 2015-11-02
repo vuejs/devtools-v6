@@ -16,7 +16,7 @@
     </a>
   </div>
   <div class="container">
-    <Tree class="column" v-ref:tree :instances="instances"></Tree>
+    <Tree class="column" :instances="instances"></Tree>
     <Inspector class="column" :target="inspectedInstance"></Inspector>
   </div>
 </div>
@@ -48,7 +48,7 @@ export default {
       this.instances = payload.instances
       this.inspectedInstance = payload.inspectedInstance
       // trigger component tree reflow
-      this.$refs.tree.reflow()
+      this.$broadcast('reflow')
     })
     bridge.on('instance-details', details => {
       this.inspectedInstance = details
@@ -60,14 +60,6 @@ export default {
   },
   events: {
     selected (target) {
-      if (this.selected === target) {
-        return
-      }
-      if (this.selected) {
-        this.selected.selected = false
-      }
-      target.selected = true
-      this.selected = target
       this.message = 'Instance selected: ' + target.instance.name
       bridge.send('select-instance', target.instance.id)
     }
