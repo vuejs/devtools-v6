@@ -4,17 +4,30 @@
       Select a component instance to inspect.
     </div>
     <div v-else>
-      <p>{{ target.name }}</p>
-      <button @click="inspectDOM">Inspect DOM</button>
-      <section>
-        <h3>Props</h3>
-        <pre>{{ target.props | json }}</pre>
+      <section class="top">
+        <span style="color:#ccc">&lt;</span>
+        <span>{{ target.name }}</span>
+        <span style="color:#ccc">&gt;</span>
       </section>
-      <section>
-        <h3>State</h3>
-        <pre>{{ target.state | json }}</pre>
+      <section class="buttons">
+        <a class="button" @click="inspectDOM">
+          <i class="material-icons">visibility</i>
+          <span>Inspect DOM</span>
+        </a>
+        <a class="button" @click="sendToConsole">
+          <i class="material-icons">dvr</i>
+          <span>Send to console</span>
+        </a>
       </section>
-      <section>
+      <section class="data">
+        <h3>Data</h3>
+        <div class="data-fields">
+          <template v-for="(key, val) in target.state">
+            {{ key }} {{ val | json }}
+          </template>
+        </div>
+      </section>
+      <section class="data" v-if="target.computed && target.computed.length">
         <h3>Computed</h3>
         <pre>{{ target.computed | json }}</pre>
       </section>
@@ -35,11 +48,6 @@ export default {
       return this.target.id != null
     }
   },
-  watch: {
-    target: function (target) {
-      bridge.send('send-to-console', target.id)
-    }
-  },
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
@@ -50,14 +58,61 @@ export default {
       } else {
         alert('DOM inspection is not supported in this shell.')
       }
+    },
+    sendToConsole () {
+      bridge.send('send-to-console', this.target.id)
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-.inspector
-  padding 10px 20px
+$border-color = #e3e3e3
+
+h3
+  margin-top 0
+
+section 
+  border-bottom 1px solid $border-color
+
+.top
+  padding 15px 0
+  text-align center
+  font-size 18px
+  color #0062c3
+
+.buttons
+  display flex
+  align-items strech
+
+.button
+  display block
+  width 50%
+  background-color #fff
+  font-size 13px
+  color #666
+  padding 12px 0
+  text-align center
+  cursor pointer
+  transition box-shadow .25s ease
+  line-height 20px
+  span, i
+    vertical-align middle
+    margin 0 3px
+  &:hover
+    box-shadow 0 2px 12px rgba(0,0,0,.1)
+  &:active
+    box-shadow 0 2px 16px rgba(0,0,0,.25)
+  &:first-child
+    border-right 1px solid $border-color
+
+.data
+  padding 15px 20px
+  h3
+    font-size 15px
+
+.data-fields
+  font-family Menlo, Consolas, monospace
 
 .non-selected
   color #ccc

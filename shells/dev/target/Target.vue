@@ -13,9 +13,9 @@ import Other from './Other.vue'
 
 export default {
   components: { Other },
+  props: ['msg', 'obj'],
   data() {
     return {
-      msg: 'hello',
       items: [1, 2]
     }
   },

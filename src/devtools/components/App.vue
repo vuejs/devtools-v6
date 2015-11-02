@@ -135,7 +135,9 @@ $border-color = #e3e3e3
   padding 0 22px 0 20px
   transition all .25s ease
   &:hover
-    box-shadow 0 0 16px rgba(0,0,0,.1)
+    box-shadow 0 2px 12px rgba(0,0,0,.1)
+  &:active
+    box-shadow 0 2px 16px rgba(0,0,0,.25)
 
 .live-mode-indicator
   width 12px

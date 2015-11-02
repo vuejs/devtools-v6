@@ -38,6 +38,7 @@ function connect () {
 
   bridge.on('send-to-console', id => {
     window.$vm = instanceMap.get(id)
+    console.log('[vue-devtools] <' + getInstanceName(window.$vm) + '> is now available as $vm.')
   })
 
   bridge.on('toggle-live-mode', () => {
@@ -56,6 +57,7 @@ function connect () {
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
+  console.log('[vue-devtools] ready.')
   scan()
 }
 
@@ -212,7 +214,7 @@ function getInstanceDetails (id) {
     return {
       id: id,
       name: getInstanceName(instance),
-      props: processProps(instance._props),
+      props: getFullProps(instance),
       state: JSON.parse(JSON.stringify(instance._data)),
       computed: processComputed(instance)
     }
@@ -240,10 +242,11 @@ function getInstanceName (instance) {
  * Make sure return a plain object because window.postMessage()
  * will throw an Error if the passed object contains Functions.
  *
- * @param {Object} props
+ * @param {Vue} instance
  */
 
-function processProps (props) {
+function getFullProps (instance) {
+  const props = instance._props
   if (!props) {
     return []
   } else {
