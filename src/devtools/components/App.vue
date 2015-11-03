@@ -15,19 +15,20 @@
       <span>Refresh</span>
     </a>
   </div>
-  <div class="container">
-    <Tree class="column" :instances="instances"></Tree>
-    <Inspector class="column" :target="inspectedInstance"></Inspector>
-  </div>
+  <split-pane class="container">
+    <tree slot="left" :instances="instances"></tree>
+    <inspector slot="right" :target="inspectedInstance"></inspector>
+  </split-pane>
 </div>
 </template>
 
 <script>
 import Tree from './Tree.vue'
 import Inspector from './Inspector.vue'
+import SplitPane from './SplitPane.vue'
 
 export default {
-  components: { Tree, Inspector },
+  components: { Tree, Inspector, SplitPane },
   data () {
     return {
       message: 'Looking for Vue.js...',
@@ -167,14 +168,6 @@ $border-color = #e3e3e3
   position relative
   z-index 1
   height 100%
-  display flex
-  align-items strech
-
-  .column
-    width 50%
-    overflow scroll
-    &:first-child
-      border-right 1px solid $border-color
 
 .fade-enter, .fade-leave
   opacity 0
