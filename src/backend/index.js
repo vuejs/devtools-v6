@@ -1,6 +1,8 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
+import { highlight, unHighlight } from './highlighter'
+
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
@@ -55,6 +57,8 @@ function connect () {
   })
 
   bridge.on('refresh', scan)
+  bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+  bridge.on('leave-instance', unHighlight)
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
