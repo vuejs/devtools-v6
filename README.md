@@ -8,6 +8,8 @@
 
 2. The devtool will only work with non-minified versions of Vue, because the devtools hooks are stripped in production builds. This also includes builds produced by Webpack and Browserify in production mode.
 
+3. Devtools cannot access pages via `file://` protocal. You need to serve the page over HTTP in order to use it.
+
 ### Installation
 
 Currently only a Chrome devtools extension is available.
