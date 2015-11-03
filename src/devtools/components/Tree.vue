@@ -31,7 +31,6 @@ function reflow (instance) {
     instance.height = 0
   } else {
     instance.height = instance.$children.reduce((total, child) => {
-      // if (!child._frag.inserted) return total
       reflow(child)
       return total + child.height + 22
     }, 0)
