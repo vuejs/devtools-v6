@@ -2,7 +2,7 @@
   <div class="data-field">
     <div class="self"
       @click="toggle"
-      :style="{ marginLeft: depth * 16 + 16 + 'px' }">
+      :style="{ marginLeft: depth * 14 + 14 + 'px' }">
       <span
         class="arrow right"
         :class="{ rotated: expanded }"
@@ -56,7 +56,7 @@ export default {
       if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (value && typeof value === 'object') {
-        return 'Object'
+        return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (typeof value === 'string') {
         return JSON.stringify(value)
       } else {
@@ -91,12 +91,12 @@ export default {
 
 <style lang="stylus" scoped>
 .data-field
-  font-size 14px
+  font-size 12px
   font-family Menlo, Consolas, monospace
   cursor default
 .self
-  height 22px
-  line-height 22px
+  height 20px
+  line-height 20px
   position relative
   white-space nowrap
   span, div
@@ -104,9 +104,8 @@ export default {
     vertical-align middle
   .arrow
     position absolute
-    transition transform .1s ease, border-left-color .1s ease
     top 8px
-    left -15px
+    left -14px
     &.rotated
       transform rotate(90deg)
   .key
@@ -122,7 +121,7 @@ export default {
     line-height 10px
     height 16px
     border-radius 3px
-    margin 4px 0
+    margin 2px 0
     position relative
     &.prop
       background-color #b3cbf7

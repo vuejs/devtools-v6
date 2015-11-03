@@ -7,10 +7,12 @@
       :class="{ selected: selected }"
       :style="{ paddingLeft: depth * 15 + 'px' }">
       <span class="content">
-        <span class="arrow right"
-          :class="{ rotated: expanded }"
+        <!-- arrow wrapper for better hit box -->
+        <span class="arrow-wrapper"
           v-if="instance.children.length"
           @click.stop="toggle">
+          <span class="arrow right" :class="{ rotated: expanded }">
+          </span>
         </span>
         <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
@@ -119,11 +121,19 @@ export default {
   position relative
   padding-left 22px
 
-.arrow
-  transition transform .1s ease, border-left-color .1s ease
+.arrow-wrapper
   position absolute
-  top 4px
-  left 8px
+  display inline-block
+  width 16px
+  height 16px
+  top 0
+  left 4px
+
+.arrow
+  position absolute
+  top 5px
+  left 4px
+  transition transform .1s ease, border-left-color .1s ease
   &.rotated
     transform rotate(90deg)
 
