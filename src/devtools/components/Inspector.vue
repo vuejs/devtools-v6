@@ -108,6 +108,7 @@ section:not(:last-child)
 
 .data
   padding 15px 20px
+  overflow scroll
   h3
     font-size 15px
 

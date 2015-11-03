@@ -298,7 +298,7 @@ function getPropType (type) {
 function processState (instance) {
   const props = instance._props
   const clone = Object.keys(instance._data)
-    .filter(key => !(key in props))
+    .filter(key => !props || !(key in props))
     .map(key => ({
       key,
       value: instance[key]

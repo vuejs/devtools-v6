@@ -98,6 +98,7 @@ export default {
   height 22px
   line-height 22px
   position relative
+  white-space nowrap
   span, div
     display inline-block
     vertical-align middle
