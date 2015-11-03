@@ -19,6 +19,11 @@ export default {
       items: [1, 2]
     }
   },
+  computed: {
+    awww () {
+      return this.items.join(':')
+    }
+  },
   methods: {
     add () {
       this.items.push(1, 2, 3)

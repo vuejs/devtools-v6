@@ -4,6 +4,7 @@
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
+const propModes = ['default', 'sync', 'once']
 
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
@@ -67,8 +68,8 @@ function connect () {
 
 function scan () {
   rootInstances.length = 0
-  var inFragment = false
-  var currentFragment = null
+  let inFragment = false
+  let currentFragment = null
   walk(document.body, function (node) {
     if (inFragment) {
       if (node === currentFragment._fragmentEnd) {
@@ -77,7 +78,7 @@ function scan () {
       }
       return true
     }
-    var instance = node.__vue__
+    let instance = node.__vue__
     if (instance) {
       if (instance._isFragment) {
         inFragment = true
@@ -100,7 +101,7 @@ function scan () {
 function walk (node, fn) {
   if (node.childNodes) {
     Array.prototype.forEach.call(node.childNodes, function (node) {
-      var stop = fn(node)
+      let stop = fn(node)
       if (!stop) {
         walk(node, fn)
       }
@@ -229,7 +230,7 @@ function getInstanceDetails (id) {
  */
 
 function getInstanceName (instance) {
-  var name = instance.$options.name
+  let name = instance.$options.name
   return name
     ? hook.Vue.util.classify(name)
     : instance._uid === 0
@@ -259,18 +260,18 @@ function processProps (instance) {
         key: prop.path,
         value: instance[prop.path],
         meta: {
-          name: prop.name,
-          path: prop.path,
-          raw: prop.raw,
-          mode: prop.mode,
+          'type': options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
-          type: options.type ? options.type.toString() : null,
-          twoWay: !!options.twoWay,
-          default: options.default
+          'binding mode': propModes[prop.mode]
         }
       }
     })
   }
+}
+
+const fnTypeRE = /^function (\w+)\(\)/
+function getPropType (fn) {
+  return fn.toString.match(fnTypeRE)[1]
 }
 
 /**

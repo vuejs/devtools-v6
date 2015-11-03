@@ -20,9 +20,11 @@
         </a>
       </section>
       <section class="data">
-        <h3>State</h3>
-        <data-field v-for="field in target.state" :field="field">
+        <data-field v-for="field in target.state" :field="field" track-by="key">
         </data-field>
+        <p class="no-state" v-show="target.state && !target.state.length">
+          This instance has no reactive state.
+        </p>
       </section>
     </div>
   </div>
@@ -85,7 +87,7 @@ section
   width 50%
   background-color #fff
   font-size 13px
-  color #666
+  color #444
   padding 12px 0
   text-align center
   cursor pointer
@@ -108,6 +110,11 @@ section
 
 .data-fields
   font-family Menlo, Consolas, monospace
+
+.no-state
+  color #ccc
+  text-align center
+  font-size 14px
 
 .non-selected
   color #ccc
