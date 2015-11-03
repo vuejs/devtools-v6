@@ -54,7 +54,7 @@ function connect () {
     flush()
   })
 
-  bridge.on('refresh', flush)
+  bridge.on('refresh', scan)
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
@@ -269,9 +269,17 @@ function processProps (instance) {
   }
 }
 
+/**
+ * Convert prop type constructor to string.
+ *
+ * @param {Function} fn
+ */
+
 const fnTypeRE = /^function (\w+)\(\)/
-function getPropType (fn) {
-  return fn.toString.match(fnTypeRE)[1]
+function getPropType (type) {
+  return typeof type === 'function'
+    ? type.toString().match(fnTypeRE)[1]
+    : 'any'
 }
 
 /**

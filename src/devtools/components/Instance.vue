@@ -2,6 +2,8 @@
   <div class="instance" :class="{ inactive: instance.inactive }">
     <div class="self"
       @click.stop="select"
+      @mouseenter="enter"
+      @mouseleave="leave"
       :class="{ selected: selected }"
       :style="{ paddingLeft: depth * 15 + 'px' }">
       <span class="content">
@@ -65,6 +67,12 @@ export default {
       expansionMap[this.instance.id] = this.expanded
       // trigger reflow in the tree component
       this.$dispatch('reflow')
+    },
+    enter () {
+      bridge.send('enter-instance', this.instance.id)
+    },
+    leave () {
+      bridge.send('leave-instance', this.instance.id)
     }
   }
 }

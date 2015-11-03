@@ -13,7 +13,10 @@ import Other from './Other.vue'
 
 export default {
   components: { Other },
-  props: ['msg', 'obj'],
+  props: {
+    msg: String,
+    obj: null
+  },
   data() {
     return {
       items: [1, 2]
