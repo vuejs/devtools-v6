@@ -16,12 +16,12 @@ export function installHook (window) {
   const hook = {
     Vue: null,
 
-    on(event, fn) {
+    on (event, fn) {
       event = '$' + event
       ;(listeners[event] || (listeners[event] = [])).push(fn)
     },
 
-    once(event, fn) {
+    once (event, fn) {
       event = '$' + event
       function on () {
         this.off(event, on)
@@ -30,7 +30,7 @@ export function installHook (window) {
       ;(listeners[event] || (listeners[event] = [])).push(on)
     },
 
-    off(event, fn) {
+    off (event, fn) {
       event = '$' + event
       if (!arguments.length) {
         listeners = {}
@@ -52,7 +52,7 @@ export function installHook (window) {
       }
     },
 
-    emit(event) {
+    emit (event) {
       event = '$' + event
       let cbs = listeners[event]
       if (cbs) {
@@ -70,7 +70,7 @@ export function installHook (window) {
   })
 
   Object.defineProperty(window, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
-    get() {
+    get () {
       return hook
     }
   })

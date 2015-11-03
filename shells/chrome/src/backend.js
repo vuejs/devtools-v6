@@ -11,7 +11,7 @@ function handshake (e) {
 
     let listeners = []
     const bridge = new Bridge({
-      listen(fn) {
+      listen (fn) {
         var listener = evt => {
           if (evt.data.source === 'vue-devtools-proxy' && evt.data.payload) {
             fn(evt.data.payload)
@@ -20,10 +20,10 @@ function handshake (e) {
         window.addEventListener('message', listener)
         listeners.push(listener)
       },
-      send(data) {
+      send (data) {
         window.postMessage({
           source: 'vue-devtools-backend',
-          payload: data,
+          payload: data
         }, '*')
       }
     })

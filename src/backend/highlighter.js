@@ -49,7 +49,6 @@ function highlightFragment ({ _fragmentStart, _fragmentEnd }) {
     }
     if (rect) {
       if (!top || rect.top < top) {
-        if (rect.top === 0) debugger
         top = rect.top
       }
       if (!bottom || rect.bottom > bottom) {

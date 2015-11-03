@@ -1,3 +1,5 @@
+/* global chrome */
+
 // the background script runs all the time and serves as a central message
 // hub for each vue devtools (panel + proxy + backend) instance.
 
@@ -18,7 +20,7 @@ chrome.runtime.onConnect.addListener((port) => {
   if (!ports[tab]) {
     ports[tab] = {
       devtools: null,
-      backend: null,
+      backend: null
     }
   }
   ports[tab][name] = port
@@ -28,7 +30,7 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
-function isNumeric(str) {
+function isNumeric (str) {
   return +str + '' === str
 }
 
@@ -39,24 +41,24 @@ function installProxy (tabId) {
   })
 }
 
-function doublePipe(id, one, two) {
+function doublePipe (id, one, two) {
   one.onMessage.addListener(lOne)
-  function lOne(message) {
+  function lOne (message) {
     if (message.event === 'log') {
       return console.log('tab ' + id, message.payload)
     }
-    console.log('devtools -> backend', message);
+    console.log('devtools -> backend', message)
     two.postMessage(message)
   }
   two.onMessage.addListener(lTwo)
-  function lTwo(message) {
+  function lTwo (message) {
     if (message.event === 'log') {
       return console.log('tab ' + id, message.payload)
     }
-    console.log('backend -> devtools', message);
+    console.log('backend -> devtools', message)
     one.postMessage(message)
   }
-  function shutdown() {
+  function shutdown () {
     console.log('tab ' + id + ' disconnected.')
     one.onMessage.removeListener(lOne)
     two.onMessage.removeListener(lTwo)

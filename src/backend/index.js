@@ -147,7 +147,7 @@ function findQualifiedChildrenFromList (instances) {
     ? instances.map(capture)
     : instances
       .map(findQualifiedChildren)
-      .reduce((all, qualified) => all.concat(qualified), []) 
+      .reduce((all, qualified) => all.concat(qualified), [])
 }
 
 /**

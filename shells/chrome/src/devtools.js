@@ -1,3 +1,5 @@
+/* global chrome */
+
 // this script is called when the VueDevtools panel is activated.
 
 import { initDevTools } from '../../../src/devtools'
@@ -35,7 +37,7 @@ initDevTools({
       })
       // 3. send a proxy API to the panel
       cb(bridge)
-    }) 
+    })
   },
 
   /**
@@ -64,7 +66,7 @@ function injectScript (scriptName, cb) {
     document.documentElement.appendChild(script);
     script.parentNode.removeChild(script);
   `
-  chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+  chrome.devtools.inspectedWindow.eval(src, function (res, err) {
     if (err) {
       console.log(err)
     }

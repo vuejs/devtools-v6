@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import appOptions from './components/App.vue'
+
 const App = Vue.extend(appOptions)
-window.app = null
+let app = null
 
 /**
  * Create the main devtools app. Expects to be called with a shell interface
