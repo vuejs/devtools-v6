@@ -143,6 +143,8 @@ function flush () {
  */
 
 function findQualifiedChildrenFromList (instances) {
+  instances = instances
+    .filter(child => !child._isBeingDestroyed)
   return !filter
     ? instances.map(capture)
     : instances
@@ -191,7 +193,9 @@ function capture (instance) {
     name: getInstanceName(instance),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: instance.$children.map(capture)
+    children: instance.$children
+      .filter(child => !child._isBeingDestroyed)
+      .map(capture)
   }
 }
 
