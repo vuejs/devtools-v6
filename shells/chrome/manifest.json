@@ -21,8 +21,7 @@
 
   "permissions": [
     "http://*/",
-    "https://*/*",
-    "file://*/*"
+    "https://*/*"
   ],
 
   "content_scripts": [
