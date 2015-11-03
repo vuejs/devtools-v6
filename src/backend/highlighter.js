@@ -11,20 +11,13 @@ overlay.style.zIndex = '99999'
 
 export function highlight (instance) {
   if (!instance) return
-  scrollIntoView(instance.$el)
+  if (!util().inDoc(instance.$el)) {
+    return
+  }
   if (!instance._isFragment) {
     showOverlay(instance.$el.getBoundingClientRect())
   } else {
     highlightFragment(instance)
-  }
-}
-
-function scrollIntoView (node) {
-  var top = node.offsetTop
-  if (top == null) {
-    scrollIntoView(node.previousSibling || node.parentNode)
-  } else {
-    window.scrollTo(0, top)
   }
 }
 
@@ -46,9 +39,8 @@ export function unHighlight () {
  */
 
 function highlightFragment ({ _fragmentStart, _fragmentEnd }) {
-  const Vue = window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue
   let top, bottom, left, right
-  Vue.util.mapNodeRange(_fragmentStart, _fragmentEnd, function (node) {
+  util().mapNodeRange(_fragmentStart, _fragmentEnd, function (node) {
     let rect
     if (node.nodeType === 1 || node.getBoundingClientRect) {
       rect = node.getBoundingClientRect()
@@ -104,4 +96,12 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }) {
   overlay.style.top = ~~top + 'px'
   overlay.style.left = ~~left + 'px'
   document.body.appendChild(overlay)
+}
+
+/**
+ * Get Vue's util
+ */
+
+function util () {
+  return window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue.util
 }

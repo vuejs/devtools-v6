@@ -36,6 +36,11 @@ function connect () {
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
+    let instance = instanceMap.get(id)
+    if (instance) {
+      scrollIntoView(instance.$el)
+      highlight(instance)
+    }
     bridge.send('instance-details', getInstanceDetails(id))
   })
 
@@ -321,4 +326,22 @@ function processComputed (instance) {
       value: instance[key]
     }
   })
+}
+
+/**
+ * Sroll a node into view.
+ *
+ * @param {Node} node
+ */
+
+function scrollIntoView (node) {
+  if (!hook.Vue.util.inDoc(node)) {
+    return
+  }
+  var top = node.offsetTop
+  if (top == null) {
+    scrollIntoView(node.previousSibling || node.parentNode)
+  } else {
+    window.scrollTo(0, top)
+  }
 }
