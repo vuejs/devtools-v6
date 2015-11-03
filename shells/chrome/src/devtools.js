@@ -1,5 +1,3 @@
-/* global chrome */
-
 // this script is called when the VueDevtools panel is activated.
 
 import { initDevTools } from '../../../src/devtools'

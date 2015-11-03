@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cd shells/dev && webpack-dev-server --inline --hot",
     "dev-chrome": "cd shells/chrome && webpack --watch --hide-modules",
-    "build": "cd shells/chrome && NODE_ENV=production webpack --progress --hide-modules"
+    "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src",
+    "build": "npm run lint && cd shells/chrome && NODE_ENV=production webpack --progress --hide-modules"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,8 @@
     "babel-loader": "^5.3.2",
     "babel-runtime": "^5.8.29",
     "css-loader": "^0.21.0",
+    "eslint": "^1.8.0",
+    "eslint-plugin-html": "^1.1.0",
     "file-loader": "^0.8.4",
     "style-loader": "^0.13.0",
     "stylus-loader": "^1.4.0",

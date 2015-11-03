@@ -1,5 +1,3 @@
-/* global chrome */
-
 // This is the devtools script, which is called when the user opens the
 // Chrome devtool on a page. We check to see if we global hook has detected
 // Vue presence on the page. If yes, create the Vue panel; otherwise poll

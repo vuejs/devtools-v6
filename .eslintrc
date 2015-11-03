@@ -4,6 +4,12 @@
     "node": true
   },
 
+  "plugins": ["html"],
+  "globals": {
+    "chrome": true,
+    "bridge": true
+  },
+
   "ecmaFeatures": {
     "arrowFunctions": true,
     "destructuring": true,
