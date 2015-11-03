@@ -11,10 +11,20 @@ overlay.style.zIndex = '99999'
 
 export function highlight (instance) {
   if (!instance) return
+  scrollIntoView(instance.$el)
   if (!instance._isFragment) {
     showOverlay(instance.$el.getBoundingClientRect())
   } else {
     highlightFragment(instance)
+  }
+}
+
+function scrollIntoView (node) {
+  var top = node.offsetTop
+  if (top == null) {
+    scrollIntoView(node.previousSibling || node.parentNode)
+  } else {
+    window.scrollTo(0, top)
   }
 }
 
