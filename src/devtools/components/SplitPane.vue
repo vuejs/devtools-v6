@@ -2,6 +2,7 @@
   <div class="split-pane"
     @mousemove="dragMove"
     @mouseup="dragEnd"
+    @mouseleave="dragEnd"
     :class="{ dragging: dragging }">
     <div class="left" :style="{ width: split + '%' }">
       <slot name="left"></slot>
