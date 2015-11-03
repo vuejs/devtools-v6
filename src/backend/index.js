@@ -242,7 +242,7 @@ function getInstanceName (instance) {
   let name = instance.$options.name
   return name
     ? hook.Vue.util.classify(name)
-    : instance._uid === 0
+    : instance.$root === instance
       ? 'Root'
       : 'Anonymous Component'
 }

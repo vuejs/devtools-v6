@@ -99,6 +99,7 @@ export default {
   font-size 14px
   line-height 22px
   height 22px
+  white-space nowrap
   &:hidden
     display none
   &:hover

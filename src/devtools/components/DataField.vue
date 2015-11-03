@@ -104,7 +104,7 @@ export default {
     vertical-align middle
   .arrow
     position absolute
-    top 8px
+    top 7px
     left -14px
     &.rotated
       transform rotate(90deg)
