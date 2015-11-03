@@ -9,7 +9,7 @@
 export default {
   components: {
     mine: {
-      template: '<div>my</div>'
+      template: 'This is a fragment instance'
     }
   }
 }

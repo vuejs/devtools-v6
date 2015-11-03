@@ -14,7 +14,10 @@
         </span>
         <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
-      <span>{{ instance.inactive ? '(inactive)' : '' }}</span>
+      <span class="info">
+        {{ instance.isFragment ? 'fragment' : '' }}
+        {{ instance.inactive ? '(inactive)' : '' }}
+      </span>
     </div>
     <div class="children"
       v-if="expanded"
@@ -104,6 +107,9 @@ export default {
       border-left-color #fff
     .instance-name
       color #fff
+  .info
+    color #ccc
+    font-size 13px
 
 .children
   position relative
