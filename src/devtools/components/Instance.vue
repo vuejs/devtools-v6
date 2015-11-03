@@ -107,7 +107,6 @@ export default {
 
 .arrow
   transition transform .1s ease, border-left-color .1s ease
-  display inline-block
   position absolute
   top 4px
   left 8px

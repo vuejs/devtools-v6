@@ -20,7 +20,10 @@
         </a>
       </section>
       <section class="data">
-        <data-field v-for="field in target.state" :field="field" track-by="key">
+        <data-field v-for="field in target.state"
+          track-by="key"
+          :field="field"
+          :depth="0">
         </data-field>
         <p class="no-state" v-show="target.state && !target.state.length">
           This instance has no reactive state.
@@ -69,7 +72,7 @@ $border-color = #e3e3e3
 h3
   margin-top 0
 
-section 
+section:not(:last-child)
   border-bottom 1px solid $border-color
 
 .top

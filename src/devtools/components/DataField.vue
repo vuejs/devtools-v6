@@ -1,7 +1,13 @@
 <template>
   <div class="data-field">
-    <div class="self">
-      <span class="arrow right" v-show="isExpandableType"></span>
+    <div class="self"
+      @click="toggle"
+      :style="{ marginLeft: depth * 16 + 16 + 'px' }">
+      <span
+        class="arrow right"
+        :class="{ rotated: expanded }"
+        v-show="isExpandableType">
+      </span>
       <span class="key">{{ field.key }}</span><span class="colon">:</span>
       <span class="value {{ type }}">{{ formattedValue }}</span>
       <div class="type {{ field.type }}" v-show="field.type" >
@@ -15,6 +21,12 @@
       </div>
     </div>
     <div class="children" v-if="expanded">
+      <data-field
+        v-for="subField in field.value | formatSubFields"
+        track-by="$index"
+        :field="subField"
+        :depth="depth + 1">
+      </data-field>
     </div>
   </div>
 </template>
@@ -23,10 +35,13 @@
 export default {
   name: 'DataField',
   props: {
-    field: Object
+    field: Object,
+    depth: Number
   },
   data () {
-    return { expanded: false }
+    return {
+      expanded: false
+    }
   },
   computed: {
     type () {
@@ -39,13 +54,35 @@ export default {
     formattedValue () {
       let value = this.field.value
       if (Array.isArray(value)) {
-        return 'Array(' + value.length + ')'
+        return 'Array[' + value.length + ']'
       } else if (value && typeof value === 'object') {
-        return 'Object(' + Object.keys(value).length + ')'
+        return 'Object'
       } else if (typeof value === 'string') {
         return JSON.stringify(value)
       } else {
         return value
+      }
+    }
+  },
+  methods: {
+    toggle () {
+      if (this.isExpandableType) {
+        this.expanded = !this.expanded
+      }
+    }
+  },
+  filters: {
+    formatSubFields (value) {
+      if (Array.isArray(value)) {
+        return value.map((item, i) => ({
+          key: i,
+          value: item
+        }))
+      } else {
+        return Object.keys(value).map(key => ({
+          key,
+          value: value[key]
+        }))
       }
     }
   }
@@ -58,17 +95,19 @@ export default {
   font-family Menlo, Consolas, monospace
   cursor default
 .self
-  height 24px
-  line-height 24px
-  padding-left 15px
+  height 22px
+  line-height 22px
   position relative
   span, div
     display inline-block
     vertical-align middle
   .arrow
     position absolute
-    top 9px
-    left 0px
+    transition transform .1s ease, border-left-color .1s ease
+    top 8px
+    left -15px
+    &.rotated
+      transform rotate(90deg)
   .key
     color #881391
   .value

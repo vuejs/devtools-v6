@@ -21,7 +21,13 @@ export default {
   },
   computed: {
     awww () {
-      return this.items.join(':')
+      return {
+        a: {
+          b: {
+            c: 123
+          }
+        }
+      }
     }
   },
   methods: {
