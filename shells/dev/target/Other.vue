@@ -9,7 +9,15 @@
 export default {
   components: {
     mine: {
-      template: 'This is a fragment instance'
+      template: 'This is a fragment instance',
+      data () {
+        return {
+          // bad dude
+          a: function () {},
+          b: /123/,
+          c: document.createElement('div')
+        }
+      }
     }
   }
 }

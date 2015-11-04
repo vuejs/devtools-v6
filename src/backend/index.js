@@ -271,7 +271,7 @@ function processProps (instance) {
       return {
         type: 'prop',
         key: prop.path,
-        value: instance[prop.path],
+        value: sanitize(instance[prop.path]),
         meta: {
           'type': options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
@@ -306,13 +306,12 @@ function getPropType (type) {
 
 function processState (instance) {
   const props = instance._props
-  const clone = Object.keys(instance._data)
+  return Object.keys(instance._data)
     .filter(key => !props || !(key in props))
     .map(key => ({
       key,
-      value: instance[key]
+      value: sanitize(instance[key])
     }))
-  return JSON.parse(JSON.stringify(clone))
 }
 
 /**
@@ -327,9 +326,43 @@ function processComputed (instance) {
     return {
       type: 'computed',
       key,
-      value: instance[key]
+      value: sanitize(instance[key])
     }
   })
+}
+
+/**
+ * Recursively sanitize data to be posted to the other side.
+ * Since the message posted is sent with structured clone,
+ * we need to filter out any types that might cause an error.
+ *
+ * @param {*} data
+ * @return {*}
+ */
+
+function sanitize (data) {
+  if (Array.isArray(data)) {
+    return data.map(sanitize)
+  } else if (hook.Vue.util.isPlainObject(data)) {
+    var ret = {}
+    Object.keys(data).forEach(key => {
+      ret[key] = sanitize(data[key])
+    })
+    return ret
+  } else if (isPrimitive(data)) {
+    return data
+  } else {
+    // handle types that will probably cause issues in
+    // the structured clone
+    return Object.prototype.toString.call(data)
+  }
+}
+
+var primitiveTypeRE = /^(string|number|boolean)$/
+function isPrimitive (data) {
+  return data == null ||
+    primitiveTypeRE.test(typeof data) ||
+    data instanceof RegExp
 }
 
 /**

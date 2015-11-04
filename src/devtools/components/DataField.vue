@@ -9,7 +9,7 @@
         v-show="isExpandableType">
       </span>
       <span class="key">{{ field.key }}</span><span class="colon">:</span>
-      <span class="value {{ type }}">{{ formattedValue }}</span>
+      <span class="value" :class="{ string: isString }">{{ formattedValue }}</span>
       <div class="type {{ field.type }}" v-show="field.type" >
         {{ field.type }}
         <div class="meta" v-if="field.meta">
@@ -32,6 +32,12 @@
 </template>
 
 <script>
+const rawTypeRE = /^\[object (\w+)\]$/
+
+function isPlainObject (value) {
+  return Object.prototype.toString.call(value) === '[object Object]'
+}
+
 export default {
   name: 'DataField',
   props: {
@@ -44,21 +50,32 @@ export default {
     }
   },
   computed: {
-    type () {
-      return typeof this.field.value
+    isString () {
+      let value = this.field.value
+      return (
+        value instanceof RegExp ||
+        (typeof value === 'string' && !rawTypeRE.test(value))
+      )
     },
     isExpandableType () {
       let value = this.field.value
-      return value && typeof value === 'object'
+      return Array.isArray(value) || isPlainObject(value)
     },
     formattedValue () {
       let value = this.field.value
       if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
-      } else if (value && typeof value === 'object') {
+      } else if (isPlainObject(value)) {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (typeof value === 'string') {
-        return JSON.stringify(value)
+        var typeMatch = value.match(rawTypeRE)
+        if (typeMatch) {
+          return typeMatch[1]
+        } else {
+          return JSON.stringify(value)
+        }
+      } else if (value instanceof RegExp) {
+        return value.toString()
       } else {
         return value
       }
