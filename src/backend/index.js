@@ -337,16 +337,30 @@ function processComputed (instance) {
  * we need to filter out any types that might cause an error.
  *
  * @param {*} data
+ * @param {Map} [map]
  * @return {*}
  */
 
-function sanitize (data) {
+function sanitize (data, map) {
+  if (!map) {
+    // we need a map for each root call to store seen items
+    // in order to handle circular references.
+    map = new Map()
+  }
   if (Array.isArray(data)) {
-    return data.map(sanitize)
+    if (map.has(data)) {
+      return data
+    }
+    map.set(data, true)
+    return data.map(item => sanitize(item, map))
   } else if (hook.Vue.util.isPlainObject(data)) {
+    if (map.has(data)) {
+      return data
+    }
+    map.set(data, true)
     var ret = {}
     Object.keys(data).forEach(key => {
-      ret[key] = sanitize(data[key])
+      ret[key] = sanitize(data[key], map)
     })
     return ret
   } else if (isPrimitive(data)) {

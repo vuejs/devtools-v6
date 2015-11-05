@@ -7,12 +7,17 @@
 
 <script>
 export default {
+  data () {
+    var a = {}
+    a.a = a
+    return a
+  },
   components: {
     mine: {
       template: 'This is a fragment instance',
       data () {
         return {
-          // bad dude
+          // testing all data types
           a: function () {},
           b: /123/,
           c: document.createElement('div'),
