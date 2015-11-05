@@ -2,7 +2,7 @@
   <div class="data-field">
     <div class="self"
       @click="toggle"
-      :style="{ marginLeft: depth * 14 + 14 + 'px' }">
+      :style="{ marginLeft: depth * 14 + 'px' }">
       <span
         class="arrow right"
         :class="{ rotated: expanded }"
@@ -116,13 +116,14 @@ export default {
   line-height 20px
   position relative
   white-space nowrap
+  padding-left 14px
   span, div
     display inline-block
     vertical-align middle
   .arrow
     position absolute
     top 7px
-    left -14px
+    left 0px
     &.rotated
       transform rotate(90deg)
   .key
