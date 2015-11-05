@@ -9,7 +9,7 @@
         v-show="isExpandableType">
       </span>
       <span class="key">{{ field.key }}</span><span class="colon">:</span>
-      <span class="value" :class="{ string: isString }">{{ formattedValue }}</span>
+      <span class="value" :class="valueType">{{ formattedValue }}</span>
       <div class="type {{ field.type }}" v-show="field.type" >
         {{ field.type }}
         <div class="meta" v-if="field.meta">
@@ -50,12 +50,19 @@ export default {
     }
   },
   computed: {
-    isString () {
+    valueType () {
       let value = this.field.value
-      return (
+      let type = typeof value
+      if (value == null) {
+        return 'null'
+      } else if (
         value instanceof RegExp ||
-        (typeof value === 'string' && !rawTypeRE.test(value))
-      )
+        (type === 'string' && !rawTypeRE.test(value))
+      ) {
+        return 'string'
+      } else if (type === 'boolean' || type === 'number') {
+        return 'literal'
+      }
     },
     isExpandableType () {
       let value = this.field.value
@@ -76,6 +83,8 @@ export default {
         }
       } else if (value instanceof RegExp) {
         return value.toString()
+      } else if (value == null) {
+        return value === undefined ? 'undefined' : 'null'
       } else {
         return value
       }
@@ -132,6 +141,10 @@ export default {
     color #444
     &.string
       color #c41a16
+    &.null
+      color #999
+    &.literal
+      color #0033cc
   .type
     color #fff
     padding 3px 6px

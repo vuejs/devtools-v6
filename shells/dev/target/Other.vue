@@ -15,7 +15,11 @@ export default {
           // bad dude
           a: function () {},
           b: /123/,
-          c: document.createElement('div')
+          c: document.createElement('div'),
+          d: null,
+          e: undefined,
+          f: true,
+          g: 12345
         }
       }
     }
