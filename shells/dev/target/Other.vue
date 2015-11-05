@@ -8,9 +8,14 @@
 <script>
 export default {
   data () {
-    var a = {}
+    let a = { c: function () {} }
     a.a = a
-    return a
+    let b = []
+    b[0] = b
+    return {
+      a: a,
+      b: b
+    }
   },
   components: {
     mine: {

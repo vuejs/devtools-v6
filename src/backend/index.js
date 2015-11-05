@@ -347,21 +347,24 @@ function sanitize (data, map) {
     // in order to handle circular references.
     map = new Map()
   }
+  let ret
   if (Array.isArray(data)) {
-    if (map.has(data)) {
-      return data
+    ret = map.get(data)
+    if (!ret) {
+      ret = []
+      map.set(data, ret)
+      data.forEach(item => ret.push(sanitize(item, map)))
     }
-    map.set(data, true)
-    return data.map(item => sanitize(item, map))
+    return ret
   } else if (hook.Vue.util.isPlainObject(data)) {
-    if (map.has(data)) {
-      return data
+    ret = map.get(data)
+    if (!ret) {
+      ret = {}
+      map.set(data, ret)
+      Object.keys(data).forEach(key => {
+        ret[key] = sanitize(data[key], map)
+      })
     }
-    map.set(data, true)
-    var ret = {}
-    Object.keys(data).forEach(key => {
-      ret[key] = sanitize(data[key], map)
-    })
     return ret
   } else if (isPrimitive(data)) {
     return data
