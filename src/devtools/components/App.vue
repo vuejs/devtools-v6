@@ -45,6 +45,9 @@ export default {
     bridge.once('ready', version => {
       this.message = 'Ready. Detected Vue ' + version + '.'
     })
+    bridge.once('proxy-fail', () => {
+      this.message = 'Proxy injection failed. Make sure to load your app over HTTP.'
+    })
     bridge.on('flush', payload => {
       this.instances = payload.instances
       this.inspectedInstance = payload.inspectedInstance

@@ -33,9 +33,14 @@ function isNumeric (str) {
 }
 
 function installProxy (tabId) {
-  console.log('injected proxy to tab ' + tabId)
   chrome.tabs.executeScript(tabId, {
     file: '/build/proxy.js'
+  }, function (res) {
+    if (!res) {
+      ports[tabId].devtools.postMessage('proxy-fail')
+    } else {
+      console.log('injected proxy to tab ' + tabId)
+    }
   })
 }
 
