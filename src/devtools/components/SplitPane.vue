@@ -46,13 +46,14 @@ export default {
 <style lang="stylus" scoped>
 .split-pane
   display flex
-  align-items strech
   &.dragging
     cursor ew-resize
 
 .left, .right
   position relative
-  overflow scroll
+  overflow-y scroll
+  &::-webkit-scrollbar
+    width 0 !important
 
 .left
   border-right 1px solid #e3e3e3

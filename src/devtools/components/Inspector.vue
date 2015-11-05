@@ -3,7 +3,7 @@
     <div v-show="!hasTarget" class="non-selected">
       Select a component instance to inspect.
     </div>
-    <div v-else>
+    <div v-else class="main">
       <section class="top">
         <span style="color:#ccc">&lt;</span>
         <span>{{ target.name }}</span>
@@ -69,6 +69,15 @@ export default {
 <style lang="stylus" scoped>
 $border-color = #e3e3e3
 
+.inspector, .main
+  position absolute
+  width 100%
+  height 100%
+
+.main
+  display flex
+  flex-direction column
+
 h3
   margin-top 0
 
@@ -76,14 +85,14 @@ section:not(:last-child)
   border-bottom 1px solid $border-color
 
 .top
-  padding 15px 0
+  height 50px
+  line-height 50px
   text-align center
   font-size 18px
   color #0062c3
 
 .buttons
   display flex
-  align-items strech
 
 .button
   display block
@@ -108,7 +117,10 @@ section:not(:last-child)
 
 .data
   padding 15px 20px
-  overflow scroll
+  flex 1
+  overflow-y scroll
+  &::-webkit-scrollbar
+    width 0 !important
   h3
     font-size 15px
 
