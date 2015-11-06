@@ -79,7 +79,7 @@ function scan () {
   rootInstances.length = 0
   let inFragment = false
   let currentFragment = null
-  walk(document.body, function (node) {
+  walk(document.documentElement, function (node) {
     if (inFragment) {
       if (node === currentFragment._fragmentEnd) {
         inFragment = false
