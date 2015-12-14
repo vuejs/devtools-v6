@@ -15,7 +15,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loader:  'babel?optional[]=runtime&loose=all',
+        loader:  'babel',
         exclude: /node_modules|vue\/dist/,
       },
       {
