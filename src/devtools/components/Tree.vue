@@ -47,6 +47,7 @@ export default {
     },
     selected (instance) {
       selectedInstance = instance
+      return true
     }
   },
   methods: {
