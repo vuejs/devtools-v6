@@ -67,11 +67,23 @@ export default {
       this.selected = true
       this.$dispatch('selected', this)
     },
-    toggle () {
-      this.expanded = !this.expanded
+    toggle (expand = null) {
+      this.expanded = expand === null ? !this.expanded : expand
       expansionMap[this.instance.id] = this.expanded
       // trigger reflow in the tree component
       this.$dispatch('reflow')
+    },
+    expand () {
+      if (this.expanded) {
+        return
+      }
+      this.toggle(true)
+    },
+    collapse () {
+      if (!this.expanded) {
+        return
+      }
+      this.toggle(false)
     },
     enter () {
       bridge.send('enter-instance', this.instance.id)
