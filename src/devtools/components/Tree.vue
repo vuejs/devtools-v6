@@ -26,6 +26,11 @@ function getAllInstance () {
     return n.__vue__
   })
 }
+let keyup = function keyup (e) {
+  if (navMap.hasOwnProperty(e.keyCode)) {
+    this.nav(navMap[e.keyCode])
+  }
+}
 
 export default {
   components: { Instance },
@@ -33,11 +38,11 @@ export default {
     instances: Array
   },
   created () {
-    document.addEventListener('keyup', (e) => {
-      if (navMap.hasOwnProperty(e.keyCode)) {
-        this.nav(navMap[e.keyCode])
-      }
-    })
+    keyup = keyup.bind(this)
+    document.addEventListener('keyup', keyup)
+  },
+  destroyed () {
+    document.removeEventListener('keyup', keyup)
   },
   events: {
     reflow () {
