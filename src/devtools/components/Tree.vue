@@ -33,11 +33,10 @@ export default {
     instances: Array
   },
   created () {
-    document.addEventListener('keyup', (e) => {
-      if (navMap.hasOwnProperty(e.keyCode)) {
-        this.nav(navMap[e.keyCode])
-      }
-    })
+    document.addEventListener('keyup', this.onKeyup)
+  },
+  destroyed () {
+    document.removeEventListener('keyup', this.onKeyup)
   },
   events: {
     reflow () {
@@ -51,6 +50,11 @@ export default {
     }
   },
   methods: {
+    onKeyup (e) {
+      if (navMap.hasOwnProperty(e.keyCode)) {
+        this.nav(navMap[e.keyCode])
+      }
+    },
     nav (dir) {
       let current = selectedInstance
 
