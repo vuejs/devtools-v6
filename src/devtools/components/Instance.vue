@@ -10,7 +10,7 @@
         <!-- arrow wrapper for better hit box -->
         <span class="arrow-wrapper"
           v-if="instance.children.length"
-          @click.stop="toggle">
+          @click.stop="toggle()">
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
