@@ -4,7 +4,7 @@
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
-    "dev": "cd shells/dev && webpack-dev-server --inline --hot",
+    "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
     "dev-chrome": "cd shells/chrome && webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src",
     "build": "npm run lint && cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
@@ -35,12 +35,12 @@
     "eslint": "^1.8.0",
     "eslint-plugin-html": "^1.1.0",
     "file-loader": "^0.8.4",
-    "style-loader": "^0.13.0",
     "stylus-loader": "^1.4.0",
     "url-loader": "^0.5.6",
     "vue-hot-reload-api": "^1.2.1",
     "vue-html-loader": "^1.0.0",
-    "vue-loader": "^7.2.0",
+    "vue-loader": "^8.0.0",
+    "vue-style-loader": "^1.0.0",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.12.1"
   },

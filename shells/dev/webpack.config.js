@@ -32,7 +32,5 @@ module.exports = {
       browsers: ['last 2 Chrome versions']
     }
   },
-  devtool: process.env.NODE_ENV !== 'production'
-    ? 'inline-source-map'
-    : false
+  devtool: 'eval-source-map'
 }
