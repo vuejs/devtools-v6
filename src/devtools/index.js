@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import appOptions from './components/App.vue'
+import App from './components/App.vue'
+import store from './vuex/store'
 
-const App = Vue.extend(appOptions)
 let app = null
 
 /**

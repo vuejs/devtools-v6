@@ -2,6 +2,7 @@
 // when the Vue Devtools panel is activated.
 
 import { highlight, unHighlight } from './highlighter'
+import { initVuexBackend } from './vuex'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -20,6 +21,13 @@ export function initBackend (_bridge) {
     connect()
   } else {
     hook.once('init', connect)
+  }
+  if (hook.store) {
+    initVuexBackend(hook, bridge)
+  } else {
+    hook.once('vuex:init', () => {
+      initVuexBackend(hook, bridge)
+    })
   }
 }
 

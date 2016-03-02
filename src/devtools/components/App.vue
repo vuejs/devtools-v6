@@ -35,7 +35,6 @@ export default {
       isLiveMode: true,
       filter: '',
       selected: null,
-      hovered: null,
       inspectedInstance: {},
       instances: [],
       snapshots: []

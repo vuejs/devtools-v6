@@ -4,7 +4,7 @@
  * Install the hook on window, which is an event emitter.
  * Note because Chrome content scripts cannot directly modify the window object,
  * we are evaling this function by inserting a script tag. That's why we have
- * to inline the while event emitter implementation here.
+ * to inline the whole event emitter implementation here.
  *
  * @param {Window} window
  */
@@ -65,8 +65,12 @@ export function installHook (window) {
     }
   }
 
-  hook.once('init', (Vue) => {
+  hook.once('init', Vue => {
     hook.Vue = Vue
+  })
+
+  hook.once('vuex:init', store => {
+    hook.store = store
   })
 
   Object.defineProperty(window, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
