@@ -44,10 +44,18 @@ export default {
     components: ComponentsTab,
     vuex: VuexTab
   },
-  data () {
-    return {
-      messages: ['Looking for Vue...'],
-      tab: 'components'
+  vuex: {
+    state: {
+      messages: state => [state.app.message],
+      tab: state => state.app.tab
+    },
+    actions: {
+      setMessage: ({ dispatch }, message) => {
+        dispatch('SET_MESSAGE', message)
+      },
+      switchTab: ({ dispatch }, tab) => {
+        dispatch('SWITCH_TAB', tab)
+      }
     }
   },
   created () {
@@ -59,14 +67,8 @@ export default {
     })
   },
   methods: {
-    switchTab (to) {
-      this.tab = to
-    },
     refresh () {
       bridge.send('refresh')
-    },
-    setMessage (message) {
-      this.messages = [message]
     }
   }
 }

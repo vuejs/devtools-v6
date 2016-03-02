@@ -2,6 +2,8 @@ import Vue from 'vue'
 import App from './components/App.vue'
 import store from './vuex/store'
 
+Vue.config.debug = true
+
 let app = null
 
 /**
