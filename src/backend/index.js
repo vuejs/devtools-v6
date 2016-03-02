@@ -3,6 +3,7 @@
 
 import { highlight, unHighlight } from './highlighter'
 import { initVuexBackend } from './vuex'
+import throttle from 'lodash.throttle'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -12,7 +13,6 @@ const propModes = ['default', 'sync', 'once']
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
 let bridge
-let isLiveMode = true
 let filter = ''
 
 export function initBackend (_bridge) {
@@ -36,11 +36,7 @@ function connect () {
   // if the user closes and reopens the devtools.
   // make sure there's only one flush listener.
   hook.off('flush')
-  hook.on('flush', () => {
-    if (isLiveMode) {
-      flush()
-    }
-  })
+  hook.on('flush', throttle(flush, 100))
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
@@ -57,13 +53,6 @@ function connect () {
     console.log('[vue-devtools] <' + getInstanceName(window.$vm) + '> is now available as $vm.')
   })
 
-  bridge.on('toggle-live-mode', () => {
-    isLiveMode = !isLiveMode
-    if (isLiveMode) {
-      flush()
-    }
-  })
-
   bridge.on('filter-instances', _filter => {
     filter = _filter.toLowerCase()
     flush()
@@ -75,7 +64,7 @@ function connect () {
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
-  console.log('[vue-devtools] ready.')
+  console.log('[vue-devtools] Ready. Detected Vue v' + hook.Vue.version)
   scan()
 }
 

@@ -4,81 +4,69 @@
 <div class="app">
   <div class="header">
     <img class="logo" src="../assets/logo.png">
-    <i class="search-icon material-icons">search</i>
-    <input class="search-box" :placeholder="message" v-model="filter" debounce="100">
-    <a class="button toggle" @click="toggleLiveMode">
-      <span class="live-mode-indicator" :class="{ off: !isLiveMode }"></span>
-      <span>Live Mode</span>
-    </a>
-    <a class="button refresh" @click="refresh" v-show="!isLiveMode" transition="fade">
+    <span class="message-container">
+      <span class="message"
+        v-for="message in messages"
+        transition="slide-up">
+        {{ message }}
+      </span>
+    </span>
+    <a class="button"
+      @click="refresh">
       <i class="material-icons">autorenew</i>
       <span>Refresh</span>
     </a>
+    <a class="button"
+      :class="{ active: tab === 'vuex'}"
+      @click="switchTab('vuex')">
+      <i class="material-icons">restore</i>
+      <span>Vuex</span>
+    </a>
+    <a class="button"
+      :class="{ active: tab === 'components'}"
+      @click="switchTab('components')">
+      <i class="material-icons">list</i>
+      <span>Components</span>
+    </a>
   </div>
-  <split-pane class="container">
-    <tree slot="left" :instances="instances"></tree>
-    <inspector slot="right" :target="inspectedInstance"></inspector>
-  </split-pane>
+  <div class="container">
+    <component :is="tab" keep-alive></component>
+  </div>
 </div>
 </template>
 
 <script>
-import Tree from './Tree.vue'
-import Inspector from './Inspector.vue'
-import SplitPane from './SplitPane.vue'
+import ComponentsTab from './ComponentsTab.vue'
+import VuexTab from './VuexTab.vue'
 
 export default {
-  components: { Tree, Inspector, SplitPane },
+  components: {
+    components: ComponentsTab,
+    vuex: VuexTab
+  },
   data () {
     return {
-      message: 'Looking for Vue.js...',
-      isLiveMode: true,
-      filter: '',
-      selected: null,
-      inspectedInstance: {},
-      instances: [],
-      snapshots: []
+      messages: ['Looking for Vue...'],
+      tab: 'components'
     }
   },
   created () {
     bridge.once('ready', version => {
-      this.message = 'Ready. Detected Vue ' + version + '.'
+      this.setMessage('Ready. Detected Vue ' + version + '.')
     })
     bridge.once('proxy-fail', () => {
-      this.message = 'Proxy injection failed. Make sure to load your app over HTTP.'
+      this.setMessage('Proxy injection failed. Make sure to load your app over HTTP.')
     })
-    bridge.on('flush', payload => {
-      this.instances = payload.instances
-      this.inspectedInstance = payload.inspectedInstance
-      // trigger component tree reflow
-      this.$broadcast('reflow')
-    })
-    bridge.on('instance-details', details => {
-      this.inspectedInstance = details
-    })
-  },
-  beforeDestroy () {
-    bridge.removeAllListeners('flush')
-    bridge.removeAllListeners('instance-details')
-  },
-  events: {
-    selected (target) {
-      this.message = 'Instance selected: ' + target.instance.name
-      bridge.send('select-instance', target.instance.id)
-    }
-  },
-  watch: {
-    filter (val) {
-      bridge.send('filter-instances', val)
-    }
   },
   methods: {
-    toggleLiveMode () {
-      this.isLiveMode = !this.isLiveMode
-      bridge.send('toggle-live-mode')
+    switchTab (to) {
+      this.tab = to
     },
     refresh () {
       bridge.send('refresh')
+    },
+    setMessage (message) {
+      this.messages = [message]
     }
   }
 }
@@ -115,6 +103,24 @@ $border-color = #e3e3e3
   height 30px
   margin 10px 15px
 
+.message-container
+  display inline-block
+  height 1em
+
+.message
+  color #aaa
+  transition all .3s ease
+  display inline-block
+  position absolute
+
+.slide-up-enter
+  opacity 0
+  transform translate(0, 50%)
+
+.slide-up-leave
+  opacity 0
+  transform translate(0, -50%)
+
 .button
   float right
   position relative
@@ -128,49 +134,17 @@ $border-color = #e3e3e3
   font-size 13px
   color #666
   padding 0 22px 0 20px
-  transition all .25s ease
+  transition box-shadow .25s ease, border-color .5s ease
   &:hover
     box-shadow 0 2px 12px rgba(0,0,0,.1)
   &:active
     box-shadow 0 2px 16px rgba(0,0,0,.25)
-
-.live-mode-indicator
-  width 12px
-  height 12px
-  box-shadow 0 0 12px rgba(51, 204, 51, .25)
-  background-color #85E085
-  transition background-color .2s ease
-  border-radius 50%
-  margin-right 4px
-  &.off
-    background-color #ccc
-    box-shadow none
-
-.search-icon
-  font-size 24px
-
-.search-box
-  font-family Roboto
-  color #333
-  position relative
-  z-index 0
-  height $header-height - 1px
-  line-height $header-height - 1px
-  font-size 13px
-  border none
-  outline none
-  padding-left 50px
-  margin-left -50px
-  background transparent
-  width calc(100% - 200px)
-  margin-right -100px
+  &.active
+    border-bottom 2px solid #44A1FF
 
 .container
   padding-top $header-height
   position relative
   z-index 1
   height 100%
-
-.fade-enter, .fade-leave
-  opacity 0
 </style>

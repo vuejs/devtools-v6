@@ -1,35 +1,27 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import app from './modules/app'
-import inspector from './modules/inspector'
+import components from './modules/components'
 import vuex from './modules/vuex'
-import router from './modules/router'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
-    app,
-    inspector,
-    vuex,
-    router
+    components,
+    vuex
   }
 })
 
 if (module.hot) {
   module.hot.accept([
-    './modules/app',
-    './modules/inspector',
-    './modules/vuex',
-    './modules/router'
+    './modules/components',
+    './modules/vuex'
   ], () => {
     try {
       store.hotUpdate({
         modules: {
-          app: require('./modules/app').default,
-          inspector: require('./modules/inspector').default,
-          vuex: require('./modules/vuex').default,
-          router: require('./modules/router').default
+          inspector: require('./modules/components').default,
+          vuex: require('./modules/vuex').default
         }
       })
     } catch (e) {

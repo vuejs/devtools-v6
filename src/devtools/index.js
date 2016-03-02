@@ -34,6 +34,7 @@ function initApp (shell) {
   shell.connect(bridge => {
     window.bridge = bridge
     app = new Vue({
+      store,
       template: '<app></app>',
       components: { App }
     }).$mount().$appendTo('#container')
