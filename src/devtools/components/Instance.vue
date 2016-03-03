@@ -1,5 +1,9 @@
 <template>
-  <div class="instance" :class="{ inactive: instance.inactive }">
+  <div class="instance"
+    :class="{
+      inactive: instance.inactive,
+      selected: selected
+    }">
     <div class="self"
       @click.stop="select"
       @mouseenter="enter"
@@ -28,7 +32,6 @@
       <instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
-        transition="expand"
         :instance="child"
         :depth="depth + 1">
       </instance>

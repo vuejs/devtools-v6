@@ -22,8 +22,7 @@ const navMap = {
 export default {
   components: { Instance },
   props: {
-    instances: Array,
-    inspectedInstance: Object
+    instances: Array
   },
   created () {
     document.addEventListener('keyup', this.onKeyup)
@@ -33,18 +32,18 @@ export default {
   },
   methods: {
     onKeyup (e) {
-      if (navMap.hasOwnProperty(e.keyCode)) {
+      if (navMap[e.keyCode]) {
         this.nav(navMap[e.keyCode])
       }
     },
     nav (dir) {
-      let current = this.inspectedInstance
-
+      // somewhat hacky key navigation, but it works!
+      let currentEl = this.$el.querySelector('.instance.selected')
+      let current = currentEl && currentEl.__vue__
       if (!current) {
         current = this.$children[0]
         current.select()
       }
-
       if (dir === 'left') {
         if (current.expanded) {
           current.collapse()
@@ -65,8 +64,7 @@ export default {
         current = findByOffset(current, 1)
         current.select()
       }
-    },
-
+    }
   }
 }
 
@@ -83,9 +81,7 @@ function findByOffset (current, offset) {
       currentIndex = index
     }
   })
-
   offset = currentIndex + offset
-
   if (offset < 0) {
     return all[0]
   } else if (offset >= all.length) {

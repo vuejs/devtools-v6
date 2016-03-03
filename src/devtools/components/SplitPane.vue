@@ -51,6 +51,7 @@ export default {
 
 .left, .right
   position relative
+  overflow-x hidden
   overflow-y scroll
   &::-webkit-scrollbar
     width 0 !important

@@ -5,7 +5,7 @@
       <input class="search-box" placeholder="Filter components" @input="filter">
     </div>
     <split-pane class="bottom">
-      <tree slot="left" :instances="instances" :selected="inspectedInstance"></tree>
+      <tree slot="left" :instances="instances"></tree>
       <inspector slot="right" :target="inspectedInstance"></inspector>
     </split-pane>
   </div>
