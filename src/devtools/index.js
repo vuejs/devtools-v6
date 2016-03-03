@@ -61,11 +61,11 @@ function initApp (shell) {
     })
 
     bridge.on('vuex:init', state => {
-      store.dispatch('vuex/INIT', CircularJSON.parse(state))
+      store.dispatch('vuex/INIT', state)
     })
 
     bridge.on('vuex:mutation', payload => {
-      store.dispatch('vuex/RECEIVE_MUTATION', CircularJSON.parse(payload))
+      store.dispatch('vuex/RECEIVE_MUTATION', payload)
     })
 
     app = new Vue({

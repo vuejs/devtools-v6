@@ -10,8 +10,6 @@
 </template>
 
 <script>
-import { stringify } from '../../util'
-
 export default {
   vuex: {
     state: {
@@ -26,18 +24,18 @@ export default {
       revert: ({ dispatch, state }) => {
         if (state.vuex.history.length > 0) {
           dispatch('vuex/REVERT')
-          bridge.send('vuex:travel-to-state', stringify(state.vuex.base))
+          bridge.send('vuex:travel-to-state', state.vuex.base)
         }
       },
       reset: ({ dispatch, state }) => {
         dispatch('vuex/RESET')
-        bridge.send('vuex:travel-to-state', stringify(state.vuex.initial))
+        bridge.send('vuex:travel-to-state', state.vuex.initial)
       },
       step: ({ dispatch, state }, n) => {
         const entry = state.vuex.history[n]
         if (entry) {
           dispatch('vuex/SETP', n)
-          bridge.send('vuex:travel-to-state', stringify(entry.state))
+          bridge.send('vuex:travel-to-state', entry.state)
         }
       }
     }

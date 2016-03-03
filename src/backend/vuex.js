@@ -7,12 +7,10 @@ export function initVuexBackend (hook, bridge) {
 
   // application -> devtool
   hook.on('vuex:mutation', (mutation, state) => {
-    if (hook.currentTab === 'vuex') {
-      bridge.send('vuex:mutation', stringify({
-        mutation,
-        state
-      }))
-    }
+    bridge.send('vuex:mutation', {
+      mutation,
+      state: stringify(state)
+    })
   })
 
   // devtool -> application

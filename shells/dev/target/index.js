@@ -14,8 +14,6 @@ new Vue({
   template: `
     <div>
       <counter></counter>
-      <target msg="whaa" :obj="obj"></target>
-      <other></other>
     </div>
   `,
   components: { Target, Other, Counter },
