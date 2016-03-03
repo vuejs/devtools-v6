@@ -46,6 +46,7 @@
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
+    "circular-json": "^0.3.0",
     "vue": "^1.0.10"
   }
 }

@@ -1,6 +1,7 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
+import CircularJSON from 'circular-json'
 import { highlight, unHighlight } from './highlighter'
 import { initVuexBackend } from './vuex'
 
@@ -44,7 +45,7 @@ function connect () {
       scrollIntoView(instance.$el)
       highlight(instance)
     }
-    bridge.send('instance-details', getInstanceDetails(id))
+    bridge.send('instance-details', stringify(getInstanceDetails(id)))
   })
 
   bridge.on('send-to-console', id => {
@@ -122,10 +123,10 @@ function walk (node, fn) {
  */
 
 function flush () {
-  bridge.send('flush', {
+  bridge.send('flush', stringify({
     inspectedInstance: getInstanceDetails(currentInspectedId),
     instances: findQualifiedChildrenFromList(rootInstances)
-  })
+  }))
 }
 
 /**
@@ -267,7 +268,7 @@ function processProps (instance) {
       return {
         type: 'prop',
         key: prop.path,
-        value: sanitize(instance[prop.path]),
+        value: instance[prop.path],
         meta: {
           'type': options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
@@ -306,7 +307,7 @@ function processState (instance) {
     .filter(key => !props || !(key in props))
     .map(key => ({
       key,
-      value: sanitize(instance[key])
+      value: instance[key]
     }))
 }
 
@@ -322,52 +323,43 @@ function processComputed (instance) {
     return {
       type: 'computed',
       key,
-      value: sanitize(instance[key])
+      value: instance[key]
     }
   })
 }
 
 /**
- * Recursively sanitize data to be posted to the other side.
+ * Stringify data using CircularJSON.
+ *
+ * @param {*} data
+ * @return {String}
+ */
+
+function stringify (data) {
+  return CircularJSON.stringify(data, (key, val) => sanitize(val))
+}
+
+/**
+ * Sanitize data to be posted to the other side.
  * Since the message posted is sent with structured clone,
  * we need to filter out any types that might cause an error.
  *
  * @param {*} data
- * @param {Map} [map]
  * @return {*}
  */
 
-function sanitize (data, map) {
-  if (!map) {
-    // we need a map for each root call to store seen items
-    // in order to handle circular references.
-    map = new Map()
-  }
+function sanitize (data) {
   let ret
-  if (Array.isArray(data)) {
-    ret = map.get(data)
-    if (!ret) {
-      ret = []
-      map.set(data, ret)
-      data.forEach(item => ret.push(sanitize(item, map)))
-    }
-    return ret
-  } else if (hook.Vue.util.isPlainObject(data)) {
-    ret = map.get(data)
-    if (!ret) {
-      ret = {}
-      map.set(data, ret)
-      Object.keys(data).forEach(key => {
-        ret[key] = sanitize(data[key], map)
-      })
-    }
-    return ret
-  } else if (isPrimitive(data)) {
-    return data
-  } else {
+  if (
+    !isPrimitive(data) &&
+    !Array.isArray(data) &&
+    !hook.Vue.util.isPlainObject(data)
+  ) {
     // handle types that will probably cause issues in
     // the structured clone
     return Object.prototype.toString.call(data)
+  } else {
+    return data
   }
 }
 

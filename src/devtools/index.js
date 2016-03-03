@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './components/App.vue'
 import store from './vuex/store'
+import CircularJSON from 'circular-json'
 
 Vue.config.debug = true
 
@@ -52,11 +53,11 @@ function initApp (shell) {
     })
 
     bridge.on('flush', payload => {
-      store.dispatch('FLUSH', payload)
+      store.dispatch('FLUSH', CircularJSON.parse(payload))
     })
 
     bridge.on('instance-details', details => {
-      store.dispatch('RECEIVE_INSTANCE_DETAILS', details)
+      store.dispatch('RECEIVE_INSTANCE_DETAILS', CircularJSON.parse(details))
     })
 
     app = new Vue({
