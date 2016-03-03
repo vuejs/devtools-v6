@@ -29,9 +29,7 @@
       <span>Components</span>
     </a>
   </div>
-  <div class="container">
-    <component :is="tab" keep-alive></component>
-  </div>
+  <component :is="tab" class="container" keep-alive></component>
 </div>
 </template>
 
@@ -50,21 +48,10 @@ export default {
       tab: state => state.app.tab
     },
     actions: {
-      setMessage: ({ dispatch }, message) => {
-        dispatch('SET_MESSAGE', message)
-      },
       switchTab: ({ dispatch }, tab) => {
         dispatch('SWITCH_TAB', tab)
       }
     }
-  },
-  created () {
-    bridge.once('ready', version => {
-      this.setMessage('Ready. Detected Vue ' + version + '.')
-    })
-    bridge.once('proxy-fail', () => {
-      this.setMessage('Proxy injection failed. Make sure to load your app over HTTP.')
-    })
   },
   methods: {
     refresh () {
@@ -77,6 +64,7 @@ export default {
 <style lang="stylus" scoped>
 $header-height = 50px
 $border-color = #e3e3e3
+$blue = #44A1FF
 
 .app
   width 100%
@@ -108,9 +96,10 @@ $border-color = #e3e3e3
 .message-container
   display inline-block
   height 1em
+  cursor default
 
 .message
-  color #aaa
+  color $blue
   transition all .3s ease
   display inline-block
   position absolute
@@ -142,7 +131,7 @@ $border-color = #e3e3e3
   &:active
     box-shadow 0 2px 16px rgba(0,0,0,.25)
   &.active
-    border-bottom 2px solid #44A1FF
+    border-bottom 2px solid $blue
 
 .container
   padding-top $header-height

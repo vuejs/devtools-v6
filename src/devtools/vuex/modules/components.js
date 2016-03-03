@@ -1,16 +1,20 @@
 const state = {
-  filter: '',
   selected: null,
   inspectedInstance: {},
   instances: []
 }
 
 const mutations = {
-  SET_SEARCH_FILTER (state, filter) {
-    state.filter = filter
+  FLUSH (state, payload) {
+    console.log(11)
+    state.instances = payload.instances
+    state.inspectedInstance = payload.inspectedInstance
   },
-  SELECT_INSTANCE () {
-
+  SELECT_INSTANCE (state, target) {
+    state.selected = target
+  },
+  RECEIVE_INSTANCE_DETAILS (state, instance) {
+    state.inspectedInstance = instance
   }
 }
 

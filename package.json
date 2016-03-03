@@ -46,7 +46,6 @@
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
-    "lodash.throttle": "^4.0.1",
     "vue": "^1.0.10"
   }
 }

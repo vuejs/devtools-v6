@@ -4,7 +4,7 @@ const state = {
 }
 
 const mutations = {
-  SET_MESSAGE (state, message) {
+  SHOW_MESSAGE (state, message) {
     state.message = message
   },
   SWITCH_TAB (state, tab) {

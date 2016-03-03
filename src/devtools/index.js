@@ -21,6 +21,7 @@ export function initDevTools (shell) {
     if (app) {
       app.$destroy(true)
     }
+    bridge.removeAllListeners()
     initApp(shell)
   })
 }
@@ -35,6 +36,29 @@ export function initDevTools (shell) {
 function initApp (shell) {
   shell.connect(bridge => {
     window.bridge = bridge
+
+    bridge.once('ready', version => {
+      store.dispatch(
+        'SHOW_MESSAGE',
+        'Ready. Detected Vue ' + version + '.'
+      )
+    })
+
+    bridge.once('proxy-fail', () => {
+      store.dispatch(
+        'SHOW_MESSAGE',
+        'Proxy injection failed. Make sure to load your app over HTTP.'
+      )
+    })
+
+    bridge.on('flush', payload => {
+      store.dispatch('FLUSH', payload)
+    })
+
+    bridge.on('instance-details', details => {
+      store.dispatch('RECEIVE_INSTANCE_DETAILS', details)
+    })
+
     app = new Vue({
       store,
       template: '<app></app>',

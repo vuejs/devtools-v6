@@ -3,7 +3,6 @@
 
 import { highlight, unHighlight } from './highlighter'
 import { initVuexBackend } from './vuex'
-import throttle from 'lodash.throttle'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -36,7 +35,7 @@ function connect () {
   // if the user closes and reopens the devtools.
   // make sure there's only one flush listener.
   hook.off('flush')
-  hook.on('flush', throttle(flush, 100))
+  hook.on('flush', flush)
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
