@@ -19,35 +19,17 @@ const navMap = {
   40: 'down'
 }
 
-let selectedInstance = null
-function getAllInstance () {
-  let nodes = [...document.querySelectorAll('.instance')]
-  return nodes.map((n) => {
-    return n.__vue__
-  })
-}
-
 export default {
   components: { Instance },
   props: {
-    instances: Array
+    instances: Array,
+    inspectedInstance: Object
   },
   created () {
     document.addEventListener('keyup', this.onKeyup)
   },
-  destroyed () {
+  beforeDestroy () {
     document.removeEventListener('keyup', this.onKeyup)
-  },
-  events: {
-    reflow () {
-      this.$nextTick(() => {
-        this.$children.forEach(reflow)
-      })
-    },
-    selected (instance) {
-      selectedInstance = instance
-      return true
-    }
   },
   methods: {
     onKeyup (e) {
@@ -56,7 +38,7 @@ export default {
       }
     },
     nav (dir) {
-      let current = selectedInstance
+      let current = this.inspectedInstance
 
       if (!current) {
         current = this.$children[0]
@@ -71,49 +53,45 @@ export default {
         }
       } else if (dir === 'right') {
         if (current.expanded && current.$children.length) {
-          current = this.findByOffset(current, 1)
+          current = findByOffset(current, 1)
           current.select()
         } else {
           current.expand()
         }
       } else if (dir === 'up') {
-        current = this.findByOffset(current, -1)
+        current = findByOffset(current, -1)
         current.select()
       } else {
-        current = this.findByOffset(current, 1)
+        current = findByOffset(current, 1)
         current.select()
       }
     },
-    findByOffset (current, offset) {
-      let all = getAllInstance()
-      let currentIndex = -1
-      all.forEach((el, index) => {
-        if (current === el) {
-          currentIndex = index
-        }
-      })
 
-      offset = currentIndex + offset
-
-      if (offset < 0) {
-        return all[0]
-      } else if (offset >= all.length) {
-        return all[all.length - 1]
-      } else {
-        return all[offset]
-      }
-    }
   }
 }
 
-function reflow (instance) {
-  if (!instance.expanded) {
-    instance.height = 0
+function getAllInstances () {
+  let nodes = [...document.querySelectorAll('.instance')]
+  return nodes.map(n => n.__vue__)
+}
+
+function findByOffset (current, offset) {
+  let all = getAllInstances()
+  let currentIndex = -1
+  all.forEach((el, index) => {
+    if (current === el) {
+      currentIndex = index
+    }
+  })
+
+  offset = currentIndex + offset
+
+  if (offset < 0) {
+    return all[0]
+  } else if (offset >= all.length) {
+    return all[all.length - 1]
   } else {
-    instance.height = instance.$children.reduce((total, child) => {
-      reflow(child)
-      return total + child.height + 22
-    }, 0)
+    return all[offset]
   }
 }
 </script>

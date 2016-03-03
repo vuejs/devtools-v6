@@ -1,20 +1,22 @@
+import { set } from 'vue'
+
 const state = {
   selected: null,
   inspectedInstance: {},
-  instances: []
+  instances: [],
+  expansionMap: {}
 }
 
 const mutations = {
   FLUSH (state, payload) {
-    console.log(11)
     state.instances = payload.instances
     state.inspectedInstance = payload.inspectedInstance
   },
-  SELECT_INSTANCE (state, target) {
-    state.selected = target
-  },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = instance
+  },
+  TOGGLE_INSTANCE ({ expansionMap }, id, expanded) {
+    set(expansionMap, id, expanded)
   }
 }
 

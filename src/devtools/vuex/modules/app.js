@@ -10,8 +10,8 @@ const mutations = {
   SWITCH_TAB (state, tab) {
     state.tab = tab
   },
-  SELECT_INSTANCE (state, target) {
-    state.message = 'Instance selected: ' + target.instance.name
+  RECEIVE_INSTANCE_DETAILS (state, instance) {
+    state.message = 'Instance selected: ' + instance.name
   }
 }
 

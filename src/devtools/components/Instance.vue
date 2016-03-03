@@ -22,8 +22,8 @@
       </span>
     </div>
     <div class="children"
+      v-el:children
       v-if="expanded"
-      transition="expand"
       :style="{ height: height + 'px' }">
       <instance
         v-for="child in instance.children | orderBy 'inactive'"
@@ -38,7 +38,6 @@
 
 <script>
 const expansionMap = {}
-let selectedInstance = null
 
 export default {
   name: 'Instance',
@@ -46,44 +45,33 @@ export default {
     instance: Object,
     depth: Number
   },
-  data () {
-    return {
-      height: this.depth === 0 ? this.instance.children.length * 22 : 0,
-      expanded: expansionMap[this.instance.id] || false,
-      selected: selectedInstance && this.instance.id === selectedInstance.instance.id
-    }
-  },
-  created () {
-    if (this.selected) {
-      selectedInstance = this
+  vuex: {
+    state: {
+      expanded ({ components: { expansionMap }}) {
+        return !!expansionMap[this.instance.id]
+      },
+      selected ({ components: { inspectedInstance }}) {
+        return this.instance.id === inspectedInstance.id
+      },
+      height ({ components: { expansionMap }}) {
+        return getInstanceHeight(this.instance, expansionMap)
+      }
+    },
+    actions: {
+      toggle ({ dispatch }) {
+        dispatch('TOGGLE_INSTANCE', this.instance.id, !this.expanded)
+      },
+      expand ({ dispatch }) {
+        dispatch('TOGGLE_INSTANCE', this.instance.id, true)
+      },
+      collapse ({ dispatch }) {
+        dispatch('TOGGLE_INSTANCE', this.instance.id, false)
+      }
     }
   },
   methods: {
     select () {
-      if (selectedInstance) {
-        selectedInstance.selected = false
-      }
-      selectedInstance = this
-      this.selected = true
-      this.$dispatch('selected', this)
-    },
-    toggle (expand = null) {
-      this.expanded = expand === null ? !this.expanded : expand
-      expansionMap[this.instance.id] = this.expanded
-      // trigger reflow in the tree component
-      this.$dispatch('reflow')
-    },
-    expand () {
-      if (this.expanded) {
-        return
-      }
-      this.toggle(true)
-    },
-    collapse () {
-      if (!this.expanded) {
-        return
-      }
-      this.toggle(false)
+      bridge.send('select-instance', this.instance.id)
     },
     enter () {
       bridge.send('enter-instance', this.instance.id)
@@ -92,6 +80,14 @@ export default {
       bridge.send('leave-instance', this.instance.id)
     }
   }
+}
+
+function getInstanceHeight (instance, expansionMap) {
+  return expansionMap[instance.id]
+    ? instance.children.map(child => {
+        return getInstanceHeight(child, expansionMap)
+      }) + 22
+    : 0
 }
 </script>
 
@@ -162,11 +158,5 @@ export default {
   transform-origin top center
   transform translate3d(0,0,0)
   opacity 1
-
-.expand-transition
   transition all .2s ease
-
-.expand-enter, .expand-leave
-  opacity 0
-  transform translate3d(0, -22px, 0)
 </style>
