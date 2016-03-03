@@ -1,9 +1,9 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
-import CircularJSON from 'circular-json'
 import { highlight, unHighlight } from './highlighter'
 import { initVuexBackend } from './vuex'
+import { stringify } from '../util'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -25,18 +25,30 @@ export function initBackend (_bridge) {
   if (hook.store) {
     initVuexBackend(hook, bridge)
   } else {
-    hook.once('vuex:init', () => {
+    hook.once('vuex:init', store => {
       initVuexBackend(hook, bridge)
     })
   }
 }
 
 function connect () {
+  hook.currentTab = 'components'
+  bridge.on('switch-tab', tab => {
+    hook.currentTab = tab
+    if (tab === 'components') {
+      flush()
+    }
+  })
+
   // the backend may get injected to the same page multiple times
   // if the user closes and reopens the devtools.
   // make sure there's only one flush listener.
   hook.off('flush')
-  hook.on('flush', flush)
+  hook.on('flush', () => {
+    if (hook.currentTab === 'components') {
+      flush()
+    }
+  })
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
@@ -326,48 +338,6 @@ function processComputed (instance) {
       value: instance[key]
     }
   })
-}
-
-/**
- * Stringify data using CircularJSON.
- *
- * @param {*} data
- * @return {String}
- */
-
-function stringify (data) {
-  return CircularJSON.stringify(data, (key, val) => sanitize(val))
-}
-
-/**
- * Sanitize data to be posted to the other side.
- * Since the message posted is sent with structured clone,
- * we need to filter out any types that might cause an error.
- *
- * @param {*} data
- * @return {*}
- */
-
-function sanitize (data) {
-  let ret
-  if (
-    !isPrimitive(data) &&
-    !Array.isArray(data) &&
-    !hook.Vue.util.isPlainObject(data)
-  ) {
-    // handle types that will probably cause issues in
-    // the structured clone
-    return Object.prototype.toString.call(data)
-  } else {
-    return data
-  }
-}
-
-var primitiveTypeRE = /^(string|number|boolean)$/
-function isPrimitive (data) {
-  return data == null ||
-    primitiveTypeRE.test(typeof data) ||
-    data instanceof RegExp
 }
 
 /**

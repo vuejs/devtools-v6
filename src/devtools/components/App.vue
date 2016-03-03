@@ -49,6 +49,7 @@ export default {
     },
     actions: {
       switchTab: ({ dispatch }, tab) => {
+        bridge.send('switch-tab', tab)
         dispatch('SWITCH_TAB', tab)
       }
     }

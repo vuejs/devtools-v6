@@ -60,6 +60,14 @@ function initApp (shell) {
       store.dispatch('RECEIVE_INSTANCE_DETAILS', CircularJSON.parse(details))
     })
 
+    bridge.on('vuex:init', state => {
+      store.dispatch('vuex/INIT', CircularJSON.parse(state))
+    })
+
+    bridge.on('vuex:mutation', payload => {
+      store.dispatch('vuex/RECEIVE_MUTATION', CircularJSON.parse(payload))
+    })
+
     app = new Vue({
       store,
       template: '<app></app>',
