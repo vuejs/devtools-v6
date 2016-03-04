@@ -20,13 +20,19 @@
         </div>
       </div>
     </div>
-    <div class="children" v-if="expanded">
+    <div class="children" v-if="expanded && isExpandableType">
       <data-field
-        v-for="subField in field.value | formatSubFields"
+        v-for="subField in formattedSubFields | limitBy limit"
         track-by="$index"
         :field="subField"
         :depth="depth + 1">
       </data-field>
+      <span class="more"
+        v-if="formattedSubFields.length > limit"
+        @click="limit += 10"
+        :style="{ marginLeft: (depth + 1) * 14 + 10 + 'px' }">
+        ...
+      </span>
     </div>
   </div>
 </template>
@@ -46,6 +52,11 @@ export default {
     expanded: {
       type: Boolean,
       default: false
+    }
+  },
+  data () {
+    return {
+      limit: Array.isArray(this.field.value) ? 10 : Infinity
     }
   },
   computed: {
@@ -87,27 +98,27 @@ export default {
       } else {
         return value
       }
+    },
+    formattedSubFields () {
+      let value = this.field.value
+      if (Array.isArray(value)) {
+        value = value.map((item, i) => ({
+          key: i,
+          value: item
+        }))
+      } else if (typeof value === 'object') {
+        value = Object.keys(value).map(key => ({
+          key,
+          value: value[key]
+        }))
+      }
+      return value
     }
   },
   methods: {
     toggle () {
       if (this.isExpandableType) {
         this.expanded = !this.expanded
-      }
-    }
-  },
-  filters: {
-    formatSubFields (value) {
-      if (Array.isArray(value)) {
-        return value.map((item, i) => ({
-          key: i,
-          value: item
-        }))
-      } else {
-        return Object.keys(value).map(key => ({
-          key,
-          value: value[key]
-        }))
       }
     }
   }
@@ -119,6 +130,7 @@ export default {
   font-size 12px
   font-family Menlo, Consolas, monospace
   cursor default
+
 .self
   height 20px
   line-height 20px
@@ -180,4 +192,12 @@ export default {
         width 90px
     .meta-field
       display block
+
+.more
+  cursor pointer
+  display inline-block
+  border-radius 4px
+  padding 0 4px 4px
+  &:hover
+    background-color #eee
 </style>
