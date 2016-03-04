@@ -25,10 +25,7 @@
         {{ instance.inactive ? '(inactive)' : '' }}
       </span>
     </div>
-    <div class="children"
-      v-el:children
-      v-if="expanded"
-      :style="{ height: height + 'px' }">
+    <div v-if="expanded" :style="{ height: height + 'px' }">
       <component-instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
@@ -87,9 +84,9 @@ export default {
 
 function getInstanceHeight (instance, expansionMap) {
   return expansionMap[instance.id]
-    ? instance.children.map(child => {
+    ? Number(instance.children.map(child => {
         return getInstanceHeight(child, expansionMap)
-      }) + 22
+      })) + 22
     : 0
 }
 </script>
@@ -156,10 +153,4 @@ function getInstanceHeight (instance, expansionMap) {
   color #0062C3
   margin 0 1px
   transition color .1s ease
-
-.children
-  transform-origin top center
-  transform translate3d(0,0,0)
-  opacity 1
-  transition all .2s ease
 </style>
