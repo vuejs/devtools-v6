@@ -21,7 +21,6 @@ export function stringify (data) {
  */
 
 function sanitize (data) {
-  let ret
   if (
     !isPrimitive(data) &&
     !Array.isArray(data) &&

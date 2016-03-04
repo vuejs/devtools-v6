@@ -10,7 +10,6 @@
  */
 
 export function installHook (window) {
-
   let listeners = {}
 
   const hook = {

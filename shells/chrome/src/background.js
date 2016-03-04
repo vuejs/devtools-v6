@@ -3,7 +3,7 @@
 
 const ports = {}
 
-chrome.runtime.onConnect.addListener((port) => {
+chrome.runtime.onConnect.addListener(port => {
   let tab
   let name
   if (isNumeric(port.name)) {

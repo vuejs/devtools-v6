@@ -37,8 +37,6 @@
 </template>
 
 <script>
-const expansionMap = {}
-
 export default {
   name: 'ComponentInstance',
   props: {
@@ -83,11 +81,13 @@ export default {
 }
 
 function getInstanceHeight (instance, expansionMap) {
-  return expansionMap[instance.id]
-    ? Number(instance.children.map(child => {
-        return getInstanceHeight(child, expansionMap)
-      })) + 22
-    : 0
+  if (expansionMap[instance.id]) {
+    return Number(instance.children.map(child => {
+      return getInstanceHeight(child, expansionMap)
+    })) + 22
+  } else {
+    return 0
+  }
 }
 </script>
 
