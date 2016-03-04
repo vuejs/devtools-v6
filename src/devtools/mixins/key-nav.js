@@ -5,18 +5,26 @@ const navMap = {
   40: 'down'
 }
 
+const activeInstances = []
+
+document.addEventListener('keyup', e => {
+  if (navMap[e.keyCode]) {
+    activeInstances.forEach(vm => {
+      if (vm.onKeyNav) {
+        vm.onKeyNav(navMap[e.keyCode])
+      }
+    })
+  }
+})
+
 export default {
   attached () {
-    document.addEventListener('keyup', this.onKeyNavKeyUp)
+    activeInstances.push(this)
   },
   detached () {
-    document.removeEventListener('keyup', this.onKeyNavKeyUp)
-  },
-  methods: {
-    onKeyNavKeyUp (e) {
-      if (this.onKeyNav && navMap[e.keyCode]) {
-        this.onKeyNav(navMap[e.keyCode])
-      }
+    const i = activeInstances.indexOf(this)
+    if (i >= 0) {
+      activeInstances.splice(i, 1)
     }
   }
 }
