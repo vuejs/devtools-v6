@@ -102,6 +102,7 @@ section:not(:last-child)
 
 .button
   display inline-block
+  vertical-align middle
   font-size 12px
   color #666
   text-align center
