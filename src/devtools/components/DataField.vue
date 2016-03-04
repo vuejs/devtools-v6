@@ -42,11 +42,10 @@ export default {
   name: 'DataField',
   props: {
     field: Object,
-    depth: Number
-  },
-  data () {
-    return {
-      expanded: false
+    depth: Number,
+    expanded: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

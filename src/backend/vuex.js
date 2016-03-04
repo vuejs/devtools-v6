@@ -9,6 +9,7 @@ export function initVuexBackend (hook, bridge) {
   hook.on('vuex:mutation', (mutation, state) => {
     bridge.send('vuex:mutation', {
       mutation,
+      timestamp: Date.now(),
       state: stringify(state)
     })
   })

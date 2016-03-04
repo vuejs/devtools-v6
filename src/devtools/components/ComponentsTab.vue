@@ -5,21 +5,21 @@
       <input class="search-box" placeholder="Filter components" @input="filter">
     </div>
     <split-pane class="bottom">
-      <tree slot="left" :instances="instances"></tree>
-      <inspector slot="right" :target="inspectedInstance"></inspector>
+      <component-tree slot="left" :instances="instances"></component-tree>
+      <component-inspector slot="right" :target="inspectedInstance"></component-inspector>
     </split-pane>
   </div>
 </template>
 
 <script>
-import Tree from './Tree.vue'
-import Inspector from './Inspector.vue'
+import ComponentTree from './ComponentTree.vue'
+import ComponentInspector from './ComponentInspector.vue'
 import SplitPane from './SplitPane.vue'
 
 export default {
   components: {
-    Tree,
-    Inspector,
+    ComponentTree,
+    ComponentInspector,
     SplitPane
   },
   vuex: {

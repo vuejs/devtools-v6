@@ -5,11 +5,11 @@
     </div>
     <div v-else class="main">
       <section class="top">
-        <span style="color:#ccc">&lt;</span>
-        <span>{{ target.name }}</span>
-        <span style="color:#ccc">&gt;</span>
-      </section>
-      <section class="buttons">
+        <span class="component-name">
+          <span style="color:#ccc">&lt;</span>
+          <span>{{ target.name }}</span>
+          <span style="color:#ccc">&gt;</span>
+        </span>
         <a class="button" @click="inspectDOM">
           <i class="material-icons">visibility</i>
           <span>Inspect DOM</span>
@@ -87,33 +87,27 @@ section:not(:last-child)
 .top
   height 50px
   line-height 50px
-  text-align center
   font-size 18px
   color #0062c3
-
-.buttons
-  display flex
+  padding 0 20px
 
 .button
-  display block
-  width 50%
-  background-color #fff
-  font-size 13px
-  color #444
-  padding 12px 0
+  font-size 12px
+  float right
+  color #666
   text-align center
   cursor pointer
   transition box-shadow .25s ease
-  line-height 20px
+  line-height 50px
+  margin-left 20px
+  transition color .2s ease
+  .material-icons
+    font-size 16px
   span, i
     vertical-align middle
-    margin 0 3px
+    margin-right 3px
   &:hover
-    box-shadow 0 2px 12px rgba(0,0,0,.1)
-  &:active
-    box-shadow 0 2px 16px rgba(0,0,0,.25)
-  &:first-child
-    border-right 1px solid $border-color
+    color #44A1FF
 
 .data
   padding 15px 20px

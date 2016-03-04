@@ -2,7 +2,9 @@ const state = {
   initial: null,
   base: null,
   activeIndex: -1,
-  history: []
+  history: [],
+  initialCommit: Date.now(),
+  lastCommit: Date.now()
 }
 
 const mutations = {
@@ -15,6 +17,7 @@ const mutations = {
   },
   'vuex/COMMIT' (state) {
     state.base = state.history[state.history.length - 1].state
+    state.lastCommit = Date.now()
     reset(state)
   },
   'vuex/REVERT' (state) {
@@ -22,6 +25,7 @@ const mutations = {
   },
   'vuex/RESET' (state) {
     state.base = state.initial
+    state.lastCommit = state.initialCommit
     reset(state)
   },
   'vuex/STEP' (state, n) {

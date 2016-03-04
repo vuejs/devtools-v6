@@ -1,16 +1,16 @@
 <template>
   <div class="tree">
-    <instance
+    <component-instance
       v-for="i in instances"
       track-by="id"
       :instance="i"
       :depth="0">
-    </instance>
+    </component-instance>
   </div>
 </template>
 
 <script>
-import Instance from './Instance.vue'
+import ComponentInstance from './ComponentInstance.vue'
 
 const navMap = {
   37: 'left',
@@ -20,7 +20,9 @@ const navMap = {
 }
 
 export default {
-  components: { Instance },
+  components: {
+    ComponentInstance
+  },
   props: {
     instances: Array
   },

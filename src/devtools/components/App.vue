@@ -13,7 +13,7 @@
     </span>
     <a class="button"
       @click="refresh">
-      <i class="material-icons">autorenew</i>
+      <i class="material-icons">cached</i>
       <span>Refresh</span>
     </a>
     <a class="button"

@@ -29,12 +29,12 @@
       v-el:children
       v-if="expanded"
       :style="{ height: height + 'px' }">
-      <instance
+      <component-instance
         v-for="child in instance.children | orderBy 'inactive'"
         track-by="id"
         :instance="child"
         :depth="depth + 1">
-      </instance>
+      </component-instance>
     </div>
   </div>
 </template>
@@ -43,7 +43,7 @@
 const expansionMap = {}
 
 export default {
-  name: 'Instance',
+  name: 'ComponentInstance',
   props: {
     instance: Object,
     depth: Number

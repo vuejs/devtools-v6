@@ -1,44 +1,27 @@
 <template>
-  <div id="vuex-tab">
-    <button @click="commit">commit</button>
-    <button @click="revert">revert</button>
-    <button @click="reset">reset</button>
-    <div v-for="entry in history">
-      {{ entry.mutation.type }}
-    </div>
+  <div>
+    <split-pane class="pane">
+      <vuex-history slot="left"></vuex-history>
+      <vuex-state-inspector slot="right"></vuex-state-inspector>
+    </split-pane>
   </div>
 </template>
 
 <script>
+import SplitPane from './SplitPane.vue'
+import VuexHistory from './VuexHistory.vue'
+import VuexStateInspector from './VuexStateInspector.vue'
+
 export default {
-  vuex: {
-    state: {
-      history: state => state.vuex.history
-    },
-    actions: {
-      commit: ({ dispatch, state }) => {
-        if (state.vuex.history.length > 0) {
-          dispatch('vuex/COMMIT')
-        }
-      },
-      revert: ({ dispatch, state }) => {
-        if (state.vuex.history.length > 0) {
-          dispatch('vuex/REVERT')
-          bridge.send('vuex:travel-to-state', state.vuex.base)
-        }
-      },
-      reset: ({ dispatch, state }) => {
-        dispatch('vuex/RESET')
-        bridge.send('vuex:travel-to-state', state.vuex.initial)
-      },
-      step: ({ dispatch, state }, n) => {
-        const entry = state.vuex.history[n]
-        if (entry) {
-          dispatch('vuex/SETP', n)
-          bridge.send('vuex:travel-to-state', entry.state)
-        }
-      }
-    }
+  components: {
+    SplitPane,
+    VuexHistory,
+    VuexStateInspector
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.pane
+  height 100%
+</style>
