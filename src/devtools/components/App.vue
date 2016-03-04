@@ -26,7 +26,7 @@
     <a class="button"
       :class="{ active: tab === 'components'}"
       @click="switchTab('components')">
-      <i class="material-icons">list</i>
+      <i class="material-icons">device_hub</i>
       <span>Components</span>
     </a>
   </div>
@@ -88,7 +88,9 @@ $blue = #44A1FF
     display inline-block
     vertical-align middle
   .material-icons
-    margin-right 2px
+    margin-right 3px
+    position relative
+    top -1px
     color #999
 
 .logo

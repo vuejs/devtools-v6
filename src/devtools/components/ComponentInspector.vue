@@ -10,14 +10,16 @@
           <span>{{ target.name }}</span>
           <span style="color:#ccc">&gt;</span>
         </span>
-        <a class="button" @click="inspectDOM">
-          <i class="material-icons">visibility</i>
-          <span>Inspect DOM</span>
-        </a>
-        <a class="button" @click="sendToConsole">
-          <i class="material-icons">dvr</i>
-          <span>Send to console</span>
-        </a>
+        <span class="buttons">
+          <a class="button" @click="inspectDOM">
+            <i class="material-icons">visibility</i>
+            <span>Inspect DOM</span>
+          </a>
+          <a class="button" @click="sendToConsole">
+            <i class="material-icons">dvr</i>
+            <span>Send to console</span>
+          </a>
+        </span>
       </section>
       <section class="data">
         <data-field v-for="field in target.state"
@@ -85,21 +87,27 @@ section:not(:last-child)
   border-bottom 1px solid $border-color
 
 .top
-  height 50px
-  line-height 50px
+  line-height 30px
   font-size 18px
   color #0062c3
-  padding 0 20px
+  padding 10px 20px
+
+.component-name
+  margin-right 15px
+
+.component-name, .buttons
+  display inline-block
+  vertical-align middle
+  white-space nowrap
 
 .button
+  display inline-block
   font-size 12px
-  float right
   color #666
   text-align center
   cursor pointer
   transition box-shadow .25s ease
-  line-height 50px
-  margin-left 20px
+  margin-right 15px
   transition color .2s ease
   .material-icons
     font-size 16px
