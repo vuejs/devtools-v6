@@ -14,6 +14,8 @@ new Vue({
   template: `
     <div>
       <counter></counter>
+      <target></target>
+      <other></other>
     </div>
   `,
   components: { Target, Other, Counter },
