@@ -1,6 +1,10 @@
 # vue-devtools
 
-![screenshot](https://raw.githubusercontent.com/vuejs/vue-devtools/master/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot.png)
+
+Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
+
+![demo](https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/demo.gif)
 
 ### NOTES
 
