@@ -1,4 +1,5 @@
 const state = {
+  hasVuex: false,
   initial: null,
   base: null,
   activeIndex: -1,
@@ -10,6 +11,7 @@ const state = {
 const mutations = {
   'vuex/INIT' (state, initialState) {
     state.initial = state.base = initialState
+    state.hasVuex = true
   },
   'vuex/RECEIVE_MUTATION' (state, entry) {
     state.history.push(entry)

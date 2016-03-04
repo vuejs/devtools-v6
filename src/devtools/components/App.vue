@@ -17,7 +17,6 @@
       <span>Refresh</span>
     </a>
     <a class="button"
-      v-if="hasVuex"
       :class="{ active: tab === 'vuex'}"
       @click="switchTab('vuex')">
       <i class="material-icons">restore</i>
@@ -46,8 +45,7 @@ export default {
   vuex: {
     state: {
       messages: state => [state.app.message],
-      tab: state => state.app.tab,
-      hasVuex: state => state.vuex.initial
+      tab: state => state.app.tab
     },
     actions: {
       switchTab: ({ dispatch }, tab) => {
