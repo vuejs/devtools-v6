@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import CircularJSON from 'circular-json'
+import CircularJSON from 'circular-json-es6'
 import DataField from './DataField.vue'
 
 export default {

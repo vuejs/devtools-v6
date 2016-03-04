@@ -1,4 +1,4 @@
-import CircularJSON from 'circular-json'
+import CircularJSON from 'circular-json-es6'
 import { stringify } from '../util'
 
 export function initVuexBackend (hook, bridge) {

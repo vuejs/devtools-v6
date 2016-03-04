@@ -9,6 +9,9 @@ for (var i = 0; i < 100; i++) {
   items.push({ id: i })
 }
 
+let circular = {}
+circular.self = circular
+
 new Vue({
   store,
   template: `
@@ -21,7 +24,8 @@ new Vue({
   components: { Target, Other, Counter },
   data: {
     obj: {
-      items: items
+      items: items,
+      circular
     }
   }
 }).$mount().$appendTo('body')

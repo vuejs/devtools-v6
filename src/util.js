@@ -1,4 +1,4 @@
-import CircularJSON from 'circular-json'
+import CircularJSON from 'circular-json-es6'
 
 /**
  * Stringify data using CircularJSON.
