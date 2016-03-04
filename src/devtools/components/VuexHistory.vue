@@ -37,7 +37,10 @@
 </template>
 
 <script>
+import keyNavMixin from '../mixins/key-nav'
+
 export default {
+  mixins: [keyNavMixin],
   vuex: {
     state: {
       history: ({ vuex }) => vuex.history,
@@ -77,6 +80,15 @@ export default {
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    }
+  },
+  methods: {
+    onKeyNav (dir) {
+      if (dir === 'up') {
+        this.step(this.activeIndex - 1)
+      } else if (dir === 'down') {
+        this.step(this.activeIndex + 1)
+      }
     }
   }
 }

@@ -11,13 +11,7 @@
 
 <script>
 import ComponentInstance from './ComponentInstance.vue'
-
-const navMap = {
-  37: 'left',
-  38: 'up',
-  39: 'right',
-  40: 'down'
-}
+import keyNavMixin from '../mixins/key-nav'
 
 export default {
   components: {
@@ -26,19 +20,9 @@ export default {
   props: {
     instances: Array
   },
-  created () {
-    document.addEventListener('keyup', this.onKeyup)
-  },
-  beforeDestroy () {
-    document.removeEventListener('keyup', this.onKeyup)
-  },
+  mixins: [keyNavMixin],
   methods: {
-    onKeyup (e) {
-      if (navMap[e.keyCode]) {
-        this.nav(navMap[e.keyCode])
-      }
-    },
-    nav (dir) {
+    onKeyNav (dir) {
       // somewhat hacky key navigation, but it works!
       let currentEl = this.$el.querySelector('.instance.selected')
       let current = currentEl && currentEl.__vue__
