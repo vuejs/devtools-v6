@@ -4,7 +4,7 @@
 
 Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
-![demo](https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/demo.gif)
+<p align="center"><img src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/demo.gif" alt="demo"></p>
 
 ### NOTES
 
