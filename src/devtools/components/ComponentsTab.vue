@@ -39,6 +39,8 @@ export default {
 <style lang="stylus" scoped>
 .search
   padding 10px 20px
+  height 50px
+  box-sizing border-box
   border-bottom 1px solid #e3e3e3
 
 .material-icons
