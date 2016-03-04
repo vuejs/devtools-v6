@@ -5,6 +5,9 @@ export function initVuexBackend (hook, bridge) {
   const store = hook.store
   bridge.send('vuex:init', stringify(store.state))
 
+  // deal with multiple backend injections
+  hook.off('vuex:mutation')
+
   // application -> devtool
   hook.on('vuex:mutation', (mutation, state) => {
     bridge.send('vuex:mutation', {
