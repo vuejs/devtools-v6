@@ -127,6 +127,7 @@ export default {
 
 <style lang="stylus" scoped>
 .data-field
+  user-select text
   font-size 12px
   font-family Menlo, Consolas, monospace
   cursor default
