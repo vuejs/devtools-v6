@@ -21,14 +21,10 @@ function handshake (e) {
         listeners.push(listener)
       },
       send (data) {
-        try {
-          window.postMessage({
-            source: 'vue-devtools-backend',
-            payload: data
-          }, '*')
-        } catch (e) {
-          debugger
-        }
+        window.postMessage({
+          source: 'vue-devtools-backend',
+          payload: data
+        }, '*')
       }
     })
 
