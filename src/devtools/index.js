@@ -48,7 +48,7 @@ function initApp (shell) {
     bridge.once('proxy-fail', () => {
       store.dispatch(
         'SHOW_MESSAGE',
-        'Proxy injection failed. Make sure to load your app over HTTP.'
+        'Proxy injection failed.'
       )
     })
 
