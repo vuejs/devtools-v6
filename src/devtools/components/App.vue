@@ -71,6 +71,7 @@ $blue = #44A1FF
   width 100%
   height 100%
   user-select none
+  background-color #fff
   h1
     color #42b983
 
