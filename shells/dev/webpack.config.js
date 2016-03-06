@@ -32,5 +32,5 @@ module.exports = {
       browsers: ['last 2 Chrome versions']
     }
   },
-  devtool: 'eval-source-map'
+  devtool: '#eval-source-map'
 }
