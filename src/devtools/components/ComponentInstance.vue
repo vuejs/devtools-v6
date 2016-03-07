@@ -20,9 +20,15 @@
         </span>
         <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
-      <span class="info router-view" v-if="instance.isRouterView">router-view: {{ instance.matchedRouteSegment }}</span>
-      <span class="info fragment" v-if="instance.isFragment">fragment</span>
-      <span class="info inactive" v-if="instance.inactive">inactive</span>
+      <span class="info router-view" v-if="instance.isRouterView">
+        router-view{{ instance.matchedRouteSegment ? ': ' + instance.matchedRouteSegment : null }}
+      </span>
+      <span class="info fragment" v-if="instance.isFragment">
+        fragment
+      </span>
+      <span class="info inactive" v-if="instance.inactive">
+        inactive
+      </span>
     </div>
     <div v-if="expanded">
       <component-instance
@@ -121,16 +127,24 @@ export default {
 .info
   color #fff
   font-size 10px
-  padding 2px 5px
+  padding 3px 5px 2px
+  display inline-block
+  line-height 10px
   border-radius 3px
   position relative
   top -1px
+
+  badge($color)
+    background-color $color
+    border-bottom 1px solid darken($color, 15%)
+    text-shadow 0 1px 1px darken($color, 15%)
+
   &.router-view
-    background-color #ff7979
+    badge(#ff8344)
   &.fragment
-    background-color #b3b3ff
+    badge(#b3b3ff)
   &.inactive
-    background-color #ccc
+    badge(#aaa)
 
 .arrow-wrapper
   position absolute

@@ -208,9 +208,11 @@ function capture (instance) {
   }
   if (instance._routerView) {
     ret.isRouterView = true
-    const matched = instance.$route.matched
-    const depth = instance._routerView.depth
-    ret.matchedRouteSegment = matched[depth].handler.path
+    if (!instance._inactive) {
+      const matched = instance.$route.matched
+      const depth = instance._routerView.depth
+      ret.matchedRouteSegment = matched[depth].handler.path
+    }
   }
   return ret
 }
