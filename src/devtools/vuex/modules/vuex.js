@@ -17,13 +17,23 @@ const mutations = {
     state.history.push(entry)
     state.activeIndex = state.history.length - 1
   },
-  'vuex/COMMIT' (state) {
+  'vuex/COMMIT_ALL' (state) {
     state.base = state.history[state.history.length - 1].state
     state.lastCommit = Date.now()
     reset(state)
   },
-  'vuex/REVERT' (state) {
+  'vuex/REVERT_ALL' (state) {
     reset(state)
+  },
+  'vuex/COMMIT_SELECTED' (state) {
+    state.base = state.history[state.activeIndex].state
+    state.lastCommit = Date.now()
+    state.history = state.history.slice(state.activeIndex + 1)
+    state.activeIndex = -1
+  },
+  'vuex/REVERT_SELECTED' (state) {
+    state.history = state.history.slice(0, state.activeIndex)
+    state.activeIndex--
   },
   'vuex/RESET' (state) {
     state.base = state.initial

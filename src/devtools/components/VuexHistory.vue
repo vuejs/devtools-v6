@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="buttons">
-      <a class="button" :class="{ disabled: !history.length }" @click="commit">
+      <a class="button" :class="{ disabled: !history.length }" @click="commitAll">
         <i class="material-icons">get_app</i>
-        <span>Commit</span>
+        <span>Commit All</span>
       </a>
-      <a class="button" :class="{ disabled: !history.length }" @click="revert">
+      <a class="button" :class="{ disabled: !history.length }" @click="revertAll">
         <i class="material-icons">restore</i>
-        <span>Revert</span>
+        <span>Revert All</span>
       </a>
       <a class="button" @click="reset">
         <i class="material-icons">cached</i>
@@ -27,7 +27,17 @@
         v-for="entry in history"
         :class="{ active: activeIndex === $index }"
         @click="step($index)">
-        {{ entry.mutation.type }}
+        <span class="mutation-type">{{ entry.mutation.type }}</span>
+        <span v-if="activeIndex === $index">
+          <a class="action" @click="commitSelected">
+            <i class="material-icons">get_app</i>
+            <span>Commit</span>
+          </a>
+          <a class="action" @click="revertSelected">
+            <i class="material-icons">restore</i>
+            <span>Revert</span>
+          </a>
+        </span>
         <span class="time">
           {{ entry.timestamp | formatTime }}
         </span>
@@ -48,16 +58,22 @@ export default {
       activeIndex: state => state.vuex.activeIndex
     },
     actions: {
-      commit ({ dispatch, state }) {
+      commitAll ({ dispatch, state }) {
         if (state.vuex.history.length > 0) {
-          dispatch('vuex/COMMIT')
+          dispatch('vuex/COMMIT_ALL')
         }
       },
-      revert ({ dispatch, state }) {
+      revertAll ({ dispatch, state }) {
         if (state.vuex.history.length > 0) {
-          dispatch('vuex/REVERT')
+          dispatch('vuex/REVERT_ALL')
           bridge.send('vuex:travel-to-state', state.vuex.base)
         }
+      },
+      commitSelected ({ dispatch }) {
+        dispatch('vuex/COMMIT_SELECTED')
+      },
+      revertSelected ({ dispatch }) {
+        dispatch('vuex/REVERT_SELECTED')
       },
       reset ({ dispatch, state }) {
         dispatch('vuex/RESET')
@@ -108,15 +124,15 @@ $blue = #44A1FF
   font-size 13px
   margin 0 20px 10px 0
   transition color .2s ease
-  .material-icons
-    font-size 16px
-  .material-icons, span
-    vertical-align middle
   &:hover
     color $blue
   &.disabled
     color #aaa
     cursor not-allowed
+  .material-icons
+    font-size 16px
+  .material-icons, span
+    vertical-align middle
 
 .history
   height calc(100% - 48px)
@@ -136,10 +152,27 @@ $blue = #44A1FF
     background-color $blue
     .time
       color lighten($blue, 75%)
+  .mutation-type
+    display inline-block
+    vertical-align middle
+
+.action
+  color lighten($blue, 75%)
+  font-size 11px
+  dispatch inline-block
+  vertical-align middle
+  margin-left 8px
+  .material-icons
+    font-size 14px
+    margin-right -4px
+  .material-icons, span
+    vertical-align middle
+  &:hover
+    color #fff
 
 .time
   font-size 11px
   color #999
-
   float right
+  margin-top 3px
 </style>
