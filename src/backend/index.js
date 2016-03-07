@@ -211,7 +211,10 @@ function capture (instance) {
     if (!instance._inactive) {
       const matched = instance.$route.matched
       const depth = instance._routerView.depth
-      ret.matchedRouteSegment = matched[depth].handler.path
+      ret.matchedRouteSegment =
+        matched &&
+        matched[depth] &&
+        matched[depth].handler.path
     }
   }
   return ret
