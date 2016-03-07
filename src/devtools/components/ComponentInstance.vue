@@ -20,10 +20,9 @@
         </span>
         <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
-      <span class="info">
-        {{ instance.isFragment ? 'fragment' : '' }}
-        {{ instance.inactive ? '(inactive)' : '' }}
-      </span>
+      <span class="info router-view" v-if="instance.isRouterView">router-view: {{ instance.matchedRouteSegment }}</span>
+      <span class="info fragment" v-if="instance.isFragment">fragment</span>
+      <span class="info inactive" v-if="instance.inactive">inactive</span>
     </div>
     <div v-if="expanded">
       <component-instance
@@ -91,6 +90,7 @@ export default {
 .self
   cursor pointer
   position relative
+  overflow hidden
   z-index 2
   background-color #fff
   transition background-color .1s ease
@@ -109,9 +109,6 @@ export default {
       border-left-color #fff
     .instance-name
       color #fff
-  .info
-    color #ccc
-    font-size 13px
 
 .children
   position relative
@@ -120,6 +117,20 @@ export default {
 .content
   position relative
   padding-left 22px
+
+.info
+  color #fff
+  font-size 10px
+  padding 2px 5px
+  border-radius 3px
+  position relative
+  top -1px
+  &.router-view
+    background-color #ff7979
+  &.fragment
+    background-color #b3b3ff
+  &.inactive
+    background-color #ccc
 
 .arrow-wrapper
   position absolute

@@ -197,7 +197,7 @@ function isQualified (instance) {
 
 function capture (instance) {
   mark(instance)
-  return {
+  const ret = {
     id: instance._uid,
     name: getInstanceName(instance),
     inactive: !!instance._inactive,
@@ -206,6 +206,13 @@ function capture (instance) {
       .filter(child => !child._isBeingDestroyed)
       .map(capture)
   }
+  if (instance._routerView) {
+    ret.isRouterView = true
+    const matched = instance.$route.matched
+    const depth = instance._routerView.depth
+    ret.matchedRouteSegment = matched[depth].handler.path
+  }
+  return ret
 }
 
 /**
@@ -240,6 +247,7 @@ function getInstanceDetails (id) {
       state: processProps(instance)
         .concat(processState(instance))
         .concat(processComputed(instance))
+        .concat(processRoute(instance))
     }
   }
 }
@@ -338,6 +346,26 @@ function processComputed (instance) {
       value: instance[key]
     }
   })
+}
+
+/**
+ * Process possible vue-router $route context
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processRoute (instance) {
+  const route = instance.$route
+  if (route) {
+    const { path, query, params } = route
+    return [{
+      key: '$route',
+      value: { path, query, params }
+    }]
+  } else {
+    return []
+  }
 }
 
 /**

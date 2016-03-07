@@ -9,11 +9,11 @@ const state = {
 
 const mutations = {
   FLUSH (state, payload) {
-    state.instances = payload.instances
-    state.inspectedInstance = payload.inspectedInstance
+    state.instances = Object.freeze(payload.instances)
+    state.inspectedInstance = Object.freeze(payload.inspectedInstance)
   },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
-    state.inspectedInstance = instance
+    state.inspectedInstance = Object.freeze(instance)
   },
   TOGGLE_INSTANCE ({ expansionMap }, id, expanded) {
     set(expansionMap, id, expanded)
