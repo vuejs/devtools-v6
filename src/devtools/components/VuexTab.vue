@@ -19,7 +19,7 @@ import VuexStateInspector from './VuexStateInspector.vue'
 
 export default {
   vuex: {
-    state: {
+    getters: {
       hasVuex: state => state.vuex.hasVuex
     }
   },

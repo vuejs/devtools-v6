@@ -19,7 +19,7 @@ export default {
     DataField
   },
   vuex: {
-    state: {
+    getters: {
       activeState ({ vuex: { base, history, activeIndex }}) {
         const entry = history[activeIndex]
         const res = {}

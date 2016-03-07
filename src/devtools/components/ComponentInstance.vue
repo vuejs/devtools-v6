@@ -44,13 +44,9 @@ export default {
     depth: Number
   },
   vuex: {
-    state: {
-      expanded ({ components: { expansionMap }}) {
-        return !!expansionMap[this.instance.id]
-      },
-      selected ({ components: { inspectedInstance }}) {
-        return this.instance.id === inspectedInstance.id
-      }
+    getters: {
+      expansionMap: state => state.components.expansionMap,
+      inspectedId: state => state.components.inspectedInstance.id
     },
     actions: {
       toggle ({ dispatch }) {
@@ -62,6 +58,14 @@ export default {
       collapse ({ dispatch }) {
         dispatch('TOGGLE_INSTANCE', this.instance.id, false)
       }
+    }
+  },
+  computed: {
+    expanded () {
+      return !!this.expansionMap[this.instance.id]
+    },
+    selected () {
+      return this.instance.id === this.inspectedId
     }
   },
   methods: {

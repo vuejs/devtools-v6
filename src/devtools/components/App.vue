@@ -43,7 +43,7 @@ export default {
     vuex: VuexTab
   },
   vuex: {
-    state: {
+    getters: {
       messages: state => [state.app.message],
       tab: state => state.app.tab
     },

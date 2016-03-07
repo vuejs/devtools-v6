@@ -23,9 +23,9 @@ export default {
     SplitPane
   },
   vuex: {
-    state: {
-      instances: ({ components }) => components.instances,
-      inspectedInstance: ({ components }) => components.inspectedInstance
+    getters: {
+      instances: state => state.components.instances,
+      inspectedInstance: state => state.components.inspectedInstance
     }
   },
   methods: {

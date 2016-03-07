@@ -9,7 +9,7 @@
 <script>
 export default {
   vuex: {
-    state: {
+    getters: {
       count: state => state.count
     },
     actions: {

@@ -42,10 +42,10 @@ import keyNavMixin from '../mixins/key-nav'
 export default {
   mixins: [keyNavMixin],
   vuex: {
-    state: {
-      history: ({ vuex }) => vuex.history,
-      lastCommit: ({ vuex }) => vuex.lastCommit,
-      activeIndex: ({ vuex }) => vuex.activeIndex
+    getters: {
+      history: state => state.vuex.history,
+      lastCommit: state => state.vuex.lastCommit,
+      activeIndex: state => state.vuex.activeIndex
     },
     actions: {
       commit ({ dispatch, state }) {
