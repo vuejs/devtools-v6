@@ -34,6 +34,6 @@ module.exports = {
     }
   },
   devtool: process.env.NODE_ENV !== 'production'
-    ? 'inline-source-map'
+    ? '#inline-source-map'
     : false
 }

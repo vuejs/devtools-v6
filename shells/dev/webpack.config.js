@@ -15,7 +15,7 @@ module.exports = {
       {
         test: /\.js$/,
         loader:  'babel',
-        exclude: /node_modules|vue\/dist/,
+        exclude: /node_modules|vue\/dist|vuex\/dist/,
       },
       {
         test: /\.vue$/,
@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         test: /\.(png|woff2)$/,
-        loader: 'file'
+        loader: 'url?limit=0'
       }
     ]
   },
