@@ -29,11 +29,11 @@
         @click="step($index)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span v-if="activeIndex === $index">
-          <a class="action" @click="commitSelected">
+          <a class="action" @click.stop="commitSelected">
             <i class="material-icons">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click="revertSelected">
+          <a class="action" @click.stop="revertSelected">
             <i class="material-icons">restore</i>
             <span>Revert</span>
           </a>
@@ -61,35 +61,30 @@ export default {
       commitAll ({ dispatch, state }) {
         if (state.vuex.history.length > 0) {
           dispatch('vuex/COMMIT_ALL')
+          travelTo(state)
         }
       },
       revertAll ({ dispatch, state }) {
         if (state.vuex.history.length > 0) {
           dispatch('vuex/REVERT_ALL')
-          bridge.send('vuex:travel-to-state', state.vuex.base)
+          travelTo(state)
         }
       },
-      commitSelected ({ dispatch }) {
+      commitSelected ({ dispatch, state }) {
         dispatch('vuex/COMMIT_SELECTED')
+        travelTo(state)
       },
-      revertSelected ({ dispatch }) {
+      revertSelected ({ dispatch, state }) {
         dispatch('vuex/REVERT_SELECTED')
+        travelTo(state)
       },
       reset ({ dispatch, state }) {
         dispatch('vuex/RESET')
-        bridge.send('vuex:travel-to-state', state.vuex.initial)
+        travelTo(state)
       },
-      step ({ dispatch, state }, n) {
-        if (n === -1) {
-          dispatch('vuex/STEP', n)
-          bridge.send('vuex:travel-to-state', state.vuex.base)
-        } else {
-          const entry = state.vuex.history[n]
-          if (entry || n === -1) {
-            dispatch('vuex/STEP', n)
-            bridge.send('vuex:travel-to-state', entry.state)
-          }
-        }
+      step ({ dispatch, state }, index) {
+        dispatch('vuex/STEP', index)
+        travelTo(state)
       }
     }
   },
@@ -107,6 +102,20 @@ export default {
       }
     }
   }
+}
+
+/**
+ * Notify application to travel to corresponding state.
+ *
+ * @param {Object} state
+ */
+
+function travelTo (state) {
+  const { history, activeIndex, base } = state.vuex
+  const targetState = activeIndex > -1
+    ? history[activeIndex].state
+    : base
+  bridge.send('vuex:travel-to-state', targetState)
 }
 </script>
 
