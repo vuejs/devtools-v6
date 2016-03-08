@@ -44,12 +44,12 @@
     "vue-html-loader": "^1.0.0",
     "vue-loader": "^8.0.0",
     "vue-style-loader": "^1.0.0",
-    "vuex": "^0.6.1",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
-    "circular-json-es6": "^1.0.0",
-    "vue": "^1.0.17"
+    "circular-json-es6": "^2.0.0",
+    "vue": "^1.0.17",
+    "vuex": "^0.6.2"
   }
 }
