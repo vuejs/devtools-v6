@@ -133,18 +133,12 @@ export default {
   border-radius 3px
   position relative
   top -1px
-
-  badge($color)
-    background-color $color
-    border-bottom 1px solid darken($color, 15%)
-    text-shadow 0 1px 1px darken($color, 15%)
-
   &.router-view
-    badge(#ff8344)
+    background-color #ff8344
   &.fragment
-    badge(#b3b3ff)
+    background-color #b3cbf7
   &.inactive
-    badge(#aaa)
+    background-color #aaa
 
 .arrow-wrapper
   position absolute
