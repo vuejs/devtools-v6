@@ -162,6 +162,7 @@ $blue = #44A1FF
   dispatch inline-block
   vertical-align middle
   margin-left 8px
+  white-space nowrap
   .material-icons
     font-size 14px
     margin-right -4px

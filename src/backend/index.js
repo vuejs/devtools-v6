@@ -253,6 +253,7 @@ function getInstanceDetails (id) {
         .concat(processState(instance))
         .concat(processComputed(instance))
         .concat(processRoute(instance))
+        .concat(processGetters(instance))
     }
   }
 }
@@ -328,8 +329,9 @@ function getPropType (type) {
 
 function processState (instance) {
   const props = instance._props
+  const getters = instance.$options.vuex && instance.$options.vuex.getters
   return Object.keys(instance._data)
-    .filter(key => !props || !(key in props))
+    .filter(key => !(props && key in props) && !(getters && key in getters))
     .map(key => ({
       key,
       value: instance[key]
@@ -368,6 +370,29 @@ function processRoute (instance) {
       key: '$route',
       value: { path, query, params }
     }]
+  } else {
+    return []
+  }
+}
+
+/**
+ * Process Vuex getters.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processGetters (instance) {
+  const getters = instance.$options.vuex
+    && instance.$options.vuex.getters
+  if (getters) {
+    return Object.keys(getters).map(key => {
+      return {
+        type: 'vuex getter',
+        key,
+        value: instance[key]
+      }
+    })
   } else {
     return []
   }

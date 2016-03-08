@@ -16,6 +16,9 @@ export default {
       increment: ({ dispatch }) => dispatch('INCREMENT', { a: 1, b: { c: 3 }}),
       decrement: ({ dispatch }) => dispatch('DECREMENT', 2)
     }
+  },
+  computed: {
+    test () { return 1 }
   }
 }
 </script>

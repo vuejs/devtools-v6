@@ -10,7 +10,7 @@
       </span>
       <span class="key">{{ field.key }}</span><span class="colon">:</span>
       <span class="value" :class="valueType">{{ formattedValue }}</span>
-      <div class="type {{ field.type }}" v-show="field.type" >
+      <div v-if="field.type" class="type {{ field.type | hyphen }}">
         {{ field.type }}
         <div class="meta" v-if="field.meta">
           <div class="meta-field" v-for="(key, val) in field.meta">
@@ -121,6 +121,9 @@ export default {
         this.expanded = !this.expanded
       }
     }
+  },
+  filters: {
+    hyphen: v => v.replace(/\s/g, '-')
   }
 }
 </script>
@@ -174,6 +177,8 @@ export default {
           display block
     &.computed
       background-color #D2BBFF
+    &.vuex-getter
+      background-color #5dd5d5
     .meta
       display none
       position absolute
