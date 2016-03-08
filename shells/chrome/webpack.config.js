@@ -16,7 +16,7 @@ module.exports = {
       {
         test: /\.js$/,
         loader:  'babel',
-        exclude: /node_modules|vue\/dist/,
+        exclude: /node_modules|vue\/dist|vuex\/dist/,
       },
       {
         test: /\.vue$/,
