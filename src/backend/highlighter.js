@@ -2,6 +2,7 @@ const overlay = document.createElement('div')
 overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
 overlay.style.position = 'fixed'
 overlay.style.zIndex = '99999'
+overlay.style.pointerEvents = 'none'
 
 /**
  * Highlight an instance.

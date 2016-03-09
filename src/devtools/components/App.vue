@@ -11,18 +11,18 @@
         {{ message }}
       </span>
     </span>
-    <a class="button"
+    <a class="button refresh"
       @click="refresh">
       <i class="material-icons">cached</i>
       <span>Refresh</span>
     </a>
-    <a class="button"
+    <a class="button vuex"
       :class="{ active: tab === 'vuex'}"
       @click="switchTab('vuex')">
       <i class="material-icons">restore</i>
       <span>Vuex</span>
     </a>
-    <a class="button"
+    <a class="button components"
       :class="{ active: tab === 'components'}"
       @click="switchTab('components')">
       <i class="material-icons">device_hub</i>

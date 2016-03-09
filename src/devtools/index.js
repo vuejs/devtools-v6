@@ -3,8 +3,6 @@ import App from './components/App.vue'
 import store from './vuex/store'
 import CircularJSON from 'circular-json-es6'
 
-Vue.config.debug = true
-
 let app = null
 
 /**

@@ -1,8 +1,8 @@
 <template>
   <div id="target">
     <h1>{{msg}}</h1>
-    <button @click="add">Add</button>
-    <button @click="rm">Remove</button>
+    <button class="add" @click="add">Add</button>
+    <button class="remove" @click="rm">Remove</button>
     <input v-model="msg">
     <other v-for="item in items" track-by="$index"></other>
   </div>
