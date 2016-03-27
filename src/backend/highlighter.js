@@ -15,11 +15,7 @@ export function highlight (instance) {
   if (!util().inDoc(instance.$el)) {
     return
   }
-  if (!instance._isFragment) {
-    showOverlay(instance.$el.getBoundingClientRect())
-  } else {
-    highlightFragment(instance)
-  }
+  showOverlay(getInstanceRect(instance))
 }
 
 /**
@@ -33,13 +29,29 @@ export function unHighlight () {
 }
 
 /**
+ * Get the client rect for an instance.
+ *
+ * @param {Vue} instance
+ * @return {Object}
+ */
+
+export function getInstanceRect (instance) {
+  if (instance._isFragment) {
+    return getFragmentRect(instance)
+  } else {
+    return instance.$el.getBoundingClientRect()
+  }
+}
+
+/**
  * Highlight a fragment instance.
  * Loop over its node range and determine its bounding box.
  *
  * @param {Vue} instance
+ * @return {Object}
  */
 
-function highlightFragment ({ _fragmentStart, _fragmentEnd }) {
+function getFragmentRect ({ _fragmentStart, _fragmentEnd }) {
   let top, bottom, left, right
   util().mapNodeRange(_fragmentStart, _fragmentEnd, function (node) {
     let rect
@@ -63,12 +75,12 @@ function highlightFragment ({ _fragmentStart, _fragmentEnd }) {
       }
     }
   })
-  showOverlay({
+  return {
     top,
     left,
     width: right - left,
     height: bottom - top
-  })
+  }
 }
 
 /**
