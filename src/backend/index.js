@@ -249,11 +249,13 @@ function getInstanceDetails (id) {
     return {
       id: id,
       name: getInstanceName(instance),
-      state: processProps(instance)
-        .concat(processState(instance))
-        .concat(processComputed(instance))
-        .concat(processRoute(instance))
-        .concat(processGetters(instance))
+      state: processProps(instance).concat(
+        processState(instance),
+        processComputed(instance),
+        processRouteContext(instance),
+        processVuexGetters(instance),
+        processFirebaseBindings(instance)
+      )
     }
   }
 }
@@ -367,7 +369,7 @@ function processComputed (instance) {
  * @return {Array}
  */
 
-function processRoute (instance) {
+function processRouteContext (instance) {
   const route = instance.$route
   if (route) {
     const { path, query, params } = route
@@ -387,7 +389,7 @@ function processRoute (instance) {
  * @return {Array}
  */
 
-function processGetters (instance) {
+function processVuexGetters (instance) {
   const getters =
     instance.$options.vuex &&
     instance.$options.vuex.getters
@@ -395,6 +397,28 @@ function processGetters (instance) {
     return Object.keys(getters).map(key => {
       return {
         type: 'vuex getter',
+        key,
+        value: instance[key]
+      }
+    })
+  } else {
+    return []
+  }
+}
+
+/**
+ * Process Firebase bindings.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processFirebaseBindings (instance) {
+  var refs = instance.$firebaseRefs
+  if (refs) {
+    return Object.keys(refs).map(key => {
+      return {
+        type: 'firebase binding',
         key,
         value: instance[key]
       }

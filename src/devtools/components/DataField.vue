@@ -179,6 +179,8 @@ export default {
       background-color #D2BBFF
     &.vuex-getter
       background-color #5dd5d5
+    &.firebase-binding
+      background-color #ffcc00
     .meta
       display none
       position absolute
