@@ -15,8 +15,7 @@ module.exports = {
       .assert.elementPresent('.data-field')
       .assert.containsText('.data-field', 'obj: Object')
 
-      // expand instance
-      .click('.instance .arrow-wrapper')
+      // should expand root by default
       .assert.elementCount('.instance', 4)
 
       // select child instance

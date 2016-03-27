@@ -48,15 +48,12 @@ export default {
   name: 'DataField',
   props: {
     field: Object,
-    depth: Number,
-    expanded: {
-      type: Boolean,
-      default: false
-    }
+    depth: Number
   },
   data () {
     return {
-      limit: Array.isArray(this.field.value) ? 10 : Infinity
+      limit: Array.isArray(this.field.value) ? 10 : Infinity,
+      expanded: this.depth < 2
     }
   },
   computed: {

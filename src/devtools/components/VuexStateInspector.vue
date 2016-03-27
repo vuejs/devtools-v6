@@ -4,7 +4,6 @@
       v-for="(key, value) of activeState"
       track-by="$index"
       :field="{ key: key, value: value }"
-      :expanded="key === 'state'"
       :depth="0">
     </data-field>
   </div>
