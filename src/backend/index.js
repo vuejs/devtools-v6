@@ -136,9 +136,9 @@ function walk (node, fn) {
  */
 
 function flush () {
-  captureCount = 0
   let start
   if (process.env.NODE_ENV !== 'production') {
+    captureCount = 0
     start = window.performance.now()
   }
   const payload = stringify({
@@ -203,21 +203,28 @@ function isQualified (instance) {
  * @return {Object}
  */
 
-function capture (instance) {
-  captureCount++
+function capture (instance, _, list) {
+  if (process.env.NODE_ENV !== 'production') {
+    captureCount++
+  }
   mark(instance)
   const ret = {
     id: instance._uid,
     name: getInstanceName(instance),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    top: instance._inactive
-      ? Infinity
-      : getInstanceRect(instance).top,
     children: instance.$children
       .filter(child => !child._isBeingDestroyed)
       .map(capture)
   }
+  // record screen position to ensure correct ordering
+  if (list.length > 1 && !instance._inactive) {
+    const rect = getInstanceRect(instance)
+    ret.top = rect ? rect.top : Infinity
+  } else {
+    ret.top = Infinity
+  }
+  // check router view
   if (instance._routerView) {
     ret.isRouterView = true
     if (!instance._inactive) {
