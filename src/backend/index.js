@@ -55,7 +55,7 @@ function connect () {
     currentInspectedId = id
     let instance = instanceMap.get(id)
     if (instance) {
-      scrollIntoView(instance.$el)
+      scrollIntoView(instance)
       highlight(instance)
     }
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
@@ -451,17 +451,12 @@ function processFirebaseBindings (instance) {
 /**
  * Sroll a node into view.
  *
- * @param {Node} node
+ * @param {Vue} instance
  */
 
-function scrollIntoView (node) {
-  if (!hook.Vue.util.inDoc(node)) {
-    return
-  }
-  var top = node.offsetTop
-  if (top == null) {
-    scrollIntoView(node.previousSibling || node.parentNode)
-  } else {
-    window.scrollTo(0, top)
+function scrollIntoView (instance) {
+  const rect = getInstanceRect(instance)
+  if (rect) {
+    window.scrollBy(0, rect.top)
   }
 }
