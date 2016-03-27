@@ -65,6 +65,12 @@ export default {
       }
     }
   },
+  created () {
+    // expand root by default
+    if (this.depth === 0) {
+      this.expand()
+    }
+  },
   computed: {
     expanded () {
       return !!this.expansionMap[this.instance.id]
