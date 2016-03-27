@@ -19,6 +19,12 @@ export default {
   },
   computed: {
     test () { return 1 }
+  },
+  created () {
+    // simulate firebase binding
+    this.$firebaseRefs = {
+      hello: 'world'
+    }
   }
 }
 </script>
