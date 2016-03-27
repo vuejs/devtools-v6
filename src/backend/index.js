@@ -1,7 +1,7 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
-import { highlight, unHighlight } from './highlighter'
+import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { stringify } from '../util'
 
@@ -14,6 +14,7 @@ let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
 let bridge
 let filter = ''
+let captureCount = 0
 
 export function initBackend (_bridge) {
   bridge = _bridge
@@ -135,10 +136,19 @@ function walk (node, fn) {
  */
 
 function flush () {
-  bridge.send('flush', stringify({
+  captureCount = 0
+  let start
+  if (process.env.NODE_ENV !== 'production') {
+    start = window.performance.now()
+  }
+  const payload = stringify({
     inspectedInstance: getInstanceDetails(currentInspectedId),
     instances: findQualifiedChildrenFromList(rootInstances)
-  }))
+  })
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[flush] serialized ${captureCount} instances, took ${window.performance.now() - start}ms.`)
+  }
+  bridge.send('flush', payload)
 }
 
 /**
@@ -194,12 +204,16 @@ function isQualified (instance) {
  */
 
 function capture (instance) {
+  captureCount++
   mark(instance)
   const ret = {
     id: instance._uid,
     name: getInstanceName(instance),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
+    top: instance._inactive
+      ? Infinity
+      : getInstanceRect(instance).top,
     children: instance.$children
       .filter(child => !child._isBeingDestroyed)
       .map(capture)
@@ -265,10 +279,11 @@ function getInstanceDetails (id) {
  * @return {String}
  */
 
+const classifyCache = Object.create(null)
 function getInstanceName (instance) {
   let name = instance.$options.name
   return name
-    ? hook.Vue.util.classify(name)
+    ? classifyCache[name] || (classifyCache[name] = hook.Vue.util.classify(name))
     : instance.$root === instance
       ? 'Root'
       : 'Anonymous Component'

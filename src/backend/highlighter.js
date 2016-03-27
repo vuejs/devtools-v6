@@ -12,10 +12,10 @@ overlay.style.pointerEvents = 'none'
 
 export function highlight (instance) {
   if (!instance) return
-  if (!util().inDoc(instance.$el)) {
-    return
+  const rect = getInstanceRect(instance)
+  if (rect) {
+    showOverlay(rect)
   }
-  showOverlay(getInstanceRect(instance))
 }
 
 /**
@@ -36,6 +36,9 @@ export function unHighlight () {
  */
 
 export function getInstanceRect (instance) {
+  if (!util().inDoc(instance.$el)) {
+    return
+  }
   if (instance._isFragment) {
     return getFragmentRect(instance)
   } else {

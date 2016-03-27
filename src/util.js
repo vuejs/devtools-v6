@@ -38,9 +38,15 @@ function isPlainObject (obj) {
   return Object.prototype.toString.call(obj) === '[object Object]'
 }
 
-var primitiveTypeRE = /^(string|number|boolean)$/
 function isPrimitive (data) {
-  return data == null ||
-    primitiveTypeRE.test(typeof data) ||
+  if (data == null) {
+    return true
+  }
+  const type = typeof data
+  return (
+    type === 'string' ||
+    type === 'number' ||
+    type === 'boolean' ||
     data instanceof RegExp
+  )
 }

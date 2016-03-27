@@ -32,7 +32,7 @@
     </div>
     <div v-if="expanded">
       <component-instance
-        v-for="child in instance.children | orderBy 'inactive'"
+        v-for="child in sortedChildren"
         track-by="id"
         :instance="child"
         :depth="depth + 1">
@@ -77,6 +77,11 @@ export default {
     },
     selected () {
       return this.instance.id === this.inspectedId
+    },
+    sortedChildren () {
+      return this.instance.children.slice().sort((a, b) => {
+        return a.top - b.top
+      })
     }
   },
   methods: {

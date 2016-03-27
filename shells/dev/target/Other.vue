@@ -1,12 +1,13 @@
 <template>
   <div>
-    Other
+    Other {{ id }}
     <mine></mine>
   </div>
 </template>
 
 <script>
 export default {
+  props: ['id'],
   data () {
     let a = { c: function () {} }
     a.a = a
