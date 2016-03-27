@@ -53,7 +53,7 @@ export default {
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth < 2
+      expanded: this.depth === 0
     }
   },
   computed: {
