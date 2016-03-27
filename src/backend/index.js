@@ -218,7 +218,7 @@ function capture (instance, _, list) {
       .map(capture)
   }
   // record screen position to ensure correct ordering
-  if (list.length > 1 && !instance._inactive) {
+  if ((!list || list.length > 1) && !instance._inactive) {
     const rect = getInstanceRect(instance)
     ret.top = rect ? rect.top : Infinity
   } else {
