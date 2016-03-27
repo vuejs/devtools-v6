@@ -156,9 +156,7 @@ function findQualifiedChildrenFromList (instances) {
     .filter(child => !child._isBeingDestroyed)
   return !filter
     ? instances.map(capture)
-    : instances
-      .map(findQualifiedChildren)
-      .reduce((all, qualified) => all.concat(qualified), [])
+    : Array.prototype.concat.apply([], instances.map(findQualifiedChildren))
 }
 
 /**
