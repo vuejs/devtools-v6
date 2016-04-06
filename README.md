@@ -10,9 +10,13 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 1. vue-devtools only works with Vue.js 1.0.0+.
 
-2. For Vue version < 1.0.16, The devtool will only work with development (non-minified) versions of Vue, because the devtools hooks are stripped in production builds. This also includes builds produced by Webpack and Browserify in production mode. Vue >= 1.0.16 works with the devtools in all cases.
+2. For Vue version < 1.0.16, The devtool will only work with development (non-minified) versions of Vue, because the devtools hooks are stripped in production builds. This also includes builds produced by Webpack and Browserify in production mode. 
+ 
+3. Vue 1.0.16 and 1.0.17 works with devtools in all cases.
 
-3. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
+4. Vue 1.0.18+ devtools hooks are now disabled in production builds by default. However, you can explicitly enable it by setting:`Vue.config.devtools = true`
+
+5. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
 ### Installation
 
