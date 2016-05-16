@@ -22,6 +22,7 @@
 import CircularJSON from 'circular-json-es6'
 import DataField from './DataField.vue'
 import store from '../vuex/store'
+import { stringify } from '../../util'
 
 export default {
   components: {
@@ -43,9 +44,15 @@ export default {
   },
   methods: {
     exportStateToConsole () {
-      // TODO: use copy to clipboard
-      // https://developers.google.com/web/updates/2015/04/cut-and-copy-commands?hl=en
-      console.log('TODO: give it to clipboard', JSON.stringify(this.activeState.state))
+      const dummyTextArea = document.createElement('textarea')
+      dummyTextArea.textContent = stringify(this.activeState.state)
+      const body = document.getElementsByTagName('body')[0]
+      body.appendChild(dummyTextArea)
+      dummyTextArea.select()
+      document.execCommand('copy')
+      body.removeChild(dummyTextArea)
+
+      // TODO: inform user
     },
     importState (e) {
       try {
