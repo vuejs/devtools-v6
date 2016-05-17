@@ -10,6 +10,7 @@
       </div>
       <div class="import-state">
         <textarea placeholder="Paste state object here to import it..." @input="importState"></textarea>
+        <span class="message invalid-json" transition="slide-up" v-show="showBadJsonMessage">Invalid JSON!</span>
       </div>
     </section>
     <div class="vuex-state-inspector">
@@ -47,6 +48,9 @@ export default {
       },
       showStateCopiedMessage ({ vuex: { showStateCopiedMessage }}) {
         return showStateCopiedMessage
+      },
+      showBadJsonMessage ({ vuex: { showBadJsonMessage }}) {
+        return showBadJsonMessage
       }
     },
   },
@@ -64,11 +68,19 @@ export default {
       window.setTimeout(() => store.dispatch('vuex/HIDE_STATE_COPIED_MESSAGE'), 2000)
     },
     importState (e) {
-      try {
-        bridge.send('vuex:travel-to-state', e.target.value) // set it on app store
-        store.dispatch('vuex/INIT', e.target.value) // set it in dev tools
-      } catch (err) {
-        console.log('TODO: tell user this isn valid JSON', err)
+      const importedStr = e.target.value
+
+      if (importedStr.length === 0) {
+        store.dispatch('vuex/HIDE_BAD_JSON_MESSAGE')
+      } else {
+        try {
+          CircularJSON.parse(importedStr) // Try to parse
+          bridge.send('vuex:travel-to-state', importedStr) // set it on app store
+          store.dispatch('vuex/INIT', importedStr) // set it in dev tools
+          store.dispatch('vuex/HIDE_BAD_JSON_MESSAGE')
+        } catch (e) {
+          store.dispatch('vuex/SHOW_BAD_JSON_MESSAGE')
+        }
       }
     }
   }
@@ -118,6 +130,10 @@ section:not(:last-child)
   transition all .3s ease
   position absolute
   top 11px
+
+.invalid-json
+  right 30px
+  color #c41a16
 
 .import-state
   flex-grow 5
