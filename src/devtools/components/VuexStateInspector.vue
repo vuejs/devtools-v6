@@ -1,14 +1,16 @@
 <template>
   <div>
     <section class="top">
-      <span class="buttons">
+      <div class="buttons">
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
           <span>Copy state to clipboard</span>
           <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied!)</span>
         </a>
-      </span>
-      <span><textarea @input="importState"></textarea></span>
+      </div>
+      <div class="import-state">
+        <textarea placeholder="Paste state object here to import it..." @input="importState"></textarea>
+      </div>
     </section>
     <div class="vuex-state-inspector">
       <data-field
@@ -75,6 +77,7 @@ export default {
 
 <style lang="stylus" scoped>
 $border-color = #e3e3e3
+$blue = #44A1FF
 
 .vuex-state-inspector
   padding 15px 20px
@@ -83,36 +86,43 @@ section:not(:last-child)
   border-bottom 1px solid $border-color
 
 .top
+  display flex
+  justify-content: space-between
   line-height 30px
   font-size 18px
-  color #0062c3
   padding 10px 20px
 
-.component-name, .buttons
-  display inline-block
-  vertical-align middle
-  white-space nowrap
-
-.message
-  transition all .3s ease
-  display inline-block
-  position absolute
+.buttons
+  flex-grow 1
 
 .button
-  display inline-block
-  vertical-align middle
+  display flex
+  align-items center
   font-size 12px
   color #666
   text-align center
   cursor pointer
   transition box-shadow .25s ease
-  margin-right 15px
   transition color .2s ease
+  height 32px
   .material-icons
-    font-size 16px
+    font-size 14px
   span, i
-    vertical-align middle
     margin-right 3px
+  span
+    align-self flex-end
   &:hover
-    color #44A1FF
+    color $blue
+
+.message
+  transition all .3s ease
+  position absolute
+  top 11px
+
+.import-state
+  flex-grow 5
+  textarea
+    display block
+    width 100%
+    outline none
 </style>
