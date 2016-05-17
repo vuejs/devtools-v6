@@ -5,7 +5,8 @@ const state = {
   activeIndex: -1,
   history: [],
   initialCommit: Date.now(),
-  lastCommit: Date.now()
+  lastCommit: Date.now(),
+  showStateCopiedMessage: false
 }
 
 const mutations = {
@@ -42,6 +43,12 @@ const mutations = {
   },
   'vuex/STEP' (state, n) {
     state.activeIndex = n
+  },
+  'vuex/SHOW_STATE_COPIED_MESSAGE' (state) {
+    state.showStateCopiedMessage = true
+  },
+  'vuex/HIDE_STATE_COPIED_MESSAGE' (state) {
+    state.showStateCopiedMessage = false
   }
 }
 
