@@ -5,7 +5,7 @@
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
           <span>Copy state to clipboard</span>
-          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(COPIED!)</span>
+          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied!)</span>
         </a>
       </div>
       <div class="import-state">
