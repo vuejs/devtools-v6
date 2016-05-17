@@ -5,12 +5,12 @@
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
           <span>Copy state to clipboard</span>
-          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied!)</span>
+          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(COPIED!)</span>
         </a>
       </div>
       <div class="import-state">
         <textarea placeholder="Paste state object here to import it..." @input="importState"></textarea>
-        <span class="message invalid-json" transition="slide-up" v-show="showBadJsonMessage">Invalid JSON!</span>
+        <span class="message invalid-json" transition="slide-up" v-show="showBadJsonMessage">INVALID JSON!</span>
       </div>
     </section>
     <div class="vuex-state-inspector">
@@ -133,6 +133,7 @@ section:not(:last-child)
 
 .invalid-json
   right 30px
+  font-size 12px
   color #c41a16
 
 .import-state
