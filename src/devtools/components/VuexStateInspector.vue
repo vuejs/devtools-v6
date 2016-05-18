@@ -4,12 +4,19 @@
       <div class="buttons">
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
-          <span>Copy state to clipboard</span>
-          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied!)</span>
+          <span>Copy</span>
+          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied to clipboard!)</span>
+        </a>
+        <a class="button" @click="toggleImportStatePopup">
+          <i class="material-icons">content_paste</i>
+          <span>Paste</span>
         </a>
       </div>
-      <div class="import-state">
-        <textarea placeholder="Paste state object here to import it..." @input="importState"></textarea>
+
+      <div class="import-state" transition="slide-up" v-if="showImportStatePopup">
+        <textarea autofocus placeholder="Paste state object here to import it..."
+          @input="importState"
+          @keydown.esc="closeImportStatePopup"></textarea>
         <span class="message invalid-json" transition="slide-up" v-show="showBadJsonMessage">INVALID JSON!</span>
       </div>
     </section>
@@ -51,6 +58,9 @@ export default {
       },
       showBadJsonMessage ({ vuex: { showBadJsonMessage }}) {
         return showBadJsonMessage
+      },
+      showImportStatePopup ({ vuex: { showImportStatePopup }}) {
+        return showImportStatePopup
       }
     },
   },
@@ -66,6 +76,16 @@ export default {
 
       store.dispatch('vuex/SHOW_STATE_COPIED_MESSAGE')
       window.setTimeout(() => store.dispatch('vuex/HIDE_STATE_COPIED_MESSAGE'), 2000)
+    },
+    toggleImportStatePopup () {
+      if (this.showImportStatePopup) {
+        this.closeImportStatePopup()
+      } else {
+        store.dispatch('vuex/SHOW_IMPORT_STATE_POPUP')
+      }
+    },
+    closeImportStatePopup () {
+      store.dispatch('vuex/HIDE_IMPORT_STATE_POPUP')
     },
     importState (e) {
       const importedStr = e.target.value
@@ -94,21 +114,15 @@ $blue = #44A1FF
 .vuex-state-inspector
   padding 15px 20px
 
-section:not(:last-child)
-  border-bottom 1px solid $border-color
-
 .top
-  display flex
+  border-bottom 1px solid $border-color
+  height 51px
   justify-content: space-between
   line-height 30px
   font-size 18px
   padding 10px 20px
 
-.buttons
-  flex-grow 1
-
 .button
-  display flex
   align-items center
   font-size 12px
   color #666
@@ -121,25 +135,37 @@ section:not(:last-child)
     font-size 14px
   span, i
     margin-right 3px
+    vertical-align middle
   span
-    align-self flex-end
+    white-space nowrap
   &:hover
     color $blue
 
 .message
   transition all .3s ease
   position absolute
-  top 11px
+  top 12px
+  left 130px
 
 .invalid-json
-  right 30px
+  right 10px
+  left initial
+  top 1px
   font-size 12px
   color #c41a16
 
 .import-state
-  flex-grow 5
+  transition all .3s ease
+  position absolute
+  z-index 1
+  left 130px
+  right 10px
+  top 9px
+  box-shadow 4px 4px 6px 0px $border-color
+
   textarea
-    display block
     width 100%
+    height 100px
+    display block
     outline none
 </style>

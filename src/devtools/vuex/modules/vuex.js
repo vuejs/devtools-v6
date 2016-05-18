@@ -7,7 +7,8 @@ const state = {
   initialCommit: Date.now(),
   lastCommit: Date.now(),
   showStateCopiedMessage: false,
-  showBadJsonMessage: false
+  showBadJsonMessage: false,
+  showImportStatePopup: false
 }
 
 const mutations = {
@@ -56,6 +57,12 @@ const mutations = {
   },
   'vuex/HIDE_BAD_JSON_MESSAGE' (state) {
     state.showBadJsonMessage = false
+  },
+  'vuex/SHOW_IMPORT_STATE_POPUP' (state) {
+    state.showImportStatePopup = true
+  },
+  'vuex/HIDE_IMPORT_STATE_POPUP' (state) {
+    state.showImportStatePopup = false
   }
 }
 
