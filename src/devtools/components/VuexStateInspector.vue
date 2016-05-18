@@ -148,11 +148,12 @@ $blue = #44A1FF
   left 130px
 
 .invalid-json
-  right 10px
+  right 20px
   left initial
   top 1px
   font-size 12px
   color #c41a16
+  background-color #fff
 
 .import-state
   transition all .3s ease
