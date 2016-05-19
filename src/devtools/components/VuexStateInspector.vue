@@ -62,7 +62,7 @@ export default {
       showImportStatePopup ({ vuex: { showImportStatePopup }}) {
         return showImportStatePopup
       }
-    },
+    }
   },
   methods: {
     copyStateToClipboard () {
@@ -128,8 +128,7 @@ $blue = #44A1FF
   color #666
   text-align center
   cursor pointer
-  transition box-shadow .25s ease
-  transition color .2s ease
+  transition box-shadow .25s ease, color .2s ease
   height 32px
   .material-icons
     font-size 14px
@@ -162,7 +161,7 @@ $blue = #44A1FF
   left 130px
   right 10px
   top 9px
-  box-shadow 4px 4px 6px 0px $border-color
+  box-shadow 4px 4px 6px 0 $border-color
 
   textarea
     width 100%
