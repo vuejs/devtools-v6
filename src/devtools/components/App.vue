@@ -108,14 +108,6 @@ $blue = #44A1FF
   display inline-block
   position absolute
 
-.slide-up-enter
-  opacity 0
-  transform translate(0, 50%)
-
-.slide-up-leave
-  opacity 0
-  transform translate(0, -50%)
-
 .button
   float right
   position relative

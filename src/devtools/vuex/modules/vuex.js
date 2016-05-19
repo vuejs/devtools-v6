@@ -5,7 +5,10 @@ const state = {
   activeIndex: -1,
   history: [],
   initialCommit: Date.now(),
-  lastCommit: Date.now()
+  lastCommit: Date.now(),
+  showStateCopiedMessage: false,
+  showBadJsonMessage: false,
+  showImportStatePopup: false
 }
 
 const mutations = {
@@ -42,6 +45,24 @@ const mutations = {
   },
   'vuex/STEP' (state, n) {
     state.activeIndex = n
+  },
+  'vuex/SHOW_STATE_COPIED_MESSAGE' (state) {
+    state.showStateCopiedMessage = true
+  },
+  'vuex/HIDE_STATE_COPIED_MESSAGE' (state) {
+    state.showStateCopiedMessage = false
+  },
+  'vuex/SHOW_BAD_JSON_MESSAGE' (state) {
+    state.showBadJsonMessage = true
+  },
+  'vuex/HIDE_BAD_JSON_MESSAGE' (state) {
+    state.showBadJsonMessage = false
+  },
+  'vuex/SHOW_IMPORT_STATE_POPUP' (state) {
+    state.showImportStatePopup = true
+  },
+  'vuex/HIDE_IMPORT_STATE_POPUP' (state) {
+    state.showImportStatePopup = false
   }
 }
 
