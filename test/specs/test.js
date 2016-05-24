@@ -100,6 +100,22 @@ module.exports = {
         .assert.containsText('#counter p', '2')
         .frame(null)
 
+      // copy vuex state
+      .click('.top .buttons .button:nth-child(1)')
+      .assert.containsText('.top .buttons .button:nth-child(1) .message', '(Copied to clipboard!)')
+
+      // import vuex state
+      .click('.top .buttons .button:nth-child(2)')
+      .assert.elementPresent('.import-state')
+      .setValue('.import-state textarea', '{invalid: json}')
+      .assert.visible('.message.invalid-json')
+      .clearValue('.import-state textarea')
+      .setValue('.import-state textarea', '{"valid": "json"}')
+      .waitForElementNotVisible('.message.invalid-json', 500)
+      .assert.containsText('.vuex-state-inspector', 'valid: "json"')
+      .click('.top .buttons .button:nth-child(2)')
+      .waitForElementNotPresent('.import-state', 500)
+
       // done
       .end()
   }
