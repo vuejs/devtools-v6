@@ -22,7 +22,7 @@
         </span>
       </section>
       <section class="data">
-        <data-field v-for="field in target.state"
+        <data-field v-for="field in sortedState"
           track-by="key"
           :field="field"
           :depth="0">
@@ -48,6 +48,9 @@ export default {
   computed: {
     hasTarget () {
       return this.target.id != null
+    },
+    sortedState() {
+      return this.target.state && this.target.state.slice().sort((a, b) => a.key > b.key)
     }
   },
   methods: {
