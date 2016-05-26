@@ -22,7 +22,7 @@
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
-        v-for="subField in formattedSubFields | limitBy limit"
+        v-for="subField in limitedSubFields"
         track-by="$index"
         :field="subField"
         :depth="depth + 1">
@@ -108,8 +108,12 @@ export default {
           key,
           value: value[key]
         }))
+        value = value.slice().sort((a, b) => a.key > b.key)
       }
       return value
+    },
+    limitedSubFields () {
+      return this.formattedSubFields.slice(0, this.limit)
     }
   },
   methods: {
