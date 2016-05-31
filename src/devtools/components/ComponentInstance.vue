@@ -148,7 +148,7 @@ export default {
   position relative
   top -1px
   &.console
-    background-color #808080
+    background-color #f19d9b
   &.router-view
     background-color #ff8344
   &.fragment
