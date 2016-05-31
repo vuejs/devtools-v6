@@ -20,6 +20,9 @@
         </span>
         <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
+      <span class="info console" v-if="instance.consoleId">
+        {{ instance.consoleId }}
+      </span>
       <span class="info router-view" v-if="instance.isRouterView">
         router-view{{ instance.matchedRouteSegment ? ': ' + instance.matchedRouteSegment : null }}
       </span>
@@ -142,6 +145,8 @@ export default {
   border-radius 3px
   position relative
   top -1px
+  &.console
+    background-color #f19d9b
   &.router-view
     background-color #ff8344
   &.fragment
