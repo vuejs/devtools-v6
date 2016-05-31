@@ -104,6 +104,7 @@ module.exports = {
       // copy vuex state
       .click('.top .buttons .button:nth-child(1)')
       .assert.containsText('.top .buttons .button:nth-child(1) .message', '(Copied to clipboard!)')
+      .waitForElementNotVisible('.top .buttons .button:nth-child(1) .message', 3000)
 
       // import vuex state
       .click('.top .buttons .button:nth-child(2)')
@@ -115,7 +116,7 @@ module.exports = {
       .waitForElementNotVisible('.message.invalid-json', 500)
       .assert.containsText('.vuex-state-inspector', 'valid: "json"')
       .click('.top .buttons .button:nth-child(2)')
-      .waitForElementNotPresent('.import-state', 500)
+      .waitForElementNotPresent('.import-state', 2000)
 
       // done
       .end()

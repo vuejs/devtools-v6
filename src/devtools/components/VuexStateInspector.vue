@@ -4,17 +4,17 @@
       <div class="buttons">
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
-          <span>Copy</span>
+          <span>Export</span>
           <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied to clipboard!)</span>
         </a>
         <a class="button" @click="toggleImportStatePopup">
           <i class="material-icons">content_paste</i>
-          <span>Paste</span>
+          <span>Import</span>
         </a>
       </div>
 
       <div class="import-state" transition="slide-up" v-if="showImportStatePopup">
-        <textarea autofocus placeholder="Paste state object here to import it..."
+        <textarea placeholder="Paste state object here to import it..."
           @input="importState"
           @keydown.esc="closeImportStatePopup"></textarea>
         <span class="message invalid-json" transition="slide-up" v-show="showBadJsonMessage">INVALID JSON!</span>
@@ -61,6 +61,15 @@ export default {
       },
       showImportStatePopup ({ vuex: { showImportStatePopup }}) {
         return showImportStatePopup
+      }
+    }
+  },
+  watch: {
+    showImportStatePopup (val) {
+      if (val) {
+        this.$nextTick(() => {
+          this.$el.querySelector('textarea').focus()
+        })
       }
     }
   },
@@ -116,35 +125,38 @@ $blue = #44A1FF
 
 .top
   border-bottom 1px solid $border-color
-  height 51px
+  height 50px
   justify-content: space-between
-  line-height 30px
   font-size 18px
-  padding 10px 20px
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
 
 .button
+  float left
+  position relative
   align-items center
   font-size 12px
   color #666
   text-align center
   cursor pointer
+  border-right 1px solid $border-color
   transition box-shadow .25s ease, color .2s ease
-  height 32px
-  .material-icons
-    font-size 14px
-  span, i
+  height 50px
+  line-height 50px
+  padding: 0 22px 0 20px
+  display inline-block
+  vertical-align middle
+  i
     margin-right 3px
     vertical-align middle
   span
     white-space nowrap
+    vertical-align middle
   &:hover
-    color $blue
+    box-shadow 0 2px 12px rgba(0,0,0,.1)
 
 .message
   transition all .3s ease
-  position absolute
-  top 12px
-  left 130px
+  color $blue
 
 .invalid-json
   right 20px
@@ -158,14 +170,19 @@ $blue = #44A1FF
   transition all .3s ease
   position absolute
   z-index 1
-  left 130px
+  left 220px
   right 10px
-  top 9px
+  top 5px
   box-shadow 4px 4px 6px 0 $border-color
-
+  border 1px solid $border-color
+  padding 3px
+  background-color #fff
+  
   textarea
     width 100%
     height 100px
     display block
     outline none
+    border none
+    resize vertical
 </style>
