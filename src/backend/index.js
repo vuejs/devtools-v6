@@ -11,6 +11,7 @@ const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
 let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+let consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
 let filter = ''
@@ -58,12 +59,9 @@ function connect () {
       scrollIntoView(instance)
       highlight(instance)
     }
+    bindToConsole(instance)
+    flush()
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
-  })
-
-  bridge.on('send-to-console', id => {
-    window.$vm = instanceMap.get(id)
-    console.log('[vue-devtools] <' + getInstanceName(window.$vm) + '> is now available as $vm.')
   })
 
   bridge.on('filter-instances', _filter => {
@@ -224,6 +222,9 @@ function capture (instance, _, list) {
   } else {
     ret.top = Infinity
   }
+  // check if instance is available in console
+  const consoleId = consoleBoundInstances.indexOf(instance._uid)
+  ret.consoleId = consoleId > -1 ? '$vm' + consoleId : null
   // check router view
   if (instance._routerView) {
     ret.isRouterView = true
@@ -459,4 +460,26 @@ function scrollIntoView (instance) {
   if (rect) {
     window.scrollBy(0, rect.top)
   }
+}
+
+/**
+ * Binds given instance in console as $vm0.
+ * For compatibility reasons it also binds it as $vm.
+ *
+ * @param {Vue} instance
+ */
+
+function bindToConsole (instance) {
+  const id = instance._uid
+  const index = consoleBoundInstances.indexOf(id)
+  if (index > -1) {
+    consoleBoundInstances.splice(index, 1)
+  } else {
+    consoleBoundInstances.pop()
+  }
+  consoleBoundInstances.unshift(id)
+  for (var i = 0; i < 5; i++) {
+    window['$vm' + i] = instanceMap.get(consoleBoundInstances[i])
+  }
+  window.$vm = instance
 }
