@@ -49,7 +49,7 @@ export default {
     hasTarget () {
       return this.target.id != null
     },
-    sortedState() {
+    sortedState () {
       return this.target.state && this.target.state.slice().sort((a, b) => a.key > b.key)
     }
   },
