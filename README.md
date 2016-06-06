@@ -39,3 +39,7 @@ Currently only a Chrome devtools extension is available.
 2. `npm install`
 3. `npm run dev`
 4. A plain shell with a test app will be available at `localhost:8080`.
+
+### License
+
+[MIT](http://opensource.org/licenses/MIT)
