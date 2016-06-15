@@ -15,10 +15,6 @@
             <i class="material-icons">visibility</i>
             <span>Inspect DOM</span>
           </a>
-          <a class="button" @click="sendToConsole">
-            <i class="material-icons">dvr</i>
-            <span>Send to console</span>
-          </a>
         </span>
       </section>
       <section class="data">
@@ -63,9 +59,6 @@ export default {
       } else {
         window.alert('DOM inspection is not supported in this shell.')
       }
-    },
-    sendToConsole () {
-      bridge.send('send-to-console', this.target.id)
     }
   }
 }
