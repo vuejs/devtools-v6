@@ -1,9 +1,9 @@
 <template>
   <div id="target">
-    <h1>{{msg}}</h1>
+    <h1>{{localMsg}}</h1>
     <button class="add" @click="add">Add</button>
     <button class="remove" @click="rm">Remove</button>
-    <input v-model="msg">
+    <input v-model="localMsg">
     <other v-for="item in items" track-by="$index"></other>
   </div>
 </template>
@@ -18,6 +18,7 @@ export default {
   },
   data() {
     return {
+      localMsg: this.msg,
       items: [1, 2]
     }
   },

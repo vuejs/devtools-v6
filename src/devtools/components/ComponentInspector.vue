@@ -3,7 +3,7 @@
     <div v-show="!hasTarget" class="non-selected">
       Select a component instance to inspect.
     </div>
-    <div v-else class="main">
+    <div v-show="hasTarget" class="main">
       <section class="top">
         <span class="component-name">
           <span style="color:#ccc">&lt;</span>

@@ -68,8 +68,9 @@ function initApp (shell) {
 
     app = new Vue({
       store,
-      template: '<app></app>',
-      components: { App }
-    }).$mount().$appendTo('#container')
+      render (h) {
+        return h(App)
+      }
+    }).$mount('#app')
   })
 }

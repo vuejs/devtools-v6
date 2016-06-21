@@ -44,9 +44,10 @@
     "selenium-server": "2.52.0",
     "stylus-loader": "^1.4.0",
     "url-loader": "^0.5.6",
+    "vue": "^2.0.0-alpha.5",
     "vue-hot-reload-api": "^1.2.1",
     "vue-html-loader": "^1.0.0",
-    "vue-loader": "^8.0.0",
+    "vue-loader": "^9.0.1",
     "vue-style-loader": "^1.0.0",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.12.1"

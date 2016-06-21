@@ -14,18 +14,17 @@ circular.self = circular
 
 new Vue({
   store,
-  template: `
-    <div>
-      <counter></counter>
-      <target></target>
-      <other></other>
-    </div>
-  `,
-  components: { Target, Other, Counter },
+  render (h) {
+    return h('div', null, [
+      h(Counter),
+      h(Target, {props:{msg:'hi'}}),
+      h(Other)
+    ])
+  },
   data: {
     obj: {
       items: items,
       circular
     }
   }
-}).$mount().$appendTo('body')
+}).$mount('#app')

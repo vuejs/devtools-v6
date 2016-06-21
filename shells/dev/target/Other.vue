@@ -20,7 +20,7 @@ export default {
   },
   components: {
     mine: {
-      template: 'This is a fragment instance',
+      render: h => h('div', null, 'mine'),
       data () {
         return {
           // testing all data types

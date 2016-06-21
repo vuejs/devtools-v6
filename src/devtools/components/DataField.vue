@@ -10,7 +10,7 @@
       </span>
       <span class="key">{{ field.key }}</span><span class="colon">:</span>
       <span class="value" :class="valueType">{{ formattedValue }}</span>
-      <div v-if="field.type" class="type {{ field.type | hyphen }}">
+      <div v-if="field.type" :class="['type', hyphen(field.type)]">
         {{ field.type }}
         <div class="meta" v-if="field.meta">
           <div class="meta-field" v-for="(key, val) in field.meta">
@@ -121,9 +121,7 @@ export default {
       if (this.isExpandableType) {
         this.expanded = !this.expanded
       }
-    }
-  },
-  filters: {
+    },
     hyphen: v => v.replace(/\s/g, '-')
   }
 }
