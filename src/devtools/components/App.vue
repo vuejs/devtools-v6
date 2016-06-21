@@ -5,9 +5,7 @@
   <div class="header">
     <img class="logo" src="../assets/logo.png">
     <span class="message-container">
-      <span class="message"
-        v-for="message in messages"
-        transition="slide-up">
+      <span class="message" :key="message" transition="slide-up">
         {{ message }}
       </span>
     </span>
@@ -44,7 +42,7 @@ export default {
   },
   vuex: {
     getters: {
-      messages: state => [state.app.message],
+      message: state => state.app.message,
       tab: state => state.app.tab
     },
     actions: {
