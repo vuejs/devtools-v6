@@ -4,8 +4,11 @@
 // for 10 seconds.
 
 let created = false
-let checkVueInterval
 let checkCount = 0
+
+chrome.devtools.network.onNavigated.addListener(createPanelIfHasVue)
+const checkVueInterval = setInterval(createPanelIfHasVue, 1000)
+createPanelIfHasVue()
 
 function createPanelIfHasVue () {
   if (created || checkCount++ > 10) {
@@ -28,7 +31,3 @@ function createPanelIfHasVue () {
     }
   )
 }
-
-chrome.devtools.network.onNavigated.addListener(createPanelIfHasVue)
-checkVueInterval = setInterval(createPanelIfHasVue, 1000)
-createPanelIfHasVue()

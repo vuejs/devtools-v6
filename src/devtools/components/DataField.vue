@@ -58,8 +58,8 @@ export default {
   },
   computed: {
     valueType () {
-      let value = this.field.value
-      let type = typeof value
+      const value = this.field.value
+      const type = typeof value
       if (value == null) {
         return 'null'
       } else if (
@@ -72,11 +72,11 @@ export default {
       }
     },
     isExpandableType () {
-      let value = this.field.value
+      const value = this.field.value
       return Array.isArray(value) || isPlainObject(value)
     },
     formattedValue () {
-      let value = this.field.value
+      const value = this.field.value
       if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {

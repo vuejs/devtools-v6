@@ -31,8 +31,8 @@ export default {
     },
     dragMove (e) {
       if (this.dragging) {
-        let dx = e.pageX - this.startX
-        let totalWidth = this.$el.offsetWidth
+        const dx = e.pageX - this.startX
+        const totalWidth = this.$el.offsetWidth
         this.split = this.startSplit + ~~(dx / totalWidth * 100)
       }
     },

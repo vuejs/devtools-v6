@@ -1,5 +1,6 @@
 {
-  "extends": "standard",
+  "root": true,
+  "extends": "vue",
   "plugins": [
     "html"
   ],
@@ -8,7 +9,6 @@
     "chrome": true
   },
   "rules": {
-    "arrow-parens": [2, "as-needed"],
-    "standard/object-curly-even-spacing": 0
+    "object-curly-spacing": 0
   }
 }

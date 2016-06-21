@@ -40,7 +40,7 @@ export function installHook (window) {
             listeners[event] = null
           } else {
             for (let i = 0, l = cbs.length; i < l; i++) {
-              let cb = cbs[i]
+              const cb = cbs[i]
               if (cb === fn || cb.fn === fn) {
                 cbs.splice(i, 1)
                 break

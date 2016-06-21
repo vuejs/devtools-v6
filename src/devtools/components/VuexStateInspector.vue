@@ -177,7 +177,7 @@ $blue = #44A1FF
   border 1px solid $border-color
   padding 3px
   background-color #fff
-  
+
   textarea
     width 100%
     height 100px

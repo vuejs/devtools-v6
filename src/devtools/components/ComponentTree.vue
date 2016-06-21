@@ -24,7 +24,7 @@ export default {
   methods: {
     onKeyNav (dir) {
       // somewhat hacky key navigation, but it works!
-      let currentEl = this.$el.querySelector('.instance.selected')
+      const currentEl = this.$el.querySelector('.instance.selected')
       let current = currentEl && currentEl.__vue__
       if (!current) {
         current = this.$children[0]
@@ -55,12 +55,12 @@ export default {
 }
 
 function getAllInstances () {
-  let nodes = [...document.querySelectorAll('.instance')]
+  const nodes = [...document.querySelectorAll('.instance')]
   return nodes.map(n => n.__vue__)
 }
 
 function findByOffset (current, offset) {
-  let all = getAllInstances()
+  const all = getAllInstances()
   let currentIndex = -1
   all.forEach((el, index) => {
     if (current === el) {

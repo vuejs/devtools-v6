@@ -10,7 +10,7 @@ const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-let instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 let currentInspectedId
 let bridge
 let filter = ''
@@ -53,7 +53,7 @@ function connect () {
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
-    let instance = instanceMap.get(id)
+    const instance = instanceMap.get(id)
     if (instance) {
       scrollIntoView(instance)
       highlight(instance)
@@ -97,7 +97,7 @@ function scan () {
       }
       return true
     }
-    let instance = node.__vue__
+    const instance = node.__vue__
     if (instance) {
       if (instance._isFragment) {
         inFragment = true
@@ -120,7 +120,7 @@ function scan () {
 function walk (node, fn) {
   if (node.childNodes) {
     Array.prototype.forEach.call(node.childNodes, function (node) {
-      let stop = fn(node)
+      const stop = fn(node)
       if (!stop) {
         walk(node, fn)
       }
@@ -192,7 +192,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  let name = getInstanceName(instance).toLowerCase()
+  const name = getInstanceName(instance).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -261,7 +261,7 @@ function mark (instance) {
  */
 
 function getInstanceDetails (id) {
-  let instance = instanceMap.get(id)
+  const instance = instanceMap.get(id)
   if (!instance) {
     return {}
   } else {
@@ -288,7 +288,7 @@ function getInstanceDetails (id) {
 
 const classifyCache = Object.create(null)
 function getInstanceName (instance) {
-  let name = instance.$options.name
+  const name = instance.$options.name
   return name
     ? classifyCache[name] || (classifyCache[name] = hook.Vue.util.classify(name))
     : instance.$root === instance
