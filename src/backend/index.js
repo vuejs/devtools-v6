@@ -3,7 +3,7 @@
 
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
-import { stringify } from '../util'
+import { stringify, classify, camelize } from '../util'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -286,11 +286,10 @@ function getInstanceDetails (id) {
  * @return {String}
  */
 
-const classifyCache = Object.create(null)
 function getInstanceName (instance) {
-  const name = instance.$options.name
+  const name = instance.$options.name || instance.$options._componentTag
   return name
-    ? classifyCache[name] || (classifyCache[name] = hook.Vue.util.classify(name))
+    ? classify(name)
     : instance.$root === instance
       ? 'Root'
       : 'Anonymous Component'
@@ -306,10 +305,9 @@ function getInstanceName (instance) {
  */
 
 function processProps (instance) {
-  const props = instance._props
-  if (!props) {
-    return []
-  } else {
+  let props
+  if ((props = instance._props)) {
+    // 1.x
     return Object.keys(props).map(key => {
       const prop = props[key]
       const options = prop.options
@@ -324,6 +322,23 @@ function processProps (instance) {
         }
       }
     })
+  } else if ((props = instance.$options.props)) {
+    // 2.0
+    return Object.keys(props).map(key => {
+      const prop = props[key]
+      key = camelize(key)
+      return {
+        type: 'prop',
+        key,
+        value: instance[key],
+        meta: {
+          type: prop.type ? getPropType(prop.type) : 'any',
+          required: !!prop.required
+        }
+      }
+    })
+  } else {
+    return []
   }
 }
 
@@ -350,7 +365,7 @@ function getPropType (type) {
  */
 
 function processState (instance) {
-  const props = instance._props
+  const props = instance._props || instance.$options.props
   const getters =
     instance.$options.vuex &&
     instance.$options.vuex.getters

@@ -1,7 +1,7 @@
 <style lang="stylus" src="../global.styl"></style>
 
 <template>
-<div class="app">
+<div id="app" class="app">
   <div class="header">
     <img class="logo" src="../assets/logo.png">
     <span class="message-container">

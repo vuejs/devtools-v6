@@ -8,6 +8,7 @@
 
 <script>
 export default {
+  name: 'Counter',
   vuex: {
     getters: {
       count: state => state.count

@@ -24,11 +24,11 @@
         </span>
       </div>
       <div class="entry"
-        v-for="entry in history"
-        :class="{ active: activeIndex === $index }"
-        @click="step($index)">
+        v-for="(entry, index) in history"
+        :class="{ active: activeIndex === index }"
+        @click="step(index)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
-        <span v-if="activeIndex === $index">
+        <span v-if="activeIndex === index">
           <a class="action" @click.stop="commitSelected">
             <i class="material-icons">get_app</i>
             <span>Commit</span>

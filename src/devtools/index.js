@@ -18,7 +18,7 @@ export function initDevTools (shell) {
   initApp(shell)
   shell.onReload(() => {
     if (app) {
-      app.$destroy(true)
+      app.$destroy()
     }
     bridge.removeAllListeners()
     initApp(shell)

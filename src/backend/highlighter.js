@@ -1,3 +1,5 @@
+import { inDoc } from '../util'
+
 const overlay = document.createElement('div')
 overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
 overlay.style.position = 'fixed'
@@ -36,7 +38,7 @@ export function unHighlight () {
  */
 
 export function getInstanceRect (instance) {
-  if (!util().inDoc(instance.$el)) {
+  if (!inDoc(instance.$el)) {
     return
   }
   if (instance._isFragment) {

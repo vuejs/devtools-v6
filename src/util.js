@@ -1,5 +1,36 @@
 import CircularJSON from 'circular-json-es6'
 
+function cached (fn) {
+  const cache = Object.create(null)
+  return function cachedFn (str) {
+    const hit = cache[str]
+    return hit || (cache[str] = fn(str))
+  }
+}
+
+var classifyRE = /(?:^|[-_\/])(\w)/g
+export const classify = cached((str) => {
+  return str.replace(classifyRE, toUpper)
+})
+
+const camelizeRE = /-(\w)/g
+export const camelize = cached((str) => {
+  return str.replace(camelizeRE, toUpper)
+})
+
+function toUpper (_, c) {
+  return c ? c.toUpperCase() : ''
+}
+
+export function inDoc (node) {
+  if (!node) return false
+  var doc = node.ownerDocument.documentElement
+  var parent = node.parentNode
+  return doc === node ||
+    doc === parent ||
+    !!(parent && parent.nodeType === 1 && (doc.contains(parent)))
+}
+
 /**
  * Stringify data using CircularJSON.
  *

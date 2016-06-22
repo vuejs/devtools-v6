@@ -13,7 +13,7 @@
       <div v-if="field.type" :class="['type', hyphen(field.type)]">
         {{ field.type }}
         <div class="meta" v-if="field.meta">
-          <div class="meta-field" v-for="(key, val) in field.meta">
+          <div class="meta-field" v-for="(val, key) in field.meta">
             <span class="key">{{ key }}</span>
             <span class="value">{{ val }}</span>
           </div>
@@ -23,7 +23,6 @@
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
         v-for="subField in limitedSubFields"
-        track-by="$index"
         :field="subField"
         :depth="depth + 1">
       </data-field>

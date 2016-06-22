@@ -22,8 +22,7 @@
     </section>
     <div class="vuex-state-inspector">
       <data-field
-        v-for="(key, value) of activeState"
-        track-by="$index"
+        v-for="(value, key) of activeState"
         :field="{ key: key, value: value }"
         :depth="0">
       </data-field>

@@ -11,6 +11,7 @@
 <script>
 import Other from './Other.vue'
 export default {
+  name: 'Target',
   components: { Other },
   props: {
     msg: String,
