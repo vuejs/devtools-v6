@@ -4,7 +4,7 @@
     <button class="add" @click="add">Add</button>
     <button class="remove" @click="rm">Remove</button>
     <input v-model="localMsg">
-    <other v-for="item in items" track-by="$index"></other>
+    <other v-for="item in items"></other>
   </div>
 </template>
 

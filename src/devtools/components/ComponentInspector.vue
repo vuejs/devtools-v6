@@ -23,7 +23,7 @@
       </section>
       <section class="data">
         <data-field v-for="field in sortedState"
-          track-by="key"
+          :key="field.key"
           :field="field"
           :depth="0">
         </data-field>

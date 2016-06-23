@@ -33,7 +33,6 @@
     <div v-if="expanded">
       <component-instance
         v-for="child in sortedChildren"
-        track-by="id"
         :instance="child"
         :depth="depth + 1">
       </component-instance>
