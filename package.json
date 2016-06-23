@@ -50,6 +50,6 @@
   "dependencies": {
     "circular-json-es6": "^2.0.0",
     "vue": "^2.0.0-alpha.6",
-    "vuex": "^0.7.1"
+    "vuex": "^0.8.0"
   }
 }
