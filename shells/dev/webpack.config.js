@@ -1,3 +1,5 @@
+var path = require('path')
+
 module.exports = {
   entry: {
     devtools: './src/devtools.js',
@@ -9,6 +11,11 @@ module.exports = {
     path: __dirname + '/build',
     publicPath: '/build/',
     filename: '[name].js',
+  },
+  resolve: {
+    alias: {
+      src: path.resolve(__dirname, '../../src')
+    }
   },
   module: {
     loaders: [
@@ -27,10 +34,5 @@ module.exports = {
       }
     ]
   },
-  vue: {
-    autoprefixer: {
-      browsers: ['last 2 Chrome versions']
-    }
-  },
-  devtool: '#eval-source-map'
+  devtool: '#source-map'
 }

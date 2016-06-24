@@ -5,7 +5,11 @@
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
           <span>Export</span>
-          <span class="message" transition="slide-up" v-show="showStateCopiedMessage">(Copied to clipboard!)</span>
+          <span class="message"
+            transition="slide-up"
+            v-show="showStateCopiedMessage">
+            (Copied to clipboard!)
+          </span>
         </a>
         <a class="button" @click="toggleImportStatePopup">
           <i class="material-icons">content_paste</i>
@@ -15,9 +19,13 @@
 
       <div class="import-state" transition="slide-up" v-if="showImportStatePopup">
         <textarea placeholder="Paste state object here to import it..."
-          @input="importState"
+          @input="tryImportState"
           @keydown.esc="closeImportStatePopup"></textarea>
-        <span class="message invalid-json" transition="slide-up" v-show="showBadJsonMessage">INVALID JSON!</span>
+        <span class="message invalid-json"
+          transition="slide-up"
+          v-show="showBadJSONMessage">
+          INVALID JSON!
+        </span>
       </div>
     </section>
     <div class="vuex-state-inspector">
@@ -33,34 +41,28 @@
 <script>
 import CircularJSON from 'circular-json-es6'
 import DataField from './DataField.vue'
-import store from '../vuex/store'
+import { activeState } from '../vuex/modules/vuex/getters'
+import { importState } from '../vuex/modules/vuex/actions'
 import { stringify } from '../../util'
+import debounce from 'lodash.debounce'
 
 export default {
   components: {
     DataField
   },
+  data () {
+    return {
+      showStateCopiedMessage: false,
+      showBadJSONMessage: false,
+      showImportStatePopup: false
+    }
+  },
   vuex: {
     getters: {
-      activeState ({ vuex: { base, history, activeIndex }}) {
-        const entry = history[activeIndex]
-        const res = {}
-        if (entry) {
-          res.type = entry.mutation.type
-          res.payload = CircularJSON.parse(entry.mutation.payload)
-        }
-        res.state = CircularJSON.parse(entry ? entry.state : base)
-        return res
-      },
-      showStateCopiedMessage ({ vuex: { showStateCopiedMessage }}) {
-        return showStateCopiedMessage
-      },
-      showBadJsonMessage ({ vuex: { showBadJsonMessage }}) {
-        return showBadJsonMessage
-      },
-      showImportStatePopup ({ vuex: { showImportStatePopup }}) {
-        return showImportStatePopup
-      }
+      activeState
+    },
+    actions: {
+      importState
     }
   },
   watch: {
@@ -74,44 +76,46 @@ export default {
   },
   methods: {
     copyStateToClipboard () {
-      const dummyTextArea = document.createElement('textarea')
-      dummyTextArea.textContent = stringify(this.activeState.state)
-      const body = document.getElementsByTagName('body')[0]
-      body.appendChild(dummyTextArea)
-      dummyTextArea.select()
-      document.execCommand('copy')
-      body.removeChild(dummyTextArea)
-
-      store.dispatch('vuex/SHOW_STATE_COPIED_MESSAGE')
-      window.setTimeout(() => store.dispatch('vuex/HIDE_STATE_COPIED_MESSAGE'), 2000)
+      copyToClipboard(this.activeState.state)
+      this.showStateCopiedMessage = true
+      window.setTimeout(() => {
+        this.showStateCopiedMessage = false
+      }, 2000)
     },
     toggleImportStatePopup () {
       if (this.showImportStatePopup) {
         this.closeImportStatePopup()
       } else {
-        store.dispatch('vuex/SHOW_IMPORT_STATE_POPUP')
+        this.showImportStatePopup = true
       }
     },
     closeImportStatePopup () {
-      store.dispatch('vuex/HIDE_IMPORT_STATE_POPUP')
+      this.showImportStatePopup = false
     },
-    importState (e) {
+    tryImportState: debounce(function (e) {
       const importedStr = e.target.value
-
       if (importedStr.length === 0) {
-        store.dispatch('vuex/HIDE_BAD_JSON_MESSAGE')
+        this.showBadJSONMessage = false
       } else {
         try {
           CircularJSON.parse(importedStr) // Try to parse
-          bridge.send('vuex:travel-to-state', importedStr) // set it on app store
-          store.dispatch('vuex/INIT', importedStr) // set it in dev tools
-          store.dispatch('vuex/HIDE_BAD_JSON_MESSAGE')
+          this.importState(importedStr)
+          this.showBadJSONMessage = false
         } catch (e) {
-          store.dispatch('vuex/SHOW_BAD_JSON_MESSAGE')
+          this.showBadJSONMessage = true
         }
       }
-    }
+    }, 250)
   }
+}
+
+function copyToClipboard (state) {
+  const dummyTextArea = document.createElement('textarea')
+  dummyTextArea.textContent = stringify(state)
+  document.body.appendChild(dummyTextArea)
+  dummyTextArea.select()
+  document.execCommand('copy')
+  document.body.removeChild(dummyTextArea)
 }
 </script>
 

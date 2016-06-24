@@ -13,6 +13,11 @@ module.exports = {
     path: __dirname + '/build',
     filename: '[name].js',
   },
+  resolve: {
+    alias: {
+      src: path.resolve(__dirname, '../../src')
+    }
+  },
   module: {
     loaders: [
       {
@@ -29,11 +34,6 @@ module.exports = {
         loader: 'url?limit=0'
       }
     ]
-  },
-  vue: {
-    autoprefixer: {
-      browsers: ['last 2 Chrome versions']
-    }
   },
   devtool: process.env.NODE_ENV !== 'production'
     ? '#inline-source-map'

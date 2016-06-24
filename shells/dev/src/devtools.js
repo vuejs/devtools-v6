@@ -1,5 +1,5 @@
-import { initDevTools } from '../../../src/devtools'
-import Bridge from '../../../src/bridge'
+import { initDevTools } from 'src/devtools'
+import Bridge from 'src/bridge'
 
 const target = document.getElementById('target')
 const targetWindow = target.contentWindow

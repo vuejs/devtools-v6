@@ -48,6 +48,14 @@
 
 <script>
 import keyNavMixin from '../mixins/key-nav'
+import {
+  commitAll,
+  revertAll,
+  commitSelected,
+  revertSelected,
+  reset,
+  step
+} from '../vuex/modules/vuex/actions'
 
 export default {
   mixins: [keyNavMixin],
@@ -58,34 +66,12 @@ export default {
       activeIndex: state => state.vuex.activeIndex
     },
     actions: {
-      commitAll ({ dispatch, state }) {
-        if (state.vuex.history.length > 0) {
-          dispatch('vuex/COMMIT_ALL')
-          travelTo(state)
-        }
-      },
-      revertAll ({ dispatch, state }) {
-        if (state.vuex.history.length > 0) {
-          dispatch('vuex/REVERT_ALL')
-          travelTo(state)
-        }
-      },
-      commitSelected ({ dispatch, state }) {
-        dispatch('vuex/COMMIT_SELECTED')
-        travelTo(state)
-      },
-      revertSelected ({ dispatch, state }) {
-        dispatch('vuex/REVERT_SELECTED')
-        travelTo(state)
-      },
-      reset ({ dispatch, state }) {
-        dispatch('vuex/RESET')
-        travelTo(state)
-      },
-      step ({ dispatch, state }, index) {
-        dispatch('vuex/STEP', index)
-        travelTo(state)
-      }
+      commitAll,
+      revertAll,
+      commitSelected,
+      revertSelected,
+      reset,
+      step
     }
   },
   filters: {
@@ -102,20 +88,6 @@ export default {
       }
     }
   }
-}
-
-/**
- * Notify application to travel to corresponding state.
- *
- * @param {Object} state
- */
-
-function travelTo (state) {
-  const { history, activeIndex, base } = state.vuex
-  const targetState = activeIndex > -1
-    ? history[activeIndex].state
-    : base
-  bridge.send('vuex:travel-to-state', targetState)
 }
 </script>
 

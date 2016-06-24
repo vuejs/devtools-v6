@@ -1,5 +1,5 @@
-import { initBackend } from '../../../src/backend'
-import Bridge from '../../../src/bridge'
+import { initBackend } from 'src/backend'
+import Bridge from 'src/bridge'
 
 const bridge = new Bridge({
   listen (fn) {
