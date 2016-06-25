@@ -33,6 +33,7 @@
     <div v-if="expanded">
       <component-instance
         v-for="child in sortedChildren"
+        :key="child.id"
         :instance="child"
         :depth="depth + 1">
       </component-instance>
