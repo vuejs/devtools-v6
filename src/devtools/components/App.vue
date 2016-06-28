@@ -27,7 +27,7 @@
       <span>Components</span>
     </a>
   </div>
-  <component :is="tab" class="container" keep-alive></component>
+  <component :is="tab" class="container"></component>
 </div>
 </template>
 
