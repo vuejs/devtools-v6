@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -50,7 +50,7 @@
   "dependencies": {
     "circular-json-es6": "^2.0.0",
     "lodash.debounce": "^4.0.6",
-    "vue": "^2.0.0-alpha.6",
-    "vuex": "^0.8.0"
+    "vue": "^2.0.0-alpha.7",
+    "vuex": "^0.8.2"
   }
 }
