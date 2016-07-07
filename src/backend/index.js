@@ -225,7 +225,10 @@ function capture (instance, _, list) {
     ret.top = Infinity
   }
   // check router view
-  if (instance._routerView) {
+  if (instance._routerView || (
+    instance.$vnode &&
+    instance.$vnode.data.routerView
+  )) {
     ret.isRouterView = true
     if (!instance._inactive) {
       const matched = instance.$route.matched
