@@ -225,18 +225,18 @@ function capture (instance, _, list) {
     ret.top = Infinity
   }
   // check router view
-  if (instance._routerView || (
-    instance.$vnode &&
-    instance.$vnode.data.routerView
-  )) {
+  const isRouterView2 = instance.$vnode && instance.$vnode.data.routerView
+  if (instance._routerView || isRouterView2) {
     ret.isRouterView = true
     if (!instance._inactive) {
       const matched = instance.$route.matched
-      const depth = instance._routerView.depth
+      const depth = isRouterView2
+        ? instance.$vnode.data.routerViewDepth
+        : instance._routerView.depth
       ret.matchedRouteSegment =
         matched &&
         matched[depth] &&
-        matched[depth].handler.path
+        (isRouterView2 ? matched[depth].path : matched[depth].handler.path)
     }
   }
   return ret
