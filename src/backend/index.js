@@ -411,9 +411,11 @@ function processRouteContext (instance) {
   const route = instance.$route
   if (route) {
     const { path, query, params } = route
+    const value = { path, query, params }
+    if (route.fullPath) value.fullPath = route.fullPath
     return [{
       key: '$route',
-      value: { path, query, params }
+      value
     }]
   } else {
     return []
