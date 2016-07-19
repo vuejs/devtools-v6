@@ -351,7 +351,7 @@ function processProps (instance) {
  * @param {Function} fn
  */
 
-const fnTypeRE = /^function (\w+)\(\)/
+const fnTypeRE = /^function (\w+)\(/
 function getPropType (type) {
   return typeof type === 'function'
     ? type.toString().match(fnTypeRE)[1]
