@@ -413,6 +413,8 @@ function processRouteContext (instance) {
     const { path, query, params } = route
     const value = { path, query, params }
     if (route.fullPath) value.fullPath = route.fullPath
+    if (route.hash) value.hash = route.hash
+    if (route.name) value.name = route.name
     return [{
       key: '$route',
       value
