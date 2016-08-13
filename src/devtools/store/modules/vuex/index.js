@@ -1,3 +1,6 @@
+import CircularJSON from 'circular-json-es6'
+import * as actions from './actions'
+
 const state = {
   hasVuex: false,
   initial: null,
@@ -50,7 +53,22 @@ function reset (state) {
   state.activeIndex = -1
 }
 
+const getters = {
+  vuexActiveState ({ base, history, activeIndex }) {
+    const entry = history[activeIndex]
+    const res = {}
+    if (entry) {
+      res.type = entry.mutation.type
+      res.payload = CircularJSON.parse(entry.mutation.payload)
+    }
+    res.state = CircularJSON.parse(entry ? entry.state : base)
+    return res
+  }
+}
+
 export default {
   state,
-  mutations
+  mutations,
+  actions,
+  getters
 }

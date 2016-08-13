@@ -48,23 +48,6 @@ export default {
     instance: Object,
     depth: Number
   },
-  vuex: {
-    getters: {
-      expansionMap: state => state.components.expansionMap,
-      inspectedId: state => state.components.inspectedInstance.id
-    },
-    actions: {
-      toggle ({ dispatch }) {
-        dispatch('TOGGLE_INSTANCE', this.instance.id, !this.expanded)
-      },
-      expand ({ dispatch }) {
-        dispatch('TOGGLE_INSTANCE', this.instance.id, true)
-      },
-      collapse ({ dispatch }) {
-        dispatch('TOGGLE_INSTANCE', this.instance.id, false)
-      }
-    }
-  },
   created () {
     // expand root by default
     if (this.depth === 0) {
@@ -73,10 +56,10 @@ export default {
   },
   computed: {
     expanded () {
-      return !!this.expansionMap[this.instance.id]
+      return !!this.$store.state.components.expansionMap[this.instance.id]
     },
     selected () {
-      return this.instance.id === this.inspectedId
+      return this.instance.id === this.$store.state.components.inspectedInstance.id
     },
     sortedChildren () {
       return this.instance.children.slice().sort((a, b) => {
@@ -85,6 +68,21 @@ export default {
     }
   },
   methods: {
+    toggle () {
+      this.toggleWithValue(!this.expanded)
+    },
+    expand () {
+      this.toggleWithValue(true)
+    },
+    collapse () {
+      this.toggleWithValue(false)
+    },
+    toggleWithValue (val) {
+      this.$store.commit('TOGGLE_INSTANCE', {
+        id: this.instance.id,
+        expanded: val
+      })
+    },
     select () {
       bridge.send('select-instance', this.instance.id)
     },

@@ -16,13 +16,12 @@
 import SplitPane from './SplitPane.vue'
 import VuexHistory from './VuexHistory.vue'
 import VuexStateInspector from './VuexStateInspector.vue'
+import { mapState } from 'vuex'
 
 export default {
-  vuex: {
-    getters: {
-      hasVuex: state => state.vuex.hasVuex
-    }
-  },
+  computed: mapState({
+    hasVuex: state => state.vuex.hasVuex
+  }),
   components: {
     SplitPane,
     VuexHistory,

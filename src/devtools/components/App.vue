@@ -34,25 +34,22 @@
 <script>
 import ComponentsTab from './ComponentsTab.vue'
 import VuexTab from './VuexTab.vue'
+import { mapState } from 'vuex'
 
 export default {
   components: {
     components: ComponentsTab,
     vuex: VuexTab
   },
-  vuex: {
-    getters: {
-      message: state => state.app.message,
-      tab: state => state.app.tab
-    },
-    actions: {
-      switchTab: ({ dispatch }, tab) => {
-        bridge.send('switch-tab', tab)
-        dispatch('SWITCH_TAB', tab)
-      }
-    }
-  },
+  computed: mapState({
+    message: state => state.app.message,
+    tab: state => state.app.tab
+  }),
   methods: {
+    switchTab (tab) {
+      bridge.send('switch-tab', tab)
+      this.$store.commit('SWITCH_TAB', tab)
+    },
     refresh () {
       bridge.send('refresh')
     }

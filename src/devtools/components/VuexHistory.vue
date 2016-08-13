@@ -48,38 +48,29 @@
 
 <script>
 import keyNavMixin from '../mixins/key-nav'
-import {
-  commitAll,
-  revertAll,
-  commitSelected,
-  revertSelected,
-  reset,
-  step
-} from '../vuex/modules/vuex/actions'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   mixins: [keyNavMixin],
-  vuex: {
-    getters: {
-      history: state => state.vuex.history,
-      lastCommit: state => state.vuex.lastCommit,
-      activeIndex: state => state.vuex.activeIndex
-    },
-    actions: {
-      commitAll,
-      revertAll,
-      commitSelected,
-      revertSelected,
-      reset,
-      step
-    }
-  },
+  computed: mapState({
+    history: state => state.vuex.history,
+    lastCommit: state => state.vuex.lastCommit,
+    activeIndex: state => state.vuex.activeIndex
+  }),
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
     }
   },
   methods: {
+    ...mapActions([
+      'commitAll',
+      'revertAll',
+      'commitSelected',
+      'revertSelected',
+      'reset',
+      'step'
+    ]),
     onKeyNav (dir) {
       if (dir === 'up') {
         this.step(this.activeIndex - 1)

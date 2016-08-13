@@ -30,6 +30,7 @@
     "babel-loader": "^6.0.0",
     "babel-plugin-transform-runtime": "^6.0.0",
     "babel-preset-es2015": "^6.0.0",
+    "babel-preset-stage-2": "^6.13.0",
     "babel-runtime": "^6.0.0",
     "chromedriver": "^2.21.2",
     "cross-env": "^1.0.5",
@@ -50,7 +51,7 @@
   "dependencies": {
     "circular-json-es6": "^2.0.0",
     "lodash.debounce": "^4.0.6",
-    "vue": "^2.0.0-alpha.7",
-    "vuex": "^0.8.2"
+    "vue": "^2.0.0-rc.1",
+    "vuex": "^2.0.0-rc.4"
   }
 }

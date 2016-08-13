@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './components/App.vue'
-import store from './vuex/store'
+import store from './store'
 import CircularJSON from 'circular-json-es6'
 
 let app = null
@@ -37,33 +37,33 @@ function initApp (shell) {
     window.bridge = bridge
 
     bridge.once('ready', version => {
-      store.dispatch(
+      store.commit(
         'SHOW_MESSAGE',
         'Ready. Detected Vue ' + version + '.'
       )
     })
 
     bridge.once('proxy-fail', () => {
-      store.dispatch(
+      store.commit(
         'SHOW_MESSAGE',
         'Proxy injection failed.'
       )
     })
 
     bridge.on('flush', payload => {
-      store.dispatch('FLUSH', CircularJSON.parse(payload))
+      store.commit('FLUSH', CircularJSON.parse(payload))
     })
 
     bridge.on('instance-details', details => {
-      store.dispatch('RECEIVE_INSTANCE_DETAILS', CircularJSON.parse(details))
+      store.commit('RECEIVE_INSTANCE_DETAILS', CircularJSON.parse(details))
     })
 
     bridge.on('vuex:init', state => {
-      store.dispatch('vuex/INIT', state)
+      store.commit('vuex/INIT', state)
     })
 
     bridge.on('vuex:mutation', payload => {
-      store.dispatch('vuex/RECEIVE_MUTATION', payload)
+      store.commit('vuex/RECEIVE_MUTATION', payload)
     })
 
     app = new Vue({

@@ -41,10 +41,9 @@
 <script>
 import CircularJSON from 'circular-json-es6'
 import DataField from './DataField.vue'
-import { activeState } from '../vuex/modules/vuex/getters'
-import { importState } from '../vuex/modules/vuex/actions'
 import { stringify } from '../../util'
 import debounce from 'lodash.debounce'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -57,14 +56,9 @@ export default {
       showImportStatePopup: false
     }
   },
-  vuex: {
-    getters: {
-      activeState
-    },
-    actions: {
-      importState
-    }
-  },
+  computed: mapGetters({
+    activeState: 'vuexActiveState'
+  }),
   watch: {
     showImportStatePopup (val) {
       if (val) {
@@ -92,14 +86,14 @@ export default {
     closeImportStatePopup () {
       this.showImportStatePopup = false
     },
-    tryImportState: debounce(function (e) {
+    importState: debounce(function (e) {
       const importedStr = e.target.value
       if (importedStr.length === 0) {
         this.showBadJSONMessage = false
       } else {
         try {
           CircularJSON.parse(importedStr) // Try to parse
-          this.importState(importedStr)
+          this.$store.dispatch('importState', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true

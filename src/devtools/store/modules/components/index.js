@@ -24,7 +24,7 @@ const mutations = {
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = Object.freeze(instance)
   },
-  TOGGLE_INSTANCE ({ expansionMap }, id, expanded) {
+  TOGGLE_INSTANCE ({ expansionMap }, { id, expanded }) {
     set(expansionMap, id, expanded)
   }
 }
