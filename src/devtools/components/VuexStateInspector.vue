@@ -19,7 +19,7 @@
 
       <div class="import-state" transition="slide-up" v-if="showImportStatePopup">
         <textarea placeholder="Paste state object here to import it..."
-          @input="tryImportState"
+          @input="importState"
           @keydown.esc="closeImportStatePopup"></textarea>
         <span class="message invalid-json"
           transition="slide-up"
