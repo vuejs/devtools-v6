@@ -415,6 +415,7 @@ function processRouteContext (instance) {
     if (route.fullPath) value.fullPath = route.fullPath
     if (route.hash) value.hash = route.hash
     if (route.name) value.name = route.name
+    if (route.meta) value.meta = route.meta
     return [{
       key: '$route',
       value
