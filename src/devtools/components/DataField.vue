@@ -52,7 +52,7 @@ export default {
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0
+      expanded: this.depth === 0 && this.field.key !== '$route'
     }
   },
   computed: {
