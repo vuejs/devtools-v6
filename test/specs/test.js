@@ -2,7 +2,7 @@ module.exports = {
   'vue-devtools e2e tests': function (browser) {
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
-      .waitForElementVisible('.app', 5000)
+      .waitForElementVisible('.message', 1000)
       .assert.containsText('.message', 'Ready. Detected Vue')
       .assert.elementPresent('.instance')
       .assert.containsText('.instance', 'Root')
@@ -16,7 +16,7 @@ module.exports = {
       .assert.containsText('.data-field', 'obj: Object')
 
       // should expand root by default
-      .assert.elementCount('.instance', 4)
+      .assert.count('.instance', 4)
 
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
@@ -27,24 +27,24 @@ module.exports = {
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
-      .assert.elementCount('.instance', 6)
+      .assert.count('.instance', 6)
 
       // add/remove component from app side
       .frame('target')
         .click('.add')
         .frame(null)
-      .assert.elementCount('.instance', 9)
+      .assert.count('.instance', 9)
       .frame('target')
         .click('.remove')
         .frame(null)
-      .assert.elementCount('.instance', 8)
+      .assert.count('.instance', 8)
 
       // filter components
       .setValue('.search-box', 'counter')
-      .assert.elementCount('.instance', 1)
+      .assert.count('.instance', 1)
       .clearValue('.search-box')
       .setValue('.search-box', 'target')
-      .assert.elementCount('.instance', 5)
+      .assert.count('.instance', 5)
 
       // vuex
       .frame('target')
@@ -54,7 +54,7 @@ module.exports = {
         .assert.containsText('#counter p', '1')
         .frame(null)
       .click('.button.vuex')
-      .assert.elementCount('.history .entry', 4)
+      .assert.count('.history .entry', 4)
       .assert.containsText('.vuex-state-inspector', 'type: "DECREMENT"')
       .assert.containsText('.vuex-state-inspector', 'count: 1')
 
@@ -85,7 +85,7 @@ module.exports = {
       // revert
       .click('.history .entry:nth-child(4)')
       .click('.history .entry:nth-child(4) .action:nth-child(2)')
-      .assert.elementCount('.history .entry', 3)
+      .assert.count('.history .entry', 3)
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
       .assert.containsText('.vuex-state-inspector', 'count: 2')
       .frame('target')
@@ -94,7 +94,7 @@ module.exports = {
 
       // commit
       .click('.history .entry:nth-child(3) .action')
-      .assert.elementCount('.history .entry', 1)
+      .assert.count('.history .entry', 1)
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'active')
       .assert.containsText('.vuex-state-inspector', 'count: 2')
       .frame('target')

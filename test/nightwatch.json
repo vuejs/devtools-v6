@@ -1,6 +1,7 @@
 {
   "src_folders" : ["test/specs"],
-  "custom_assertions_path": ["test/assertions"],
+  "custom_commands_path": ["node_modules/nightwatch-helpers/commands"],
+  "custom_assertions_path": ["node_modules/nightwatch-helpers/assertions"],
 
   "selenium" : {
     "start_process" : true,
