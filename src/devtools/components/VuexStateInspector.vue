@@ -5,11 +5,11 @@
         <a class="button" @click="copyStateToClipboard">
           <i class="material-icons">content_copy</i>
           <span>Export</span>
-          <span class="message"
-            transition="slide-up"
-            v-show="showStateCopiedMessage">
-            (Copied to clipboard!)
-          </span>
+          <transition name="slide-up">
+            <span class="message" v-show="showStateCopiedMessage">
+              (Copied to clipboard!)
+            </span>
+          </transition>
         </a>
         <a class="button" @click="toggleImportStatePopup">
           <i class="material-icons">content_paste</i>
@@ -17,16 +17,18 @@
         </a>
       </div>
 
-      <div class="import-state" transition="slide-up" v-if="showImportStatePopup">
-        <textarea placeholder="Paste state object here to import it..."
-          @input="importState"
-          @keydown.esc="closeImportStatePopup"></textarea>
-        <span class="message invalid-json"
-          transition="slide-up"
-          v-show="showBadJSONMessage">
-          INVALID JSON!
-        </span>
-      </div>
+      <transition name="slide-up">
+        <div class="import-state" v-if="showImportStatePopup">
+          <textarea placeholder="Paste state object here to import it..."
+            @input="importState"
+            @keydown.esc="closeImportStatePopup"></textarea>
+          <transition name="slide-up">
+            <span class="message invalid-json" v-show="showBadJSONMessage">
+              INVALID JSON!
+            </span>
+          </transition>
+        </div>
+      </transition>
     </section>
     <div class="vuex-state-inspector">
       <data-field

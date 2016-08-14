@@ -5,9 +5,9 @@
   <div class="header">
     <img class="logo" src="../assets/logo.png">
     <span class="message-container">
-      <span class="message" :key="message" transition="slide-up">
-        {{ message }}
-      </span>
+      <transition name="slide-up">
+        <span class="message" :key="message">{{ message }}</span>
+      </transition>
     </span>
     <a class="button refresh"
       @click="refresh">
