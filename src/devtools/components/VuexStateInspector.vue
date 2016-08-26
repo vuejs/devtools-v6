@@ -33,7 +33,7 @@
     <div class="vuex-state-inspector">
       <data-field
         v-for="(value, key) of activeState"
-        :field="{ key: key, value: value }"
+        :field="{ key, value }"
         :depth="0">
       </data-field>
     </div>
