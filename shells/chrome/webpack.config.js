@@ -23,7 +23,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loader:  'babel',
+        loader:  'buble',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
       },
       {
@@ -35,6 +35,11 @@ module.exports = {
         loader: 'url?limit=0'
       }
     ]
+  },
+  vue: {
+    loaders: {
+      js: 'buble'
+    }
   },
   devtool: process.env.NODE_ENV !== 'production'
     ? '#inline-source-map'
