@@ -43,7 +43,7 @@ export function getInstanceRect (instance) {
   }
   if (instance._isFragment) {
     return getFragmentRect(instance)
-  } else {
+  } else if (instance.$el.nodeType === 1) {
     return instance.$el.getBoundingClientRect()
   }
 }
