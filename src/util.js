@@ -32,14 +32,25 @@ export function inDoc (node) {
 }
 
 /**
- * Stringify data using CircularJSON.
- *
- * @param {*} data
- * @return {String}
+ * Stringify/parse data using CircularJSON.
  */
 
+export const UNDEFINED = '__vue_devtool_undefined__'
+
 export function stringify (data) {
-  return CircularJSON.stringify(data, (key, val) => sanitize(val))
+  return CircularJSON.stringify(data, replacer)
+}
+
+function replacer (key, val) {
+  if (val === undefined) {
+    return UNDEFINED
+  } else {
+    return sanitize(val)
+  }
+}
+
+export function parse (data) {
+  return CircularJSON.parse(data)
 }
 
 /**
@@ -65,7 +76,7 @@ function sanitize (data) {
   }
 }
 
-function isPlainObject (obj) {
+export function isPlainObject (obj) {
   return Object.prototype.toString.call(obj) === '[object Object]'
 }
 

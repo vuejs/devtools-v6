@@ -37,11 +37,9 @@
 </template>
 
 <script>
-const rawTypeRE = /^\[object (\w+)\]$/
+import { UNDEFINED, isPlainObject } from '../../util'
 
-function isPlainObject (value) {
-  return Object.prototype.toString.call(value) === '[object Object]'
-}
+const rawTypeRE = /^\[object (\w+)\]$/
 
 export default {
   name: 'DataField',
@@ -59,7 +57,7 @@ export default {
     valueType () {
       const value = this.field.value
       const type = typeof value
-      if (value == null) {
+      if (value == null || value === UNDEFINED) {
         return 'null'
       } else if (
         value instanceof RegExp ||
@@ -76,7 +74,11 @@ export default {
     },
     formattedValue () {
       const value = this.field.value
-      if (Array.isArray(value)) {
+      if (value === null) {
+        return 'null'
+      } else if (value === UNDEFINED) {
+        return 'undefined'
+      } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
@@ -89,8 +91,6 @@ export default {
         }
       } else if (value instanceof RegExp) {
         return value.toString()
-      } else if (value == null) {
-        return value === undefined ? 'undefined' : 'null'
       } else {
         return value
       }

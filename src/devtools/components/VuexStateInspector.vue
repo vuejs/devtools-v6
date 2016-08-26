@@ -41,9 +41,8 @@
 </template>
 
 <script>
-import CircularJSON from 'circular-json-es6'
 import DataField from './DataField.vue'
-import { stringify } from '../../util'
+import { stringify, parse } from '../../util'
 import debounce from 'lodash.debounce'
 import { mapGetters } from 'vuex'
 
@@ -94,7 +93,7 @@ export default {
         this.showBadJSONMessage = false
       } else {
         try {
-          CircularJSON.parse(importedStr) // Try to parse
+          parse(importedStr) // Try to parse
           this.$store.dispatch('importState', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {

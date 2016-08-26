@@ -1,4 +1,4 @@
-import CircularJSON from 'circular-json-es6'
+import { parse } from '../../../../util'
 import * as actions from './actions'
 
 const state = {
@@ -60,10 +60,10 @@ const getters = {
     if (entry) {
       res.type = entry.mutation.type
       if (entry.mutation.payload) {
-        res.payload = CircularJSON.parse(entry.mutation.payload)
+        res.payload = parse(entry.mutation.payload)
       }
     }
-    res.state = CircularJSON.parse(entry ? entry.state : base)
+    res.state = parse(entry ? entry.state : base)
     return res
   }
 }

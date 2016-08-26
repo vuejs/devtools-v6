@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './components/App.vue'
 import store from './store'
-import CircularJSON from 'circular-json-es6'
+import { parse } from '../util'
 
 let app = null
 
@@ -51,11 +51,11 @@ function initApp (shell) {
     })
 
     bridge.on('flush', payload => {
-      store.commit('FLUSH', CircularJSON.parse(payload))
+      store.commit('FLUSH', parse(payload))
     })
 
     bridge.on('instance-details', details => {
-      store.commit('RECEIVE_INSTANCE_DETAILS', CircularJSON.parse(details))
+      store.commit('RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
     bridge.on('vuex:init', state => {

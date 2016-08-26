@@ -1,5 +1,4 @@
-import CircularJSON from 'circular-json-es6'
-import { stringify } from '../util'
+import { stringify, parse } from '../util'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
@@ -22,6 +21,6 @@ export function initVuexBackend (hook, bridge) {
 
   // devtool -> application
   bridge.on('vuex:travel-to-state', state => {
-    hook.emit('vuex:travel-to-state', CircularJSON.parse(state))
+    hook.emit('vuex:travel-to-state', parse(state))
   })
 }
