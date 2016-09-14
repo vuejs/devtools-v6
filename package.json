@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "circular-json-es6": "^2.0.0",
+    "glob": "^7.0.6",
     "lodash.debounce": "^4.0.6",
     "vue": "^2.0.0-rc.3",
     "vuex": "^2.0.0-rc.4"
