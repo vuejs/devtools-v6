@@ -1,15 +1,16 @@
 var path = require('path')
 var webpack = require('webpack')
-
+var glob = require('glob')
+var entryList = glob.sync("./src/**/*.js", {
+	cwd:'./',
+	nobrace:true
+});
+var entryObj = {};
+entryList.forEach((one)=>{
+	entryObj[one.replace(/.\/src\/|.js$/g, '')] = '' + one;
+});
 module.exports = {
-  entry: {
-    hook: './src/hook.js',
-    devtools: './src/devtools.js',
-    background: './src/background.js',
-    'devtools-background': './src/devtools-background.js',
-    backend: './src/backend.js',
-    proxy: './src/proxy.js'
-  },
+  entry: entryObj,
   output: {
     path: __dirname + '/build',
     filename: '[name].js',
