@@ -50,7 +50,11 @@ export default {
       return this.target.id != null
     },
     sortedState () {
-      return this.target.state && this.target.state.slice().sort((a, b) => a.key > b.key)
+      return this.target.state && this.target.state.slice().sort((a, b) => {
+        if(a.key < b.key) return -1
+        if(a.key > b.key) return 1
+        return 0
+      })
     }
   },
   methods: {
