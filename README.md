@@ -26,6 +26,8 @@ Currently only a Chrome devtools extension is available.
 
 ### Manual Installation
 
+**Make sure you are using Node 6+ and NPM 3+**
+
 1. Clone this repo
 2. `npm install`
 3. `npm run build`
