@@ -18,7 +18,7 @@ module.exports = {
     }
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         loader:  'buble',
@@ -33,11 +33,6 @@ module.exports = {
         loader: 'url?limit=0'
       }
     ]
-  },
-  vue: {
-    loaders: {
-      js: 'buble'
-    }
   },
   devtool: '#source-map'
 }
