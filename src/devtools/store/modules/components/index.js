@@ -4,7 +4,8 @@ const state = {
   selected: null,
   inspectedInstance: {},
   instances: [],
-  expansionMap: {}
+  expansionMap: {},
+  events: []
 }
 
 const mutations = {

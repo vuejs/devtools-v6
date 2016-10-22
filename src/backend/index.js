@@ -3,6 +3,7 @@
 
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
+import { initEventsBackend } from './events'
 import { stringify, classify, camelize } from '../util'
 
 // hook should have been injected before this executes.
@@ -30,6 +31,7 @@ export function initBackend (_bridge) {
       initVuexBackend(hook, bridge)
     })
   }
+  initEventsBackend(bridge, instanceMap, getInstanceName)
 }
 
 function connect () {
