@@ -1,6 +1,7 @@
 var path = require('path')
 
 var bubleOptions = {
+  target: { chrome: 52 },
   objectAssign: 'Object.assign'
 }
 
