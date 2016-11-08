@@ -50,7 +50,13 @@ function replacer (key, val) {
 }
 
 export function parse (data) {
-  return CircularJSON.parse(data)
+  return CircularJSON.parse(data, (k, v) => {
+    if (v === UNDEFINED) {
+      return undefined
+    } else {
+      return v
+    }
+  })
 }
 
 /**
