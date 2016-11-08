@@ -21,6 +21,6 @@ export function initVuexBackend (hook, bridge) {
 
   // devtool -> application
   bridge.on('vuex:travel-to-state', state => {
-    hook.emit('vuex:travel-to-state', parse(state))
+    hook.emit('vuex:travel-to-state', parse(state, true /* revive */))
   })
 }

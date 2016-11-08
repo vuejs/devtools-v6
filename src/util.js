@@ -52,8 +52,20 @@ function replacer (key, val) {
   }
 }
 
-export function parse (data, revivier) {
-  return CircularJSON.parse(data, revivier)
+export function parse (data, revive) {
+  return revive
+    ? CircularJSON.parse(data, reviver)
+    : CircularJSON.parse(data)
+}
+
+function reviver (key, val) {
+  if (val === UNDEFINED) {
+    return undefined
+  } else if (val === INFINITY) {
+    return Infinity
+  } else {
+    return val
+  }
 }
 
 /**
