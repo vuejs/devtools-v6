@@ -20,7 +20,16 @@ module.exports = {
     }
   },
   module: {
-    loaders: [
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue',
+        options: {
+          loaders: {
+            js: 'buble'
+          }
+        }
+      },
       {
         test: /\.js$/,
         loader:  'buble',
@@ -35,11 +44,6 @@ module.exports = {
         loader: 'url?limit=0'
       }
     ]
-  },
-  vue: {
-    loaders: {
-      js: 'buble'
-    }
   },
   devtool: process.env.NODE_ENV !== 'production'
     ? '#inline-source-map'

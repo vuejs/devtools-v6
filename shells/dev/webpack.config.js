@@ -18,26 +18,26 @@ module.exports = {
     }
   },
   module: {
-    loaders: [
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue',
+        options: {
+          loaders: {
+            js: 'buble'
+          }
+        }
+      },
       {
         test: /\.js$/,
         loader:  'buble',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
       },
       {
-        test: /\.vue$/,
-        loader: 'vue'
-      },
-      {
         test: /\.(png|woff2)$/,
         loader: 'url?limit=0'
       }
     ]
-  },
-  vue: {
-    loaders: {
-      js: 'buble'
-    }
   },
   devtool: '#source-map'
 }
