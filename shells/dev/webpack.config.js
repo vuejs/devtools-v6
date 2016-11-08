@@ -1,5 +1,9 @@
 var path = require('path')
 
+var bubleOptions = {
+  objectAssign: 'Object.assign'
+}
+
 module.exports = {
   entry: {
     devtools: './src/devtools.js',
@@ -14,6 +18,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      vue$: 'vue/dist/vue.js',
       src: path.resolve(__dirname, '../../src')
     }
   },
@@ -23,10 +28,14 @@ module.exports = {
         test: /\.js$/,
         loader:  'buble',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
+        options: bubleOptions
       },
       {
         test: /\.vue$/,
-        loader: 'vue'
+        loader: 'vue',
+        options: {
+          buble: bubleOptions
+        }
       },
       {
         test: /\.(png|woff2)$/,

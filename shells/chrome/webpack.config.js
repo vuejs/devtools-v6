@@ -1,6 +1,10 @@
 var path = require('path')
 var webpack = require('webpack')
 
+var bubleOptions = {
+  objectAssign: 'Object.assign'
+}
+
 module.exports = {
   entry: {
     hook: './src/hook.js',
@@ -25,10 +29,14 @@ module.exports = {
         test: /\.js$/,
         loader:  'buble',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
+        options: bubleOptions
       },
       {
         test: /\.vue$/,
-        loader: 'vue'
+        loader: 'vue',
+        options: {
+          buble: bubleOptions
+        }
       },
       {
         test: /\.(png|woff2)$/,
