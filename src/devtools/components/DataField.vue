@@ -39,7 +39,7 @@
 <script>
 import { UNDEFINED, INFINITY, isPlainObject } from '../../util'
 
-const rawTypeRE = /^\[object (\w+)\]$/
+const rawTypeRE = /^\[object (\w+)]$/
 
 export default {
   name: 'DataField',

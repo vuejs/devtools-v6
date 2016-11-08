@@ -8,7 +8,7 @@ function cached (fn) {
   }
 }
 
-var classifyRE = /(?:^|[-_\/])(\w)/g
+var classifyRE = /(?:^|[-_/])(\w)/g
 export const classify = cached((str) => {
   return str.replace(classifyRE, toUpper)
 })
