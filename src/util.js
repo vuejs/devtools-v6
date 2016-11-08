@@ -36,6 +36,7 @@ export function inDoc (node) {
  */
 
 export const UNDEFINED = '__vue_devtool_undefined__'
+export const INFINITY = '__vue_devtool_infinity__'
 
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
@@ -44,13 +45,15 @@ export function stringify (data) {
 function replacer (key, val) {
   if (val === undefined) {
     return UNDEFINED
+  } else if (val === Infinity) {
+    return INFINITY
   } else {
     return sanitize(val)
   }
 }
 
-export function parse (data) {
-  return CircularJSON.parse(data)
+export function parse (data, revivier) {
+  return CircularJSON.parse(data, revivier)
 }
 
 /**
