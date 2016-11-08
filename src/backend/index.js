@@ -379,7 +379,7 @@ function processState (instance) {
     ))
     .map(key => ({
       key,
-      value: instance[key]
+      value: instance._data[key]
     }))
 }
 
