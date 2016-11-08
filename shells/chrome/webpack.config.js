@@ -2,6 +2,7 @@ var path = require('path')
 var webpack = require('webpack')
 
 var bubleOptions = {
+  target: process.env.NODE_ENV === 'production' ? null : { chrome: 52 },
   objectAssign: 'Object.assign'
 }
 
@@ -12,7 +13,8 @@ module.exports = {
     background: './src/background.js',
     'devtools-background': './src/devtools-background.js',
     backend: './src/backend.js',
-    proxy: './src/proxy.js'
+    proxy: './src/proxy.js',
+    detector: './src/detector.js'
   },
   output: {
     path: __dirname + '/build',

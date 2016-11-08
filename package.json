@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
-    "dev-chrome": "cd shells/chrome && webpack --watch --hide-modules",
+    "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src",
     "build": "npm run lint && cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "zip": "npm run test && npm run build && rm -f chrome.zip && cd shells && zip -r ../chrome.zip chrome -x *src/* -x *webpack.config.js",
+    "zip": "rm -f chrome.zip && cd shells && zip -r ../chrome.zip chrome -x *src/* -x *webpack.config.js",
+    "release": "npm run test && npm run build && npm run zip",
     "test": "bash test/test.sh"
   },
   "repository": {

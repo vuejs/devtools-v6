@@ -4,11 +4,9 @@
 
 1. vue-devtools only works with Vue.js 1.0.0+.
 
-2. After installation, there will be a grayed-out icon to the right of your omnibar. **It doesn't do anything.** Chrome team made this questionable design decision to display the icon even if an extension doesn't define any browser actions at all, and it's not possible to programmatically open the devtools pane for you from an extension. **You need to open the devtools and navigate to the Vue pane yourself.**
+2. If the page uses a production/minified build of Vue.js, devtools inspection is disabled by default so the Vue pane won't show up.
 
-3. The Vue pane only appears if Vue.js is detected on the page. **If the page uses a production/minified build of Vue.js, devtools inspection is disabled by default so the Vue pane won't show up.**
-
-4. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
+3. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
 ![screenshot](https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot.png)
 

@@ -9,6 +9,16 @@
     "128": "icons/128.png"
   },
 
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/16-gray.png",
+      "48": "icons/48-gray.png",
+      "128": "icons/128-gray.png"
+    },
+    "default_title": "Vue Devtools",
+    "default_popup": "popups/not-found.html"
+  },
+
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "web_accessible_resources": [ "devtools.html", "devtools-background.html", "build/backend.js" ],
 
@@ -30,6 +40,11 @@
       "matches": ["<all_urls>"],
       "js": ["build/hook.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["build/detector.js"],
+      "run_at": "document_idle"
     }
   ]
 }
