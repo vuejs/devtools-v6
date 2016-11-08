@@ -11,8 +11,7 @@ const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
 const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
-const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
-let consoleBoundInstances = Array(5)
+const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
 let filter = ''
