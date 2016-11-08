@@ -276,7 +276,8 @@ function getInstanceDetails (id) {
         processComputed(instance),
         processRouteContext(instance),
         processVuexGetters(instance),
-        processFirebaseBindings(instance)
+        processFirebaseBindings(instance),
+        processObservables(instance)
       )
     }
   }
@@ -462,6 +463,28 @@ function processFirebaseBindings (instance) {
     return Object.keys(refs).map(key => {
       return {
         type: 'firebase binding',
+        key,
+        value: instance[key]
+      }
+    })
+  } else {
+    return []
+  }
+}
+
+/**
+ * Process vue-rx observable bindings.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processObservables (instance) {
+  var obs = instance.$observables
+  if (obs) {
+    return Object.keys(obs).map(key => {
+      return {
+        type: 'observable',
         key,
         value: instance[key]
       }

@@ -169,6 +169,7 @@ export default {
     border-radius 3px
     margin 2px 0
     position relative
+    background-color #eee
     &.prop
       background-color #b3cbf7
       &:hover
@@ -181,6 +182,8 @@ export default {
       background-color #5dd5d5
     &.firebase-binding
       background-color #ffcc00
+    &.observable
+      background-color #ff9999
     .meta
       display none
       position absolute
