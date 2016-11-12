@@ -1,34 +1,42 @@
 const state = {
-  emitted: [],
-  activeIndex: 0,
+  events: [],
+  filteredEvents: [],
+  activeFilteredEventIndex: 0,
   newEventCount: 0
 }
 
 const mutations = {
   'events/EMIT' (state, payload) {
-    state.emitted.push(payload)
-    state.activeIndex = state.emitted.length - 1
+    if (state.events.length === state.filteredEvents.length) {
+      state.filteredEvents.push(payload)
+    }
+    state.events.push(payload)
+    state.activeFilteredEventIndex = state.filteredEvents.length - 1
   },
   'events/RESET' (state) {
-    state.emitted = []
+    state.events = []
+    state.filteredEvents = []
   },
   'events/STEP' (state, n) {
-    state.activeIndex = n
+    state.activeFilteredEventIndex = n
   },
   'events/RESET_NEW_EVENT_COUNT' (state) {
     state.newEventCount = 0
   },
   'events/INCREASE_NEW_EVENT_COUNT' (state) {
     state.newEventCount++
+  },
+  'events/FILTER_EVENTS' (state, filter) {
+    state.filteredEvents = state.events.filter(event => {
+      return event.eventName.toLowerCase().includes(filter) || event.instanceName.toLowerCase().includes(filter)
+    })
+    state.activeFilteredEventIndex = state.filteredEvents.length - 1
   }
 }
 
 const getters = {
-  activeEvent: state => state.emitted[state.activeIndex],
-  eventData: (state, getters) => getters.activeEvent.eventData,
-  instanceName: (state, getters) => getters.activeEvent.instanceName,
-  eventName: (state, getters) => getters.activeEvent.eventName,
-  hasEvents: state => state.emitted.length > 0
+  activeEvent: state => state.filteredEvents[state.activeFilteredEventIndex],
+  hasEvents: state => state.events.length > 0
 }
 
 export default {

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <section class="top">
+    <section v-if="activeEvent" class="top">
       <span class="component-name">
         <span style="color:#ccc">&lt;</span>
-        <span>{{ instanceName }}</span>
+        <span>{{ activeEvent.instanceName }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
     </section>
@@ -43,18 +43,16 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'eventData',
-      'instanceName',
-      'eventName'
+      'activeEvent'
     ]),
     sortedEventData () {
-      return this.isComplex ? this.getSortedEventData() : this.eventData
+      return this.isComplex ? this.getSortedEventData() : this.activeEvent.eventData
     },
     hasEventData () {
-      return this.eventData !== undefined && this.eventData !== '__vue_devtool_undefined__'
+      return this.activeEvent && (this.activeEvent.eventData !== undefined && this.activeEvent.eventData !== '__vue_devtool_undefined__')
     },
     eventDataType () {
-      return Object.prototype.toString.call(this.eventData).slice(8, -1)
+      return Object.prototype.toString.call(this.activeEvent.eventData).slice(8, -1)
     },
     eventDataTypeIsLiteral () {
       return this.eventDataType === 'Number' || this.eventDataType === 'Boolean' || this.eventDataType === 'Null'
@@ -68,12 +66,12 @@ export default {
       if (this.eventDataType === 'Null') {
         return 'NULL'
       }
-      return this.eventData
+      return this.activeEvent.eventData
     },
     getSortedEventData () {
       const ordered = {}
-      Object.keys(this.eventData).sort().forEach(key => {
-        ordered[key] = this.eventData[key]
+      Object.keys(this.activeEvent.eventData).sort().forEach(key => {
+        ordered[key] = this.activeEvent.eventData[key]
       })
       return ordered
     }

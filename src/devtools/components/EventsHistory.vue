@@ -1,15 +1,25 @@
 <template>
   <div>
-    <div class="buttons">
-      <a class="button" @click="reset">
-        <i class="material-icons">cached</i>
-        <span>Reset</span>
-      </a>
+    <div class="func-bar">
+      <div class="buttons">
+        <a class="button" @click="reset">
+          <i class="material-icons">cached</i>
+          <span>Reset</span>
+        </a>
+      </div>
+      <div class="search">
+        <i class="search-icon material-icons">search</i>
+        <input class="search-box" placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
+      </div>
     </div>
     <div class="history">
+      <div v-if="events.length === 0" class="no-events">
+        No events found
+      </div>
       <div class="entry" 
+        v-else
         v-for="(event, index) in events"
-        :class="{ active: activeIndex === index }"
+        :class="{ active: activeEventIndex === index }"
         @click="step(index)">
         <div class="event">
           <div>
@@ -22,7 +32,7 @@
         <div class="event-meta">
           <span class="time">
             <div>{{ event.timestamp | formatTime }}</div>
-            <div v-if="activeIndex === index" class="action-wrapper">
+            <div v-if="activeEventIndex === index" class="action-wrapper">
               <a class="action" @click.stop="emitSelected(event)">
                 <i class="material-icons">flare</i>
                 <span>Emit</span>
@@ -39,13 +49,20 @@
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState({
-    events: state => state.events.emitted,
-    activeIndex: state => state.events.activeIndex
-  }),
+  computed: {
+    ...mapState({
+      events: state => state.events.filteredEvents,
+      activeEventIndex: state => state.events.activeFilteredEventIndex
+    })
+  },
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    }
+  },
+  data () {
+    return {
+      filter: ''
     }
   },
   methods: {
@@ -57,24 +74,68 @@ export default {
     },
     emitSelected (event) {
       bridge.send('trigger-event', event)
+    },
+    filterEvents () {
+      this.$store.commit('events/FILTER_EVENTS', this.filter)
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+
+.no-events 
+  color: #ccc
+  text-align: center
+  margin-top: 50px
+  line-height: 30px
+
+.search
+  box-sizing border-box
+  width: 78%
+  display: inline-block
+  padding-left: 17px
+
+.material-icons
+  display inline-block
+  vertical-align middle
+
+.search-icon
+  font-size 24px
+  color #999
+  width: 7%
+
+.search-box
+  font-family Roboto
+  box-sizing border-box
+  color #666
+  position relative
+  z-index 0
+  height 30px
+  line-height 30px
+  font-size 13px
+  border none
+  outline none
+  padding-left 15px
+  background transparent
+  width: 91%;
+
 $blue = #44A1FF
 
+.func-bar
+  border-bottom 1px solid #e3e3e3
+  padding: 10.5px;
+
 .buttons
-  padding 15px 30px 5px 20px
-  border-bottom 1px solid #eee
+  width: 20%
+  display: inline-block
+  border-right: 1px solid #e3e3e3;
 
 .button
   color #555
   cursor pointer
   display inline-block
   font-size 13px
-  margin 0 20px 10px 0
   transition color .2s ease
   &:hover
     color $blue

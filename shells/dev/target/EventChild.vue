@@ -1,15 +1,30 @@
 <template>
   <div>
-    <button @click="emitEventWithObject">Emit event</button>
+    <button @click="emitEvent">Emit</button>
+    <button @click="emitEvent1">Emit</button>
+    <button @click="emitEvent2">Emit</button>
   </div>
 </template>
 
 <script>
 export default {
   name: 'EventChild',
-  data () {
-    return {
-      eventData: {
+  methods: {
+    emitEvent () {
+      let data = {
+        eventName: 'event'
+      }
+      this.$emit('event', data)
+    },
+    emitEvent1 () {
+      let data = {
+        eventName: 'event-1'
+      }
+      this.$emit('event-1', data)
+    },
+    emitEvent2 () {
+      let complexData = {
+        componentName: 'EventChild',
         string: 'Lorem ipsum', 
         complex: { 
           string: 'Lorem ipsum', 
@@ -20,11 +35,7 @@ export default {
           }
         }
       }
-    }
-  },
-  methods: {
-    emitEventWithObject () {
-      this.$emit('log', this.eventData)
+      this.$emit('event-2', complexData)
     }
   }
 }
