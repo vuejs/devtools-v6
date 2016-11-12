@@ -15,10 +15,6 @@
             <i class="material-icons">visibility</i>
             <span>Inspect DOM</span>
           </a>
-          <a class="button" @click="sendToConsole">
-            <i class="material-icons">dvr</i>
-            <span>Send to console</span>
-          </a>
         </span>
       </section>
       <section class="data">
@@ -50,7 +46,11 @@ export default {
       return this.target.id != null
     },
     sortedState () {
-      return this.target.state && this.target.state.slice().sort((a, b) => a.key > b.key)
+      return this.target.state && this.target.state.slice().sort((a, b) => {
+        if (a.key < b.key) return -1
+        if (a.key > b.key) return 1
+        return 0
+      })
     }
   },
   methods: {
@@ -63,9 +63,6 @@ export default {
       } else {
         window.alert('DOM inspection is not supported in this shell.')
       }
-    },
-    sendToConsole () {
-      bridge.send('send-to-console', this.target.id)
     }
   }
 }
