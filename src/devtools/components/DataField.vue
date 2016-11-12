@@ -37,9 +37,9 @@
 </template>
 
 <script>
-import { UNDEFINED, isPlainObject } from '../../util'
+import { UNDEFINED, INFINITY, isPlainObject } from '../../util'
 
-const rawTypeRE = /^\[object (\w+)\]$/
+const rawTypeRE = /^\[object (\w+)]$/
 
 export default {
   name: 'DataField',
@@ -59,13 +59,13 @@ export default {
       const type = typeof value
       if (value == null || value === UNDEFINED) {
         return 'null'
+      } else if (type === 'boolean' || type === 'number' || value === INFINITY) {
+        return 'literal'
       } else if (
         value instanceof RegExp ||
         (type === 'string' && !rawTypeRE.test(value))
       ) {
         return 'string'
-      } else if (type === 'boolean' || type === 'number') {
-        return 'literal'
       }
     },
     isExpandableType () {
@@ -78,6 +78,8 @@ export default {
         return 'null'
       } else if (value === UNDEFINED) {
         return 'undefined'
+      } else if (value === INFINITY) {
+        return 'Infinity'
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
@@ -167,6 +169,7 @@ export default {
     border-radius 3px
     margin 2px 0
     position relative
+    background-color #eee
     &.prop
       background-color #b3cbf7
       &:hover
@@ -179,6 +182,8 @@ export default {
       background-color #5dd5d5
     &.firebase-binding
       background-color #ffcc00
+    &.observable
+      background-color #ff9999
     .meta
       display none
       position absolute

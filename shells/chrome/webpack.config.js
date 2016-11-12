@@ -1,6 +1,11 @@
 var path = require('path')
 var webpack = require('webpack')
 
+var bubleOptions = {
+  target: process.env.NODE_ENV === 'production' ? null : { chrome: 52 },
+  objectAssign: 'Object.assign'
+}
+
 module.exports = {
   entry: {
     hook: './src/hook.js',
@@ -8,7 +13,8 @@ module.exports = {
     background: './src/background.js',
     'devtools-background': './src/devtools-background.js',
     backend: './src/backend.js',
-    proxy: './src/proxy.js'
+    proxy: './src/proxy.js',
+    detector: './src/detector.js'
   },
   output: {
     path: __dirname + '/build',
@@ -20,26 +26,25 @@ module.exports = {
     }
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         loader:  'buble',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
+        options: bubleOptions
       },
       {
         test: /\.vue$/,
-        loader: 'vue'
+        loader: 'vue',
+        options: {
+          buble: bubleOptions
+        }
       },
       {
         test: /\.(png|woff2)$/,
         loader: 'url?limit=0'
       }
     ]
-  },
-  vue: {
-    loaders: {
-      js: 'buble'
-    }
   },
   devtool: process.env.NODE_ENV !== 'production'
     ? '#inline-source-map'

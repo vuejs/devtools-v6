@@ -73,3 +73,20 @@ function doublePipe (id, one, two) {
   two.onDisconnect.addListener(shutdown)
   console.log('tab ' + id + ' connected.')
 }
+
+chrome.runtime.onMessage.addListener((req, sender) => {
+  if (sender.tab && req.vueDetected) {
+    chrome.browserAction.setIcon({
+      tabId: sender.tab.id,
+      path: {
+        16: 'icons/16.png',
+        48: 'icons/48.png',
+        128: 'icons/128.png'
+      }
+    })
+    chrome.browserAction.setPopup({
+      tabId: sender.tab.id,
+      popup: req.devtoolsEnabled ? 'popups/enabled.html' : 'popups/disabled.html'
+    })
+  }
+})

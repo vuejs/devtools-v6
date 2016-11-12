@@ -8,7 +8,7 @@ function cached (fn) {
   }
 }
 
-var classifyRE = /(?:^|[-_\/])(\w)/g
+var classifyRE = /(?:^|[-_/])(\w)/g
 export const classify = cached((str) => {
   return str.replace(classifyRE, toUpper)
 })
@@ -36,6 +36,7 @@ export function inDoc (node) {
  */
 
 export const UNDEFINED = '__vue_devtool_undefined__'
+export const INFINITY = '__vue_devtool_infinity__'
 
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
@@ -44,13 +45,27 @@ export function stringify (data) {
 function replacer (key, val) {
   if (val === undefined) {
     return UNDEFINED
+  } else if (val === Infinity) {
+    return INFINITY
   } else {
     return sanitize(val)
   }
 }
 
-export function parse (data) {
-  return CircularJSON.parse(data)
+export function parse (data, revive) {
+  return revive
+    ? CircularJSON.parse(data, reviver)
+    : CircularJSON.parse(data)
+}
+
+function reviver (key, val) {
+  if (val === UNDEFINED) {
+    return undefined
+  } else if (val === INFINITY) {
+    return Infinity
+  } else {
+    return val
+  }
 }
 
 /**
