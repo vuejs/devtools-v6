@@ -88,6 +88,7 @@ export default {
         }
       }
       // simple case-insensitve search
+      this.invalidRegex = false
       return new RegExp(this.escapeStringForRegExp(this.userInputFilter), 'i')
     },
     filteredHistory () {
@@ -119,7 +120,6 @@ export default {
     },
     clearFilter () {
       this.userInputFilter = ''
-      this.invalidRegex = false
     },
     escapeStringForRegExp (str) {
       return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
