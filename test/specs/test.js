@@ -58,6 +58,21 @@ module.exports = {
       .assert.containsText('.vuex-state-inspector', 'type: "DECREMENT"')
       .assert.containsText('.vuex-state-inspector', 'count: 1')
 
+      // filtering
+      .setValue('.search-box', 'inc')
+      .assert.count('.history .entry', 3)
+      .click('.buttons a:last-of-type')
+      .assert.value('.search-box', '')
+      .setValue('.search-box', '/dec/i')
+      .assert.count('.history .entry', 2)
+      .clearValue('.search-box')
+      .setValue('.search-box', '/dec)/i')
+      .waitForElementVisible('.invalid-regex', 100)
+      .assert.count('.history .entry', 4)
+      .setValue('.search-box', '\b\b\b')
+      .waitForElementNotVisible('.invalid-regex', 100)
+      .click('.buttons a:last-of-type')
+      
       // time travel
       .click('.history .entry:nth-child(3)')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
