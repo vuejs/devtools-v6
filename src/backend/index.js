@@ -32,7 +32,7 @@ export function initBackend (_bridge) {
       initVuexBackend(hook, bridge)
     })
   }
-  initEventsBackend(rootInstances[0], bridge, instanceMap, getInstanceName)
+  initEventsBackend(hook.Vue, bridge, instanceMap, getInstanceName)
 }
 
 function connect () {
