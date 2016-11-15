@@ -14,6 +14,13 @@
       <i class="material-icons">cached</i>
       <span>Refresh</span>
     </a>
+    <a class="button events"
+      :class="{ active: tab === 'events' }"
+      @click="switchTab('events')">
+      <i class="material-icons">grain</i>
+      <span>Events</span>
+      <span class="new-event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
+    </a>
     <a class="button vuex"
       :class="{ active: tab === 'vuex'}"
       @click="switchTab('vuex')">
@@ -33,22 +40,28 @@
 
 <script>
 import ComponentsTab from './ComponentsTab.vue'
+import EventsTab from './EventsTab.vue'
 import VuexTab from './VuexTab.vue'
 import { mapState } from 'vuex'
 
 export default {
   components: {
     components: ComponentsTab,
-    vuex: VuexTab
+    vuex: VuexTab,
+    events: EventsTab
   },
   computed: mapState({
     message: state => state.app.message,
-    tab: state => state.app.tab
+    tab: state => state.app.tab,
+    newEventCount: state => state.events.newEventCount
   }),
   methods: {
     switchTab (tab) {
       bridge.send('switch-tab', tab)
       this.$store.commit('SWITCH_TAB', tab)
+      if (tab === 'events') {
+        this.$store.commit('events/RESET_NEW_EVENT_COUNT')
+      }
     },
     refresh () {
       bridge.send('refresh')
@@ -129,4 +142,18 @@ $blue = #44A1FF
   position relative
   z-index 1
   height 100%
+
+.new-event-count
+  background-color: #44a1ff;
+  color: #fff;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  line-height: 15px;
+  font-size: 9px;
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  padding-right: 0.6px;
 </style>
