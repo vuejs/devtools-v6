@@ -1,28 +1,22 @@
 import { stringify } from '../util'
 
-export function initEventsBackend (bridge, instanceMap, getInstanceName) {
+export function initEventsBackend (rootInstance, bridge, instanceMap, getInstanceName) {
   bridge.on('trigger-event', (event) => {
     const instance = instanceMap.get(event.instanceId)
     instance._events[event.eventName][0](event.eventData)
   })
-  instanceMap.forEach((instance) => {
-    const listeners = instance._events
-    if (listeners) {
-      Object.keys(listeners).forEach((eventName) => {
-        if (!eventName.startsWith('hook:')) {
-          const oldEventFunc = listeners[eventName][0]
-          listeners[eventName][0] = (...args) => {
-            oldEventFunc.apply(instance, args)
-            bridge.send('event:emit', stringify({
-              instanceId: instance._uid,
-              instanceName: getInstanceName(instance),
-              eventName: eventName,
-              eventData: args[0],
-              timestamp: Date.now()
-            }))
-          }
-        }
-      })
+  const rootInstanceEmit = rootInstance.constructor.prototype.$emit
+  rootInstance.constructor.prototype.$emit = function () {
+    rootInstanceEmit.apply(this, arguments)
+    const eventName = arguments[0]
+    if (!eventName.startsWith('hook:')) {
+      bridge.send('event:emit', stringify({
+        instanceId: this._uid,
+        instanceName: getInstanceName(this),
+        eventName: eventName,
+        eventData: arguments[1],
+        timestamp: Date.now()
+      }))
     }
-  })
+  }
 }
