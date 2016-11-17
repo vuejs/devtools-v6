@@ -29,20 +29,20 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader:  'buble',
+        loader:  'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },
       {
         test: /\.vue$/,
-        loader: 'vue',
+        loader: 'vue-loader',
         options: {
           buble: bubleOptions
         }
       },
       {
         test: /\.(png|woff2)$/,
-        loader: 'url?limit=0'
+        loader: 'url-loader?limit=0'
       }
     ]
   },
