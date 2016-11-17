@@ -32,12 +32,6 @@
         <div class="event-meta">
           <span class="time">
             <div>{{ event.timestamp | formatTime }}</div>
-            <div v-if="activeEventIndex === index" class="action-wrapper">
-              <a class="action" @click.stop="emitSelected(event)">
-                <i class="material-icons">flare</i>
-                <span>Emit</span>
-              </a>
-            </span>
           </span>
         </div>
       </div>
@@ -71,9 +65,6 @@ export default {
     },
     reset () {
       this.$store.commit('events/RESET')
-    },
-    emitSelected (event) {
-      bridge.send('trigger-event', event)
     },
     filterEvents () {
       this.$store.commit('events/FILTER_EVENTS', this.filter)
