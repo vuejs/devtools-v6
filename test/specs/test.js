@@ -16,7 +16,7 @@ module.exports = {
       .assert.containsText('.data-field', 'obj: Object')
 
       // should expand root by default
-      .assert.count('.instance', 4)
+      .assert.count('.instance', 5)
 
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
@@ -27,17 +27,17 @@ module.exports = {
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
-      .assert.count('.instance', 6)
+      .assert.count('.instance', 7)
 
       // add/remove component from app side
       .frame('target')
         .click('.add')
         .frame(null)
-      .assert.count('.instance', 9)
+      .assert.count('.instance', 10)
       .frame('target')
         .click('.remove')
         .frame(null)
-      .assert.count('.instance', 8)
+      .assert.count('.instance', 9)
 
       // filter components
       .setValue('.search-box', 'counter')
@@ -72,7 +72,7 @@ module.exports = {
       .setValue('.search-box', '\b\b\b')
       .waitForElementNotVisible('.invalid-regex', 100)
       .click('.buttons a:last-of-type')
-      
+
       // time travel
       .click('.history .entry:nth-child(3)')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
