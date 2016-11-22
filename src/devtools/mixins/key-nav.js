@@ -18,10 +18,10 @@ document.addEventListener('keyup', e => {
 })
 
 export default {
-  attached () {
+  mounted () {
     activeInstances.push(this)
   },
-  detached () {
+  destroyed () {
     const i = activeInstances.indexOf(this)
     if (i >= 0) {
       activeInstances.splice(i, 1)
