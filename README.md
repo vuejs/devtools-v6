@@ -2,11 +2,9 @@
 
 ### Important Usage Notes
 
-1. vue-devtools only works with Vue.js 1.0.0+.
+1. If the page uses a production/minified build of Vue.js, devtools inspection is disabled by default so the Vue pane won't show up.
 
-2. If the page uses a production/minified build of Vue.js, devtools inspection is disabled by default so the Vue pane won't show up.
-
-3. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
+2. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
 ![screenshot](https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot.png)
 
