@@ -1,4 +1,5 @@
 var path = require('path')
+var webpack = require('webpack')
 
 var bubleOptions = {
   target: { chrome: 52 },
@@ -19,7 +20,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      vue$: 'vue/dist/vue.js',
+      vue$: 'vue/dist/vue.common.js',
       src: path.resolve(__dirname, '../../src')
     }
   },
