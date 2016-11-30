@@ -15,6 +15,7 @@ const mutations = {
   'vuex/INIT' (state, initialState) {
     state.initial = state.base = initialState
     state.hasVuex = true
+    reset(state)
   },
   'vuex/RECEIVE_MUTATION' (state, entry) {
     state.history.push(entry)
