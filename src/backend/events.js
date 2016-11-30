@@ -1,10 +1,6 @@
 import { stringify } from '../util'
 
-export function initEventsBackend (vue, bridge, instanceMap, getInstanceName) {
-  bridge.on('trigger-event', (event) => {
-    const instance = instanceMap.get(event.instanceId)
-    instance._events[event.eventName][0](event.eventData)
-  })
+export function initEventsBackend (vue, bridge, getInstanceName) {
   const vueEmit = vue.prototype.$emit
   vue.prototype.$emit = function () {
     vueEmit.apply(this, arguments)
