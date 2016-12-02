@@ -121,9 +121,7 @@ section:not(:last-child)
 .data
   padding 15px 20px
   flex 1
-  overflow-y scroll
-  &::-webkit-scrollbar
-    width 0 !important
+  overflow-y auto
   h3
     font-size 15px
 

@@ -81,4 +81,6 @@ function findByOffset (current, offset) {
 <style lang="stylus">
 .tree
   padding 5px
+  height 100%
+  overflow-y auto
 </style>
