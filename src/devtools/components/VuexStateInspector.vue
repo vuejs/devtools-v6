@@ -44,7 +44,6 @@ import DataField from './DataField.vue'
 import ScrollPane from './ScrollPane.vue'
 import Actions from './Actions.vue'
 
-
 import { stringify, parse } from '../../util'
 import debounce from 'lodash.debounce'
 import { mapGetters } from 'vuex'

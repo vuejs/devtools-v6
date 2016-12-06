@@ -40,6 +40,7 @@
 <script>
 import ScrollPane from './ScrollPane.vue'
 import Actions from './Actions.vue'
+
 import { mapState } from 'vuex'
 
 export default {

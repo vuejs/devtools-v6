@@ -30,6 +30,7 @@
 import DataField from './DataField.vue'
 import ScrollPane from './ScrollPane.vue'
 import Actions from './Actions.vue'
+
 import { mapGetters } from 'vuex'
 
 export default {

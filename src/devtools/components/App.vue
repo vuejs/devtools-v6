@@ -42,6 +42,7 @@
 import ComponentsTab from './ComponentsTab.vue'
 import EventsTab from './EventsTab.vue'
 import VuexTab from './VuexTab.vue'
+
 import { mapState } from 'vuex'
 
 export default {

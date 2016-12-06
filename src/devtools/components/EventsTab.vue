@@ -16,6 +16,7 @@
 import SplitPane from './SplitPane.vue'
 import EventsHistory from './EventsHistory.vue'
 import EventInspector from './EventInspector.vue'
+
 import { mapGetters } from 'vuex'
 
 export default {
