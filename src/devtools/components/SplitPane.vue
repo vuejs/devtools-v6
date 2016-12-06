@@ -44,20 +44,19 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import "../common"
+
 .split-pane
   display flex
+  height 100%
   &.dragging
     cursor ew-resize
 
 .left, .right
   position relative
-  overflow-x hidden
-  overflow-y scroll
-  &::-webkit-scrollbar
-    width 0 !important
 
 .left
-  border-right 1px solid #e3e3e3
+  border-right 1px solid $border-color
 
 .dragger
   position absolute

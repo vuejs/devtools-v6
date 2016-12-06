@@ -10,7 +10,7 @@ module.exports = {
       // select instance
       .click('.instance .self')
       .assert.cssClassPresent('.instance', 'selected')
-      .assert.visible('.inspector .main')
+      .assert.visible('.tree')
       .assert.containsText('.component-name', 'Root')
       .assert.elementPresent('.data-field')
       .assert.containsText('.data-field', 'obj: Object')
@@ -40,10 +40,10 @@ module.exports = {
       .assert.count('.instance', 9)
 
       // filter components
-      .setValue('.search-box', 'counter')
+      .setValue('.search input', 'counter')
       .assert.count('.instance', 1)
-      .clearValue('.search-box')
-      .setValue('.search-box', 'target')
+      .clearValue('.search input')
+      .setValue('.search input', 'target')
       .assert.count('.instance', 5)
 
       // vuex
@@ -59,19 +59,17 @@ module.exports = {
       .assert.containsText('.vuex-state-inspector', 'count: 1')
 
       // filtering
-      .setValue('.search-box', 'inc')
+      .setValue('.search input', 'inc')
       .assert.count('.history .entry', 3)
-      .click('.buttons a:last-of-type')
-      .assert.value('.search-box', '')
-      .setValue('.search-box', '/dec/i')
+      .clearValue('.search input')
+
+      .setValue('.search input', '/dec/i')
       .assert.count('.history .entry', 2)
-      .clearValue('.search-box')
-      .setValue('.search-box', '/dec)/i')
-      .waitForElementVisible('.invalid-regex', 100)
+      .clearValue('.search input')
+
+      .setValue('.search input', '/dec)/i')
       .assert.count('.history .entry', 4)
-      .setValue('.search-box', '\b\b\b')
-      .waitForElementNotVisible('.invalid-regex', 100)
-      .click('.buttons a:last-of-type')
+      .clearValue('.search input')
 
       // time travel
       .click('.history .entry:nth-child(3)')
@@ -117,12 +115,12 @@ module.exports = {
         .frame(null)
 
       // copy vuex state
-      .click('.top .buttons .button:nth-child(1)')
-      .assert.containsText('.top .buttons .button:nth-child(1) .message', '(Copied to clipboard!)')
-      .waitForElementNotVisible('.top .buttons .button:nth-child(1) .message', 3000)
+      .click('.export')
+      .assert.containsText('.export .message', '(Copied to clipboard!)')
+      .waitForElementNotVisible('.export .message', 3000)
 
       // import vuex state
-      .click('.top .buttons .button:nth-child(2)')
+      .click('.import')
       .assert.elementPresent('.import-state')
       .setValue('.import-state textarea', '{invalid: json}')
       .waitForElementVisible('.message.invalid-json', 100)
@@ -130,7 +128,7 @@ module.exports = {
       .setValue('.import-state textarea', '{"valid": "json"}')
       .waitForElementNotVisible('.message.invalid-json', 1000)
       .assert.containsText('.vuex-state-inspector', 'valid: "json"')
-      .click('.top .buttons .button:nth-child(2)')
+      .click('.import')
       .waitForElementNotPresent('.import-state', 2000)
 
       // done

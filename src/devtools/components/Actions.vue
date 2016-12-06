@@ -1,0 +1,72 @@
+<template>
+  <div class="actions">
+    <slot></slot>
+  </div>
+</template>
+
+<style lang="stylus" scoped>
+@import "../common"
+
+.actions
+  display flex
+  align-items stretch
+  padding 0 10px
+  font-size 12px
+  border-bottom 1px solid $border-color
+  height 50px
+  color #666
+
+.component-name
+  display flex
+  align-items center
+  font-size 18px
+  color $component-color
+
+.button
+  cursor pointer
+  display flex
+  align-items center
+  justify-content center
+  padding 0 10px
+  transition opacity 0.25s
+  white-space nowrap
+  opacity 0.8
+  overflow hidden
+
+  &:not(.disabled):hover
+    opacity 1
+    color $active-color
+
+  &.disabled
+    opacity 0.45
+    cursor not-allowed
+
+  span
+    display none
+    @media (min-width: 780px)
+      display inline
+
+.material-icons
+  font-size 18px
+  margin-right 0
+  color inherit
+  @media (min-width: 780px)
+    margin-right 5px
+
+.search
+  display flex
+  align-items center
+  flex 1
+  input
+    flex 1
+    height 100%
+    background-color transparent
+    border 0
+    margin-left 5px
+    font-size inherit
+    color inherit
+    &:focus
+      outline 0
+    &.invalid
+      color rgba(77, 10, 9, 1)
+</style>

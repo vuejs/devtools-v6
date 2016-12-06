@@ -100,6 +100,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import "../common"
+
 .instance
   font-family Menlo, Consolas, monospace
   &.inactive
@@ -122,7 +124,7 @@ export default {
   &:hover
     background-color #E5F2FF
   &.selected
-    background-color #44A1FF
+    background-color $active-color
     .arrow
       border-left-color #fff
     .instance-name
@@ -175,7 +177,7 @@ export default {
   color #ccc
 
 .instance-name
-  color #0062C3
+  color $component-color
   margin 0 1px
   transition color .1s ease
 </style>

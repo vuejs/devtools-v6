@@ -1,14 +1,15 @@
 <template>
   <div>
-    <split-pane v-if="hasVuex" class="pane">
+    <split-pane v-if="hasVuex">
       <vuex-history slot="left"></vuex-history>
       <vuex-state-inspector slot="right"></vuex-state-inspector>
     </split-pane>
-    <p v-else class="message">
-      No Vuex store detected.
-      <br>
-      Make sure you are using Vuex 0.5.0 or above.
-    </p>
+    <div v-else class="notice">
+      <div>
+        No Vuex store detected.<br>
+        Make sure you are using Vuex 0.5.0 or above.
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,9 +32,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.pane
-  height 100%
-
 .message
   text-align center
   color #ccc

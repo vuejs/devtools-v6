@@ -1,14 +1,14 @@
 <template>
   <div>
     <template v-if="hasEvents">
-      <split-pane class="pane">
+      <split-pane v-if="hasEvents">
         <events-history slot="left"></events-history>
         <event-inspector slot="right"></event-inspector>
       </split-pane>
     </template>
-    <p v-else class="message">
-      No events detected.
-    </p>
+    <div v-else class="notice">
+      <div>No events detected.</div>
+    </div>
   </div>
 </template>
 
@@ -29,15 +29,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus" scoped>
-.pane
-  height 100%
-
-.message
-  text-align center
-  color #ccc
-  font-size 14px
-  line-height 1.5em
-  margin-top 50px
-</style>
