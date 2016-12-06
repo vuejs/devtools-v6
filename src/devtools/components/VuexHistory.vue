@@ -5,15 +5,15 @@
         <i class="material-icons">search</i>
         <input :class="{ invalid: invalidRegex }" placeholder="Filter mutations" v-model="userInputFilter">
       </div>
-      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll">
+      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button revert-all" :class="{ disabled: !history.length }" @click="revertAll">
+      <a class="button revert-all" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
         <i class="material-icons">restore</i>
         <span>Revert All</span>
       </a>
-      <a class="button reset" @click="reset">
+      <a class="button reset" @click="reset" title="Reset">
         <i class="material-icons">cached</i>
         <span>Reset</span>
       </a>

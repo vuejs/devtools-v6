@@ -11,19 +11,22 @@
     </span>
     <a class="button components"
       :class="{ active: tab === 'components'}"
-      @click="switchTab('components')">
+      @click="switchTab('components')"
+      title="Switch to Components">
       <i class="material-icons">device_hub</i>
       <span class="pane-name">Components</span>
     </a>
     <a class="button vuex"
       :class="{ active: tab === 'vuex'}"
-      @click="switchTab('vuex')">
+      @click="switchTab('vuex')"
+      title="Switch to Vuex">
       <i class="material-icons">restore</i>
       <span class="pane-name">Vuex</span>
     </a>
     <a class="button events"
       :class="{ active: tab === 'events' }"
-      @click="switchTab('events')">
+      @click="switchTab('events')"
+      title="Switch to Events">
       <i class="material-icons">grain</i>
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>

@@ -4,7 +4,7 @@
       <span class="component-name">
         <span style="color:#ccc">&lt;</span><span>{{ target.name }}</span><span style="color:#ccc">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM">
+      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>

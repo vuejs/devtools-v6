@@ -1,7 +1,7 @@
 <template>
   <scroll-pane>
     <actions slot="header">
-      <a class="button export" @click="copyStateToClipboard">
+      <a class="button export" @click="copyStateToClipboard" title="Export Vuex State">
         <i class="material-icons">content_copy</i>
         <span>Export</span>
         <transition name="slide-up">
@@ -10,7 +10,7 @@
           </span>
         </transition>
       </a>
-      <a class="button import" @click="toggleImportStatePopup">
+      <a class="button import" @click="toggleImportStatePopup" title="Import Vuex State">
         <i class="material-icons">content_paste</i>
         <span>Import</span>
       </a>

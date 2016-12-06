@@ -5,7 +5,7 @@
         <i class="search-icon material-icons">search</i>
         <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
       </div>  
-      <a class="button reset" @click="reset">
+      <a class="button reset" @click="reset" title="Reset">
         <i class="material-icons">cached</i>
         <span>Reset</span>
       </a>
