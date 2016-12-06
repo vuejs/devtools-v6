@@ -13,7 +13,7 @@
   padding 0 10px
   font-size 12px
   border-bottom 1px solid $border-color
-  height 50px
+  height 45px
   color #666
 
 .component-name
@@ -43,14 +43,14 @@
 
   span
     display none
-    @media (min-width: 780px)
+    @media (min-width: $wide)
       display inline
 
 .material-icons
   font-size 18px
   margin-right 0
   color inherit
-  @media (min-width: 780px)
+  @media (min-width: $wide)
     margin-right 5px
 
 .search
@@ -65,8 +65,11 @@
     margin-left 5px
     font-size inherit
     color inherit
+    outline 0
+    transition color 0.25s
     &:focus
-      outline 0
+      color $active-color
+
     &.invalid
       color rgba(77, 10, 9, 1)
 </style>

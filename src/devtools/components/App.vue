@@ -90,9 +90,6 @@ export default {
   border-bottom 1px solid $border-color
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
-  .material-icons
-    font-size 20px
-    margin-right 5px
 
 .logo
   width 30px
@@ -119,17 +116,26 @@ export default {
   color #888
   transition box-shadow .25s ease, border-color .5s ease, opacity .5s
 
+  &:hover
+    color #555
+
   &.active
-    border-bottom 2px solid $active-color
+    border-bottom 3px solid $active-color
+    color $active-color
 
   &.components
     margin-left auto
 
+  .material-icons
+    font-size 20px
+    margin-right 5px
+    color inherit
+
   .pane-name
     display none
 
-  @media (min-width: 780px)
-    padding 15px 15px
+  @media (min-width: $wide)
+    padding 20px 15px
     .pane-name
       display block
 
