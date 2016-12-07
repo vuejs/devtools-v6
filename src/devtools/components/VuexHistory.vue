@@ -33,16 +33,16 @@
         @click="step(index)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span v-if="activeIndex === index">
-          <a class="action" @click.stop="commitSelected">
+          <a class="action" @click.stop="commitSelected" title="Commit">
             <i class="material-icons">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revertSelected">
+          <a class="action" @click.stop="revertSelected" title="Revert">
             <i class="material-icons">restore</i>
             <span>Revert</span>
           </a>
         </span>
-        <span class="time">
+        <span class="time" :title="entry.timestamp">
           {{ entry.timestamp | formatTime }}
         </span>
       </div>
@@ -155,6 +155,10 @@ export default {
   vertical-align middle
   margin-left 8px
   white-space nowrap
+  span
+    display none
+    @media (min-width: $wide)
+      display inline
   .material-icons
     color lighten($active-color, 75%) 
     font-size 20px
