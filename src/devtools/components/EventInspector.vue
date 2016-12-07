@@ -5,22 +5,20 @@
         <span style="color:#ccc">&lt;</span><span>{{ activeEvent.instanceName }}</span><span style="color:#ccc">&gt;</span>
       </span>
     </actions>
-    <div slot="scroll">
-      <div v-if="!hasEventData" class="notice">
-        No event data available
+    <div v-if="!hasEventData" slot="scroll" class="notice">
+      <div>No event data available</div>
+    </div>
+    <div v-if="hasEventData">
+      <div class="data-fields">
+        <data-field
+          v-if="isComplex"
+          v-for="(value, key) of sortedEventData"
+          :field="{ key, value }"
+          :depth="0">
+        </data-field>
       </div>
-      <div v-else>
-        <div class="data-fields">
-          <data-field
-            v-if="isComplex"
-            v-for="(value, key) of sortedEventData"
-            :field="{ key, value }"
-            :depth="0">
-          </data-field>
-        </div>
-        <div v-if="!isComplex" :class="{ 'literal': eventDataTypeIsLiteral, 'string': !eventDataTypeIsLiteral }">
-          <span v-if="!eventDataTypeIsLiteral">"</span>{{ getEventDataString() }}<span v-if="!eventDataTypeIsLiteral">"</span>
-        </div>
+      <div v-if="!isComplex" :class="{ 'literal': eventDataTypeIsLiteral, 'string': !eventDataTypeIsLiteral }">
+        <span v-if="!eventDataTypeIsLiteral">"</span>{{ getEventDataString() }}<span v-if="!eventDataTypeIsLiteral">"</span>
       </div>
     </div>
   </scroll-pane>
