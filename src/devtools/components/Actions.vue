@@ -13,8 +13,10 @@
   padding 0 10px
   font-size 12px
   border-bottom 1px solid $border-color
-  height 45px
   color #666
+  height 35px
+  @media (min-height: $tall)
+    height 50px
 
 .component-name
   display flex

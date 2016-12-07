@@ -109,7 +109,7 @@ export default {
   position absolute
 
 .button
-  padding 15px 10px
+  padding 10px
   display flex
   align-items center
   cursor pointer
@@ -138,9 +138,14 @@ export default {
     display none
 
   @media (min-width: $wide)
-    padding 20px 15px
+    padding-right 20px
+    padding-left 20px
     .pane-name
       display block
+
+  @media (min-height: $tall)
+    padding-top 20px
+    padding-bottom 20px
 
 .container
   overflow hidden
