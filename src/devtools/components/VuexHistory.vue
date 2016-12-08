@@ -63,7 +63,7 @@ export default {
   mixins: [keyNavMixin],
   components: {
     Actions,
-    ScrollPane,
+    ScrollPane
   },
   data () {
     return {

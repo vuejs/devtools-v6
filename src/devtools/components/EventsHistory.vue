@@ -46,7 +46,7 @@ import { mapState } from 'vuex'
 export default {
   components: {
     ScrollPane,
-    Actions,
+    Actions
   },
   computed: {
     ...mapState({

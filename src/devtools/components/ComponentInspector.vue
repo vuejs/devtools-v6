@@ -38,7 +38,7 @@ export default {
   components: {
     DataField,
     ScrollPane,
-    Actions,
+    Actions
   },
   props: {
     target: Object

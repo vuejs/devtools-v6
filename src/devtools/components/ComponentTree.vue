@@ -28,7 +28,7 @@ export default {
   components: {
     ScrollPane,
     ComponentInstance,
-    Actions,
+    Actions
   },
   props: {
     instances: Array

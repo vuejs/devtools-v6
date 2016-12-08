@@ -36,7 +36,7 @@ export default {
   components: {
     DataField,
     ScrollPane,
-    Actions,
+    Actions
   },
   data () {
     return {
