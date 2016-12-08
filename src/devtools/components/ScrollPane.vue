@@ -19,9 +19,13 @@
 
 .scroll
   flex 1
-  overflow scroll
+  overflow overlay
+
+// Keeping this here in case `overflow: overlay`
+// doesn't float everyone's boat.
+.scroll--themed
   &::-webkit-scrollbar
-    width 3px
+    width 5px
     height 0
     &-thumb
       background $active-color

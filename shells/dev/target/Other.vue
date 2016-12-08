@@ -31,7 +31,8 @@ export default {
           d: null,
           e: undefined,
           f: true,
-          g: 12345
+          g: 12345,
+          h: 'I am a really long string mostly just to see how the horizontal scrolling works.',
         }
       }
     }
