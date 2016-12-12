@@ -118,6 +118,7 @@ module.exports = {
 
       // copy vuex state
       .click('.top .buttons .button:nth-child(1)')
+      .waitFor(100)
       .assert.containsText('.top .buttons .button:nth-child(1) .message', '(Copied to clipboard!)')
       .waitForElementNotVisible('.top .buttons .button:nth-child(1) .message', 3000)
 
