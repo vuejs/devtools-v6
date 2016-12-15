@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="vuex">
     <div class="buttons">
       <a class="button" :class="{ disabled: !history.length }" @click="commitAll">
         <i class="material-icons">get_app</i>
@@ -131,6 +131,11 @@ export default {
 <style lang="stylus" scoped>
 $blue = #44A1FF
 
+.vuex
+  display flex
+  flex-direction column
+  height 100%
+
 .buttons
   padding 15px 30px 5px 20px
   border-bottom 1px solid #eee
@@ -178,7 +183,7 @@ $blue = #44A1FF
   color #ff4141
   
 .history
-  height calc(100% - 48px)
+  flex 1
   overflow-x hidden
   overflow-y auto
 
