@@ -116,6 +116,7 @@ module.exports = {
 
       // copy vuex state
       .click('.export')
+      .waitFor(100)
       .assert.containsText('.export .message', '(Copied to clipboard!)')
       .waitForElementNotVisible('.export .message', 3000)
 
