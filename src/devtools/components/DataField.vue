@@ -171,13 +171,13 @@ export default {
     position relative
     background-color #eee
     &.prop
-      background-color #b3cbf7
+      background-color #96afdd
       &:hover
         cursor pointer
         .meta
           display block
     &.computed
-      background-color #D2BBFF
+      background-color #af90d5
     &.vuex-getter
       background-color #5dd5d5
     &.firebase-binding

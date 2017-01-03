@@ -32,7 +32,7 @@
           {{ lastCommit | formatTime }}
         </span>
         <span class="label active" v-if="activeIndex === -1">active</span>
-        <span class="label inspected" v-if="inspectedIndex === -1 && activeIndex !== -1">inspected</span>
+        <span class="label inspected" v-if="inspectedIndex === -1">inspected</span>
       </div>
       <div class="entry"
         v-for="(entry, index) in filteredHistory"
@@ -57,7 +57,7 @@
           {{ entry.timestamp | formatTime }}
         </span>
         <span class="label active" v-if="activeIndex === index">active</span>
-        <span class="label inspected" v-if="inspectedIndex === index && activeIndex !== index">inspected</span>
+        <span class="label inspected" v-if="inspectedIndex === index">inspected</span>
       </div>
     </div>
   </scroll-pane>
@@ -146,8 +146,8 @@ export default {
 <style lang="stylus" scoped>
 @import "../../common"
 
-$inspected_color = #a583cf
-$label_threshold = 720px
+$inspected_color = #af90d5
+$label_threshold = 780px
 
 .entry
   font-family Menlo, Consolas, monospace
@@ -177,6 +177,8 @@ $label_threshold = 720px
         color lighten($active-color, 95%)
         .material-icons
           color lighten($active-color, 95%)
+    .label.inspected
+      background-color darken($inspected_color, 10%)
   @media (max-width: $label_threshold)
     .label
       display none
