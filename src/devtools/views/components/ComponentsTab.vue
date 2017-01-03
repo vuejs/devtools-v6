@@ -8,9 +8,9 @@
 </template>
 
 <script>
+import SplitPane from 'components/SplitPane.vue'
 import ComponentTree from './ComponentTree.vue'
 import ComponentInspector from './ComponentInspector.vue'
-import SplitPane from './SplitPane.vue'
 
 import { mapState } from 'vuex'
 

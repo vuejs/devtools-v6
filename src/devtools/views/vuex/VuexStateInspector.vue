@@ -1,6 +1,6 @@
 <template>
   <scroll-pane>
-    <actions slot="header">
+    <action-header slot="header">
       <a class="button export" @click="copyStateToClipboard" title="Export Vuex State">
         <i class="material-icons">content_copy</i>
         <span>Export</span>
@@ -26,7 +26,7 @@
           </transition>
         </div>
       </transition>
-    </actions>
+    </action-header>
     <div slot="scroll" class="vuex-state-inspector">
       <div class="data-fields">
         <data-field
@@ -40,11 +40,11 @@
 </template>
 
 <script>
-import DataField from './DataField.vue'
-import ScrollPane from './ScrollPane.vue'
-import Actions from './Actions.vue'
+import DataField from 'components/DataField.vue'
+import ScrollPane from 'components/ScrollPane.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 
-import { stringify, parse } from '../../util'
+import { stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
 import { mapGetters } from 'vuex'
 
@@ -52,7 +52,7 @@ export default {
   components: {
     DataField,
     ScrollPane,
-    Actions
+    ActionHeader
   },
   data () {
     return {
@@ -119,7 +119,7 @@ function copyToClipboard (state) {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../../common"
 
 .message
   margin-left 5px

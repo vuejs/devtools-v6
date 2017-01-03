@@ -21,7 +21,9 @@ module.exports = {
   resolve: {
     alias: {
       vue$: 'vue/dist/vue.common.js',
-      src: path.resolve(__dirname, '../../src')
+      src: path.resolve(__dirname, '../../src'),
+      components: path.resolve(__dirname, '../../src/devtools/components'),
+      common: path.resolve(__dirname, '../../src/devtools/common.styl')
     }
   },
   module: {

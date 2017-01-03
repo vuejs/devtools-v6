@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import SplitPane from './SplitPane.vue'
+import SplitPane from 'components/SplitPane.vue'
 import EventsHistory from './EventsHistory.vue'
 import EventInspector from './EventInspector.vue'
 

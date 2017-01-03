@@ -1,9 +1,9 @@
-<style lang="stylus" src="../global.styl"></style>
+<style lang="stylus" src="./global.styl"></style>
 
 <template>
 <div id="app" class="app">
   <div class="header">
-    <img class="logo" src="../assets/logo.png" alt="Vue">
+    <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
       <transition name="slide-up">
         <span class="message" :key="message">{{ message }}</span>
@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import ComponentsTab from './ComponentsTab.vue'
-import EventsTab from './EventsTab.vue'
-import VuexTab from './VuexTab.vue'
+import ComponentsTab from './views/components/ComponentsTab.vue'
+import EventsTab from './views/events/EventsTab.vue'
+import VuexTab from './views/vuex/VuexTab.vue'
 
 import { mapState } from 'vuex'
 
@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "./common"
 
 .app
   width 100%

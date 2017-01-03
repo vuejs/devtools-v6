@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { UNDEFINED, INFINITY, isPlainObject } from '../../util'
+import { UNDEFINED, INFINITY, isPlainObject } from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
 

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import SplitPane from './SplitPane.vue'
+import SplitPane from 'components/SplitPane.vue'
 import VuexHistory from './VuexHistory.vue'
 import VuexStateInspector from './VuexStateInspector.vue'
 import { mapState } from 'vuex'

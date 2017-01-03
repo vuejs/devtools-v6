@@ -1,6 +1,6 @@
 <template>
   <scroll-pane>
-    <actions slot="header">
+    <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>
         <input :class="{ invalid: invalidRegex }" placeholder="Filter mutations" v-model="userInputFilter">
@@ -17,7 +17,7 @@
         <i class="material-icons">cached</i>
         <span>Reset</span>
       </a>
-    </actions>
+    </action-header>
     <div slot="scroll" class="history">
       <div class="entry"
         :class="{ active: activeIndex === -1 }"
@@ -51,10 +51,10 @@
 </template>
 
 <script>
-import ScrollPane from './ScrollPane.vue'
-import Actions from './Actions.vue'
+import ScrollPane from 'components/ScrollPane.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 
-import keyNavMixin from '../mixins/key-nav'
+import keyNavMixin from '../../mixins/key-nav'
 import { mapState, mapActions } from 'vuex'
 
 const REGEX_RE = /^\/(.*?)\/(\w*)/
@@ -62,7 +62,7 @@ const REGEX_RE = /^\/(.*?)\/(\w*)/
 export default {
   mixins: [keyNavMixin],
   components: {
-    Actions,
+    ActionHeader,
     ScrollPane
   },
   data () {
@@ -129,7 +129,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../../common"
 
 .entry
   font-family Menlo, Consolas, monospace
@@ -160,7 +160,7 @@ export default {
     @media (min-width: $wide)
       display inline
   .material-icons
-    color lighten($active-color, 75%) 
+    color lighten($active-color, 75%)
     font-size 20px
     margin-right -4px
   .material-icons, span

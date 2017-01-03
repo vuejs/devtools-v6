@@ -1,20 +1,20 @@
 <template>
   <scroll-pane>
-    <actions slot="header">
+    <action-header slot="header">
       <div class="search">
         <i class="search-icon material-icons">search</i>
         <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
-      </div>  
+      </div>
       <a class="button reset" @click="reset" title="Reset">
         <i class="material-icons">cached</i>
         <span>Reset</span>
       </a>
-    </actions>
+    </action-header>
     <div slot="scroll" class="history">
       <div v-if="events.length === 0" class="no-events">
         No events found
       </div>
-      <div class="entry" 
+      <div class="entry"
         v-else
         v-for="(event, index) in events"
         :class="{ active: activeEventIndex === index }"
@@ -38,15 +38,15 @@
 </template>
 
 <script>
-import ScrollPane from './ScrollPane.vue'
-import Actions from './Actions.vue'
+import ScrollPane from 'components/ScrollPane.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 
 import { mapState } from 'vuex'
 
 export default {
   components: {
     ScrollPane,
-    Actions
+    ActionHeader
   },
   computed: {
     ...mapState({
@@ -79,9 +79,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../../common"
 
-.no-events 
+.no-events
   color: #ccc
   text-align: center
   margin-top: 50px
@@ -101,7 +101,7 @@ export default {
     background-color $active-color
     .time
       color lighten($active-color, 75%)
-    .event, .event-name 
+    .event, .event-name
       color: #fff
   .mutation-type
     display inline-block

@@ -1,5 +1,5 @@
 <template>
-  <div class="actions">
+  <div class="action-header">
     <slot></slot>
   </div>
 </template>
@@ -7,7 +7,7 @@
 <style lang="stylus" scoped>
 @import "../common"
 
-.actions
+.action-header
   display flex
   align-items stretch
   padding 0 10px

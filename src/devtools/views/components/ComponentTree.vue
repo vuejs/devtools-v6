@@ -1,11 +1,11 @@
 <template>
   <scroll-pane>
-    <actions slot="header">
+    <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
-    </actions>
+    </action-header>
     <div slot="scroll" class="tree">
       <component-instance
         v-for="instance in instances"
@@ -18,17 +18,17 @@
 </template>
 
 <script>
-import ScrollPane from './ScrollPane.vue'
-import Actions from './Actions.vue'
+import ScrollPane from 'components/ScrollPane.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
-import keyNavMixin from '../mixins/key-nav'
+import keyNavMixin from '../../mixins/key-nav'
 
 export default {
   components: {
     ScrollPane,
-    ComponentInstance,
-    Actions
+    ActionHeader,
+    ComponentInstance
   },
   props: {
     instances: Array

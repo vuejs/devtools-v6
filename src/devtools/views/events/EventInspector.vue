@@ -1,10 +1,10 @@
 <template>
   <scroll-pane>
-    <actions v-if="activeEvent" slot="header">
+    <action-header v-if="activeEvent" slot="header">
       <span class="component-name">
         <span style="color:#ccc">&lt;</span><span>{{ activeEvent.instanceName }}</span><span style="color:#ccc">&gt;</span>
       </span>
-    </actions>
+    </action-header>
     <div v-if="!hasEventData" slot="scroll" class="notice">
       <div>No event data available</div>
     </div>
@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import DataField from './DataField.vue'
-import ScrollPane from './ScrollPane.vue'
-import Actions from './Actions.vue'
+import DataField from 'components/DataField.vue'
+import ScrollPane from 'components/ScrollPane.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 
 import { mapGetters } from 'vuex'
 
@@ -36,7 +36,7 @@ export default {
   components: {
     DataField,
     ScrollPane,
-    Actions
+    ActionHeader
   },
   data () {
     return {
@@ -83,7 +83,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../../common"
 
 section:not(:last-child)
   border-bottom 1px solid $border-color

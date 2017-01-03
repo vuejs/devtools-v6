@@ -22,7 +22,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, '../../src')
+      src: path.resolve(__dirname, '../../src'),
+      components: path.resolve(__dirname, '../../src/devtools/components')
     }
   },
   module: {

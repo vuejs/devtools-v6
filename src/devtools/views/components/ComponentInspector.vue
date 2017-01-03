@@ -1,6 +1,6 @@
 <template>
   <scroll-pane>
-    <actions v-show="hasTarget" slot="header">
+    <action-header v-show="hasTarget" slot="header">
       <span class="component-name">
         <span style="color:#ccc">&lt;</span><span>{{ target.name }}</span><span style="color:#ccc">&gt;</span>
       </span>
@@ -8,7 +8,7 @@
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>
-    </actions>
+    </action-header>
     <section v-show="!hasTarget" slot="scroll" class="notice">
       <div>Select a component instance to inspect.</div>
     </section>
@@ -28,9 +28,9 @@
 </template>
 
 <script>
-import DataField from './DataField.vue'
-import ScrollPane from './ScrollPane.vue'
-import Actions from './Actions.vue'
+import DataField from 'components/DataField.vue'
+import ScrollPane from 'components/ScrollPane.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
@@ -38,7 +38,7 @@ export default {
   components: {
     DataField,
     ScrollPane,
-    Actions
+    ActionHeader
   },
   props: {
     target: Object
