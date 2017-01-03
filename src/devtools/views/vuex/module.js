@@ -1,4 +1,4 @@
-import { parse } from '../../../../util'
+import { parse } from 'src/util'
 import * as actions from './actions'
 
 const state = {

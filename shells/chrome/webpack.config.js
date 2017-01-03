@@ -23,6 +23,7 @@ module.exports = {
   resolve: {
     alias: {
       src: path.resolve(__dirname, '../../src'),
+      views: path.resolve(__dirname, '../../src/devtools/views'),
       components: path.resolve(__dirname, '../../src/devtools/components')
     }
   },

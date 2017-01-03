@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import app from './modules/app'
-import components from './modules/components'
-import vuex from './modules/vuex'
-import events from './modules/events'
+import app from './app-module'
+import components from 'views/components/module'
+import vuex from 'views/vuex/module'
+import events from 'views/events/module'
 
 Vue.use(Vuex)
 
@@ -20,18 +20,18 @@ export default store
 
 if (module.hot) {
   module.hot.accept([
-    './modules/app',
-    './modules/components',
-    './modules/vuex',
-    './modules/events'
+    './app-module',
+    'views/components/module',
+    'views/vuex/module',
+    'views/events/module'
   ], () => {
     try {
       store.hotUpdate({
         modules: {
-          app: require('./modules/app').default,
-          components: require('./modules/components').default,
-          vuex: require('./modules/vuex').default,
-          events: require('./modules/events').default
+          app: require('./app-module').default,
+          components: require('views/components/module').default,
+          vuex: require('views/vuex/module').default,
+          events: require('views/events/module').default
         }
       })
     } catch (e) {
