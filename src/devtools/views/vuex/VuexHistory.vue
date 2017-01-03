@@ -155,6 +155,10 @@ export default {
   height 40px
   .action
     color #999
+    &:hover
+      color $active-color
+      .material-icons
+        color $active-color
   &.inspected
     border-left 4px solid $active-color
     padding-left 16px
