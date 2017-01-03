@@ -22,10 +22,8 @@
       <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="step(-1)">
         <span>Base State</span>
         <span>
-          <a v-if="inspectedIndex === -1 && activeIndex !== -1"
-             class="action"
-             title="Time Travel to This State"
-             @click.stop="timeTravelToSelected">
+          <a v-if="inspectedIndex === -1 && activeIndex !== -1" class="action"
+             @click.stop="timeTravelToSelected" title="Time Travel to This State">
             <i class="material-icons">restore</i>
             <span>Time Travel</span>
           </a>
@@ -33,6 +31,8 @@
         <span class="time">
           {{ lastCommit | formatTime }}
         </span>
+        <span class="label active" v-if="activeIndex === -1">active</span>
+        <span class="label inspected" v-if="inspectedIndex === -1 && activeIndex !== -1">inspected</span>
       </div>
       <div class="entry"
         v-for="(entry, index) in filteredHistory"
@@ -56,6 +56,8 @@
         <span class="time" :title="entry.timestamp">
           {{ entry.timestamp | formatTime }}
         </span>
+        <span class="label active" v-if="activeIndex === index">active</span>
+        <span class="label inspected" v-if="inspectedIndex === index && activeIndex !== index">inspected</span>
       </div>
     </div>
   </scroll-pane>
@@ -144,6 +146,9 @@ export default {
 <style lang="stylus" scoped>
 @import "../../common"
 
+$inspected_color = #a583cf
+$label_threshold = 720px
+
 .entry
   font-family Menlo, Consolas, monospace
   color #881391
@@ -159,14 +164,9 @@ export default {
       color $active-color
       .material-icons
         color $active-color
-  &.inspected
-    border-left 4px solid $active-color
-    padding-left 16px
   &.active
     color #fff
     background-color $active-color
-    &.inspected
-      border-left-color darken($active-color, 40%)
     .time
       color lighten($active-color, 75%)
     .action
@@ -177,11 +177,28 @@ export default {
         color lighten($active-color, 95%)
         .material-icons
           color lighten($active-color, 95%)
+  @media (max-width: $label_threshold)
+    .label
+      display none
+    &.inspected
+      border-left 4px solid darken($inspected_color, 15%)
+      padding-left 16px
   .mutation-type
     display inline-block
     vertical-align middle
   .material-icons, span, a
     vertical-align middle
+  .label
+    float right
+    font-size 10px
+    padding 4px 8px
+    border-radius 6px
+    margin-right 8px
+    &.active
+      background-color darken($active-color, 25%)
+    &.inspected
+      color #fff
+      background-color $inspected_color
 
 .action
   font-size 11px
@@ -191,7 +208,7 @@ export default {
   white-space nowrap
   span
     display none
-    @media (min-width: $wide)
+    @media (min-width: 1080px)
       display inline
   .material-icons
     font-size 20px
