@@ -5,6 +5,7 @@ const state = {
   hasVuex: false,
   initial: null,
   base: null,
+  inspectedIndex: -1,
   activeIndex: -1,
   history: [],
   initialCommit: Date.now(),
@@ -19,7 +20,7 @@ const mutations = {
   },
   'RECEIVE_MUTATION' (state, entry) {
     state.history.push(entry)
-    state.activeIndex = state.history.length - 1
+    state.inspectedIndex = state.activeIndex = state.history.length - 1
   },
   'COMMIT_ALL' (state) {
     state.base = state.history[state.history.length - 1].state
@@ -30,33 +31,36 @@ const mutations = {
     reset(state)
   },
   'COMMIT_SELECTED' (state) {
-    state.base = state.history[state.activeIndex].state
+    state.base = state.history[state.inspectedIndex].state
     state.lastCommit = Date.now()
-    state.history = state.history.slice(state.activeIndex + 1)
-    state.activeIndex = -1
+    state.history = state.history.slice(state.inspectedIndex + 1)
+    state.inspectedIndex = -1
   },
   'REVERT_SELECTED' (state) {
-    state.history = state.history.slice(0, state.activeIndex)
-    state.activeIndex--
+    state.history = state.history.slice(0, state.inspectedIndex)
+    state.inspectedIndex--
   },
   'RESET' (state) {
     state.base = state.initial
     state.lastCommit = state.initialCommit
     reset(state)
   },
-  'STEP' (state, n) {
-    state.activeIndex = n
+  'STEP' (state, index) {
+    state.inspectedIndex = index
+  },
+  'TIME_TRAVEL' (state, index) {
+    state.activeIndex = index
   }
 }
 
 function reset (state) {
   state.history = []
-  state.activeIndex = -1
+  state.inspectedIndex = -1
 }
 
 const getters = {
-  activeState ({ base, history, activeIndex }) {
-    const entry = history[activeIndex]
+  inspectedState ({ base, history, inspectedIndex }) {
+    const entry = history[inspectedIndex]
     const res = {}
     if (entry) {
       res.type = entry.mutation.type

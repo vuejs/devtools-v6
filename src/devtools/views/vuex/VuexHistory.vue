@@ -10,36 +10,47 @@
         <span>Commit All</span>
       </a>
       <a class="button revert-all" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
-        <i class="material-icons">restore</i>
+        <i class="material-icons">delete</i>
         <span>Revert All</span>
       </a>
-      <a class="button reset" @click="reset" title="Reset">
+      <a class="button reset" @click="reset" title="Reset to Original State">
         <i class="material-icons">cached</i>
         <span>Reset</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div class="entry"
-        :class="{ active: activeIndex === -1 }"
-        @click="step(-1)">
-        Base State
+      <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="step(-1)">
+        <span>Base State</span>
+        <span>
+          <a v-if="inspectedIndex === -1 && activeIndex !== -1"
+             class="action"
+             title="Time Travel to This State"
+             @click.stop="timeTravelToSelected">
+            <i class="material-icons">restore</i>
+            <span>Time Travel</span>
+          </a>
+        </span>
         <span class="time">
           {{ lastCommit | formatTime }}
         </span>
       </div>
       <div class="entry"
         v-for="(entry, index) in filteredHistory"
-        :class="{ active: activeIndex === index }"
+        :class="{ inspected: inspectedIndex === index, active: activeIndex === index }"
         @click="step(index)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
-        <span v-if="activeIndex === index">
-          <a class="action" @click.stop="commitSelected" title="Commit">
+        <span class="entry-actions" v-if="inspectedIndex === index">
+          <a class="action" @click.stop="commitSelected" title="Commit This Mutation">
             <i class="material-icons">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revertSelected" title="Revert">
-            <i class="material-icons">restore</i>
+          <a class="action" @click.stop="revertSelected" title="Revert This Mutation">
+            <i class="material-icons">delete</i>
             <span>Revert</span>
+          </a>
+          <a v-if="activeIndex !== index" class="action" @click.stop="timeTravelToSelected" title="Time Travel to This State">
+            <i class="material-icons">restore</i>
+            <span>Time Travel</span>
           </a>
         </span>
         <span class="time" :title="entry.timestamp">
@@ -72,11 +83,12 @@ export default {
     }
   },
   computed: {
-    ...mapState('vuex', {
-      history: state => state.history,
-      lastCommit: state => state.lastCommit,
-      activeIndex: state => state.activeIndex
-    }),
+    ...mapState('vuex', [
+      'history',
+      'lastCommit',
+      'inspectedIndex',
+      'activeIndex'
+    ]),
     compiledFilter () {
       const regexParts = this.userInputFilter.match(REGEX_RE)
       if (regexParts !== null) {
@@ -112,13 +124,14 @@ export default {
       'commitSelected',
       'revertSelected',
       'reset',
-      'step'
+      'step',
+      'timeTravelToSelected'
     ]),
     onKeyNav (dir) {
       if (dir === 'up') {
-        this.step(this.activeIndex - 1)
+        this.step(this.inspectedIndex - 1)
       } else if (dir === 'down') {
-        this.step(this.activeIndex + 1)
+        this.step(this.inspectedIndex + 1)
       }
     },
     escapeStringForRegExp (str) {
@@ -139,17 +152,34 @@ export default {
   font-size 14px
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
+  height 40px
+  .action
+    color #999
+  &.inspected
+    border-left 4px solid $active-color
+    padding-left 16px
   &.active
     color #fff
     background-color $active-color
+    &.inspected
+      border-left-color darken($active-color, 40%)
     .time
       color lighten($active-color, 75%)
+    .action
+      color lighten($active-color, 75%)
+      .material-icons
+        color lighten($active-color, 75%)
+      &:hover
+        color lighten($active-color, 95%)
+        .material-icons
+          color lighten($active-color, 95%)
   .mutation-type
     display inline-block
     vertical-align middle
+  .material-icons, span, a
+    vertical-align middle
 
 .action
-  color lighten($active-color, 75%)
   font-size 11px
   display inline-block
   vertical-align middle
@@ -160,15 +190,8 @@ export default {
     @media (min-width: $wide)
       display inline
   .material-icons
-    color lighten($active-color, 75%)
     font-size 20px
     margin-right -4px
-  .material-icons, span
-    vertical-align middle
-  &:hover
-    color lighten($active-color, 95%)
-    .material-icons
-      color lighten($active-color, 95%)
 
 .time
   font-size 11px

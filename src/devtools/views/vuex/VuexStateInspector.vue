@@ -30,7 +30,7 @@
     <div slot="scroll" class="vuex-state-inspector">
       <div class="data-fields">
         <data-field
-          v-for="(value, key) of activeState"
+          v-for="(value, key) of inspectedState"
           :field="{ key, value }"
           :depth="0">
         </data-field>
@@ -62,7 +62,7 @@ export default {
     }
   },
   computed: mapGetters('vuex', [
-    'activeState'
+    'inspectedState'
   ]),
   watch: {
     showImportStatePopup (val) {
@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     copyStateToClipboard () {
-      copyToClipboard(this.activeState.state)
+      copyToClipboard(this.inspectedState.state)
       this.showStateCopiedMessage = true
       window.setTimeout(() => {
         this.showStateCopiedMessage = false
