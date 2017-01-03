@@ -61,9 +61,9 @@ export default {
       showImportStatePopup: false
     }
   },
-  computed: mapGetters({
-    activeState: 'vuexActiveState'
-  }),
+  computed: mapGetters('vuex', [
+    'activeState'
+  ]),
   watch: {
     showImportStatePopup (val) {
       if (val) {
@@ -98,7 +98,7 @@ export default {
       } else {
         try {
           parse(importedStr) // Try to parse
-          this.$store.dispatch('importState', importedStr)
+          this.$store.dispatch('vuex/importState', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true

@@ -81,7 +81,7 @@ export default {
       this.toggleWithValue(false)
     },
     toggleWithValue (val) {
-      this.$store.commit('TOGGLE_INSTANCE', {
+      this.$store.commit('components/TOGGLE_INSTANCE', {
         id: this.instance.id,
         expanded: val
       })

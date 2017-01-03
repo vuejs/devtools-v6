@@ -12,39 +12,39 @@ const state = {
 }
 
 const mutations = {
-  'vuex/INIT' (state, initialState) {
+  'INIT' (state, initialState) {
     state.initial = state.base = initialState
     state.hasVuex = true
     reset(state)
   },
-  'vuex/RECEIVE_MUTATION' (state, entry) {
+  'RECEIVE_MUTATION' (state, entry) {
     state.history.push(entry)
     state.activeIndex = state.history.length - 1
   },
-  'vuex/COMMIT_ALL' (state) {
+  'COMMIT_ALL' (state) {
     state.base = state.history[state.history.length - 1].state
     state.lastCommit = Date.now()
     reset(state)
   },
-  'vuex/REVERT_ALL' (state) {
+  'REVERT_ALL' (state) {
     reset(state)
   },
-  'vuex/COMMIT_SELECTED' (state) {
+  'COMMIT_SELECTED' (state) {
     state.base = state.history[state.activeIndex].state
     state.lastCommit = Date.now()
     state.history = state.history.slice(state.activeIndex + 1)
     state.activeIndex = -1
   },
-  'vuex/REVERT_SELECTED' (state) {
+  'REVERT_SELECTED' (state) {
     state.history = state.history.slice(0, state.activeIndex)
     state.activeIndex--
   },
-  'vuex/RESET' (state) {
+  'RESET' (state) {
     state.base = state.initial
     state.lastCommit = state.initialCommit
     reset(state)
   },
-  'vuex/STEP' (state, n) {
+  'STEP' (state, n) {
     state.activeIndex = n
   }
 }
@@ -55,7 +55,7 @@ function reset (state) {
 }
 
 const getters = {
-  vuexActiveState ({ base, history, activeIndex }) {
+  activeState ({ base, history, activeIndex }) {
     const entry = history[activeIndex]
     const res = {}
     if (entry) {
@@ -70,6 +70,7 @@ const getters = {
 }
 
 export default {
+  namespaced: true,
   state,
   mutations,
   actions,

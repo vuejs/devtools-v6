@@ -20,9 +20,9 @@ export default {
     ComponentInspector,
     SplitPane
   },
-  computed: mapState({
-    instances: state => state.components.instances,
-    inspectedInstance: state => state.components.inspectedInstance
+  computed: mapState('components', {
+    instances: state => state.instances,
+    inspectedInstance: state => state.inspectedInstance
   }),
   methods: {
     filter (e) {

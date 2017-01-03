@@ -55,8 +55,8 @@ export default {
     events: EventsTab
   },
   computed: mapState({
-    message: state => state.app.message,
-    tab: state => state.app.tab,
+    message: state => state.message,
+    tab: state => state.tab,
     newEventCount: state => state.events.newEventCount
   }),
   methods: {

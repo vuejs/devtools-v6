@@ -72,10 +72,10 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      history: state => state.vuex.history,
-      lastCommit: state => state.vuex.lastCommit,
-      activeIndex: state => state.vuex.activeIndex
+    ...mapState('vuex', {
+      history: state => state.history,
+      lastCommit: state => state.lastCommit,
+      activeIndex: state => state.activeIndex
     }),
     compiledFilter () {
       const regexParts = this.userInputFilter.match(REGEX_RE)
@@ -106,7 +106,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
+    ...mapActions('vuex', [
       'commitAll',
       'revertAll',
       'commitSelected',

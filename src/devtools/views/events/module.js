@@ -6,27 +6,27 @@ const state = {
 }
 
 const mutations = {
-  'events/EMIT' (state, payload) {
+  'EMIT' (state, payload) {
     if (state.events.length === state.filteredEvents.length) {
       state.filteredEvents.push(payload)
     }
     state.events.push(payload)
     state.activeFilteredEventIndex = state.filteredEvents.length - 1
   },
-  'events/RESET' (state) {
+  'RESET' (state) {
     state.events = []
     state.filteredEvents = []
   },
-  'events/STEP' (state, n) {
+  'STEP' (state, n) {
     state.activeFilteredEventIndex = n
   },
-  'events/RESET_NEW_EVENT_COUNT' (state) {
+  'RESET_NEW_EVENT_COUNT' (state) {
     state.newEventCount = 0
   },
-  'events/INCREASE_NEW_EVENT_COUNT' (state) {
+  'INCREASE_NEW_EVENT_COUNT' (state) {
     state.newEventCount++
   },
-  'events/FILTER_EVENTS' (state, filter) {
+  'FILTER_EVENTS' (state, filter) {
     state.filteredEvents = state.events.filter(event => {
       return event.eventName.toLowerCase().includes(filter) || event.instanceName.toLowerCase().includes(filter)
     })
@@ -40,6 +40,7 @@ const getters = {
 }
 
 export default {
+  namespaced: true,
   state,
   mutations,
   getters

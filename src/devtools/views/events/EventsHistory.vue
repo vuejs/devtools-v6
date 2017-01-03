@@ -49,9 +49,9 @@ export default {
     ActionHeader
   },
   computed: {
-    ...mapState({
-      events: state => state.events.filteredEvents,
-      activeEventIndex: state => state.events.activeFilteredEventIndex
+    ...mapState('events', {
+      events: state => state.filteredEvents,
+      activeEventIndex: state => state.activeFilteredEventIndex
     })
   },
   filters: {

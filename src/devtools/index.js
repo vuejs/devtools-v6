@@ -51,11 +51,11 @@ function initApp (shell) {
     })
 
     bridge.on('flush', payload => {
-      store.commit('FLUSH', parse(payload))
+      store.commit('components/FLUSH', parse(payload))
     })
 
     bridge.on('instance-details', details => {
-      store.commit('RECEIVE_INSTANCE_DETAILS', parse(details))
+      store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
     bridge.on('vuex:init', state => {

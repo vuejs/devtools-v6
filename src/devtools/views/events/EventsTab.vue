@@ -20,7 +20,7 @@ import EventInspector from './EventInspector.vue'
 import { mapGetters } from 'vuex'
 
 export default {
-  computed: mapGetters([
+  computed: mapGetters('events', [
     'hasEvents'
   ]),
   components: {

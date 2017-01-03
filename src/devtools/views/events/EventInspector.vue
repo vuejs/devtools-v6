@@ -45,7 +45,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('events', [
       'activeEvent'
     ]),
     sortedEventData () {

@@ -1,39 +1,39 @@
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
-    commit('vuex/COMMIT_ALL')
+    commit('COMMIT_ALL')
     travelTo(state)
   }
 }
 
 export function revertAll ({ commit, state }) {
   if (state.history.length > 0) {
-    commit('vuex/REVERT_ALL')
+    commit('REVERT_ALL')
     travelTo(state)
   }
 }
 
 export function commitSelected ({ commit, state }) {
-  commit('vuex/COMMIT_SELECTED')
+  commit('COMMIT_SELECTED')
   travelTo(state)
 }
 
 export function revertSelected ({ commit, state }) {
-  commit('vuex/REVERT_SELECTED')
+  commit('REVERT_SELECTED')
   travelTo(state)
 }
 
 export function reset ({ commit, state }) {
-  commit('vuex/RESET')
+  commit('RESET')
   travelTo(state)
 }
 
 export function step ({ commit, state }, index) {
-  commit('vuex/STEP', index)
+  commit('STEP', index)
   travelTo(state)
 }
 
 export function importState (store, importedState) {
-  store.commit('vuex/INIT', importedState)
+  store.commit('INIT', importedState)
   store.dispatch('reset')
 }
 

@@ -20,8 +20,8 @@ import VuexStateInspector from './VuexStateInspector.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState({
-    hasVuex: state => state.vuex.hasVuex
+  computed: mapState('vuex', {
+    hasVuex: state => state.hasVuex
   }),
   components: {
     SplitPane,
