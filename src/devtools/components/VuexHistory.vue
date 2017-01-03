@@ -1,28 +1,24 @@
 <template>
-  <div>
-    <div class="buttons">
-      <a class="button" :class="{ disabled: !history.length }" @click="commitAll">
+  <scroll-pane>
+    <actions slot="header">
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input :class="{ invalid: invalidRegex }" placeholder="Filter mutations" v-model="userInputFilter">
+      </div>
+      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button" :class="{ disabled: !history.length }" @click="revertAll">
+      <a class="button revert-all" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
         <i class="material-icons">restore</i>
         <span>Revert All</span>
       </a>
-      <a class="button" @click="reset">
+      <a class="button reset" @click="reset" title="Reset">
         <i class="material-icons">cached</i>
         <span>Reset</span>
       </a>
-      <div class="search">
-        <i class="material-icons">search</i>
-        <input class="search-box" placeholder="Filter mutations" v-model="userInputFilter">
-        <span class="invalid-regex" v-show="invalidRegex">Invalid RegEx!</span>
-      </div>
-      <a class="button" @click="clearFilter" v-show="userInputFilter">
-        <i class="material-icons">clear</i>
-      </a>
-    </div>
-    <div class="history">
+    </actions>
+    <div slot="scroll" class="history">
       <div class="entry"
         :class="{ active: activeIndex === -1 }"
         @click="step(-1)">
@@ -37,24 +33,27 @@
         @click="step(index)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span v-if="activeIndex === index">
-          <a class="action" @click.stop="commitSelected">
+          <a class="action" @click.stop="commitSelected" title="Commit">
             <i class="material-icons">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revertSelected">
+          <a class="action" @click.stop="revertSelected" title="Revert">
             <i class="material-icons">restore</i>
             <span>Revert</span>
           </a>
         </span>
-        <span class="time">
+        <span class="time" :title="entry.timestamp">
           {{ entry.timestamp | formatTime }}
         </span>
       </div>
     </div>
-  </div>
+  </scroll-pane>
 </template>
 
 <script>
+import ScrollPane from './ScrollPane.vue'
+import Actions from './Actions.vue'
+
 import keyNavMixin from '../mixins/key-nav'
 import { mapState, mapActions } from 'vuex'
 
@@ -62,6 +61,10 @@ const REGEX_RE = /^\/(.*?)\/(\w*)/
 
 export default {
   mixins: [keyNavMixin],
+  components: {
+    Actions,
+    ScrollPane
+  },
   data () {
     return {
       userInputFilter: '',
@@ -118,9 +121,6 @@ export default {
         this.step(this.activeIndex + 1)
       }
     },
-    clearFilter () {
-      this.userInputFilter = ''
-    },
     escapeStringForRegExp (str) {
       return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
     }
@@ -129,58 +129,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-$blue = #44A1FF
-
-.buttons
-  padding 15px 30px 5px 20px
-  border-bottom 1px solid #eee
-  .material-icons
-    font-size 16px
-  .material-icons, span
-    vertical-align middle
-    
-.button
-  color #555
-  cursor pointer
-  display inline-block
-  font-size 13px
-  margin 0 20px 10px 0
-  transition color .2s ease
-  &:hover
-    color $blue
-  &.disabled
-    color #aaa
-    cursor not-allowed
-
-.search
-  width 300px
-  display inline-block
-  font-size 13px
-  margin 0 0 10px 0
-  box-sizing border-box
-
-.search-box
-  font-family Roboto
-  box-sizing border-box
-  color #666
-  position relative
-  z-index 0
-  vertical-align middle
-  font-size 13px
-  border none
-  outline none
-  width calc(100% - 110px)
-  background transparent
-
-.invalid-regex 
-  display inline-block
-  width 85px
-  color #ff4141
-  
-.history
-  height calc(100% - 48px)
-  overflow-x hidden
-  overflow-y auto
+@import "../common"
 
 .entry
   font-family Menlo, Consolas, monospace
@@ -192,27 +141,34 @@ $blue = #44A1FF
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   &.active
     color #fff
-    background-color $blue
+    background-color $active-color
     .time
-      color lighten($blue, 75%)
+      color lighten($active-color, 75%)
   .mutation-type
     display inline-block
     vertical-align middle
 
 .action
-  color lighten($blue, 75%)
+  color lighten($active-color, 75%)
   font-size 11px
-  dispatch inline-block
+  display inline-block
   vertical-align middle
   margin-left 8px
   white-space nowrap
+  span
+    display none
+    @media (min-width: $wide)
+      display inline
   .material-icons
-    font-size 14px
+    color lighten($active-color, 75%) 
+    font-size 20px
     margin-right -4px
   .material-icons, span
     vertical-align middle
   &:hover
-    color #fff
+    color lighten($active-color, 95%)
+    .material-icons
+      color lighten($active-color, 95%)
 
 .time
   font-size 11px

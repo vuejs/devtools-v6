@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <div class="func-bar">
-      <div class="buttons">
-        <a class="button" @click="reset">
-          <i class="material-icons">cached</i>
-          <span>Reset</span>
-        </a>
-      </div>
+  <scroll-pane>
+    <actions slot="header">
       <div class="search">
         <i class="search-icon material-icons">search</i>
-        <input class="search-box" placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
-      </div>
-    </div>
-    <div class="history">
+        <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
+      </div>  
+      <a class="button reset" @click="reset" title="Reset">
+        <i class="material-icons">cached</i>
+        <span>Reset</span>
+      </a>
+    </actions>
+    <div slot="scroll" class="history">
       <div v-if="events.length === 0" class="no-events">
         No events found
       </div>
@@ -22,7 +20,7 @@
         :class="{ active: activeEventIndex === index }"
         @click="step(index)">
         <div class="event">
-          <div>
+          <div class="component-name">
             <span class="angle-bracket">&lt;</span>{{event.instanceName}}<span class="angle-bracket">&gt;</span>
           </div>
           <div class="event-name">
@@ -36,13 +34,20 @@
         </div>
       </div>
     </div>
-  </div>
+  </scroll-pane>
 </template>
 
 <script>
+import ScrollPane from './ScrollPane.vue'
+import Actions from './Actions.vue'
+
 import { mapState } from 'vuex'
 
 export default {
+  components: {
+    ScrollPane,
+    Actions
+  },
   computed: {
     ...mapState({
       events: state => state.events.filteredEvents,
@@ -74,74 +79,13 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import "../common"
 
 .no-events 
   color: #ccc
   text-align: center
   margin-top: 50px
   line-height: 30px
-
-.search
-  box-sizing border-box
-  width: 78%
-  display: inline-block
-  padding-left: 17px
-
-.material-icons
-  display inline-block
-  vertical-align middle
-
-.search-icon
-  font-size 24px
-  color #999
-  width: 7%
-
-.search-box
-  font-family Roboto
-  box-sizing border-box
-  color #666
-  position relative
-  z-index 0
-  height 30px
-  line-height 30px
-  font-size 13px
-  border none
-  outline none
-  padding-left 15px
-  background transparent
-  width: 91%;
-
-$blue = #44A1FF
-
-.func-bar
-  border-bottom 1px solid #e3e3e3
-  padding: 10.5px;
-
-.buttons
-  width: 20%
-  display: inline-block
-  border-right: 1px solid #e3e3e3;
-
-.button
-  color #555
-  cursor pointer
-  display inline-block
-  font-size 13px
-  transition color .2s ease
-  &:hover
-    color $blue
-  &.disabled
-    color #aaa
-    cursor not-allowed
-  .material-icons
-    font-size 16px
-  .material-icons, span
-    vertical-align middle
-
-.history
-  height calc(100% - 48px)
-  overflow-x hidden
-  overflow-y auto
 
 .entry
   position: relative;
@@ -154,9 +98,9 @@ $blue = #44A1FF
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   &.active
     color #fff
-    background-color $blue
+    background-color $active-color
     .time
-      color lighten($blue, 75%)
+      color lighten($active-color, 75%)
     .event, .event-name 
       color: #fff
   .mutation-type
@@ -167,7 +111,7 @@ $blue = #44A1FF
   margin-top: 5px;
 
 .action
-  color lighten($blue, 75%)
+  color lighten($active-color, 75%)
   font-size 11px
   dispatch inline-block
   vertical-align middle
@@ -202,4 +146,10 @@ $blue = #44A1FF
   color #999
   float right
   margin-top 3px
+
+.component-name
+  color $component-color
+
+.active .component-name
+  color #fff
 </style>

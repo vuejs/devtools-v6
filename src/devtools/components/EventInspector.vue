@@ -1,39 +1,42 @@
 <template>
-  <div>
-    <section v-if="activeEvent" class="top">
+  <scroll-pane>
+    <actions v-if="activeEvent" slot="header">
       <span class="component-name">
-        <span style="color:#ccc">&lt;</span>
-        <span>{{ activeEvent.instanceName }}</span>
-        <span style="color:#ccc">&gt;</span>
+        <span style="color:#ccc">&lt;</span><span>{{ activeEvent.instanceName }}</span><span style="color:#ccc">&gt;</span>
       </span>
-    </section>
-    <div class="events-state-inspector">
-      <div v-if="!hasEventData" class="no-event-data">
-        No event data available
-      </div>
-      <div v-else>
+    </actions>
+    <div v-if="!hasEventData" slot="scroll" class="notice">
+      <div>No event data available</div>
+    </div>
+    <div v-if="hasEventData">
+      <div class="data-fields">
         <data-field
           v-if="isComplex"
           v-for="(value, key) of sortedEventData"
           :field="{ key, value }"
           :depth="0">
         </data-field>
-        <div v-if="!isComplex" :class="{ 'literal': eventDataTypeIsLiteral, 'string': !eventDataTypeIsLiteral }">
-          <span v-if="!eventDataTypeIsLiteral">"</span>{{ getEventDataString() }}<span v-if="!eventDataTypeIsLiteral">"</span>
-        </div>
+      </div>
+      <div v-if="!isComplex" :class="{ 'literal': eventDataTypeIsLiteral, 'string': !eventDataTypeIsLiteral }">
+        <span v-if="!eventDataTypeIsLiteral">"</span>{{ getEventDataString() }}<span v-if="!eventDataTypeIsLiteral">"</span>
       </div>
     </div>
-  </div>
+  </scroll-pane>
 </template>
 
 <script>
 import DataField from './DataField.vue'
+import ScrollPane from './ScrollPane.vue'
+import Actions from './Actions.vue'
+
 import { mapGetters } from 'vuex'
 
 export default {
 
   components: {
-    DataField
+    DataField,
+    ScrollPane,
+    Actions
   },
   data () {
     return {
@@ -80,42 +83,16 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-$border-color = #e3e3e3
-
-.inspector, .main
-  position absolute
-  width 100%
-  height 100%
-
-.main
-  display flex
-  flex-direction column
+@import "../common"
 
 section:not(:last-child)
   border-bottom 1px solid $border-color
-
-.top
-  line-height 30px
-  font-size 18px
-  color #0062c3
-  padding 10px 20px
-
-.component-name
-  margin-right 15px
-
-.component-name, .buttons
-  display inline-block
-  vertical-align middle
-  white-space nowrap
 
 .string
   color: #c41a16
 
 .literal
   color: #03c
-
-.events-state-inspector
-  padding 15px 20px
 
 .no-event-data
   color: #ccc;

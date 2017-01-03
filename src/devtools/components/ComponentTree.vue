@@ -1,27 +1,43 @@
 <template>
-  <div class="tree">
-    <component-instance
-      v-for="instance in instances"
-      :key="instance.id"
-      :instance="instance"
-      :depth="0">
-    </component-instance>
-  </div>
+  <scroll-pane>
+    <actions slot="header">
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input placeholder="Filter components" @input="filterInstances">
+      </div>
+    </actions>
+    <div slot="scroll" class="tree">
+      <component-instance
+        v-for="instance in instances"
+        :key="instance.id"
+        :instance="instance"
+        :depth="0">
+      </component-instance>
+    </div>
+  </scroll-pane>
 </template>
 
 <script>
+import ScrollPane from './ScrollPane.vue'
+import Actions from './Actions.vue'
 import ComponentInstance from './ComponentInstance.vue'
+
 import keyNavMixin from '../mixins/key-nav'
 
 export default {
   components: {
-    ComponentInstance
+    ScrollPane,
+    ComponentInstance,
+    Actions
   },
   props: {
     instances: Array
   },
   mixins: [keyNavMixin],
   methods: {
+    filterInstances (e) {
+      bridge.send('filter-instances', e.target.value)
+    },
     onKeyNav (dir) {
       // somewhat hacky key navigation, but it works!
       const currentEl = this.$el.querySelector('.instance.selected')
