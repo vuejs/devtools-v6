@@ -6,8 +6,7 @@
     </split-pane>
     <div v-else class="notice">
       <div>
-        No Vuex store detected.<br>
-        Make sure you are using Vuex 0.5.0 or above.
+        No Vuex store detected.
       </div>
     </div>
   </div>
