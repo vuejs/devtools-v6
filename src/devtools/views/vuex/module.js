@@ -1,7 +1,12 @@
 import { parse } from 'src/util'
 import * as actions from './actions'
+import storage from 'storage'
+
+const ENABLED_KEY = 'VUEX_ENABLED'
+const enabled = storage.get(ENABLED_KEY)
 
 const state = {
+  enabled: enabled == null ? true : enabled,
   hasVuex: false,
   initial: null,
   base: null,
@@ -50,6 +55,9 @@ const mutations = {
   },
   'TIME_TRAVEL' (state, index) {
     state.activeIndex = index
+  },
+  'TOGGLE' (state) {
+    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
   }
 }
 

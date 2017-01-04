@@ -1,4 +1,10 @@
+import storage from 'storage'
+
+const ENABLED_KEY = 'EVENTS_ENABLED'
+const enabled = storage.get(ENABLED_KEY)
+
 const state = {
+  enabled: enabled == null ? true : enabled,
   events: [],
   filteredEvents: [],
   activeFilteredEventIndex: 0,
@@ -31,12 +37,14 @@ const mutations = {
       return event.eventName.toLowerCase().includes(filter) || event.instanceName.toLowerCase().includes(filter)
     })
     state.activeFilteredEventIndex = state.filteredEvents.length - 1
+  },
+  'TOGGLE' (state) {
+    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
   }
 }
 
 const getters = {
-  activeEvent: state => state.filteredEvents[state.activeFilteredEventIndex],
-  hasEvents: state => state.events.length > 0
+  activeEvent: state => state.filteredEvents[state.activeFilteredEventIndex]
 }
 
 export default {

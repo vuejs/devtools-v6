@@ -5,9 +5,9 @@
         <i class="search-icon material-icons">search</i>
         <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
       </div>
-      <a class="button reset" @click="reset" title="Reset">
-        <i class="material-icons">cached</i>
-        <span>Reset</span>
+      <a class="button reset" :class="{ disabled: !rawEvents.length }" @click="reset" title="Clear Log">
+        <i class="material-icons">delete</i>
+        <span>Clear Log</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
@@ -50,6 +50,7 @@ export default {
   },
   computed: {
     ...mapState('events', {
+      rawEvents: state => state.events,
       events: state => state.filteredEvents,
       activeEventIndex: state => state.activeFilteredEventIndex
     })

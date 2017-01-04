@@ -1,5 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
+var alias = require('../alias')
 
 var bubleOptions = {
   target: process.env.NODE_ENV === 'production' ? null : { chrome: 52 },
@@ -21,11 +22,9 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: {
-      src: path.resolve(__dirname, '../../src'),
-      views: path.resolve(__dirname, '../../src/devtools/views'),
-      components: path.resolve(__dirname, '../../src/devtools/components')
-    }
+    alias: Object.assign({}, alias, {
+      storage: path.resolve(__dirname, './src/storage')
+    })
   },
   module: {
     rules: [

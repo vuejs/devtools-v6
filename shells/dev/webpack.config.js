@@ -1,5 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
+var alias = require('../alias')
 
 var bubleOptions = {
   target: { chrome: 52 },
@@ -19,12 +20,10 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: {
+    alias: Object.assign({}, alias, {
       vue$: 'vue/dist/vue.common.js',
-      src: path.resolve(__dirname, '../../src'),
-      views: path.resolve(__dirname, '../../src/devtools/views'),
-      components: path.resolve(__dirname, '../../src/devtools/components')
-    }
+      storage: path.resolve(__dirname, './src/storage')
+    })
   },
   module: {
     rules: [
