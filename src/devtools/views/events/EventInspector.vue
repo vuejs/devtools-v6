@@ -8,7 +8,7 @@
     <div v-if="!hasEventData" slot="scroll" class="notice">
       <div>No event data available</div>
     </div>
-    <div v-if="hasEventData">
+    <div v-if="hasEventData" slot="scroll">
       <div class="data-fields">
         <data-field
           v-if="isComplex"
