@@ -8,7 +8,8 @@
         :class="{ rotated: expanded }"
         v-show="isExpandableType">
       </span>
-      <span class="key">{{ field.key }}</span><span class="colon">:</span>
+      <span class="key">{{ field.key }}</span>
+      <span class="colon">:</span>
       <span class="value" :class="valueType">{{ formattedValue }}</span>
       <div v-if="field.type" :class="['type', hyphen(field.type)]">
         {{ field.type }}
@@ -152,6 +153,8 @@ export default {
       transform rotate(90deg)
   .key
     color #881391
+  .colon
+    margin-right .5em
   .value
     color #444
     &.string
@@ -167,7 +170,7 @@ export default {
     line-height 10px
     height 16px
     border-radius 3px
-    margin 2px 0
+    margin 2px 6px
     position relative
     background-color #eee
     &.prop

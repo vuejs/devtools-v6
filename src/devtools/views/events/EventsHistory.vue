@@ -22,20 +22,15 @@
         v-else
         v-for="event in filteredEvents"
         :class="{ active: inspectedIndex === events.indexOf(event) }"
-        @click="step(events.indexOf(event))">
-        <div class="event">
-          <div class="component-name">
-            <span class="angle-bracket">&lt;</span>{{event.instanceName}}<span class="angle-bracket">&gt;</span>
-          </div>
-          <div class="event-name">
-            {{ event.eventName }}
-          </div>
-        </div>
-        <div class="event-meta">
-          <span class="time">
-            <div>{{ event.timestamp | formatTime }}</div>
-          </span>
-        </div>
+        @click="inspect(events.indexOf(event))">
+        <span class="event-name">{{ event.eventName }}</span>
+        <span class="event-source">
+          by
+          <span>&lt;</span>
+          <span class="component-name">{{ event.instanceName }}</span>
+          <span>&gt;</span>
+        </span>
+        <span class="time">{{ event.timestamp | formatTime }}</span>
       </div>
     </div>
   </scroll-pane>
@@ -71,7 +66,7 @@ export default {
     ])
   },
   methods: mapMutations('events', {
-    step: 'STEP',
+    inspect: 'INSPECT',
     reset: 'RESET',
     toggleRecording: 'TOGGLE'
   }),
@@ -98,19 +93,24 @@ export default {
   color #881391
   cursor pointer
   padding 10px 20px
-  font-size 14px
+  font-size 12px
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
+  .event-source
+    color #999
+  .component-name
+    color $component-color
   &.active
     color #fff
     background-color $active-color
     .time
       color lighten($active-color, 75%)
-    .event, .event-name
+    .event-name
       color: #fff
-  .mutation-type
-    display inline-block
-    vertical-align middle
+    .component-name
+      color lighten($active-color, 75%)
+    .event-source
+      color #ddd
 
 .action-wrapper
   margin-top: 5px;
@@ -130,31 +130,9 @@ export default {
   &:hover
     color #fff
 
-.event
-  width: 82%
-  color: #0062c3
-  span
-    color: #ccc
-
-.event-meta
-  position: absolute
-  right: 8px
-  top: 10px
-
-.event-name
-  margin-top: 5px
-  font-size: 12px
-  color #881391
-
 .time
   font-size 11px
   color #999
   float right
   margin-top 3px
-
-.component-name
-  color $component-color
-
-.active .component-name
-  color #fff
 </style>

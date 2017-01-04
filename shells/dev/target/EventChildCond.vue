@@ -11,12 +11,12 @@ export default {
     emitLogEvent () {
       let data = {
         componentName: 'EventChild1',
-        string: 'Lorem ipsum', 
-        complex: { 
-          string: 'Lorem ipsum', 
-          object: { 
-            number: 23, 
-            boolean: true, 
+        string: 'Lorem ipsum',
+        complex: {
+          string: 'Lorem ipsum',
+          object: {
+            number: 23,
+            boolean: true,
             array: [1,2,3,4,5]
           }
         }

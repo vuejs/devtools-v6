@@ -22,7 +22,7 @@ const mutations = {
     state.events = []
     state.inspectedIndex = -1
   },
-  'STEP' (state, index) {
+  'INSPECT' (state, index) {
     state.inspectedIndex = index
   },
   'RESET_NEW_EVENT_COUNT' (state) {
