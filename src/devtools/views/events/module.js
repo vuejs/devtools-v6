@@ -6,25 +6,24 @@ const enabled = storage.get(ENABLED_KEY)
 const state = {
   enabled: enabled == null ? true : enabled,
   events: [],
-  filteredEvents: [],
-  activeFilteredEventIndex: 0,
-  newEventCount: 0
+  inspectedIndex: -1,
+  newEventCount: 0,
+  filter: ''
 }
 
 const mutations = {
   'EMIT' (state, payload) {
-    if (state.events.length === state.filteredEvents.length) {
-      state.filteredEvents.push(payload)
-    }
     state.events.push(payload)
-    state.activeFilteredEventIndex = state.filteredEvents.length - 1
+    if (!state.filter) {
+      state.inspectedIndex = state.events.length - 1
+    }
   },
   'RESET' (state) {
     state.events = []
-    state.filteredEvents = []
+    state.inspectedIndex = -1
   },
-  'STEP' (state, n) {
-    state.activeFilteredEventIndex = n
+  'STEP' (state, index) {
+    state.inspectedIndex = index
   },
   'RESET_NEW_EVENT_COUNT' (state) {
     state.newEventCount = 0
@@ -32,11 +31,8 @@ const mutations = {
   'INCREASE_NEW_EVENT_COUNT' (state) {
     state.newEventCount++
   },
-  'FILTER_EVENTS' (state, filter) {
-    state.filteredEvents = state.events.filter(event => {
-      return event.eventName.toLowerCase().includes(filter) || event.instanceName.toLowerCase().includes(filter)
-    })
-    state.activeFilteredEventIndex = state.filteredEvents.length - 1
+  'UPDATE_FILTER' (state, filter) {
+    state.filter = filter
   },
   'TOGGLE' (state) {
     storage.set(ENABLED_KEY, state.enabled = !state.enabled)
@@ -45,7 +41,12 @@ const mutations = {
 }
 
 const getters = {
-  activeEvent: state => state.filteredEvents[state.activeFilteredEventIndex]
+  activeEvent: state => {
+    return state.events[state.inspectedIndex]
+  },
+  filteredEvents: state => {
+    return state.events.filter(e => e.eventName.indexOf(state.filter) > -1)
+  }
 }
 
 export default {

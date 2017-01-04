@@ -32,17 +32,10 @@ import ActionHeader from 'components/ActionHeader.vue'
 import { mapGetters } from 'vuex'
 
 export default {
-
   components: {
     DataField,
     ScrollPane,
     ActionHeader
-  },
-  data () {
-    return {
-      showStateCopiedMessage: false,
-      eventDataAsString: ''
-    }
   },
   computed: {
     ...mapGetters('events', [

@@ -3,7 +3,7 @@
     <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>
-        <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model="filter">
+        <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
       </div>
       <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
         <i class="material-icons">get_app</i>
@@ -20,11 +20,11 @@
     </action-header>
     <div slot="scroll" class="history">
       <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="step(-1)">
-        <span>Base State</span>
+        <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a v-if="inspectedIndex === -1 && activeIndex !== -1" class="action"
              @click.stop="timeTravelToSelected" title="Time Travel to This State">
-            <i class="material-icons">restore</i>
+            <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
         </span>
@@ -141,7 +141,7 @@ $inspected_color = #af90d5
   color #881391
   cursor pointer
   padding 10px 20px
-  font-size 14px
+  font-size 12px
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   height 40px
@@ -173,9 +173,9 @@ $inspected_color = #af90d5
       border-left 4px solid darken($inspected_color, 15%)
       padding-left 16px
   .mutation-type
-    display inline-block
-    vertical-align middle
+    line-height 20px
   .material-icons, span, a
+    display inline-block
     vertical-align middle
   .label
     float right

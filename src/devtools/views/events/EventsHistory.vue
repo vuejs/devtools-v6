@@ -3,9 +3,9 @@
     <action-header slot="header">
       <div class="search">
         <i class="search-icon material-icons">search</i>
-        <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
+        <input placeholder="Filter events" v-model.trim="filter">
       </div>
-      <a class="button reset" :class="{ disabled: !rawEvents.length }" @click="reset" title="Clear Log">
+      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" title="Clear Log">
         <i class="material-icons small">do_not_disturb</i>
         <span>Clear</span>
       </a>
@@ -15,14 +15,14 @@
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div v-if="events.length === 0" class="no-events">
+      <div v-if="filteredEvents.length === 0" class="no-events">
         No events found
       </div>
       <div class="entry"
         v-else
-        v-for="(event, index) in events"
-        :class="{ active: activeEventIndex === index }"
-        @click="step(index)">
+        v-for="event in filteredEvents"
+        :class="{ active: inspectedIndex === events.indexOf(event) }"
+        @click="step(events.indexOf(event))">
         <div class="event">
           <div class="component-name">
             <span class="angle-bracket">&lt;</span>{{event.instanceName}}<span class="angle-bracket">&gt;</span>
@@ -45,7 +45,7 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import { mapState } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 
 export default {
   components: {
@@ -53,35 +53,31 @@ export default {
     ActionHeader
   },
   computed: {
-    ...mapState('events', {
-      enabled: state => state.enabled,
-      rawEvents: state => state.events,
-      events: state => state.filteredEvents,
-      activeEventIndex: state => state.activeFilteredEventIndex
-    })
+    filter: {
+      get () {
+        return this.$store.state.events.filter
+      },
+      set (filter) {
+        this.$store.commit('events/UPDATE_FILTER', filter)
+      }
+    },
+    ...mapState('events', [
+      'enabled',
+      'events',
+      'inspectedIndex'
+    ]),
+    ...mapGetters('events', [
+      'filteredEvents'
+    ])
   },
+  methods: mapMutations('events', {
+    step: 'STEP',
+    reset: 'RESET',
+    toggleRecording: 'TOGGLE'
+  }),
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  },
-  data () {
-    return {
-      filter: ''
-    }
-  },
-  methods: {
-    step (index) {
-      this.$store.commit('events/STEP', index)
-    },
-    reset () {
-      this.$store.commit('events/RESET')
-    },
-    filterEvents () {
-      this.$store.commit('events/FILTER_EVENTS', this.filter)
-    },
-    toggleRecording () {
-      this.$store.commit('events/TOGGLE')
     }
   }
 }
