@@ -68,7 +68,7 @@ function initApp (shell) {
 
     bridge.on('event:emit', payload => {
       store.commit('events/EMIT', parse(payload))
-      if (store.state.app.tab !== 'events') {
+      if (store.state.tab !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }
     })

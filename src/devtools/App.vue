@@ -151,7 +151,7 @@ export default {
   overflow hidden
   flex 1
 
-$event-count-bubble-size = 22px
+$event-count-bubble-size = 17px
 
 .event-count
   background-color $active-color
@@ -161,8 +161,8 @@ $event-count-bubble-size = 22px
   height $event-count-bubble-size
   text-align center
   line-height $event-count-bubble-size
-  font-size $event-count-bubble-size * 0.5
+  font-size $event-count-bubble-size * 0.55
   position absolute
   right 0
-  top 3px
+  top 8px
 </style>
