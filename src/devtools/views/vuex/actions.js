@@ -27,11 +27,11 @@ export function reset ({ commit, state }) {
   travelTo(state, commit)
 }
 
-export function step ({ commit, state }, entry) {
-  const index = state.history.indexOf(entry)
-  if (index > -1) {
-    commit('STEP', index)
+export function step ({ commit, state }, index) {
+  if (typeof index !== 'number') {
+    index = state.history.indexOf(index)
   }
+  commit('STEP', index)
 }
 
 export function timeTravelToSelected ({ state, commit }) {

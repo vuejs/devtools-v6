@@ -21,7 +21,7 @@
     <div slot="scroll" class="history">
       <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="step(-1)">
         <span>Base State</span>
-        <span>
+        <span class="entry-actions">
           <a v-if="inspectedIndex === -1 && activeIndex !== -1" class="action"
              @click.stop="timeTravelToSelected" title="Time Travel to This State">
             <i class="material-icons">restore</i>
