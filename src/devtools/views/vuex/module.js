@@ -2,6 +2,8 @@ import { parse } from 'src/util'
 import * as actions from './actions'
 import storage from 'storage'
 
+const REGEX_RE = /^\/(.*?)\/(\w*)/
+const ANY_RE = new RegExp('.*', 'i')
 const ENABLED_KEY = 'VUEX_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
 
@@ -14,7 +16,10 @@ const state = {
   activeIndex: -1,
   history: [],
   initialCommit: Date.now(),
-  lastCommit: Date.now()
+  lastCommit: Date.now(),
+  filter: '',
+  filterRegex: ANY_RE,
+  filterRegexInvalid: false
 }
 
 const mutations = {
@@ -25,7 +30,9 @@ const mutations = {
   },
   'RECEIVE_MUTATION' (state, entry) {
     state.history.push(entry)
-    state.inspectedIndex = state.activeIndex = state.history.length - 1
+    if (!state.filter) {
+      state.inspectedIndex = state.activeIndex = state.history.length - 1
+    }
   },
   'COMMIT_ALL' (state) {
     state.base = state.history[state.history.length - 1].state
@@ -39,16 +46,11 @@ const mutations = {
     state.base = state.history[state.inspectedIndex].state
     state.lastCommit = Date.now()
     state.history = state.history.slice(state.inspectedIndex + 1)
-    state.inspectedIndex = -1
+    state.inspectedIndex = state.activeIndex = -1
   },
   'REVERT_SELECTED' (state) {
     state.history = state.history.slice(0, state.inspectedIndex)
     state.inspectedIndex--
-  },
-  'RESET' (state) {
-    state.base = state.initial
-    state.lastCommit = state.initialCommit
-    reset(state)
   },
   'STEP' (state, index) {
     state.inspectedIndex = index
@@ -58,12 +60,34 @@ const mutations = {
   },
   'TOGGLE' (state) {
     storage.set(ENABLED_KEY, state.enabled = !state.enabled)
+  },
+  'UPDATE_FILTER' (state, filter) {
+    state.filter = filter
+    const regexParts = filter.match(REGEX_RE)
+    if (regexParts !== null) {
+      // looks like it might be a regex -> try to compile it
+      try {
+        state.filterRegexInvalid = false
+        state.filterRegex = new RegExp(regexParts[1], regexParts[2])
+      } catch (e) {
+        state.filterRegexInvalid = true
+        state.filterRegex = ANY_RE
+      }
+    } else {
+      // simple case-insensitve search
+      state.filterRegexInvalid = false
+      state.filterRegex = new RegExp(escapeStringForRegExp(filter), 'i')
+    }
   }
 }
 
 function reset (state) {
   state.history = []
-  state.inspectedIndex = -1
+  state.inspectedIndex = state.activeIndex = -1
+}
+
+function escapeStringForRegExp (str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
 }
 
 const getters = {
@@ -78,6 +102,10 @@ const getters = {
     }
     res.state = parse(entry ? entry.state : base)
     return res
+  },
+
+  filteredHistory ({ history, filterRegex }) {
+    return history.filter(entry => filterRegex.test(entry.mutation.type))
   }
 }
 

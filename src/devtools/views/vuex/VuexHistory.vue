@@ -3,7 +3,7 @@
     <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>
-        <input :class="{ invalid: invalidRegex }" placeholder="Filter mutations" v-model="userInputFilter">
+        <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model="filter">
       </div>
       <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
         <i class="material-icons">get_app</i>
@@ -68,9 +68,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
 import keyNavMixin from '../../mixins/key-nav'
-import { mapState, mapActions } from 'vuex'
-
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   mixins: [keyNavMixin],
@@ -78,47 +76,27 @@ export default {
     ActionHeader,
     ScrollPane
   },
-  data () {
-    return {
-      userInputFilter: '',
-      invalidRegex: false
-    }
-  },
   computed: {
+    filter: {
+      get () {
+        return this.$store.state.vuex.filter
+      },
+      set (filter) {
+        this.$store.dispatch('vuex/updateFilter', filter)
+      }
+    },
     ...mapState('vuex', [
       'enabled',
       'history',
       'lastCommit',
       'inspectedIndex',
-      'activeIndex'
+      'activeIndex',
+      'filterRegex',
+      'filterRegexInvalid'
     ]),
-    compiledFilter () {
-      const regexParts = this.userInputFilter.match(REGEX_RE)
-      if (regexParts !== null) {
-        // looks like it might be a regex -> try to compile it
-        try {
-          const re = new RegExp(regexParts[1], regexParts[2])
-          this.invalidRegex = false
-          return re
-        } catch (e) {
-          this.invalidRegex = true
-          return new RegExp('.*', 'i')
-        }
-      }
-      // simple case-insensitve search
-      this.invalidRegex = false
-      return new RegExp(this.escapeStringForRegExp(this.userInputFilter), 'i')
-    },
-    filteredHistory () {
-      return this.history.filter((entry) => {
-        return this.compiledFilter.test(entry.mutation.type)
-      })
-    }
-  },
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
+    ...mapGetters('vuex', [
+      'filteredHistory'
+    ])
   },
   methods: {
     ...mapActions('vuex', [
@@ -128,7 +106,8 @@ export default {
       'commitSelected',
       'revertSelected',
       'step',
-      'timeTravelToSelected'
+      'timeTravelToSelected',
+      'updateFilter'
     ]),
     isActive (entry) {
       return this.activeIndex === this.history.indexOf(entry)
@@ -142,9 +121,11 @@ export default {
       } else if (dir === 'down') {
         this.step(this.inspectedIndex + 1)
       }
-    },
-    escapeStringForRegExp (str) {
-      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+    }
+  },
+  filters: {
+    formatTime (timestamp) {
+      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
     }
   }
 }

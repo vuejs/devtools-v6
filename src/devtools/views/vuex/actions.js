@@ -48,6 +48,10 @@ export function importState ({ commit, dispatch }, importedState) {
   dispatch('reset')
 }
 
+export function updateFilter ({ commit }, filter) {
+  commit('UPDATE_FILTER', filter)
+}
+
 function travelTo (state, commit) {
   const { history, inspectedIndex, base } = state
   const targetState = inspectedIndex > -1
