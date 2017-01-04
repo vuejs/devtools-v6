@@ -38,6 +38,7 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
+          preserveWhitespace: false,
           buble: bubleOptions
         }
       },
