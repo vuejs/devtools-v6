@@ -6,7 +6,8 @@
   ],
   "globals": {
     "bridge": true,
-    "chrome": true
+    "chrome": true,
+    "localStorage": true
   },
   "rules": {
     "object-curly-spacing": 0

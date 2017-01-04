@@ -22,8 +22,7 @@ module.exports = {
   },
   resolve: {
     alias: Object.assign({}, alias, {
-      vue$: 'vue/dist/vue.common.js',
-      storage: path.resolve(__dirname, './src/storage')
+      vue$: 'vue/dist/vue.common.js'
     })
   },
   module: {

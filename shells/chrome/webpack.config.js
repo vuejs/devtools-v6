@@ -22,9 +22,7 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: Object.assign({}, alias, {
-      storage: path.resolve(__dirname, './src/storage')
-    })
+    alias
   },
   module: {
     rules: [

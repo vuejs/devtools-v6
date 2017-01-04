@@ -1,6 +1,6 @@
 import { parse } from 'src/util'
 import * as actions from './actions'
-import storage from 'storage'
+import storage from '../../storage'
 
 const REGEX_RE = /^\/(.*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
