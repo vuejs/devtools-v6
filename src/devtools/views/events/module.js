@@ -40,6 +40,7 @@ const mutations = {
   },
   'TOGGLE' (state) {
     storage.set(ENABLED_KEY, state.enabled = !state.enabled)
+    bridge.send('events:toggle-recording', state.enabled)
   }
 }
 

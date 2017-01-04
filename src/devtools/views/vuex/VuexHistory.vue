@@ -227,16 +227,4 @@ $inspected_color = #af90d5
   color #999
   float right
   margin-top 3px
-
-.toggle-recording .material-icons
-  color #999
-  &.enabled
-    color red
-    text-shadow 0 0 3px rgba(255, 0, 0, .4)
-
-.material-icons
-  &.medium
-    transform scale(0.9)
-  &.small
-    transform scale(0.8)
 </style>

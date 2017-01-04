@@ -6,8 +6,12 @@
         <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
       </div>
       <a class="button reset" :class="{ disabled: !rawEvents.length }" @click="reset" title="Clear Log">
-        <i class="material-icons">delete</i>
-        <span>Clear Log</span>
+        <i class="material-icons small">do_not_disturb</i>
+        <span>Clear</span>
+      </a>
+      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+        <i class="material-icons small" :class="{ enabled: enabled }">lens</i>
+        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
@@ -50,6 +54,7 @@ export default {
   },
   computed: {
     ...mapState('events', {
+      enabled: state => state.enabled,
       rawEvents: state => state.events,
       events: state => state.filteredEvents,
       activeEventIndex: state => state.activeFilteredEventIndex
@@ -74,6 +79,9 @@ export default {
     },
     filterEvents () {
       this.$store.commit('events/FILTER_EVENTS', this.filter)
+    },
+    toggleRecording () {
+      this.$store.commit('events/TOGGLE')
     }
   }
 }

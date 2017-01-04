@@ -33,6 +33,16 @@
   text-rendering: optimizeLegibility
   /* Support for Firefox. */
   -moz-osx-font-smoothing: grayscale
+  &.medium
+    transform scale(0.9)
+  &.small
+    transform scale(0.8)
+
+.toggle-recording .material-icons
+  color #999
+  &.enabled
+    color red
+    text-shadow 0 0 3px rgba(255, 0, 0, .4)
 
 html, body
   margin 0
