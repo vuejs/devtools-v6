@@ -35,11 +35,11 @@
         <span class="label inspected" v-if="inspectedIndex === -1">inspected</span>
       </div>
       <div class="entry"
-        v-for="(entry, index) in filteredHistory"
-        :class="{ inspected: inspectedIndex === index, active: activeIndex === index }"
-        @click="step(index)">
+        v-for="entry in filteredHistory"
+        :class="{ inspected: isInspected(entry), active: isActive(entry) }"
+        @click="step(entry)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
-        <span class="entry-actions" v-if="inspectedIndex === index">
+        <span class="entry-actions" v-if="isInspected(entry)">
           <a class="action" @click.stop="commitSelected" title="Commit This Mutation">
             <i class="material-icons">get_app</i>
             <span>Commit</span>
@@ -48,7 +48,7 @@
             <i class="material-icons">delete</i>
             <span>Revert</span>
           </a>
-          <a v-if="activeIndex !== index" class="action" @click.stop="timeTravelToSelected" title="Time Travel to This State">
+          <a v-if="!isActive(entry)" class="action" @click.stop="timeTravelToSelected" title="Time Travel to This State">
             <i class="material-icons">restore</i>
             <span>Time Travel</span>
           </a>
@@ -56,8 +56,8 @@
         <span class="time" :title="entry.timestamp">
           {{ entry.timestamp | formatTime }}
         </span>
-        <span class="label active" v-if="activeIndex === index">active</span>
-        <span class="label inspected" v-if="inspectedIndex === index">inspected</span>
+        <span class="label active" v-if="isActive(entry)">active</span>
+        <span class="label inspected" v-if="isInspected(entry)">inspected</span>
       </div>
     </div>
   </scroll-pane>
@@ -129,6 +129,12 @@ export default {
       'step',
       'timeTravelToSelected'
     ]),
+    isActive (entry) {
+      return this.activeIndex === this.history.indexOf(entry)
+    },
+    isInspected (entry) {
+      return this.inspectedIndex === this.history.indexOf(entry)
+    },
     onKeyNav (dir) {
       if (dir === 'up') {
         this.step(this.inspectedIndex - 1)
