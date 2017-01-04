@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
 var alias = require('../alias')
+var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 var bubleOptions = {
   target: { chrome: 52 },
@@ -49,5 +50,11 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#source-map'
+  devtool: '#source-map',
+  devServer: {
+    quiet: true
+  },
+  plugins: [
+    new FriendlyErrorsPlugin()
+  ]
 }

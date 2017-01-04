@@ -38,9 +38,14 @@ export function timeTravelToSelected ({ state, commit }) {
   travelTo(state, commit)
 }
 
-export function importState (store, importedState) {
-  store.commit('INIT', importedState)
-  store.dispatch('reset')
+export function toggleRecording ({ state, commit }) {
+  commit('TOGGLE')
+  bridge.send('vuex:toggle-recording', state.enabled)
+}
+
+export function importState ({ commit, dispatch }, importedState) {
+  commit('INIT', importedState)
+  dispatch('reset')
 }
 
 function travelTo (state, commit) {

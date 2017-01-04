@@ -25,14 +25,6 @@ export function initBackend (_bridge) {
   } else {
     hook.once('init', connect)
   }
-  if (hook.store) {
-    initVuexBackend(hook, bridge)
-  } else {
-    hook.once('vuex:init', store => {
-      initVuexBackend(hook, bridge)
-    })
-  }
-  initEventsBackend(hook.Vue, bridge, getInstanceName)
 }
 
 function connect () {
@@ -74,6 +66,18 @@ function connect () {
   bridge.on('refresh', scan)
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
   bridge.on('leave-instance', unHighlight)
+
+  // vuex
+  if (hook.store) {
+    initVuexBackend(hook, bridge)
+  } else {
+    hook.once('vuex:init', store => {
+      initVuexBackend(hook, bridge)
+    })
+  }
+
+  // events
+  initEventsBackend(hook.Vue, bridge, getInstanceName)
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)

@@ -9,13 +9,13 @@
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button revert-all" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
-        <i class="material-icons">delete</i>
+      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
+        <i class="material-icons small">do_not_disturb</i>
         <span>Revert All</span>
       </a>
-      <a class="button reset" @click="reset" title="Reset to Original State">
-        <i class="material-icons">cached</i>
-        <span>Reset</span>
+      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+        <i class="material-icons small" :class="{ enabled: enabled }">lens</i>
+        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
@@ -41,15 +41,15 @@
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions" v-if="isInspected(entry)">
           <a class="action" @click.stop="commitSelected" title="Commit This Mutation">
-            <i class="material-icons">get_app</i>
+            <i class="material-icons medium">get_app</i>
             <span>Commit</span>
           </a>
           <a class="action" @click.stop="revertSelected" title="Revert This Mutation">
-            <i class="material-icons">delete</i>
+            <i class="material-icons small">do_not_disturb</i>
             <span>Revert</span>
           </a>
           <a v-if="!isActive(entry)" class="action" @click.stop="timeTravelToSelected" title="Time Travel to This State">
-            <i class="material-icons">restore</i>
+            <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
         </span>
@@ -86,6 +86,7 @@ export default {
   },
   computed: {
     ...mapState('vuex', [
+      'enabled',
       'history',
       'lastCommit',
       'inspectedIndex',
@@ -123,9 +124,9 @@ export default {
     ...mapActions('vuex', [
       'commitAll',
       'revertAll',
+      'toggleRecording',
       'commitSelected',
       'revertSelected',
-      'reset',
       'step',
       'timeTravelToSelected'
     ]),
@@ -153,7 +154,6 @@ export default {
 @import "../../common"
 
 $inspected_color = #af90d5
-$label_threshold = 780px
 
 .entry
   font-family Menlo, Consolas, monospace
@@ -185,7 +185,7 @@ $label_threshold = 780px
           color lighten($active-color, 95%)
     .label.inspected
       background-color darken($inspected_color, 10%)
-  @media (max-width: $label_threshold)
+  @media (max-width: $wide)
     .label
       display none
     &.inspected
@@ -227,4 +227,16 @@ $label_threshold = 780px
   color #999
   float right
   margin-top 3px
+
+.toggle-recording .material-icons
+  color #999
+  &.enabled
+    color red
+    text-shadow 0 0 3px rgba(255, 0, 0, .4)
+
+.material-icons
+  &.medium
+    transform scale(0.9)
+  &.small
+    transform scale(0.8)
 </style>
