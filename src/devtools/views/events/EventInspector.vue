@@ -30,6 +30,9 @@ export default {
       'activeEvent'
     ]),
     sortedEventData () {
+      if (!this.activeEvent) {
+        return {}
+      }
       const data = this.isComplex
         ? this.getSortedEventData()
         : this.activeEvent.eventData

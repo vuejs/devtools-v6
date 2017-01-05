@@ -400,10 +400,20 @@ function processState (instance) {
 
 function processComputed (instance) {
   return Object.keys(instance.$options.computed || {}).map(key => {
-    return {
-      type: 'computed',
-      key,
-      value: instance[key]
+    // use try ... catch here because some computed properties may
+    // throw error during its evaluation
+    try {
+      return {
+        type: 'computed',
+        key,
+        value: instance[key]
+      }
+    } catch (e) {
+      return {
+        type: 'computed',
+        key,
+        value: '(error during evaluation)'
+      }
     }
   })
 }

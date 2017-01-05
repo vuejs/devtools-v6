@@ -51,6 +51,7 @@ import VuexTab from './views/vuex/VuexTab.vue'
 import { mapState } from 'vuex'
 
 export default {
+  name: 'app',
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
