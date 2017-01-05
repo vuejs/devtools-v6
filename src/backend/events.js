@@ -1,14 +1,14 @@
 import { stringify } from '../util'
 
-export function initEventsBackend (vue, bridge, getInstanceName) {
+export function initEventsBackend (Vue, bridge, getInstanceName) {
   let recording = true
 
   bridge.on('events:toggle-recording', enabled => {
     recording = enabled
   })
 
-  const vueEmit = vue.prototype.$emit
-  vue.prototype.$emit = function () {
+  const vueEmit = Vue.prototype.$emit
+  Vue.prototype.$emit = function () {
     vueEmit.apply(this, arguments)
 
     if (!recording) return
