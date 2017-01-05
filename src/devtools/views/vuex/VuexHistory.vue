@@ -201,7 +201,6 @@ $inspected_color = #af90d5
       display inline
   .material-icons
     font-size 20px
-    margin-right -4px
 
 .time
   font-size 11px
