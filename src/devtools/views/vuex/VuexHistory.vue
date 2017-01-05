@@ -14,7 +14,7 @@
         <span>Revert All</span>
       </a>
       <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
-        <i class="material-icons small" :class="{ enabled: enabled }">lens</i>
+        <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
