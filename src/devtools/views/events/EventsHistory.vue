@@ -112,24 +112,6 @@ export default {
     .event-source
       color #ddd
 
-.action-wrapper
-  margin-top: 5px;
-
-.action
-  color lighten($active-color, 75%)
-  font-size 11px
-  dispatch inline-block
-  vertical-align middle
-  margin-left 8px
-  white-space nowrap
-  .material-icons
-    font-size 14px
-    margin-right -4px
-  .material-icons, span
-    vertical-align middle
-  &:hover
-    color #fff
-
 .time
   font-size 11px
   color #999
