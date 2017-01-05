@@ -6,11 +6,11 @@
 
 2. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
-![screenshot](https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot.png)
+<p align="center"><img width="600px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot.png" alt="demo"></p>
 
 Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
-<p align="center"><img src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/demo.gif" alt="demo"></p>
+<p align="center"><img width="600px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/demo.gif" alt="demo"></p>
 
 ### Installation
 
