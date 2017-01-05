@@ -147,6 +147,8 @@ $inspected_color = #af90d5
   height 40px
   .action
     color #999
+    .material-icons
+      margin-right 3px
     &:hover
       color $active-color
       .material-icons
