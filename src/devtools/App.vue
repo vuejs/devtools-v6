@@ -36,6 +36,7 @@
       <i class="material-icons">cached</i>
       <span class="pane-name">Refresh</span>
     </a>
+    <span class="active-bar"></span>
   </div>
   <component :is="tab" class="container"></component>
 </div>
@@ -69,6 +70,20 @@ export default {
     },
     refresh () {
       bridge.send('refresh')
+    },
+    updateActiveBar () {
+      const activeButton = this.$el.querySelector('.button.active')
+      const activeBar = this.$el.querySelector('.active-bar')
+      activeBar.style.left = activeButton.offsetLeft + 'px'
+      activeBar.style.width = activeButton.offsetWidth + 'px'
+    }
+  },
+  mounted () {
+    this.updateActiveBar()
+  },
+  watch: {
+    tab () {
+      this.$nextTick(this.updateActiveBar)
     }
   }
 }
@@ -93,6 +108,7 @@ export default {
   border-bottom 1px solid $border-color
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
+  position relative
 
 .logo
   width 30px
@@ -117,13 +133,12 @@ export default {
   border-bottom-color transparent
   background-color #fff
   color #888
-  transition box-shadow .25s ease, border-color .5s ease, opacity .5s
+  transition color .35s ease
 
   &:hover
     color #555
 
   &.active
-    border-bottom 3px solid $active-color
     color $active-color
 
   &.components
@@ -165,4 +180,12 @@ $event-count-bubble-size = 18px
   position absolute
   right 0
   top 12px
+
+.active-bar
+  position absolute
+  bottom 0
+  width 0px
+  height 3px
+  background-color $active-color
+  transition all .35s cubic-bezier(0,.9,.6,1)
 </style>
