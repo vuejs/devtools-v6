@@ -32,7 +32,8 @@
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
     <a class="button refresh"
-      @click="refresh">
+      @click="refresh"
+      title="Force Refresh">
       <i class="material-icons">cached</i>
       <span class="pane-name">Refresh</span>
     </a>
@@ -80,6 +81,10 @@ export default {
   },
   mounted () {
     this.updateActiveBar()
+    window.addEventListener('resize', this.updateActiveBar)
+  },
+  destroyed () {
+    window.removeEventListener('resize', this.updateActiveBar)
   },
   watch: {
     tab () {
@@ -187,5 +192,5 @@ $event-count-bubble-size = 18px
   width 0px
   height 3px
   background-color $active-color
-  transition all .35s cubic-bezier(0,.9,.6,1)
+  transition all .32s cubic-bezier(0,.9,.6,1)
 </style>
