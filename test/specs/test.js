@@ -3,6 +3,7 @@ module.exports = {
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
       .waitForElementVisible('.message', 1000)
+      .waitFor(1000) // wait for entering animation
       .assert.containsText('.message', 'Ready. Detected Vue')
       .assert.elementPresent('.instance')
       .assert.containsText('.instance', 'Root')
