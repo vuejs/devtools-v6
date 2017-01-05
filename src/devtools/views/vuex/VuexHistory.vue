@@ -1,5 +1,5 @@
 <template>
-  <scroll-pane>
+  <scroll-pane scroll-event="vuex:mutation">
     <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>

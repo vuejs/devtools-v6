@@ -1,5 +1,5 @@
 <template>
-  <scroll-pane>
+  <scroll-pane scroll-event="event:emit">
     <action-header slot="header">
       <div class="search">
         <i class="search-icon material-icons">search</i>
@@ -16,7 +16,7 @@
     </action-header>
     <div slot="scroll" class="history">
       <div v-if="filteredEvents.length === 0" class="no-events">
-        No events found
+        No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
       <div class="entry"
         v-else
