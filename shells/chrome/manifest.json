@@ -32,8 +32,7 @@
   "permissions": [
     "http://*/*",
     "https://*/*",
-    "file://*",
-    "storage"
+    "file://*"
   ],
 
   "content_scripts": [
