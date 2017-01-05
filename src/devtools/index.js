@@ -3,6 +3,14 @@ import App from './App.vue'
 import store from './store'
 import { parse } from '../util'
 
+Vue.config.errorHandler = (e, vm) => {
+  bridge.send('ERROR', {
+    message: e.message,
+    stack: e.stack,
+    component: vm.$options.name || vm.$options._componentTag || 'anonymous'
+  })
+}
+
 let app = null
 
 /**
