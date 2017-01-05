@@ -156,6 +156,8 @@ export default {
     background-color #b3cbf7
   &.inactive
     background-color #aaa
+  &:not(.console)
+    margin-left 6px
 
 .arrow-wrapper
   position absolute

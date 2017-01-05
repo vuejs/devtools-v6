@@ -41,6 +41,8 @@ function initApp (shell) {
         'SHOW_MESSAGE',
         'Ready. Detected Vue ' + version + '.'
       )
+      bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
+      bridge.send('events:toggle-recording', store.state.events.enabled)
     })
 
     bridge.once('proxy-fail', () => {
@@ -68,7 +70,7 @@ function initApp (shell) {
 
     bridge.on('event:emit', payload => {
       store.commit('events/EMIT', parse(payload))
-      if (store.state.app.tab !== 'events') {
+      if (store.state.tab !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }
     })

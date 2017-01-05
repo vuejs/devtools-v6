@@ -1,25 +1,13 @@
 <template>
   <scroll-pane>
-    <action-header v-if="activeEvent" slot="header">
-      <span class="component-name">
-        <span style="color:#ccc">&lt;</span><span>{{ activeEvent.instanceName }}</span><span style="color:#ccc">&gt;</span>
-      </span>
-    </action-header>
-    <div v-if="!hasEventData" slot="scroll" class="notice">
-      <div>No event data available</div>
+    <div v-if="activeEvent" slot="scroll" class="data-fields">
+      <data-field v-for="(value, key) of sortedEventData"
+        :field="{ key, value }"
+        :depth="0">
+      </data-field>
     </div>
-    <div v-if="hasEventData">
-      <div class="data-fields">
-        <data-field
-          v-if="isComplex"
-          v-for="(value, key) of sortedEventData"
-          :field="{ key, value }"
-          :depth="0">
-        </data-field>
-      </div>
-      <div v-if="!isComplex" :class="{ 'literal': eventDataTypeIsLiteral, 'string': !eventDataTypeIsLiteral }">
-        <span v-if="!eventDataTypeIsLiteral">"</span>{{ getEventDataString() }}<span v-if="!eventDataTypeIsLiteral">"</span>
-      </div>
+    <div v-else slot="scroll" class="no-event-data">
+      No event selected
     </div>
   </scroll-pane>
 </template>
@@ -32,45 +20,30 @@ import ActionHeader from 'components/ActionHeader.vue'
 import { mapGetters } from 'vuex'
 
 export default {
-
   components: {
     DataField,
     ScrollPane,
     ActionHeader
-  },
-  data () {
-    return {
-      showStateCopiedMessage: false,
-      eventDataAsString: ''
-    }
   },
   computed: {
     ...mapGetters('events', [
       'activeEvent'
     ]),
     sortedEventData () {
-      return this.isComplex ? this.getSortedEventData() : this.activeEvent.eventData
-    },
-    hasEventData () {
-      return this.activeEvent && (this.activeEvent.eventData !== undefined && this.activeEvent.eventData !== '__vue_devtool_undefined__')
-    },
-    eventDataType () {
-      return Object.prototype.toString.call(this.activeEvent.eventData).slice(8, -1)
-    },
-    eventDataTypeIsLiteral () {
-      return this.eventDataType === 'Number' || this.eventDataType === 'Boolean' || this.eventDataType === 'Null'
-    },
-    isComplex () {
-      return this.eventDataType === 'Object' || this.eventDataType === 'Array'
+      if (!this.activeEvent) {
+        return {}
+      }
+      const data = this.isComplex
+        ? this.getSortedEventData()
+        : this.activeEvent.eventData
+      return {
+        type: this.activeEvent.eventName,
+        source: '<' + this.activeEvent.instanceName + '>',
+        payload: data
+      }
     }
   },
   methods: {
-    getEventDataString () {
-      if (this.eventDataType === 'Null') {
-        return 'NULL'
-      }
-      return this.activeEvent.eventData
-    },
     getSortedEventData () {
       const ordered = {}
       Object.keys(this.activeEvent.eventData).sort().forEach(key => {
@@ -87,6 +60,9 @@ export default {
 
 section:not(:last-child)
   border-bottom 1px solid $border-color
+
+.component-name
+  margin 0 10px
 
 .string
   color: #c41a16

@@ -23,7 +23,7 @@ Currently only a Chrome devtools extension is available.
 **Make sure you are using Node 6+ and NPM 3+**
 
 1. Clone this repo
-2. `npm install`
+2. `npm install` (Or `yarn install` if you are using yarn as the package manager)
 3. `npm run build`
 4. Open Chrome extension page
 5. Check "developer mode"

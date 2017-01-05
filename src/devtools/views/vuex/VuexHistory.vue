@@ -1,30 +1,30 @@
 <template>
-  <scroll-pane>
+  <scroll-pane scroll-event="vuex:mutation">
     <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>
-        <input :class="{ invalid: invalidRegex }" placeholder="Filter mutations" v-model="userInputFilter">
+        <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
       </div>
       <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button revert-all" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
-        <i class="material-icons">delete</i>
+      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
+        <i class="material-icons small">do_not_disturb</i>
         <span>Revert All</span>
       </a>
-      <a class="button reset" @click="reset" title="Reset to Original State">
-        <i class="material-icons">cached</i>
-        <span>Reset</span>
+      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+        <i class="material-icons small" :class="{ enabled }">lens</i>
+        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
       <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="step(-1)">
-        <span>Base State</span>
+        <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a v-if="inspectedIndex === -1 && activeIndex !== -1" class="action"
              @click.stop="timeTravelToSelected" title="Time Travel to This State">
-            <i class="material-icons">restore</i>
+            <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
         </span>
@@ -41,15 +41,15 @@
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions" v-if="isInspected(entry)">
           <a class="action" @click.stop="commitSelected" title="Commit This Mutation">
-            <i class="material-icons">get_app</i>
+            <i class="material-icons medium">get_app</i>
             <span>Commit</span>
           </a>
           <a class="action" @click.stop="revertSelected" title="Revert This Mutation">
-            <i class="material-icons">delete</i>
+            <i class="material-icons small">do_not_disturb</i>
             <span>Revert</span>
           </a>
           <a v-if="!isActive(entry)" class="action" @click.stop="timeTravelToSelected" title="Time Travel to This State">
-            <i class="material-icons">restore</i>
+            <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
         </span>
@@ -68,9 +68,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
 import keyNavMixin from '../../mixins/key-nav'
-import { mapState, mapActions } from 'vuex'
-
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   mixins: [keyNavMixin],
@@ -78,56 +76,38 @@ export default {
     ActionHeader,
     ScrollPane
   },
-  data () {
-    return {
-      userInputFilter: '',
-      invalidRegex: false
-    }
-  },
   computed: {
+    filter: {
+      get () {
+        return this.$store.state.vuex.filter
+      },
+      set (filter) {
+        this.$store.dispatch('vuex/updateFilter', filter)
+      }
+    },
     ...mapState('vuex', [
+      'enabled',
       'history',
       'lastCommit',
       'inspectedIndex',
-      'activeIndex'
+      'activeIndex',
+      'filterRegex',
+      'filterRegexInvalid'
     ]),
-    compiledFilter () {
-      const regexParts = this.userInputFilter.match(REGEX_RE)
-      if (regexParts !== null) {
-        // looks like it might be a regex -> try to compile it
-        try {
-          const re = new RegExp(regexParts[1], regexParts[2])
-          this.invalidRegex = false
-          return re
-        } catch (e) {
-          this.invalidRegex = true
-          return new RegExp('.*', 'i')
-        }
-      }
-      // simple case-insensitve search
-      this.invalidRegex = false
-      return new RegExp(this.escapeStringForRegExp(this.userInputFilter), 'i')
-    },
-    filteredHistory () {
-      return this.history.filter((entry) => {
-        return this.compiledFilter.test(entry.mutation.type)
-      })
-    }
-  },
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
+    ...mapGetters('vuex', [
+      'filteredHistory'
+    ])
   },
   methods: {
     ...mapActions('vuex', [
       'commitAll',
       'revertAll',
+      'toggleRecording',
       'commitSelected',
       'revertSelected',
-      'reset',
       'step',
-      'timeTravelToSelected'
+      'timeTravelToSelected',
+      'updateFilter'
     ]),
     isActive (entry) {
       return this.activeIndex === this.history.indexOf(entry)
@@ -141,9 +121,11 @@ export default {
       } else if (dir === 'down') {
         this.step(this.inspectedIndex + 1)
       }
-    },
-    escapeStringForRegExp (str) {
-      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+    }
+  },
+  filters: {
+    formatTime (timestamp) {
+      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
     }
   }
 }
@@ -153,14 +135,13 @@ export default {
 @import "../../common"
 
 $inspected_color = #af90d5
-$label_threshold = 780px
 
 .entry
   font-family Menlo, Consolas, monospace
   color #881391
   cursor pointer
   padding 10px 20px
-  font-size 14px
+  font-size 12px
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   height 40px
@@ -185,16 +166,16 @@ $label_threshold = 780px
           color lighten($active-color, 95%)
     .label.inspected
       background-color darken($inspected_color, 10%)
-  @media (max-width: $label_threshold)
+  @media (max-width: $wide)
     .label
       display none
     &.inspected
       border-left 4px solid darken($inspected_color, 15%)
       padding-left 16px
   .mutation-type
-    display inline-block
-    vertical-align middle
+    line-height 20px
   .material-icons, span, a
+    display inline-block
     vertical-align middle
   .label
     float right
@@ -220,7 +201,6 @@ $label_threshold = 780px
       display inline
   .material-icons
     font-size 20px
-    margin-right -4px
 
 .time
   font-size 11px

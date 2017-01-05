@@ -3,6 +3,7 @@ module.exports = {
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
       .waitForElementVisible('.message', 1000)
+      .waitFor(1000) // wait for entering animation
       .assert.containsText('.message', 'Ready. Detected Vue')
       .assert.elementPresent('.instance')
       .assert.containsText('.instance', 'Root')
@@ -13,7 +14,7 @@ module.exports = {
       .assert.visible('.tree')
       .assert.containsText('.component-name', 'Root')
       .assert.elementPresent('.data-field')
-      .assert.containsText('.data-field', 'obj: Object')
+      .assert.containsText('.data-field', 'obj:Object')
 
       // should expand root by default
       .assert.count('.instance', 5)
@@ -21,9 +22,9 @@ module.exports = {
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
       .assert.containsText('.component-name', 'Counter')
-      .assert.containsText('.data-field', 'count: 0 computed')
-      .assert.containsText('.data-field:nth-child(2)', 'hello: undefined')
-      .assert.containsText('.data-field:nth-child(3)', 'test: 1 computed')
+      .assert.containsText('.data-field', 'count:0 computed')
+      .assert.containsText('.data-field:nth-child(2)', 'hello:undefined')
+      .assert.containsText('.data-field:nth-child(3)', 'test:1 computed')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
@@ -55,8 +56,8 @@ module.exports = {
         .frame(null)
       .click('.button.vuex')
       .assert.count('.history .entry', 4)
-      .assert.containsText('.vuex-state-inspector', 'type: "DECREMENT"')
-      .assert.containsText('.vuex-state-inspector', 'count: 1')
+      .assert.containsText('.vuex-state-inspector', 'type:"DECREMENT"')
+      .assert.containsText('.vuex-state-inspector', 'count:1')
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'active')
 
@@ -81,8 +82,8 @@ module.exports = {
       .click('.history .entry:nth-child(3)')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'inspected')
       .assert.cssClassNotPresent('.history .entry:nth-child(3)', 'active')
-      .assert.containsText('.vuex-state-inspector', 'type: "INCREMENT"')
-      .assert.containsText('.vuex-state-inspector', 'count: 2')
+      .assert.containsText('.vuex-state-inspector', 'type:"INCREMENT"')
+      .assert.containsText('.vuex-state-inspector', 'count:2')
       .frame('target')
         .assert.containsText('#counter p', '1')
         .frame(null)
@@ -99,8 +100,8 @@ module.exports = {
       .assert.cssClassNotPresent('.history .entry:nth-child(2)', 'active')
       .assert.cssClassNotPresent('.history .entry:nth-child(3)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
-      .assert.containsText('.vuex-state-inspector', 'type: "INCREMENT"')
-      .assert.containsText('.vuex-state-inspector', 'count: 1')
+      .assert.containsText('.vuex-state-inspector', 'type:"INCREMENT"')
+      .assert.containsText('.vuex-state-inspector', 'count:1')
       .frame('target')
         .assert.containsText('#counter p', '2')
         .frame(null)
@@ -116,7 +117,7 @@ module.exports = {
       .click('.history .entry:nth-child(1)')
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'inspected')
       .assert.cssClassNotPresent('.history .entry:nth-child(1)', 'active')
-      .assert.containsText('.vuex-state-inspector', 'count: 0')
+      .assert.containsText('.vuex-state-inspector', 'count:0')
       .frame('target')
         .assert.containsText('#counter p', '1')
         .frame(null)
@@ -133,7 +134,7 @@ module.exports = {
       .assert.count('.history .entry', 3)
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'inspected')
-      .assert.containsText('.vuex-state-inspector', 'count: 2')
+      .assert.containsText('.vuex-state-inspector', 'count:2')
       .frame('target')
         .assert.containsText('#counter p', '2')
         .frame(null)
@@ -143,7 +144,7 @@ module.exports = {
       .assert.count('.history .entry', 1)
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'active')
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'inspected')
-      .assert.containsText('.vuex-state-inspector', 'count: 2')
+      .assert.containsText('.vuex-state-inspector', 'count:2')
       .frame('target')
         .assert.containsText('#counter p', '2')
         .frame(null)
@@ -162,7 +163,7 @@ module.exports = {
       .clearValue('.import-state textarea')
       .setValue('.import-state textarea', '{"valid": "json"}')
       .waitForElementNotVisible('.message.invalid-json', 1000)
-      .assert.containsText('.vuex-state-inspector', 'valid: "json"')
+      .assert.containsText('.vuex-state-inspector', 'valid:"json"')
       .click('.import')
       .waitForElementNotPresent('.import-state', 2000)
 

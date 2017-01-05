@@ -1,5 +1,7 @@
 var path = require('path')
 var webpack = require('webpack')
+var alias = require('../alias')
+var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 var bubleOptions = {
   target: { chrome: 52 },
@@ -19,12 +21,9 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: {
-      vue$: 'vue/dist/vue.common.js',
-      src: path.resolve(__dirname, '../../src'),
-      views: path.resolve(__dirname, '../../src/devtools/views'),
-      components: path.resolve(__dirname, '../../src/devtools/components')
-    }
+    alias: Object.assign({}, alias, {
+      vue$: 'vue/dist/vue.common.js'
+    })
   },
   module: {
     rules: [
@@ -38,6 +37,7 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
+          preserveWhitespace: false,
           buble: bubleOptions
         }
       },
@@ -50,5 +50,11 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#source-map'
+  devtool: '#source-map',
+  devServer: {
+    quiet: true
+  },
+  plugins: [
+    new FriendlyErrorsPlugin()
+  ]
 }

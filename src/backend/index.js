@@ -25,14 +25,6 @@ export function initBackend (_bridge) {
   } else {
     hook.once('init', connect)
   }
-  if (hook.store) {
-    initVuexBackend(hook, bridge)
-  } else {
-    hook.once('vuex:init', store => {
-      initVuexBackend(hook, bridge)
-    })
-  }
-  initEventsBackend(hook.Vue, bridge, getInstanceName)
 }
 
 function connect () {
@@ -74,6 +66,18 @@ function connect () {
   bridge.on('refresh', scan)
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
   bridge.on('leave-instance', unHighlight)
+
+  // vuex
+  if (hook.store) {
+    initVuexBackend(hook, bridge)
+  } else {
+    hook.once('vuex:init', store => {
+      initVuexBackend(hook, bridge)
+    })
+  }
+
+  // events
+  initEventsBackend(hook.Vue, bridge, getInstanceName)
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
@@ -396,10 +400,20 @@ function processState (instance) {
 
 function processComputed (instance) {
   return Object.keys(instance.$options.computed || {}).map(key => {
-    return {
-      type: 'computed',
-      key,
-      value: instance[key]
+    // use try ... catch here because some computed properties may
+    // throw error during its evaluation
+    try {
+      return {
+        type: 'computed',
+        key,
+        value: instance[key]
+      }
+    } catch (e) {
+      return {
+        type: 'computed',
+        key,
+        value: '(error during evaluation)'
+      }
     }
   })
 }

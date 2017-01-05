@@ -2,7 +2,9 @@
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
       <span class="component-name">
-        <span style="color:#ccc">&lt;</span><span>{{ target.name }}</span><span style="color:#ccc">&gt;</span>
+        <span style="color:#ccc">&lt;</span>
+        <span>{{ target.name }}</span>
+        <span style="color:#ccc">&gt;</span>
       </span>
       <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
         <i class="material-icons">visibility</i>
@@ -79,4 +81,7 @@ export default {
 .non-selected
   color #ccc
   text-align center
+
+.component-name
+  margin 0 10px
 </style>

@@ -3,11 +3,39 @@
     <div class="header">
       <slot name="header"></slot>
     </div>
-    <div class="scroll">
+    <div ref="scrollContainer" class="scroll">
       <slot name="scroll"></slot>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    scrollEvent: String
+  },
+  mounted () {
+    if (this.scrollEvent) {
+      bridge.on(this.scrollEvent, this.scroll)
+    }
+  },
+  destroyed () {
+    if (this.scrollEvent) {
+      bridge.removeListener(this.scrollEvent, this.scroll)
+    }
+  },
+  methods: {
+    scroll () {
+      this.$nextTick(() => {
+        const container = this.$refs.scrollContainer
+        if (container.children.length) {
+          container.scrollTop = container.children[0].offsetHeight
+        }
+      })
+    }
+  }
+}
+</script>
 
 <style lang="stylus" scoped>
 @import "../common"

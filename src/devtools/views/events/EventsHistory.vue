@@ -1,37 +1,36 @@
 <template>
-  <scroll-pane>
+  <scroll-pane scroll-event="event:emit">
     <action-header slot="header">
       <div class="search">
         <i class="search-icon material-icons">search</i>
-        <input placeholder="Filter events" v-model.trim="filter" @input="filterEvents">
+        <input placeholder="Filter events" v-model.trim="filter">
       </div>
-      <a class="button reset" @click="reset" title="Reset">
-        <i class="material-icons">cached</i>
-        <span>Reset</span>
+      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" title="Clear Log">
+        <i class="material-icons small">do_not_disturb</i>
+        <span>Clear</span>
+      </a>
+      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+        <i class="material-icons small" :class="{ enabled }">lens</i>
+        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div v-if="events.length === 0" class="no-events">
-        No events found
+      <div v-if="filteredEvents.length === 0" class="no-events">
+        No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
       <div class="entry"
         v-else
-        v-for="(event, index) in events"
-        :class="{ active: activeEventIndex === index }"
-        @click="step(index)">
-        <div class="event">
-          <div class="component-name">
-            <span class="angle-bracket">&lt;</span>{{event.instanceName}}<span class="angle-bracket">&gt;</span>
-          </div>
-          <div class="event-name">
-            {{ event.eventName }}
-          </div>
-        </div>
-        <div class="event-meta">
-          <span class="time">
-            <div>{{ event.timestamp | formatTime }}</div>
-          </span>
-        </div>
+        v-for="event in filteredEvents"
+        :class="{ active: inspectedIndex === events.indexOf(event) }"
+        @click="inspect(events.indexOf(event))">
+        <span class="event-name">{{ event.eventName }}</span>
+        <span class="event-source">
+          by
+          <span>&lt;</span>
+          <span class="component-name">{{ event.instanceName }}</span>
+          <span>&gt;</span>
+        </span>
+        <span class="time">{{ event.timestamp | formatTime }}</span>
       </div>
     </div>
   </scroll-pane>
@@ -41,7 +40,7 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import { mapState } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 
 export default {
   components: {
@@ -49,30 +48,31 @@ export default {
     ActionHeader
   },
   computed: {
-    ...mapState('events', {
-      events: state => state.filteredEvents,
-      activeEventIndex: state => state.activeFilteredEventIndex
-    })
+    filter: {
+      get () {
+        return this.$store.state.events.filter
+      },
+      set (filter) {
+        this.$store.commit('events/UPDATE_FILTER', filter)
+      }
+    },
+    ...mapState('events', [
+      'enabled',
+      'events',
+      'inspectedIndex'
+    ]),
+    ...mapGetters('events', [
+      'filteredEvents'
+    ])
   },
+  methods: mapMutations('events', {
+    inspect: 'INSPECT',
+    reset: 'RESET',
+    toggleRecording: 'TOGGLE'
+  }),
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  },
-  data () {
-    return {
-      filter: ''
-    }
-  },
-  methods: {
-    step (index) {
-      this.$store.commit('events/STEP', index)
-    },
-    reset () {
-      this.$store.commit('events/RESET')
-    },
-    filterEvents () {
-      this.$store.commit('events/FILTER_EVENTS', this.filter)
     }
   }
 }
@@ -93,19 +93,24 @@ export default {
   color #881391
   cursor pointer
   padding 10px 20px
-  font-size 14px
+  font-size 12px
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
+  .event-source
+    color #999
+  .component-name
+    color $component-color
   &.active
     color #fff
     background-color $active-color
     .time
       color lighten($active-color, 75%)
-    .event, .event-name
+    .event-name
       color: #fff
-  .mutation-type
-    display inline-block
-    vertical-align middle
+    .component-name
+      color lighten($active-color, 75%)
+    .event-source
+      color #ddd
 
 .action-wrapper
   margin-top: 5px;
@@ -125,31 +130,9 @@ export default {
   &:hover
     color #fff
 
-.event
-  width: 82%
-  color: #0062c3
-  span
-    color: #ccc
-
-.event-meta
-  position: absolute
-  right: 8px
-  top: 10px
-
-.event-name
-  margin-top: 5px
-  font-size: 12px
-  color #881391
-
 .time
   font-size 11px
   color #999
   float right
   margin-top 3px
-
-.component-name
-  color $component-color
-
-.active .component-name
-  color #fff
 </style>

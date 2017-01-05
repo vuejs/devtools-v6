@@ -32,10 +32,12 @@
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
     <a class="button refresh"
-      @click="refresh">
+      @click="refresh"
+      title="Force Refresh">
       <i class="material-icons">cached</i>
       <span class="pane-name">Refresh</span>
     </a>
+    <span class="active-bar"></span>
   </div>
   <component :is="tab" class="container"></component>
 </div>
@@ -49,6 +51,7 @@ import VuexTab from './views/vuex/VuexTab.vue'
 import { mapState } from 'vuex'
 
 export default {
+  name: 'app',
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
@@ -69,6 +72,24 @@ export default {
     },
     refresh () {
       bridge.send('refresh')
+    },
+    updateActiveBar () {
+      const activeButton = this.$el.querySelector('.button.active')
+      const activeBar = this.$el.querySelector('.active-bar')
+      activeBar.style.left = activeButton.offsetLeft + 'px'
+      activeBar.style.width = activeButton.offsetWidth + 'px'
+    }
+  },
+  mounted () {
+    this.updateActiveBar()
+    window.addEventListener('resize', this.updateActiveBar)
+  },
+  destroyed () {
+    window.removeEventListener('resize', this.updateActiveBar)
+  },
+  watch: {
+    tab () {
+      this.$nextTick(this.updateActiveBar)
     }
   }
 }
@@ -93,6 +114,7 @@ export default {
   border-bottom 1px solid $border-color
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
+  position relative
 
 .logo
   width 30px
@@ -117,13 +139,12 @@ export default {
   border-bottom-color transparent
   background-color #fff
   color #888
-  transition box-shadow .25s ease, border-color .5s ease, opacity .5s
+  transition color .35s ease
 
   &:hover
     color #555
 
   &.active
-    border-bottom 3px solid $active-color
     color $active-color
 
   &.components
@@ -151,7 +172,7 @@ export default {
   overflow hidden
   flex 1
 
-$event-count-bubble-size = 22px
+$event-count-bubble-size = 18px
 
 .event-count
   background-color $active-color
@@ -160,9 +181,17 @@ $event-count-bubble-size = 22px
   width $event-count-bubble-size
   height $event-count-bubble-size
   text-align center
-  line-height $event-count-bubble-size
+  padding-top 4px
   font-size $event-count-bubble-size * 0.5
   position absolute
   right 0
-  top 3px
+  top 12px
+
+.active-bar
+  position absolute
+  bottom 0
+  width 0px
+  height 3px
+  background-color $active-color
+  transition all .32s cubic-bezier(0,.9,.6,1)
 </style>

@@ -2,6 +2,7 @@ import { stringify, parse } from '../util'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
+  let recording = true
   bridge.send('vuex:init', stringify(store.state))
 
   // deal with multiple backend injections
@@ -9,6 +10,7 @@ export function initVuexBackend (hook, bridge) {
 
   // application -> devtool
   hook.on('vuex:mutation', (mutation, state) => {
+    if (!recording) return
     bridge.send('vuex:mutation', {
       mutation: {
         type: mutation.type,
@@ -22,5 +24,9 @@ export function initVuexBackend (hook, bridge) {
   // devtool -> application
   bridge.on('vuex:travel-to-state', state => {
     hook.emit('vuex:travel-to-state', parse(state, true /* revive */))
+  })
+
+  bridge.on('vuex:toggle-recording', enabled => {
+    recording = enabled
   })
 }
