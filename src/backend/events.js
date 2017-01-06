@@ -1,6 +1,7 @@
 import { stringify } from '../util'
+import { getInstanceName } from './index'
 
-export function initEventsBackend (Vue, bridge, getInstanceName) {
+export function initEventsBackend (Vue, bridge) {
   let recording = true
 
   bridge.on('events:toggle-recording', enabled => {
@@ -16,7 +17,7 @@ export function initEventsBackend (Vue, bridge, getInstanceName) {
       if (!eventName.startsWith('hook:')) {
         bridge.send('event:emit', stringify({
           instanceId: this._uid,
-          instanceName: getInstanceName(this),
+          instanceName: getInstanceName(this._self || this),
           eventName: eventName,
           eventData: arguments[1],
           timestamp: Date.now()

@@ -77,7 +77,7 @@ function connect () {
   }
 
   // events
-  initEventsBackend(hook.Vue, bridge, getInstanceName)
+  initEventsBackend(hook.Vue, bridge)
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
@@ -297,7 +297,7 @@ function getInstanceDetails (id) {
  * @return {String}
  */
 
-function getInstanceName (instance) {
+export function getInstanceName (instance) {
   const name = instance.$options.name || instance.$options._componentTag
   return name
     ? classify(name)
