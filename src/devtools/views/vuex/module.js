@@ -42,15 +42,15 @@ const mutations = {
   'REVERT_ALL' (state) {
     reset(state)
   },
-  'COMMIT_SELECTED' (state) {
-    state.base = state.history[state.inspectedIndex].state
+  'COMMIT' (state, index) {
+    state.base = state.history[index].state
     state.lastCommit = Date.now()
-    state.history = state.history.slice(state.inspectedIndex + 1)
-    state.inspectedIndex = state.activeIndex = -1
+    state.history = state.history.slice(index + 1)
+    state.inspectedIndex = -1
   },
-  'REVERT_SELECTED' (state) {
-    state.history = state.history.slice(0, state.inspectedIndex)
-    state.inspectedIndex--
+  'REVERT' (state, index) {
+    state.history = state.history.slice(0, index)
+    state.inspectedIndex = state.history.length - 1
   },
   'INSPECT' (state, index) {
     state.inspectedIndex = index

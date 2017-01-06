@@ -79,7 +79,7 @@ module.exports = {
       .clearValue('.search input')
 
       // inspecting
-      .click('.history .entry:nth-child(3)')
+      .click('.history .entry:nth-child(3) .mutation-type')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'inspected')
       .assert.cssClassNotPresent('.history .entry:nth-child(3)', 'active')
       .assert.containsText('.vuex-state-inspector', 'type:"INCREMENT"')
@@ -95,7 +95,7 @@ module.exports = {
         .assert.containsText('#counter p', '2')
         .frame(null)
 
-      .click('.history .entry:nth-child(2)')
+      .click('.history .entry:nth-child(2) .mutation-type')
       .assert.cssClassPresent('.history .entry:nth-child(2)', 'inspected')
       .assert.cssClassNotPresent('.history .entry:nth-child(2)', 'active')
       .assert.cssClassNotPresent('.history .entry:nth-child(3)', 'inspected')
@@ -114,7 +114,7 @@ module.exports = {
         .frame(null)
 
       // base state
-      .click('.history .entry:nth-child(1)')
+      .click('.history .entry:nth-child(1) .mutation-type')
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'inspected')
       .assert.cssClassNotPresent('.history .entry:nth-child(1)', 'active')
       .assert.containsText('.vuex-state-inspector', 'count:0')
@@ -129,7 +129,7 @@ module.exports = {
         .frame(null)
 
       // revert
-      .click('.history .entry:nth-child(4)')
+      .click('.history .entry:nth-child(4) .mutation-type')
       .click('.history .entry:nth-child(4) .action:nth-child(2)')
       .assert.count('.history .entry', 3)
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
@@ -140,7 +140,8 @@ module.exports = {
         .frame(null)
 
       // commit
-      .click('.history .entry:nth-child(3) .action')
+      .click('.history .entry:nth-child(3) .mutation-type')
+      .click('.history .entry:nth-child(3) .action:nth-child(1)')
       .assert.count('.history .entry', 1)
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'active')
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'inspected')
@@ -148,6 +149,16 @@ module.exports = {
       .frame('target')
         .assert.containsText('#counter p', '2')
         .frame(null)
+
+      // toggle recording
+      .click('.toggle-recording')
+      .assert.containsText('.toggle-recording', 'Paused')
+      .assert.cssClassNotPresent('.toggle-recording .material-icons', 'enabled')
+      // should not record
+      .frame('target')
+        .click('.increment')
+        .frame(null)
+      .assert.count('.history .entry', 1)
 
       // copy vuex state
       .click('.export')

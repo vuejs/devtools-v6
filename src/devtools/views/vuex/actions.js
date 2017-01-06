@@ -1,25 +1,31 @@
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
     commit('COMMIT_ALL')
-    travelTo(state, commit, null)
+    travelTo(state, commit, -1)
   }
 }
 
 export function revertAll ({ commit, state }) {
   if (state.history.length > 0) {
     commit('REVERT_ALL')
-    travelTo(state, commit, null)
+    travelTo(state, commit, -1)
   }
 }
 
 export function commit ({ commit, state }, entry) {
-  commit('COMMIT_SELECTED')
-  travelTo(state, commit, entry)
+  const index = state.history.indexOf(entry)
+  if (index > -1) {
+    commit('COMMIT', index)
+    travelTo(state, commit, -1)
+  }
 }
 
 export function revert ({ commit, state }, entry) {
-  commit('REVERT_SELECTED')
-  travelTo(state, commit, entry)
+  const index = state.history.indexOf(entry)
+  if (index > -1) {
+    commit('REVERT', index)
+    travelTo(state, commit, state.history.length - 1)
+  }
 }
 
 export function inspect ({ commit, state }, entryOrIndex) {
@@ -32,7 +38,7 @@ export function inspect ({ commit, state }, entryOrIndex) {
 }
 
 export function timeTravelTo ({ state, commit }, entry) {
-  travelTo(state, commit, entry)
+  travelTo(state, commit, state.history.indexOf(entry))
 }
 
 export function toggleRecording ({ state, commit }) {
@@ -49,9 +55,9 @@ export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
-function travelTo (state, commit, entry) {
+function travelTo (state, commit, index) {
   const { history, base } = state
-  const targetState = entry ? entry.state : base
+  const targetState = index > -1 ? history[index].state : base
   bridge.send('vuex:travel-to-state', targetState)
-  commit('TIME_TRAVEL', history.indexOf(entry))
+  commit('TIME_TRAVEL', index)
 }
