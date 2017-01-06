@@ -9,7 +9,7 @@ function detect (win) {
     const all = document.querySelectorAll('*')
     const el = [].find.call(all, e => e.__vue__)
     if (el) {
-      let Vue = el.__vue__.constructor
+      let Vue = el.__vue__.prototype.constructor
       while (Vue.super) {
         Vue = Vue.super
       }
