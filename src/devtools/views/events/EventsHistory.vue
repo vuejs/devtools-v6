@@ -24,6 +24,7 @@
         :class="{ active: inspectedIndex === events.indexOf(event) }"
         @click="inspect(events.indexOf(event))">
         <span class="event-name">{{ event.eventName }}</span>
+        <span class="event-type">{{ event.type }}</span>
         <span class="event-source">
           by
           <span>&lt;</span>
@@ -96,39 +97,24 @@ export default {
   font-size 12px
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
+  .event-name
+    font-weight 600
   .event-source
     color #999
   .component-name
     color $component-color
+  .event-type
+    color #999
+    margin-left 8px
   &.active
     color #fff
     background-color $active-color
-    .time
+    .time, .event-type, .component-name
       color lighten($active-color, 75%)
     .event-name
       color: #fff
-    .component-name
-      color lighten($active-color, 75%)
     .event-source
       color #ddd
-
-.action-wrapper
-  margin-top: 5px;
-
-.action
-  color lighten($active-color, 75%)
-  font-size 11px
-  dispatch inline-block
-  vertical-align middle
-  margin-left 8px
-  white-space nowrap
-  .material-icons
-    font-size 14px
-    margin-right -4px
-  .material-icons, span
-    vertical-align middle
-  &:hover
-    color #fff
 
 .time
   font-size 11px

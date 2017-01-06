@@ -33,23 +33,12 @@ export default {
       if (!this.activeEvent) {
         return {}
       }
-      const data = this.isComplex
-        ? this.getSortedEventData()
-        : this.activeEvent.eventData
       return {
-        type: this.activeEvent.eventName,
+        name: this.activeEvent.eventName,
+        type: this.activeEvent.type,
         source: '<' + this.activeEvent.instanceName + '>',
-        payload: data
+        payload: this.activeEvent.payload
       }
-    }
-  },
-  methods: {
-    getSortedEventData () {
-      const ordered = {}
-      Object.keys(this.activeEvent.eventData).sort().forEach(key => {
-        ordered[key] = this.activeEvent.eventData[key]
-      })
-      return ordered
     }
   }
 }

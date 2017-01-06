@@ -12,7 +12,7 @@ const state = {
 }
 
 const mutations = {
-  'EMIT' (state, payload) {
+  'RECEIVE_EVENT' (state, payload) {
     state.events.push(payload)
     if (!state.filter) {
       state.inspectedIndex = state.events.length - 1

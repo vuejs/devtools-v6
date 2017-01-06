@@ -76,8 +76,8 @@ function initApp (shell) {
       store.commit('vuex/RECEIVE_MUTATION', payload)
     })
 
-    bridge.on('event:emit', payload => {
-      store.commit('events/EMIT', parse(payload))
+    bridge.on('event:triggered', payload => {
+      store.commit('events/RECEIVE_EVENT', parse(payload))
       if (store.state.tab !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }

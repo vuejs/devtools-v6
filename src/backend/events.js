@@ -8,26 +8,37 @@ export function initEventsBackend (Vue, bridge) {
     recording = enabled
   })
 
-  const vueEmit = Vue.prototype.$emit
-  Vue.prototype.$emit = function () {
-    const res = vueEmit.apply(this, arguments)
+  function logEvent (vm, type, eventName, payload) {
+    // The string check is important for compat with 1.x where the first
+    // argument may be an object instead of a string.
+    // this also ensures the event is only logged for direct $emit (source)
+    // instead of by $dispatch/$broadcast
+    if (typeof eventName === 'string' && !eventName.startsWith('hook:')) {
+      bridge.send('event:triggered', stringify({
+        eventName,
+        type,
+        payload,
+        instanceId: vm._uid,
+        instanceName: getInstanceName(vm._self || vm),
+        timestamp: Date.now()
+      }))
+    }
+  }
 
-    if (recording) {
-      let eventName = String(arguments[0])
-      if (Object.prototype.toString.call(arguments[0]) === '[object Object]' && arguments[0].name) {
-        eventName = String(arguments[0].name)
-      }
-      if (!eventName.startsWith('hook:')) {
-        bridge.send('event:emit', stringify({
-          instanceId: this._uid,
-          instanceName: getInstanceName(this._self || this),
-          eventName: eventName,
-          eventData: arguments[1],
-          timestamp: Date.now()
-        }))
+  function wrap (method) {
+    const original = Vue.prototype[method]
+    if (original) {
+      Vue.prototype[method] = function (...args) {
+        const res = original.apply(this, args)
+        if (recording) {
+          logEvent(this, method, args[0], args.slice(1))
+        }
+        return res
       }
     }
-
-    return res
   }
+
+  wrap('$emit')
+  wrap('$broadcast')
+  wrap('$dispatch')
 }
