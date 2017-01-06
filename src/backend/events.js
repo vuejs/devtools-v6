@@ -13,7 +13,10 @@ export function initEventsBackend (Vue, bridge) {
     const res = vueEmit.apply(this, arguments)
 
     if (recording) {
-      const eventName = arguments[0]
+      let eventName = String(arguments[0])
+      if (Object.prototype.toString.call(arguments[0]) === '[object Object]' && arguments[0].name) {
+        eventName = String(arguments[0].name)
+      }
       if (!eventName.startsWith('hook:')) {
         bridge.send('event:emit', stringify({
           instanceId: this._uid,
