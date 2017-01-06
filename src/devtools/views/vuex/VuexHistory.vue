@@ -19,11 +19,11 @@
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="step(-1)">
+      <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
-          <a v-if="inspectedIndex === -1 && activeIndex !== -1" class="action"
-             @click.stop="timeTravelToSelected" title="Time Travel to This State">
+          <a class="action"
+             @click.stop="timeTravelTo(null)" title="Time Travel to This State">
             <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
@@ -37,18 +37,21 @@
       <div class="entry"
         v-for="entry in filteredHistory"
         :class="{ inspected: isInspected(entry), active: isActive(entry) }"
-        @click="step(entry)">
+        @click="inspect(entry)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
-        <span class="entry-actions" v-if="isInspected(entry)">
-          <a class="action" @click.stop="commitSelected" title="Commit This Mutation">
+        <span class="entry-actions">
+          <a class="action" @click.stop="commit(entry)" title="Commit This Mutation">
             <i class="material-icons medium">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revertSelected" title="Revert This Mutation">
+          <a class="action" @click.stop="revert(entry)" title="Revert This Mutation">
             <i class="material-icons small">do_not_disturb</i>
             <span>Revert</span>
           </a>
-          <a v-if="!isActive(entry)" class="action" @click.stop="timeTravelToSelected" title="Time Travel to This State">
+          <a v-if="!isActive(entry)"
+             class="action"
+             @click.stop="timeTravelTo(entry)"
+             title="Time Travel to This State">
             <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
@@ -103,10 +106,10 @@ export default {
       'commitAll',
       'revertAll',
       'toggleRecording',
-      'commitSelected',
-      'revertSelected',
-      'step',
-      'timeTravelToSelected',
+      'commit',
+      'revert',
+      'inspect',
+      'timeTravelTo',
       'updateFilter'
     ]),
     isActive (entry) {
@@ -117,9 +120,9 @@ export default {
     },
     onKeyNav (dir) {
       if (dir === 'up') {
-        this.step(this.inspectedIndex - 1)
+        this.inspect(this.inspectedIndex - 1)
       } else if (dir === 'down') {
-        this.step(this.inspectedIndex + 1)
+        this.inspect(this.inspectedIndex + 1)
       }
     }
   },
@@ -145,12 +148,6 @@ $inspected_color = #af90d5
   background-color #fff
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   height 40px
-  .action
-    color #999
-    &:hover
-      color $active-color
-      .material-icons
-        color $active-color
   &.active
     color #fff
     background-color $active-color
@@ -172,28 +169,23 @@ $inspected_color = #af90d5
     &.inspected
       border-left 4px solid darken($inspected_color, 15%)
       padding-left 16px
-  .mutation-type
-    line-height 20px
   .material-icons, span, a
     display inline-block
     vertical-align middle
-  .label
-    float right
-    font-size 10px
-    padding 4px 8px
-    border-radius 6px
-    margin-right 8px
-    &.active
-      background-color darken($active-color, 25%)
-    &.inspected
-      color #fff
-      background-color $inspected_color
+  .mutation-type
+    line-height 20px
+  .entry-actions
+    display none
+  &:hover
+    .entry-actions
+      display inline-block
 
 .action
+  color #999
   font-size 11px
   display inline-block
   vertical-align middle
-  margin-left 8px
+  margin-left 10px
   white-space nowrap
   span
     display none
@@ -201,10 +193,27 @@ $inspected_color = #af90d5
       display inline
   .material-icons
     font-size 20px
+    margin-right 2px
+  &:hover
+    color $active-color
+    .material-icons
+      color $active-color
 
 .time
   font-size 11px
   color #999
   float right
   margin-top 3px
+
+.label
+  float right
+  font-size 10px
+  padding 4px 8px
+  border-radius 6px
+  margin-right 8px
+  &.active
+    background-color darken($active-color, 25%)
+  &.inspected
+    color #fff
+    background-color $inspected_color
 </style>

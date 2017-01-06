@@ -1,41 +1,36 @@
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
     commit('COMMIT_ALL')
-    travelTo(state, commit)
+    travelTo(state, commit, null)
   }
 }
 
 export function revertAll ({ commit, state }) {
   if (state.history.length > 0) {
     commit('REVERT_ALL')
-    travelTo(state, commit)
+    travelTo(state, commit, null)
   }
 }
 
-export function commitSelected ({ commit, state }) {
+export function commit ({ commit, state }, entry) {
   commit('COMMIT_SELECTED')
-  travelTo(state, commit)
+  travelTo(state, commit, entry)
 }
 
-export function revertSelected ({ commit, state }) {
+export function revert ({ commit, state }, entry) {
   commit('REVERT_SELECTED')
-  travelTo(state, commit)
+  travelTo(state, commit, entry)
 }
 
-export function reset ({ commit, state }) {
-  commit('RESET')
-  travelTo(state, commit)
-}
-
-export function step ({ commit, state }, index) {
-  if (typeof index !== 'number') {
-    index = state.history.indexOf(index)
+export function inspect ({ commit, state }, entryOrIndex) {
+  if (typeof entryOrIndex !== 'number') {
+    entryOrIndex = state.history.indexOf(entryOrIndex)
   }
-  commit('STEP', index)
+  commit('INSPECT', entryOrIndex)
 }
 
-export function timeTravelToSelected ({ state, commit }) {
-  travelTo(state, commit)
+export function timeTravelTo ({ state, commit }, entry) {
+  travelTo(state, commit, entry)
 }
 
 export function toggleRecording ({ state, commit }) {
@@ -52,11 +47,9 @@ export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
-function travelTo (state, commit) {
-  const { history, inspectedIndex, base } = state
-  const targetState = inspectedIndex > -1
-    ? history[inspectedIndex].state
-    : base
+function travelTo (state, commit, entry) {
+  const { history, base } = state
+  const targetState = entry ? entry.state : base
   bridge.send('vuex:travel-to-state', targetState)
-  commit('TIME_TRAVEL', inspectedIndex)
+  commit('TIME_TRAVEL', history.indexOf(entry))
 }

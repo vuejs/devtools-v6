@@ -52,7 +52,7 @@ const mutations = {
     state.history = state.history.slice(0, state.inspectedIndex)
     state.inspectedIndex--
   },
-  'STEP' (state, index) {
+  'INSPECT' (state, index) {
     state.inspectedIndex = index
   },
   'TIME_TRAVEL' (state, index) {
