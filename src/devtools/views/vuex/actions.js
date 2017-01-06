@@ -23,10 +23,12 @@ export function revert ({ commit, state }, entry) {
 }
 
 export function inspect ({ commit, state }, entryOrIndex) {
-  if (typeof entryOrIndex !== 'number') {
-    entryOrIndex = state.history.indexOf(entryOrIndex)
-  }
-  commit('INSPECT', entryOrIndex)
+  let index = typeof entryOrIndex === 'number'
+    ? entryOrIndex
+    : state.history.indexOf(entryOrIndex)
+  if (index < -1) index = -1
+  if (index >= state.history.length) index = state.history.length - 1
+  commit('INSPECT', index)
 }
 
 export function timeTravelTo ({ state, commit }, entry) {
