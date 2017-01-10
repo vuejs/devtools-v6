@@ -123,7 +123,18 @@ function scan () {
 
 function walk (node, fn) {
   if (node.childNodes) {
-    Array.prototype.forEach.call(node.childNodes, function (node) {
+    node.childNodes.forEach(function (node) {
+      const stop = fn(node)
+      if (!stop) {
+        walk(node, fn)
+      }
+    })
+  }
+
+  // This code is duplicated because there doesn't seem to be
+  // a reasonable way to concat NodeLists
+  if (node.shadowRoot && node.shadowRoot.childNodes) {
+    node.shadowRoot.childNodes.forEach(function (node) {
       const stop = fn(node)
       if (!stop) {
         walk(node, fn)
