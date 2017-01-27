@@ -6,7 +6,6 @@
 
 <script>
 export default {
-  name: 'EventChildCond',
   methods: {
     emitLogEvent () {
       let data = {

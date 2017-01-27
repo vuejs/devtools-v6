@@ -3,7 +3,7 @@ import store from './store'
 import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
-import Event from './Event.vue'
+import Events from './Events.vue'
 
 let items = []
 for (var i = 0; i < 100; i++) {
@@ -20,7 +20,7 @@ new Vue({
       h(Counter),
       h(Target, {props:{msg:'hi'}}),
       h(Other),
-      h(Event)
+      h(Events)
     ])
   },
   data: {

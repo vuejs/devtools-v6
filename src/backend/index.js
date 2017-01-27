@@ -299,11 +299,16 @@ function getInstanceDetails (id) {
 
 export function getInstanceName (instance) {
   const name = instance.$options.name || instance.$options._componentTag
-  return name
-    ? classify(name)
-    : instance.$root === instance
-      ? 'Root'
-      : 'Anonymous Component'
+  if (name) {
+    return classify(name)
+  }
+  const file = instance.$options.__file // injected by vue-loader
+  if (file) {
+    return classify(require('path').basename(file).replace(/\.vue$/, ''))
+  }
+  return instance.$root === instance
+    ? 'Root'
+    : 'Anonymous Component'
 }
 
 /**

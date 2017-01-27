@@ -13,8 +13,7 @@ import EventChild from './EventChild.vue'
 import EventChild1 from './EventChild1.vue'
 import EventChildCond from './EventChildCond.vue'
 export default {
-  name: 'Event',
-  components: { 
+  components: {
     EventChild,
     EventChild1,
     EventChildCond

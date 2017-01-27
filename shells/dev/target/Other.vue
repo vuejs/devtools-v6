@@ -7,7 +7,6 @@
 
 <script>
 export default {
-  name: 'Other',
   props: ['id'],
   data () {
     let a = { c: function () {} }

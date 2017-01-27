@@ -10,7 +10,6 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'Counter',
   created () {
     // simulate firebase binding
     this.$firebaseRefs = {

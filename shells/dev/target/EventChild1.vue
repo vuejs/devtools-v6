@@ -6,7 +6,6 @@
 
 <script>
 export default {
-  name: 'EventChild1',
   methods: {
     emitLogEvent () {
       this.$emit('log')
