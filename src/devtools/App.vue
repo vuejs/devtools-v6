@@ -1,7 +1,7 @@
 <style lang="stylus" src="./global.styl"></style>
 
 <template>
-<div id="app" :class="{ app: true, dark: true }">
+<div id="app" :class="{ app: true, dark: isDark }">
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
@@ -60,7 +60,8 @@ export default {
   computed: mapState({
     message: state => state.message,
     tab: state => state.tab,
-    newEventCount: state => state.events.newEventCount
+    newEventCount: state => state.events.newEventCount,
+    isDark: state => chrome.devtools && chrome.devtools.panels.themeName === 'dark'
   }),
   methods: {
     switchTab (tab) {
