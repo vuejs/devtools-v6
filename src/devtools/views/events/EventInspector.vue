@@ -49,6 +49,8 @@ export default {
 
 section:not(:last-child)
   border-bottom 1px solid $border-color
+  .app.dark &
+    border-bottom 1px solid $dark-border-color
 
 .component-name
   margin 0 10px

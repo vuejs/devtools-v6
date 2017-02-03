@@ -1,7 +1,7 @@
 <style lang="stylus" src="./global.styl"></style>
 
 <template>
-<div id="app" class="app">
+<div id="app" :class="{ app: true, dark: true }">
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
@@ -102,11 +102,13 @@ export default {
   width 100%
   height 100%
   user-select none
-  background-color #fff
+  background-color $background-color
   display flex
   flex-direction column
   h1
     color #42b983
+  &.dark
+    background-color $dark-background-color
 
 .header
   display flex
@@ -115,6 +117,8 @@ export default {
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
   position relative
+  .app.dark &
+    border-bottom 1px solid $dark-border-color
 
 .logo
   width 30px
@@ -137,9 +141,11 @@ export default {
   cursor pointer
   position relative
   border-bottom-color transparent
-  background-color #fff
+  background-color $background-color
   color #888
   transition color .35s ease
+  .app.dark &
+    background-color $dark-background-color
 
   &:hover
     color #555
@@ -186,6 +192,8 @@ $event-count-bubble-size = 18px
   position absolute
   right 0
   top 12px
+  .app.dark &
+    background-color $dark-background-color
 
 .active-bar
   position absolute

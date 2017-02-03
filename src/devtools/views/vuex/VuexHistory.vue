@@ -145,7 +145,7 @@ $inspected_color = #af90d5
   cursor pointer
   padding 10px 20px
   font-size 12px
-  background-color #fff
+  background-color $background-color
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   height 40px
   &.active
@@ -179,6 +179,8 @@ $inspected_color = #af90d5
   &:hover
     .entry-actions
       display inline-block
+  .app.dark &
+    background-color $dark-background-color
 
 .action
   color #999

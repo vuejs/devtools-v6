@@ -132,7 +132,9 @@ function copyToClipboard (state) {
   top 1px
   font-size 12px
   color #c41a16
-  background-color #fff
+  background-color $background-color
+  .app.dark &
+    background-color $dark-background-color
 
 .import-state
   transition all .3s ease
@@ -144,7 +146,11 @@ function copyToClipboard (state) {
   box-shadow 4px 4px 6px 0 $border-color
   border 1px solid $border-color
   padding 3px
-  background-color #fff
+  background-color $background-color
+  .app.dark &
+    background-color $dark-background-color
+    box-shadow 4px 4px 6px 0 $dark-border-color
+    border 1px solid $dark-border-color
 
   textarea
     width 100%
@@ -153,4 +159,7 @@ function copyToClipboard (state) {
     outline none
     border none
     resize vertical
+    .app.dark &
+      color #DDD
+      background-color $dark-background-color
 </style>

@@ -48,6 +48,12 @@ export default {
 .scroll
   flex 1
   overflow overlay
+  .app.dark &::-webkit-scrollbar
+    background: $dark-background-color
+    border-left: 1px solid $dark-border-color
+  .app.dark &::-webkit-scrollbar-thumb
+    background: lighten($dark-background-color, 7%);
+    border: 1px solid lighten($dark-border-color, 7%)
 
 // Keeping this here in case `overflow: overlay`
 // doesn't float everyone's boat.

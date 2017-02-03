@@ -95,7 +95,7 @@ export default {
   cursor pointer
   padding 10px 20px
   font-size 12px
-  background-color #fff
+  background-color $background-color
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   .event-name
     font-weight 600
@@ -115,6 +115,8 @@ export default {
       color: #fff
     .event-source
       color #ddd
+  .app.dark &
+    background-color $dark-background-color
 
 .time
   font-size 11px
