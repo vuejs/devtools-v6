@@ -61,7 +61,7 @@ export default {
     message: state => state.message,
     tab: state => state.tab,
     newEventCount: state => state.events.newEventCount,
-    isDark: state => chrome.devtools && chrome.devtools.panels.themeName === 'dark'
+    isDark: () => chrome.devtools && chrome.devtools.panels.themeName === 'dark'
   }),
   methods: {
     switchTab (tab) {
