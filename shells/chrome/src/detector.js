@@ -6,7 +6,7 @@ window.addEventListener('message', e => {
 
 function detect (win) {
   function findVueRootNode (array, callback) {
-    for (let i = 0; i < array.length;i++) {
+    for (let i = 0; i < array.length; i++) {
       if (Function.prototype.call(array[i], callback)) return array[i]
     }
   }
