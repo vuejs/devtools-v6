@@ -1,6 +1,8 @@
 import { stringify } from '../util'
 import { getInstanceName } from './index'
 
+const internalRE = /^(?:pre-)?hook:/
+
 export function initEventsBackend (Vue, bridge) {
   let recording = true
 
@@ -13,7 +15,7 @@ export function initEventsBackend (Vue, bridge) {
     // argument may be an object instead of a string.
     // this also ensures the event is only logged for direct $emit (source)
     // instead of by $dispatch/$broadcast
-    if (typeof eventName === 'string' && !eventName.startsWith('hook:')) {
+    if (typeof eventName === 'string' && !internalRE.test(eventName)) {
       bridge.send('event:triggered', stringify({
         eventName,
         type,
