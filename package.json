@@ -36,6 +36,7 @@
     "eslint-config-vue": "^2.0.0",
     "eslint-plugin-vue": "^1.0.0",
     "file-loader": "^0.9.0",
+    "friendly-errors-webpack-plugin": "^1.1.2",
     "nightwatch": "^0.9.4",
     "nightwatch-helpers": "^1.2.0",
     "selenium-server": "2.52.0",
@@ -49,9 +50,7 @@
   },
   "dependencies": {
     "circular-json-es6": "^2.0.0",
-    "friendly-errors-webpack-plugin": "^1.1.2",
     "lodash.debounce": "^4.0.6",
-    "nightwatch-helpers": "^1.2.0",
     "vue": "^2.0.0",
     "vuex": "^2.0.0"
   }
