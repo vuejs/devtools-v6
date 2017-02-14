@@ -5,14 +5,15 @@ window.addEventListener('message', e => {
 })
 
 function detect (win) {
-  function findVueRootNode (array, callback) {
-    for (let i = 0; i < array.length; i++) {
-      if (callback.call(array[i])) return array[i]
-    }
-  }
   setTimeout(() => {
     const all = document.querySelectorAll('*')
-    const el = findVueRootNode(all, e => e.__vue__)
+    let el
+    for (let i = 0; i < all.length; i++) {
+      if (all[i].__vue__) {
+        el = all[i]
+        break
+      }
+    }
     if (el) {
       let Vue = el.__vue__.constructor
       while (Vue.super) {
