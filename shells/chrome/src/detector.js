@@ -7,7 +7,13 @@ window.addEventListener('message', e => {
 function detect (win) {
   setTimeout(() => {
     const all = document.querySelectorAll('*')
-    const el = [].find.call(all, e => e.__vue__)
+    let el
+    for (let i = 0; i < all.length; i++) {
+      if (all[i].__vue__) {
+        el = all[i]
+        break
+      }
+    }
     if (el) {
       let Vue = Object.getPrototypeOf(el.__vue__).constructor
       while (Vue.super) {
