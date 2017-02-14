@@ -124,24 +124,21 @@ function scan () {
  */
 
 function walk (node, fn) {
+  function iterator (node) {
+    const stop = fn(node)
+    if (!stop) {
+      walk(node, fn)
+    }
+  }
+
   if (node.childNodes) {
-    node.childNodes.forEach(function (node) {
-      const stop = fn(node)
-      if (!stop) {
-        walk(node, fn)
-      }
-    })
+    node.childNodes.forEach(iterator)
   }
 
   // This code is duplicated because there doesn't seem to be
   // a reasonable way to concat NodeLists
   if (node.shadowRoot && node.shadowRoot.childNodes) {
-    node.shadowRoot.childNodes.forEach(function (node) {
-      const stop = fn(node)
-      if (!stop) {
-        walk(node, fn)
-      }
-    })
+    node.shadowRoot.childNodes.forEach(iterator)
   }
 }
 
