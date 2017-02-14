@@ -17,10 +17,12 @@ let currentInspectedId
 let bridge
 let filter = ''
 let captureCount = 0
+let isLegacy = false
 
 export function initBackend (_bridge) {
   bridge = _bridge
   if (hook.Vue) {
+    isLegacy = hook.Vue.version && hook.Vue.version.split('.')[0] === '1'
     connect()
   } else {
     hook.once('init', connect)
@@ -322,7 +324,7 @@ export function getInstanceName (instance) {
 
 function processProps (instance) {
   let props
-  if ((props = instance._props)) {
+  if (isLegacy && (props = instance._props)) {
     // 1.x
     return Object.keys(props).map(key => {
       const prop = props[key]
@@ -381,7 +383,9 @@ function getPropType (type) {
  */
 
 function processState (instance) {
-  const props = instance._props || instance.$options.props
+  const props = isLegacy
+    ? instance._props
+    : instance.$options.props
   const getters =
     instance.$options.vuex &&
     instance.$options.vuex.getters
