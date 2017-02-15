@@ -52,6 +52,13 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'app',
+  data () {
+    return {
+      isDark: typeof chrome !== 'undefined' &&
+        typeof chrome.devtools !== 'undefined' &&
+        chrome.devtools.panels.themeName === 'dark'
+    }
+  },
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
@@ -60,8 +67,7 @@ export default {
   computed: mapState({
     message: state => state.message,
     tab: state => state.tab,
-    newEventCount: state => state.events.newEventCount,
-    isDark: () => chrome.devtools && chrome.devtools.panels.themeName === 'dark'
+    newEventCount: state => state.events.newEventCount
   }),
   methods: {
     switchTab (tab) {
