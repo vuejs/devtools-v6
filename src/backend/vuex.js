@@ -3,7 +3,10 @@ import { stringify, parse } from '../util'
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
   let recording = true
-  bridge.send('vuex:init', stringify({state: store.state, getters: store.getters}))
+  bridge.send('vuex:init', {
+    state: stringify(store.state),
+    getters: stringify(store.getters)
+  })
 
   // deal with multiple backend injections
   hook.off('vuex:mutation')
@@ -17,13 +20,22 @@ export function initVuexBackend (hook, bridge) {
         payload: stringify(mutation.payload)
       },
       timestamp: Date.now(),
-      state: stringify({state, getters: store.getters}),
+      state: stringify(state),
+      getters: stringify(store.getters)
     })
   })
 
   // devtool -> application
   bridge.on('vuex:travel-to-state', state => {
     hook.emit('vuex:travel-to-state', parse(state, true /* revive */))
+  })
+
+  bridge.on('vuex:import-state', state => {
+    hook.emit('vuex:travel-to-state', parse(state, true /* revive */))
+    bridge.send('vuex:init', {
+      state: state,
+      getters: stringify(store.getters)
+    })
   })
 
   bridge.on('vuex:toggle-recording', enabled => {

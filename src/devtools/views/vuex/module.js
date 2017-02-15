@@ -23,8 +23,8 @@ const state = {
 }
 
 const mutations = {
-  'INIT' (state, initialState) {
-    state.initial = state.base = initialState
+  'INIT' (state, initial) {
+    state.initial = state.base = {state: initial.state, getters: initial.getters}
     state.hasVuex = true
     reset(state)
   },
@@ -35,7 +35,10 @@ const mutations = {
     }
   },
   'COMMIT_ALL' (state) {
-    state.base = state.history[state.history.length - 1].state
+    state.base = {
+      state: state.history[state.history.length - 1].state,
+      getters: state.history[state.history.length - 1].getters
+    }
     state.lastCommit = Date.now()
     reset(state)
   },
@@ -43,7 +46,10 @@ const mutations = {
     reset(state)
   },
   'COMMIT' (state, index) {
-    state.base = state.history[index].state
+    state.base = {
+      state: state.history[index].state,
+      getters: state.history[index].getters
+    }
     state.lastCommit = Date.now()
     state.history = state.history.slice(index + 1)
     state.inspectedIndex = -1
@@ -101,7 +107,9 @@ const getters = {
       }
     }
 
-    return parse(entry ? entry.state : base)
+    res.state = parse(entry ? entry.state : base.state)
+    res.getters = parse(entry ? entry.getters : base.getters)
+    return res
   },
 
   filteredHistory ({ history, filterRegex }) {

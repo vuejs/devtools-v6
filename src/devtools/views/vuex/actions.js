@@ -1,5 +1,3 @@
-import {parse, stringify} from '../../../util'
-
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
     commit('COMMIT_ALL')
@@ -48,22 +46,14 @@ export function toggleRecording ({ state, commit }) {
   bridge.send('vuex:toggle-recording', state.enabled)
 }
 
-export function importState ({ commit }, importedState) {
-  commit('INIT', importedState)
-  let parsedState = parse(importedState)
-  bridge.send('vuex:travel-to-state', stringify(parsedState.state))
-}
-
 export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
 function travelTo (state, commit, index) {
   const { history, base } = state
-  const targetState = index > -1 ? history[index].state : base
+  const targetState = index > -1 ? history[index].state : base.state
 
-  // Need to send only the state (not getters) into the bridge
-  let parsedState = parse(targetState)
-  bridge.send('vuex:travel-to-state', stringify(parsedState.state))
+  bridge.send('vuex:travel-to-state', targetState)
   commit('TIME_TRAVEL', index)
 }

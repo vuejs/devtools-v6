@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     copyStateToClipboard () {
-      copyToClipboard({state: this.inspectedState.state, getters: this.inspectedState.getters})
+      copyToClipboard(this.inspectedState.state)
       this.showStateCopiedMessage = true
       window.setTimeout(() => {
         this.showStateCopiedMessage = false
@@ -98,7 +98,7 @@ export default {
       } else {
         try {
           parse(importedStr) // Try to parse
-          this.$store.dispatch('vuex/importState', importedStr)
+          bridge.send('vuex:import-state', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true
