@@ -150,6 +150,16 @@ module.exports = {
         .assert.containsText('#counter p', '2')
         .frame(null)
 
+      // getters
+      .assert.containsText('.vuex-state-inspector', 'isPositive:true')
+      .frame('target')
+        .click('.decrement')
+        .click('.decrement')
+        .click('.decrement')
+        .frame(null)
+      .click('.history .entry:nth-child(4)')
+      .assert.containsText('.vuex-state-inspector', 'isPositive:false')
+
       // toggle recording
       .click('.toggle-recording')
       .assert.containsText('.toggle-recording', 'Paused')
@@ -158,7 +168,7 @@ module.exports = {
       .frame('target')
         .click('.increment')
         .frame(null)
-      .assert.count('.history .entry', 1)
+      .assert.count('.history .entry', 4)
 
       // copy vuex state
       .click('.export')
