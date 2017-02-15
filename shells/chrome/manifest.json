@@ -1,6 +1,6 @@
 {
   "name": "Vue.js devtools",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "Chrome devtools extension for debugging Vue.js applications.",
   "manifest_version": 2,
   "icons": {
