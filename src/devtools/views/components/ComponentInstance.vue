@@ -112,7 +112,7 @@ export default {
   position relative
   overflow hidden
   z-index 2
-  background-color #fff
+  background-color $background-color
   transition background-color .1s ease
   border-radius 3px
   font-size 14px
@@ -129,6 +129,8 @@ export default {
       border-left-color #fff
     .instance-name
       color #fff
+  .app.dark &
+    background-color $dark-background-color
 
 .children
   position relative

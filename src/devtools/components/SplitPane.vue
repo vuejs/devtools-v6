@@ -57,6 +57,8 @@ export default {
 
 .left
   border-right 1px solid $border-color
+  .app.dark &
+    border-right 1px solid $dark-border-color
 
 .dragger
   position absolute

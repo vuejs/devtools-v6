@@ -17,6 +17,8 @@
   height 35px
   @media (min-height: $tall)
     height 50px
+  .app.dark &
+    border-bottom 1px solid $dark-border-color
 
 .component-name
   display flex

@@ -130,6 +130,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import "../common"
+
 .data-field
   user-select text
   font-size 12px
@@ -164,7 +166,7 @@ export default {
     &.literal
       color #0033cc
   .type
-    color #fff
+    color $background-color
     padding 3px 6px
     font-size 10px
     line-height 10px
@@ -199,13 +201,30 @@ export default {
       border 1px solid #e3e3e3
       border-radius 3px
       padding 8px 12px
-      background-color #fff
+      background-color $background-color
       line-height 16px
       box-shadow 0 2px 12px rgba(0,0,0,.1)
       .key
         width 90px
     .meta-field
       display block
+  .app.dark &
+    .key
+      color: #e36eec
+    .value
+      color #bdc6cf
+      &.string
+        color #e33e3a
+      &.null
+        color #999
+      &.literal
+        color #997fff
+    .type
+      color: #242424
+      .meta
+        border 1px solid $dark-border-color
+        background-color $dark-background-color
+
 
 .more
   cursor pointer
