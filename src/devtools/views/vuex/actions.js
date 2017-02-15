@@ -50,6 +50,8 @@ export function toggleRecording ({ state, commit }) {
 
 export function importState ({ commit }, importedState) {
   commit('INIT', importedState)
+  let parsedState = parse(importedState)
+  bridge.send('vuex:travel-to-state', stringify(parsedState.state))
 }
 
 export function updateFilter ({ commit }, filter) {
