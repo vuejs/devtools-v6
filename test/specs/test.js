@@ -1,5 +1,7 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
+    var baseInstanceCount = 6
+
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
       .waitForElementVisible('.message', 1000)
@@ -7,6 +9,9 @@ module.exports = {
       .assert.containsText('.message', 'Ready. Detected Vue')
       .assert.elementPresent('.instance')
       .assert.containsText('.instance', 'Root')
+
+      // should detect instances inside shadow DOM
+      .assert.containsText('.tree > .instance:last-child', 'Shadow')
 
       // select instance
       .click('.instance .self')
@@ -17,7 +22,7 @@ module.exports = {
       .assert.containsText('.data-field', 'obj:Object')
 
       // should expand root by default
-      .assert.count('.instance', 5)
+      .assert.count('.instance', baseInstanceCount)
 
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
@@ -28,17 +33,17 @@ module.exports = {
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
-      .assert.count('.instance', 7)
+      .assert.count('.instance', baseInstanceCount + 2)
 
       // add/remove component from app side
       .frame('target')
         .click('.add')
         .frame(null)
-      .assert.count('.instance', 10)
+      .assert.count('.instance', baseInstanceCount + 5)
       .frame('target')
         .click('.remove')
         .frame(null)
-      .assert.count('.instance', 9)
+      .assert.count('.instance', baseInstanceCount + 4)
 
       // filter components
       .setValue('.search input', 'counter')
