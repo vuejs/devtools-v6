@@ -132,13 +132,13 @@ function walk (node, fn) {
   }
 
   if (node.childNodes) {
-    node.childNodes.forEach(iterator)
+    Array.prototype.forEach.call(node.childNodes, iterator)
   }
 
   // This code is duplicated because there doesn't seem to be
   // a reasonable way to concat NodeLists
   if (node.shadowRoot && node.shadowRoot.childNodes) {
-    node.shadowRoot.childNodes.forEach(iterator)
+    Array.prototype.forEach.call(node.shadowRoot.childNodes, iterator)
   }
 }
 
