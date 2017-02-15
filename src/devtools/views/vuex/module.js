@@ -100,8 +100,8 @@ const getters = {
         res.payload = parse(entry.mutation.payload)
       }
     }
-    res.state = parse(entry ? entry.state : base)
-    return res
+
+    return parse(entry ? entry.state : base)
   },
 
   filteredHistory ({ history, filterRegex }) {

@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     copyStateToClipboard () {
-      copyToClipboard(this.inspectedState.state)
+      copyToClipboard({state: this.inspectedState.state, getters: this.inspectedState.getters})
       this.showStateCopiedMessage = true
       window.setTimeout(() => {
         this.showStateCopiedMessage = false

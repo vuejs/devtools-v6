@@ -3,7 +3,7 @@ import { stringify, parse } from '../util'
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
   let recording = true
-  bridge.send('vuex:init', stringify(store.state))
+  bridge.send('vuex:init', stringify({state: store.state, getters: store.getters}))
 
   // deal with multiple backend injections
   hook.off('vuex:mutation')
@@ -17,7 +17,7 @@ export function initVuexBackend (hook, bridge) {
         payload: stringify(mutation.payload)
       },
       timestamp: Date.now(),
-      state: stringify(state)
+      state: stringify({state, getters: store.getters}),
     })
   })
 
