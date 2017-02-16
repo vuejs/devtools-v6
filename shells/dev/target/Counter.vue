@@ -4,7 +4,7 @@
     <button class="increment" @click="increment">+1</button>
     <button class="decrement" @click="decrement">-1</button>
 
-    <p>Your counter is {{$store.getters.isPositive ? 'positive' : 'negative'}}</p>
+    <p>Your counter is {{ $store.getters.isPositive ? 'positive' : 'negative' }}</p>
   </div>
 </template>
 
