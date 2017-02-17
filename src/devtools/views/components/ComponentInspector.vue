@@ -14,16 +14,38 @@
     <section v-show="!hasTarget" slot="scroll" class="notice">
       <div>Select a component instance to inspect.</div>
     </section>
-    <section v-show="hasTarget" slot="scroll">
-      <div class="data-fields">
-        <data-field v-for="field in sortedState"
-          :key="field.key"
-          :field="field"
-          :depth="0">
-        </data-field>
-      </div>
-      <div class="notice" v-show="target.state && !target.state.length">
+    <section v-show="hasTarget" slot="scroll" class="data">
+      <div class="notice" v-if="target.state && !target.state.length">
         <div>This instance has no reactive state.</div>
+      </div>
+      <div v-else>
+        <div class="data-container">
+          <div class="data-type">data</div>
+          <div class="data-fields">
+            <div v-if="groupedState.undefined">
+              <data-field v-for="field in groupedState.undefined" :key="field.key" :field="field" :depth="0"></data-field>
+            </div>
+            <span v-else class="no-fields">No data</span>
+          </div>
+        </div>
+        <div class="data-container">
+          <div class="data-type">computed</div>
+          <div class="data-fields">
+            <div v-if="groupedState.computed">
+              <data-field v-for="field in groupedState.computed" :key="field.key" :field="field" :depth="0"></data-field>
+            </div>
+            <span v-else class="no-fields">No computed data</span>
+          </div>
+        </div>
+        <div class="data-container">
+          <div class="data-type">props</div>
+          <div class="data-fields">
+            <div v-if="groupedState.prop">
+              <data-field v-for="field in groupedState.prop" :key="field.key" :field="field" :depth="0"></data-field>
+            </div>
+            <span v-else class="no-fields">No props</span>
+          </div>
+        </div>
       </div>
     </section>
   </scroll-pane>
@@ -33,6 +55,7 @@
 import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+import groupBy from 'lodash.groupBy'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
@@ -48,6 +71,9 @@ export default {
   computed: {
     hasTarget () {
       return this.target.id != null
+    },
+    groupedState () {
+      return groupBy(this.sortedState, 'type')
     },
     sortedState () {
       return this.target.state && this.target.state.slice().sort((a, b) => {
@@ -84,4 +110,20 @@ export default {
 
 .component-name
   margin 0 10px
+
+.data
+  padding: 20px 0px
+
+.data-container
+  float: left
+  min-width: 33%
+  padding: 0px 10px
+
+  .data-type 
+    color: #3ba776
+    padding-left: 20px
+
+  .no-fields
+    font-size: 14px
+    color: #ddd
 </style>
