@@ -109,7 +109,12 @@ function scan () {
         inFragment = true
         currentFragment = instance
       }
-      rootInstances.push(instance)
+
+      // respect Vue.config.devtools option
+      if (instance.$options._base.config.devtools) {
+        rootInstances.push(instance)
+      }
+
       return true
     }
   })
