@@ -14,7 +14,7 @@
         <!-- arrow wrapper for better hit box -->
         <span class="arrow-wrapper"
           v-if="instance.children.length"
-          @click.stop="toggle()">
+          @click.stop="toggle">
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
@@ -71,8 +71,8 @@ export default {
     }
   },
   methods: {
-    toggle () {
-      this.toggleWithValue(!this.expanded)
+    toggle (event) {
+      this.toggleWithValue(!this.expanded, event.altKey)
     },
     expand () {
       this.toggleWithValue(true)
@@ -80,10 +80,11 @@ export default {
     collapse () {
       this.toggleWithValue(false)
     },
-    toggleWithValue (val) {
-      this.$store.commit('components/TOGGLE_INSTANCE', {
-        id: this.instance.id,
-        expanded: val
+    toggleWithValue (val, recursive = false) {
+      this.$store.dispatch('components/toggleInstance', {
+        instance: this.instance,
+        expanded: val,
+        recursive
       })
     },
     select () {
