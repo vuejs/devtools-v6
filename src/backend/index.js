@@ -5,6 +5,16 @@ import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
 import { stringify, classify, camelize } from '../util'
+import path from 'path'
+
+// Use a custom basename functions instead of the shimed version
+// because it doesn't work on Windows
+function basename (filename, ext) {
+  return path.basename(
+    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
+    ext
+  )
+}
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -109,7 +119,12 @@ function scan () {
         inFragment = true
         currentFragment = instance
       }
-      rootInstances.push(instance)
+
+      // respect Vue.config.devtools option
+      if (instance.$options._base.config.devtools) {
+        rootInstances.push(instance)
+      }
+
       return true
     }
   })
@@ -312,7 +327,7 @@ export function getInstanceName (instance) {
   }
   const file = instance.$options.__file // injected by vue-loader
   if (file) {
-    return classify(require('path').basename(file).replace(/\.vue$/, ''))
+    return classify(basename(file, '.vue'))
   }
   return instance.$root === instance
     ? 'Root'
