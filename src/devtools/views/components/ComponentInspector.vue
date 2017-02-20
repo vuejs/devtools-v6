@@ -18,8 +18,8 @@
       <div class="notice" v-if="target.state && !target.state.length">
         <div>This instance has no reactive state.</div>
       </div>
-      <div v-else>
-        <div class="data-container">
+      <div v-else class="data-wrapper">
+        <div class="data-el">
           <div class="data-type">data</div>
           <div class="data-fields">
             <div v-if="groupedState.undefined">
@@ -28,7 +28,7 @@
             <span v-else class="no-fields">No data</span>
           </div>
         </div>
-        <div class="data-container">
+        <div class="data-el">
           <div class="data-type">computed</div>
           <div class="data-fields">
             <div v-if="groupedState.computed">
@@ -37,7 +37,7 @@
             <span v-else class="no-fields">No computed data</span>
           </div>
         </div>
-        <div class="data-container">
+        <div class="data-el">
           <div class="data-type">props</div>
           <div class="data-fields">
             <div v-if="groupedState.prop">
@@ -113,11 +113,14 @@ export default {
 
 .data
   padding: 20px 0px
+  
+.data-wrapper
+  display: flex;
+  flex-wrap: wrap;
 
-.data-container
-  float: left
-  min-width: 33%
+.data-el
   padding: 0px 10px
+  flex: 1 0 33.33%;
 
   .data-type 
     color: #3ba776
