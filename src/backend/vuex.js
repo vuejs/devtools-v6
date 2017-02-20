@@ -33,7 +33,7 @@ export function initVuexBackend (hook, bridge) {
   bridge.on('vuex:import-state', state => {
     hook.emit('vuex:travel-to-state', parse(state, true /* revive */))
     bridge.send('vuex:init', {
-      state: state,
+      state,
       getters: stringify(store.getters)
     })
   })
