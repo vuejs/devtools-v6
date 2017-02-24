@@ -10,6 +10,10 @@
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input placeholder="Filter data" v-model.trim="filter">
+      </div>
     </action-header>
     <section v-show="!hasTarget" slot="scroll" class="notice">
       <div>Select a component instance to inspect.</div>
@@ -22,8 +26,8 @@
         <div class="data-el">
           <div class="data-type">data</div>
           <div class="data-fields">
-            <div v-if="groupedState.undefined">
-              <data-field v-for="field in groupedState.undefined" :key="field.key" :field="field" :depth="0"></data-field>
+            <div v-if="filteredState.undefined">
+              <data-field v-for="field in filteredState.undefined" :key="field.key" :field="field" :depth="0"></data-field>
             </div>
             <span v-else class="no-fields">No data</span>
           </div>
@@ -31,8 +35,8 @@
         <div class="data-el">
           <div class="data-type">computed</div>
           <div class="data-fields">
-            <div v-if="groupedState.computed">
-              <data-field v-for="field in groupedState.computed" :key="field.key" :field="field" :depth="0"></data-field>
+            <div v-if="filteredState.computed">
+              <data-field v-for="field in filteredState.computed" :key="field.key" :field="field" :depth="0"></data-field>
             </div>
             <span v-else class="no-fields">No computed data</span>
           </div>
@@ -40,8 +44,8 @@
         <div class="data-el">
           <div class="data-type">props</div>
           <div class="data-fields">
-            <div v-if="groupedState.prop">
-              <data-field v-for="field in groupedState.prop" :key="field.key" :field="field" :depth="0"></data-field>
+            <div v-if="filteredState.prop">
+              <data-field v-for="field in filteredState.prop" :key="field.key" :field="field" :depth="0"></data-field>
             </div>
             <span v-else class="no-fields">No props</span>
           </div>
@@ -55,6 +59,7 @@
 import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+import { searchDeepInObject } from 'src/util'
 import groupBy from 'lodash.groupBy'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
@@ -68,19 +73,17 @@ export default {
   props: {
     target: Object
   },
+  data () {
+    return {
+      filter: ''
+    }
+  },
   computed: {
     hasTarget () {
       return this.target.id != null
     },
-    groupedState () {
-      return groupBy(this.sortedState, 'type')
-    },
-    sortedState () {
-      return this.target.state && this.target.state.slice().sort((a, b) => {
-        if (a.key < b.key) return -1
-        if (a.key > b.key) return 1
-        return 0
-      })
+    filteredState () {
+      return groupBy(this.sort(this.target.state.filter(el => searchDeepInObject({[el.key]: el.value}, this.filter))), 'type')
     }
   },
   methods: {
@@ -93,6 +96,13 @@ export default {
       } else {
         window.alert('DOM inspection is not supported in this shell.')
       }
+    },
+    sort (state) {
+      return state && state.slice().sort((a, b) => {
+        if (a.key < b.key) return -1
+        if (a.key > b.key) return 1
+        return 0
+      })
     }
   }
 }
