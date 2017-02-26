@@ -24,6 +24,7 @@
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
         v-for="subField in limitedSubFields"
+        :key="subField.key"
         :field="subField"
         :depth="depth + 1">
       </data-field>

@@ -2,6 +2,7 @@
   <scroll-pane>
     <div v-if="activeEvent" slot="scroll" class="data-fields">
       <data-field v-for="(value, key) of sortedEventData"
+        :key="key"
         :field="{ key, value }"
         :depth="0">
       </data-field>

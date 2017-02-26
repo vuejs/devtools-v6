@@ -31,6 +31,7 @@
       <div class="data-fields">
         <data-field
           v-for="(value, key) of inspectedState"
+          :key="key"
           :field="{ key, value }"
           :depth="0">
         </data-field>

@@ -4,7 +4,7 @@
     <button class="add" @click="add">Add</button>
     <button class="remove" @click="rm">Remove</button>
     <input v-model="localMsg">
-    <other v-for="item in items"></other>
+    <other v-for="item in items" :key="item"></other>
   </div>
 </template>
 
