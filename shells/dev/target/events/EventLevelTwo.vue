@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="emitLogEvent">Emit</button>
+    <button @click="emitLogEvent">Emit from L2</button>
   </div>
 </template>
 

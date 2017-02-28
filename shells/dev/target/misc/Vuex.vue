@@ -1,8 +1,12 @@
 <template>
-  <div id="counter">
-    <p>{{ count }}</p>
-    <button class="increment" @click="increment">+1</button>
-    <button class="decrement" @click="decrement">-1</button>
+  <div class="vuex box">
+    <h2>Vuex</h2>
+    <p>Component for testing vuex and firebase ref (see <b>Vuex Tab</b> in Dev-Tools).</p>
+    <div class="actions">
+      <p>Counter: <b>{{ count }}</b></p>
+      <button class="increment" @click="increment">Increment</button>
+      <button class="decrement" @click="decrement">Decrement</button>
+    </div>
   </div>
 </template>
 
