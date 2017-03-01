@@ -4,6 +4,40 @@ import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
 import Events from './Events.vue'
+import IndexRoute from './router/IndexRoute.vue'
+import RouteOne from './router/RouteOne.vue'
+import RouteTwo from './router/RouteTwo.vue'
+import RouteWithParams from './router/RouteWithParams.vue'
+import NamedRoute from './router/NamedRoute.vue'
+import RouteWithQuery from './router/RouteWithQuery.vue'
+import RouteWithBeforeEnter from './router/RouteWithBeforeEnter.vue'
+import RouteWithAlias from './router/RouteWithAlias.vue'
+
+import VueRouter from 'vue-router'
+
+Vue.use(VueRouter)
+
+const DynamicComponent = { 
+  template: '<div>Hello from dynamic component</div>' 
+}
+
+const routes = [
+  { path: '/route-one', component: RouteOne },
+  { path: '/route-two', component: RouteTwo },
+  { path: '/route-with-params/:username/:id', component: RouteWithParams },
+  { path: '/route-named', component: NamedRoute, name: 'NamedRoute' },
+  { path: '/route-with-query', component: RouteWithQuery },
+  { path: '/route-with-before-enter', component: RouteWithBeforeEnter, beforeEnter: (to, from, next) => {
+    next()
+  }},
+  { path: '/route-with-redirect', redirect: '/route-one' },
+  { path: '/route-with-alias', component: RouteWithAlias, alias: '/this-is-the-alias' },
+  { path: '/route-with-dynamic-component', component: DynamicComponent }
+]
+
+const router = new VueRouter({
+  routes
+})
 
 let items = []
 for (var i = 0; i < 100; i++) {
@@ -15,12 +49,14 @@ circular.self = circular
 
 new Vue({
   store,
+  router,
   render (h) {
     return h('div', null, [
       h(Counter),
       h(Target, {props:{msg:'hi'}}),
       h(Other),
-      h(Events)
+      h(Events),
+      h(IndexRoute)
     ])
   },
   data: {

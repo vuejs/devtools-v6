@@ -31,6 +31,13 @@
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
+    <a class="button router"
+      :class="{ active: tab === 'router' }"
+      @click="switchTab('router')"
+      title="Switch to Router">
+      <i class="material-icons">directions</i>
+      <span class="pane-name">Router</span>
+    </a>
     <a class="button refresh"
       @click="refresh"
       title="Force Refresh">
@@ -47,6 +54,7 @@
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
+import RouterTab from './views/router/RouterTab.vue'
 
 import { mapState } from 'vuex'
 
@@ -62,7 +70,8 @@ export default {
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
-    events: EventsTab
+    events: EventsTab,
+    router: RouterTab
   },
   computed: mapState({
     message: state => state.message,

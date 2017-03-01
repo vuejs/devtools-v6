@@ -83,6 +83,14 @@ function initApp (shell) {
       }
     })
 
+    bridge.on('router:init', payload => {
+      store.commit('router/INIT', parse(payload))
+    })
+
+    bridge.on('router:changed', payload => {
+      store.commit('router/CHANGED', parse(payload))
+    })
+
     app = new Vue({
       store,
       render (h) {
