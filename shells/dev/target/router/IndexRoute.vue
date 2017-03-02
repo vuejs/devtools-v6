@@ -9,6 +9,8 @@
     <p><router-link to="/route-with-redirect">Go to route with redirect</router-link></p>
     <p><router-link to="/this-is-the-alias">Go to route with alias</router-link></p>
     <p><router-link to="/route-with-dynamic-component">Go to route with dyn. component</router-link></p>
+    <p><router-link to="/route-with-props">Go to route with props</router-link></p>
+    <p><router-link to="/route-with-props-default">Go to route with props (default)</router-link></p>
     <router-view></router-view>
    <div>
 </template>

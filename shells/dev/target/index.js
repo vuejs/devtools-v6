@@ -12,6 +12,7 @@ import NamedRoute from './router/NamedRoute.vue'
 import RouteWithQuery from './router/RouteWithQuery.vue'
 import RouteWithBeforeEnter from './router/RouteWithBeforeEnter.vue'
 import RouteWithAlias from './router/RouteWithAlias.vue'
+import RouteWithProps from './router/RouteWithProps.vue'
 
 import VueRouter from 'vue-router'
 
@@ -32,7 +33,12 @@ const routes = [
   }},
   { path: '/route-with-redirect', redirect: '/route-one' },
   { path: '/route-with-alias', component: RouteWithAlias, alias: '/this-is-the-alias' },
-  { path: '/route-with-dynamic-component', component: DynamicComponent }
+  { path: '/route-with-dynamic-component', component: DynamicComponent },
+  { path: '/route-with-props', component: RouteWithProps, props: {
+    username: 'My Username',
+    id: 99
+  }},
+  { path: '/route-with-props-default', component: RouteWithProps }
 ]
 
 const router = new VueRouter({

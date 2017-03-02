@@ -5,18 +5,28 @@
         <i class="material-icons">search</i>
         <input class="" placeholder="Filter routes" v-model.trim="filter">
       </div>
+      <a class="button reset" :class="{ disabled: !routeChanges.length }" @click="reset" title="Clear Routes">
+        <i class="material-icons small">do_not_disturb</i>
+        <span>Clear</span>
+      </a>
     </action-header>
     <div slot="scroll" class="">
-      <div v-if="routeChanges.length === 0" class="no-routes">
-        No route chnages found
+      <div v-if="filteredRoutes.length === 0" class="no-routes">
+        No route transitions found
       </div>
       <div class="entry"
         v-else
-        v-for="routeChange in routeChanges"
-        :class="{ active: inspectedIndex === routeChanges.indexOf(routeChange) }"
-        @click="inspect(routeChanges.indexOf(routeChange))">
-        <div class="">From: {{ routeChange.from.fullPath }}</span>
-        <div class="">To: {{ routeChange.to.fullPath }}</span>
+        v-for="route in filteredRoutes"
+        :class="{ active: inspectedIndex === filteredRoutes.indexOf(route) }"
+        @click="inspect(filteredRoutes.indexOf(route))">
+        <div class="urls">
+          <span><b>From:</b> {{ route.from.path }}</span></br></br>
+          <span><b>To:</b> {{ route.to.path }}</span>
+        </div>
+        <div>
+          <span class="redirect" v-if="route.to.redirectedFrom">redirect</span>
+          <span class="time">{{ route.timestamp | formatTime }}</span>
+        </div>
       </div>
     </div>
   </scroll-pane>
@@ -25,26 +35,33 @@
 <script>
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 
 export default {
   components: {
     ScrollPane,
     ActionHeader
   },
-  computed: { 
+  computed: {
     ...mapState('router', [
       'routeChanges',
       'inspectedIndex'
-    ])
-  },
-  data () {
-    return {
-      filter: ''
+    ]),
+    ...mapGetters('router', [
+      'filteredRoutes'
+    ]),
+    filter: {
+      get () {
+        return this.$store.state.router.filter
+      },
+      set (filter) {
+        this.$store.commit('router/UPDATE_FILTER', filter)
+      }
     }
   },
   methods: mapMutations('router', {
-    inspect: 'INSPECT'
+    inspect: 'INSPECT',
+    reset: 'RESET'
   })
 }
 </script>
@@ -52,13 +69,15 @@ export default {
 <style lang="stylus" scoped>
 @import "../../common"
 
-.no-events
+.no-routes
   color: #ccc
   text-align: center
   margin-top: 50px
   line-height: 30px
 
 .entry
+  display: flex
+  align-items: center
   position: relative;
   font-family Menlo, Consolas, monospace
   color #881391
@@ -88,9 +107,29 @@ export default {
   .app.dark &
     background-color $dark-background-color
 
+.urls
+  margin-right: auto
+
 .time
   font-size 11px
   color #999
   float right
   margin-top 3px
+
+.redirect
+  color: #fff
+  background-color: #96afdd
+  padding: 3px 6px
+  font-size: 10px
+  line-height: 10px
+  height: 16px
+  border-radius: 3px
+  margin-right: 17px
+  position: relative
+
+.entry.active 
+  .redirect
+    color: #000
+    background-color: #fff
+
 </style>

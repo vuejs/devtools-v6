@@ -70,12 +70,7 @@ export default {
     inspect: 'INSPECT',
     reset: 'RESET',
     toggleRecording: 'TOGGLE'
-  }),
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  }
+  })
 }
 </script>
 
