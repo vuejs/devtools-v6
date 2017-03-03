@@ -118,7 +118,7 @@ export default {
 
 .redirect
   color: #fff
-  background-color: #96afdd
+  background-color: #af90d5
   padding: 3px 6px
   font-size: 10px
   line-height: 10px
@@ -126,10 +126,4 @@ export default {
   border-radius: 3px
   margin-right: 17px
   position: relative
-
-.entry.active 
-  .redirect
-    color: #000
-    background-color: #fff
-
 </style>
