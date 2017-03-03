@@ -1,7 +1,7 @@
 <template>
   <scroll-pane scroll-event="route:init">
     <action-header slot="header">
-      <h2>Route List</h2>
+      <h3 class="route-heading">Route List</h3>
     </action-header>
     <div slot="scroll">
       <div class="entry" v-for="route in routes">{{ route.path }}</div>
