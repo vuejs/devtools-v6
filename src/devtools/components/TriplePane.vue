@@ -1,20 +1,19 @@
 <template>
-  <div style="height: 100%;">
-    <div class="left" style="width: 20%; float: left; height: 100%; border-right: 1px solid #ddd;">
+  <div style="height: 100%;" class="split-pane"
+    @mousemove="dragMove"
+    @mouseup="dragEnd"
+    @mouseleave="dragEnd"
+    :class="{ dragging: dragging }">
+    <div class="left" :style="{ width: widthLeft + '%' }">
       <slot name="left"></slot>
+      <div class="dragger" @mousedown="dragStartLeft"></div>
     </div>
-    <div style="width: 80%; float: right;" class="split-pane"
-      @mousemove="dragMove"
-      @mouseup="dragEnd"
-      @mouseleave="dragEnd"
-      :class="{ dragging: dragging }">
-      <div class="middle" :style="{ width: split + '%' }">
-        <slot name="middle"></slot>
-        <div class="dragger" @mousedown="dragStart"></div>
-      </div>
-      <div class="right" :style="{ width: (100 - split) + '%' }">
-        <slot name="right"></slot>
-      </div>
+    <div class="middle" :style="{ width: widthMiddle + '%' }">
+      <slot name="middle"></slot>
+      <div class="dragger" @mousedown="dragStartRight"></div>
+    </div>
+    <div class="right" :style="{ width: widthRight + '%' }">
+      <slot name="right"></slot>
     </div>
   </div>
 </template>
@@ -23,25 +22,48 @@
 export default {
   data () {
     return {
-      split: 50,
-      dragging: false
+      widthLeft: 20,
+      widthMiddle: 40,
+      widthRight: 40,
+      draggingLeft: false,
+      draggingRight: false
+    }
+  },
+  computed: {
+    dragging () {
+      return this.draggingLeft && this.draggingRight
     }
   },
   methods: {
-    dragStart (e) {
-      this.dragging = true
-      this.startX = e.pageX
-      this.startSplit = this.split
+    dragStartLeft (e) {
+      this.draggingLeft = true
+      this.startXLeft = e.pageX
+      this.startSplitLeft = this.widthLeft
+      this.startSplitMiddle = this.widthMiddle
+    },
+    dragStartRight (e) {
+      this.draggingRight = true
+      this.startXRight = e.pageX
+      this.startSplitRight = this.widthRight
+      this.startSplitMiddle = this.widthMiddle
     },
     dragMove (e) {
-      if (this.dragging) {
-        const dx = e.pageX - this.startX
+      if (this.draggingLeft) {
+        const dx = e.pageX - this.startXLeft
         const totalWidth = this.$el.offsetWidth
-        this.split = this.startSplit + ~~(dx / totalWidth * 100)
+        this.widthLeft = this.startSplitLeft + ~~(dx / totalWidth * 100)
+        this.widthMiddle = this.startSplitMiddle - ~~(dx / totalWidth * 100)
+      }
+      if (this.draggingRight) {
+        const dx = e.pageX - this.startXRight
+        const totalWidth = this.$el.offsetWidth
+        this.widthMiddle = this.startSplitMiddle + ~~(dx / totalWidth * 100)
+        this.widthRight = this.startSplitRight - ~~(dx / totalWidth * 100) 
       }
     },
     dragEnd () {
-      this.dragging = false
+      this.draggingLeft = false
+      this.draggingRight = false
     }
   }
 }
@@ -56,10 +78,10 @@ export default {
   &.dragging
     cursor ew-resize
 
-.middle, .right
+.left, .right, .middle
   position relative
 
-.middle
+.left, .middle
   border-right 1px solid $border-color
   .app.dark &
     border-right 1px solid $dark-border-color
