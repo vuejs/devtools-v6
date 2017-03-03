@@ -12,7 +12,7 @@
     <p><router-link to="/route-with-props">Go to route with props</router-link></p>
     <p><router-link to="/route-with-props-default">Go to route with props (default)</router-link></p>
     <router-view></router-view>
-   <div>
+   </div>
 </template>
 
 <script>
