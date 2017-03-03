@@ -1,7 +1,6 @@
 import { stringify } from '../util'
 
 export function initRouterBackend (Vue, bridge, rootInstances) {
-  console.log('rootInstances', rootInstances)
   for (let i = 0; i < rootInstances.length; i++) {
     if (rootInstances[i]._router) {
       rootInstances[i]._router.afterEach((to, from) => {
