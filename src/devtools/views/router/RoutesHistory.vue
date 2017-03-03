@@ -11,7 +11,7 @@
       </a>
     </action-header>
     <div slot="scroll" class="">
-      <div v-if="filteredRoutes.length === 0" class="no-routes">
+      <div v-if="filteredRoutes.length === 0" class="no-entries">
         No route transitions found
       </div>
       <div class="entry"
@@ -69,52 +69,12 @@ export default {
 <style lang="stylus" scoped>
 @import "../../common"
 
-.no-routes
-  color: #ccc
-  text-align: center
-  margin-top: 50px
-  line-height: 30px
-
 .entry
   display: flex
   align-items: center
-  position: relative;
-  font-family Menlo, Consolas, monospace
-  color #881391
-  cursor pointer
-  padding 10px 20px
-  font-size 12px
-  background-color $background-color
-  box-shadow 0 1px 5px rgba(0,0,0,.12)
-  .event-name
-    font-weight 600
-  .event-source
-    color #999
-  .component-name
-    color $component-color
-  .event-type
-    color #999
-    margin-left 8px
-  &.active
-    color #fff
-    background-color $active-color
-    .time, .event-type, .component-name
-      color lighten($active-color, 75%)
-    .event-name
-      color: #fff
-    .event-source
-      color #ddd
-  .app.dark &
-    background-color $dark-background-color
 
 .urls
   margin-right: auto
-
-.time
-  font-size 11px
-  color #999
-  float right
-  margin-top 3px
 
 .redirect
   color: #fff
