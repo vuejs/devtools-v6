@@ -49,17 +49,20 @@ export default {
     },
     dragMove (e) {
       if (this.draggingLeft) {
-        const dx = e.pageX - this.startXLeft
-        const totalWidth = this.$el.offsetWidth
-        this.widthLeft = this.startSplitLeft + ~~(dx / totalWidth * 100)
-        this.widthMiddle = this.startSplitMiddle - ~~(dx / totalWidth * 100)
+        const diff = this.getDiff(e, this.startXLeft)
+        this.widthLeft = this.startSplitLeft + diff
+        this.widthMiddle = this.startSplitMiddle - diff
       }
       if (this.draggingRight) {
-        const dx = e.pageX - this.startXRight
-        const totalWidth = this.$el.offsetWidth
-        this.widthMiddle = this.startSplitMiddle + ~~(dx / totalWidth * 100)
-        this.widthRight = this.startSplitRight - ~~(dx / totalWidth * 100) 
+        const diff = this.getDiff(e, this.startXRight)
+        this.widthMiddle = this.startSplitMiddle + diff
+        this.widthRight = this.startSplitRight - diff
       }
+    },
+    getDiff (e, start) {
+      const dx = e.pageX - start
+      const totalWidth = this.$el.offsetWidth
+      return ~~(dx / totalWidth * 100)
     },
     dragEnd () {
       this.draggingLeft = false
