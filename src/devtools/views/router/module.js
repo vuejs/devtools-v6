@@ -8,6 +8,9 @@ const state = {
 
 const mutations = {
   'INIT' (state, payload) {
+    state.instances = []
+    state.routeChanges = []
+    state.inspectedIndex = -1
     state.hasRouter = true
     state.instances.push(payload)
   },
@@ -37,6 +40,15 @@ const getters = {
     return state.routeChanges.filter(routeChange => {
       return routeChange.from.fullPath.indexOf(state.filter) > -1 || routeChange.to.fullPath.indexOf(state.filter) > -1
     })
+  },
+  routes: state => {
+    const routes = []
+    state.instances.forEach(instance => {
+      instance.routes.forEach(route => {
+        routes.push(route)
+      })
+    })
+    return routes
   }
 }
 

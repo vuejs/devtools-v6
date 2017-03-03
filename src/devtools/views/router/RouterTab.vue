@@ -1,9 +1,10 @@
 <template>
   <div>
-    <split-pane v-if="hasRouter">
-      <routes-history slot="left"></routes-history>
+    <triple-pane v-if="hasRouter">
+      <routes-list slot="left"></routes-list>
+      <routes-history slot="middle"></routes-history>
       <route-meta slot="right"></route-meta>
-    </split-pane>
+    </triple-pane>
     <div v-else class="notice">
       <div>
         No router detected.
@@ -14,7 +15,9 @@
 
 <script>
 import SplitPane from 'components/SplitPane.vue'
+import TriplePane from 'components/TriplePane.vue'
 import RoutesHistory from './RoutesHistory.vue'
+import RoutesList from './RoutesList.vue'
 import RouteMeta from './RouteMeta.vue'
 import { mapState } from 'vuex'
 
@@ -24,8 +27,10 @@ export default {
   }),
   components: {
     SplitPane,
+    TriplePane,
     RoutesHistory,
-    RouteMeta
+    RouteMeta,
+    RoutesList
   }
 }
 </script>
