@@ -429,23 +429,33 @@ function processState (instance) {
  */
 
 function processComputed (instance) {
-  return Object.keys(instance.$options.computed || {}).map(key => {
+  const computed = []
+  // use for...in here because if 'computed' is not defined
+  // on component, computed properties will be placed in prototype
+  // and Object.keys does not include
+  // properties from object's prototype
+  for (const key in (instance.$options.computed || {})) {
     // use try ... catch here because some computed properties may
     // throw error during its evaluation
+    let computedProp = null
     try {
-      return {
+      computedProp = {
         type: 'computed',
         key,
         value: instance[key]
       }
     } catch (e) {
-      return {
+      computedProp = {
         type: 'computed',
         key,
         value: '(error during evaluation)'
       }
     }
-  })
+
+    computed.push(computedProp)
+  }
+
+  return computed
 }
 
 /**
