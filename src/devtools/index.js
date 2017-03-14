@@ -68,8 +68,8 @@ function initApp (shell) {
       store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
-    bridge.on('vuex:init', payload => {
-      store.commit('vuex/INIT', payload)
+    bridge.on('vuex:init', snapshot => {
+      store.commit('vuex/INIT', snapshot)
     })
 
     bridge.on('vuex:mutation', payload => {

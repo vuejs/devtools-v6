@@ -1,3 +1,5 @@
+import { parse } from '../../../util'
+
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
     commit('COMMIT_ALL')
@@ -52,8 +54,8 @@ export function updateFilter ({ commit }, filter) {
 
 function travelTo (state, commit, index) {
   const { history, base } = state
-  const targetState = index > -1 ? history[index].state : base.state
+  const targetSnapshot = index > -1 ? history[index].snapshot : base
 
-  bridge.send('vuex:travel-to-state', targetState)
+  bridge.send('vuex:travel-to-state', parse(targetSnapshot, true).state)
   commit('TIME_TRAVEL', index)
 }
