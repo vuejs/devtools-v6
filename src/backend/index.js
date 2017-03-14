@@ -431,23 +431,28 @@ function processState (instance) {
 
 function processComputed (instance) {
   const computed = []
+  const defs = instance.$options.computed || {}
   // use for...in here because if 'computed' is not defined
   // on component, computed properties will be placed in prototype
   // and Object.keys does not include
   // properties from object's prototype
-  for (const key in (instance.$options.computed || {})) {
+  for (const key in defs) {
+    const def = defs[key]
+    const type = typeof def === 'function' && def.vuex
+      ? 'vuex'
+      : 'computed'
     // use try ... catch here because some computed properties may
     // throw error during its evaluation
     let computedProp = null
     try {
       computedProp = {
-        type: 'computed',
+        type,
         key,
         value: instance[key]
       }
     } catch (e) {
       computedProp = {
-        type: 'computed',
+        type,
         key,
         value: '(error during evaluation)'
       }

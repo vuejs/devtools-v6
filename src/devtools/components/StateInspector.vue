@@ -1,7 +1,7 @@
 <template>
   <div class="data-wrapper">
     <div v-for="type in Object.keys(state)" :class="['data-el', toDisplayType(type)]">
-      <div class="data-type">{{ toDisplayType(type) }}</div>
+      <div class="data-type">{{ toDisplayType(type, true) }}</div>
       <div class="data-fields">
         <template v-if="Array.isArray(state[type])">
           <data-field
@@ -33,8 +33,14 @@ export default {
     DataField
   },
   methods: {
-    toDisplayType (type) {
-      return type === 'undefined' ? 'data' : type
+    toDisplayType (type, full) {
+      return type === 'undefined'
+        ? 'data'
+        : full
+          ? (type === 'vuex' || type === 'firebase')
+            ? type + ' bindings'
+            : type
+          : type
     }
   }
 }
