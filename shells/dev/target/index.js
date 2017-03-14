@@ -4,6 +4,8 @@ import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
 import Events from './Events.vue'
+import MyClass from './MyClass.js'
+
 import IndexRoute from './router/IndexRoute.vue'
 import RouteOne from './router/RouteOne.vue'
 import RouteTwo from './router/RouteTwo.vue'
@@ -59,7 +61,7 @@ new Vue({
   render (h) {
     return h('div', null, [
       h(Counter),
-      h(Target, {props:{msg:'hi'}}),
+      h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
       h(Other),
       h(Events),
       h(IndexRoute)

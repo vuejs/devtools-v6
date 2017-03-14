@@ -6,8 +6,19 @@
 </template>
 
 <script>
+// this computed property should be visible 
+// even if component has no 'computed' defined
+const computedPropMixin = {
+  computed: {
+    computedPropFromMixin() {
+      return null
+    }
+  }
+}
+
 export default {
   props: ['id'],
+  mixins: [ computedPropMixin ],
   data () {
     let a = { c: function () {} }
     a.a = a

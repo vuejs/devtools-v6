@@ -10,11 +10,13 @@
 
 <script>
 import Other from './Other.vue'
+import MyClass from './MyClass.js'
 export default {
   components: { Other },
   props: {
     msg: String,
-    obj: null
+    obj: null,
+    ins: MyClass
   },
   data() {
     return {

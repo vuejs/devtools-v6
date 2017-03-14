@@ -107,3 +107,44 @@ function isPrimitive (data) {
     data instanceof RegExp
   )
 }
+
+export function searchDeepInObject (obj, searchTerm) {
+  var match = false
+  const keys = Object.keys(obj)
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i]
+    const value = obj[key]
+    if (compare(key, searchTerm) || compare(value, searchTerm)) {
+      match = true
+      break
+    }
+    if (isPlainObject(value)) {
+      match = searchDeepInObject(value, searchTerm)
+      if (match) {
+        break
+      }
+    }
+  }
+  return match
+}
+
+function compare (mixedValue, stringValue) {
+  if (Array.isArray(mixedValue) && searchInArray(mixedValue, stringValue.toLowerCase())) {
+    return true
+  }
+  if (('' + mixedValue).toLowerCase().indexOf(stringValue.toLowerCase()) !== -1) {
+    return true
+  }
+  return false
+}
+
+function searchInArray (arr, searchTerm) {
+  let found = false
+  for (let i = 0; i < arr.length; i++) {
+    if (('' + arr[i]).toLowerCase().indexOf(searchTerm) !== -1) {
+      found = true
+      break
+    }
+  }
+  return found
+}

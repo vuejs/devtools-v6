@@ -391,10 +391,11 @@ function processProps (instance) {
  * @param {Function} fn
  */
 
-const fnTypeRE = /^function (\w+)\(/
+const fnTypeRE = /^(?:function|class) (\w+)/
 function getPropType (type) {
+  const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
-    ? type.toString().match(fnTypeRE)[1]
+    ? match && match[1] || 'any'
     : 'any'
 }
 
@@ -433,23 +434,33 @@ function processState (instance) {
  */
 
 function processComputed (instance) {
-  return Object.keys(instance.$options.computed || {}).map(key => {
+  const computed = []
+  // use for...in here because if 'computed' is not defined
+  // on component, computed properties will be placed in prototype
+  // and Object.keys does not include
+  // properties from object's prototype
+  for (const key in (instance.$options.computed || {})) {
     // use try ... catch here because some computed properties may
     // throw error during its evaluation
+    let computedProp = null
     try {
-      return {
+      computedProp = {
         type: 'computed',
         key,
         value: instance[key]
       }
     } catch (e) {
-      return {
+      computedProp = {
         type: 'computed',
         key,
         value: '(error during evaluation)'
       }
     }
-  })
+
+    computed.push(computedProp)
+  }
+
+  return computed
 }
 
 /**
@@ -513,7 +524,7 @@ function processFirebaseBindings (instance) {
   if (refs) {
     return Object.keys(refs).map(key => {
       return {
-        type: 'firebase binding',
+        type: 'firebase',
         key,
         value: instance[key]
       }

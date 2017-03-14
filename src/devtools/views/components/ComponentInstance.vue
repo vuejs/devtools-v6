@@ -132,6 +132,10 @@ export default {
       color #fff
   .app.dark &
     background-color $dark-background-color
+    &:hover
+      background-color #444
+    &.selected
+      background-color $active-color
 
 .children
   position relative

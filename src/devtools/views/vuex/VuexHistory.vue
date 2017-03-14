@@ -181,6 +181,8 @@ $inspected_color = #af90d5
       display inline-block
   .app.dark &
     background-color $dark-background-color
+    &.active
+      background-color $active-color
 
 .action
   color #999
