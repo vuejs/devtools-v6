@@ -24,19 +24,19 @@ module.exports = {
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
 
-      // prop types
-      .click('.instance .instance:nth-child(2) .self')
-      .assert.containsText('.component-name', 'Target')
-      .assert.containsText('.data-field:nth-child(5)', 'msg:"hi"')
-      .assert.containsText('.data-field:nth-child(6)', 'obj:undefined')
-      .assert.containsText('.data-field:nth-child(2)', 'ins:Object')
-
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
       .assert.containsText('.component-name', 'Counter')
       .assert.containsText('.data-el.computed .data-field', 'count:0')
       .assert.containsText('.data-el.computed .data-field:nth-child(2)', 'test:1')
       .assert.containsText('.data-el.firebase .data-field', 'hello:undefined')
+
+      // prop types
+      .click('.instance .instance:nth-child(2) .self')
+      .assert.containsText('.component-name', 'Target')
+      .assert.containsText('.data-el.prop .data-field:nth-child(1)', 'ins:Object')
+      .assert.containsText('.data-el.prop .data-field:nth-child(2)', 'msg:"hi"')
+      .assert.containsText('.data-el.prop .data-field:nth-child(3)', 'obj:undefined')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
