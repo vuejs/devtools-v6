@@ -99,7 +99,7 @@ export default {
       } else {
         try {
           parse(importedStr) // Try to parse
-          this.$store.dispatch('vuex/importState', importedStr)
+          bridge.send('vuex:import-state', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true

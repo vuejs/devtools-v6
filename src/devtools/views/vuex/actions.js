@@ -46,18 +46,14 @@ export function toggleRecording ({ state, commit }) {
   bridge.send('vuex:toggle-recording', state.enabled)
 }
 
-export function importState ({ commit, dispatch }, importedState) {
-  commit('INIT', importedState)
-  dispatch('reset')
-}
-
 export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
 function travelTo (state, commit, index) {
   const { history, base } = state
-  const targetState = index > -1 ? history[index].state : base
+  const targetState = index > -1 ? history[index].state : base.state
+
   bridge.send('vuex:travel-to-state', targetState)
   commit('TIME_TRAVEL', index)
 }
