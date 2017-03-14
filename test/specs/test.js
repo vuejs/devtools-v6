@@ -24,6 +24,13 @@ module.exports = {
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
 
+      // prop types
+      .click('.instance .instance:nth-child(2) .self')
+      .assert.containsText('.component-name', 'Target')
+      .assert.containsText('.data-field:nth-child(5)', 'msg:"hi"')
+      .assert.containsText('.data-field:nth-child(6)', 'obj:undefined')
+      .assert.containsText('.data-field:nth-child(2)', 'ins:Object')
+
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
       .assert.containsText('.component-name', 'Counter')

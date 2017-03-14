@@ -4,6 +4,7 @@ import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
 import Events from './Events.vue'
+import MyClass from './MyClass.js'
 
 let items = []
 for (var i = 0; i < 100; i++) {
@@ -18,7 +19,7 @@ new Vue({
   render (h) {
     return h('div', null, [
       h(Counter),
-      h(Target, {props:{msg:'hi'}}),
+      h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
       h(Other),
       h(Events)
     ])
