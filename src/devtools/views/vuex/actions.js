@@ -53,9 +53,12 @@ export function updateFilter ({ commit }, filter) {
 }
 
 function travelTo (state, commit, index) {
-  const { history, base } = state
+  const { history, base, inspectedIndex } = state
   const targetSnapshot = index > -1 ? history[index].snapshot : base
 
   bridge.send('vuex:travel-to-state', parse(targetSnapshot, true).state)
+  if (index !== inspectedIndex) {
+    commit('INSPECT', index)
+  }
   commit('TIME_TRAVEL', index)
 }
