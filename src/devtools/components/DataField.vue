@@ -11,6 +11,13 @@
       <span class="key">{{ field.key }}</span>
       <span class="colon">:</span>
       <span class="value" :class="valueType">{{ formattedValue }}</span>
+
+      <div class="meta" v-if="field.meta">
+        <div class="meta-field" v-for="(val, key) in field.meta">
+          <span class="key">{{ key }}</span>
+          <span class="value">{{ val }}</span>
+        </div>
+      </div>
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
@@ -157,6 +164,7 @@ export default {
       color #999
     &.literal
       color #0033cc
+
   .type
     color $background-color
     padding 3px 6px
@@ -169,10 +177,6 @@ export default {
     background-color #eee
     &.prop
       background-color #96afdd
-      &:hover
-        cursor pointer
-        .meta
-          display block
     &.computed
       background-color #af90d5
     &.vuex-getter
@@ -181,25 +185,31 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
+
+  .meta
+    display none
+    position absolute
+    z-index 999
+    font-size 11px
+    color #444
+    top 0
+    right calc(100% + 10px)
+    width 170px
+    border 1px solid #e3e3e3
+    border-radius 3px
+    padding 8px 12px
+    background-color $background-color
+    line-height 16px
+    box-shadow 0 2px 12px rgba(0,0,0,.1)
+    .key
+      width 90px
+  .meta-field
+    display block
+  &:hover
+    cursor pointer
     .meta
-      display none
-      position absolute
-      z-index 999
-      font-size 11px
-      color #444
-      top 0
-      left calc(100% + 4px)
-      width 170px
-      border 1px solid #e3e3e3
-      border-radius 3px
-      padding 8px 12px
-      background-color $background-color
-      line-height 16px
-      box-shadow 0 2px 12px rgba(0,0,0,.1)
-      .key
-        width 90px
-    .meta-field
       display block
+
   .app.dark &
     .key
       color: #e36eec
