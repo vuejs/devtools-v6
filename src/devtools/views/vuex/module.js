@@ -94,16 +94,18 @@ const getters = {
   inspectedState ({ base, history, inspectedIndex }) {
     const entry = history[inspectedIndex]
     const res = {}
+
     if (entry) {
-      res.type = entry.mutation.type
-      if (entry.mutation.payload) {
-        res.payload = parse(entry.mutation.payload)
+      res.mutation = {
+        type: entry.mutation.type,
+        payload: entry.mutation.payload ? parse(entry.mutation.payload) : undefined
       }
     }
 
     const snapshot = parse(entry ? entry.snapshot : base)
     res.state = snapshot.state
     res.getters = snapshot.getters
+
     return res
   },
 

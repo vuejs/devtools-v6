@@ -28,22 +28,15 @@
       </transition>
     </action-header>
     <div slot="scroll" class="vuex-state-inspector">
-      <div class="data-fields">
-        <data-field
-          v-for="(value, key) of inspectedState"
-          :key="key"
-          :field="{ key, value }"
-          :depth="0">
-        </data-field>
-      </div>
+      <state-inspector :state="inspectedState" />
     </div>
   </scroll-pane>
 </template>
 
 <script>
-import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+import StateInspector from 'components/StateInspector.vue'
 
 import { stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
@@ -51,9 +44,9 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    DataField,
     ScrollPane,
-    ActionHeader
+    ActionHeader,
+    StateInspector
   },
   data () {
     return {
