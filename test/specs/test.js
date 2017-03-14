@@ -27,9 +27,9 @@ module.exports = {
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
       .assert.containsText('.component-name', 'Counter')
-      .assert.containsText('.data-field', 'count:0 computed')
-      .assert.containsText('.data-field:nth-child(2)', 'hello:undefined')
-      .assert.containsText('.data-field:nth-child(3)', 'test:1 computed')
+      .assert.containsText('.data-el.computed .data-field', 'count:0')
+      .assert.containsText('.data-el.computed .data-field:nth-child(2)', 'test:1')
+      .assert.containsText('.data-el.firebase .data-field', 'hello:undefined')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')

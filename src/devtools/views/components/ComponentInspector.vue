@@ -23,31 +23,18 @@
         <div>This instance has no reactive state.</div>
       </div>
       <div v-else class="data-wrapper">
-        <div class="data-el">
-          <div class="data-type">data</div>
+        <div
+          v-for="type in stateGroups"
+          v-if="filteredState[type]"
+          :class="['data-el', type]">
+          <div class="data-type">{{ type === 'undefined' ? 'data' : type }}</div>
           <div class="data-fields">
-            <div v-if="filteredState.undefined">
-              <data-field v-for="field in filteredState.undefined" :key="field.key" :field="field" :depth="0"></data-field>
-            </div>
-            <span v-else class="no-fields">No data</span>
-          </div>
-        </div>
-        <div class="data-el">
-          <div class="data-type">computed</div>
-          <div class="data-fields">
-            <div v-if="filteredState.computed">
-              <data-field v-for="field in filteredState.computed" :key="field.key" :field="field" :depth="0"></data-field>
-            </div>
-            <span v-else class="no-fields">No computed data</span>
-          </div>
-        </div>
-        <div class="data-el">
-          <div class="data-type">props</div>
-          <div class="data-fields">
-            <div v-if="filteredState.prop">
-              <data-field v-for="field in filteredState.prop" :key="field.key" :field="field" :depth="0"></data-field>
-            </div>
-            <span v-else class="no-fields">No props</span>
+            <data-field
+              v-for="field in filteredState[type]"
+              :key="field.key"
+              :field="field"
+              :depth="0">
+            </data-field>
           </div>
         </div>
       </div>
@@ -75,7 +62,14 @@ export default {
   },
   data () {
     return {
-      filter: ''
+      filter: '',
+      stateGroups: [
+        'undefined', // data
+        'props',
+        'computed',
+        'vuex',
+        'firebase'
+      ]
     }
   },
   computed: {
@@ -123,20 +117,18 @@ export default {
 
 .data
   padding: 20px 0px
-  
+
 .data-wrapper
-  display: flex;
-  flex-wrap: wrap;
+  display flex
+  flex-wrap wrap
 
 .data-el
-  padding: 0px 10px
-  flex: 1 0 33.33%;
+  padding 0px 10px
+  flex 1 0 33.33%
+  font-size 14px
 
-  .data-type 
-    color: #3ba776
-    padding-left: 20px
-
-  .no-fields
-    font-size: 14px
-    color: #ddd
+  .data-type
+    color #486887
+    padding-left 20px
+    margin-bottom -10px
 </style>

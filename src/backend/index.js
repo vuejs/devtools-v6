@@ -509,7 +509,7 @@ function processFirebaseBindings (instance) {
   if (refs) {
     return Object.keys(refs).map(key => {
       return {
-        type: 'firebase binding',
+        type: 'firebase',
         key,
         value: instance[key]
       }
