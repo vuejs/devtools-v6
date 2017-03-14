@@ -1,4 +1,4 @@
-import { stringify } from '../util'
+import { stringify } from 'src/util'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store

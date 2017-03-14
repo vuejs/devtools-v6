@@ -1,4 +1,4 @@
-import { parse } from '../../../util'
+import { parse } from 'src/util'
 
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
