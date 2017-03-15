@@ -41,13 +41,16 @@ export default {
     },
 
     onKeyNav (dir) {
-      // somewhat hacky key navigation, but it works!
-      const currentEl = this.$el.querySelector('.instance.selected')
-      let current = currentEl && currentEl.__vue__
-      if (!current) {
-        current = this.$children[0]
-        current.select()
+      const all = getAllInstances(this.$refs.instances)
+      if (!all.length) {
+        return
       }
+
+      const { current, currentIndex } = findCurrent(all, i => i.selected)
+      if (!current) {
+        return
+      }
+
       if (dir === 'left') {
         if (current.expanded) {
           current.collapse()
@@ -56,29 +59,14 @@ export default {
         }
       } else if (dir === 'right') {
         if (current.expanded && current.$children.length) {
-          current = this.findByOffset(current, 1)
-          current.select()
+          findByIndex(all, currentIndex + 1).select()
         } else {
           current.expand()
         }
       } else if (dir === 'up') {
-        current = this.findByOffset(current, -1)
-        current.select()
+        findByIndex(all, currentIndex - 1).select()
       } else {
-        current = this.findByOffset(current, 1)
-        current.select()
-      }
-    },
-
-    findByOffset (current, offset) {
-      const all = getAllInstances(this.$refs.instances)
-      const index = all.indexOf(current) + offset
-      if (index < 0) {
-        return all[0]
-      } else if (index >= all.length) {
-        return all[all.length - 1]
-      } else {
-        return all[index]
+        findByIndex(all, currentIndex + 1).select()
       }
     }
   }
@@ -88,6 +76,31 @@ function getAllInstances (list) {
   return Array.prototype.concat.apply([], list.map(instance => {
     return [instance, ...getAllInstances(instance.$children)]
   }))
+}
+
+function findCurrent (all, check) {
+  for (let i = 0; i < all.length; i++) {
+    if (check(all[i])) {
+      return {
+        current: all[i],
+        currentIndex: i
+      }
+    }
+  }
+  return {
+    current: null,
+    currentIndex: -1
+  }
+}
+
+function findByIndex (all, index) {
+  if (index < 0) {
+    return all[0]
+  } else if (index >= all.length) {
+    return all[all.length - 1]
+  } else {
+    return all[index]
+  }
 }
 </script>
 
