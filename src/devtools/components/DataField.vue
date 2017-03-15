@@ -9,15 +9,13 @@
         v-show="isExpandableType">
       </span>
       <span class="key">{{ field.key }}</span>
-      <span class="colon">:</span>
-      <span class="value" :class="valueType">{{ formattedValue }}</span>
-
-      <div class="meta" v-if="field.meta">
+      <span class="colon">:<div class="meta" v-if="field.meta">
         <div class="meta-field" v-for="(val, key) in field.meta">
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>
-      </div>
+      </div></span>
+      <span class="value" :class="valueType">{{ formattedValue }}</span>
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
@@ -156,6 +154,7 @@ export default {
     color #881391
   .colon
     margin-right .5em
+    position relative
   .value
     color #444
     &.string
@@ -193,8 +192,8 @@ export default {
     font-size 11px
     color #444
     top 0
-    right calc(100% + 10px)
-    width 170px
+    left calc(100% + 5px)
+    width 150px
     border 1px solid #e3e3e3
     border-radius 3px
     padding 8px 12px
@@ -202,7 +201,7 @@ export default {
     line-height 16px
     box-shadow 0 2px 12px rgba(0,0,0,.1)
     .key
-      width 90px
+      width 65px
   .meta-field
     display block
   &:hover

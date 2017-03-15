@@ -359,9 +359,9 @@ function processProps (instance) {
         key: prop.path,
         value: instance[prop.path],
         meta: {
-          'type': options.type ? getPropType(options.type) : 'any',
+          type: options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
-          'binding mode': propModes[prop.mode]
+          mode: propModes[prop.mode]
         }
       }
     })
