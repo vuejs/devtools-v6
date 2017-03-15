@@ -1,6 +1,6 @@
 <template>
   <div class="data-wrapper">
-    <div v-for="type in getKeys(state)" :class="['data-el', toDisplayType(type)]">
+    <div v-for="type in getKeys(state)" :class="['data-el', toDisplayType(type, true)]">
       <div class="data-type">{{ toDisplayType(type) }}</div>
       <div class="data-fields">
         <template v-if="Array.isArray(state[type])">
@@ -49,10 +49,12 @@ export default {
         )
       })
     },
-    toDisplayType (type) {
+    toDisplayType (type, asClass) {
       return type === 'undefined'
         ? 'data'
-        : type
+        : asClass
+          ? type.replace(/\s/g, '-')
+          : type
     }
   }
 }
