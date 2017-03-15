@@ -11,6 +11,17 @@ Vue.config.errorHandler = (e, vm) => {
   })
 }
 
+Vue.options.renderError = (h, e) => {
+  return h('pre', {
+    style: {
+      backgroundColor: 'red',
+      color: 'white',
+      fontSize: '12px',
+      padding: '10px'
+    }
+  }, e.stack)
+}
+
 let app = null
 
 /**

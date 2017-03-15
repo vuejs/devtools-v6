@@ -15,15 +15,17 @@
         <input placeholder="Filter data" v-model.trim="filter">
       </div>
     </action-header>
-    <section v-show="!hasTarget" slot="scroll" class="notice">
-      <div>Select a component instance to inspect.</div>
-    </section>
-    <section v-show="hasTarget" slot="scroll" class="data">
-      <div class="notice" v-if="target.state && !target.state.length">
+    <template slot="scroll">
+      <section v-if="!hasTarget" class="notice">
+        <div>Select a component instance to inspect.</div>
+      </section>
+      <div v-else-if="!target.state || !target.state.length" class="notice">
         <div>This instance has no reactive state.</div>
       </div>
-      <state-inspector v-else :state="filteredState" />
-    </section>
+      <section v-else class="data">
+        <state-inspector :state="filteredState" />
+      </section>
+    </template>
   </scroll-pane>
 </template>
 
