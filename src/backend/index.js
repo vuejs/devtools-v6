@@ -121,7 +121,11 @@ function scan () {
       }
 
       // respect Vue.config.devtools option
-      if (instance.$options._base.config.devtools) {
+      let baseVue = instance.constructor
+      while (baseVue.super) {
+        baseVue = baseVue.super
+      }
+      if (baseVue.config && baseVue.config.devtools) {
         rootInstances.push(instance)
       }
 
