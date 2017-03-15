@@ -6,7 +6,7 @@
         <span>{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
+      <a v-if="isChrome" class="button inspect" @click="inspectDOM" title="Inspect DOM">
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>
@@ -34,8 +34,6 @@ import StateInspector from 'components/StateInspector.vue'
 import { searchDeepInObject } from 'src/util'
 import groupBy from 'lodash.groupBy'
 
-const isChrome = typeof chrome !== 'undefined' && chrome.devtools
-
 export default {
   components: {
     ScrollPane,
@@ -47,7 +45,8 @@ export default {
   },
   data () {
     return {
-      filter: ''
+      filter: '',
+      isChrome: typeof chrome !== 'undefined' && chrome.devtools
     }
   },
   computed: {
@@ -65,7 +64,7 @@ export default {
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      if (isChrome) {
+      if (this.isChrome) {
         chrome.devtools.inspectedWindow.eval(
           `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${this.target.id}).$el)`
         )
