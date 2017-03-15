@@ -1,7 +1,7 @@
 <template>
   <div class="data-wrapper">
-    <div v-for="type in Object.keys(state)" :class="['data-el', toDisplayType(type)]">
-      <div class="data-type">{{ toDisplayType(type, true) }}</div>
+    <div v-for="type in getKeys(state)" :class="['data-el', toDisplayType(type)]">
+      <div class="data-type">{{ toDisplayType(type) }}</div>
       <div class="data-fields">
         <template v-if="Array.isArray(state[type])">
           <data-field
@@ -27,20 +27,32 @@
 <script>
 import DataField from './DataField.vue'
 
+const keyOrder = {
+  undefined: 1,
+  props: 2,
+  computed: 3,
+  state: 1,
+  getters: 2
+}
+
 export default {
   props: ['state'],
   components: {
     DataField
   },
   methods: {
-    toDisplayType (type, full) {
+    getKeys (state) {
+      return Object.keys(state).sort((a, b) => {
+        return (
+          (keyOrder[a] || (a.charCodeAt(0) + 999)) -
+          (keyOrder[b] || (b.charCodeAt(0) + 999))
+        )
+      })
+    },
+    toDisplayType (type) {
       return type === 'undefined'
         ? 'data'
-        : full
-          ? (type === 'vuex' || type === 'firebase')
-            ? type + ' bindings'
-            : type
-          : type
+        : type
     }
   }
 }

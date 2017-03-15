@@ -351,7 +351,7 @@ function processProps (instance) {
       const prop = props[key]
       const options = prop.options
       return {
-        type: 'prop',
+        type: 'props',
         key: prop.path,
         value: instance[prop.path],
         meta: {
@@ -367,7 +367,7 @@ function processProps (instance) {
       const prop = props[key]
       key = camelize(key)
       return {
-        type: 'prop',
+        type: 'props',
         key,
         value: instance[key],
         meta: {
@@ -439,7 +439,7 @@ function processComputed (instance) {
   for (const key in defs) {
     const def = defs[key]
     const type = typeof def === 'function' && def.vuex
-      ? 'vuex'
+      ? 'vuex bindings'
       : 'computed'
     // use try ... catch here because some computed properties may
     // throw error during its evaluation
@@ -503,7 +503,7 @@ function processVuexGetters (instance) {
   if (getters) {
     return Object.keys(getters).map(key => {
       return {
-        type: 'vuex getter',
+        type: 'vuex getters',
         key,
         value: instance[key]
       }
@@ -525,7 +525,7 @@ function processFirebaseBindings (instance) {
   if (refs) {
     return Object.keys(refs).map(key => {
       return {
-        type: 'firebase',
+        type: 'firebase bindings',
         key,
         value: instance[key]
       }
@@ -547,7 +547,7 @@ function processObservables (instance) {
   if (obs) {
     return Object.keys(obs).map(key => {
       return {
-        type: 'observable',
+        type: 'observables',
         key,
         value: instance[key]
       }
