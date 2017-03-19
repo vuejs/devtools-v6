@@ -43,6 +43,7 @@ export default {
           f: true,
           g: 12345,
           h: 'I am a really long string mostly just to see how the horizontal scrolling works.',
+          i: new RegExp('12345', 'ig'),
         }
       }
     }

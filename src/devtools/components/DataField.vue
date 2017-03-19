@@ -37,7 +37,8 @@
 <script>
 import { UNDEFINED, INFINITY, isPlainObject } from 'src/util'
 
-const rawTypeRE = /^\[object (.+)\]$/
+const rawTypeRE = /^\[object (\w+)]$/
+const regExpRE = /^(\/.*?\/\w*)/
 
 export default {
   name: 'DataField',
@@ -83,14 +84,16 @@ export default {
       } else if (isPlainObject(value)) {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (typeof value === 'string') {
+        var regexMatch = value.match(regExpRE)
         var typeMatch = value.match(rawTypeRE)
+        if (regexMatch) {
+          return regexMatch[1]
+        }
         if (typeMatch) {
           return typeMatch[1]
         } else {
           return JSON.stringify(value)
         }
-      } else if (value instanceof RegExp) {
-        return value.toString()
       } else {
         return value
       }
