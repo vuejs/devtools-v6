@@ -60,9 +60,7 @@ function connect () {
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
-    console.log(id)
     const instance = instanceMap.get(id)
-    console.log(instance)
     if (instance) {
       scrollIntoView(instance)
       highlight(instance)
