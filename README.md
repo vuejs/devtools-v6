@@ -18,7 +18,7 @@ Currently only a Chrome devtools extension is available.
 
 [Get it on the Chrome Web Store](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd).  
 
-[Workaround for Firefox](https://github.com/vuejs/vue-devtools/tree/master/docs#wordaround-for-firefox.md)  
+[Workaround for Firefox](https://github.com/neeravp/vue-devtools/tree/master/docs#wordaround-for-firefox.md)  
 
 ### Manual Installation
 
