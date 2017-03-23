@@ -1,7 +1,7 @@
 #### Workaround to get **vue-devtools** in Firefox.  
 
 1. Install FireFox Developer Edition (should work with Firefox and aurora channel as well).  
-2. Install **Chrome Store Foxified** extension.  
+2. Install [**Chrome Store Foxified**](https://addons.mozilla.org/es/firefox/addon/chrome-store-foxified/) extension.  
 3. Create an account at [AMO](https://addons.mozilla.org/en-US/firefox/).
 4. If not already, signin with the credentials from Step 3.  
 5. Navigate to [Chrome Web Store](https://chrome.google.com/webstore/search/vue-devtools) and search for vue-devtools.
