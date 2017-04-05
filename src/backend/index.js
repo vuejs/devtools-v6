@@ -367,10 +367,11 @@ function processProps (instance) {
     })
   } else if ((props = instance.$options.props)) {
     // 2.0
-    return Object.keys(props).map(key => {
+    const propsData = []
+    for (let key in props) {
       const prop = props[key]
       key = camelize(key)
-      return {
+      propsData.push({
         type: 'props',
         key,
         value: instance[key],
@@ -378,8 +379,9 @@ function processProps (instance) {
           type: prop.type ? getPropType(prop.type) : 'any',
           required: !!prop.required
         }
-      }
-    })
+      })
+    }
+    return propsData
   } else {
     return []
   }
