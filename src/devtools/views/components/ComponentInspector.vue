@@ -34,7 +34,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
 import { searchDeepInObject } from 'src/util'
-import groupBy from 'lodash.groupBy'
+import groupBy from 'lodash.groupby'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
