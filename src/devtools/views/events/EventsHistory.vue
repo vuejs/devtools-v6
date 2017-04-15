@@ -83,13 +83,13 @@ export default {
 @import "../../common"
 
 .no-events
-  color: #ccc
-  text-align: center
-  margin-top: 50px
-  line-height: 30px
+  color #ccc
+  text-align center
+  margin-top 50px
+  line-height 30px
 
 .entry
-  position: relative;
+  position relative;
   font-family Menlo, Consolas, monospace
   color #881391
   cursor pointer
