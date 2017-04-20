@@ -34,6 +34,7 @@
     "css-loader": "^0.26.1",
     "eslint": "^3.9.1",
     "eslint-config-vue": "^2.0.0",
+    "eslint-plugin-html": "^1.7.0",
     "eslint-plugin-vue": "^1.0.0",
     "file-loader": "^0.9.0",
     "friendly-errors-webpack-plugin": "^1.1.2",
