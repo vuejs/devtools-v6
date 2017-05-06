@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p><router-link to="/route-one">Go to Route One</router-link></p>
+    <p><router-link to="/">Go to Route One</router-link></p>
     <p><router-link to="/route-two">Go to Route Two</router-link></p>
     <p><router-link to="/route-with-params/markussorg/5">Go to route with params</router-link></p>
     <p><router-link to="/named-route">Go to named route</router-link></p>

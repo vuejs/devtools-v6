@@ -9,10 +9,14 @@
         <i class="material-icons small">do_not_disturb</i>
         <span>Clear</span>
       </a>
+      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+        <i class="material-icons small" :class="{ enabled }">lens</i>
+        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
+      </a>
     </action-header>
     <div slot="scroll" class="">
       <div v-if="filteredRoutes.length === 0" class="no-entries">
-        No route transitions found
+        No route transitions found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
       <div class="entry"
         v-else
@@ -20,12 +24,11 @@
         :class="{ active: inspectedIndex === filteredRoutes.indexOf(route) }"
         @click="inspect(filteredRoutes.indexOf(route))">
         <div class="urls">
-          <span><b>From:</b> {{ route.from.path }}</span></br></br>
-          <span><b>To:</b> {{ route.to.path }}</span>
+          <span>{{ route.to.path }}</span>
         </div>
         <div>
-          <span class="redirect" v-if="route.to.redirectedFrom">redirect</span>
           <span class="time">{{ route.timestamp | formatTime }}</span>
+          <span class="label redirect" v-if="route.to.redirectedFrom">redirect</span>
         </div>
       </div>
     </div>
@@ -35,6 +38,7 @@
 <script>
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+
 import { mapState, mapMutations, mapGetters } from 'vuex'
 
 export default {
@@ -43,13 +47,6 @@ export default {
     ActionHeader
   },
   computed: {
-    ...mapState('router', [
-      'routeChanges',
-      'inspectedIndex'
-    ]),
-    ...mapGetters('router', [
-      'filteredRoutes'
-    ]),
     filter: {
       get () {
         return this.$store.state.router.filter
@@ -57,12 +54,23 @@ export default {
       set (filter) {
         this.$store.commit('router/UPDATE_FILTER', filter)
       }
-    }
+    },
+    ...mapState('router', [
+      'enabled',
+      'routeChanges',
+      'inspectedIndex'
+    ]),
+    ...mapGetters('router', [
+      'filteredRoutes'
+    ])
   },
-  methods: mapMutations('router', {
-    inspect: 'INSPECT',
-    reset: 'RESET'
-  })
+  methods: {
+    ...mapMutations('router', {
+      inspect: 'INSPECT',
+      reset: 'RESET',
+      toggleRecording: 'TOGGLE'
+    })
+  }
 }
 </script>
 
@@ -76,14 +84,14 @@ export default {
 .urls
   margin-right: auto
 
-.redirect
-  color: #fff
-  background-color: #af90d5
-  padding: 3px 6px
-  font-size: 10px
-  line-height: 10px
-  height: 16px
-  border-radius: 3px
-  margin-right: 17px
-  position: relative
+
+.label
+  float right
+  font-size 10px
+  padding 4px 8px
+  border-radius 6px
+  margin-right 8px
+  &.redirect
+    color: #fff
+    background-color: #af90d5
 </style>

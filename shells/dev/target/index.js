@@ -25,8 +25,18 @@ const DynamicComponent = {
 }
 
 const routes = [
-  { path: '/route-one', component: RouteOne },
-  { path: '/route-two', component: RouteTwo },
+  {
+    name: 'route one',
+    path: '/',
+    component: RouteOne,
+    children: [
+      {
+        name: 'route two',
+        path: '/route-two',
+        component: RouteTwo
+      }
+    ]
+  },
   { path: '/route-with-params/:username/:id', component: RouteWithParams },
   { path: '/route-named', component: NamedRoute, name: 'NamedRoute' },
   { path: '/route-with-query', component: RouteWithQuery },

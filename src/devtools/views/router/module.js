@@ -1,4 +1,10 @@
+import storage from '../../storage'
+
+const ENABLED_KEY = 'EVENTS_ENABLED'
+const enabled = storage.get(ENABLED_KEY)
+
 const state = {
+  enabled: enabled == null ? true : enabled,
   hasRouter: false,
   instances: [],
   routeChanges: [],
@@ -29,6 +35,10 @@ const mutations = {
   },
   'UPDATE_FILTER' (state, filter) {
     state.filter = filter
+  },
+  'TOGGLE' (state) {
+    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
+    bridge.send('router:toggle-recording', state.enabled)
   }
 }
 
@@ -44,9 +54,11 @@ const getters = {
   routes: state => {
     const routes = []
     state.instances.forEach(instance => {
-      instance.routes.forEach(route => {
-        routes.push(route)
-      })
+      if (instance.routes) {
+        instance.routes.forEach(route => {
+          routes.push(route)
+        })
+      }
     })
     return routes
   }
