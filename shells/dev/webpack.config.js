@@ -50,7 +50,7 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#source-map',
+  devtool: '#cheap-module-eval-source-map',
   devServer: {
     quiet: true
   },

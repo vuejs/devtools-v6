@@ -27,16 +27,16 @@ module.exports = {
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
       .assert.containsText('.component-name', 'Counter')
-      .assert.containsText('.data-el.computed .data-field', 'count:0')
-      .assert.containsText('.data-el.computed .data-field:nth-child(2)', 'test:1')
-      .assert.containsText('.data-el.firebase .data-field', 'hello:undefined')
+      .assert.containsText('.data-el.vuex-bindings .data-field', 'count:0')
+      .assert.containsText('.data-el.computed .data-field', 'test:1')
+      .assert.containsText('.data-el.firebase-bindings .data-field', 'hello:undefined')
 
       // prop types
       .click('.instance .instance:nth-child(2) .self')
       .assert.containsText('.component-name', 'Target')
-      .assert.containsText('.data-el.prop .data-field:nth-child(1)', 'ins:Object')
-      .assert.containsText('.data-el.prop .data-field:nth-child(2)', 'msg:"hi"')
-      .assert.containsText('.data-el.prop .data-field:nth-child(3)', 'obj:undefined')
+      .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
+      .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
+      .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
