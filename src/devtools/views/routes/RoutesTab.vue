@@ -1,12 +1,12 @@
 <template>
   <div>
     <split-pane v-if="hasRouter">
-      <router-history slot="left"></router-history>
-      <router-meta slot="right"></router-meta>
+      <routes-tree slot="left"></routes-tree>
+      <routes-meta slot="right"></routes-meta>
     </split-pane>
     <div v-else class="notice">
       <div>
-        No router detected.
+        No routes detected.
       </div>
     </div>
   </div>
@@ -14,18 +14,18 @@
 
 <script>
 import SplitPane from 'components/SplitPane.vue'
-import RouterHistory from './RouterHistory.vue'
-import RouterMeta from './RouterMeta.vue'
+import RoutesTree from './RoutesTree.vue'
+import RoutesMeta from './RoutesMeta.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState('router', {
+  computed: mapState('routes', {
     hasRouter: state => state.hasRouter
   }),
   components: {
     SplitPane,
-    RouterHistory,
-    RouterMeta
+    RoutesMeta,
+    RoutesTree
   }
 }
 </script>

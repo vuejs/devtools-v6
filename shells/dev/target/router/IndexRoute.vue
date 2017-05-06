@@ -14,10 +14,20 @@
     <p><router-link to="/route-parent">Go to route parent</router-link></p>
     <p><router-link to="/route-child">Go to route child</router-link></p>
     <router-view></router-view>
+    <p><button @click="addRoutes">Add new routes</button></p>
    </div>
 </template>
 
 <script>
+import RouteOne from './RouteOne.vue'
+
 export default {
+  methods: {
+    addRoutes () {
+      this.$router.addRoutes([
+        { path: '/new-route', component: RouteOne }
+      ])
+    } 
+  }
 }
 </script>

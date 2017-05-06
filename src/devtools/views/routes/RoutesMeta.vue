@@ -15,6 +15,7 @@
 import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import { mapGetters } from 'vuex'
+import { UNDEFINED } from 'src/util'
 
 export default {
   components: {
@@ -22,7 +23,7 @@ export default {
     ScrollPane
   },
   computed: {
-    ...mapGetters('router', [
+    ...mapGetters('routes', [
       'activeRouteChange'
     ]),
     to () {
@@ -45,7 +46,7 @@ export default {
       if (!this.isEmptyObject(routeData.query)) {
         data.query = routeData.query
       }
-      if (routeData.name && routeData.name !== '__vue_devtool_undefined__') {
+      if (routeData.name && routeData.name !== UNDEFINED) {
         data.name = routeData.name
       }
       if (routeData.hash && routeData.hash !== '') {

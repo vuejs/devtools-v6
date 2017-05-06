@@ -18,7 +18,7 @@ module.exports = {
     detector: './src/detector.js'
   },
   output: {
-    path: __dirname + '/build',
+    path: path.join(__dirname, '/build'),
     filename: '[name].js',
   },
   resolve: {

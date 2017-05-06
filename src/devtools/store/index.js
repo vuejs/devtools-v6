@@ -4,6 +4,7 @@ import components from 'views/components/module'
 import vuex from 'views/vuex/module'
 import events from 'views/events/module'
 import router from 'views/router/module'
+import routes from 'views/routes/module'
 
 Vue.use(Vuex)
 
@@ -27,7 +28,8 @@ const store = new Vuex.Store({
     components,
     vuex,
     events,
-    router
+    router,
+    routes
   }
 })
 
@@ -38,7 +40,8 @@ if (module.hot) {
     'views/components/module',
     'views/vuex/module',
     'views/events/module',
-    'views/router/module'
+    'views/router/module',
+    'views/routes/module'
   ], () => {
     try {
       store.hotUpdate({
@@ -46,7 +49,8 @@ if (module.hot) {
           components: require('views/components/module').default,
           vuex: require('views/vuex/module').default,
           events: require('views/events/module').default,
-          router: require('views/router/module').default
+          router: require('views/router/module').default,
+          routes: require('views/routes/module').default
         }
       })
     } catch (e) {

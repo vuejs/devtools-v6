@@ -22,6 +22,10 @@ export function initRouterBackend (Vue, bridge, rootInstances) {
         routes: rootInstances[i]._router.options.routes,
         mode: rootInstances[i]._router.mode
       }))
+      bridge.send('routes:init', stringify({
+        routes: rootInstances[i]._router.options.routes,
+        mode: rootInstances[i]._router.mode
+      }))
     }
   }
 }

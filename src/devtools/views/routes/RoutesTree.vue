@@ -29,7 +29,7 @@ export default {
     RoutesTreeItem
   },
   computed: {
-    ...mapGetters('router', [
+    ...mapGetters('routes', [
       'routes'
     ])
   }

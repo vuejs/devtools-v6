@@ -102,6 +102,14 @@ function initApp (shell) {
       store.commit('router/CHANGED', parse(payload))
     })
 
+    bridge.on('routes:init', payload => {
+      store.commit('routes/INIT', parse(payload))
+    })
+
+    bridge.on('routes:changed', payload => {
+      store.commit('routes/CHANGED', parse(payload))
+    })
+
     // register filters
     Vue.filter('formatTime', function (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
