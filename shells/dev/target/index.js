@@ -15,28 +15,20 @@ import RouteWithQuery from './router/RouteWithQuery.vue'
 import RouteWithBeforeEnter from './router/RouteWithBeforeEnter.vue'
 import RouteWithAlias from './router/RouteWithAlias.vue'
 import RouteWithProps from './router/RouteWithProps.vue'
+import ParentRoute from './router/ParentRoute.vue'
+import ChildRoute from './router/ChildRoute.vue'
 
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const DynamicComponent = { 
-  template: '<div>Hello from dynamic component</div>' 
+const DynamicComponent = {
+  template: '<div>Hello from dynamic component</div>'
 }
 
 const routes = [
-  {
-    name: 'route one',
-    path: '/',
-    component: RouteOne,
-    children: [
-      {
-        name: 'route two',
-        path: '/route-two',
-        component: RouteTwo
-      }
-    ]
-  },
+  { path: '/route-one', component: RouteOne },
+  { path: '/route-two', component: RouteTwo },
   { path: '/route-with-params/:username/:id', component: RouteWithParams },
   { path: '/route-named', component: NamedRoute, name: 'NamedRoute' },
   { path: '/route-with-query', component: RouteWithQuery },
@@ -50,19 +42,24 @@ const routes = [
     username: 'My Username',
     id: 99
   }},
-  { path: '/route-with-props-default', component: RouteWithProps }
+  { path: '/route-with-props-default', component: RouteWithProps },
+  { path: '/route-parent', component: ParentRoute,
+    children: [
+      { path: '/route-child', component: ChildRoute }
+    ]
+  }
 ]
 
 const router = new VueRouter({
   routes
 })
 
-let items = []
+const items = []
 for (var i = 0; i < 100; i++) {
   items.push({ id: i })
 }
 
-let circular = {}
+const circular = {}
 circular.self = circular
 
 new Vue({
@@ -71,7 +68,7 @@ new Vue({
   render (h) {
     return h('div', null, [
       h(Counter),
-      h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
+      h(Target, {props: {msg: 'hi', ins: new MyClass()}}),
       h(Other),
       h(Events),
       h(IndexRoute)
