@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "3.0.8",
+  "version": "3.1.2",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -51,6 +51,7 @@
   "dependencies": {
     "circular-json-es6": "^2.0.0",
     "lodash.debounce": "^4.0.6",
+    "lodash.groupby": "^4.6.0",
     "vue": "^2.0.0",
     "vuex": "^2.0.0"
   }

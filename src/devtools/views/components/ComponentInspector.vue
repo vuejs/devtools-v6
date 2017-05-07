@@ -10,51 +10,58 @@
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>
-    </action-header>
-    <section v-show="!hasTarget" slot="scroll" class="notice">
-      <div>Select a component instance to inspect.</div>
-    </section>
-    <section v-show="hasTarget" slot="scroll">
-      <div class="data-fields">
-        <data-field v-for="field in sortedState"
-          :key="field.key"
-          :field="field"
-          :depth="0">
-        </data-field>
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input placeholder="Filter data" v-model.trim="filter">
       </div>
-      <div class="notice" v-show="target.state && !target.state.length">
+    </action-header>
+    <template slot="scroll">
+      <section v-if="!hasTarget" class="notice">
+        <div>Select a component instance to inspect.</div>
+      </section>
+      <div v-else-if="!target.state || !target.state.length" class="notice">
         <div>This instance has no reactive state.</div>
       </div>
-    </section>
+      <section v-else class="data">
+        <state-inspector :state="filteredState" />
+      </section>
+    </template>
   </scroll-pane>
 </template>
 
 <script>
-import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+import StateInspector from 'components/StateInspector.vue'
+import { searchDeepInObject } from 'src/util'
+import groupBy from 'lodash.groupby'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 export default {
   components: {
-    DataField,
     ScrollPane,
-    ActionHeader
+    ActionHeader,
+    StateInspector
   },
   props: {
     target: Object
+  },
+  data () {
+    return {
+      filter: ''
+    }
   },
   computed: {
     hasTarget () {
       return this.target.id != null
     },
-    sortedState () {
-      return this.target.state && this.target.state.slice().sort((a, b) => {
-        if (a.key < b.key) return -1
-        if (a.key > b.key) return 1
-        return 0
-      })
+    filteredState () {
+      return groupBy(sort(this.target.state.filter(el => {
+        return searchDeepInObject({
+          [el.key]: el.value
+        }, this.filter)
+      })), 'type')
     }
   },
   methods: {
@@ -69,6 +76,14 @@ export default {
       }
     }
   }
+}
+
+function sort (state) {
+  return state && state.slice().sort((a, b) => {
+    if (a.key < b.key) return -1
+    if (a.key > b.key) return 1
+    return 0
+  })
 }
 </script>
 

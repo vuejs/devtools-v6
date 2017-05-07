@@ -121,7 +121,11 @@ function scan () {
       }
 
       // respect Vue.config.devtools option
-      if (instance.$options._base.config.devtools) {
+      let baseVue = instance.constructor
+      while (baseVue.super) {
+        baseVue = baseVue.super
+      }
+      if (baseVue.config && baseVue.config.devtools) {
         rootInstances.push(instance)
       }
 
@@ -351,31 +355,33 @@ function processProps (instance) {
       const prop = props[key]
       const options = prop.options
       return {
-        type: 'prop',
+        type: 'props',
         key: prop.path,
         value: instance[prop.path],
         meta: {
-          'type': options.type ? getPropType(options.type) : 'any',
+          type: options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
-          'binding mode': propModes[prop.mode]
+          mode: propModes[prop.mode]
         }
       }
     })
   } else if ((props = instance.$options.props)) {
     // 2.0
-    return Object.keys(props).map(key => {
+    const propsData = []
+    for (let key in props) {
       const prop = props[key]
       key = camelize(key)
-      return {
-        type: 'prop',
+      propsData.push({
+        type: 'props',
         key,
         value: instance[key],
         meta: {
           type: prop.type ? getPropType(prop.type) : 'any',
           required: !!prop.required
         }
-      }
-    })
+      })
+    }
+    return propsData
   } else {
     return []
   }
@@ -387,10 +393,11 @@ function processProps (instance) {
  * @param {Function} fn
  */
 
-const fnTypeRE = /^function (\w+)\(/
+const fnTypeRE = /^(?:function|class) (\w+)/
 function getPropType (type) {
+  const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
-    ? type.toString().match(fnTypeRE)[1]
+    ? match && match[1] || 'any'
     : 'any'
 }
 
@@ -429,23 +436,38 @@ function processState (instance) {
  */
 
 function processComputed (instance) {
-  return Object.keys(instance.$options.computed || {}).map(key => {
+  const computed = []
+  const defs = instance.$options.computed || {}
+  // use for...in here because if 'computed' is not defined
+  // on component, computed properties will be placed in prototype
+  // and Object.keys does not include
+  // properties from object's prototype
+  for (const key in defs) {
+    const def = defs[key]
+    const type = typeof def === 'function' && def.vuex
+      ? 'vuex bindings'
+      : 'computed'
     // use try ... catch here because some computed properties may
     // throw error during its evaluation
+    let computedProp = null
     try {
-      return {
-        type: 'computed',
+      computedProp = {
+        type,
         key,
         value: instance[key]
       }
     } catch (e) {
-      return {
-        type: 'computed',
+      computedProp = {
+        type,
         key,
         value: '(error during evaluation)'
       }
     }
-  })
+
+    computed.push(computedProp)
+  }
+
+  return computed
 }
 
 /**
@@ -487,7 +509,7 @@ function processVuexGetters (instance) {
   if (getters) {
     return Object.keys(getters).map(key => {
       return {
-        type: 'vuex getter',
+        type: 'vuex getters',
         key,
         value: instance[key]
       }
@@ -509,7 +531,7 @@ function processFirebaseBindings (instance) {
   if (refs) {
     return Object.keys(refs).map(key => {
       return {
-        type: 'firebase binding',
+        type: 'firebase bindings',
         key,
         value: instance[key]
       }
@@ -531,7 +553,7 @@ function processObservables (instance) {
   if (obs) {
     return Object.keys(obs).map(key => {
       return {
-        type: 'observable',
+        type: 'observables',
         key,
         value: instance[key]
       }

@@ -28,22 +28,15 @@
       </transition>
     </action-header>
     <div slot="scroll" class="vuex-state-inspector">
-      <div class="data-fields">
-        <data-field
-          v-for="(value, key) of inspectedState"
-          :key="key"
-          :field="{ key, value }"
-          :depth="0">
-        </data-field>
-      </div>
+      <state-inspector :state="inspectedState" />
     </div>
   </scroll-pane>
 </template>
 
 <script>
-import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+import StateInspector from 'components/StateInspector.vue'
 
 import { stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
@@ -51,9 +44,9 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    DataField,
     ScrollPane,
-    ActionHeader
+    ActionHeader,
+    StateInspector
   },
   data () {
     return {
@@ -98,8 +91,9 @@ export default {
         this.showBadJSONMessage = false
       } else {
         try {
-          parse(importedStr) // Try to parse
-          this.$store.dispatch('vuex/importState', importedStr)
+          // Try to parse here so we can provide invalid feedback
+          const parsedState = parse(importedStr, true)
+          bridge.send('vuex:import-state', parsedState)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true

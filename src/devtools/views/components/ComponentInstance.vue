@@ -66,7 +66,9 @@ export default {
     },
     sortedChildren () {
       return this.instance.children.slice().sort((a, b) => {
-        return a.top - b.top
+        return a.top === b.top
+          ? a.id - b.id
+          : a.top - b.top
       })
     }
   },
@@ -132,6 +134,10 @@ export default {
       color #fff
   .app.dark &
     background-color $dark-background-color
+    &:hover
+      background-color #444
+    &.selected
+      background-color $active-color
 
 .children
   position relative

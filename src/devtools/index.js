@@ -11,6 +11,17 @@ Vue.config.errorHandler = (e, vm) => {
   })
 }
 
+Vue.options.renderError = (h, e) => {
+  return h('pre', {
+    style: {
+      backgroundColor: 'red',
+      color: 'white',
+      fontSize: '12px',
+      padding: '10px'
+    }
+  }, e.stack)
+}
+
 let app = null
 
 /**
@@ -68,8 +79,8 @@ function initApp (shell) {
       store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
-    bridge.on('vuex:init', state => {
-      store.commit('vuex/INIT', state)
+    bridge.on('vuex:init', snapshot => {
+      store.commit('vuex/INIT', snapshot)
     })
 
     bridge.on('vuex:mutation', payload => {

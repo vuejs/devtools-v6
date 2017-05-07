@@ -4,6 +4,7 @@
     <p>Component for testing vuex and firebase ref (see <b>Vuex Tab</b> in Dev-Tools).</p>
     <div class="actions">
       <p>Counter: <b>{{ count }}</b></p>
+      <p>Your counter is {{ $store.getters.isPositive ? 'positive' : 'negative' }}</p>
       <button class="increment" @click="increment">Increment</button>
       <button class="decrement" @click="decrement">Decrement</button>
     </div>

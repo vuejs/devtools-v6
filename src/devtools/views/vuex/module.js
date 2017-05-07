@@ -11,10 +11,10 @@ const state = {
   enabled: enabled == null ? true : enabled,
   hasVuex: false,
   initial: null,
-  base: null,
+  base: null, // type Snapshot = { state: {}, getters: {} }
   inspectedIndex: -1,
   activeIndex: -1,
-  history: [],
+  history: [/* { mutation, timestamp, snapshot } */],
   initialCommit: Date.now(),
   lastCommit: Date.now(),
   filter: '',
@@ -23,8 +23,8 @@ const state = {
 }
 
 const mutations = {
-  'INIT' (state, initialState) {
-    state.initial = state.base = initialState
+  'INIT' (state, snapshot) {
+    state.initial = state.base = snapshot
     state.hasVuex = true
     reset(state)
   },
@@ -35,7 +35,7 @@ const mutations = {
     }
   },
   'COMMIT_ALL' (state) {
-    state.base = state.history[state.history.length - 1].state
+    state.base = state.history[state.history.length - 1].snapshot
     state.lastCommit = Date.now()
     reset(state)
   },
@@ -43,7 +43,7 @@ const mutations = {
     reset(state)
   },
   'COMMIT' (state, index) {
-    state.base = state.history[index].state
+    state.base = state.history[index].snapshot
     state.lastCommit = Date.now()
     state.history = state.history.slice(index + 1)
     state.inspectedIndex = -1
@@ -94,13 +94,18 @@ const getters = {
   inspectedState ({ base, history, inspectedIndex }) {
     const entry = history[inspectedIndex]
     const res = {}
+
     if (entry) {
-      res.type = entry.mutation.type
-      if (entry.mutation.payload) {
-        res.payload = parse(entry.mutation.payload)
+      res.mutation = {
+        type: entry.mutation.type,
+        payload: entry.mutation.payload ? parse(entry.mutation.payload) : undefined
       }
     }
-    res.state = parse(entry ? entry.state : base)
+
+    const snapshot = parse(entry ? entry.snapshot : base)
+    res.state = snapshot.state
+    res.getters = snapshot.getters
+
     return res
   },
 

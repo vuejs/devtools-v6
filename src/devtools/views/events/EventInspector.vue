@@ -1,11 +1,7 @@
 <template>
   <scroll-pane>
-    <div v-if="activeEvent" slot="scroll" class="data-fields">
-      <data-field v-for="(value, key) of sortedEventData"
-        :key="key"
-        :field="{ key, value }"
-        :depth="0">
-      </data-field>
+    <div v-if="activeEvent" slot="scroll">
+      <state-inspector :state="{ 'event info': sortedEventData }" />
     </div>
     <div v-else slot="scroll" class="no-event-data">
       No event selected
@@ -14,17 +10,17 @@
 </template>
 
 <script>
-import DataField from 'components/DataField.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
+import StateInspector from 'components/StateInspector.vue'
 
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    DataField,
     ScrollPane,
-    ActionHeader
+    ActionHeader,
+    StateInspector
   },
   computed: {
     ...mapGetters('events', [
