@@ -6,32 +6,38 @@ const enabled = storage.get(ENABLED_KEY)
 const state = {
   enabled: enabled == null ? true : enabled,
   hasRouter: false,
-  instances: [],
   routeChanges: [],
   inspectedIndex: -1,
   filter: ''
 }
 
 const mutations = {
-  'INIT' (state, payload) {
-    state.instances = []
+  INIT (state, payload) {
     state.inspectedIndex = -1
     state.hasRouter = true
-    state.instances.push(payload)
+    state.routeChanges = payload.routeChanges
   },
-  'CHANGED' (state, payload) {
+  CHANGED (state, payload) {
     state.routeChanges.push(payload)
   },
-  'INSPECT' (state, index) {
+  INSPECT (state, index) {
     state.inspectedIndex = index
   },
-  'UPDATE_FILTER' (state, filter) {
+  UPDATE_FILTER (state, filter) {
     state.filter = filter
   }
 }
 
 const getters = {
   activeRouteChange: state => {
+    if (typeof state.inspectedIndex === 'string') {
+      const path = state.inspectedIndex.split('_')
+      let obj = state.routeChanges[parseInt(path[0])]
+      for (var i = 1, len = path.length; i < len; ++i) {
+        obj = obj.children[parseInt(path[i])]
+      }
+      return obj
+    }
     return state.routeChanges[state.inspectedIndex]
   },
   filteredRoutes: state => {

@@ -1,9 +1,7 @@
 <template>
   <scroll-pane>
-    <div v-if="activeRouteChange" slot="scroll" class="data-wrapper">
-        <div class="data-fields">
-            <data-field v-for="(value, key) of to" :key="key" :field="{ key, value }" :depth="0"></data-field>
-        </div>
+    <div v-if="activeRouteChange" slot="scroll">
+      <state-inspector :state="{ options }" />
     </div>
     <div v-else slot="scroll" class="no-route-data">
       No route selected
@@ -12,21 +10,23 @@
 </template>
 
 <script>
-import DataField from 'components/DataField.vue'
+import StateInspector from 'components/StateInspector.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import { mapGetters } from 'vuex'
 import { UNDEFINED } from 'src/util'
 
 export default {
   components: {
-    DataField,
-    ScrollPane
+    ScrollPane,
+    ActionHeader,
+    StateInspector
   },
   computed: {
     ...mapGetters('routes', [
       'activeRouteChange'
     ]),
-    to () {
+    options () {
       return this.sanitizeRouteData(this.activeRouteChange)
     }
   },
@@ -50,16 +50,16 @@ export default {
       }
       if (routeData.component) {
         const component = {}
-        if (routeData.component.__file) {
-          component.file = routeData.component.__file
-        }
+        // if (routeData.component.__file) {
+        //   component.file = routeData.component.__file
+        // }
         if (routeData.component.template) {
           component.template = routeData.component.template
         }
         if (routeData.component.props) {
           component.props = routeData.component.props
         }
-        if (component !== {}) {
+        if (!this.isEmptyObject(component)) {
           data.component = component
         }
       }

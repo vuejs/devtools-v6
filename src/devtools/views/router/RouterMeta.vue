@@ -1,9 +1,7 @@
 <template>
   <scroll-pane>
-    <div v-if="activeRouteChange" slot="scroll" class="data-wrapper">
-        <div class="data-fields">
-            <data-field v-for="(value, key) of to" :key="key" :field="{ key, value }" :depth="0"></data-field>
-        </div>
+    <div v-if="activeRouteChange" slot="scroll">
+      <state-inspector :state="{ from, to }" />
     </div>
     <div v-else slot="scroll" class="no-route-data">
       No route transition selected
@@ -12,23 +10,27 @@
 </template>
 
 <script>
-import DataField from 'components/DataField.vue'
+import StateInspector from 'components/StateInspector.vue'
+import ActionHeader from 'components/ActionHeader.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import { mapGetters } from 'vuex'
 import { UNDEFINED } from 'src/util'
 
 export default {
   components: {
-    DataField,
-    ScrollPane
+    ScrollPane,
+    ActionHeader,
+    StateInspector
   },
   computed: {
     ...mapGetters('router', [
       'activeRouteChange'
     ]),
     to () {
-      // return this.activeRouteChange.to
       return this.sanitizeRouteData(this.activeRouteChange.to)
+    },
+    from () {
+      return this.sanitizeRouteData(this.activeRouteChange.from)
     }
   },
   methods: {
