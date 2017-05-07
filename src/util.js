@@ -43,7 +43,9 @@ export function stringify (data) {
 }
 
 function replacer (key, val) {
-  if (val === undefined) {
+  if (val instanceof RegExp) {
+    return '[object ' + val.toString() + ']'
+  } else if (val === undefined) {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
