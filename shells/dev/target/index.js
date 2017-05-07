@@ -6,5 +6,10 @@ new Vue({
   store,
   components: {
     App
+  },
+  data: {
+    obj: {
+
+    }
   }
 }).$mount('#app-container')

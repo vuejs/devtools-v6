@@ -5,7 +5,7 @@
     <hero></hero>
     <circular></circular>
     <vuex></vuex>
-    <loop msg="hi"></loop>
+    <loop msg="hi" :ins="{}"></loop>
     <events></events>
     <two-way></two-way>
     <shadow-dom></shadow-dom>

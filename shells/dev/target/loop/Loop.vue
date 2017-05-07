@@ -6,7 +6,7 @@
       <button class="add" @click="add">Add</button>
       <button class="remove" @click="rm">Remove</button>
       <div class="added-container">
-        <added v-for="item in items"></added>
+        <added v-for="item in items" :key="item"></added>
       </div>
     </div>
   </div>
@@ -17,6 +17,7 @@ import Added from './Added.vue'
 export default {
   components: { Added },
   props: {
+    ins: Object,
     msg: String,
     obj: null
   },
