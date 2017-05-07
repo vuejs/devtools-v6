@@ -6,7 +6,7 @@
         </div>
     </div>
     <div v-else slot="scroll" class="no-route-data">
-      No route transition selected
+      No route selected
     </div>
   </scroll-pane>
 </template>
@@ -27,54 +27,52 @@ export default {
       'activeRouteChange'
     ]),
     to () {
-      // return this.activeRouteChange.to
-      return this.sanitizeRouteData(this.activeRouteChange.to)
+      return this.sanitizeRouteData(this.activeRouteChange)
     }
   },
   methods: {
     sanitizeRouteData (routeData) {
+      console.log(routeData)
       const data = {
-        path: routeData.path,
-        fullPath: routeData.fullPath
+        path: routeData.path
       }
-      if (routeData.redirectedFrom) {
-        data.redirectedFrom = routeData.redirectedFrom
+      if (routeData.redirect) {
+        data.redirect = routeData.redirect
       }
-      if (!this.isEmptyObject(routeData.params)) {
-        data.params = routeData.params
+      if (routeData.alias) {
+        data.alias = routeData.alias
       }
-      if (!this.isEmptyObject(routeData.query)) {
-        data.query = routeData.query
+      if (!this.isEmptyObject(routeData.props)) {
+        data.props = routeData.props
       }
       if (routeData.name && routeData.name !== UNDEFINED) {
         data.name = routeData.name
       }
-      if (routeData.hash && routeData.hash !== '') {
-        data.hash = routeData.hash
+      if (routeData.component) {
+        const component = {}
+        if (routeData.component.__file) {
+          component.file = routeData.component.__file
+        }
+        if (routeData.component.template) {
+          component.template = routeData.component.template
+        }
+        if (routeData.component.props) {
+          component.props = routeData.component.props
+        }
+        if (component !== {}) {
+          data.component = component
+        }
       }
-      if (routeData.meta && !this.isEmptyObject(routeData.meta)) {
-        data.meta = routeData.meta
-      }
-      if (routeData.matched && routeData.matched.length > 0) {
-        data.matched = this.sanitizeMatched(routeData.matched)
+      if (routeData.children) {
+        data.children = []
+        routeData.children.forEach((item) => {
+          data.children.push(this.sanitizeRouteData(item))
+        })
       }
       return data
     },
     isEmptyObject (obj) {
-      return Object.keys(obj).length === 0
-    },
-    sanitizeMatched (matched) {
-      const result = []
-      for (let i = 0; i < matched.length; i++) {
-        const obj = {
-          path: matched[i].path
-        }
-        if (matched[i].props && !this.isEmptyObject(matched[i].props)) {
-          obj.props = matched[i].props
-        }
-        result.push(obj)
-      }
-      return result
+      return obj === UNDEFINED || !obj || Object.keys(obj).length === 0
     }
   }
 }

@@ -37,7 +37,7 @@ const routes = [
   }},
   { path: '/route-with-redirect', redirect: '/route-one' },
   { path: '/route-with-alias', component: RouteWithAlias, alias: '/this-is-the-alias' },
-  { path: '/route-with-dynamic-component', component: DynamicComponent },
+  { path: '/route-with-dynamic-component', component: DynamicComponent, props: true },
   { path: '/route-with-props', component: RouteWithProps, props: {
     username: 'My Username',
     id: 99

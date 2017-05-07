@@ -19,13 +19,26 @@ export function initRouterBackend (Vue, bridge, rootInstances) {
         }
       })
       bridge.send('router:init', stringify({
-        routes: rootInstances[i]._router.options.routes,
         mode: rootInstances[i]._router.mode
       }))
+
       bridge.send('routes:init', stringify({
         routes: rootInstances[i]._router.options.routes,
         mode: rootInstances[i]._router.mode
       }))
+
+      rootInstances[i]._router.options.routes.forEach(instance => {
+        bridge.send('routes:changed', stringify(instance))
+        console.log(instance)
+      })
+
+      const addRoutes = rootInstances[i]._router.matcher.addRoutes
+      rootInstances[i]._router.matcher.addRoutes = function (routes) {
+        routes.forEach((item) => {
+          bridge.send('routes:changed', stringify(item))
+        })
+        addRoutes.call(this, routes)
+      }
     }
   }
 }

@@ -50,17 +50,6 @@ const getters = {
     return state.routeChanges.filter(routeChange => {
       return routeChange.from.fullPath.indexOf(state.filter) > -1 || routeChange.to.fullPath.indexOf(state.filter) > -1
     })
-  },
-  routes: state => {
-    const routes = []
-    state.instances.forEach(instance => {
-      if (instance.routes instanceof Array) {
-        instance.routes.forEach(route => {
-          routes.push(route)
-        })
-      }
-    })
-    return routes
   }
 }
 

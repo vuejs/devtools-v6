@@ -1,5 +1,5 @@
 <template>
-  <scroll-pane scroll-event="route:init">
+  <scroll-pane scroll-event="routes:init">
     <action-header slot="header">
       <div class="search">
         <i class="material-icons">search</i>
@@ -29,6 +29,7 @@
         <div>
           <span class="time">{{ route.timestamp | formatTime }}</span>
           <span class="label redirect" v-if="route.to.redirectedFrom">redirect</span>
+          <span class="label name" v-if="isNotEmpty(route.to.name)">{{route.to.name}}</span>
         </div>
       </div>
     </div>
@@ -36,6 +37,7 @@
 </template>
 
 <script>
+import { UNDEFINED } from 'src/util'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
@@ -69,7 +71,10 @@ export default {
       inspect: 'INSPECT',
       reset: 'RESET',
       toggleRecording: 'TOGGLE'
-    })
+    }),
+    isNotEmpty (value) {
+      return !!value && value !== UNDEFINED
+    }
   }
 }
 </script>
@@ -84,14 +89,17 @@ export default {
 .urls
   margin-right: auto
 
-
 .label
+  color #fff
   float right
   font-size 10px
   padding 4px 8px
   border-radius 6px
   margin-right 8px
+  &.name
+    background-color #aaa
+  &.alias
+    background-color #ff8344
   &.redirect
-    color: #fff
-    background-color: #af90d5
+    background-color #af90d5
 </style>

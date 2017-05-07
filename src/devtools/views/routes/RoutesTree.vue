@@ -1,14 +1,18 @@
 <template>
-  <scroll-pane scroll-event="route:init">
+  <scroll-pane scroll-event="routes:init">
     <action-header slot="header">
-      <h3 class="route-heading">All routes</h3>
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input placeholder="Filter routes" v-model.trim="filter">
+      </div>
     </action-header>
     <div slot="scroll" class="tree">
       <routes-tree-item
-        v-for="route in routes"
+        v-for="(route, key) in filteredRoutes"
         ref="instances"
-        :key="route"
+        :key="key"
         :route="route"
+        :routeId="key"
         :depth="0">
       </routes-tree-item>
     </div>
@@ -29,8 +33,16 @@ export default {
     RoutesTreeItem
   },
   computed: {
+    filter: {
+      get () {
+        return this.$store.state.routes.filter
+      },
+      set (filter) {
+        this.$store.commit('routes/UPDATE_FILTER', filter)
+      }
+    },
     ...mapGetters('routes', [
-      'routes'
+      'filteredRoutes'
     ])
   }
 }

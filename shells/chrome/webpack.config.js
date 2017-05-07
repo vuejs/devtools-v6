@@ -19,7 +19,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, '/build'),
-    filename: '[name].js',
+    filename: '[name].js'
   },
   resolve: {
     alias
@@ -28,7 +28,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader:  'buble-loader',
+        loader: 'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },

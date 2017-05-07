@@ -15,30 +15,18 @@ const state = {
 const mutations = {
   'INIT' (state, payload) {
     state.instances = []
-    state.routeChanges = []
     state.inspectedIndex = -1
     state.hasRouter = true
     state.instances.push(payload)
   },
-  'RESET' (state) {
-    state.routeChanges = []
-    state.inspectedIndex = -1
-  },
   'CHANGED' (state, payload) {
     state.routeChanges.push(payload)
-    if (!state.filter) {
-      state.inspectedIndex = state.routeChanges.length - 1
-    }
   },
   'INSPECT' (state, index) {
     state.inspectedIndex = index
   },
   'UPDATE_FILTER' (state, filter) {
     state.filter = filter
-  },
-  'TOGGLE' (state) {
-    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
-    bridge.send('routes:toggle-recording', state.enabled)
   }
 }
 
@@ -48,19 +36,8 @@ const getters = {
   },
   filteredRoutes: state => {
     return state.routeChanges.filter(routeChange => {
-      return routeChange.from.fullPath.indexOf(state.filter) > -1 || routeChange.to.fullPath.indexOf(state.filter) > -1
+      return routeChange.path.indexOf(state.filter) > -1
     })
-  },
-  routes: state => {
-    const routes = []
-    state.instances.forEach(instance => {
-      if (instance.routes instanceof Array) {
-        instance.routes.forEach(route => {
-          routes.push(route)
-        })
-      }
-    })
-    return routes
   }
 }
 

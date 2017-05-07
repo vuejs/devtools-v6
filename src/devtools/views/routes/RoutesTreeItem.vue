@@ -1,13 +1,19 @@
 <template>
-  <div class="instance">
-    <div class="self" :style="{ paddingLeft: depth * 15 + 'px' }">
+  <div class="instance"
+      :class="{ selected: selected }">
+    <div class="self"
+      @click.stop="inspect(routeId)"
+      :class="{ selected: selected }"
+      :style="{ paddingLeft: depth * 15 + 'px' }">
       <span class="content">
         <!-- arrow wrapper for better hit box -->
         <span class="arrow-wrapper" v-if="route.children && route.children.length">
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
-        <span class="instance-name">{{ route.path }}</span>
+        <span class="instance-name">
+          {{ route.path }}
+        </span>
       </span>
       <span class="info name" v-if="route.name">
         {{ route.name }}
@@ -21,9 +27,10 @@
     </div>
     <div v-if="expanded">
       <routes-tree-item
-        v-for="child in route.children"
+        v-for="(child, key) in route.children"
         :key="child"
         :route="child"
+        :routeId="routeId + '_' + key"
         :depth="depth + 1">
       </routes-tree-item>
     </div>
@@ -32,9 +39,12 @@
 </template>
 
 <script>
+import { mapState, mapMutations, mapGetters } from 'vuex'
+
 export default {
   name: 'RoutesTreeItem',
   props: {
+    routeId: String|Number,
     route: Object,
     depth: Number
   },
@@ -45,9 +55,20 @@ export default {
     }
   },
   computed: {
+    ...mapState('routes', [
+      'inspectedIndex'
+    ]),
     expanded () {
       return !!this.route.children && this.route.children.length
     },
+    selected () {
+      return this.inspectedIndex === this.routeId
+    }
+  },
+  methods: {
+    ...mapMutations('routes', {
+      inspect: 'INSPECT'
+    })
   }
 }
 </script>
@@ -70,6 +91,12 @@ export default {
   line-height 22px
   height 22px
   white-space nowrap
+  &.selected
+    background-color $active-color
+    .arrow
+      border-left-color #fff
+    .instance-name
+      color #fff
 
 .arrow
   position absolute
