@@ -43,12 +43,13 @@ export function stringify (data) {
 }
 
 function replacer (key, val) {
-  if (val instanceof RegExp) {
-    return '[object ' + val.toString() + ']'
-  } else if (val === undefined) {
+  if (val === undefined) {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
+  } else if (val instanceof RegExp) {
+    // special handling of native type
+    return `[object RegExp ${val.toString()}]`
   } else {
     return sanitize(val)
   }
@@ -80,9 +81,7 @@ function reviver (key, val) {
  */
 
 function sanitize (data) {
-  if (isRegExp(data)) {
-    return RegExp.prototype.toString.call(data)
-  } else if (
+  if (
     !isPrimitive(data) &&
     !Array.isArray(data) &&
     !isPlainObject(data)
@@ -109,10 +108,6 @@ function isPrimitive (data) {
     type === 'number' ||
     type === 'boolean'
   )
-}
-
-function isRegExp (data) {
-  return data instanceof RegExp
 }
 
 export function searchDeepInObject (obj, searchTerm) {

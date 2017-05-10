@@ -38,7 +38,7 @@
 import { UNDEFINED, INFINITY, isPlainObject } from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
-const regExpRE = /^(\/.*?\/\w*)/
+const specialTypeRE = /^\[object \w+ (.*)\]$/
 
 export default {
   name: 'DataField',
@@ -60,10 +60,9 @@ export default {
         return 'null'
       } else if (type === 'boolean' || type === 'number' || value === INFINITY) {
         return 'literal'
-      } else if (
-        value instanceof RegExp ||
-        (type === 'string' && !rawTypeRE.test(value))
-      ) {
+      } else if (specialTypeRE.test(value)) {
+        return 'native'
+      } else if (type === 'string' && !rawTypeRE.test(value)) {
         return 'string'
       }
     },
@@ -83,12 +82,10 @@ export default {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
+      } else if (this.valueType === 'native') {
+        return specialTypeRE.exec(value)[1]
       } else if (typeof value === 'string') {
-        var regexMatch = value.match(regExpRE)
         var typeMatch = value.match(rawTypeRE)
-        if (regexMatch) {
-          return regexMatch[1]
-        }
         if (typeMatch) {
           return typeMatch[1]
         } else {
@@ -160,7 +157,7 @@ export default {
     position relative
   .value
     color #444
-    &.string
+    &.string, &.native
       color #c41a16
     &.null
       color #999
@@ -217,7 +214,7 @@ export default {
       color: #e36eec
     .value
       color #bdc6cf
-      &.string
+      &.string, &.native
         color #e33e3a
       &.null
         color #999
