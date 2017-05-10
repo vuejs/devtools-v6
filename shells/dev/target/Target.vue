@@ -1,6 +1,10 @@
 <template>
   <div id="target">
     <h1>{{localMsg}}</h1>
+    <span>Regex: {{regex.toString()}}</span>
+    <input @keyup.enter="regex = new RegExp($event.target.value)"/>
+    <span>(Press enter to set)</span>
+    <br/>
     <button class="add" @click="add">Add</button>
     <button class="remove" @click="rm">Remove</button>
     <input v-model="localMsg">
@@ -18,10 +22,11 @@ export default {
     obj: null,
     ins: MyClass
   },
-  data() {
+  data () {
     return {
       localMsg: this.msg,
-      items: [1, 2]
+      items: [1, 2],
+      regex: /(a\w+b)/g
     }
   },
   computed: {

@@ -27,8 +27,7 @@ new Vue({
   data: {
     obj: {
       items: items,
-      circular,
-      regexp: /([a-z]+)/g
+      circular
     }
   }
 }).$mount('#app')

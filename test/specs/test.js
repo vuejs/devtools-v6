@@ -20,7 +20,6 @@ module.exports = {
       .assert.containsText('.component-name', 'Root')
       .assert.elementPresent('.data-field')
       .assert.containsText('.data-field', 'obj:Object')
-      .assert.containsText('.data-field', 'regexp:/([a-z]+)/g')
 
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
@@ -38,6 +37,8 @@ module.exports = {
       .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
+      // Regexp
+      .assert.containsText('.data-el.data .data-field:nth-child(3)', 'regex:/(a\\w+b)/g')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
