@@ -6,14 +6,14 @@
         <span>{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
-        <i class="material-icons">visibility</i>
-        <span>Inspect DOM</span>
-      </a>
       <div class="search">
         <i class="material-icons">search</i>
         <input placeholder="Filter data" v-model.trim="filter">
       </div>
+      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
+        <i class="material-icons">visibility</i>
+        <span>Inspect DOM</span>
+      </a>
     </action-header>
     <template slot="scroll">
       <section v-if="!hasTarget" class="notice">

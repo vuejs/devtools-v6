@@ -22,6 +22,7 @@
 
 .component-name
   display flex
+  flex 1
   align-items center
   font-size 18px
   color $component-color
