@@ -319,6 +319,9 @@ function getInstanceDetails (id) {
 
 /**
  * Get the appropriate display name for an instance.
+ * Looks if the instance provides an individual `instanceName`
+ * and adds it to the component's name.
+ * e.g. to render this: <Person: Christian Gambardella>
  *
  * @param {Vue} instance
  * @return {String}
@@ -327,7 +330,12 @@ function getInstanceDetails (id) {
 export function getInstanceName (instance) {
   const name = instance.$options.name || instance.$options._componentTag
   if (name) {
-    return classify(name)
+    let instanceName
+    if (instance.instanceName !== undefined) {
+      // convert to String in the odd case that the returned value is 0.
+      instanceName = `${instance.instanceName}`
+    }
+    return instanceName ? `${classify(name)}: ${instanceName}` : classify(name)
   }
   const file = instance.$options.__file // injected by vue-loader
   if (file) {

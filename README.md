@@ -31,6 +31,23 @@ Currently only a Chrome devtools extension is available.
 5. Check "developer mode"
 6. Click "load unpacked extension", and choose `shells/chrome`.
 
+### Optional Usage
+
+Implement a computed value `instanceName` in your components to make the component tree be more verbose.
+
+The following example could have the component be rendered as
+`<Person: Evan You>` instead of `<Person>`.
+
+```
+export default {
+  name: 'Person',
+  props: ['name']
+  computed: {
+    instanceName () { return this.name }
+  }
+}
+```
+
 ### Hacking
 
 1. Clone this repo

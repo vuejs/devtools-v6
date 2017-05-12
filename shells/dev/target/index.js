@@ -4,6 +4,7 @@ import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
 import Events from './Events.vue'
+import People from './People.vue'
 import MyClass from './MyClass.js'
 
 let items = []
@@ -21,6 +22,7 @@ new Vue({
       h(Counter),
       h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
       h(Other),
+      h(People),
       h(Events)
     ])
   },

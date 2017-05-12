@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 6
+    var baseInstanceCount = 7
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
@@ -30,6 +30,17 @@ module.exports = {
       .assert.containsText('.data-el.vuex-bindings .data-field', 'count:0')
       .assert.containsText('.data-el.computed .data-field', 'test:1')
       .assert.containsText('.data-el.firebase-bindings .data-field', 'hello:undefined')
+
+      // instance names
+      .click('.instance .instance:nth-child(4) .arrow-wrapper')
+      .click('.instance .instance:nth-child(4) .self')
+      .assert.containsText('.component-name', 'People: Open Me')
+      .click('.instance .instance:nth-child(4) .instance:nth-child(1) .self')
+      .assert.containsText('.component-name', 'Person: Evan You')
+      .click('.instance .instance:nth-child(4) .instance:nth-child(2) .self')
+      .assert.containsText('.component-name', 'Person: Gambo')
+      // close again
+      .click('.instance .instance:nth-child(4) .arrow-wrapper')
 
       // prop types
       .click('.instance .instance:nth-child(2) .self')
