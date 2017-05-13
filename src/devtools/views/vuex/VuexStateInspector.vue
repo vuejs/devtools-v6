@@ -146,6 +146,13 @@ function copyToClipboard (state) {
     background-color $dark-background-color
     box-shadow 4px 4px 6px 0 $dark-border-color
     border 1px solid $dark-border-color
+  &:after
+    content 'Press ESC to close'
+    position absolute
+    bottom 0
+    padding 5px
+    color inherit
+    opacity .5
 
   textarea
     width 100%

@@ -1,19 +1,19 @@
 <template>
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
-      <span class="component-name">
+      <span class="title">
         <span style="color:#ccc">&lt;</span>
         <span>{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
-      <div class="search">
-        <i class="material-icons">search</i>
-        <input placeholder="Filter data" v-model.trim="filter">
-      </div>
       <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input placeholder="Filter inspected data" v-model.trim="filter">
+      </div>
     </action-header>
     <template slot="scroll">
       <section v-if="!hasTarget" class="notice">
@@ -99,4 +99,5 @@ function sort (state) {
 
 .component-name
   margin 0 10px
+
 </style>
