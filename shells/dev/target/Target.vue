@@ -26,7 +26,9 @@ export default {
     return {
       localMsg: this.msg,
       items: [1, 2],
-      regex: /(a\w+b)/g
+      regex: /(a\w+b)/g,
+      nan: NaN,
+      infinity: Infinity
     }
   },
   computed: {

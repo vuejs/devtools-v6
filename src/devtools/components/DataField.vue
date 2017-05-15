@@ -35,7 +35,12 @@
 </template>
 
 <script>
-import { UNDEFINED, INFINITY, isPlainObject } from 'src/util'
+import {
+  UNDEFINED,
+  INFINITY,
+  NAN,
+  isPlainObject
+} from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[object \w+ (.*)\]$/
@@ -58,7 +63,12 @@ export default {
       const type = typeof value
       if (value == null || value === UNDEFINED) {
         return 'null'
-      } else if (type === 'boolean' || type === 'number' || value === INFINITY) {
+      } else if (
+        type === 'boolean' ||
+        type === 'number' ||
+        value === INFINITY ||
+        value === NAN
+      ) {
         return 'literal'
       } else if (specialTypeRE.test(value)) {
         return 'native'
@@ -76,6 +86,8 @@ export default {
         return 'null'
       } else if (value === UNDEFINED) {
         return 'undefined'
+      } else if (value === NAN) {
+        return 'NaN'
       } else if (value === INFINITY) {
         return 'Infinity'
       } else if (Array.isArray(value)) {

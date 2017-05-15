@@ -37,6 +37,7 @@ export function inDoc (node) {
 
 export const UNDEFINED = '__vue_devtool_undefined__'
 export const INFINITY = '__vue_devtool_infinity__'
+export const NAN = '__vue_devtool_nan__'
 
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
@@ -47,6 +48,8 @@ function replacer (key, val) {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
+  } else if (Number.isNaN(val)) {
+    return NAN
   } else if (val instanceof RegExp) {
     // special handling of native type
     return `[object RegExp ${val.toString()}]`
@@ -66,6 +69,8 @@ function reviver (key, val) {
     return undefined
   } else if (val === INFINITY) {
     return Infinity
+  } else if (val === NAN) {
+    return NaN
   } else {
     return val
   }

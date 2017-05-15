@@ -38,7 +38,10 @@ module.exports = {
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
       // Regexp
-      .assert.containsText('.data-el.data .data-field:nth-child(3)', 'regex:/(a\\w+b)/g')
+      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'regex:/(a\\w+b)/g')
+      // Literals
+      .assert.containsText('.data-el.data .data-field:nth-child(4)', 'NaN')
+      .assert.containsText('.data-el.data .data-field:nth-child(1)', 'Infinity')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
