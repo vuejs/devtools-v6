@@ -45,27 +45,5 @@ export default {
 
 <style lang="stylus" scoped>
 @import "../common"
-
-.split-pane
-  display flex
-  height 100%
-  &.dragging
-    cursor ew-resize
-
-.left, .right
-  position relative
-
-.left
-  border-right 1px solid $border-color
-  .app.dark &
-    border-right 1px solid $dark-border-color
-
-.dragger
-  position absolute
-  z-index 99
-  top 0
-  bottom 0
-  right -5px
-  width 10px
-  cursor ew-resize
+@import "./splitPanes"
 </style>

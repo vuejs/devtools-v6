@@ -1,0 +1,36 @@
+<template>
+  <div>
+    <triple-pane v-if="hasRouter">
+      <routes-list slot="left"></routes-list>
+      <routes-history slot="middle"></routes-history>
+      <route-meta slot="right"></route-meta>
+    </triple-pane>
+    <div v-else class="notice">
+      <div>
+        No router detected.
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import SplitPane from 'components/SplitPane.vue'
+import TriplePane from 'components/TriplePane.vue'
+import RoutesHistory from './RoutesHistory.vue'
+import RoutesList from './RoutesList.vue'
+import RouteMeta from './RouteMeta.vue'
+import { mapState } from 'vuex'
+
+export default {
+  computed: mapState('router', {
+    hasRouter: state => state.hasRouter
+  }),
+  components: {
+    SplitPane,
+    TriplePane,
+    RoutesHistory,
+    RouteMeta,
+    RoutesList
+  }
+}
+</script>

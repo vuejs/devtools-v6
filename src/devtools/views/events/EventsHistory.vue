@@ -15,7 +15,7 @@
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div v-if="filteredEvents.length === 0" class="no-events">
+      <div v-if="filteredEvents.length === 0" class="no-entries">
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
       <div class="entry"
@@ -23,9 +23,9 @@
         v-for="event in filteredEvents"
         :class="{ active: inspectedIndex === events.indexOf(event) }"
         @click="inspect(events.indexOf(event))">
-        <span class="event-name">{{ event.eventName }}</span>
-        <span class="event-type">{{ event.type }}</span>
-        <span class="event-source">
+        <span class="entry-name">{{ event.eventName }}</span>
+        <span class="entry-type">{{ event.type }}</span>
+        <span class="entry-source">
           by
           <span>&lt;</span>
           <span class="component-name">{{ event.instanceName }}</span>
@@ -70,57 +70,10 @@ export default {
     inspect: 'INSPECT',
     reset: 'RESET',
     toggleRecording: 'TOGGLE'
-  }),
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  }
+  })
 }
 </script>
 
 <style lang="stylus" scoped>
 @import "../../common"
-
-.no-events
-  color: #ccc
-  text-align: center
-  margin-top: 50px
-  line-height: 30px
-
-.entry
-  position: relative;
-  font-family Menlo, Consolas, monospace
-  color #881391
-  cursor pointer
-  padding 10px 20px
-  font-size 12px
-  background-color $background-color
-  box-shadow 0 1px 5px rgba(0,0,0,.12)
-  .event-name
-    font-weight 600
-  .event-source
-    color #999
-  .component-name
-    color $component-color
-  .event-type
-    color #999
-    margin-left 8px
-  &.active
-    color #fff
-    background-color $active-color
-    .time, .event-type, .component-name
-      color lighten($active-color, 75%)
-    .event-name
-      color: #fff
-    .event-source
-      color #ddd
-  .app.dark &
-    background-color $dark-background-color
-
-.time
-  font-size 11px
-  color #999
-  float right
-  margin-top 3px
 </style>
