@@ -52,7 +52,7 @@ function replacer (key, val) {
     return NAN
   } else if (val instanceof RegExp) {
     // special handling of native type
-    return `[object RegExp ${val.toString()}]`
+    return `[native RegExp ${val.toString()}]`
   } else {
     return sanitize(val)
   }

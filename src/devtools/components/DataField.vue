@@ -43,7 +43,7 @@ import {
 } from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
-const specialTypeRE = /^\[object \w+ (.*)\]$/
+const specialTypeRE = /^\[native \w+ (.*)\]$/
 
 export default {
   name: 'DataField',
