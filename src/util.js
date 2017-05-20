@@ -78,7 +78,9 @@ function reviver (key, val) {
  */
 
 function sanitize (data) {
-  if (
+  if (isRegExp(data)) {
+    return RegExp.prototype.toString.call(data)
+  } else if (
     !isPrimitive(data) &&
     !Array.isArray(data) &&
     !isPlainObject(data)
@@ -103,9 +105,12 @@ function isPrimitive (data) {
   return (
     type === 'string' ||
     type === 'number' ||
-    type === 'boolean' ||
-    data instanceof RegExp
+    type === 'boolean'
   )
+}
+
+function isRegExp (data) {
+  return data instanceof RegExp
 }
 
 export function searchDeepInObject (obj, searchTerm) {
