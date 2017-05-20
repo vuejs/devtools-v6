@@ -20,6 +20,7 @@ module.exports = {
       .assert.containsText('.component-name', 'Root')
       .assert.elementPresent('.data-field')
       .assert.containsText('.data-field', 'obj:Object')
+      .assert.containsText('.data-field', 'regexp:/([a-z]+)/g')
 
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
