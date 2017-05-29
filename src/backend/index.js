@@ -28,6 +28,7 @@ let bridge
 let filter = ''
 let captureCount = 0
 let isLegacy = false
+let rootUID = 0
 
 export function initBackend (_bridge) {
   bridge = _bridge
@@ -128,7 +129,9 @@ function scan () {
       if (baseVue.config && baseVue.config.devtools) {
         // give a unique id to root instance so we can
         // 'namespace' its children
-        instance.__VUE_DEVTOOLS_ROOT_UID__ = rootInstances.length
+        if (typeof instance.__VUE_DEVTOOLS_ROOT_UID__ === 'undefined') {
+          instance.__VUE_DEVTOOLS_ROOT_UID__ = ++rootUID
+        }
         rootInstances.push(instance)
       }
 
