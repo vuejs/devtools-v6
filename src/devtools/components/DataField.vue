@@ -45,6 +45,16 @@ import {
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native \w+ (.*)\]$/
 
+function subFieldCount (value) {
+  if (Array.isArray(value)) {
+    return value.length
+  } else if (typeof value === 'object') {
+    return Object.keys(value).length
+  } else {
+    return 0
+  }
+}
+
 export default {
   name: 'DataField',
   props: {
@@ -54,7 +64,7 @@ export default {
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0 && this.field.key !== '$route'
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
   },
   computed: {
