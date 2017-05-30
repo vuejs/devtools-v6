@@ -48,7 +48,7 @@ const specialTypeRE = /^\[native \w+ (.*)\]$/
 function subFieldCount (value) {
   if (Array.isArray(value)) {
     return value.length
-  } else if (typeof value === 'object') {
+  } else if (value && typeof value === 'object') {
     return Object.keys(value).length
   } else {
     return 0
