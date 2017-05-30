@@ -34,7 +34,7 @@
     <a class="button refresh"
       @click="refresh"
       title="Force Refresh">
-      <i class="material-icons">cached</i>
+      <i class="material-icons" ref="refresh">refresh</i>
       <span class="pane-name">Refresh</span>
     </a>
     <span class="active-bar"></span>
@@ -78,7 +78,13 @@ export default {
       }
     },
     refresh () {
+      let refreshIcon = this.$refs.refresh
+      refreshIcon.style.animation = 'none'
+
       bridge.send('refresh')
+      bridge.once('flush', () => {
+        refreshIcon.style.animation = 'rotate 1s'
+      })
     },
     updateActiveBar () {
       const activeButton = this.$el.querySelector('.button.active')
