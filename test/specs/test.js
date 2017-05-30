@@ -17,7 +17,7 @@ module.exports = {
       .click('.instance .self')
       .assert.cssClassPresent('.instance', 'selected')
       .assert.visible('.tree')
-      .assert.containsText('.component-name', 'Root')
+      .assert.containsText('.action-header .title', 'Root')
       .assert.elementPresent('.data-field')
       .assert.containsText('.data-field', 'obj:Object')
 
@@ -26,14 +26,14 @@ module.exports = {
 
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
-      .assert.containsText('.component-name', 'Counter')
+      .assert.containsText('.action-header .title', 'Counter')
       .assert.containsText('.data-el.vuex-bindings .data-field', 'count:0')
       .assert.containsText('.data-el.computed .data-field', 'test:1')
       .assert.containsText('.data-el.firebase-bindings .data-field', 'hello:undefined')
 
       // prop types
       .click('.instance .instance:nth-child(2) .self')
-      .assert.containsText('.component-name', 'Target')
+      .assert.containsText('.action-header .title', 'Target')
       .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')

@@ -86,18 +86,3 @@ function sort (state) {
   })
 }
 </script>
-
-<style lang="stylus" scoped>
-.no-state
-  color #ccc
-  text-align center
-  font-size 14px
-
-.non-selected
-  color #ccc
-  text-align center
-
-.component-name
-  margin 0 10px
-
-</style>

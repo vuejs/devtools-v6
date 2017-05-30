@@ -14,16 +14,14 @@
         <i class="material-icons">content_paste</i>
         <span>Import</span>
       </a>
-      <transition name="slide-up">
+      <transition name="slide-down">
         <div class="import-state" v-if="showImportStatePopup">
           <textarea placeholder="Paste state object here to import it..."
             @input="importState"
             @keydown.esc="closeImportStatePopup"></textarea>
-          <transition name="slide-up">
-            <span class="message invalid-json" v-show="showBadJSONMessage">
-              INVALID JSON!
-            </span>
-          </transition>
+          <span class="message invalid-json" v-show="showBadJSONMessage">
+            INVALID JSON!
+          </span>
         </div>
       </transition>
     </action-header>
@@ -114,7 +112,7 @@ function copyToClipboard (state) {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
+@import "../../variables"
 
 .message
   margin-left 5px
@@ -132,12 +130,13 @@ function copyToClipboard (state) {
     background-color $dark-background-color
 
 .import-state
-  transition all .3s ease
+  transition all .2s ease
+  width 300px
   position absolute
   z-index 1
   left 220px
   right 10px
-  top 5px
+  top 45px
   box-shadow 4px 4px 6px 0 $border-color
   border 1px solid $border-color
   padding 3px

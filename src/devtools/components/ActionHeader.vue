@@ -5,7 +5,7 @@
 </template>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../variables"
 
 .action-header
   display flex

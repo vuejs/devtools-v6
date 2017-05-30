@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../variables"
 
 .split-pane
   display flex

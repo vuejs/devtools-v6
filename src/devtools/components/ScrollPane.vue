@@ -38,7 +38,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../variables"
 
 .scroll-pane
   display flex

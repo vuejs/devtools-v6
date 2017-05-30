@@ -103,7 +103,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
+@import "../../variables"
 
 .instance
   font-family Menlo, Consolas, monospace
