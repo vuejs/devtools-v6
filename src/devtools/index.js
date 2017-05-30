@@ -3,12 +3,17 @@ import App from './App.vue'
 import store from './store'
 import { parse } from '../util'
 
-Vue.config.errorHandler = (e, vm) => {
-  bridge.send('ERROR', {
-    message: e.message,
-    stack: e.stack,
-    component: vm.$options.name || vm.$options._componentTag || 'anonymous'
-  })
+// Capture and log devtool errors when running as actual extension
+// so that we can debug it by inspecting the background page.
+// We do want the errors to be thrown in the dev shell though.
+if (typeof chrome !== 'undefined' && chrome.devtools) {
+  Vue.config.errorHandler = (e, vm) => {
+    bridge.send('ERROR', {
+      message: e.message,
+      stack: e.stack,
+      component: vm.$options.name || vm.$options._componentTag || 'anonymous'
+    })
+  }
 }
 
 Vue.options.renderError = (h, e) => {
