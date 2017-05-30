@@ -181,8 +181,12 @@ $inspected_color = #af90d5
       display inline-block
   .app.dark &
     background-color $dark-background-color
+    .mutation-type
+      color #e36eec
     &.active
       background-color $active-color
+      .mutation-type
+        color #fff
 
 .action
   color #999

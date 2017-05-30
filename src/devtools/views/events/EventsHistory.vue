@@ -116,6 +116,7 @@ export default {
     .event-source
       color #ddd
   .app.dark &
+    color #e36eec
     background-color $dark-background-color
 
 .time
