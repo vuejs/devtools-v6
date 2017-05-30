@@ -32,7 +32,7 @@
   "permissions": [
     "http://*/*",
     "https://*/*",
-    "file://*"
+    "file:///*"
   ],
 
   "content_scripts": [
