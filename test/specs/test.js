@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 6
+    var baseInstanceCount = 9
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
@@ -10,8 +10,11 @@ module.exports = {
       .assert.elementPresent('.instance')
       .assert.containsText('.instance', 'Root')
 
+      .assert.containsText('.tree > .instance > div > .instance:last-child', 'App')
+      .click('.tree > .instance > div > .instance:last-child > .self .arrow-wrapper')
+
       // should detect instances inside shadow DOM
-      .assert.containsText('.tree > .instance:last-child', 'Shadow')
+      .assert.containsText('.tree > .instance > div > .instance > div > .instance:last-child', 'Shadow')
 
       // select instance
       .click('.instance .self')
@@ -25,21 +28,21 @@ module.exports = {
       .assert.count('.instance', baseInstanceCount)
 
       // select child instance
-      .click('.instance .instance:nth-child(1) .self')
-      .assert.containsText('.component-name', 'Counter')
+      .click('.instance .instance .instance:nth-child(3) .self')
+      .assert.containsText('.component-name', 'Vuex')
       .assert.containsText('.data-el.vuex-bindings .data-field', 'count:0')
       .assert.containsText('.data-el.computed .data-field', 'test:1')
       .assert.containsText('.data-el.firebase-bindings .data-field', 'hello:undefined')
 
       // prop types
-      .click('.instance .instance:nth-child(2) .self')
-      .assert.containsText('.component-name', 'Target')
+      .click('.instance .instance:nth-child(4) .self')
+      .assert.containsText('.component-name', 'Loop')
       .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
 
       // expand child instance
-      .click('.instance .instance:nth-child(2) .arrow-wrapper')
+      .click('.instance .instance:nth-child(4) .arrow-wrapper')
       .assert.count('.instance', baseInstanceCount + 2)
 
       // add/remove component from app side
@@ -53,10 +56,10 @@ module.exports = {
       .assert.count('.instance', baseInstanceCount + 4)
 
       // filter components
-      .setValue('.search input', 'counter')
+      .setValue('.search input', 'vuex')
       .assert.count('.instance', 1)
       .clearValue('.search input')
-      .setValue('.search input', 'target')
+      .setValue('.search input', 'loop')
       .assert.count('.instance', 5)
 
       // vuex
@@ -64,7 +67,7 @@ module.exports = {
         .click('.increment')
         .click('.increment')
         .click('.decrement')
-        .assert.containsText('#counter p', '1')
+        .assert.containsText('.vuex.box .actions p:first-child', '1')
         .frame(null)
       .click('.button.vuex')
       .assert.count('.history .entry', 4)
@@ -97,14 +100,14 @@ module.exports = {
       .assert.containsText('.vuex-state-inspector', 'type:"INCREMENT"')
       .assert.containsText('.vuex-state-inspector', 'count:2')
       .frame('target')
-        .assert.containsText('#counter p', '1')
+        .assert.containsText('.vuex.box .actions p:first-child', '1')
         .frame(null)
       // time-travel
       .click('.history .entry:nth-child(3) .entry-actions .action:nth-child(3)')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'active')
       .frame('target')
-        .assert.containsText('#counter p', '2')
+        .assert.containsText('.vuex.box .actions p:first-child', '2')
         .frame(null)
 
       .click('.history .entry:nth-child(2) .mutation-type')
@@ -115,14 +118,16 @@ module.exports = {
       .assert.containsText('.vuex-state-inspector', 'type:"INCREMENT"')
       .assert.containsText('.vuex-state-inspector', 'count:1')
       .frame('target')
-        .assert.containsText('#counter p', '2')
+        .assert.containsText('.vuex.box .actions p:first-child', '2')
         .frame(null)
+
       .click('.history .entry:nth-child(2) .entry-actions .action:nth-child(3)')
+      .pause(500)
       .assert.cssClassPresent('.history .entry:nth-child(2)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(2)', 'active')
       .assert.cssClassNotPresent('.history .entry:nth-child(3)', 'active')
       .frame('target')
-        .assert.containsText('#counter p', '1')
+        .assert.containsText('.vuex.box .actions p:first-child', '1')
         .frame(null)
 
       // base state
@@ -131,13 +136,13 @@ module.exports = {
       .assert.cssClassNotPresent('.history .entry:nth-child(1)', 'active')
       .assert.containsText('.vuex-state-inspector', 'count:0')
       .frame('target')
-        .assert.containsText('#counter p', '1')
+        .assert.containsText('.vuex.box .actions p:first-child', '1')
         .frame(null)
       .click('.history .entry:nth-child(1) .entry-actions .action:nth-child(1)')
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'active')
       .frame('target')
-        .assert.containsText('#counter p', '0')
+        .assert.containsText('.vuex.box .actions p:first-child', '0')
         .frame(null)
 
       // revert
@@ -148,7 +153,7 @@ module.exports = {
       .assert.cssClassPresent('.history .entry:nth-child(3)', 'inspected')
       .assert.containsText('.vuex-state-inspector', 'count:2')
       .frame('target')
-        .assert.containsText('#counter p', '2')
+        .assert.containsText('.vuex.box .actions p:first-child', '2')
         .frame(null)
 
       // commit
@@ -159,7 +164,7 @@ module.exports = {
       .assert.cssClassPresent('.history .entry:nth-child(1)', 'inspected')
       .assert.containsText('.vuex-state-inspector', 'count:2')
       .frame('target')
-        .assert.containsText('#counter p', '2')
+        .assert.containsText('.vuex.box .actions p:first-child', '2')
         .frame(null)
 
       // getters

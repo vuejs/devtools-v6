@@ -1,27 +1,26 @@
 <template>
   <div>
-    <button @click="emitEvent">Emit</button>
-    <button @click="emitEvent1">Emit</button>
-    <button @click="emitEvent2">Emit</button>
+    <button @click="emitEvent">Emit From L1</button>
+    <button @click="emitEventWithComplexData">Emit From L1 w. compl.</button>
+    <event-level-two @log="log"></event-level-two>
   </div>
 </template>
 
 <script>
+
+import EventLevelTwo from './EventLevelTwo.vue'
+
 export default {
+  components: {
+    EventLevelTwo
+  },
   methods: {
     emitEvent () {
-      let data = {
+      this.$emit('event', {
         eventName: 'event'
-      }
-      this.$emit('event', data)
+      })
     },
-    emitEvent1 () {
-      let data = {
-        eventName: 'event-1'
-      }
-      this.$emit('event-1', data)
-    },
-    emitEvent2 () {
+    emitEventWithComplexData () {
       let complexData = {
         componentName: 'EventChild',
         string: 'Lorem ipsum',
@@ -35,6 +34,9 @@ export default {
         }
       }
       this.$emit('event-2', complexData)
+    },
+    log (data) {
+      console.log('Event fired from child component with data', data)
     }
   }
 }
