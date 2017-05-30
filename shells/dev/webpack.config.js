@@ -21,9 +21,7 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: Object.assign({}, alias, {
-      vue$: 'vue/dist/vue.common.js'
-    })
+    alias
   },
   module: {
     rules: [
