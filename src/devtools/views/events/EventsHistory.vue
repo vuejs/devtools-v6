@@ -15,7 +15,7 @@
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div v-if="filteredEvents.length === 0" class="no-events">
+      <div v-if="filteredEvents.length === 0" class="no-entries">
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
       <div class="entry"
@@ -23,9 +23,9 @@
         v-for="event in filteredEvents"
         :class="{ active: inspectedIndex === events.indexOf(event) }"
         @click="inspect(events.indexOf(event))">
-        <span class="event-name">{{ event.eventName }}</span>
-        <span class="event-type">{{ event.type }}</span>
-        <span class="event-source">
+        <span class="entry-name">{{ event.eventName }}</span>
+        <span class="entry-type">{{ event.type }}</span>
+        <span class="entry-source">
           by
           <span>&lt;</span>
           <span class="component-name">{{ event.instanceName }}</span>
@@ -70,18 +70,12 @@ export default {
     inspect: 'INSPECT',
     reset: 'RESET',
     toggleRecording: 'TOGGLE'
-  }),
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  }
+  })
 }
 </script>
 
 <style lang="stylus" scoped>
 @import "../../common"
-
 .no-events
   color #ccc
   text-align center

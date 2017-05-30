@@ -53,6 +53,7 @@
     "lodash.debounce": "^4.0.6",
     "lodash.groupby": "^4.6.0",
     "vue": "^2.0.0",
+    "vue-router": "^2.3.0",
     "vuex": "^2.0.0"
   }
 }

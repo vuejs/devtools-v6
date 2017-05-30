@@ -4,6 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { initRouterBackend } from './router'
 import { stringify, classify, camelize } from '../util'
 import path from 'path'
 
@@ -96,6 +97,9 @@ function connect () {
   bridge.send('ready', hook.Vue.version)
   console.log('[vue-devtools] Ready. Detected Vue v' + hook.Vue.version)
   scan()
+
+  // router
+  initRouterBackend(hook.Vue, bridge, rootInstances)
 }
 
 /**
