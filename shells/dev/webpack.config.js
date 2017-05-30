@@ -54,7 +54,5 @@ module.exports = {
   devServer: {
     quiet: true
   },
-  plugins: [
-    new FriendlyErrorsPlugin()
-  ]
+  plugins: process.env.VUE_DEVTOOL_TEST ? [] :[new FriendlyErrorsPlugin()]
 }

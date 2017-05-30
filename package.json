@@ -43,7 +43,7 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^2.1.1",
     "url-loader": "^0.5.6",
-    "vue-loader": "^11.0.0",
+    "vue-loader": "^12.2.0",
     "vue-template-compiler": "^2.0.0",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0"
