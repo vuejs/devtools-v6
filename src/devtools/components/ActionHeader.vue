@@ -20,7 +20,7 @@
   .app.dark &
     border-bottom 1px solid $dark-border-color
 
-.component-name
+.title
   display flex
   align-items center
   font-size 18px
@@ -36,6 +36,9 @@
   white-space nowrap
   opacity 0.8
   overflow hidden
+
+  &:first-of-type
+    margin-left auto
 
   &:not(.disabled):hover
     opacity 1
@@ -60,7 +63,6 @@
 .search
   display flex
   align-items center
-  flex 1
   input
     flex 1
     height 100%
@@ -73,6 +75,9 @@
     transition color 0.25s
     &:focus
       color $active-color
+
+    &::placeholder
+      opacity 0.8
 
     &.invalid
       color rgba(77, 10, 9, 1)

@@ -166,7 +166,7 @@ export default {
   &.active
     color $active-color
 
-  &.components
+  &:first-of-type
     margin-left auto
 
   .material-icons
