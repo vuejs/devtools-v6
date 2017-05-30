@@ -78,7 +78,7 @@ export default {
       }
     },
     refresh () {
-      let refreshIcon = this.$refs.refresh
+      const refreshIcon = this.$refs.refresh
       refreshIcon.style.animation = 'none'
 
       bridge.send('refresh')
