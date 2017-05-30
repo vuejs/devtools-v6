@@ -170,6 +170,7 @@ export default {
     position absolute
     top 7px
     left 0px
+    transition transform .1s ease
     &.rotated
       transform rotate(90deg)
   .key
