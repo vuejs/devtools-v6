@@ -31,8 +31,8 @@ const mutations = {
 }
 
 const actions = {
-  toggleInstance ({commit, dispatch}, {instance, expanded, recursive}) {
-    commit('TOGGLE_INSTANCE', {id: instance.id, expanded})
+  toggleInstance ({ commit, dispatch }, { instance, expanded, recursive }) {
+    commit('TOGGLE_INSTANCE', { id: instance.id, expanded })
 
     if (recursive) {
       instance.children.forEach((child) => {

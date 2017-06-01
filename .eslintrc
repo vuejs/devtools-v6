@@ -1,15 +1,14 @@
 {
   "root": true,
-  "extends": "vue",
   "plugins": [
-    "html"
+    "vue-libs"
+  ],
+  "extends": [
+    "plugin:vue-libs/recommended"
   ],
   "globals": {
     "bridge": true,
     "chrome": true,
     "localStorage": true
-  },
-  "rules": {
-    "object-curly-spacing": 0
   }
 }
