@@ -42,7 +42,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
+@import "../../variables"
 
 section:not(:last-child)
   border-bottom 1px solid $border-color

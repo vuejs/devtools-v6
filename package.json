@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -8,11 +8,11 @@
     "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
     "dev:safari": "cd 'shells/safari/Vue.js devtools.safariextension' && webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src",
-    "build": "npm run lint && cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "build:safari": "npm run lint && cd 'shells/safari/Vue.js devtools.safariextension' && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build:safari": "cd 'shells/safari/Vue.js devtools.safariextension' && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "zip": "rm -f chrome.zip && cd shells && zip -r ../chrome.zip chrome -x *src/* -x *webpack.config.js",
     "release": "npm run test && npm run build && npm run zip",
-    "test": "bash test/test.sh"
+    "test": "npm run lint && bash test/test.sh"
   },
   "repository": {
     "type": "git",
@@ -35,8 +35,7 @@
     "cross-env": "^3.1.3",
     "css-loader": "^0.26.1",
     "eslint": "^3.9.1",
-    "eslint-config-vue": "^2.0.0",
-    "eslint-plugin-vue": "^1.0.0",
+    "eslint-plugin-vue-libs": "^1.2.0",
     "file-loader": "^0.9.0",
     "friendly-errors-webpack-plugin": "^1.1.2",
     "nightwatch": "^0.9.4",
@@ -45,7 +44,7 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^2.1.1",
     "url-loader": "^0.5.6",
-    "vue-loader": "^11.0.0",
+    "vue-loader": "^12.2.0",
     "vue-template-compiler": "^2.0.0",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0"

@@ -6,7 +6,7 @@
     :class="{ dragging: dragging }">
     <div class="left" :style="{ width: split + '%' }">
       <slot name="left"></slot>
-      <div class="dragger" @mousedown="dragStart">
+      <div class="dragger" @mousedown.prevent="dragStart">
       </div>
     </div>
     <div class="right" :style="{ width: (100 - split) + '%' }">
@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../variables"
 
 .split-pane
   display flex

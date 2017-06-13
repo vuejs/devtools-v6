@@ -1,3 +1,4 @@
+export VUE_DEVTOOL_TEST=true
 DEV_SERVER_BIN=`pwd`/node_modules/.bin/webpack-dev-server
 cd shells/dev
 $DEV_SERVER_BIN --inline --no-info --port 8081 &

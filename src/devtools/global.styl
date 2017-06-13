@@ -1,4 +1,5 @@
-@import "./common"
+@import "./variables"
+@import "./transitions"
 
 @font-face
   font-family 'Material Icons'
@@ -76,14 +77,6 @@ $arrow-color = #444
     border-top 4px solid transparent
     border-bottom 4px solid transparent
     border-right 6px solid $arrow-color
-
-.slide-up-enter
-  opacity 0
-  transform translate(0, 50%)
-
-.slide-up-leave-to
-  opacity 0
-  transform translate(0, -50%)
 
 .notice
   display flex

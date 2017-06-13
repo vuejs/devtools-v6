@@ -1,7 +1,7 @@
 <template>
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
-      <span class="component-name">
+      <span class="title">
         <span style="color:#ccc">&lt;</span>
         <span>{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
@@ -12,7 +12,7 @@
       </a>
       <div class="search">
         <i class="material-icons">search</i>
-        <input placeholder="Filter data" v-model.trim="filter">
+        <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
     </action-header>
     <template slot="scroll">
@@ -86,17 +86,3 @@ function sort (state) {
   })
 }
 </script>
-
-<style lang="stylus" scoped>
-.no-state
-  color #ccc
-  text-align center
-  font-size 14px
-
-.non-selected
-  color #ccc
-  text-align center
-
-.component-name
-  margin 0 10px
-</style>

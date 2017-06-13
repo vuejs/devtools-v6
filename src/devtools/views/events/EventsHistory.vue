@@ -80,16 +80,16 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
+@import "../../variables"
 
 .no-events
-  color: #ccc
-  text-align: center
-  margin-top: 50px
-  line-height: 30px
+  color #ccc
+  text-align center
+  margin-top 50px
+  line-height 30px
 
 .entry
-  position: relative;
+  position relative;
   font-family Menlo, Consolas, monospace
   color #881391
   cursor pointer
@@ -116,6 +116,7 @@ export default {
     .event-source
       color #ddd
   .app.dark &
+    color #e36eec
     background-color $dark-background-color
 
 .time

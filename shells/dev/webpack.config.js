@@ -21,9 +21,7 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: Object.assign({}, alias, {
-      vue$: 'vue/dist/vue.common.js'
-    })
+    alias
   },
   module: {
     rules: [
@@ -50,11 +48,9 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#cheap-module-eval-source-map',
+  devtool: '#cheap-module-source-map',
   devServer: {
     quiet: true
   },
-  plugins: [
-    new FriendlyErrorsPlugin()
-  ]
+  plugins: process.env.VUE_DEVTOOL_TEST ? [] :[new FriendlyErrorsPlugin()]
 }
