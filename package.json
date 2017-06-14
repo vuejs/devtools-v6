@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
     "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
-    "dev:safari": "cd 'shells/safari/Vue.js devtools.safariextension' && webpack --watch --hide-modules",
+    "dev:safari": "cd shells/safari && webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src",
     "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "build:safari": "cd 'shells/safari/Vue.js devtools.safariextension' && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build:safari": "cd shells/safari && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "zip": "rm -f chrome.zip && cd shells && zip -r ../chrome.zip chrome -x *src/* -x *webpack.config.js",
     "release": "npm run test && npm run build && npm run zip",
     "test": "npm run lint && bash test/test.sh"

@@ -1,6 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
-var alias = require('../../alias')
+var alias = require('../alias')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 var bubleOptions = {
@@ -17,7 +17,7 @@ module.exports = {
     proxy: './src/proxy.js',
   },
   output: {
-    path: __dirname + '/build',
+    path: __dirname + '/Vue.js devtools.safariextension/build',
     publicPath: '/build/',
     filename: '[name].js',
   },
