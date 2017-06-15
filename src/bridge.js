@@ -3,7 +3,7 @@ import { EventEmitter } from 'events'
 export default class Bridge extends EventEmitter {
   constructor (wall) {
     super()
-    const self = this;
+    const self = this
     self.setMaxListeners(Infinity)
     self.wall = wall
     wall.listen(message => {
