@@ -9,7 +9,7 @@
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src",
     "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "zip": "npm run zip:chrome && npm run zip:firefox",
-    "zip:chrome": "zip -r -FS dist/chrome.zip shells/chrome -x *src/* -x *webpack.config.js",
+    "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
     "zip:firefox": "web-ext build -s shells/chrome -a dist -i src",
     "release": "npm run test && npm run build && npm run zip",
     "test": "npm run lint && bash test/test.sh"
