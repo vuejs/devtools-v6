@@ -3,7 +3,7 @@ var webpack = require('webpack')
 var alias = require('../alias')
 
 var bubleOptions = {
-  target: process.env.NODE_ENV === 'production' ? null : { chrome: 52 },
+  target: process.env.NODE_ENV === 'production' ? null : { chrome: 52, firefox: 48 },
   objectAssign: 'Object.assign'
 }
 
