@@ -1,15 +1,16 @@
+/*global safari*/
 function handleMessage (evt) {
   const name = evt.name
   const data = evt.message
   if (name === 'inject') {
-    eval(data)
+    eval(data)  // eslint-disable-line no-eval
     safari.self.tab.dispatchMessage('script-loaded', data)
   } else if (name === 'send') {
     const script = document.constructor.prototype.createElement.call(document, 'script')
     const msg = JSON.stringify({ source: 'vue-devtools-proxy', payload: data })
     script.innerHTML = `window.postMessage(${msg}, '*');`
-    document.documentElement.appendChild(script);
-    script.parentNode.removeChild(script);
+    document.documentElement.appendChild(script)
+    script.parentNode.removeChild(script)
   }
 }
 

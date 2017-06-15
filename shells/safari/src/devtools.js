@@ -1,3 +1,4 @@
+/*global safari*/
 import { initDevTools } from 'src/devtools'
 import Bridge from 'src/bridge'
 
@@ -5,7 +6,7 @@ import Bridge from 'src/bridge'
 // 2. init devtools when extention bar button is clicked
 safari.application.addEventListener('popover', (evt) => {
   if (evt.target.identifier !== 'VuePopover') {
-    return;
+    return
   }
   initDevTools({
     connect (cb) {
@@ -26,9 +27,9 @@ safari.application.addEventListener('popover', (evt) => {
         }))
       })
     },
-    onReload() {
+    onReload () {
       console.log('[devtools] reloaded')
-    },
+    }
   })
 }, true)
 
