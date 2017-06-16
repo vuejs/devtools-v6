@@ -69,7 +69,7 @@ export default {
       if (!this.hasTarget) return
       if (isChrome) {
         chrome.devtools.inspectedWindow.eval(
-          `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${this.target.id}).$el)`
+          `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.target.id}").$el)`
         )
       } else {
         window.alert('DOM inspection is not supported in this shell.')
