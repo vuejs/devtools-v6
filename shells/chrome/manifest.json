@@ -1,6 +1,6 @@
 {
   "name": "Vue.js devtools",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "description": "Chrome and Firefox DevTools extension for debugging Vue.js applications.",
   "manifest_version": 2,
   "icons": {
@@ -19,7 +19,6 @@
     "default_popup": "popups/not-found.html"
   },
 
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "web_accessible_resources": [ "devtools.html", "devtools-background.html", "build/backend.js" ],
 
   "devtools_page": "devtools-background.html",
