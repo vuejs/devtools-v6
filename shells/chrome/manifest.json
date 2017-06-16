@@ -19,7 +19,6 @@
     "default_popup": "popups/not-found.html"
   },
 
-  "content_security_policy": "script-src 'self'; object-src 'self'",
   "web_accessible_resources": [ "devtools.html", "devtools-background.html", "build/backend.js" ],
 
   "devtools_page": "devtools-background.html",
