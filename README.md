@@ -16,7 +16,7 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 - [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
 
-- [Get the Firefox Addon](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-firefox.md)
+- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
 
 - [Workaround for Safari](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-safari.md)
 
