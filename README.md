@@ -20,6 +20,8 @@ Currently only a Chrome devtools extension is available.
 
 [Workaround for Firefox](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-firefox.md)  
 
+[Workaround for Safari](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-safari.md)  
+
 ### Manual Installation
 
 **Make sure you are using Node 6+ and NPM 3+**

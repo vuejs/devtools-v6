@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Jared Hobbs</string>
+	<key>Builder Version</key>
+	<string>13604.1.21.7</string>
+	<key>CFBundleDisplayName</key>
+	<string>Vue.js devtools</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.pyhacker.vuejsdevtools</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>Chrome</key>
+	<dict>
+		<key>Popovers</key>
+		<array>
+			<dict>
+				<key>Filename</key>
+				<string>devtools.html</string>
+				<key>Height</key>
+				<integer>600</integer>
+				<key>Identifier</key>
+				<string>VuePopover</string>
+				<key>Width</key>
+				<integer>800</integer>
+			</dict>
+		</array>
+		<key>Toolbar Items</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>vue-button</string>
+				<key>Image</key>
+				<string>icons/16-gray.png</string>
+				<key>Include By Default</key>
+				<true/>
+				<key>Label</key>
+				<string>Vue.js</string>
+				<key>Palette Label</key>
+				<string>Vue.js devtools</string>
+				<key>Popover</key>
+				<string>VuePopover</string>
+				<key>Tool Tip</key>
+				<string>Vue.js devtools</string>
+			</dict>
+		</array>
+	</dict>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict>
+			<key>End</key>
+			<array>
+				<string>build/proxy.js</string>
+			</array>
+			<key>Start</key>
+			<array>
+				<string>build/hook-loader.js</string>
+			</array>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Safari extension for debugging Vue.js applications.</string>
+	<key>DeveloperIdentifier</key>
+	<string>0000000000</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Allowed Domains</key>
+			<array>
+				<string>localhost</string>
+				<string>127.0.0.1</string>
+			</array>
+			<key>Level</key>
+			<string>Some</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

@@ -3,13 +3,18 @@ import { EventEmitter } from 'events'
 export default class Bridge extends EventEmitter {
   constructor (wall) {
     super()
-    this.setMaxListeners(Infinity)
-    this.wall = wall
+    // Setting `this` to `self` here to fix an error in the Safari build:
+    // ReferenceError: Cannot access uninitialized variable.
+    // The error might be related to the webkit bug here:
+    // https://bugs.webkit.org/show_bug.cgi?id=171543
+    const self = this
+    self.setMaxListeners(Infinity)
+    self.wall = wall
     wall.listen(message => {
       if (typeof message === 'string') {
-        this.emit(message)
+        self.emit(message)
       } else {
-        this.emit(message.event, message.payload)
+        self.emit(message.event, message.payload)
       }
     })
   }
