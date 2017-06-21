@@ -18,8 +18,8 @@ module.exports = {
     detector: './src/detector.js'
   },
   output: {
-    path: __dirname + '/build',
-    filename: '[name].js',
+    path: path.join(__dirname, 'build'),
+    filename: '[name].js'
   },
   resolve: {
     alias
@@ -28,7 +28,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader:  'buble-loader',
+        loader: 'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },
