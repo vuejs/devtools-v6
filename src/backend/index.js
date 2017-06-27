@@ -106,7 +106,7 @@ function scan () {
   rootInstances.length = 0
   let inFragment = false
   let currentFragment = null
-  walk(document, function (node) {
+  walk(window.__VUE_DEVTOOLS_CONTEXT__ || document, function (node) {
     if (inFragment) {
       if (node === currentFragment._fragmentEnd) {
         inFragment = false
