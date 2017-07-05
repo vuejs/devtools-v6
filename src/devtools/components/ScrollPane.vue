@@ -47,7 +47,7 @@ export default {
 
 .scroll
   flex 1
-  overflow overlay
+  overflow auto
   .app.dark &::-webkit-scrollbar
     background: $dark-background-color
     border-left: 1px solid $dark-border-color
