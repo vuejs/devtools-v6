@@ -38,6 +38,36 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 3. `npm run dev`
 4. A plain shell with a test app will be available at `localhost:8080`.
 
+### Testing as Firefox addon
+
+ 1. Install `web-ext`
+
+	~~~~
+	$ npm install --global web-ext
+	~~~~
+
+	Or, for Yarn:
+
+	~~~~
+	$ yarn global add web-ext
+	~~~~
+
+	Also, make sure `PATH` is set up. Something like this in `~/.bash_profile`:
+
+	~~~~
+	$ PATH=$PATH:$(yarn global bin)
+	~~~~
+
+ 2. Build and run in Firefox
+
+	~~~~
+	$ npm run build
+	$ npm run run:firefox
+	~~~~
+
+	When using Yarn, just replace `npm` with `yarn`.
+
+
 ### License
 
 [MIT](http://opensource.org/licenses/MIT)
