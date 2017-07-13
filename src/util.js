@@ -155,3 +155,11 @@ function searchInArray (arr, searchTerm) {
   }
   return found
 }
+
+export function sortByKey (state) {
+  return state && state.slice().sort((a, b) => {
+    if (a.key < b.key) return -1
+    if (a.key > b.key) return 1
+    return 0
+  })
+}
