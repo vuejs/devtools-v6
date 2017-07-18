@@ -63,6 +63,7 @@
 .search
   display flex
   align-items center
+  flex 1
   input
     flex 1
     height 100%
