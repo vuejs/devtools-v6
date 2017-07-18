@@ -65,7 +65,7 @@ export default {
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 1)
     }
   },
   computed: {
