@@ -27,8 +27,10 @@ function detect (win) {
   }, 100)
 }
 
-// inject the hook
-const script = document.createElement('script')
-script.textContent = ';(' + detect.toString() + ')(window)'
-document.documentElement.appendChild(script)
-script.parentNode.removeChild(script)
+// inject the hook, avoid non HTML pages
+if (document.doctype !== null) {
+  const script = document.createElement('script')
+  script.textContent = ';(' + detect.toString() + ')(window)'
+  document.documentElement.appendChild(script)
+  script.parentNode.removeChild(script)
+}
