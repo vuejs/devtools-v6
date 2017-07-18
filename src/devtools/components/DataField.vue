@@ -39,7 +39,8 @@ import {
   UNDEFINED,
   INFINITY,
   NAN,
-  isPlainObject
+  isPlainObject,
+  sortByKey
 } from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
@@ -125,11 +126,10 @@ export default {
           value: item
         }))
       } else if (typeof value === 'object') {
-        value = Object.keys(value).map(key => ({
+        value = sortByKey(Object.keys(value).map(key => ({
           key,
           value: value[key]
-        }))
-        value = value.slice().sort((a, b) => a.key > b.key)
+        })))
       }
       return value
     },

@@ -33,7 +33,7 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
-import { searchDeepInObject } from 'src/util'
+import { searchDeepInObject, sortByKey } from 'src/util'
 import groupBy from 'lodash.groupby'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
@@ -57,7 +57,7 @@ export default {
       return this.target.id != null
     },
     filteredState () {
-      return groupBy(sort(this.target.state.filter(el => {
+      return groupBy(sortByKey(this.target.state.filter(el => {
         return searchDeepInObject({
           [el.key]: el.value
         }, this.filter)
@@ -76,13 +76,5 @@ export default {
       }
     }
   }
-}
-
-function sort (state) {
-  return state && state.slice().sort((a, b) => {
-    if (a.key < b.key) return -1
-    if (a.key > b.key) return 1
-    return 0
-  })
 }
 </script>
