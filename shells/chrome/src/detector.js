@@ -28,7 +28,9 @@ function detect (win) {
 }
 
 // inject the hook
-const script = document.createElement('script')
-script.textContent = ';(' + detect.toString() + ')(window)'
-document.documentElement.appendChild(script)
-script.parentNode.removeChild(script)
+if (document instanceof HTMLDocument) {
+  const script = document.createElement('script')
+  script.textContent = ';(' + detect.toString() + ')(window)'
+  document.documentElement.appendChild(script)
+  script.parentNode.removeChild(script)
+}
