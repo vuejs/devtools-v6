@@ -61,24 +61,34 @@ export default {
 </script>
 
 <style lang="stylus">
+@import "../variables"
+
 .data-wrapper
-  display flex
-  flex-wrap wrap
-  padding-top 20px
+  padding 10px 0 20px 0
+  background darken($white, 10%)
 
-.data-fields
-  padding 20px 20px 40px
+  .app.dark &
+    background $slate
 
-.data-el
-  padding 0px 10px
-  flex 1 0 33.33%
-  font-size 14px
-
-  .data-type
-    color #486887
-    padding-left 20px
-    margin-bottom -10px
+  .data-fields
+    padding 20px
+    background $white
+    border-bottom-left-radius 3px
+    border-bottom-right-radius 3px
 
     .app.dark &
-      color lighten(#486887, 30%)
+      border 1px solid $green
+      background transparent
+
+  .data-el
+    margin-bottom 10px
+    padding 0px 10px
+    font-size 14px
+
+    .data-type
+      color $white
+      background $green
+      padding 5px 10px 5px 20px
+      border-top-left-radius 3px
+      border-top-right-radius 3px
 </style>
