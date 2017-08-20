@@ -59,10 +59,12 @@ initDevTools({
 
 function injectScript (scriptName, cb) {
   const src = `
-    var script = document.constructor.prototype.createElement.call(document, 'script');
-    script.src = "${scriptName}";
-    document.documentElement.appendChild(script);
-    script.parentNode.removeChild(script);
+    (function() {
+      var script = document.constructor.prototype.createElement.call(document, 'script');
+      script.src = "${scriptName}";
+      document.documentElement.appendChild(script);
+      script.parentNode.removeChild(script);
+    })()
   `
   chrome.devtools.inspectedWindow.eval(src, function (res, err) {
     if (err) {
