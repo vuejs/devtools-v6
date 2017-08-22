@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>iframe</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/vue"></script>
+    <div id="app">
+      <h1>My value: {{ counter }}</h1>
+      <button @click="counter++">+</button>
+      <button @click="counter--">-</button>
+    </div>
+
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          counter: 0
+        }
+      })
+    </script>
+  </body>
+</html>

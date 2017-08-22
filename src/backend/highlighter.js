@@ -1,4 +1,5 @@
 import { inDoc } from '../util'
+import { getDocumentTarget } from './target-document'
 
 const overlay = document.createElement('div')
 overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
@@ -26,7 +27,7 @@ export function highlight (instance) {
 
 export function unHighlight () {
   if (overlay.parentNode) {
-    document.body.removeChild(overlay)
+    getDocumentTarget().body.removeChild(overlay)
   }
 }
 
@@ -95,7 +96,7 @@ function getFragmentRect ({ _fragmentStart, _fragmentEnd }) {
  * @return {Rect}
  */
 
-const range = document.createRange()
+const range = getDocumentTarget().createRange()
 function getTextRect (node) {
   range.selectNode(node)
   return range.getBoundingClientRect()
@@ -112,7 +113,7 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }) {
   overlay.style.height = ~~height + 'px'
   overlay.style.top = ~~top + 'px'
   overlay.style.left = ~~left + 'px'
-  document.body.appendChild(overlay)
+  getDocumentTarget().body.appendChild(overlay)
 }
 
 /**

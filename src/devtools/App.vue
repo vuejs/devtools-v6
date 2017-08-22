@@ -5,9 +5,8 @@
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
-      <transition name="slide-up">
-        <span class="message" :key="message">{{ message }}</span>
-      </transition>
+      <span v-if="false" class="message" :key="message">{{ message }}</span>
+      <target-selector/>
     </span>
     <a class="button components"
       :class="{ active: tab === 'components'}"
@@ -47,6 +46,7 @@
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
+import TargetSelector from './components/TargetSelector.vue'
 
 import { mapState } from 'vuex'
 
@@ -62,7 +62,8 @@ export default {
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
-    events: EventsTab
+    events: EventsTab,
+    TargetSelector
   },
   computed: mapState({
     message: state => state.message,
