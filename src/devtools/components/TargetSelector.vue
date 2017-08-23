@@ -4,6 +4,7 @@
       <option v-for="(target, i) in targets" :value="i"
       >{{ target.location.pathname }}</option>
     </select>
+    <button @click="currentTarget = null">reset</button>
   </div>
 </template>
 

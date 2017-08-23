@@ -16,6 +16,6 @@ export function getAllTargets () {
 }
 
 function findTargetsInElement (el) {
-  const iframes = [...el.getElementsByTagName('iframe')].map(i => i.contentDocument)
+  const iframes = Array.prototype.map.call(el.getElementsByTagName('iframe'), i => i.contentDocument)
   return iframes.concat(...iframes.map(findTargetsInElement))
 }
