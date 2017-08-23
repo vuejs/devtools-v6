@@ -77,9 +77,12 @@ function connect () {
     flush()
   })
 
-  bridge.on('change-target', (target) => {
-    setDocumentTarget(getAllTargets()[target])
-    scan()
+  bridge.on('change-target', (id) => {
+    const target = getAllTargets().find(t => t.id === id)
+    if (target) {
+      setDocumentTarget(target.doc)
+      scan()
+    }
   })
   bridge.on('refresh', scan)
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))

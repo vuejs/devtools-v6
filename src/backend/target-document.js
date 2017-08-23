@@ -10,12 +10,32 @@ export function getDocumentTarget () {
   return target
 }
 
-export function getAllTargets () {
-  const targets = [document]
-  return targets.concat(findTargetsInElement(document))
+let id = 0
+const documents = new WeakMap()
+
+function getId (doc) {
+  console.log('Getting', doc)
+  if (!documents.has(doc)) {
+    console.log('Added with', id)
+    documents.set(doc, id++)
+  }
+  console.log(`generated id ${documents.get(doc)}`, doc)
+  return documents.get(doc)
 }
 
-function findTargetsInElement (el) {
-  const iframes = Array.prototype.map.call(el.getElementsByTagName('iframe'), i => i.contentDocument)
+function packTarget (doc) {
+  return {
+    doc,
+    id: getId(doc)
+  }
+}
+
+export function getAllTargets () {
+  const targets = [packTarget(document)]
+  return targets.concat(findTargetsInElement(targets[0]))
+}
+
+function findTargetsInElement ({ doc }) {
+  const iframes = Array.prototype.map.call(doc.getElementsByTagName('iframe'), i => i.contentDocument).map(packTarget)
   return iframes.concat(...iframes.map(findTargetsInElement))
 }
