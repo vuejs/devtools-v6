@@ -45,6 +45,12 @@ export default {
   flex-direction column
   height 100%
 
+  .header
+    background $white
+
+    .app.dark &
+      background transparent
+
 .scroll
   flex 1
   overflow auto

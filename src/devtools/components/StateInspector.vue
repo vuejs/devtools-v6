@@ -64,11 +64,28 @@ export default {
 @import "../variables"
 
 .data-wrapper
-  padding 10px 0 20px 0
-  background darken($white, 10%)
+  padding 10px 0
 
   .app.dark &
     background $slate
+
+  .data-el
+    margin 0 10px 10px 10px
+    font-size 14px
+    box-shadow 0px 0px 5px darken($white, 20%)
+
+    .app.dark &
+      box-shadow none
+
+    .data-type
+      color $white
+      background $green
+      padding 5px 10px 5px 20px
+      border-top-left-radius 3px
+      border-top-right-radius 3px
+
+      .app.dark &
+        background $dark-border-color
 
   .data-fields
     padding 20px
@@ -77,18 +94,7 @@ export default {
     border-bottom-right-radius 3px
 
     .app.dark &
-      border 1px solid $green
+      border 1px solid $dark-border-color
       background transparent
 
-  .data-el
-    margin-bottom 10px
-    padding 0px 10px
-    font-size 14px
-
-    .data-type
-      color $white
-      background $green
-      padding 5px 10px 5px 20px
-      border-top-left-radius 3px
-      border-top-right-radius 3px
 </style>
