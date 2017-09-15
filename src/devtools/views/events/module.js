@@ -45,7 +45,7 @@ const getters = {
     return state.events[state.inspectedIndex]
   },
   filteredEvents: state => {
-    return state.events.filter(e => e.eventName.indexOf(state.filter) > -1)
+    return state.events.filter(e => (e.eventName + e.instanceName).indexOf(state.filter) > -1)
   }
 }
 
