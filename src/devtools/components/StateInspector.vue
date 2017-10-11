@@ -1,7 +1,8 @@
 <template>
   <div class="data-wrapper">
     <div v-if="extendsComponent" class="extends">
-      <span>extends: {{ extendsComponent }}</span>
+      <div>extends</div>
+      <div>{{ extendsComponentDisplay }}</div>
     </div>
     <div v-for="type in getKeys(state)" :class="['data-el', toDisplayType(type, true)]">
       <div class="data-type">{{ toDisplayType(type) }}</div>
@@ -42,6 +43,11 @@ export default {
   props: ['state', 'extendsComponent'],
   components: {
     DataField
+  },
+  computed: {
+    extendsComponentDisplay() {
+      return this.extendsComponent.map(c => `<${c}>`).join(' → ')
+    }
   },
   methods: {
     getKeys (state) {
@@ -90,4 +96,5 @@ export default {
   flex: 1 100%
   padding: 0 30px
   margin-bottom: 10px
+  font-size 14px
 </style>

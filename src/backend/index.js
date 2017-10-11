@@ -313,16 +313,10 @@ function getInstanceDetails (id) {
   if (!instance) {
     return {}
   } else {
-    let extendsOtherComponent = null
-
-    if (instance.constructor.extendOptions) {
-      extendsOtherComponent = instance.constructor.extendOptions.extends
-    }
-
     return {
       id: id,
       name: getInstanceName(instance),
-      extendsComponent: extendsOtherComponent ? getConstructorName(extendsOtherComponent) : null,
+      extendsComponent: processExtends(instance),
       state: processProps(instance).concat(
         processState(instance),
         processComputed(instance),
@@ -365,6 +359,24 @@ function getConstructorName (Ctor) {
 
   return 'Anonymous Component'
 }
+
+function processExtends (instance) {
+  const extendHierarchy = []
+
+  if (instance.constructor.extendOptions) {
+    let extendsOptions = instance.constructor.extendOptions.extends
+    while (extendsOptions) {
+      const constructorName = getConstructorName(extendsOptions)
+      extendHierarchy.push(constructorName)
+      extendsOptions = extendsOptions.extends
+    }
+  }
+
+  return extendHierarchy.length 
+    ? extendHierarchy 
+    : null
+}
+
 /**
  * Process the props of an instance.
  * Make sure return a plain object because window.postMessage()

@@ -10,17 +10,20 @@
     <input v-model="localMsg">
     <other v-for="item in items" :key="item"></other>
     <extends-other v-for="item in otherItems" :key="item"></extends-other>
+    <multiple-extends v-for="item in otherItems" :key="item"></multiple-extends>
   </div>
 </template>
 
 <script>
 import Other from './Other.vue'
 import ExtendsOther from './ExtendsOther.vue'
+import MultipleExtends from './MultipleExtends.vue'
 import MyClass from './MyClass.js'
 export default {
   components: { 
     Other,
     ExtendsOther,
+    MultipleExtends,
   },
   props: {
     msg: String,
