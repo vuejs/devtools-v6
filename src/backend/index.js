@@ -309,12 +309,20 @@ function mark (instance) {
 
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
+
   if (!instance) {
     return {}
   } else {
+    let extendsOtherComponent = null
+
+    if (instance.constructor.extendOptions) {
+      extendsOtherComponent = instance.constructor.extendOptions.extends
+    }
+
     return {
       id: id,
       name: getInstanceName(instance),
+      extendsComponent: extendsOtherComponent ? getConstructorName(extendsOtherComponent) : null,
       state: processProps(instance).concat(
         processState(instance),
         processComputed(instance),
@@ -348,6 +356,15 @@ export function getInstanceName (instance) {
     : 'Anonymous Component'
 }
 
+
+function getConstructorName (Ctor) {
+  const file = Ctor.__file // injected by vue-loader
+  if (file) {
+    return classify(basename(file, '.vue'))
+  }
+
+  return 'Anonymous Component'
+}
 /**
  * Process the props of an instance.
  * Make sure return a plain object because window.postMessage()

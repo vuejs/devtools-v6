@@ -23,7 +23,7 @@
         <div>This instance has no reactive state.</div>
       </div>
       <section v-else class="data">
-        <state-inspector :state="filteredState" />
+        <state-inspector :state="filteredState" :extends-component="target.extendsComponent" />
       </section>
     </template>
   </scroll-pane>
