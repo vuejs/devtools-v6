@@ -9,14 +9,22 @@
     <button class="remove" @click="rm">Remove</button>
     <input v-model="localMsg">
     <other v-for="item in items" :key="item"></other>
+    <extends-other v-for="item in otherItems" :key="item"></extends-other>
+    <multiple-extends v-for="item in otherItems" :key="item"></multiple-extends>
   </div>
 </template>
 
 <script>
 import Other from './Other.vue'
+import ExtendsOther from './ExtendsOther.vue'
+import MultipleExtends from './MultipleExtends.vue'
 import MyClass from './MyClass.js'
 export default {
-  components: { Other },
+  components: { 
+    Other,
+    ExtendsOther,
+    MultipleExtends,
+  },
   props: {
     msg: String,
     obj: null,
@@ -26,6 +34,7 @@ export default {
     return {
       localMsg: this.msg,
       items: [1, 2],
+      otherItems: [3, 4],
       regex: /(a\w+b)/g,
       nan: NaN,
       infinity: Infinity

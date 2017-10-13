@@ -1,5 +1,9 @@
 <template>
   <div class="data-wrapper">
+    <div v-if="extendsComponent" class="extends">
+      <div>extends</div>
+      <div>{{ extendsComponentDisplay }}</div>
+    </div>
     <div v-for="type in getKeys(state)" :class="['data-el', toDisplayType(type, true)]">
       <div class="data-type">{{ toDisplayType(type) }}</div>
       <div class="data-fields">
@@ -36,9 +40,14 @@ const keyOrder = {
 }
 
 export default {
-  props: ['state'],
+  props: ['state', 'extendsComponent'],
   components: {
     DataField
+  },
+  computed: {
+    extendsComponentDisplay() {
+      return this.extendsComponent.map(c => `<${c}>`).join(' → ')
+    }
   },
   methods: {
     getKeys (state) {
@@ -81,4 +90,11 @@ export default {
 
     .app.dark &
       color lighten(#486887, 30%)
+
+.extends
+  color #486887
+  flex: 1 100%
+  padding: 0 30px
+  margin-bottom: 10px
+  font-size 14px
 </style>

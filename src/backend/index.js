@@ -309,12 +309,14 @@ function mark (instance) {
 
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
+
   if (!instance) {
     return {}
   } else {
     return {
       id: id,
       name: getInstanceName(instance),
+      extendsComponent: processExtends(instance),
       state: processProps(instance).concat(
         processState(instance),
         processComputed(instance),
@@ -346,6 +348,33 @@ export function getInstanceName (instance) {
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'
+}
+
+
+function getConstructorName (Ctor) {
+  const file = Ctor.__file // injected by vue-loader
+  if (file) {
+    return classify(basename(file, '.vue'))
+  }
+
+  return 'Anonymous Component'
+}
+
+function processExtends (instance) {
+  const extendHierarchy = []
+
+  if (instance.constructor.extendOptions) {
+    let extendsOptions = instance.constructor.extendOptions.extends
+    while (extendsOptions) {
+      const constructorName = getConstructorName(extendsOptions)
+      extendHierarchy.push(constructorName)
+      extendsOptions = extendsOptions.extends
+    }
+  }
+
+  return extendHierarchy.length 
+    ? extendHierarchy 
+    : null
 }
 
 /**
