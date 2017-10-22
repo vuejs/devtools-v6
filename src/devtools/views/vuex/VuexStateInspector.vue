@@ -42,6 +42,7 @@ import StateInspector from 'components/StateInspector.vue'
 
 import { searchDeepInObject, sortByKey, stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
+import groupBy from 'lodash.groupby'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -63,28 +64,23 @@ export default {
       'inspectedState'
     ]),
     filteredState() {
-      const filtered = {};
+      const inspectedState = [].concat(
+        ...Object.keys(this.inspectedState).map(
+          type => Object.keys(this.inspectedState[type]).map(
+            key => ({
+              key,
+              type,
+              value: this.inspectedState[type][key]
+            })
+          )
+        )
+      )
 
-      Object.keys(this.inspectedState).forEach((stateProperty) => {
-        const inspectedStateProperty = this.inspectedState[stateProperty];
-
-        const filteredStateProperty = {};
-
-        Object.keys(inspectedStateProperty).forEach((key) => {
-          const match = searchDeepInObject({
-            [key]: inspectedStateProperty[key]
-          }, this.filter);
-
-          if (match) {
-            filteredStateProperty[key] = inspectedStateProperty[key];
-          }
-        });
-
-
-        filtered[stateProperty] = filteredStateProperty
-      });
-
-      return filtered;
+      return groupBy(sortByKey(inspectedState.filter(el => {
+        return searchDeepInObject({
+          [el.key]: el.value
+        }, this.filter)
+      })), 'type')
     },
   },
   watch: {
