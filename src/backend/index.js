@@ -94,7 +94,12 @@ function connect () {
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
-  console.log('[vue-devtools] Ready. Detected Vue v' + hook.Vue.version)
+  console.log(
+    `%c vue-devtools %c Detected Vue v${hook.Vue.version} %c`,
+    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+    'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+    'background:transparent'
+  )
   scan()
 }
 

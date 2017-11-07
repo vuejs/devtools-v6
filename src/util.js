@@ -163,4 +163,3 @@ export function sortByKey (state) {
     return 0
   })
 }
-

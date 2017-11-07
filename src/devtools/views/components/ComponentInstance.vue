@@ -6,6 +6,7 @@
     }">
     <div class="self"
       @click.stop="select"
+      @dblclick.stop="toggle"
       @mouseenter="enter"
       @mouseleave="leave"
       :class="{ selected: selected }"
