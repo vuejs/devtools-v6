@@ -56,14 +56,14 @@ export default {
       showStateCopiedMessage: false,
       showBadJSONMessage: false,
       showImportStatePopup: false,
-      filter: '',
+      filter: ''
     }
   },
   computed: {
     ...mapGetters('vuex', [
       'inspectedState'
     ]),
-    filteredState() {
+    filteredState () {
       const inspectedState = [].concat(
         ...Object.keys(this.inspectedState).map(
           type => Object.keys(this.inspectedState[type]).map(

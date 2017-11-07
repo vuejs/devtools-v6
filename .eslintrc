@@ -6,6 +6,7 @@
   "globals": {
     "bridge": true,
     "chrome": true,
-    "localStorage": true
+    "localStorage": true,
+    "HTMLDocument": true
   }
 }
