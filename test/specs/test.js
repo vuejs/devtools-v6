@@ -78,7 +78,14 @@ module.exports = {
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'active')
 
-      // filtering
+      // filtering state & getters
+      .setValue('.right .search input', 'cou')
+      .assert.count('.data-field', 1)
+      .setValue('.right .search input', 'no value')
+      .assert.count('.data-field', 0)
+      .clearValue('.right .search input')
+
+      // filtering history
       .setValue('.search input', 'inc')
       .assert.count('.history .entry', 3)
       .assert.count('.history .entry.inspected', 0)
