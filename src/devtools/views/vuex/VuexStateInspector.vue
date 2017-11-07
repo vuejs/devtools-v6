@@ -76,12 +76,12 @@ export default {
         )
       )
 
-      return groupBy(sortByKey(inspectedState.filter(el => {
-        return searchDeepInObject({
+      return groupBy(sortByKey(inspectedState.filter(
+        el => searchDeepInObject({
           [el.key]: el.value
         }, this.filter)
-      })), 'type')
-    },
+      )), 'type')
+    }
   },
   watch: {
     showImportStatePopup (val) {
