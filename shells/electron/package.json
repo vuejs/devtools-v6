@@ -1,0 +1,17 @@
+{
+  "name": "vue-devtools",
+  "version": "0.0.1",
+  "description": "StandAlone vue-devtools",
+  "bin": {
+    "vue-devtools": "./bin.js"
+  },
+  "scripts": {
+    "start": "node bin.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cross-spawn": "^5.1.0",
+    "electron": "^1.8.1"
+  }
+}
