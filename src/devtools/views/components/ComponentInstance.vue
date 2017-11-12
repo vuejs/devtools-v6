@@ -116,7 +116,6 @@ export default {
   position relative
   overflow hidden
   z-index 2
-  background-color $background-color
   transition background-color .1s ease
   border-radius 3px
   font-size 14px

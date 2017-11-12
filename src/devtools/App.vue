@@ -31,11 +31,15 @@
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
-    <a class="button refresh"
+    <a class="button refresh icon-only"
       @click="refresh"
       title="Force Refresh">
       <i class="material-icons" ref="refresh">refresh</i>
-      <span class="pane-name">Refresh</span>
+    </a>
+    <a class="button view icon-only"
+      @click="switchView"
+      title="Switch View">
+      <i class="material-icons view-icon" :class="{ 'rotate-90': view !== 'vertical' }">view_stream</i>
     </a>
     <span class="active-bar"></span>
   </div>
@@ -67,6 +71,7 @@ export default {
   computed: mapState({
     message: state => state.message,
     tab: state => state.tab,
+    view: state => state.view,
     newEventCount: state => state.events.newEventCount
   }),
   methods: {
@@ -85,6 +90,12 @@ export default {
       bridge.once('flush', () => {
         refreshIcon.style.animation = 'rotate 1s'
       })
+    },
+    switchView () {
+      this.$store.commit(
+        'SWITCH_VIEW',
+        this.view === 'vertical' ? 'horizontal' : 'vertical'
+      )
     },
     updateActiveBar () {
       const activeButton = this.$el.querySelector('.button.active')
@@ -141,6 +152,10 @@ export default {
 .message-container
   height 1em
   cursor default
+  display none
+  @media (min-width: $wide - 300px)
+    display block
+
 
 .message
   color $active-color
@@ -160,6 +175,9 @@ export default {
   .app.dark &
     background-color $dark-background-color
 
+  &.icon-only
+    padding 0 5px
+
   &:hover
     color #555
 
@@ -173,6 +191,11 @@ export default {
     font-size 20px
     margin-right 5px
     color inherit
+    &.view-icon
+      transition transform 0.25s
+
+    &.rotate-90
+      transform rotate(-90deg)
 
   .pane-name
     display none
