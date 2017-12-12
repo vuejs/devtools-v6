@@ -30,6 +30,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
+import { classify } from '../../../util'
 import keyNavMixin from '../../mixins/key-nav'
 
 export default {
@@ -49,7 +50,7 @@ export default {
   },
   methods: {
     filterInstances (e) {
-      bridge.send('filter-instances', e.target.value)
+      bridge.send('filter-instances', classify(e.target.value))
     },
 
     onKeyNav (dir) {

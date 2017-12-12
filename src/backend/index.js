@@ -234,7 +234,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = getInstanceName(instance).toLowerCase()
+  const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
