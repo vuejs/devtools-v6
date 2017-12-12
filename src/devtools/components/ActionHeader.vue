@@ -40,7 +40,8 @@
   &:first-of-type
     margin-left auto
 
-  &:not(.disabled):hover
+  &:not(.disabled):hover,
+  &:not(.disabled).active
     opacity 1
     color $active-color
 

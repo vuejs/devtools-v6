@@ -4,7 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize } from '../util'
+import { stringify, camelize } from '../util'
 import path from 'path'
 
 // Use a custom basename functions instead of the shimed version
@@ -342,11 +342,11 @@ function getInstanceDetails (id) {
 export function getInstanceName (instance) {
   const name = instance.$options.name || instance.$options._componentTag
   if (name) {
-    return classify(name)
+    return name
   }
   const file = instance.$options.__file // injected by vue-loader
   if (file) {
-    return classify(basename(file, '.vue'))
+    return basename(file, '.vue')
   }
   return instance.$root === instance
     ? 'Root'

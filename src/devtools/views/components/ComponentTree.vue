@@ -5,6 +5,12 @@
         <i class="material-icons">search</i>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
+      <a class="button"
+         :class="{ active: classifyDisplayName }"
+         @click="toggleComponentNames"
+         title="Toggle component names">
+        <i class="material-icons">text_fields</i>
+      </a>
     </action-header>
     <div slot="scroll" class="tree">
       <component-instance
@@ -12,7 +18,8 @@
         ref="instances"
         :key="instance.id"
         :instance="instance"
-        :depth="0">
+        :depth="0"
+        :classifyDisplayName="classifyDisplayName">
       </component-instance>
     </div>
   </scroll-pane>
@@ -31,6 +38,11 @@ export default {
     ScrollPane,
     ActionHeader,
     ComponentInstance
+  },
+  data () {
+    return {
+      classifyDisplayName: true
+    }
   },
   props: {
     instances: Array
@@ -68,6 +80,10 @@ export default {
       } else {
         findByIndex(all, currentIndex + 1).select()
       }
+    },
+
+    toggleComponentNames () {
+      this.classifyDisplayName = !this.classifyDisplayName
     }
   }
 }

@@ -19,7 +19,7 @@
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
-        <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
+        <span class="angle-bracket">&lt;</span><span class="instance-name">{{ displayName }}</span><span class="angle-bracket">&gt;</span>
       </span>
       <span class="info console" v-if="instance.consoleId === '$vm0'">
         == {{ instance.consoleId }}
@@ -39,18 +39,25 @@
         v-for="child in sortedChildren"
         :key="child.id"
         :instance="child"
-        :depth="depth + 1">
+        :depth="depth + 1"
+        :classifyDisplayName="classifyDisplayName">
       </component-instance>
     </div>
   </div>
 </template>
 
 <script>
+import { classify } from '../../../util'
+
 export default {
   name: 'ComponentInstance',
   props: {
     instance: Object,
-    depth: Number
+    depth: Number,
+    classifyDisplayName: {
+      type: Boolean,
+      default: true
+    }
   },
   created () {
     // expand root by default
@@ -71,6 +78,9 @@ export default {
           ? a.id - b.id
           : a.top - b.top
       })
+    },
+    displayName () {
+      return this.classifyDisplayName ? classify(this.instance.name) : this.instance.name
     }
   },
   methods: {
