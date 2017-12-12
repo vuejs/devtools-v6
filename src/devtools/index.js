@@ -83,6 +83,9 @@ function initApp (shell) {
     bridge.on('instance-details', details => {
       store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
+    bridge.on('select-instance-by-inspector', isByInspector => {
+      store.commit('components/SELECT_BY_INSPECTOR', isByInspector)
+    })
 
     bridge.on('vuex:init', snapshot => {
       store.commit('vuex/INIT', snapshot)

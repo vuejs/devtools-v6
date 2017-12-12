@@ -59,17 +59,46 @@ function connect () {
     }
   })
 
-  bridge.on('select-instance', id => {
+  // when select element in dev tool element panel
+  //find the selected elment and select it in VUE component tree
+  bridge.on('element-inspected', uuid => {
+    function findParentComponent (instanceMap, uuid) {
+      let instanceContainer = []
+      instanceMap.forEach((instance, id) => {
+        let curSelectedDom = document.querySelector(`[data-v_track_id="${uuid}"]`)
+        let isAncestorInstance = instance.$el.contains(curSelectedDom)
+        if (isAncestorInstance) {
+          instanceContainer.push(instance)
+        }
+      })
+      //sort ancestor
+      instanceContainer.sort(function (m, n) {
+        return m._uid < n._uid
+      })
+      return instanceContainer[0]
+    }
+
+    let selectedComponent = findParentComponent(instanceMap, uuid)
+    if (selectedComponent) {
+      let id = selectedComponent.__VUE_DEVTOOLS_UID__
+      selectInstance(id, true)
+    }
+  })
+
+  function selectInstance (id, isSelectedByInspector = false) {
     currentInspectedId = id
     const instance = instanceMap.get(id)
-    if (instance) {
+    if (instance && !isSelectedByInspector) {
       scrollIntoView(instance)
       highlight(instance)
     }
+    bridge.send('select-instance-by-inspector', isSelectedByInspector)
     bindToConsole(instance)
     flush()
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
-  })
+  }
+
+  bridge.on('select-instance', selectInstance)
 
   bridge.on('filter-instances', _filter => {
     filter = _filter.toLowerCase()

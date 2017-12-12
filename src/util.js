@@ -163,3 +163,36 @@ export function sortByKey (state) {
     return 0
   })
 }
+
+/**
+ * find a path to the specify node with the id.
+ * @param root
+ * @param id
+ * @param comparator
+ * @returns {*}
+ */
+export function findPath (root, id, comparator) {
+  let paths = [root]
+  let NOT_FOUND = undefined
+  if (comparator(root.id, id)) {
+    return paths
+  }
+  if (root.children) {
+    let isNotFound = true
+    root.children.some((node) => {
+      let resolvedPath = findPath(node, id, comparator)
+      if (resolvedPath) {
+        paths = [...paths, ...resolvedPath]
+        isNotFound = false
+        return true
+      }
+    })
+    if(isNotFound) {
+      return NOT_FOUND
+    }
+
+  }else{
+    return NOT_FOUND
+  }
+  return paths
+}
