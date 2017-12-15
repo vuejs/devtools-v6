@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "3.1.5",
+  "version": "3.1.7",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "run:firefox": "web-ext run -s shells/chrome -a dist -i src",
     "zip": "npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
-    "zip:firefox": "web-ext build -s shells/chrome -a dist -i src",
+    "zip:firefox": "web-ext build -s shells/chrome -a dist -i src --overwrite-dest",
     "release": "npm run test && npm run build && npm run zip",
     "test": "npm run lint && bash test/test.sh"
   },
