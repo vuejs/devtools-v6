@@ -28,7 +28,8 @@ export default {
       items: [1, 2],
       regex: /(a\w+b)/g,
       nan: NaN,
-      infinity: Infinity
+      infinity: Infinity,
+      negativeInfinity: -Infinity
     }
   },
   computed: {
