@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 6
+    var baseInstanceCount = 7
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))

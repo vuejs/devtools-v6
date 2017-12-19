@@ -20,10 +20,10 @@ new Vue({
   render (h) {
     return h('div', null, [
       h(Counter),
-      h(Date),
       h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
       h(Other),
-      h(Events)
+      h(Events),
+      h(Date)
     ])
   },
   data: {
