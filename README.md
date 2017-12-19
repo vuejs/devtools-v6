@@ -70,12 +70,10 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 ### Commom problems and how to fix
 
-1. Fixing "Download the Vue Devtools for a better development experience" console message when working locally: 
-	1.1 - Google Chrome: Right click on vue-devtools icon and click "Manage Extensions" then search for vue-devtools on the extensions list and then check the "Allow access to file URLs" box.
+1. Fixing "Download the Vue Devtools for a better development experience" console message when working locally over `file://` protocol:
+  1.1 - Google Chrome: Right click on vue-devtools icon and click "Manage Extensions" then search for vue-devtools on the extensions list. Check the "Allow access to file URLs" box.
 
 
 ### License
 
 [MIT](http://opensource.org/licenses/MIT)
-
-
