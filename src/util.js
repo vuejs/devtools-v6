@@ -43,7 +43,8 @@ export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
 }
 
-function replacer (key, val) {
+function replacer (key) {
+  const val = this[key]
   if (val === undefined) {
     return UNDEFINED
   } else if (val === Infinity) {
@@ -53,6 +54,8 @@ function replacer (key, val) {
   } else if (val instanceof RegExp) {
     // special handling of native type
     return `[native RegExp ${val.toString()}]`
+  } else if (val instanceof Date) {
+    return `[native Date ${val.toString()}]`
   } else {
     return sanitize(val)
   }
@@ -64,6 +67,8 @@ export function parse (data, revive) {
     : CircularJSON.parse(data)
 }
 
+const specialTypeRE = /^\[native (\w+) (.*)\]$/
+
 function reviver (key, val) {
   if (val === UNDEFINED) {
     return undefined
@@ -71,6 +76,9 @@ function reviver (key, val) {
     return Infinity
   } else if (val === NAN) {
     return NaN
+  } else if (specialTypeRE.test(val)) {
+    const [, type, string] = specialTypeRE.exec(val)
+    return new window[type](string)
   } else {
     return val
   }
