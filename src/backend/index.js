@@ -6,6 +6,7 @@ import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
 import { stringify, classify, camelize, set, parse } from '../util'
 import path from 'path'
+import ComponentSelector from './component-selector'
 
 // Use a custom basename functions instead of the shimed version
 // because it doesn't work on Windows
@@ -76,8 +77,9 @@ function connect () {
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
 
   bridge.on('leave-instance', unHighlight)
-  bridge.on('select-element', selectElement)
-  bridge.on('stop-select-element', removeDocumentListeners)
+
+  const componentSelector = new ComponentSelector(bridge, instanceMap)
+  componentSelector.onComponentSelected(selectInstance)
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
@@ -124,61 +126,6 @@ function connect () {
     'background:transparent'
   )
   scan()
-}
-
-let component
-
-function selectElement () {
-  document.body.addEventListener('mouseover', onMouseOver)
-  document.body.addEventListener('mouseup', onMouseUp)
-}
-
-function onMouseOver (e) {
-  instanceMap.forEach(instance => {
-    if (instance.$el.isSameNode(e.target)) {
-      component = instance
-
-      return
-    }
-
-    if (instance.$el.contains(e.target) && (!component || !instance.$el.contains(component.$el))) {
-      component = instance
-    }
-  })
-
-  unHighlight()
-  if (component) {
-    highlight(component)
-  }
-}
-
-function onMouseUp (e) {
-  e.preventDefault()
-
-  selectInstance(component.__VUE_DEVTOOLS_UID__, false)
-  expandParent(component)
-  bridge.send('component-selected')
-
-  removeDocumentListeners()
-}
-
-function expandParent (child) {
-  const instance = child.$parent
-
-  if (instance) {
-    bridge.send('toggle-instance', stringify({
-      instance: getInstanceDetails(instance.__VUE_DEVTOOLS_UID__),
-      expanded: true
-    }))
-    expandParent(instance)
-  }
-}
-
-function removeDocumentListeners () {
-  document.body.removeEventListener('mouseover', onMouseOver)
-  document.body.removeEventListener('mouseup', onMouseUp)
-
-  unHighlight()
 }
 
 /**
@@ -469,6 +416,12 @@ export function getInstanceName (instance) {
     : 'Anonymous Component'
 }
 
+/**
+ * Select an instance in the component view
+ *
+ * @param {String} id
+ * @param {Boolean} highlightElement
+ */
 function selectInstance (id, highlightElement = true) {
   currentInspectedId = id
   const instance = instanceMap.get(id)

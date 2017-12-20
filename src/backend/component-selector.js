@@ -1,0 +1,104 @@
+import { highlight, unHighlight } from './highlighter'
+import { stringify } from '../util'
+
+export default class ComponentSelector {
+  constructor (bridge, instanceMap) {
+    const self = this
+    self.bridge = bridge
+    self.instanceMap = instanceMap
+    self.listeners = []
+    self.bindMethods()
+
+    bridge.on('start-component-selector', self.startSelecting)
+    bridge.on('stop-component-selector', self.stopSelecting)
+  }
+
+  /**
+   * Adds event listeners for mouseover and mouseup
+   */
+  startSelecting () {
+    document.body.addEventListener('mouseover', this.elementMouseOver)
+    document.body.addEventListener('mouseup', this.elementClicked)
+  }
+
+  /**
+   * Removes event listeners
+   */
+  stopSelecting () {
+    document.body.removeEventListener('mouseover', this.elementMouseOver)
+    document.body.removeEventListener('mouseup', this.elementClicked)
+
+    unHighlight()
+  }
+
+  /**
+   * Highlights a component on element mouse over
+   * @param {MouseEvent} e
+   */
+  elementMouseOver (e) {
+    this.instanceMap.forEach(instance => {
+      if (instance.$el.isSameNode(e.target)) {
+        this.selectedInstance = instance
+
+        return
+      }
+
+      if (instance.$el.contains(e.target) && (!this.selectedInstance || !instance.$el.contains(this.selectedInstance.$el))) {
+        this.selectedInstance = instance
+      }
+    })
+
+    unHighlight()
+    if (this.selectedInstance) {
+      highlight(this.selectedInstance)
+    }
+  }
+
+  /**
+   * Selects an instance in the component view
+   * @param {MouseEvent} e
+   */
+  elementClicked (e) {
+    e.preventDefault()
+
+    this.listeners.forEach(listener => listener(this.selectedInstance.__VUE_DEVTOOLS_UID__, false))
+    this.expandParent(this.selectedInstance)
+    this.bridge.send('component-selected')
+
+    this.stopSelecting()
+  }
+
+  /**
+   * Fires event to expand an instance' tree
+   * @param {Vue} child
+   */
+  expandParent (child) {
+    const instance = child.$parent
+
+    if (instance) {
+      this.bridge.send('toggle-instance', stringify({
+        id: instance.__VUE_DEVTOOLS_UID__,
+        expanded: true
+      }))
+      this.expandParent(instance)
+    }
+  }
+
+  /**
+   * Used for listening to event when a component is selected
+   * @param {Function} method
+   */
+  onComponentSelected (method) {
+    this.listeners.push(method)
+  }
+
+  /**
+   * Bind class methods to the class scope to avoid rebind for event listeners
+   */
+  bindMethods () {
+    this.startSelecting = this.startSelecting.bind(this)
+    this.stopSelecting = this.stopSelecting.bind(this)
+    this.elementMouseOver = this.elementMouseOver.bind(this)
+    this.elementClicked = this.elementClicked.bind(this)
+  }
+}

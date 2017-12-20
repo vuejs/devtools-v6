@@ -123,7 +123,7 @@ function initApp (shell) {
     })
 
     bridge.on('toggle-instance', payload => {
-      store.dispatch('components/toggleInstance', parse(payload))
+      store.commit('components/TOGGLE_INSTANCE', parse(payload))
     })
 
     bridge.on('vuex:init', snapshot => {

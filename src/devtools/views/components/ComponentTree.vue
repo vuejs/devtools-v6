@@ -5,6 +5,14 @@
         <i class="material-icons">search</i>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
+      <a 
+        class="select-component" 
+        :class="{active: selecting}"
+        v-tooltip="'Select component from dom'"
+        @click="toggleSelecting"
+      >
+        <i class="material-icons">location_searching</i>
+      </a>
       <a class="button classify-names"
          :class="{ active: classifyComponents }"
          v-tooltip="'Format component names'"
@@ -44,6 +52,11 @@ export default {
   },
   props: {
     instances: Array
+  },
+  data () {
+    return {
+      selecting: false
+    }
   },
   computed: {
     ...mapState('components', [
@@ -87,7 +100,19 @@ export default {
       } else {
         findByIndex(all, currentIndex + 1).select()
       }
+    },
+    toggleSelecting () {
+      this.selecting = !this.selecting
+
+      if (this.selecting) {
+        bridge.send('start-component-selector')
+      } else {
+        bridge.send('stop-component-selector')
+      }
     }
+  },
+  mounted () {
+    bridge.on('component-selected', () => this.selecting = false)
   }
 }
 
@@ -124,6 +149,16 @@ function findByIndex (all, index) {
 </script>
 
 <style lang="stylus">
+@import "../../variables"
+
+
 .tree
   padding 5px
+.select-component
+  display flex
+  align-items center
+  cursor pointer
+  &.active
+    color $active-color
+
 </style>
