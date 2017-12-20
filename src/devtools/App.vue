@@ -11,6 +11,13 @@
       </transition>
     </span>
     <a class="button components"
+      :class="{ active: selecting}"
+      @click="selectElement"
+      title="Select element">
+      <i class="material-icons">location_searching</i>
+      <span class="pane-name">Select element</span>
+    </a>
+    <a class="button components"
       :class="{ active: tab === 'components'}"
       @click="switchTab('components')"
       v-tooltip="'Switch to Components'">
@@ -54,6 +61,14 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'app',
+  data () {
+    return {
+      selecting: false,
+      isDark: typeof chrome !== 'undefined' &&
+        typeof chrome.devtools !== 'undefined' &&
+        chrome.devtools.panels.themeName === 'dark'
+    }
+  },
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
@@ -98,6 +113,15 @@ export default {
       const activeBar = this.$el.querySelector('.active-bar')
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
+    },
+    selectElement () {
+      this.selecting = !this.selecting
+
+      if (this.selecting) {
+        bridge.send('select-element')
+      } else {
+        bridge.send('stop-select-element')
+      }
     }
   },
   mounted () {
@@ -107,6 +131,7 @@ export default {
 
     this.updateActiveBar()
     window.addEventListener('resize', this.updateActiveBar)
+    bridge.on('component-selected', () => this.selecting = false)
   },
   destroyed () {
     window.removeEventListener('resize', this.updateActiveBar)

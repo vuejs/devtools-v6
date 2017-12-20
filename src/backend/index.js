@@ -59,13 +59,7 @@ function connect () {
     }
   })
 
-  bridge.on('select-instance', id => {
-    currentInspectedId = id
-    const instance = instanceMap.get(id)
-    bindToConsole(instance)
-    flush()
-    bridge.send('instance-details', stringify(getInstanceDetails(id)))
-  })
+  bridge.on('select-instance', selectInstance)
 
   bridge.on('scroll-to-instance', id => {
     const instance = instanceMap.get(id)
@@ -82,6 +76,8 @@ function connect () {
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
 
   bridge.on('leave-instance', unHighlight)
+  bridge.on('select-element', selectElement)
+  bridge.on('stop-select-element', removeDocumentListeners)
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
@@ -128,6 +124,61 @@ function connect () {
     'background:transparent'
   )
   scan()
+}
+
+let component
+
+function selectElement () {
+  document.body.addEventListener('mouseover', onMouseOver)
+  document.body.addEventListener('mouseup', onMouseUp)
+}
+
+function onMouseOver (e) {
+  instanceMap.forEach(instance => {
+    if (instance.$el.isSameNode(e.target)) {
+      component = instance
+
+      return
+    }
+
+    if (instance.$el.contains(e.target) && (!component || !instance.$el.contains(component.$el))) {
+      component = instance
+    }
+  })
+
+  unHighlight()
+  if (component) {
+    highlight(component)
+  }
+}
+
+function onMouseUp (e) {
+  e.preventDefault()
+
+  selectInstance(component.__VUE_DEVTOOLS_UID__, false)
+  expandParent(component)
+  bridge.send('component-selected')
+
+  removeDocumentListeners()
+}
+
+function expandParent (child) {
+  const instance = child.$parent
+
+  if (instance) {
+    bridge.send('toggle-instance', stringify({
+      instance: getInstanceDetails(instance.__VUE_DEVTOOLS_UID__),
+      expanded: true
+    }))
+    expandParent(instance)
+  }
+}
+
+function removeDocumentListeners () {
+  document.body.removeEventListener('mouseover', onMouseOver)
+  document.body.removeEventListener('mouseup', onMouseUp)
+
+  unHighlight()
 }
 
 /**
@@ -416,6 +467,18 @@ export function getInstanceName (instance) {
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'
+}
+
+function selectInstance (id, highlightElement = true) {
+  currentInspectedId = id
+  const instance = instanceMap.get(id)
+  if (instance && highlightElement) {
+    scrollIntoView(instance)
+    highlight(instance)
+  }
+  bindToConsole(instance)
+  flush()
+  bridge.send('instance-details', stringify(getInstanceDetails(id)))
 }
 
 /**
