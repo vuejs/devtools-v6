@@ -72,6 +72,16 @@ module.exports = {
       .setValue('.search input', 'target')
       .assert.count('.instance', 5)
 
+      // Select component
+      .click('.select-component')
+      .frame('target')
+        .useXpath()
+        .moveToElement("//*[contains(text(), 'mine')]", 0, 0)
+        .click('//*[contains(text(), "mine")]')
+        .frame(null)
+      .useCss()
+      .assert.containsText('.tree', '<Mine> == $vm0')
+
       // vuex
       .frame('target')
         .click('.increment')

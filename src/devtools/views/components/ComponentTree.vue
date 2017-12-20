@@ -112,7 +112,9 @@ export default {
     }
   },
   mounted () {
-    bridge.on('component-selected', () => this.selecting = false)
+    bridge.on('component-selected', () => {
+      this.selecting = false
+    })
   }
 }
 
@@ -151,7 +153,6 @@ function findByIndex (all, index) {
 <style lang="stylus">
 @import "../../variables"
 
-
 .tree
   padding 5px
 .select-component
@@ -160,5 +161,4 @@ function findByIndex (all, index) {
   cursor pointer
   &.active
     color $active-color
-
 </style>
