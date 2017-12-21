@@ -61,10 +61,12 @@ export default class ComponentSelector {
   elementClicked (e) {
     e.preventDefault()
 
-    this.listeners.forEach(listener => listener(this.selectedInstance.__VUE_DEVTOOLS_UID__, false))
-    this.expandParent(this.selectedInstance)
-    this.bridge.send('component-selected')
+    if (this.selectedInstance) {
+      this.listeners.forEach(listener => listener(this.selectedInstance.__VUE_DEVTOOLS_UID__, false))
+      this.expandParent(this.selectedInstance)
+    }
 
+    this.bridge.send('component-selected')
     this.stopSelecting()
   }
 
