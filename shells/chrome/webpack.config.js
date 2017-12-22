@@ -1,8 +1,8 @@
-var path = require('path')
-var webpack = require('webpack')
-var alias = require('../alias')
+const path = require('path')
+const webpack = require('webpack')
+const alias = require('../alias')
 
-var bubleOptions = {
+const bubleOptions = {
   target: process.env.NODE_ENV === 'production' ? null : { chrome: 52, firefox: 48 },
   objectAssign: 'Object.assign'
 }
@@ -55,11 +55,13 @@ module.exports = {
 }
 
 if (process.env.NODE_ENV === 'production') {
+  const UglifyPlugin = require('uglifyjs-webpack-plugin')
   module.exports.plugins = [
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
       }
-    })
+    }),
+    new UglifyPlugin()
   ]
 }
