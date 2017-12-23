@@ -63,12 +63,16 @@ function connect () {
     currentInspectedId = id
     const instance = instanceMap.get(id)
     if (instance) {
-      scrollIntoView(instance)
       highlight(instance)
     }
     bindToConsole(instance)
     flush()
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
+  })
+
+  bridge.on('scroll-to-instance', id => {
+    const instance = instanceMap.get(id)
+    instance && scrollIntoView(instance)
   })
 
   bridge.on('filter-instances', _filter => {

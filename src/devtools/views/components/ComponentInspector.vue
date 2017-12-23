@@ -7,7 +7,7 @@
         <span style="color:#ccc">&gt;</span>
       </span>
       <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
-        <i class="material-icons">visibility</i>
+        <i class="material-icons">find_in_page</i>
         <span>Inspect DOM</span>
       </a>
       <div class="search">
