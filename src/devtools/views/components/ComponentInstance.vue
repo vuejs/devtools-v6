@@ -40,7 +40,7 @@
         :key="child.id"
         :instance="child"
         :depth="depth + 1"
-        :classifyDisplayName="classifyDisplayName">
+        :classify-display-name="classifyDisplayName">
       </component-instance>
     </div>
   </div>
