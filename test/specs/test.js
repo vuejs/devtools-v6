@@ -43,6 +43,13 @@ module.exports = {
       .assert.containsText('.data-el.data .data-field:nth-child(4)', 'NaN')
       .assert.containsText('.data-el.data .data-field:nth-child(1)', 'Infinity')
 
+      // Classify names
+      .assert.containsText('.instance .instance:nth-child(3)', 'OtherWithMine')
+      .click('.button.classify-names')
+      .assert.containsText('.instance .instance:nth-child(3)', 'other-with-mine')
+      .click('.button.classify-names')
+      .assert.containsText('.instance .instance:nth-child(3)', 'OtherWithMine')
+
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
       .assert.count('.instance', baseInstanceCount + 2)
