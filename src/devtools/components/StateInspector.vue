@@ -127,6 +127,7 @@ export default {
     color $green
     position relative
     cursor pointer
+    border-radius 3px
 
     .arrow
       position absolute
