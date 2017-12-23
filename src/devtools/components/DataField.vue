@@ -1,16 +1,19 @@
 <template>
   <div class="data-field">
-    <div class="self"
+    <div
+      class="self"
+      :style="{ marginLeft: depth * 14 + 'px' }"
       @click="toggle"
-      :style="{ marginLeft: depth * 14 + 'px' }">
+    >
       <span
+        v-show="isExpandableType"
         class="arrow right"
         :class="{ rotated: expanded }"
-        v-show="isExpandableType">
+      >
       </span>
       <span class="key">{{ field.key }}</span>
-      <span class="colon">:<div class="meta" v-if="field.meta">
-        <div class="meta-field" v-for="(val, key) in field.meta">
+      <span class="colon">:<div v-if="field.meta" class="meta">
+        <div v-for="(val, key) in field.meta" class="meta-field">
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>

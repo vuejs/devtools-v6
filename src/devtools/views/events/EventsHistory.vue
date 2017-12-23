@@ -18,7 +18,7 @@
       <div v-if="filteredEvents.length === 0" class="no-events">
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <div class="entry"
+      <div class="entry list-item"
         v-else
         v-for="event in filteredEvents"
         :class="{ active: inspectedIndex === events.indexOf(event) }"
@@ -91,11 +91,9 @@ export default {
 .entry
   position relative;
   font-family Menlo, Consolas, monospace
-  color #881391
   cursor pointer
   padding 10px 20px
   font-size 12px
-  background-color $background-color
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   .event-name
     font-weight 600
@@ -107,21 +105,15 @@ export default {
     color #999
     margin-left 8px
   &.active
-    color #fff
-    background-color $active-color
     .time, .event-type, .component-name
       color lighten($active-color, 75%)
     .event-name
       color: #fff
     .event-source
       color #ddd
-  .app.dark &
-    color #e36eec
-    background-color $dark-background-color
 
 .time
   font-size 11px
   color #999
   float right
-  margin-top 3px
 </style>

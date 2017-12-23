@@ -4,7 +4,7 @@
       inactive: instance.inactive,
       selected: selected
     }">
-    <div class="self"
+    <div class="self selectable-item"
       @click.stop="select"
       @dblclick.stop="toggle"
       @mouseenter="enter"
@@ -19,7 +19,7 @@
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
-        <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
+        <span class="angle-bracket">&lt;</span><span class="item-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
       </span>
       <span class="info console" v-if="instance.consoleId === '$vm0'">
         == {{ instance.consoleId }}
@@ -116,7 +116,6 @@ export default {
   position relative
   overflow hidden
   z-index 2
-  background-color $background-color
   transition background-color .1s ease
   border-radius 3px
   font-size 14px
@@ -125,20 +124,6 @@ export default {
   white-space nowrap
   &:hidden
     display none
-  &:hover
-    background-color #E5F2FF
-  &.selected
-    background-color $active-color
-    .arrow
-      border-left-color #fff
-    .instance-name
-      color #fff
-  .app.dark &
-    background-color $dark-background-color
-    &:hover
-      background-color #444
-    &.selected
-      background-color $active-color
 
 .children
   position relative
@@ -188,7 +173,7 @@ export default {
 .angle-bracket
   color #ccc
 
-.instance-name
+.item-name
   color $component-color
   margin 0 1px
   transition color .1s ease
