@@ -5,7 +5,7 @@
         <i class="material-icons">search</i>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
-      <a class="button"
+      <a class="button classify-names"
          :class="{ active: classifyDisplayName }"
          @click="toggleComponentNames"
          title="Toggle component names">
@@ -32,6 +32,10 @@ import ComponentInstance from './ComponentInstance.vue'
 
 import { classify } from '../../../util'
 import keyNavMixin from '../../mixins/key-nav'
+import storage from '../../storage'
+
+const CLASSIFY_NAMES_KEY = 'CLASSIFY_COMPONENTS_NAMES'
+const classifyDisplayName = storage.get(CLASSIFY_NAMES_KEY)
 
 export default {
   mixins: [keyNavMixin],
@@ -42,7 +46,7 @@ export default {
   },
   data () {
     return {
-      classifyDisplayName: true
+      classifyDisplayName: classifyDisplayName == null ? true : classifyDisplayName
     }
   },
   props: {
@@ -84,7 +88,7 @@ export default {
     },
 
     toggleComponentNames () {
-      this.classifyDisplayName = !this.classifyDisplayName
+      storage.set(CLASSIFY_NAMES_KEY, this.classifyDisplayName = !this.classifyDisplayName)
     }
   }
 }
