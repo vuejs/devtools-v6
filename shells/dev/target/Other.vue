@@ -6,7 +6,7 @@
 </template>
 
 <script>
-// this computed property should be visible 
+// this computed property should be visible
 // even if component has no 'computed' defined
 const computedPropMixin = {
   computed: {

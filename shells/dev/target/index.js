@@ -5,6 +5,8 @@ import Other from './Other.vue'
 import Counter from './Counter.vue'
 import Events from './Events.vue'
 import MyClass from './MyClass.js'
+import Router from './Router.vue'
+import router from './router'
 
 let items = []
 for (var i = 0; i < 100; i++) {
@@ -16,12 +18,14 @@ circular.self = circular
 
 new Vue({
   store,
+  router,
   render (h) {
     return h('div', null, [
       h(Counter),
       h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
       h(Other),
-      h(Events)
+      h(Events),
+      h(Router)
     ])
   },
   data: {

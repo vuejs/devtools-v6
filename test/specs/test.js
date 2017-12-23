@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 6
+    var baseInstanceCount = 7
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
@@ -19,7 +19,7 @@ module.exports = {
       .assert.visible('.tree')
       .assert.containsText('.action-header .title', 'Root')
       .assert.elementPresent('.data-field')
-      .assert.containsText('.data-field', 'obj:Object')
+      .assert.containsText('.data-field', '$route:Object')
 
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
@@ -38,10 +38,10 @@ module.exports = {
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
       // Regexp
-      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'regex:/(a\\w+b)/g')
+      .assert.containsText('.data-el.data .data-field:nth-child(6)', 'regex:/(a\\w+b)/g')
       // Literals
-      .assert.containsText('.data-el.data .data-field:nth-child(4)', 'NaN')
-      .assert.containsText('.data-el.data .data-field:nth-child(1)', 'Infinity')
+      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'NaN')
+      .assert.containsText('.data-el.data .data-field:nth-child(2)', 'Infinity')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
