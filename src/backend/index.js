@@ -591,7 +591,7 @@ function processObservables (instance) {
 function scrollIntoView (instance) {
   const rect = getInstanceRect(instance)
   if (rect) {
-    window.scrollBy(0, rect.top)
+    window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
 }
 
