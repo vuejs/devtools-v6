@@ -6,7 +6,8 @@ const state = {
   instances: [],
   instancesMap: {},
   expansionMap: {},
-  events: []
+  events: [],
+  scrollToExpanded: null
 }
 
 const mutations = {
@@ -43,15 +44,23 @@ const mutations = {
   },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = Object.freeze(instance)
+    state.scrollToExpanded = null
   },
-  TOGGLE_INSTANCE ({ expansionMap }, { id, expanded }) {
-    Vue.set(expansionMap, id, expanded)
+  TOGGLE_INSTANCE (state, { id, expanded, scrollTo = null } = {}) {
+    Vue.set(state.expansionMap, id, expanded)
+    state.scrollToExpanded = scrollTo
   }
 }
 
 const actions = {
-  toggleInstance ({ commit, dispatch, state }, { instance, expanded, recursive, parent }) {
-    commit('TOGGLE_INSTANCE', { id: instance.id, expanded })
+  toggleInstance ({ commit, dispatch, state }, { instance, expanded, recursive, parent = false } = {}) {
+    const id = instance.id
+
+    commit('TOGGLE_INSTANCE', {
+      id,
+      expanded,
+      scrollTo: parent ? id : null
+    })
 
     if (recursive) {
       instance.children.forEach((child) => {
@@ -70,7 +79,8 @@ const actions = {
         i = i.parent
         commit('TOGGLE_INSTANCE', {
           id: i.id,
-          expanded: true
+          expanded: true,
+          scrollTo: id
         })
       }
     }

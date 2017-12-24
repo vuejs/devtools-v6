@@ -4,7 +4,9 @@
       inactive: instance.inactive,
       selected: selected
     }">
-    <div class="self"
+    <div
+      ref="self"
+      class="self"
       @click.stop="select"
       @dblclick.stop="toggle"
       @mouseenter="enter"
@@ -46,6 +48,8 @@
 </template>
 
 <script>
+import { scrollIntoView } from '../../../util'
+
 export default {
   name: 'ComponentInstance',
   props: {
@@ -59,6 +63,9 @@ export default {
     }
   },
   computed: {
+    scrollToExpanded () {
+      return this.$store.state.components.scrollToExpanded
+    },
     expanded () {
       return !!this.$store.state.components.expansionMap[this.instance.id]
     },
@@ -71,6 +78,18 @@ export default {
           ? a.id - b.id
           : a.top - b.top
       })
+    }
+  },
+  watch: {
+    scrollToExpanded: {
+      handler (value, oldValue) {
+        if (value !== oldValue && value === this.instance.id) {
+          this.$nextTick(() => {
+            scrollIntoView(document.querySelector('.left .scroll'), this.$refs.self)
+          })
+        }
+      },
+      immediate: true
     }
   },
   methods: {
