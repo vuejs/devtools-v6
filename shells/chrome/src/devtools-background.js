@@ -88,4 +88,5 @@ chrome.runtime.onMessage.addListener(request => {
 
 function onPanelLoad () {
   pendingAction && pendingAction()
+  pendingAction = null
 }
