@@ -64,7 +64,6 @@ function connect () {
     const instance = instanceMap.get(id)
     if (instance) {
       scrollIntoView(instance)
-      highlight(instance)
     }
     bindToConsole(instance)
     flush()
