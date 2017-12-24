@@ -54,7 +54,7 @@ function onPanelHidden () {
 chrome.contextMenus.create({
   id: 'vue-inspect-instance',
   title: 'Inspect Vue component',
-  contexts: ['page']
+  contexts: ['all']
 })
 
 chrome.contextMenus.onClicked.addListener(genericOnContext)
