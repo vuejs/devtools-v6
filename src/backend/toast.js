@@ -9,7 +9,7 @@ export function installToast (window) {
   }
 
   window.__VUE_DEVTOOLS_TOAST = (message, type) => {
-    console.log('%c vue-devtools ', 'background:#35495e ; padding: 1px; border-radius: 3px;  color: #fff', message)
+    console.log(`%c vue-devtools %c ${message} %c `, 'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff', `background: ${colors[type] || colors.normal}; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff`, 'background:transparent')
     if (!toastEl) {
       toastEl = document.createElement('div')
       toastEl.addEventListener('click', removeToast)
@@ -43,7 +43,7 @@ export function installToast (window) {
       document.body.appendChild(toastEl)
     }
 
-    toastEl.querySelector('.vue-content').innerHTML = message
+    toastEl.querySelector('.vue-content').innerText = message
 
     clearTimeout(toastTimer)
     toastTimer = setTimeout(removeToast, 5000)
