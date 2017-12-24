@@ -2,7 +2,13 @@ export function installToast (window) {
   let toastEl = null
   let toastTimer = 0
 
-  window.__VUE_DEVTOOLS_TOAST = (message) => {
+  const colors = {
+    normal: '#3BA776',
+    warn: '#DB6B00',
+    error: '#DB2600'
+  }
+
+  window.__VUE_DEVTOOLS_TOAST = (message, type) => {
     console.log('%c vue-devtools ', 'background:#35495e ; padding: 1px; border-radius: 3px;  color: #fff', message)
     if (!toastEl) {
       toastEl = document.createElement('div')
@@ -23,7 +29,7 @@ export function installToast (window) {
       ">
         <div style="
           padding: 6px 12px;
-          background: #3BA776;
+          background: ${colors[type] || colors.normal};
           color: white;
           border-radius: 3px;
           flex: auto 0 0;

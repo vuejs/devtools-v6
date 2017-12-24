@@ -73,7 +73,7 @@ function genericOnContext (info, tab) {
         }, 'Open Vue devtools to see component details')
       } else {
         pendingAction = null
-        toast('No Vue component was found')
+        toast('No Vue component was found', 'warn')
       }
     })
   }
@@ -97,7 +97,7 @@ chrome.runtime.onMessage.addListener(request => {
   if (request === 'vue-panel-load') {
     onPanelLoad()
   } else if (request.vueToast) {
-    toast(request.vueToast)
+    toast(request.vueToast.message, request.vueToast.type)
   }
 })
 
@@ -108,9 +108,9 @@ function onPanelLoad () {
 
 // Toasts
 
-function toast (message) {
+function toast (message, type = 'normal') {
   const src = `(function() {
-    __VUE_DEVTOOLS_TOAST(\`${message}\`);
+    __VUE_DEVTOOLS_TOAST(\`${message}\`, '${type}');
   })()`
 
   chrome.devtools.inspectedWindow.eval(src, function (res, err) {

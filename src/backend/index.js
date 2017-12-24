@@ -93,7 +93,7 @@ function connect () {
       }
     }
 
-    toast('No Vue component was found')
+    toast('No Vue component was found', 'warn')
   })
 
   // vuex
@@ -642,7 +642,7 @@ function getUniqueId (instance) {
  * Display a toast message.
  * @param {any} message HTML content
  */
-export function toast (message) {
+export function toast (message, type = 'normal') {
   const fn = window.__VUE_DEVTOOLS_TOAST
-  fn && fn(message)
+  fn && fn(message, type)
 }
