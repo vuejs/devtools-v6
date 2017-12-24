@@ -3,6 +3,8 @@
 // Vue presence on the page. If yes, create the Vue panel; otherwise poll
 // for 10 seconds.
 
+let panelShown = false
+let pendingAction
 let created = false
 let checkCount = 0
 
@@ -14,6 +16,7 @@ function createPanelIfHasVue () {
   if (created || checkCount++ > 10) {
     return
   }
+  panelShown = false
   chrome.devtools.inspectedWindow.eval(
     '!!(window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue)',
     function (hasVue) {
@@ -24,10 +27,65 @@ function createPanelIfHasVue () {
       created = true
       chrome.devtools.panels.create(
         'Vue', 'icons/128.png', 'devtools.html',
-        function (panel) {
+        panel => {
           // panel loaded
+          panel.onShown.addListener(onPanelShown)
+          panel.onHidden.addListener(onPanelHidden)
         }
       )
     }
   )
+}
+
+// Manage panel visibility
+
+function onPanelShown () {
+  chrome.runtime.sendMessage('vue-panel-shown')
+  panelShown = true
+}
+
+function onPanelHidden () {
+  chrome.runtime.sendMessage('vue-panel-hidden')
+  panelShown = false
+}
+
+// Page context menu entry
+
+chrome.contextMenus.create({
+  id: 'vue-inspect-instance',
+  title: 'Inspect Vue component',
+  contexts: ['page']
+})
+
+chrome.contextMenus.onClicked.addListener(genericOnContext)
+
+function genericOnContext (info, tab) {
+  if (info.menuItemId === 'vue-inspect-instance') {
+    panelAction(() => {
+      chrome.runtime.sendMessage('vue-get-context-menu-target')
+    })
+  }
+}
+
+// Action that may execute immediatly
+// or later when the Vue panel is ready
+
+function panelAction (cb) {
+  if (created && panelShown) {
+    cb()
+  } else {
+    pendingAction = cb
+  }
+}
+
+// Execute pending action when Vue panel is ready
+
+chrome.runtime.onMessage.addListener(request => {
+  if (request === 'vue-panel-load') {
+    onPanelLoad()
+  }
+})
+
+function onPanelLoad () {
+  pendingAction && pendingAction()
 }

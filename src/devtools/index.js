@@ -3,6 +3,9 @@ import App from './App.vue'
 import store from './store'
 import { parse } from '../util'
 
+let panelShown = false
+let pendingAction = null
+
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.
 // We do want the errors to be thrown in the dev shell though.
@@ -14,6 +17,16 @@ if (typeof chrome !== 'undefined' && chrome.devtools) {
       component: vm.$options.name || vm.$options._componentTag || 'anonymous'
     })
   }
+
+  chrome.runtime.onMessage.addListener(request => {
+    if (request === 'vue-panel-shown') {
+      onPanelShown()
+    } else if (request === 'vue-panel-hidden') {
+      onPanelHidden()
+    } else if (request === 'vue-get-context-menu-target') {
+      getContextMenuInstance()
+    }
+  })
 }
 
 Vue.options.renderError = (h, e) => {
@@ -67,6 +80,10 @@ function initApp (shell) {
       )
       bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
       bridge.send('events:toggle-recording', store.state.events.enabled)
+
+      if (typeof chrome !== 'undefined' && chrome.devtools) {
+        chrome.runtime.sendMessage('vue-panel-load')
+      }
     })
 
     bridge.once('proxy-fail', () => {
@@ -99,6 +116,12 @@ function initApp (shell) {
       }
     })
 
+    bridge.on('context-menu-target', id => {
+      ensurePaneShown(() => {
+        inspectInstance(id)
+      })
+    })
+
     app = new Vue({
       store,
       render (h) {
@@ -106,4 +129,41 @@ function initApp (shell) {
       }
     }).$mount('#app')
   })
+}
+
+function getContextMenuInstance () {
+  bridge.send('get-context-menu-target')
+}
+
+function inspectInstance (id) {
+  bridge.send('select-instance', id)
+  store.commit('SWITCH_TAB', 'components')
+  const instance = store.state.components.instancesMap[id]
+  instance && store.dispatch('components/toggleInstance', {
+    instance,
+    expanded: true,
+    parent: true
+  })
+}
+
+// Pane visibility management
+
+function ensurePaneShown (cb) {
+  if (panelShown) {
+    cb()
+  } else {
+    pendingAction = cb
+  }
+}
+
+function onPanelShown () {
+  panelShown = true
+  if (pendingAction) {
+    pendingAction()
+    pendingAction = null
+  }
+}
+
+function onPanelHidden () {
+  panelShown = false
 }

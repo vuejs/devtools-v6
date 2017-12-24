@@ -80,6 +80,22 @@ function connect () {
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
   bridge.on('leave-instance', unHighlight)
 
+  // Get the instance id that is targeted by context menu
+  bridge.on('get-context-menu-target', () => {
+    let lastContextMenuTarget = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET
+    if (lastContextMenuTarget) {
+      // Search for parent that "is" a component instance
+      while (!lastContextMenuTarget.__vue__ && lastContextMenuTarget.parentElement) {
+        lastContextMenuTarget = lastContextMenuTarget.parentElement
+      }
+      const instance = lastContextMenuTarget.__vue__
+      if (instance) {
+        const id = instance.__VUE_DEVTOOLS_UID__
+        id && bridge.send('context-menu-target', id)
+      }
+    }
+  })
+
   // vuex
   if (hook.store) {
     initVuexBackend(hook, bridge)

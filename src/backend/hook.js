@@ -77,4 +77,10 @@ export function installHook (window) {
       return hook
     }
   })
+
+  // Start recording context menu when Vue is detected
+  // event if Vue devtools are not loaded yet
+  document.addEventListener('contextmenu', event => {
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = event.target
+  })
 }

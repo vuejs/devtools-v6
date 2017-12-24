@@ -4,6 +4,7 @@ const state = {
   selected: null,
   inspectedInstance: {},
   instances: [],
+  instancesMap: {},
   expansionMap: {},
   events: []
 }
@@ -14,8 +15,26 @@ const mutations = {
     if (process.env.NODE_ENV !== 'production') {
       start = window.performance.now()
     }
+
+    // Instance ID map
+    // + add 'parent' properties
+    const map = {}
+    function walk (instance) {
+      map[instance.id] = instance
+      if (instance.children) {
+        instance.children.forEach(child => {
+          child.parent = instance
+          walk(child)
+        })
+      }
+    }
+    payload.instances.forEach(walk)
+
+    // Mutations
     state.instances = Object.freeze(payload.instances)
     state.inspectedInstance = Object.freeze(payload.inspectedInstance)
+    state.instancesMap = Object.freeze(map)
+
     if (process.env.NODE_ENV !== 'production') {
       Vue.nextTick(() => {
         console.log(`devtools render took ${window.performance.now() - start}ms.`)
@@ -31,7 +50,7 @@ const mutations = {
 }
 
 const actions = {
-  toggleInstance ({ commit, dispatch }, { instance, expanded, recursive }) {
+  toggleInstance ({ commit, dispatch, state }, { instance, expanded, recursive, parent }) {
     commit('TOGGLE_INSTANCE', { id: instance.id, expanded })
 
     if (recursive) {
@@ -42,6 +61,18 @@ const actions = {
           recursive
         })
       })
+    }
+
+    // Expand the parents
+    if (parent) {
+      let i = instance
+      while (i.parent) {
+        i = i.parent
+        commit('TOGGLE_INSTANCE', {
+          id: i.id,
+          expanded: true
+        })
+      }
     }
   }
 }
