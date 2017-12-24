@@ -63,18 +63,19 @@ function genericOnContext (info, tab) {
   if (info.menuItemId === 'vue-inspect-instance') {
     panelAction(() => {
       chrome.runtime.sendMessage('vue-get-context-menu-target')
-    })
+    }, 'Open Vue devtools to see component details')
   }
 }
 
 // Action that may execute immediatly
 // or later when the Vue panel is ready
 
-function panelAction (cb) {
+function panelAction (cb, message) {
   if (created && panelShown) {
     cb()
   } else {
     pendingAction = cb
+    toast(message)
   }
 }
 
@@ -83,10 +84,26 @@ function panelAction (cb) {
 chrome.runtime.onMessage.addListener(request => {
   if (request === 'vue-panel-load') {
     onPanelLoad()
+  } else if (request.vueToast) {
+    toast(request.vueToast)
   }
 })
 
 function onPanelLoad () {
   pendingAction && pendingAction()
   pendingAction = null
+}
+
+// Toasts
+
+function toast (message) {
+  const src = `(function() {
+    __VUE_DEVTOOLS_TOAST(\`${message}\`);
+  })()`
+
+  chrome.devtools.inspectedWindow.eval(src, function (res, err) {
+    if (err) {
+      console.log(err)
+    }
+  })
 }
