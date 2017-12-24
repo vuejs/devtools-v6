@@ -81,6 +81,20 @@ export function installHook (window) {
   // Start recording context menu when Vue is detected
   // event if Vue devtools are not loaded yet
   document.addEventListener('contextmenu', event => {
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = event.target
+    let el = event.srcElement
+    if (el) {
+      // Search for parent that "is" a component instance
+      while (!el.__vue__ && el.parentElement) {
+        el = el.parentElement
+      }
+      const instance = el.__vue__
+      if (instance) {
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET = true
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = instance
+        return
+      }
+    }
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = null
   })
 }

@@ -81,18 +81,19 @@ function connect () {
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
-    let lastContextMenuTarget = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET
-    if (lastContextMenuTarget) {
-      // Search for parent that "is" a component instance
-      while (!lastContextMenuTarget.__vue__ && lastContextMenuTarget.parentElement) {
-        lastContextMenuTarget = lastContextMenuTarget.parentElement
-      }
-      const instance = lastContextMenuTarget.__vue__
-      if (instance) {
-        const id = instance.__VUE_DEVTOOLS_UID__
-        id && bridge.send('context-menu-target', id)
+    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET
+
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET = false
+
+    if (instance) {
+      const id = instance.__VUE_DEVTOOLS_UID__
+      if (id) {
+        return bridge.send('context-menu-target', id)
       }
     }
+
+    toast('No Vue component was found')
   })
 
   // vuex
@@ -635,4 +636,13 @@ function bindToConsole (instance) {
 function getUniqueId (instance) {
   const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
   return `${rootVueId}:${instance._uid}`
+}
+
+/**
+ * Display a toast message.
+ * @param {any} message HTML content
+ */
+export function toast (message) {
+  const fn = window.__VUE_DEVTOOLS_TOAST
+  fn && fn(message)
 }

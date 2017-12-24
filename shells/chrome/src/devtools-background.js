@@ -61,9 +61,21 @@ chrome.contextMenus.onClicked.addListener(genericOnContext)
 
 function genericOnContext (info, tab) {
   if (info.menuItemId === 'vue-inspect-instance') {
-    panelAction(() => {
-      chrome.runtime.sendMessage('vue-get-context-menu-target')
-    }, 'Open Vue devtools to see component details')
+    const src = `window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET`
+
+    chrome.devtools.inspectedWindow.eval(src, function (res, err) {
+      if (err) {
+        console.log(err)
+      }
+      if (typeof res !== 'undefined' && res) {
+        panelAction(() => {
+          chrome.runtime.sendMessage('vue-get-context-menu-target')
+        }, 'Open Vue devtools to see component details')
+      } else {
+        pendingAction = null
+        toast('No Vue component was found')
+      }
+    })
   }
 }
 
