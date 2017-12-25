@@ -3,7 +3,7 @@ import store from './store'
 import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
-import Date from './Date.vue'
+import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
 import MyClass from './MyClass.js'
 
@@ -23,7 +23,7 @@ new Vue({
       h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
       h(Other),
       h(Events),
-      h(Date)
+      h(NativeTypes)
     ])
   },
   data: {

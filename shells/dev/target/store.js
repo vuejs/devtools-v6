@@ -13,7 +13,8 @@ export default new Vuex.Store({
     DECREMENT: state => state.count--,
     UPDATE_DATE: state => {
       state.date = new Date()
-    }
+    },
+    TEST_COMPONENT: state => {}
   },
   getters: {
     isPositive: state => state.count >= 0,

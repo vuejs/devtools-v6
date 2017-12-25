@@ -21,7 +21,7 @@ const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -320,16 +320,44 @@ function getInstanceDetails (id) {
     return {
       id: id,
       name: getInstanceName(instance),
-      state: processProps(instance).concat(
-        processState(instance),
-        processComputed(instance),
-        processRouteContext(instance),
-        processVuexGetters(instance),
-        processFirebaseBindings(instance),
-        processObservables(instance)
-      )
+      state: getInstanceState(instance)
     }
   }
+}
+
+function getInstanceState (instance) {
+  return processProps(instance).concat(
+    processState(instance),
+    processComputed(instance),
+    processRouteContext(instance),
+    processVuexGetters(instance),
+    processFirebaseBindings(instance),
+    processObservables(instance)
+  )
+}
+
+export function getCustomInstanceDetails (instance) {
+  const state = getInstanceState(instance)
+  return {
+    _custom: {
+      type: 'component',
+      id: instance.__VUE_DEVTOOLS_UID__,
+      display: getInstanceName(instance),
+      state: reduceStateList(state)
+    }
+  }
+}
+
+export function reduceStateList (list) {
+  if (!list.length) {
+    return undefined
+  }
+  return list.reduce((map, item) => {
+    const key = item.type || 'data'
+    const obj = map[key] = map[key] || {}
+    obj[item.key] = item.value
+    return map
+  }, {})
 }
 
 /**
