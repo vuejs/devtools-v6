@@ -9,7 +9,11 @@ export function installToast (window) {
   }
 
   window.__VUE_DEVTOOLS_TOAST = (message, type) => {
-    console.log(`%c vue-devtools %c ${message} %c `, 'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff', `background: ${colors[type] || colors.normal}; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff`, 'background:transparent')
+    const color = colors[type] || colors.normal
+    console.log(`%c vue-devtools %c ${message} %c `,
+      'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+      `background: ${color}; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff`,
+      'background:transparent')
     if (!toastEl) {
       toastEl = document.createElement('div')
       toastEl.addEventListener('click', removeToast)
@@ -27,9 +31,9 @@ export function installToast (window) {
         font-family: monospace;
         font-size: 14px;
       ">
-        <div style="
+        <div class="vue-wrapper" style="
           padding: 6px 12px;
-          background: ${colors[type] || colors.normal};
+          background: ${color};
           color: white;
           border-radius: 3px;
           flex: auto 0 0;
@@ -41,6 +45,8 @@ export function installToast (window) {
       </div>
       `
       document.body.appendChild(toastEl)
+    } else {
+      toastEl.querySelector('.vue-wrapper').style.background = color
     }
 
     toastEl.querySelector('.vue-content').innerText = message
