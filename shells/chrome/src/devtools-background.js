@@ -51,15 +51,9 @@ function onPanelHidden () {
 
 // Page context menu entry
 
-chrome.contextMenus.create({
-  id: 'vue-inspect-instance',
-  title: 'Inspect Vue component',
-  contexts: ['all']
-})
+chrome.contextMenus.onClicked.addListener(onContextMenu)
 
-chrome.contextMenus.onClicked.addListener(genericOnContext)
-
-function genericOnContext (info, tab) {
+function onContextMenu (info, tab) {
   if (info.menuItemId === 'vue-inspect-instance') {
     const src = `window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET`
 

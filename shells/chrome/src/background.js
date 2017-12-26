@@ -90,3 +90,11 @@ chrome.runtime.onMessage.addListener((req, sender) => {
     })
   }
 })
+
+// Right-click inspect context menu entry
+
+chrome.contextMenus.create({
+  id: 'vue-inspect-instance',
+  title: 'Inspect Vue component',
+  contexts: ['all']
+})
