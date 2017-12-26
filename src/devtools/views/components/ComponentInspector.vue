@@ -1,9 +1,9 @@
 <template>
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
-      <span class="title">
+      <span class="title" @click="onTitleClick">
         <span style="color:#ccc">&lt;</span>
-        <span>{{ target.name }}</span>
+        <span :title="target.file">{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
       <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
@@ -74,7 +74,23 @@ export default {
       } else {
         window.alert('DOM inspection is not supported in this shell.')
       }
+    },
+    onTitleClick () {
+      const file = this.target.file
+      if (file) {
+        fetch(`/_open?file=${file}`).then(() => {
+          console.log(`File ${file} opened in editor`)
+        }).catch(e => {
+          console.warn(e)
+        })
+      }
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.title
+  cursor pointer
+</style>
+

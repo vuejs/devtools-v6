@@ -2,6 +2,7 @@ var path = require('path')
 var webpack = require('webpack')
 var alias = require('../alias')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+var openInEditor = require('express-open-in-editor')
 
 var bubleOptions = {
   target: { chrome: 52, firefox: 48 },
@@ -50,7 +51,12 @@ module.exports = {
   },
   devtool: '#cheap-module-source-map',
   devServer: {
-    quiet: true
+    quiet: true,
+    before (app) {
+      app.use('/_open', openInEditor({
+        editor: 'code'
+      }))
+    }
   },
   plugins: process.env.VUE_DEVTOOL_TEST ? [] :[new FriendlyErrorsPlugin()]
 }
