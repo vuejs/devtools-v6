@@ -1,7 +1,7 @@
 <template>
   <scroll-pane>
     <action-header slot="header">
-      <a class="button export" @click="copyStateToClipboard" title="Export Vuex State">
+      <a class="button export" @click="copyStateToClipboard" v-tooltip="'Export Vuex State'">
         <i class="material-icons">content_copy</i>
         <span>Export</span>
         <transition name="slide-up">
@@ -10,7 +10,7 @@
           </span>
         </transition>
       </a>
-      <a class="button import" @click="toggleImportStatePopup" title="Import Vuex State">
+      <a class="button import" @click="toggleImportStatePopup" v-tooltip="'Import Vuex State'">
         <i class="material-icons">content_paste</i>
         <span>Import</span>
       </a>
@@ -126,7 +126,7 @@ function copyToClipboard (state) {
   font-size 12px
   color #c41a16
   background-color $background-color
-  .app.dark &
+  .dark &
     background-color $dark-background-color
 
 .import-state
@@ -141,7 +141,7 @@ function copyToClipboard (state) {
   border 1px solid $border-color
   padding 3px
   background-color $background-color
-  .app.dark &
+  .dark &
     background-color $dark-background-color
     box-shadow 4px 4px 6px 0 $dark-border-color
     border 1px solid $dark-border-color
@@ -160,7 +160,7 @@ function copyToClipboard (state) {
     outline none
     border none
     resize vertical
-    .app.dark &
+    .dark &
       color #DDD
       background-color $dark-background-color
 </style>

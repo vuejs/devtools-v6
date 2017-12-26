@@ -79,6 +79,6 @@ export default {
     padding-left 20px
     margin-bottom -10px
 
-    .app.dark &
+    .dark &
       color lighten(#486887, 30%)
 </style>

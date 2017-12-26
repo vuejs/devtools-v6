@@ -6,7 +6,7 @@
         <span>{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
+      <a class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>

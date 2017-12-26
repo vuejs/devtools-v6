@@ -5,11 +5,11 @@
         <i class="search-icon material-icons">search</i>
         <input placeholder="Filter events" v-model.trim="filter">
       </div>
-      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" title="Clear Log">
+      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" v-tooltip="'Clear Log'">
         <i class="material-icons small">do_not_disturb</i>
         <span>Clear</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
@@ -115,7 +115,7 @@ export default {
       color: #fff
     .event-source
       color #ddd
-  .app.dark &
+  .dark &
     color #e36eec
     background-color $dark-background-color
 

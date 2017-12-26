@@ -133,7 +133,7 @@ export default {
       border-left-color #fff
     .instance-name
       color #fff
-  .app.dark &
+  .dark &
     background-color $dark-background-color
     &:hover
       background-color #444

@@ -34,9 +34,9 @@ module.exports = {
       // prop types
       .click('.instance .instance:nth-child(2) .self')
       .assert.containsText('.action-header .title', 'Target')
-      .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
-      .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
-      .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
+      .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:Object')
+      .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:"hi"')
+      .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:undefined')
       // Regexp
       .assert.containsText('.data-el.data .data-field:nth-child(5)', 'regex:/(a\\w+b)/g')
       // Literals

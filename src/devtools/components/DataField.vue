@@ -1,6 +1,11 @@
 <template>
   <div class="data-field">
-    <div class="self"
+    <v-popover
+      class="self"
+      trigger="hover"
+      placement="left"
+      offset="24"
+      :disabled="!field.meta"
       @click="toggle"
       :style="{ marginLeft: depth * 14 + 'px' }">
       <span
@@ -8,15 +13,16 @@
         :class="{ rotated: expanded }"
         v-show="isExpandableType">
       </span>
-      <span class="key">{{ field.key }}</span>
-      <span class="colon">:<div class="meta" v-if="field.meta">
+      <span class="key">{{ field.key }}</span><span class="colon">:</span>
+      <span class="value" :class="valueType">{{ formattedValue }}</span>
+
+      <div slot="popover" class="meta" v-if="field.meta">
         <div class="meta-field" v-for="(val, key) in field.meta">
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>
-      </div></span>
-      <span class="value" :class="valueType">{{ formattedValue }}</span>
-    </div>
+      </div>
+    </v-popover>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
         v-for="subField in limitedSubFields"
@@ -155,7 +161,7 @@ export default {
   user-select text
   font-size 12px
   font-family Menlo, Consolas, monospace
-  cursor default
+  cursor pointer
 
 .self
   height 20px
@@ -173,19 +179,9 @@ export default {
     transition transform .1s ease
     &.rotated
       transform rotate(90deg)
-  .key
-    color #881391
   .colon
     margin-right .5em
     position relative
-  .value
-    color #444
-    &.string, &.native
-      color #c41a16
-    &.null
-      color #999
-    &.literal
-      color #0033cc
 
   .type
     color $background-color
@@ -207,48 +203,41 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
-
-  .meta
-    display none
-    position absolute
-    z-index 999
-    font-size 11px
-    color #444
-    top 0
-    left calc(100% + 5px)
-    width 150px
-    border 1px solid #e3e3e3
-    border-radius 3px
-    padding 8px 12px
-    background-color $background-color
-    line-height 16px
-    box-shadow 0 2px 12px rgba(0,0,0,.1)
-    .key
-      width 65px
-  .meta-field
-    display block
-  &:hover
-    cursor pointer
-    .meta
-      display block
-
-  .app.dark &
-    .key
-      color: #e36eec
-    .value
-      color #bdc6cf
-      &.string, &.native
-        color #e33e3a
-      &.null
-        color #999
-      &.literal
-        color #997fff
-    .type
+    .dark &
       color: #242424
-      .meta
-        border 1px solid $dark-border-color
-        background-color $dark-background-color
 
+.key
+  color #881391
+  .dark &
+    color: #e36eec
+.value
+  color #444
+  &.string, &.native
+    color #c41a16
+  &.null
+    color #999
+  &.literal
+    color #0033cc
+  .dark &
+    color #bdc6cf
+    &.string, &.native
+      color #e33e3a
+    &.null
+      color #999
+    &.literal
+      color #997fff
+
+.meta
+  font-size 12px
+  font-family Menlo, Consolas, monospace
+  color #444
+  min-width 150px
+  .key
+    display inline-block
+    width 80px
+.meta-field
+  &:not(:last-child)
+    margin-bottom 4px
 
 .more
   cursor pointer

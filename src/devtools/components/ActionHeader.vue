@@ -17,7 +17,7 @@
   height 35px
   @media (min-height: $tall)
     height 50px
-  .app.dark &
+  .dark &
     border-bottom 1px solid $dark-border-color
 
 .title
