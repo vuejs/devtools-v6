@@ -4,6 +4,7 @@ import store from './store'
 import './plugins'
 import { parse } from '../util'
 
+// To test dark theme replace `false` with `true`
 const isDark = false || (typeof chrome !== 'undefined' &&
 typeof chrome.devtools !== 'undefined' &&
 chrome.devtools.panels.themeName === 'dark')

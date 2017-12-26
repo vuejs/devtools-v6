@@ -133,7 +133,7 @@ $arrow-color = #444
       &::before
         border-color grey
       &::after
-        border-color $white !important
+        border-color $white
   &[x-placement^='top']
     margin-bottom $arrow-size
     .tooltip-arrow
@@ -227,9 +227,10 @@ $arrow-color = #444
       border-radius 3px
       box-shadow 0 5px 30px rgba(black, .1)
       border darken($color, 10%) solid 1px
-    .popover-arrow
+    .tooltip-arrow
       &::before
         display block
+        border-color darken($color, 10%)
       &::after
         border-color $color
     .dark &
@@ -237,7 +238,10 @@ $arrow-color = #444
       .popover-inner
         background $color
         color $white
+        border-color lighten($color, 10%)
       .popover-arrow
+        &::before
+          border-color lighten($color, 10%)
         &::after
           border-color $color
 
