@@ -3,13 +3,15 @@ import App from './App.vue'
 import store from './store'
 import { parse } from '../util'
 
-let panelShown = false
+const isChrome = typeof chrome !== 'undefined' && chrome.devtools
+
+let panelShown = !isChrome
 let pendingAction = null
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.
 // We do want the errors to be thrown in the dev shell though.
-if (typeof chrome !== 'undefined' && chrome.devtools) {
+if (isChrome) {
   Vue.config.errorHandler = (e, vm) => {
     bridge.send('ERROR', {
       message: e.message,
@@ -81,7 +83,7 @@ function initApp (shell) {
       bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
       bridge.send('events:toggle-recording', store.state.events.enabled)
 
-      if (typeof chrome !== 'undefined' && chrome.devtools) {
+      if (isChrome) {
         chrome.runtime.sendMessage('vue-panel-load')
       }
     })
@@ -116,7 +118,7 @@ function initApp (shell) {
       }
     })
 
-    bridge.on('context-menu-target', id => {
+    bridge.on('inspect-instance', id => {
       ensurePaneShown(() => {
         inspectInstance(id)
       })

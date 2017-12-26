@@ -55,7 +55,7 @@ chrome.contextMenus.onClicked.addListener(onContextMenu)
 
 function onContextMenu (info, tab) {
   if (info.menuItemId === 'vue-inspect-instance') {
-    const src = `window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET`
+    const src = `window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__`
 
     chrome.devtools.inspectedWindow.eval(src, function (res, err) {
       if (err) {
@@ -104,7 +104,7 @@ function onPanelLoad () {
 
 function toast (message, type = 'normal') {
   const src = `(function() {
-    __VUE_DEVTOOLS_TOAST(\`${message}\`, '${type}');
+    __VUE_DEVTOOLS_TOAST__(\`${message}\`, '${type}');
   })()`
 
   chrome.devtools.inspectedWindow.eval(src, function (res, err) {

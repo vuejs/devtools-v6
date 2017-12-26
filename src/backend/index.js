@@ -81,15 +81,15 @@ function connect () {
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
-    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET
+    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
 
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = null
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET = false
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
 
     if (instance) {
       const id = instance.__VUE_DEVTOOLS_UID__
       if (id) {
-        return bridge.send('context-menu-target', id)
+        return bridge.send('inspect-instance', id)
       }
     }
 
@@ -107,6 +107,8 @@ function connect () {
 
   // events
   initEventsBackend(hook.Vue, bridge)
+
+  window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
@@ -643,6 +645,11 @@ function getUniqueId (instance) {
  * @param {any} message HTML content
  */
 export function toast (message, type = 'normal') {
-  const fn = window.__VUE_DEVTOOLS_TOAST
+  const fn = window.__VUE_DEVTOOLS_TOAST__
   fn && fn(message, type)
+}
+
+export function inspectInstance (instance) {
+  const id = instance.__VUE_DEVTOOLS_UID__
+  id && bridge.send('inspect-instance', id)
 }

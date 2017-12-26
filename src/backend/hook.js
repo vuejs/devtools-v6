@@ -66,6 +66,11 @@ export function installHook (window) {
 
   hook.once('init', Vue => {
     hook.Vue = Vue
+
+    Vue.prototype.$inspect = function () {
+      const fn = window.__VUE_DEVTOOLS_INSPECT__
+      fn && fn(this)
+    }
   })
 
   hook.once('vuex:init', store => {
@@ -89,12 +94,12 @@ export function installHook (window) {
       }
       const instance = el.__vue__
       if (instance) {
-        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET = true
-        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = instance
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance
         return
       }
     }
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET = null
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
   })
 }
