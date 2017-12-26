@@ -76,12 +76,12 @@ function onContextMenu (info, tab) {
 // Action that may execute immediatly
 // or later when the Vue panel is ready
 
-function panelAction (cb, message) {
+function panelAction (cb, message = null) {
   if (created && panelShown) {
     cb()
   } else {
     pendingAction = cb
-    toast(message)
+    message && toast(message)
   }
 }
 
