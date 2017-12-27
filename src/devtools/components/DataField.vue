@@ -195,7 +195,7 @@ export default {
     },
     editValid () {
       try {
-        this.editedValue && parse(this.editedValue)
+        parse(this.editedValue)
         return true
       } catch (e) {
         return false
