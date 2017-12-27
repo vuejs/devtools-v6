@@ -34,13 +34,15 @@ new Vue({
 
 // custom element instance
 const ce = document.querySelector('#shadow')
-const shadowRoot = ce.attachShadow({ mode: 'open' })
+if (ce.attachShadow) {
+  const shadowRoot = ce.attachShadow({ mode: 'open' })
 
-const ceVM = new Vue({
-  name: 'Shadow',
-  render (h) {
-    return h('h2', 'Inside Shadow DOM!')
-  }
-}).$mount()
+  const ceVM = new Vue({
+    name: 'Shadow',
+    render (h) {
+      return h('h2', 'Inside Shadow DOM!')
+    }
+  }).$mount()
 
-shadowRoot.appendChild(ceVM.$el)
+  shadowRoot.appendChild(ceVM.$el)
+}
