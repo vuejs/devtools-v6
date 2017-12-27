@@ -50,7 +50,7 @@
         <span class="value" :class="valueType">{{ formattedValue }}</span>
         <span class="actions">
           <i
-            v-if="field.editable"
+            v-if="isEditable"
             class="icon-button edit-value material-icons"
             title="Edit value"
             @click="openEdit"
@@ -65,6 +65,7 @@
         :field="subField"
         :depth="depth + 1"
         :path="`${path}.${subField.key}`"
+        :editable="editable"
       />
       <span class="more"
         v-if="formattedSubFields.length > limit"
@@ -107,7 +108,8 @@ export default {
   props: {
     field: Object,
     depth: Number,
-    path: String
+    path: String,
+    editable: Boolean
   },
   data () {
     return {
@@ -147,6 +149,14 @@ export default {
     isExpandableType () {
       const value = this.field.value
       return Array.isArray(value) || isPlainObject(value)
+    },
+    isEditable () {
+      const type = this.valueType
+      return this.editable && (
+        type === 'null' ||
+        type === 'literal' ||
+        type === 'string'
+      )
     },
     formattedValue () {
       const value = this.field.value

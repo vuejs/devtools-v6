@@ -9,7 +9,8 @@
             :key="field.key"
             :field="field"
             :depth="0"
-            :path="field.key">
+            :path="field.key"
+            :editable="field.editable">
           </data-field>
         </template>
         <template v-else>
@@ -18,7 +19,8 @@
             :key="key"
             :field="{ value, key }"
             :depth="0"
-            :path="key">
+            :path="key"
+            :editable="false">
           </data-field>
         </template>
       </div>

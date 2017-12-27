@@ -4,7 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize, isEditable, set, parse } from '../util'
+import { stringify, classify, camelize, set, parse } from '../util'
 import path from 'path'
 
 // Use a custom basename functions instead of the shimed version
@@ -447,7 +447,7 @@ function processState (instance) {
     .map(key => ({
       key,
       value: instance._data[key],
-      editable: isEditable(instance._data[key])
+      editable: true
     }))
 }
 

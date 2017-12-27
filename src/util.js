@@ -164,20 +164,6 @@ export function sortByKey (state) {
   })
 }
 
-export function isEditable (value) {
-  const type = typeof value
-  return (
-    value === null ||
-    type === 'undefined' ||
-    type === 'string' ||
-    type === 'number' ||
-    type === 'boolean'/* ||
-    value instanceof RegExp ||
-    value instanceof Date */
-    // Need Date type PR merged #474
-  )
-}
-
 export function set (object, path, value) {
   const sections = path.split('.')
   while (sections.length > 1) {
