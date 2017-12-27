@@ -60,12 +60,15 @@
             title="Edit value"
             @click="openEdit"
           >edit</i>
-          <i
-            v-if="quickEditInfo"
-            class="icon-button quick-edit material-icons"
-            title="Quick edit"
-            @click="quickEdit"
-          >{{ quickEditInfo.icon }}</i>
+          <template v-if="quickEdits">
+            <i
+              v-for="(info, index) of quickEdits"
+              :key="index"
+              class="icon-button quick-edit material-icons"
+              title="Quick edit"
+              @click="quickEdit(info)"
+            >{{ info.icon }}</i>
+          </template>
         </span>
       </template>
     </div>
@@ -232,15 +235,17 @@ export default {
         return false
       }
     },
-    quickEditInfo () {
+    quickEdits () {
       if (this.isEditable) {
         const value = this.field.value
         const type = typeof value
         if (type === 'boolean') {
-          return {
-            icon: value ? 'check_box' : 'check_box_outline_blank',
-            newValue: !value
-          }
+          return [
+            {
+              icon: value ? 'check_box' : 'check_box_outline_blank',
+              newValue: !value
+            }
+          ]
         }
       }
       return null
@@ -302,10 +307,8 @@ export default {
       })
       return str
     },
-    quickEdit () {
-      if (this.quickEditInfo) {
-        this.sendEdit(this.quickEditInfo.newValue)
-      }
+    quickEdit (info) {
+      this.sendEdit(info.newValue)
     }
   }
 }
