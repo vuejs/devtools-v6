@@ -57,6 +57,12 @@
             title="Edit value"
             @click="openEdit"
           >edit</i>
+          <i
+            v-if="quickEditInfo"
+            class="icon-button quick-edit material-icons"
+            title="Quick edit"
+            @click="quickEdit"
+          >{{ quickEditInfo.icon }}</i>
         </span>
       </template>
     </div>
@@ -219,6 +225,19 @@ export default {
       } catch (e) {
         return false
       }
+    },
+    quickEditInfo () {
+      if (this.isEditable) {
+        const value = this.field.value
+        const type = typeof value
+        if (type === 'boolean') {
+          return {
+            icon: value ? 'check_box' : 'check_box_outline_blank',
+            newValue: !value
+          }
+        }
+      }
+      return null
     }
   },
   methods: {
@@ -251,12 +270,15 @@ export default {
       if (this.editValid) {
         this.editing = false
         const value = this.transformSpecialTokens(this.editedValue, false)
-        bridge.send('set-instance-data', {
-          id: this.inspectedInstance.id,
-          path: this.path,
-          value
-        })
+        this.sendEdit(value)
       }
+    },
+    sendEdit (value) {
+      bridge.send('set-instance-data', {
+        id: this.inspectedInstance.id,
+        path: this.path,
+        value
+      })
     },
     transformSpecialTokens (str, display) {
       Object.keys(SPECIAL_TOKENS).forEach(key => {
@@ -273,6 +295,11 @@ export default {
         str = str.replace(new RegExp(search), replace)
       })
       return str
+    },
+    quickEdit () {
+      if (this.quickEditInfo) {
+        this.sendEdit(this.quickEditInfo.newValue)
+      }
     }
   }
 }
