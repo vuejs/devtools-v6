@@ -246,6 +246,17 @@ export default {
               newValue: !value
             }
           ]
+        } else if (type === 'number') {
+          return [
+            {
+              icon: 'remove',
+              newValue: value - 1
+            },
+            {
+              icon: 'add',
+              newValue: value + 1
+            }
+          ]
         }
       }
       return null
