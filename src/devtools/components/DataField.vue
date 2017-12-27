@@ -145,6 +145,10 @@ export default {
         return 'native'
       } else if (type === 'string' && !rawTypeRE.test(value)) {
         return 'string'
+      } else if (Array.isArray(value)) {
+        return 'array'
+      } else if (isPlainObject(value)) {
+        return 'plain-object'
       }
     },
     isExpandableType () {
@@ -156,7 +160,9 @@ export default {
       return this.editable && (
         type === 'null' ||
         type === 'literal' ||
-        type === 'string'
+        type === 'string' ||
+        type === 'array' ||
+        type === 'plain-object'
       )
     },
     formattedValue () {
@@ -169,9 +175,9 @@ export default {
         return 'NaN'
       } else if (value === INFINITY) {
         return 'Infinity'
-      } else if (Array.isArray(value)) {
+      } else if (this.valueType === 'array') {
         return 'Array[' + value.length + ']'
-      } else if (isPlainObject(value)) {
+      } else if (this.valueType === 'plain-object') {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (this.valueType === 'native') {
         return specialTypeRE.exec(value)[1]
@@ -214,7 +220,10 @@ export default {
     }
   },
   methods: {
-    toggle () {
+    toggle (event) {
+      if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
+        return
+      }
       if (this.isExpandableType) {
         this.expanded = !this.expanded
       }
