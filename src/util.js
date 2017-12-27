@@ -40,9 +40,10 @@ export const INFINITY = '__vue_devtool_infinity__'
 export const NAN = '__vue_devtool_nan__'
 
 export const SPECIAL_TOKENS = {
-  UNDEFINED,
-  INFINITY,
-  NAN
+  'undefined': UNDEFINED,
+  'null': null,
+  'Infinity': INFINITY,
+  'NaN': NAN
 }
 
 export function stringify (data) {

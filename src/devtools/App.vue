@@ -3,7 +3,7 @@
 <template>
 <div id="app" :class="{ app: true, dark: isDark }">
   <datalist id="special-tokens">
-    <option v-for="(value, key) of specialTokens" :key="key" :value="value | specialTokenValue"></option>
+    <option v-for="(value, key) of specialTokens" :key="key" :value="key"></option>
   </datalist>
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
@@ -113,9 +113,6 @@ export default {
     tab () {
       this.$nextTick(this.updateActiveBar)
     }
-  },
-  filters: {
-    specialTokenValue: value => JSON.stringify(value)
   }
 }
 </script>

@@ -85,6 +85,7 @@ import {
   UNDEFINED,
   INFINITY,
   NAN,
+  SPECIAL_TOKENS,
   isPlainObject,
   sortByKey,
   parse
@@ -213,7 +214,7 @@ export default {
     },
     editValid () {
       try {
-        parse(this.editedValue)
+        parse(this.transformSpecialTokens(this.editedValue, false))
         return true
       } catch (e) {
         return false
@@ -234,7 +235,7 @@ export default {
       if (currentEditedField && currentEditedField !== this) {
         currentEditedField.cancelEdit()
       }
-      this.editedValue = JSON.stringify(this.field.value)
+      this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
       this.editing = true
       currentEditedField = this
       this.$nextTick(() => {
@@ -249,12 +250,29 @@ export default {
     submitEdit () {
       if (this.editValid) {
         this.editing = false
+        const value = this.transformSpecialTokens(this.editedValue, false)
         bridge.send('set-instance-data', {
           id: this.inspectedInstance.id,
           path: this.path,
-          value: this.editedValue
+          value
         })
       }
+    },
+    transformSpecialTokens (str, display) {
+      Object.keys(SPECIAL_TOKENS).forEach(key => {
+        const value = JSON.stringify(SPECIAL_TOKENS[key])
+        let search
+        let replace
+        if (display) {
+          search = value
+          replace = key
+        } else {
+          search = key
+          replace = value
+        }
+        str = str.replace(new RegExp(search), replace)
+      })
+      return str
     }
   }
 }
