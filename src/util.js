@@ -40,6 +40,8 @@ export const INFINITY = '__vue_devtool_infinity__'
 export const NAN = '__vue_devtool_nan__'
 
 export const SPECIAL_TOKENS = {
+  'true': true,
+  'false': false,
   'undefined': UNDEFINED,
   'null': null,
   'Infinity': INFINITY,
