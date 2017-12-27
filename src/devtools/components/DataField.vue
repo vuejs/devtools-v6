@@ -49,7 +49,10 @@
         </span>
       </span>
       <template v-else>
-        <span class="value" :class="valueType">{{ formattedValue }}</span>
+        <span
+          class="value"
+          :class="[valueType, `raw-${rawValueType}`]"
+        >{{ formattedValue }}</span>
         <span class="actions">
           <i
             v-if="isEditable"
@@ -158,6 +161,9 @@ export default {
       } else if (isPlainObject(value)) {
         return 'plain-object'
       }
+    },
+    rawValueType () {
+      return typeof this.field.value
     },
     isExpandableType () {
       const value = this.field.value
@@ -338,6 +344,7 @@ export default {
     position relative
     top -1px
     .icon-button
+      user-select none
       font-size 14px
       &:not(:last-child)
         margin-right 4px
@@ -353,6 +360,7 @@ export default {
     margin-right .5em
     position relative
   .value
+    display inline-block
     color #444
     &.string, &.native
       color #c41a16
@@ -360,6 +368,8 @@ export default {
       color #999
     &.literal
       color #0033cc
+    &.raw-boolean
+      width 36px
 
   .type
     color $background-color
