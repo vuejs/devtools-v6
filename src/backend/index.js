@@ -4,7 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize } from '../util'
+import { stringify, classify, camelize, isEditable, set, parse } from '../util'
 import path from 'path'
 
 // Use a custom basename functions instead of the shimed version
@@ -77,8 +77,15 @@ function connect () {
   })
 
   bridge.on('refresh', scan)
+
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+
   bridge.on('leave-instance', unHighlight)
+
+  bridge.on('set-instance-data', ({ id, path, value }) => {
+    setStateValue(id, path, value)
+    flush()
+  })
 
   // vuex
   if (hook.store) {
@@ -439,7 +446,8 @@ function processState (instance) {
     ))
     .map(key => ({
       key,
-      value: instance._data[key]
+      value: instance._data[key],
+      editable: isEditable(instance._data[key])
     }))
 }
 
@@ -620,4 +628,16 @@ function bindToConsole (instance) {
 function getUniqueId (instance) {
   const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
   return `${rootVueId}:${instance._uid}`
+}
+
+function setStateValue (id, path, value) {
+  const instance = instanceMap.get(id)
+  if (instance) {
+    try {
+      const data = parse(value)
+      set(instance._data, path, data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 }

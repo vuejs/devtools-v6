@@ -1,5 +1,5 @@
 <template>
-  <div class="data-field">
+  <div class="data-field" :class="cssClass">
     <div class="self"
       @click="toggle"
       :style="{ marginLeft: depth * 14 + 'px' }">
@@ -15,15 +15,57 @@
           <span class="value">{{ val }}</span>
         </div>
       </div></span>
-      <span class="value" :class="valueType">{{ formattedValue }}</span>
+      <span
+        v-if="editing"
+        class="edit-overlay"
+      >
+        <input
+          ref="editInput"
+          class="edit-input"
+          v-model="editedValue"
+          @keyup.esc="cancelEdit"
+          @keyup.enter="submitEdit"
+        >
+        <span class="actions">
+          <i
+            v-if="!editValid"
+            class="icon-button material-icons warning"
+            title="Invalid value"
+          >warning</i>
+          <template v-else>
+            <i
+              class="icon-button material-icons"
+              title="[Esc] Cancel"
+              @click="cancelEdit"
+            >close</i>
+            <i
+              class="icon-button material-icons"
+              title="[Enter] Submit change"
+              @click="submitEdit"
+            >done</i>
+          </template>
+        </span>
+      </span>
+      <template v-else>
+        <span class="value" :class="valueType">{{ formattedValue }}</span>
+        <span class="actions">
+          <i
+            v-if="field.editable"
+            class="icon-button edit-value material-icons"
+            title="Edit value"
+            @click="openEdit"
+          >edit</i>
+        </span>
+      </template>
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
         v-for="subField in limitedSubFields"
         :key="subField.key"
         :field="subField"
-        :depth="depth + 1">
-      </data-field>
+        :depth="depth + 1"
+        :path="`${path}.${subField.key}`"
+      />
       <span class="more"
         v-if="formattedSubFields.length > limit"
         @click="limit += 10"
@@ -35,16 +77,20 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import {
   UNDEFINED,
   INFINITY,
   NAN,
   isPlainObject,
-  sortByKey
+  sortByKey,
+  parse
 } from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native \w+ (.*)\]$/
+
+let currentEditedField = null
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -60,15 +106,26 @@ export default {
   name: 'DataField',
   props: {
     field: Object,
-    depth: Number
+    depth: Number,
+    path: String
   },
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5),
+      editing: false,
+      editedValue: null
     }
   },
   computed: {
+    ...mapState('components', [
+      'inspectedInstance'
+    ]),
+    cssClass () {
+      return {
+        editing: this.editing
+      }
+    },
     valueType () {
       const value = this.field.value
       const type = typeof value
@@ -135,6 +192,14 @@ export default {
     },
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
+    },
+    editValid () {
+      try {
+        this.editedValue && parse(this.editedValue)
+        return true
+      } catch (e) {
+        return false
+      }
     }
   },
   methods: {
@@ -143,7 +208,33 @@ export default {
         this.expanded = !this.expanded
       }
     },
-    hyphen: v => v.replace(/\s/g, '-')
+    hyphen: v => v.replace(/\s/g, '-'),
+    openEdit () {
+      if (currentEditedField && currentEditedField !== this) {
+        currentEditedField.cancelEdit()
+      }
+      this.editedValue = JSON.stringify(this.field.value)
+      this.editing = true
+      currentEditedField = this
+      this.$nextTick(() => {
+        const el = this.$refs.editInput
+        el.focus()
+        el.setSelectionRange(0, el.value.length)
+      })
+    },
+    cancelEdit () {
+      this.editing = false
+    },
+    submitEdit () {
+      if (this.editValid) {
+        this.editing = false
+        bridge.send('set-instance-data', {
+          id: this.inspectedInstance.id,
+          path: this.path,
+          value: this.editedValue
+        })
+      }
+    }
   }
 }
 </script>
@@ -173,6 +264,23 @@ export default {
     transition transform .1s ease
     &.rotated
       transform rotate(90deg)
+  .actions
+    visibility hidden
+    margin-left 6px
+    display inline-flex
+    align-items center
+    position relative
+    top -1px
+    .icon-button
+      font-size 14px
+      &:not(:last-child)
+        margin-right 4px
+    .warning
+      color $orange
+  &:hover,
+  .editing &
+    .actions
+      visibility visible
   .key
     color #881391
   .colon
@@ -257,4 +365,11 @@ export default {
   padding 0 4px 4px
   &:hover
     background-color #eee
+
+.edit-input
+  font-family Menlo, Consolas, monospace
+  border solid 1px $green
+  border-radius 3px
+  padding 2px
+  outline none
 </style>

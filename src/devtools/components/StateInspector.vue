@@ -8,7 +8,8 @@
             v-for="field in state[type]"
             :key="field.key"
             :field="field"
-            :depth="0">
+            :depth="0"
+            :path="field.key">
           </data-field>
         </template>
         <template v-else>
@@ -16,7 +17,8 @@
             v-for="(value, key) in state[type]"
             :key="key"
             :field="{ value, key }"
-            :depth="0">
+            :depth="0"
+            :path="key">
           </data-field>
         </template>
       </div>
