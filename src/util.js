@@ -39,6 +39,12 @@ export const UNDEFINED = '__vue_devtool_undefined__'
 export const INFINITY = '__vue_devtool_infinity__'
 export const NAN = '__vue_devtool_nan__'
 
+export const SPECIAL_TOKENS = {
+  UNDEFINED,
+  INFINITY,
+  NAN
+}
+
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
 }

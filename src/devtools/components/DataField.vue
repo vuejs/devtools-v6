@@ -23,6 +23,7 @@
           ref="editInput"
           class="edit-input"
           v-model="editedValue"
+          list="special-tokens"
           @keyup.esc="cancelEdit"
           @keyup.enter="submitEdit"
         >
