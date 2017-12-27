@@ -382,4 +382,5 @@ export default {
   border-radius 3px
   padding 2px
   outline none
+  width 200px
 </style>
