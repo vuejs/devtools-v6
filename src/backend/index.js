@@ -635,7 +635,9 @@ function setStateValue (id, path, value) {
   if (instance) {
     try {
       const data = parse(value)
-      set(instance._data, path, data)
+      set(instance._data, path, data, (obj, field, value) => {
+        instance.$set(obj, field, value)
+      })
     } catch (e) {
       console.error(e)
     }

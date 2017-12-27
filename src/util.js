@@ -170,10 +170,15 @@ export function sortByKey (state) {
   })
 }
 
-export function set (object, path, value) {
+export function set (object, path, value, cb = null) {
   const sections = path.split('.')
   while (sections.length > 1) {
     object = object[sections.shift()]
   }
-  object[sections[0]] = value
+  const field = sections[0]
+  if (cb) {
+    cb(object, field, value)
+  } else {
+    object[field] = value
+  }
 }
