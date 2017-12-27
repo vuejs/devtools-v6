@@ -1,6 +1,7 @@
 <template>
-  <div class="data-field" :class="cssClass">
+  <div class="data-field">
     <div class="self"
+      :class="cssClass"
       @click="toggle"
       :style="{ marginLeft: depth * 14 + 'px' }">
       <span
@@ -298,7 +299,7 @@ export default {
     .warning
       color $orange
   &:hover,
-  .editing &
+  &.editing
     .actions
       visibility visible
   .key
