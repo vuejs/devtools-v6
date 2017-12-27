@@ -56,7 +56,7 @@
         <span class="actions">
           <i
             v-if="isEditable"
-            class="icon-button edit-value material-icons"
+            class="edit-value icon-button material-icons"
             title="Edit value"
             @click="openEdit"
           >edit</i>
@@ -64,11 +64,17 @@
             <i
               v-for="(info, index) of quickEdits"
               :key="index"
-              class="icon-button quick-edit material-icons"
+              class="quick-edit icon-button material-icons"
               :title="info.title || 'Quick edit'"
               @click="quickEdit(info, $event)"
             >{{ info.icon }}</i>
           </template>
+          <i
+            v-if="removable"
+            class="remove-field icon-button material-icons"
+            title="Remove value"
+            @click="removeField"
+          >delete</i>
         </span>
       </template>
     </div>
@@ -80,6 +86,8 @@
         :depth="depth + 1"
         :path="`${path}.${subField.key}`"
         :editable="editable"
+        :removable="valueType === 'array' || valueType === 'plain-object'"
+        @remove-field="onRemoveField(subField)"
       />
       <span class="more"
         v-if="formattedSubFields.length > limit"
@@ -148,7 +156,11 @@ export default {
     field: Object,
     depth: Number,
     path: String,
-    editable: Boolean
+    editable: Boolean,
+    removable: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
@@ -351,7 +363,19 @@ export default {
       } else {
         newValue = info.newValue
       }
-      this.sendEdit(newValue)
+      this.sendEdit(JSON.stringify(newValue))
+    },
+    removeField () {
+      this.$emit('remove-field')
+    },
+    onRemoveField (subField) {
+      const newValue = this.field.value
+      if (this.valueType === 'array') {
+        newValue.splice(subField.key, 1)
+      } else if (this.valueType === 'plain-object') {
+        delete newValue[subField.key]
+      }
+      this.sendEdit(JSON.stringify(newValue))
     }
   }
 }
@@ -495,4 +519,7 @@ export default {
   padding 2px
   outline none
   width 200px
+
+.remove-field
+  margin-left 10px
 </style>
