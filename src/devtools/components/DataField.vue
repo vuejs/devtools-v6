@@ -65,8 +65,8 @@
               v-for="(info, index) of quickEdits"
               :key="index"
               class="icon-button quick-edit material-icons"
-              title="Quick edit"
-              @click="quickEdit(info)"
+              :title="info.title || 'Quick edit'"
+              @click="quickEdit(info, $event)"
             >{{ info.icon }}</i>
           </template>
         </span>
@@ -103,6 +103,16 @@ import {
   parse
 } from 'src/util'
 
+const QUICK_EDIT_NUMBER_REMOVE = `Quick Edit
+[Ctrl-Click] -5
+[Shift-Click] -10
+[Alt-Click] -100`
+
+const QUICK_EDIT_NUMBER_ADD = `Quick Edit
+[Ctrl-Click] +5
+[Shift-Click] +10
+[Alt-Click] +100`
+
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native \w+ (.*)\]$/
 
@@ -116,6 +126,20 @@ function subFieldCount (value) {
   } else {
     return 0
   }
+}
+
+function numberQuickEditMod (event) {
+  let mod = 1
+  if (event.ctrlKey) {
+    mod *= 5
+  }
+  if (event.shiftKey) {
+    mod *= 10
+  }
+  if (event.altKey) {
+    mod *= 100
+  }
+  return mod
 }
 
 export default {
@@ -250,11 +274,13 @@ export default {
           return [
             {
               icon: 'remove',
-              newValue: value - 1
+              title: QUICK_EDIT_NUMBER_REMOVE,
+              newValue: event => value - numberQuickEditMod(event)
             },
             {
               icon: 'add',
-              newValue: value + 1
+              title: QUICK_EDIT_NUMBER_ADD,
+              newValue: event => value + numberQuickEditMod(event)
             }
           ]
         }
@@ -318,8 +344,14 @@ export default {
       })
       return str
     },
-    quickEdit (info) {
-      this.sendEdit(info.newValue)
+    quickEdit (info, event) {
+      let newValue
+      if (typeof info.newValue === 'function') {
+        newValue = info.newValue(event)
+      } else {
+        newValue = info.newValue
+      }
+      this.sendEdit(newValue)
     }
   }
 }
