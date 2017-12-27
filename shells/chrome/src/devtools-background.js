@@ -3,6 +3,7 @@
 // Vue presence on the page. If yes, create the Vue panel; otherwise poll
 // for 10 seconds.
 
+let panelLoaded = false
 let panelShown = false
 let pendingAction
 let created = false
@@ -16,6 +17,7 @@ function createPanelIfHasVue () {
   if (created || checkCount++ > 10) {
     return
   }
+  panelLoaded = false
   panelShown = false
   chrome.devtools.inspectedWindow.eval(
     '!!(window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue)',
@@ -37,24 +39,22 @@ function createPanelIfHasVue () {
   )
 }
 
-// Manage panel visibility
+// Runtime messages
 
-function onPanelShown () {
-  chrome.runtime.sendMessage('vue-panel-shown')
-  panelShown = true
-}
-
-function onPanelHidden () {
-  chrome.runtime.sendMessage('vue-panel-hidden')
-  panelShown = false
-}
+chrome.runtime.onMessage.addListener(request => {
+  if (request === 'vue-panel-load') {
+    onPanelLoad()
+  } else if (request.vueToast) {
+    toast(request.vueToast.message, request.vueToast.type)
+  } else if (request.vueContextMenu) {
+    onContextMenu(request.vueContextMenu)
+  }
+})
 
 // Page context menu entry
 
-chrome.contextMenus.onClicked.addListener(onContextMenu)
-
-function onContextMenu (info, tab) {
-  if (info.menuItemId === 'vue-inspect-instance') {
+function onContextMenu ({ id }) {
+  if (id === 'vue-inspect-instance') {
     const src = `window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__`
 
     chrome.devtools.inspectedWindow.eval(src, function (res, err) {
@@ -77,7 +77,7 @@ function onContextMenu (info, tab) {
 // or later when the Vue panel is ready
 
 function panelAction (cb, message = null) {
-  if (created && panelShown) {
+  if (created && panelLoaded && panelShown) {
     cb()
   } else {
     pendingAction = cb
@@ -85,19 +85,29 @@ function panelAction (cb, message = null) {
   }
 }
 
-// Execute pending action when Vue panel is ready
-
-chrome.runtime.onMessage.addListener(request => {
-  if (request === 'vue-panel-load') {
-    onPanelLoad()
-  } else if (request.vueToast) {
-    toast(request.vueToast.message, request.vueToast.type)
-  }
-})
-
-function onPanelLoad () {
+function executePendingAction () {
   pendingAction && pendingAction()
   pendingAction = null
+}
+
+// Execute pending action when Vue panel is ready
+
+function onPanelLoad () {
+  executePendingAction()
+  panelLoaded = true
+}
+
+// Manage panel visibility
+
+function onPanelShown () {
+  chrome.runtime.sendMessage('vue-panel-shown')
+  panelShown = true
+  panelLoaded && executePendingAction()
+}
+
+function onPanelHidden () {
+  chrome.runtime.sendMessage('vue-panel-hidden')
+  panelShown = false
 }
 
 // Toasts

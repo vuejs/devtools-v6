@@ -98,3 +98,11 @@ chrome.contextMenus.create({
   title: 'Inspect Vue component',
   contexts: ['all']
 })
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  chrome.runtime.sendMessage({
+    vueContextMenu: {
+      id: info.menuItemId
+    }
+  })
+})
