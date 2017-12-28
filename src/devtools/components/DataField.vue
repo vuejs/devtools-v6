@@ -81,6 +81,12 @@
             >{{ info.icon }}</i>
           </template>
           <i
+            v-if="isSubfieldsEditable && !addingValue"
+            class="add-value icon-button material-icons"
+            title="Add new value"
+            @click="addNewValue"
+          >add_circle</i>
+          <i
             v-if="removable"
             class="remove-field icon-button material-icons"
             title="Remove value"
@@ -97,15 +103,27 @@
         :depth="depth + 1"
         :path="`${path}.${subField.key}`"
         :editable="editable"
-        :removable="valueType === 'array' || valueType === 'plain-object'"
-        :renamable="valueType === 'plain-object'"
+        :removable="isSubfieldsEditable"
+        :renamable="editable && valueType === 'plain-object'"
       />
       <span class="more"
         v-if="formattedSubFields.length > limit"
         @click="limit += 10"
-        :style="{ marginLeft: (depth + 1) * 14 + 10 + 'px' }">
+        :style="{ marginLeft: depthMargin + 'px' }">
         ...
       </span>
+      <data-field
+        v-if="isSubfieldsEditable && addingValue"
+        ref="newField"
+        :field="newField"
+        :depth="depth + 1"
+        :path="`${path}.${newField.key}`"
+        editable
+        removable
+        :renamable="valueType === 'plain-object'"
+        @cancel-edit="addingValue = false"
+        @submit-edit="addingValue = false"
+      />
     </div>
   </div>
 </template>
@@ -167,7 +185,10 @@ export default {
     field: Object,
     depth: Number,
     path: String,
-    editable: Boolean,
+    editable: {
+      type: Boolean,
+      default: false
+    },
     removable: {
       type: Boolean,
       default: false
@@ -183,7 +204,9 @@ export default {
       expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5),
       editing: false,
       editedValue: null,
-      editedKey: null
+      editedKey: null,
+      addingValue: false,
+      newField: null
     }
   },
   computed: {
@@ -194,6 +217,9 @@ export default {
       return {
         editing: this.editing
       }
+    },
+    depthMargin () {
+      return (this.depth + 1) * 14 + 10
     },
     valueType () {
       const value = this.field.value
@@ -233,6 +259,9 @@ export default {
         type === 'array' ||
         type === 'plain-object'
       )
+    },
+    isSubfieldsEditable () {
+      return this.editable && (this.valueType === 'array' || this.valueType === 'plain-object')
     },
     formattedValue () {
       const value = this.field.value
@@ -326,7 +355,7 @@ export default {
       }
     },
     hyphen: v => v.replace(/\s/g, '-'),
-    openEdit () {
+    openEdit (focusKey = false) {
       if (currentEditedField && currentEditedField !== this) {
         currentEditedField.cancelEdit()
       }
@@ -335,13 +364,14 @@ export default {
       this.editing = true
       currentEditedField = this
       this.$nextTick(() => {
-        const el = this.$refs.editInput
+        const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
         el.focus()
         el.setSelectionRange(0, el.value.length)
       })
     },
     cancelEdit () {
       this.editing = false
+      this.$emit('cancel-edit')
     },
     submitEdit () {
       if (this.editValid) {
@@ -349,6 +379,7 @@ export default {
         const value = this.transformSpecialTokens(this.editedValue, false)
         const newKey = this.editedKey !== this.field.key ? this.editedKey : undefined
         this.sendEdit({ value, newKey })
+        this.$emit('submit-edit')
       }
     },
     sendEdit (args) {
@@ -385,6 +416,21 @@ export default {
     },
     removeField () {
       this.sendEdit({ remove: true })
+    },
+    addNewValue () {
+      let key
+      if (this.valueType === 'array') {
+        key = this.field.value.length
+      } else if (this.valueType === 'plain-object') {
+        let i = 1
+        while (this.field.value.hasOwnProperty(key = `prop${i}`)) i++
+      }
+      this.newField = { key, value: UNDEFINED }
+      this.expanded = true
+      this.addingValue = true
+      this.$nextTick(() => {
+        this.$refs.newField.openEdit(true)
+      })
     }
   }
 }
