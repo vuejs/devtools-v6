@@ -82,8 +82,8 @@ function connect () {
 
   bridge.on('leave-instance', unHighlight)
 
-  bridge.on('set-instance-data', ({ id, path, value }) => {
-    setStateValue(id, path, value)
+  bridge.on('set-instance-data', args => {
+    setStateValue(args)
     flush()
   })
 
@@ -630,13 +630,17 @@ function getUniqueId (instance) {
   return `${rootVueId}:${instance._uid}`
 }
 
-function setStateValue (id, path, value) {
+function setStateValue ({ id, path, value, newKey, remove }) {
   const instance = instanceMap.get(id)
   if (instance) {
     try {
-      const data = parse(value)
-      set(instance._data, path, data, (obj, field, value) => {
-        instance.$set(obj, field, value)
+      let parsedValue
+      if (value) {
+        parsedValue = parse(value)
+      }
+      set(instance._data, path, parsedValue, (obj, field, value) => {
+        (remove || newKey) && instance.$delete(obj, field)
+        !remove && instance.$set(obj, newKey || field, value)
       })
     } catch (e) {
       console.error(e)

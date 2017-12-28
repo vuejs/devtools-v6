@@ -9,7 +9,18 @@
         :class="{ rotated: expanded }"
         v-show="isExpandableType">
       </span>
-      <span class="key">{{ field.key }}</span>
+      <span
+        v-if="editing && renamable"
+      >
+        <input
+          ref="keyInput"
+          class="edit-input key-input"
+          v-model="editedKey"
+          @keyup.esc="cancelEdit"
+          @keyup.enter="submitEdit"
+        >
+      </span>
+      <span v-else class="key">{{ field.key }}</span>
       <span class="colon">:<div class="meta" v-if="field.meta">
         <div class="meta-field" v-for="(val, key) in field.meta">
           <span class="key">{{ key }}</span>
@@ -22,7 +33,7 @@
       >
         <input
           ref="editInput"
-          class="edit-input"
+          class="edit-input value-input"
           v-model="editedValue"
           list="special-tokens"
           @keyup.esc="cancelEdit"
@@ -87,7 +98,7 @@
         :path="`${path}.${subField.key}`"
         :editable="editable"
         :removable="valueType === 'array' || valueType === 'plain-object'"
-        @remove-field="onRemoveField(subField)"
+        :renamable="valueType === 'plain-object'"
       />
       <span class="more"
         v-if="formattedSubFields.length > limit"
@@ -160,6 +171,10 @@ export default {
     removable: {
       type: Boolean,
       default: false
+    },
+    renamable: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -167,7 +182,8 @@ export default {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
       expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5),
       editing: false,
-      editedValue: null
+      editedValue: null,
+      editedKey: null
     }
   },
   computed: {
@@ -315,6 +331,7 @@ export default {
         currentEditedField.cancelEdit()
       }
       this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
+      this.editedKey = this.field.key
       this.editing = true
       currentEditedField = this
       this.$nextTick(() => {
@@ -330,14 +347,15 @@ export default {
       if (this.editValid) {
         this.editing = false
         const value = this.transformSpecialTokens(this.editedValue, false)
-        this.sendEdit(value)
+        const newKey = this.editedKey !== this.field.key ? this.editedKey : undefined
+        this.sendEdit({ value, newKey })
       }
     },
-    sendEdit (value) {
+    sendEdit (args) {
       bridge.send('set-instance-data', {
         id: this.inspectedInstance.id,
         path: this.path,
-        value
+        ...args
       })
     },
     transformSpecialTokens (str, display) {
@@ -363,19 +381,10 @@ export default {
       } else {
         newValue = info.newValue
       }
-      this.sendEdit(JSON.stringify(newValue))
+      this.sendEdit({ value: JSON.stringify(newValue) })
     },
     removeField () {
-      this.$emit('remove-field')
-    },
-    onRemoveField (subField) {
-      const newValue = this.field.value
-      if (this.valueType === 'array') {
-        newValue.splice(subField.key, 1)
-      } else if (this.valueType === 'plain-object') {
-        delete newValue[subField.key]
-      }
-      this.sendEdit(JSON.stringify(newValue))
+      this.sendEdit({ remove: true })
     }
   }
 }
@@ -408,7 +417,6 @@ export default {
       transform rotate(90deg)
   .actions
     visibility hidden
-    margin-left 6px
     display inline-flex
     align-items center
     position relative
@@ -416,8 +424,10 @@ export default {
     .icon-button
       user-select none
       font-size 14px
+      &:first-child
+        margin-left 6px
       &:not(:last-child)
-        margin-right 4px
+        margin-right 6px
     .warning
       color $orange
   &:hover,
@@ -503,7 +513,6 @@ export default {
         border 1px solid $dark-border-color
         background-color $dark-background-color
 
-
 .more
   cursor pointer
   display inline-block
@@ -518,7 +527,11 @@ export default {
   border-radius 3px
   padding 2px
   outline none
-  width 200px
+.value-input
+  width 180px
+.key-input
+  width 90px
+  color #881391
 
 .remove-field
   margin-left 10px
