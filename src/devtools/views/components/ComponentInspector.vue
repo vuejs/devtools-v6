@@ -78,11 +78,17 @@ export default {
     onTitleClick () {
       const file = this.target.file
       if (file) {
-        fetch(`/_open?file=${file}`).then(() => {
-          console.log(`File ${file} opened in editor`)
+        const src = `fetch('/_open?file=${file}').then(() => {
+          console.log('File ${file} opened in editor')
         }).catch(e => {
           console.warn(e)
-        })
+        })`
+        if (chrome && chrome.devtools) {
+          chrome.devtools.inspectedWindow.eval(src)
+        } else {
+          // eslint-disable-next-line no-eval
+          eval(src)
+        }
       }
     }
   }
