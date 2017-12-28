@@ -16,8 +16,8 @@
           ref="keyInput"
           class="edit-input key-input"
           v-model="editedKey"
-          @keyup.esc="cancelEdit"
-          @keyup.enter="submitEdit"
+          @keyup.esc="cancelEdit()"
+          @keyup.enter="submitEdit()"
         >
       </span>
       <span v-else class="key">{{ field.key }}</span>
@@ -36,25 +36,25 @@
           class="edit-input value-input"
           v-model="editedValue"
           list="special-tokens"
-          @keyup.esc="cancelEdit"
-          @keyup.enter="submitEdit"
+          @keyup.esc="cancelEdit()"
+          @keyup.enter="submitEdit()"
         >
         <span class="actions">
           <i
             v-if="!editValid"
             class="icon-button material-icons warning"
-            title="Invalid value"
+            :title="editErrorMessage"
           >warning</i>
           <template v-else>
             <i
               class="icon-button material-icons"
               title="[Esc] Cancel"
-              @click="cancelEdit"
+              @click="cancelEdit()"
             >close</i>
             <i
               class="icon-button material-icons"
               title="[Enter] Submit change"
-              @click="submitEdit"
+              @click="submitEdit()"
             >done</i>
           </template>
         </span>
@@ -69,7 +69,7 @@
             v-if="isEditable"
             class="edit-value icon-button material-icons"
             title="Edit value"
-            @click="openEdit"
+            @click="openEdit()"
           >edit</i>
           <template v-if="quickEdits">
             <i
@@ -84,13 +84,13 @@
             v-if="isSubfieldsEditable && !addingValue"
             class="add-value icon-button material-icons"
             title="Add new value"
-            @click="addNewValue"
+            @click="addNewValue()"
           >add_circle</i>
           <i
             v-if="removable"
             class="remove-field icon-button material-icons"
             title="Remove value"
-            @click="removeField"
+            @click="removeField()"
           >delete</i>
         </span>
       </template>
@@ -100,6 +100,7 @@
         v-for="subField in limitedSubFields"
         :key="subField.key"
         :field="subField"
+        :parent-field="field"
         :depth="depth + 1"
         :path="`${path}.${subField.key}`"
         :editable="editable"
@@ -116,6 +117,7 @@
         v-if="isSubfieldsEditable && addingValue"
         ref="newField"
         :field="newField"
+        :parent-field="field"
         :depth="depth + 1"
         :path="`${path}.${newField.key}`"
         editable
@@ -183,6 +185,7 @@ export default {
   name: 'DataField',
   props: {
     field: Object,
+    parentField: Object,
     depth: Number,
     path: String,
     editable: {
@@ -308,12 +311,32 @@ export default {
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
     },
-    editValid () {
+    valueValid () {
       try {
         parse(this.transformSpecialTokens(this.editedValue, false))
         return true
       } catch (e) {
         return false
+      }
+    },
+    duplicateKey () {
+      return this.parentField.value.hasOwnProperty(this.editedKey)
+    },
+    keyValid () {
+      return this.editedKey && (this.editedKey === this.field.key || !this.duplicateKey)
+    },
+    editValid () {
+      return this.valueValid && (!this.renamable || this.keyValid)
+    },
+    editErrorMessage () {
+      if (!this.valueValid) {
+        return 'Invalid value'
+      } else if (!this.keyValid) {
+        if (this.duplicateKey) {
+          return 'Duplicate key'
+        } else {
+          return 'Invalid key'
+        }
       }
     },
     quickEdits () {
