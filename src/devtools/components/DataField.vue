@@ -15,6 +15,7 @@
         <input
           ref="keyInput"
           class="edit-input key-input"
+          :class="{ error: !keyValid }"
           v-model="editedKey"
           @keyup.esc="cancelEdit()"
           @keyup.enter="submitEdit()"
@@ -34,6 +35,7 @@
         <input
           ref="editInput"
           class="edit-input value-input"
+          :class="{ error: !valueValid }"
           v-model="editedValue"
           list="special-tokens"
           @keyup.esc="cancelEdit()"
@@ -596,6 +598,8 @@ export default {
   border-radius 3px
   padding 2px
   outline none
+  &.error
+    border-color $orange
 .value-input
   width 180px
 .key-input
