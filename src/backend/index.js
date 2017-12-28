@@ -636,7 +636,7 @@ function setStateValue ({ id, path, value, newKey, remove }) {
     try {
       let parsedValue
       if (value) {
-        parsedValue = parse(value)
+        parsedValue = parse(value, true)
       }
       set(instance._data, path, parsedValue, (obj, field, value) => {
         (remove || newKey) && instance.$delete(obj, field)
