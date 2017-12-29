@@ -260,6 +260,8 @@ export default {
         return 'array'
       } else if (isPlainObject(value)) {
         return 'plain-object'
+      } else {
+        return 'unknown'
       }
     },
     rawValueType () {
