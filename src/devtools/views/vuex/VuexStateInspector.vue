@@ -1,6 +1,10 @@
 <template>
   <scroll-pane>
     <action-header slot="header">
+      <div class="search">
+        <i class="material-icons">search</i>
+        <input placeholder="Filter inspected state" v-model.trim="filter">
+      </div>
       <a class="button export" @click="copyStateToClipboard" title="Export Vuex State">
         <i class="material-icons">content_copy</i>
         <span>Export</span>
@@ -26,7 +30,7 @@
       </transition>
     </action-header>
     <div slot="scroll" class="vuex-state-inspector">
-      <state-inspector :state="inspectedState" />
+      <state-inspector :state="filteredState" />
     </div>
   </scroll-pane>
 </template>
@@ -36,8 +40,9 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
 
-import { stringify, parse } from 'src/util'
+import { searchDeepInObject, sortByKey, stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
+import groupBy from 'lodash.groupby'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -50,12 +55,34 @@ export default {
     return {
       showStateCopiedMessage: false,
       showBadJSONMessage: false,
-      showImportStatePopup: false
+      showImportStatePopup: false,
+      filter: ''
     }
   },
-  computed: mapGetters('vuex', [
-    'inspectedState'
-  ]),
+  computed: {
+    ...mapGetters('vuex', [
+      'inspectedState'
+    ]),
+    filteredState () {
+      const inspectedState = [].concat(
+        ...Object.keys(this.inspectedState).map(
+          type => Object.keys(this.inspectedState[type]).map(
+            key => ({
+              key,
+              type,
+              value: this.inspectedState[type][key]
+            })
+          )
+        )
+      )
+
+      return groupBy(sortByKey(inspectedState.filter(
+        el => searchDeepInObject({
+          [el.key]: el.value
+        }, this.filter)
+      )), 'type')
+    }
+  },
   watch: {
     showImportStatePopup (val) {
       if (val) {

@@ -78,7 +78,15 @@ module.exports = {
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'active')
 
-      // filtering
+      // filtering state & getters
+      .setValue('.right .search input', 'cou')
+      .assert.count('.data-field', 1)
+      .clearValue('.right .search input')
+      .setValue('.right .search input', 'no value')
+      .assert.count('.data-field', 0)
+      .clearValue('.right .search input')
+
+      // filtering history
       .setValue('.search input', 'inc')
       .assert.count('.history .entry', 3)
       .assert.count('.history .entry.inspected', 0)
@@ -94,6 +102,10 @@ module.exports = {
       .assert.count('.history .entry', 4)
       .assert.count('.history .entry.inspected.active', 1)
       .clearValue('.search input')
+
+      // Clear filters (clearValue is buggy)
+      .click('.button.components')
+      .click('.button.vuex')
 
       // inspecting
       .click('.history .entry:nth-child(3) .mutation-type')
