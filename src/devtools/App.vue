@@ -31,7 +31,7 @@
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
-    <a class="button refresh icon-only"
+    <a class="button refresh"
       @click="refresh"
       title="Force Refresh">
       <i class="material-icons" ref="refresh">refresh</i>
@@ -174,9 +174,6 @@ export default {
   transition color .35s ease
   .app.dark &
     background-color $dark-background-color
-
-  &.icon-only
-    padding 0 5px
 
   &:hover
     color #555
