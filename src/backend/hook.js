@@ -21,10 +21,10 @@ export function installHook (window) {
     },
 
     once (event, fn) {
-      const event_alias = event;
+      const eventAlias = event
       event = '$' + event
       function on () {
-        this.off(event_alias, on)
+        this.off(eventAlias, on)
         fn.apply(this, arguments)
       }
       ;(listeners[event] || (listeners[event] = [])).push(on)
