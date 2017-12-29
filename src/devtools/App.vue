@@ -1,5 +1,3 @@
-<style lang="stylus" src="./global.styl"></style>
-
 <template>
 <div id="app" class="app">
   <datalist id="special-tokens">
@@ -109,6 +107,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" src="./global.styl">
+</style>
 
 <style lang="stylus" scoped>
 @import "./variables"
