@@ -337,11 +337,18 @@ function getInstanceDetails (id) {
   if (!instance) {
     return {}
   } else {
-    return {
+    const data = {
       id: id,
       name: getInstanceName(instance),
       state: getInstanceState(instance)
     }
+
+    let i
+    if ((i = instance.$vnode) && (i = i.componentOptions) && (i = i.Ctor) && (i = i.options)) {
+      data.file = i.__file
+    }
+
+    return data
   }
 }
 
