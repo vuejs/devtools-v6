@@ -28,7 +28,7 @@ export function installToast (window) {
         align-items: flex-end;
         justify-content: center;
         z-index: 999999999999999999999;
-        font-family: monospace;
+        font-family: Menlo, Consolas, monospace;
         font-size: 14px;
       ">
         <div class="vue-wrapper" style="
