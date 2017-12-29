@@ -103,8 +103,10 @@ const getters = {
     }
 
     const snapshot = parse(entry ? entry.snapshot : base)
-    res.state = snapshot.state
-    res.getters = snapshot.getters
+    if (snapshot) {
+      res.state = snapshot.state
+      res.getters = snapshot.getters
+    }
 
     return res
   },
