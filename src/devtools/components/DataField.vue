@@ -47,17 +47,17 @@
           <i
             v-if="!editValid"
             class="icon-button material-icons warning"
-            :title="editErrorMessage"
+            v-tooltip="editErrorMessage"
           >warning</i>
           <template v-else>
             <i
               class="icon-button material-icons"
-              title="[Esc] Cancel"
+              v-tooltip="'[Esc] Cancel'"
               @click="cancelEdit()"
             >close</i>
             <i
               class="icon-button material-icons"
-              title="[Enter] Submit change"
+              v-tooltip="'[Enter] Submit change'"
               @click="submitEdit()"
             >done</i>
           </template>
@@ -72,7 +72,7 @@
           <i
             v-if="isEditable"
             class="edit-value icon-button material-icons"
-            title="Edit value"
+            v-tooltip="'Edit value'"
             @click="openEdit()"
           >edit</i>
           <template v-if="quickEdits">
@@ -80,20 +80,20 @@
               v-for="(info, index) of quickEdits"
               :key="index"
               class="quick-edit icon-button material-icons"
-              :title="info.title || 'Quick edit'"
+              v-tooltip="info.title || 'Quick edit'"
               @click="quickEdit(info, $event)"
             >{{ info.icon }}</i>
           </template>
           <i
             v-if="isSubfieldsEditable && !addingValue"
             class="add-value icon-button material-icons"
-            title="Add new value"
+            v-tooltip="'Add new value'"
             @click="addNewValue()"
           >add_circle</i>
           <i
             v-if="removable"
             class="remove-field icon-button material-icons"
-            title="Remove value"
+            v-tooltip="'Remove value'"
             @click="removeField()"
           >delete</i>
         </span>

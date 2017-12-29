@@ -6,8 +6,7 @@
     >
       <div
         class="data-type selectable-item"
-        title="Ctrl+Click: Collapse All
-Shift+Click: Expand All"
+        v-tooltip="'Ctrl+Click: Collapse All<br>Shift+Click: Expand All'"
         @click="toggle(dataType, $event)"
       >
         <span

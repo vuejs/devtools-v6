@@ -38,7 +38,7 @@
       <span class="spacer"></span>
       <i
         class="icon-button material-icons scroll-to-instance"
-        title="Scroll into view"
+        v-tooltip="'Scroll into view'"
         @click="scrollToInstance"
       >visibility</i>
     </div>
