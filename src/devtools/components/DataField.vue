@@ -596,6 +596,18 @@ export default {
     color #999
   &.literal
     color #0033cc
+  &.raw-boolean
+    width 36px
+  &.custom
+    &.type-component
+      color $green
+      &::before,
+      &::after
+        color $darkerGrey
+      &::before
+        content '<'
+      &::after
+        content '>'
   .dark &
     color #bdc6cf
     &.string, &.native
@@ -604,18 +616,6 @@ export default {
       color #999
     &.literal
       color #997fff
-    &.raw-boolean
-      width 36px
-    &.custom
-      &.type-component
-        color $green
-        &::before,
-        &::after
-          color $darkerGrey
-        &::before
-          content '<'
-        &::after
-          content '>'
 
 .meta
   font-size 12px
