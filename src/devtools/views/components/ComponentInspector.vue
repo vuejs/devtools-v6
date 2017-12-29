@@ -3,7 +3,7 @@
     <action-header v-show="hasTarget" slot="header">
       <span class="title" @click="onTitleClick">
         <span style="color:#ccc">&lt;</span>
-        <span :title="target.file">{{ target.name }}</span>
+        <span :title="target.file">{{ targetName }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
       <a class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
@@ -30,10 +30,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
-import { searchDeepInObject, sortByKey } from 'src/util'
+import { searchDeepInObject, sortByKey, classify } from 'src/util'
 import groupBy from 'lodash.groupby'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
@@ -53,8 +54,14 @@ export default {
     }
   },
   computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
     hasTarget () {
       return this.target.id != null
+    },
+    targetName () {
+      return this.classifyComponents ? classify(this.target.name) : this.target.name
     },
     filteredState () {
       return groupBy(sortByKey(this.target.state.filter(el => {
@@ -98,5 +105,6 @@ export default {
 <style lang="stylus" scoped>
 .title
   cursor pointer
+  white-space nowrap
 </style>
 

@@ -6,9 +6,10 @@
         <input placeholder="Filter components" @input="filterInstances">
       </div>
       <a class="button classify-names"
-         :class="{ active: classifyDisplayName }"
-         @click="toggleComponentNames"
-         title="Toggle component names">
+         :class="{ active: classifyComponents }"
+         v-tooltip="'Format component names'"
+         @click="toggleClassifyComponents"
+      >
         <i class="material-icons">text_fields</i>
       </a>
     </action-header>
@@ -18,24 +19,21 @@
         ref="instances"
         :key="instance.id"
         :instance="instance"
-        :depth="0"
-        :classifyDisplayName="classifyDisplayName">
+        :depth="0">
       </component-instance>
     </div>
   </scroll-pane>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
 import { classify } from '../../../util'
 import keyNavMixin from '../../mixins/key-nav'
-import storage from '../../storage'
-
-const CLASSIFY_NAMES_KEY = 'CLASSIFY_COMPONENTS_NAMES'
-const classifyDisplayName = storage.get(CLASSIFY_NAMES_KEY)
 
 export default {
   mixins: [keyNavMixin],
@@ -44,15 +42,19 @@ export default {
     ActionHeader,
     ComponentInstance
   },
-  data () {
-    return {
-      classifyDisplayName: classifyDisplayName == null ? true : classifyDisplayName
-    }
-  },
   props: {
     instances: Array
   },
+  computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ])
+  },
   methods: {
+    ...mapActions('components', [
+      'toggleClassifyComponents'
+    ]),
+
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
     },
@@ -85,10 +87,6 @@ export default {
       } else {
         findByIndex(all, currentIndex + 1).select()
       }
-    },
-
-    toggleComponentNames () {
-      storage.set(CLASSIFY_NAMES_KEY, this.classifyDisplayName = !this.classifyDisplayName)
     }
   }
 }

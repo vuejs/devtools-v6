@@ -47,25 +47,21 @@
         v-for="child in sortedChildren"
         :key="child.id"
         :instance="child"
-        :depth="depth + 1"
-        :classify-display-name="classifyDisplayName">
+        :depth="depth + 1">
       </component-instance>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { classify, scrollIntoView } from '../../../util'
 
 export default {
   name: 'ComponentInstance',
   props: {
     instance: Object,
-    depth: Number,
-    classifyDisplayName: {
-      type: Boolean,
-      default: true
-    }
+    depth: Number
   },
   created () {
     // expand root by default
@@ -74,6 +70,9 @@ export default {
     }
   },
   computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
     scrollToExpanded () {
       return this.$store.state.components.scrollToExpanded
     },
@@ -91,7 +90,7 @@ export default {
       })
     },
     displayName () {
-      return this.classifyDisplayName ? classify(this.instance.name) : this.instance.name
+      return this.classifyComponents ? classify(this.instance.name) : this.instance.name
     }
   },
   watch: {
