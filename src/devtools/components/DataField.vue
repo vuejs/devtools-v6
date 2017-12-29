@@ -38,6 +38,7 @@
 import {
   UNDEFINED,
   INFINITY,
+  NEGATIVE_INFINITY,
   NAN,
   isPlainObject,
   sortByKey
@@ -78,6 +79,7 @@ export default {
         type === 'boolean' ||
         type === 'number' ||
         value === INFINITY ||
+        value === NEGATIVE_INFINITY ||
         value === NAN
       ) {
         return 'literal'
@@ -101,6 +103,8 @@ export default {
         return 'NaN'
       } else if (value === INFINITY) {
         return 'Infinity'
+      } else if (value === NEGATIVE_INFINITY) {
+        return '-Infinity'
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {

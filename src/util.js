@@ -37,6 +37,7 @@ export function inDoc (node) {
 
 export const UNDEFINED = '__vue_devtool_undefined__'
 export const INFINITY = '__vue_devtool_infinity__'
+export const NEGATIVE_INFINITY = '__vue_devtool_negative_infinity__'
 export const NAN = '__vue_devtool_nan__'
 
 export function stringify (data) {
@@ -48,6 +49,8 @@ function replacer (key, val) {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
+  } else if (val === -Infinity) {
+    return NEGATIVE_INFINITY
   } else if (Number.isNaN(val)) {
     return NAN
   } else if (val instanceof RegExp) {
@@ -69,6 +72,8 @@ function reviver (key, val) {
     return undefined
   } else if (val === INFINITY) {
     return Infinity
+  } else if (val === NEGATIVE_INFINITY) {
+    return -Infinity
   } else if (val === NAN) {
     return NaN
   } else {
