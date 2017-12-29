@@ -8,7 +8,7 @@
       placement="left"
       offset="24"
       :disabled="!field.meta"
-      @click="toggle"
+      @click.native="toggle"
     >
       <span
         v-show="isExpandableType"
@@ -70,7 +70,7 @@
         >{{ formattedValue }}</span>
         <span class="actions">
           <i
-            v-if="isEditable"
+            v-if="isValueEditable"
             class="edit-value icon-button material-icons"
             v-tooltip="'Edit value'"
             @click="openEdit()"
@@ -114,7 +114,7 @@
         :parent-field="field"
         :depth="depth + 1"
         :path="`${path}.${subField.key}`"
-        :editable="editable"
+        :editable="isEditable"
         :removable="isSubfieldsEditable"
         :renamable="editable && valueType === 'plain-object'"
       />
@@ -274,17 +274,26 @@ export default {
         (this.valueType !== 'custom' && isPlainObject(value))
     },
     isEditable () {
+      return this.editable &&
+        !this.field.noDisplay &&
+        (
+          typeof this.field.key !== 'string' ||
+          this.field.key.charAt(0) !== '$'
+        )
+    },
+    isValueEditable () {
       const type = this.valueType
-      return this.editable && (
-        type === 'null' ||
-        type === 'literal' ||
-        type === 'string' ||
-        type === 'array' ||
-        type === 'plain-object'
-      )
+      return this.isEditable &&
+        (
+          type === 'null' ||
+          type === 'literal' ||
+          type === 'string' ||
+          type === 'array' ||
+          type === 'plain-object'
+        )
     },
     isSubfieldsEditable () {
-      return this.editable && (this.valueType === 'array' || this.valueType === 'plain-object')
+      return this.isEditable && (this.valueType === 'array' || this.valueType === 'plain-object')
     },
     formattedValue () {
       const value = this.field.value
@@ -371,7 +380,7 @@ export default {
       }
     },
     quickEdits () {
-      if (this.isEditable) {
+      if (this.isValueEditable) {
         const value = this.field.value
         const type = typeof value
         if (type === 'boolean') {
