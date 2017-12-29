@@ -205,6 +205,29 @@ module.exports = {
       .click('.import')
       .waitForElementNotPresent('.import-state', 2000)
 
+      // Events
+      .frame('target')
+        .click('.btn-emit-event')
+        .click('.btn-emit-event1')
+        .click('.btn-emit-event2')
+        .frame(null)
+      .assert.containsText('.event-count', 3)
+      .click('.button.events')
+      .assert.elementNotPresent('.event-count')
+      .assert.count('.history .entry', 3)
+      .frame('target')
+        .click('.btn-emit-log-event')
+        .frame(null)
+      .assert.count('.history .entry', 4)
+      .setValue('.search input', 'event')
+      .assert.count('.history .entry', 3)
+      .clearValue('.search input')
+      .setValue('.search input', 'EventChild1')
+      .assert.count('.history .entry', 1)
+      .clearValue('.search input')
+      .click('.button.reset')
+      .assert.count('.history .entry', 0)
+
       // done
       .end()
   }
