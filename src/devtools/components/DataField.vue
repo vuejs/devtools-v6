@@ -8,14 +8,14 @@
         :class="{ rotated: expanded }"
         v-show="isExpandableType">
       </span>
-      <span class="key">{{ field.key }}</span>
-      <span class="colon">:<div class="meta" v-if="field.meta">
+      <span class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span>
+      <span class="colon"><span v-if="!field.noDisplay">:</span><div class="meta" v-if="field.meta">
         <div class="meta-field" v-for="(val, key) in field.meta">
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>
       </div></span>
-      <span class="value" :class="valueType">{{ formattedValue }}</span>
+      <span class="value" :class="valueClass">{{ formattedValue }}</span>
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
@@ -45,7 +45,7 @@ import {
 } from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
-const specialTypeRE = /^\[native \w+ (.*)\]$/
+const specialTypeRE = /^\[native (\w+) (.*)\]$/
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -83,19 +83,26 @@ export default {
         value === NAN
       ) {
         return 'literal'
+      } else if (value && value._custom) {
+        return 'custom'
       } else if (specialTypeRE.test(value)) {
-        return 'native'
+        const [, type] = specialTypeRE.exec(value)
+        return `native ${type}`
       } else if (type === 'string' && !rawTypeRE.test(value)) {
         return 'string'
       }
     },
     isExpandableType () {
       const value = this.field.value
-      return Array.isArray(value) || isPlainObject(value)
+      return Array.isArray(value) ||
+        (this.valueType === 'custom' && value._custom.state) ||
+        (this.valueType !== 'custom' && isPlainObject(value))
     },
     formattedValue () {
       const value = this.field.value
-      if (value === null) {
+      if (this.field.noDisplay) {
+        return ''
+      } else if (value === null) {
         return 'null'
       } else if (value === UNDEFINED) {
         return 'undefined'
@@ -105,12 +112,14 @@ export default {
         return 'Infinity'
       } else if (value === NEGATIVE_INFINITY) {
         return '-Infinity'
+      } else if (this.valueType === 'custom') {
+        return value._custom.display
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
-      } else if (this.valueType === 'native') {
-        return specialTypeRE.exec(value)[1]
+      } else if (this.valueType.includes('native')) {
+        return specialTypeRE.exec(value)[2]
       } else if (typeof value === 'string') {
         var typeMatch = value.match(rawTypeRE)
         if (typeMatch) {
@@ -130,15 +139,29 @@ export default {
           value: item
         }))
       } else if (typeof value === 'object') {
+        const isCustom = this.valueType === 'custom'
+        if (isCustom) {
+          value = value._custom.state
+        }
         value = sortByKey(Object.keys(value).map(key => ({
           key,
-          value: value[key]
+          value: value[key],
+          noDisplay: isCustom
         })))
       }
       return value
     },
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
+    },
+    valueClass () {
+      const cssClass = [this.valueType]
+      if (this.valueType === 'custom') {
+        const value = this.field.value
+        value._custom.type && cssClass.push(`type-${value._custom.type}`)
+        value._custom.class && cssClass.push(value._custom.class)
+      }
+      return cssClass
     }
   },
   methods: {
@@ -179,6 +202,8 @@ export default {
       transform rotate(90deg)
   .key
     color #881391
+    &.special
+      color $blueishGrey
   .colon
     margin-right .5em
     position relative
@@ -190,6 +215,16 @@ export default {
       color #999
     &.literal
       color #0033cc
+    &.custom
+      &.type-component
+        color $green
+        &::before,
+        &::after
+          color $darkerGrey
+        &::before
+          content '<'
+        &::after
+          content '>'
 
   .type
     color $background-color

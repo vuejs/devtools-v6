@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 6
+    var baseInstanceCount = 7
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
@@ -219,9 +219,10 @@ module.exports = {
       .setValue('.import-state textarea', '{invalid: json}')
       .waitForElementVisible('.message.invalid-json', 100)
       .clearValue('.import-state textarea')
-      .setValue('.import-state textarea', '{"valid": "json"}')
+      .setValue('.import-state textarea', '{"count":42,"date":"[native Date Fri Dec 22 2017 10:12:04 GMT+0100 (CET)]"}')
       .waitForElementNotVisible('.message.invalid-json', 1000)
-      .assert.containsText('.vuex-state-inspector', 'valid:"json"')
+      .assert.containsText('.vuex-state-inspector', 'count:42')
+      .assert.containsText('.vuex-state-inspector', 'date:Fri Dec 22 2017 10:12:04 GMT+0100 (CET)')
       .click('.import')
       .waitForElementNotPresent('.import-state', 2000)
 

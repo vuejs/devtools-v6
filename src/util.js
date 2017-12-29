@@ -1,5 +1,7 @@
 import CircularJSON from 'circular-json-es6'
 
+import { instanceMap, getCustomInstanceDetails } from 'src/backend'
+
 function cached (fn) {
   const cache = Object.create(null)
   return function cachedFn (str) {
@@ -44,7 +46,8 @@ export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
 }
 
-function replacer (key, val) {
+function replacer (key) {
+  const val = this[key]
   if (val === undefined) {
     return UNDEFINED
   } else if (val === Infinity) {
@@ -56,6 +59,10 @@ function replacer (key, val) {
   } else if (val instanceof RegExp) {
     // special handling of native type
     return `[native RegExp ${val.toString()}]`
+  } else if (val instanceof Date) {
+    return `[native Date ${val.toString()}]`
+  } else if (val && val._isVue) {
+    return getCustomInstanceDetails(val)
   } else {
     return sanitize(val)
   }
@@ -67,6 +74,8 @@ export function parse (data, revive) {
     : CircularJSON.parse(data)
 }
 
+const specialTypeRE = /^\[native (\w+) (.*)\]$/
+
 function reviver (key, val) {
   if (val === UNDEFINED) {
     return undefined
@@ -76,6 +85,13 @@ function reviver (key, val) {
     return -Infinity
   } else if (val === NAN) {
     return NaN
+  } else if (val && val._custom) {
+    if (val._custom.type === 'component') {
+      return instanceMap.get(val._custom.id)
+    }
+  } else if (specialTypeRE.test(val)) {
+    const [, type, string] = specialTypeRE.exec(val)
+    return new window[type](string)
   } else {
     return val
   }
