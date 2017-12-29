@@ -8,7 +8,7 @@
     <button class="add" @click="add">Add</button>
     <button class="remove" @click="rm">Remove</button>
     <input v-model="localMsg">
-    <other v-for="item in items" :key="item"></other>
+    <other v-for="item in items" :key="item" :id="item"></other>
     <button @click="inspect">Inspect component</button>
   </div>
 </template>

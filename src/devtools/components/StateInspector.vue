@@ -22,7 +22,9 @@ Shift+Click: Expand All"
             v-for="field in state[dataType]"
             :key="field.key"
             :field="field"
-            :depth="0">
+            :depth="0"
+            :path="field.key"
+            :editable="field.editable">
           </data-field>
         </template>
         <template v-else>
@@ -30,7 +32,9 @@ Shift+Click: Expand All"
             v-for="(value, key) in state[dataType]"
             :key="key"
             :field="{ value, key }"
-            :depth="0">
+            :depth="0"
+            :path="key"
+            :editable="false">
           </data-field>
         </template>
       </div>

@@ -3,6 +3,7 @@
     <div
       class="self"
       :style="{ marginLeft: depth * 14 + 'px' }"
+      :class="cssClass"
       @click="toggle"
     >
       <span
@@ -11,44 +12,156 @@
         :class="{ rotated: expanded }"
       >
       </span>
-      <span class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span>
+      <span
+        v-if="editing && renamable"
+      >
+        <input
+          ref="keyInput"
+          class="edit-input key-input"
+          :class="{ error: !keyValid }"
+          v-model="editedKey"
+          @keyup.esc="cancelEdit()"
+          @keyup.enter="submitEdit()"
+        >
+      </span>
+      <span v-else class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span>
       <span class="colon"><span v-if="!field.noDisplay">:</span><div class="meta" v-if="field.meta">
         <div class="meta-field" v-for="(val, key) in field.meta">
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>
       </div></span>
-      <span class="value" :class="valueClass">{{ formattedValue }}</span>
+      <span
+        v-if="editing"
+        class="edit-overlay"
+      >
+        <input
+          ref="editInput"
+          class="edit-input value-input"
+          :class="{ error: !valueValid }"
+          v-model="editedValue"
+          list="special-tokens"
+          @keyup.esc="cancelEdit()"
+          @keyup.enter="submitEdit()"
+        >
+        <span class="actions">
+          <i
+            v-if="!editValid"
+            class="icon-button material-icons warning"
+            :title="editErrorMessage"
+          >warning</i>
+          <template v-else>
+            <i
+              class="icon-button material-icons"
+              title="[Esc] Cancel"
+              @click="cancelEdit()"
+            >close</i>
+            <i
+              class="icon-button material-icons"
+              title="[Enter] Submit change"
+              @click="submitEdit()"
+            >done</i>
+          </template>
+        </span>
+      </span>
+      <template v-else>
+        <span
+          class="value"
+          :class="[valueType, `raw-${rawValueType}`, valueClass]"
+        >{{ formattedValue }}</span>
+        <span class="actions">
+          <i
+            v-if="isEditable"
+            class="edit-value icon-button material-icons"
+            title="Edit value"
+            @click="openEdit()"
+          >edit</i>
+          <template v-if="quickEdits">
+            <i
+              v-for="(info, index) of quickEdits"
+              :key="index"
+              class="quick-edit icon-button material-icons"
+              :title="info.title || 'Quick edit'"
+              @click="quickEdit(info, $event)"
+            >{{ info.icon }}</i>
+          </template>
+          <i
+            v-if="isSubfieldsEditable && !addingValue"
+            class="add-value icon-button material-icons"
+            title="Add new value"
+            @click="addNewValue()"
+          >add_circle</i>
+          <i
+            v-if="removable"
+            class="remove-field icon-button material-icons"
+            title="Remove value"
+            @click="removeField()"
+          >delete</i>
+        </span>
+      </template>
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
         v-for="subField in limitedSubFields"
         :key="subField.key"
         :field="subField"
-        :depth="depth + 1">
-      </data-field>
+        :parent-field="field"
+        :depth="depth + 1"
+        :path="`${path}.${subField.key}`"
+        :editable="editable"
+        :removable="isSubfieldsEditable"
+        :renamable="editable && valueType === 'plain-object'"
+      />
       <span class="more"
         v-if="formattedSubFields.length > limit"
         @click="limit += 10"
-        :style="{ marginLeft: (depth + 1) * 14 + 10 + 'px' }">
+        :style="{ marginLeft: depthMargin + 'px' }">
         ...
       </span>
+      <data-field
+        v-if="isSubfieldsEditable && addingValue"
+        ref="newField"
+        :field="newField"
+        :parent-field="field"
+        :depth="depth + 1"
+        :path="`${path}.${newField.key}`"
+        editable
+        removable
+        :renamable="valueType === 'plain-object'"
+        @cancel-edit="addingValue = false"
+        @submit-edit="addingValue = false"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import {
   UNDEFINED,
   INFINITY,
   NEGATIVE_INFINITY,
   NAN,
+  SPECIAL_TOKENS,
   isPlainObject,
-  sortByKey
+  sortByKey,
+  parse
 } from 'src/util'
+
+const QUICK_EDIT_NUMBER_REMOVE = `Quick Edit
+[Ctrl-Click] -5
+[Shift-Click] -10
+[Alt-Click] -100`
+
+const QUICK_EDIT_NUMBER_ADD = `Quick Edit
+[Ctrl-Click] +5
+[Shift-Click] +10
+[Alt-Click] +100`
 
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
+
+let currentEditedField = null
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -60,19 +173,63 @@ function subFieldCount (value) {
   }
 }
 
+function numberQuickEditMod (event) {
+  let mod = 1
+  if (event.ctrlKey) {
+    mod *= 5
+  }
+  if (event.shiftKey) {
+    mod *= 10
+  }
+  if (event.altKey) {
+    mod *= 100
+  }
+  return mod
+}
+
 export default {
   name: 'DataField',
   props: {
     field: Object,
-    depth: Number
+    parentField: Object,
+    depth: Number,
+    path: String,
+    editable: {
+      type: Boolean,
+      default: false
+    },
+    removable: {
+      type: Boolean,
+      default: false
+    },
+    renamable: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5),
+      editing: false,
+      editedValue: null,
+      editedKey: null,
+      addingValue: false,
+      newField: null
     }
   },
   computed: {
+    ...mapState('components', [
+      'inspectedInstance'
+    ]),
+    cssClass () {
+      return {
+        editing: this.editing
+      }
+    },
+    depthMargin () {
+      return (this.depth + 1) * 14 + 10
+    },
     valueType () {
       const value = this.field.value
       const type = typeof value
@@ -93,13 +250,33 @@ export default {
         return `native ${type}`
       } else if (type === 'string' && !rawTypeRE.test(value)) {
         return 'string'
+      } else if (Array.isArray(value)) {
+        return 'array'
+      } else if (isPlainObject(value)) {
+        return 'plain-object'
       }
+    },
+    rawValueType () {
+      return typeof this.field.value
     },
     isExpandableType () {
       const value = this.field.value
       return Array.isArray(value) ||
         (this.valueType === 'custom' && value._custom.state) ||
         (this.valueType !== 'custom' && isPlainObject(value))
+    },
+    isEditable () {
+      const type = this.valueType
+      return this.editable && (
+        type === 'null' ||
+        type === 'literal' ||
+        type === 'string' ||
+        type === 'array' ||
+        type === 'plain-object'
+      )
+    },
+    isSubfieldsEditable () {
+      return this.editable && (this.valueType === 'array' || this.valueType === 'plain-object')
     },
     formattedValue () {
       const value = this.field.value
@@ -117,9 +294,9 @@ export default {
         return '-Infinity'
       } else if (this.valueType === 'custom') {
         return value._custom.display
-      } else if (Array.isArray(value)) {
+      } else if (this.valueType === 'array') {
         return 'Array[' + value.length + ']'
-      } else if (isPlainObject(value)) {
+      } else if (this.valueType === 'plain-object') {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (this.valueType.includes('native')) {
         return specialTypeRE.exec(value)[2]
@@ -157,6 +334,62 @@ export default {
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
     },
+    valueValid () {
+      try {
+        parse(this.transformSpecialTokens(this.editedValue, false))
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    duplicateKey () {
+      return this.parentField.value.hasOwnProperty(this.editedKey)
+    },
+    keyValid () {
+      return this.editedKey && (this.editedKey === this.field.key || !this.duplicateKey)
+    },
+    editValid () {
+      return this.valueValid && (!this.renamable || this.keyValid)
+    },
+    editErrorMessage () {
+      if (!this.valueValid) {
+        return 'Invalid value'
+      } else if (!this.keyValid) {
+        if (this.duplicateKey) {
+          return 'Duplicate key'
+        } else {
+          return 'Invalid key'
+        }
+      }
+    },
+    quickEdits () {
+      if (this.isEditable) {
+        const value = this.field.value
+        const type = typeof value
+        if (type === 'boolean') {
+          return [
+            {
+              icon: value ? 'check_box' : 'check_box_outline_blank',
+              newValue: !value
+            }
+          ]
+        } else if (type === 'number') {
+          return [
+            {
+              icon: 'remove',
+              title: QUICK_EDIT_NUMBER_REMOVE,
+              newValue: event => value - numberQuickEditMod(event)
+            },
+            {
+              icon: 'add',
+              title: QUICK_EDIT_NUMBER_ADD,
+              newValue: event => value + numberQuickEditMod(event)
+            }
+          ]
+        }
+      }
+      return null
+    },
     valueClass () {
       const cssClass = [this.valueType]
       if (this.valueType === 'custom') {
@@ -168,12 +401,92 @@ export default {
     }
   },
   methods: {
-    toggle () {
+    toggle (event) {
+      if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
+        return
+      }
       if (this.isExpandableType) {
         this.expanded = !this.expanded
       }
     },
-    hyphen: v => v.replace(/\s/g, '-')
+    hyphen: v => v.replace(/\s/g, '-'),
+    openEdit (focusKey = false) {
+      if (currentEditedField && currentEditedField !== this) {
+        currentEditedField.cancelEdit()
+      }
+      this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
+      this.editedKey = this.field.key
+      this.editing = true
+      currentEditedField = this
+      this.$nextTick(() => {
+        const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
+        el.focus()
+        el.setSelectionRange(0, el.value.length)
+      })
+    },
+    cancelEdit () {
+      this.editing = false
+      this.$emit('cancel-edit')
+    },
+    submitEdit () {
+      if (this.editValid) {
+        this.editing = false
+        const value = this.transformSpecialTokens(this.editedValue, false)
+        const newKey = this.editedKey !== this.field.key ? this.editedKey : undefined
+        this.sendEdit({ value, newKey })
+        this.$emit('submit-edit')
+      }
+    },
+    sendEdit (args) {
+      bridge.send('set-instance-data', {
+        id: this.inspectedInstance.id,
+        path: this.path,
+        ...args
+      })
+    },
+    transformSpecialTokens (str, display) {
+      Object.keys(SPECIAL_TOKENS).forEach(key => {
+        const value = JSON.stringify(SPECIAL_TOKENS[key])
+        let search
+        let replace
+        if (display) {
+          search = value
+          replace = key
+        } else {
+          search = key
+          replace = value
+        }
+        str = str.replace(new RegExp(search), replace)
+      })
+      return str
+    },
+    quickEdit (info, event) {
+      let newValue
+      if (typeof info.newValue === 'function') {
+        newValue = info.newValue(event)
+      } else {
+        newValue = info.newValue
+      }
+      this.sendEdit({ value: JSON.stringify(newValue) })
+    },
+    removeField () {
+      this.sendEdit({ remove: true })
+    },
+    addNewValue () {
+      let key
+      if (this.valueType === 'array') {
+        key = this.field.value.length
+      } else if (this.valueType === 'plain-object') {
+        let i = 1
+        while (this.field.value.hasOwnProperty(key = `prop${i}`)) i++
+      }
+      this.newField = { key, value: UNDEFINED }
+      this.expanded = true
+      this.addingValue = true
+      this.$nextTick(() => {
+        this.$refs.newField.openEdit(true)
+      })
+    }
   }
 }
 </script>
@@ -203,6 +516,25 @@ export default {
     transition transform .1s ease
     &.rotated
       transform rotate(90deg)
+  .actions
+    visibility hidden
+    display inline-flex
+    align-items center
+    position relative
+    top -1px
+    .icon-button
+      user-select none
+      font-size 14px
+      &:first-child
+        margin-left 6px
+      &:not(:last-child)
+        margin-right 6px
+    .warning
+      color $orange
+  &:hover,
+  &.editing
+    .actions
+      visibility visible
   .key
     color #881391
     &.special
@@ -211,6 +543,7 @@ export default {
     margin-right .5em
     position relative
   .value
+    display inline-block
     color #444
     &.string, &.native
       color #c41a16
@@ -218,6 +551,8 @@ export default {
       color #999
     &.literal
       color #0033cc
+    &.raw-boolean
+      width 36px
     &.custom
       &.type-component
         color $green
@@ -291,7 +626,6 @@ export default {
         border 1px solid $dark-border-color
         background-color $dark-background-color
 
-
 .more
   cursor pointer
   display inline-block
@@ -299,4 +633,21 @@ export default {
   padding 0 4px 4px
   &:hover
     background-color #eee
+
+.edit-input
+  font-family Menlo, Consolas, monospace
+  border solid 1px $green
+  border-radius 3px
+  padding 2px
+  outline none
+  &.error
+    border-color $orange
+.value-input
+  width 180px
+.key-input
+  width 90px
+  color #881391
+
+.remove-field
+  margin-left 10px
 </style>

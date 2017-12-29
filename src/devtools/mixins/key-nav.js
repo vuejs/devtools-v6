@@ -8,6 +8,9 @@ const navMap = {
 const activeInstances = []
 
 document.addEventListener('keyup', e => {
+  if (e.target.tagName === 'INPUT') {
+    return
+  }
   if (navMap[e.keyCode]) {
     activeInstances.forEach(vm => {
       if (vm.onKeyNav) {

@@ -2,6 +2,9 @@
 
 <template>
 <div id="app" :class="{ app: true, dark: isDark }">
+  <datalist id="special-tokens">
+    <option v-for="(value, key) of specialTokens" :key="key" :value="key"></option>
+  </datalist>
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
@@ -47,6 +50,7 @@
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
+import { SPECIAL_TOKENS } from '../util'
 
 import { mapState } from 'vuex'
 
@@ -64,11 +68,16 @@ export default {
     vuex: VuexTab,
     events: EventsTab
   },
-  computed: mapState({
-    message: state => state.message,
-    tab: state => state.tab,
-    newEventCount: state => state.events.newEventCount
-  }),
+  computed: {
+    ...mapState({
+      message: state => state.message,
+      tab: state => state.tab,
+      newEventCount: state => state.events.newEventCount
+    }),
+    specialTokens () {
+      return SPECIAL_TOKENS
+    }
+  },
   methods: {
     switchTab (tab) {
       bridge.send('switch-tab', tab)

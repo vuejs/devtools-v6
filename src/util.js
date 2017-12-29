@@ -42,6 +42,15 @@ export const INFINITY = '__vue_devtool_infinity__'
 export const NEGATIVE_INFINITY = '__vue_devtool_negative_infinity__'
 export const NAN = '__vue_devtool_nan__'
 
+export const SPECIAL_TOKENS = {
+  'true': true,
+  'false': false,
+  'undefined': UNDEFINED,
+  'null': null,
+  'Infinity': INFINITY,
+  'NaN': NAN
+}
+
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
 }
@@ -183,6 +192,19 @@ export function sortByKey (state) {
     if (a.key > b.key) return 1
     return 0
   })
+}
+
+export function set (object, path, value, cb = null) {
+  const sections = path.split('.')
+  while (sections.length > 1) {
+    object = object[sections.shift()]
+  }
+  const field = sections[0]
+  if (cb) {
+    cb(object, field, value)
+  } else {
+    object[field] = value
+  }
 }
 
 export function scrollIntoView (scrollParent, el) {

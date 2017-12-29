@@ -4,7 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize } from '../util'
+import { stringify, classify, camelize, set, parse } from '../util'
 import path from 'path'
 
 // Use a custom basename functions instead of the shimed version
@@ -78,7 +78,9 @@ function connect () {
   })
 
   bridge.on('refresh', scan)
+
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+
   bridge.on('leave-instance', unHighlight)
 
   // Get the instance id that is targeted by context menu
@@ -96,6 +98,11 @@ function connect () {
     }
 
     toast('No Vue component was found', 'warn')
+  })
+
+  bridge.on('set-instance-data', args => {
+    setStateValue(args)
+    flush()
   })
 
   // vuex
@@ -494,7 +501,8 @@ function processState (instance) {
     ))
     .map(key => ({
       key,
-      value: instance._data[key]
+      value: instance._data[key],
+      editable: true
     }))
 }
 
@@ -689,4 +697,22 @@ export function toast (message, type = 'normal') {
 export function inspectInstance (instance) {
   const id = instance.__VUE_DEVTOOLS_UID__
   id && bridge.send('inspect-instance', id)
+}
+
+function setStateValue ({ id, path, value, newKey, remove }) {
+  const instance = instanceMap.get(id)
+  if (instance) {
+    try {
+      let parsedValue
+      if (value) {
+        parsedValue = parse(value, true)
+      }
+      set(instance._data, path, parsedValue, (obj, field, value) => {
+        (remove || newKey) && instance.$delete(obj, field)
+        !remove && instance.$set(obj, newKey || field, value)
+      })
+    } catch (e) {
+      console.error(e)
+    }
+  }
 }
