@@ -19,7 +19,7 @@ module.exports = {
       .assert.visible('.tree')
       .assert.containsText('.action-header .title', 'Root')
       .assert.elementPresent('.data-field')
-      .assert.containsText('.data-field', 'obj:Object')
+      .assert.containsText('.data-field', '$route:Object')
 
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)

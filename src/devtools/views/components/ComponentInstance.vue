@@ -33,6 +33,12 @@
       <span class="info inactive" v-if="instance.inactive">
         inactive
       </span>
+      <span class="spacer"></span>
+      <i
+        class="icon-button material-icons scroll-to-instance"
+        title="Scroll into view"
+        @click="scrollToInstance"
+      >visibility</i>
     </div>
     <div v-if="expanded">
       <component-instance
@@ -108,6 +114,9 @@ export default {
     },
     leave () {
       bridge.send('leave-instance', this.instance.id)
+    },
+    scrollToInstance () {
+      bridge.send('scroll-to-instance', this.instance.id)
     }
   }
 }
@@ -132,6 +141,10 @@ export default {
   line-height 22px
   height 22px
   white-space nowrap
+  display flex
+  align-items center
+  padding-right 6px
+
   &:hidden
     display none
 
@@ -155,6 +168,7 @@ export default {
   &.console
     color #fff
     background-color transparent
+    top 0px
   &.router-view
     background-color #ff8344
   &.fragment
@@ -169,7 +183,7 @@ export default {
   display inline-block
   width 16px
   height 16px
-  top 0
+  top 1px
   left 4px
 
 .arrow
@@ -187,4 +201,17 @@ export default {
   color $component-color
   margin 0 1px
   transition color .1s ease
+
+.spacer
+  flex 100% 1 1
+  width 0
+
+.icon-button
+  font-size 16px
+
+  .self:not(:hover) &
+    visibility hidden
+
+  .self.selected &
+    color $white
 </style>
