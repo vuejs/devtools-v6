@@ -191,11 +191,6 @@ export default {
     font-size 20px
     margin-right 5px
     color inherit
-    &.view-icon
-      transition transform 0.25s
-
-    &.rotate-90
-      transform rotate(-90deg)
 
   .pane-name
     display none
