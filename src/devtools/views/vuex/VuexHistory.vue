@@ -19,7 +19,7 @@
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
+      <div class="entry list-item" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a class="action"
@@ -34,7 +34,7 @@
         <span class="label active" v-if="activeIndex === -1">active</span>
         <span class="label inspected" v-if="inspectedIndex === -1">inspected</span>
       </div>
-      <div class="entry"
+      <div class="entry list-item"
         v-for="entry in filteredHistory"
         :class="{ inspected: isInspected(entry), active: isActive(entry) }"
         @click="inspect(entry)">
@@ -141,16 +141,12 @@ $inspected_color = #af90d5
 
 .entry
   font-family Menlo, Consolas, monospace
-  color #881391
   cursor pointer
-  padding 10px 20px
+  padding 7px 20px
   font-size 12px
-  background-color $background-color
   box-shadow 0 1px 5px rgba(0,0,0,.12)
-  height 40px
+  height 34px
   &.active
-    color #fff
-    background-color $active-color
     .time
       color lighten($active-color, 75%)
     .action
@@ -180,11 +176,9 @@ $inspected_color = #af90d5
     .entry-actions
       display inline-block
   .app.dark &
-    background-color $dark-background-color
     .mutation-type
       color #e36eec
     &.active
-      background-color $active-color
       .mutation-type
         color #fff
 

@@ -1,12 +1,15 @@
 <template>
   <div class="data-field">
-    <div class="self"
+    <div
+      class="self"
+      :style="{ marginLeft: depth * 14 + 'px' }"
       @click="toggle"
-      :style="{ marginLeft: depth * 14 + 'px' }">
+    >
       <span
+        v-show="isExpandableType"
         class="arrow right"
         :class="{ rotated: expanded }"
-        v-show="isExpandableType">
+      >
       </span>
       <span class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span>
       <span class="colon"><span v-if="!field.noDisplay">:</span><div class="meta" v-if="field.meta">

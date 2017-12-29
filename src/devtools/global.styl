@@ -88,3 +88,30 @@ $arrow-color = #444
     text-align center
     padding 0.5em
     margin 0 auto
+
+.selectable-item
+  background-color $background-color
+  &:hover
+    background-color $hover-color
+  &.selected,
+  &.active
+    background-color $active-color
+    color #fff
+    .arrow
+      border-left-color #fff
+    .item-name
+      color #fff
+
+  .app.dark &
+    background-color $dark-background-color
+    &:hover
+      background-color $dark-hover-color
+      .arrow
+        border-left-color #666
+    &.selected,
+    &.active
+      background-color $active-color
+
+.list-item
+  color #881391
+  @extends .selectable-item

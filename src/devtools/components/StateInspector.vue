@@ -1,11 +1,25 @@
 <template>
   <div class="data-wrapper">
-    <div v-for="type in getKeys(state)" :class="['data-el', toDisplayType(type, true)]">
-      <div class="data-type">{{ toDisplayType(type) }}</div>
-      <div class="data-fields">
-        <template v-if="Array.isArray(state[type])">
+    <div
+      v-for="dataType in dataTypes"
+      :class="['data-el', toDisplayType(dataType, true)]"
+    >
+      <div
+        class="data-type selectable-item"
+        title="Ctrl+Click: Collapse All
+Shift+Click: Expand All"
+        @click="toggle(dataType, $event)"
+      >
+        <span
+          class="arrow right"
+          :class="{ rotated: isExpanded(dataType) }"
+        ></span>
+        <span class="key">{{ toDisplayType(dataType) }}</span>
+      </div>
+      <div v-show="isExpanded(dataType)" class="data-fields">
+        <template v-if="Array.isArray(state[dataType])">
           <data-field
-            v-for="field in state[type]"
+            v-for="field in state[dataType]"
             :key="field.key"
             :field="field"
             :depth="0">
@@ -13,7 +27,7 @@
         </template>
         <template v-else>
           <data-field
-            v-for="(value, key) in state[type]"
+            v-for="(value, key) in state[dataType]"
             :key="key"
             :field="{ value, key }"
             :depth="0">
@@ -25,6 +39,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import DataField from './DataField.vue'
 
 const keyOrder = {
@@ -36,49 +51,93 @@ const keyOrder = {
 }
 
 export default {
-  props: ['state'],
   components: {
     DataField
   },
-  methods: {
-    getKeys (state) {
-      return Object.keys(state).sort((a, b) => {
+  props: {
+    state: {
+      type: Object,
+      required: true
+    }
+  },
+  data () {
+    return {
+      expandedState: {}
+    }
+  },
+  computed: {
+    dataTypes () {
+      return Object.keys(this.state).sort((a, b) => {
         return (
           (keyOrder[a] || (a.charCodeAt(0) + 999)) -
           (keyOrder[b] || (b.charCodeAt(0) + 999))
         )
       })
-    },
-    toDisplayType (type, asClass) {
-      return type === 'undefined'
+    }
+  },
+  methods: {
+    toDisplayType (dataType, asClass) {
+      return dataType === 'undefined'
         ? 'data'
         : asClass
-          ? type.replace(/\s/g, '-')
-          : type
+          ? dataType.replace(/\s/g, '-')
+          : dataType
+    },
+    isExpanded (dataType) {
+      const value = this.expandedState[dataType]
+      return typeof value === 'undefined' || value
+    },
+    toggle (dataType, event = null) {
+      if (event) {
+        if (event.ctrlKey) {
+          return this.setExpandToAll(false)
+        } else if (event.shiftKey) {
+          return this.setExpandToAll(true)
+        }
+      }
+      Vue.set(this.expandedState, dataType, !this.isExpanded(dataType))
+    },
+    setExpandToAll (value) {
+      this.dataTypes.forEach(key => {
+        Vue.set(this.expandedState, key, value)
+      })
     }
   }
 }
 </script>
 
 <style lang="stylus">
-.data-wrapper
-  display flex
-  flex-wrap wrap
-  padding-top 20px
-
-.data-fields
-  padding 20px 20px 40px
+@import "../variables"
 
 .data-el
-  padding 0px 10px
-  flex 1 0 33.33%
   font-size 14px
 
-  .data-type
-    color #486887
-    padding-left 20px
-    margin-bottom -10px
+  &:not(:last-child)
+    border-bottom rgba($grey, .4) solid 1px
 
-    .app.dark &
-      color lighten(#486887, 30%)
+  .app.dark &
+    box-shadow none
+
+  .data-type,
+  .data-fields
+    margin 5px
+    padding 2px 9px 2px 21px
+
+  .data-type
+    color $green
+    position relative
+    cursor pointer
+    border-radius 3px
+
+    .arrow
+      position absolute
+      top 9px
+      left 7px
+      transition transform .1s ease
+      &.rotated
+        transform rotate(90deg)
+
+  .data-fields
+    padding-top 0
+
 </style>
