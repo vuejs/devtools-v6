@@ -184,3 +184,9 @@ export function sortByKey (state) {
     return 0
   })
 }
+
+export function scrollIntoView (scrollParent, el) {
+  const top = el.offsetTop
+  const height = el.offsetHeight
+  scrollParent.scrollTop = top + (height - scrollParent.offsetHeight) / 2
+}

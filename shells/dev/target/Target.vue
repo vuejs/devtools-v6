@@ -9,6 +9,7 @@
     <button class="remove" @click="rm">Remove</button>
     <input v-model="localMsg">
     <other v-for="item in items" :key="item"></other>
+    <button @click="inspect">Inspect component</button>
   </div>
 </template>
 
@@ -49,6 +50,9 @@ export default {
     },
     rm () {
       this.items.pop()
+    },
+    inspect () {
+      this.$inspect()
     }
   }
 }
