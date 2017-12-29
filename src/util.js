@@ -12,7 +12,7 @@ function cached (fn) {
 
 var classifyRE = /(?:^|[-_/])(\w)/g
 export const classify = cached((str) => {
-  return str.replace(classifyRE, toUpper)
+  return str && str.replace(classifyRE, toUpper)
 })
 
 const camelizeRE = /-(\w)/g
