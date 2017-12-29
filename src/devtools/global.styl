@@ -124,6 +124,20 @@ $arrow-color = #444
 .scroll
   position relative
 
+.keyboard
+  display inline-block
+  background rgba($grey, .3)
+  padding 2px 4px 0
+  border-radius 3px
+  margin-bottom 6px
+  box-shadow 0 3px 0 rgba($grey, .2)
+  .dark &
+    background rgba($grey, .7)
+    box-shadow 0 3px 0 rgba($grey, .4)
+
+.mono
+  font-family Menlo, Consolas, monospace
+
 // Tooltips & Popovers
 
 .tooltip
@@ -138,7 +152,12 @@ $arrow-color = #444
     background $black
     color $white
     border-radius 3px
-    padding 5px 10px 4px
+    padding 5px 10px
+    .material-icons
+      font-size 16px
+      line-height @font-size
+      position relative
+      top 3px
   .tooltip-arrow
     width $arrow-size
     height $arrow-size

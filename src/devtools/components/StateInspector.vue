@@ -6,7 +6,7 @@
     >
       <div
         class="data-type selectable-item"
-        v-tooltip="'Ctrl+Click: Collapse All<br>Shift+Click: Expand All'"
+        v-tooltip="dataTypeTooltip"
         @click="toggle(dataType, $event)"
       >
         <span
@@ -76,6 +76,9 @@ export default {
           (keyOrder[b] || (b.charCodeAt(0) + 999))
         )
       })
+    },
+    dataTypeTooltip () {
+      return '<span class="keyboard">Ctrl</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: Expand All'
     }
   },
   methods: {

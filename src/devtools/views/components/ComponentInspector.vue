@@ -3,7 +3,7 @@
     <action-header v-show="hasTarget" slot="header">
       <span class="title" @click="onTitleClick">
         <span style="color:#ccc">&lt;</span>
-        <span v-tooltip="target.file">{{ targetName }}</span>
+        <span v-tooltip="titleTooltip">{{ targetName }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
       <a class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
@@ -69,6 +69,9 @@ export default {
           [el.key]: el.value
         }, this.filter)
       })), 'type')
+    },
+    titleTooltip () {
+      return `Open <i class="material-icons">insert_drive_file</i> <span class="mono">${this.target.file}</span>`
     }
   },
   methods: {

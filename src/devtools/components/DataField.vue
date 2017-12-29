@@ -154,15 +154,12 @@ import {
   parse
 } from 'src/util'
 
-const QUICK_EDIT_NUMBER_REMOVE = `Quick Edit
-[Ctrl-Click] -5
-[Shift-Click] -10
-[Alt-Click] -100`
-
-const QUICK_EDIT_NUMBER_ADD = `Quick Edit
-[Ctrl-Click] +5
-[Shift-Click] +10
-[Alt-Click] +100`
+const quickEditNumberTooltip = operator => `Quick Edit<br><br>
+<span class="keyboard">Ctrl</span> + <i class="material-icons">mouse</i>: ${operator}5<br>
+<span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: ${operator}10<br>
+<span class="keyboard">Alt</span> + <i class="material-icons">mouse</i>: ${operator}100`
+const QUICK_EDIT_NUMBER_REMOVE = quickEditNumberTooltip('-')
+const QUICK_EDIT_NUMBER_ADD = quickEditNumberTooltip('+')
 
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
