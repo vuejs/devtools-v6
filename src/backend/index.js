@@ -234,7 +234,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = getInstanceName(instance).toLowerCase()
+  const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -342,7 +342,7 @@ function getInstanceDetails (id) {
 export function getInstanceName (instance) {
   const name = instance.$options.name || instance.$options._componentTag
   if (name) {
-    return classify(name)
+    return name
   }
   const file = instance.$options.__file // injected by vue-loader
   if (file) {
