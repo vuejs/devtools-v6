@@ -9,12 +9,7 @@ const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 let panelShown = !isChrome
 let pendingAction = null
 
-const isDark = isChrome &&
-chrome.devtools.panels.themeName === 'dark'
-
-if (isDark) {
-  document.body.classList.add('dark')
-}
+const isDark = isChrome ? chrome.devtools.panels.themeName === 'dark' : false
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.
@@ -133,9 +128,22 @@ function initApp (shell) {
     })
 
     app = new Vue({
+      extends: App,
       store,
-      render (h) {
-        return h(App)
+      data: {
+        isDark
+      },
+      watch: {
+        isDark: {
+          handler (value) {
+            if (value) {
+              document.body.classList.add('dark')
+            } else {
+              document.body.classList.remove('dark')
+            }
+          },
+          immediate: true
+        }
       }
     }).$mount('#app')
   })
