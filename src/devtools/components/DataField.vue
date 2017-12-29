@@ -14,8 +14,7 @@
         v-show="isExpandableType"
         class="arrow right"
         :class="{ rotated: expanded }"
-      >
-      </span>
+      ></span>
       <span
         v-if="editing && renamable"
       >
@@ -66,7 +65,8 @@
       <template v-else>
         <span
           class="value"
-          :class="[valueType, `raw-${rawValueType}`, valueClass]"
+          :class="valueClass"
+          @dblclick="openEdit()"
         >{{ formattedValue }}</span>
         <span class="actions">
           <i
@@ -408,7 +408,7 @@ export default {
       return null
     },
     valueClass () {
-      const cssClass = [this.valueType]
+      const cssClass = [this.valueType, `raw-${this.rawValueType}`]
       if (this.valueType === 'custom') {
         const value = this.field.value
         value._custom.type && cssClass.push(`type-${value._custom.type}`)
@@ -428,18 +428,20 @@ export default {
     },
     hyphen: v => v.replace(/\s/g, '-'),
     openEdit (focusKey = false) {
-      if (currentEditedField && currentEditedField !== this) {
-        currentEditedField.cancelEdit()
+      if (this.isValueEditable) {
+        if (currentEditedField && currentEditedField !== this) {
+          currentEditedField.cancelEdit()
+        }
+        this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
+        this.editedKey = this.field.key
+        this.editing = true
+        currentEditedField = this
+        this.$nextTick(() => {
+          const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
+          el.focus()
+          el.setSelectionRange(0, el.value.length)
+        })
       }
-      this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
-      this.editedKey = this.field.key
-      this.editing = true
-      currentEditedField = this
-      this.$nextTick(() => {
-        const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
-        el.focus()
-        el.setSelectionRange(0, el.value.length)
-      })
     },
     cancelEdit () {
       this.editing = false
