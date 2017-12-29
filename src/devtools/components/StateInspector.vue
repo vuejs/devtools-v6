@@ -118,7 +118,10 @@ export default {
   &:not(:last-child)
     border-bottom rgba($grey, .4) solid 1px
 
-  .app.dark &
+    .dark &
+      border-bottom-color rgba($grey, .07)
+
+  .dark &
     box-shadow none
 
   .data-type,

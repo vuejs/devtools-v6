@@ -176,7 +176,6 @@ $inspected_color = #af90d5
     .entry-actions
       display inline-block
   .dark &
-    background-color $dark-background-color
     .mutation-type
       color #e36eec
     &.active
