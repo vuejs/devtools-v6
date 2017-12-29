@@ -1,12 +1,20 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
+import './plugins'
 import { parse } from '../util'
 
 const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 let panelShown = !isChrome
 let pendingAction = null
+
+const isDark = isChrome &&
+chrome.devtools.panels.themeName === 'dark'
+
+if (isDark) {
+  document.body.classList.add('dark')
+}
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.

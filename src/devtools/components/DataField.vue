@@ -1,9 +1,13 @@
 <template>
   <div class="data-field">
-    <div
+    <v-popover
       class="self"
-      :style="{ marginLeft: depth * 14 + 'px' }"
       :class="cssClass"
+      :style="{ marginLeft: depth * 14 + 'px' }"
+      trigger="hover"
+      placement="left"
+      offset="24"
+      :disabled="!field.meta"
       @click="toggle"
     >
       <span
@@ -24,13 +28,8 @@
           @keyup.enter="submitEdit()"
         >
       </span>
-      <span v-else class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span>
-      <span class="colon"><span v-if="!field.noDisplay">:</span><div class="meta" v-if="field.meta">
-        <div class="meta-field" v-for="(val, key) in field.meta">
-          <span class="key">{{ key }}</span>
-          <span class="value">{{ val }}</span>
-        </div>
-      </div></span>
+      <span v-else class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span><span class="colon"><span v-if="!field.noDisplay">:</span>
+
       <span
         v-if="editing"
         class="edit-overlay"
@@ -99,7 +98,14 @@
           >delete</i>
         </span>
       </template>
-    </div>
+
+      <div slot="popover" class="meta" v-if="field.meta">
+        <div class="meta-field" v-for="(val, key) in field.meta">
+          <span class="key">{{ key }}</span>
+          <span class="value">{{ val }}</span>
+        </div>
+      </div>
+    </v-popover>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
         v-for="subField in limitedSubFields"
@@ -498,7 +504,7 @@ export default {
   user-select text
   font-size 12px
   font-family Menlo, Consolas, monospace
-  cursor default
+  cursor pointer
 
 .self
   height 20px
@@ -535,34 +541,9 @@ export default {
   &.editing
     .actions
       visibility visible
-  .key
-    color #881391
-    &.special
-      color $blueishGrey
   .colon
     margin-right .5em
     position relative
-  .value
-    display inline-block
-    color #444
-    &.string, &.native
-      color #c41a16
-    &.null
-      color #999
-    &.literal
-      color #0033cc
-    &.raw-boolean
-      width 36px
-    &.custom
-      &.type-component
-        color $green
-        &::before,
-        &::after
-          color $darkerGrey
-        &::before
-          content '<'
-        &::after
-          content '>'
 
   .type
     color $background-color
@@ -584,47 +565,56 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
-
-  .meta
-    display none
-    position absolute
-    z-index 999
-    font-size 11px
-    color #444
-    top 0
-    left calc(100% + 5px)
-    width 150px
-    border 1px solid #e3e3e3
-    border-radius 3px
-    padding 8px 12px
-    background-color $background-color
-    line-height 16px
-    box-shadow 0 2px 12px rgba(0,0,0,.1)
-    .key
-      width 65px
-  .meta-field
-    display block
-  &:hover
-    cursor pointer
-    .meta
-      display block
-
-  .app.dark &
-    .key
-      color: #e36eec
-    .value
-      color #bdc6cf
-      &.string, &.native
-        color #e33e3a
-      &.null
-        color #999
-      &.literal
-        color #997fff
-    .type
+    .dark &
       color: #242424
-      .meta
-        border 1px solid $dark-border-color
-        background-color $dark-background-color
+
+.key
+  color #881391
+  .dark &
+    color: #e36eec
+  &.special
+    color $blueishGrey
+.value
+  display inline-block
+  color #444
+  &.string, &.native
+    color #c41a16
+  &.null
+    color #999
+  &.literal
+    color #0033cc
+  .dark &
+    color #bdc6cf
+    &.string, &.native
+      color #e33e3a
+    &.null
+      color #999
+    &.literal
+      color #997fff
+    &.raw-boolean
+      width 36px
+    &.custom
+      &.type-component
+        color $green
+        &::before,
+        &::after
+          color $darkerGrey
+        &::before
+          content '<'
+        &::after
+          content '>'
+
+.meta
+  font-size 12px
+  font-family Menlo, Consolas, monospace
+  color #444
+  min-width 150px
+  .key
+    display inline-block
+    width 80px
+.meta-field
+  &:not(:last-child)
+    margin-bottom 4px
 
 .more
   cursor pointer

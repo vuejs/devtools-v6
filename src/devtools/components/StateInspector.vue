@@ -133,6 +133,9 @@ export default {
     cursor pointer
     border-radius 3px
 
+    .dark &
+      color lighten(#486887, 30%)
+
     .arrow
       position absolute
       top 9px

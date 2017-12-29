@@ -48,10 +48,10 @@ export default {
 .scroll
   flex 1
   overflow auto
-  .app.dark &::-webkit-scrollbar
+  .dark &::-webkit-scrollbar
     background: $dark-background-color
     border-left: 1px solid $dark-border-color
-  .app.dark &::-webkit-scrollbar-thumb
+  .dark &::-webkit-scrollbar-thumb
     background: lighten($dark-background-color, 7%);
     border: 1px solid lighten($dark-border-color, 7%)
 

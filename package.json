@@ -58,6 +58,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
     "uglifyjs-webpack-plugin": "^1.1.4",
+    "v-tooltip": "^2.0.0-rc.25",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

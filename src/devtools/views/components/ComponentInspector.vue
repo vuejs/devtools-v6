@@ -6,7 +6,7 @@
         <span :title="target.file">{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
+      <a class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
         <i class="material-icons">find_in_page</i>
         <span>Inspect DOM</span>
       </a>

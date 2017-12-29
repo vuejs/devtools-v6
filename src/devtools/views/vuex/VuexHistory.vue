@@ -5,15 +5,15 @@
         <i class="material-icons">search</i>
         <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
       </div>
-      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
+      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" v-tooltip="'Commit All'">
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
+      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" v-tooltip="'Revert All'">
         <i class="material-icons small">do_not_disturb</i>
         <span>Revert All</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
@@ -23,7 +23,7 @@
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a class="action"
-             @click.stop="timeTravelTo(null)" title="Time Travel to This State">
+             @click.stop="timeTravelTo(null)" v-tooltip="'Time Travel to This State'">
             <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
@@ -40,23 +40,23 @@
         @click="inspect(entry)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions">
-          <a class="action" @click.stop="commit(entry)" title="Commit This Mutation">
+          <a class="action" @click.stop="commit(entry)" v-tooltip="'Commit This Mutation'">
             <i class="material-icons medium">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revert(entry)" title="Revert This Mutation">
+          <a class="action" @click.stop="revert(entry)" v-tooltip="'Revert This Mutation'">
             <i class="material-icons small">do_not_disturb</i>
             <span>Revert</span>
           </a>
           <a v-if="!isActive(entry)"
              class="action"
              @click.stop="timeTravelTo(entry)"
-             title="Time Travel to This State">
+             v-tooltip="'Time Travel to This State'">
             <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
         </span>
-        <span class="time" :title="entry.timestamp">
+        <span class="time" v-tooltip="entry.timestamp">
           {{ entry.timestamp | formatTime }}
         </span>
         <span class="label active" v-if="isActive(entry)">active</span>
@@ -175,7 +175,8 @@ $inspected_color = #af90d5
   &:hover
     .entry-actions
       display inline-block
-  .app.dark &
+  .dark &
+    background-color $dark-background-color
     .mutation-type
       color #e36eec
     &.active
