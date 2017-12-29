@@ -36,11 +36,6 @@
       title="Force Refresh">
       <i class="material-icons" ref="refresh">refresh</i>
     </a>
-    <a class="button view icon-only"
-      @click="switchView"
-      title="Switch View">
-      <i class="material-icons view-icon" :class="{ 'rotate-90': view !== 'vertical' }">view_stream</i>
-    </a>
     <span class="active-bar"></span>
   </div>
   <component :is="tab" class="container"></component>
@@ -91,10 +86,10 @@ export default {
         refreshIcon.style.animation = 'rotate 1s'
       })
     },
-    switchView () {
+    switchView (mediaQueryEvent) {
       this.$store.commit(
         'SWITCH_VIEW',
-        this.view === 'vertical' ? 'horizontal' : 'vertical'
+        mediaQueryEvent.matches ? 'vertical' : 'horizontal'
       )
     },
     updateActiveBar () {
@@ -102,14 +97,19 @@ export default {
       const activeBar = this.$el.querySelector('.active-bar')
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
-    }
+    },
   },
   mounted () {
+    this.mediaQuery = window.matchMedia('(min-width: 685px)')
+    this.switchView(this.mediaQuery)
+    this.mediaQuery.addListener(this.switchView)
+
     this.updateActiveBar()
     window.addEventListener('resize', this.updateActiveBar)
   },
   destroyed () {
     window.removeEventListener('resize', this.updateActiveBar)
+    this.mediaQuery.removeListener(this.switchView)
   },
   watch: {
     tab () {
