@@ -28,7 +28,7 @@
           @keyup.enter="submitEdit()"
         >
       </span>
-      <span v-else class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span><span class="colon"><span v-if="!field.noDisplay">:</span>
+      <span v-else class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span><span class="colon" v-if="!field.noDisplay">:</span>
 
       <span
         v-if="editing"
