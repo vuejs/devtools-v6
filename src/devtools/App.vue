@@ -97,7 +97,7 @@ export default {
       const activeBar = this.$el.querySelector('.active-bar')
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
-    },
+    }
   },
   mounted () {
     this.mediaQuery = window.matchMedia('(min-width: 685px)')
