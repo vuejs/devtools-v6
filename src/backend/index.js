@@ -352,7 +352,7 @@ function getInstanceDetails (id) {
 
     let i
     if ((i = instance.$vnode) && (i = i.componentOptions) && (i = i.Ctor) && (i = i.options)) {
-      data.file = i.__file
+      data.file = i.__file || null
     }
 
     return data

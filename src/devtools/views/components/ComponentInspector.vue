@@ -71,7 +71,7 @@ export default {
       })), 'type')
     },
     titleTooltip () {
-      return `Open <i class="material-icons">insert_drive_file</i> <span class="mono">${this.target.file}</span>`
+      return this.target.file && `Open <i class="material-icons">insert_drive_file</i> <span class="mono">${this.target.file}</span>`
     }
   },
   methods: {
