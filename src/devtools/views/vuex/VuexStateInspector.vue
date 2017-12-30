@@ -117,8 +117,8 @@ export default {
       } else {
         try {
           // Try to parse here so we can provide invalid feedback
-          const parsedState = parse(importedStr, true)
-          bridge.send('vuex:import-state', parsedState)
+          parse(importedStr, true)
+          bridge.send('vuex:import-state', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true
