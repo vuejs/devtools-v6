@@ -63,7 +63,8 @@ export default {
     ...mapState({
       message: state => state.message,
       tab: state => state.tab,
-      newEventCount: state => state.events.newEventCount
+      newEventCount: state => state.events.newEventCount,
+      view: state => state.view
     }),
     specialTokens () {
       return SPECIAL_TOKENS
@@ -86,6 +87,12 @@ export default {
         refreshIcon.style.animation = 'rotate 1s'
       })
     },
+    switchView (mediaQueryEvent) {
+      this.$store.commit(
+        'SWITCH_VIEW',
+        mediaQueryEvent.matches ? 'vertical' : 'horizontal'
+      )
+    },
     updateActiveBar () {
       const activeButton = this.$el.querySelector('.button.active')
       const activeBar = this.$el.querySelector('.active-bar')
@@ -94,11 +101,16 @@ export default {
     }
   },
   mounted () {
+    this.mediaQuery = window.matchMedia('(min-width: 685px)')
+    this.switchView(this.mediaQuery)
+    this.mediaQuery.addListener(this.switchView)
+
     this.updateActiveBar()
     window.addEventListener('resize', this.updateActiveBar)
   },
   destroyed () {
     window.removeEventListener('resize', this.updateActiveBar)
+    this.mediaQuery.removeListener(this.switchView)
   },
   watch: {
     tab () {
@@ -144,6 +156,10 @@ export default {
 .message-container
   height 1em
   cursor default
+  display none
+  @media (min-width: $wide - 300px)
+    display block
+
 
 .message
   color $active-color
