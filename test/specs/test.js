@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 7
+    var baseInstanceCount = 8
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
@@ -38,11 +38,11 @@ module.exports = {
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:undefined')
       // Regexp
-      .assert.containsText('.data-el.data .data-field:nth-child(6)', 'regex:/(a\\w+b)/g')
+      .assert.containsText('.data-el.data .data-field:nth-child(7)', 'regex:/(a\\w+b)/g')
       // Literals
-      .assert.containsText('.data-el.data .data-field:nth-child(4)', 'NaN')
-      .assert.containsText('.data-el.data .data-field:nth-child(1)', 'Infinity')
-      .assert.containsText('.data-el.data .data-field:nth-child(5)', '-Infinity')
+      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'NaN')
+      .assert.containsText('.data-el.data .data-field:nth-child(2)', 'Infinity')
+      .assert.containsText('.data-el.data .data-field:nth-child(6)', '-Infinity')
 
       // Classify names
       .assert.containsText('.instance .instance:nth-child(3)', 'OtherWithMine')
@@ -217,7 +217,7 @@ module.exports = {
       .click('.import')
       .assert.elementPresent('.import-state')
       .setValue('.import-state textarea', '{invalid: json}')
-      .waitForElementVisible('.message.invalid-json', 100)
+      .waitForElementVisible('.message.invalid-json', 200)
       .clearValue('.import-state textarea')
       .setValue('.import-state textarea', '{"count":42,"date":"[native Date Fri Dec 22 2017 10:12:04 GMT+0100 (CET)]"}')
       .waitForElementNotVisible('.message.invalid-json', 1000)
@@ -243,7 +243,7 @@ module.exports = {
       .setValue('.search input', 'event')
       .assert.count('.history .entry', 3)
       .clearValue('.search input')
-      .setValue('.search input', 'EventChild1')
+      .setValue('.search input', '<event-child-1>')
       .assert.count('.history .entry', 1)
       .clearValue('.search input')
       .click('.button.reset')
