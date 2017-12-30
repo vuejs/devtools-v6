@@ -35,6 +35,7 @@
       @click="refresh"
       title="Force Refresh">
       <i class="material-icons" ref="refresh">refresh</i>
+      <span class="pane-name">Refresh</span>
     </a>
     <span class="active-bar"></span>
   </div>
