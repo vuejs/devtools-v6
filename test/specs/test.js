@@ -243,7 +243,7 @@ module.exports = {
       .setValue('.search input', 'event')
       .assert.count('.history .entry', 3)
       .clearValue('.search input')
-      .setValue('.search input', '<event-child-1>')
+      .setValue('.search input', '<eventchild1>')
       .assert.count('.history .entry', 1)
       .clearValue('.search input')
       .click('.button.reset')
