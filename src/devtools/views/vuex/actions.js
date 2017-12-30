@@ -1,4 +1,4 @@
-import { parse } from 'src/util'
+import { parse, stringify } from 'src/util'
 
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
@@ -56,7 +56,7 @@ function travelTo (state, commit, index) {
   const { history, base, inspectedIndex } = state
   const targetSnapshot = index > -1 ? history[index].snapshot : base
 
-  bridge.send('vuex:travel-to-state', parse(targetSnapshot, true).state)
+  bridge.send('vuex:travel-to-state', stringify(parse(targetSnapshot).state))
   if (index !== inspectedIndex) {
     commit('INSPECT', index)
   }
