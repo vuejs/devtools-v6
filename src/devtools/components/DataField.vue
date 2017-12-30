@@ -51,12 +51,12 @@
           <template v-else>
             <i
               class="icon-button material-icons"
-              v-tooltip="'[Esc] Cancel'"
+              v-tooltip="cancelEditTooltip"
               @click="cancelEdit()"
             >close</i>
             <i
               class="icon-button material-icons"
-              v-tooltip="'[Enter] Submit change'"
+              v-tooltip="submitEditTooltip"
               @click="submitEdit()"
             >done</i>
           </template>
@@ -412,6 +412,12 @@ export default {
         value._custom.class && cssClass.push(value._custom.class)
       }
       return cssClass
+    },
+    cancelEditTooltip () {
+      return '<span class="keyboard">Esc</span> Cancel'
+    },
+    submitEditTooltip () {
+      return '<span class="keyboard">Enter</span> Submit change'
     }
   },
   methods: {
