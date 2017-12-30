@@ -47,6 +47,7 @@ export const SPECIAL_TOKENS = {
   'false': false,
   'undefined': UNDEFINED,
   'null': null,
+  '-Infinity': NEGATIVE_INFINITY,
   'Infinity': INFINITY,
   'NaN': NAN
 }
