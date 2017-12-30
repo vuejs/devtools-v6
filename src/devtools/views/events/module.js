@@ -1,4 +1,5 @@
 import storage from '../../storage'
+import { classify } from 'src/util'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
@@ -44,14 +45,15 @@ const getters = {
   activeEvent: state => {
     return state.events[state.inspectedIndex]
   },
-  filteredEvents: state => {
-    let searchText = state.filter
+  filteredEvents: (state, getters, rootState) => {
+    const classifyComponents = rootState.components.classifyComponents
+    let searchText = state.filter.toLowerCase()
     const searchComponent = /<|>/g.test(searchText)
     if (searchComponent) {
       searchText = searchText.replace(/<|>/g, '')
     }
     return state.events.filter(
-      e => (searchComponent ? e.instanceName : e.eventName).indexOf(searchText) > -1
+      e => (searchComponent ? (classifyComponents ? classify(e.instanceName) : e.instanceName) : e.eventName).toLowerCase().indexOf(searchText) > -1
     )
   }
 }

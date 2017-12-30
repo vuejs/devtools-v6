@@ -31,7 +31,7 @@
         <span class="event-source">
           by
           <span>&lt;</span>
-          <span class="component-name">{{ event.instanceName }}</span>
+          <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
           <span>&gt;</span>
         </span>
         <span class="time">{{ event.timestamp | formatTime }}</span>
@@ -45,6 +45,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
 import { mapState, mapGetters, mapMutations } from 'vuex'
+import { classify } from 'src/util'
 
 export default {
   components: {
@@ -68,15 +69,23 @@ export default {
     ...mapGetters('events', [
       'filteredEvents'
     ]),
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
     searchTooltip () {
-      return `To filter on components, type '<span class="mono">&lt;my-component&gt;</span>' or just '<span class="mono">&lt;comp</span>'.`
+      return `To filter on components, type '<span class="mono">&lt;MyComponent&gt;</span>' or just '<span class="mono">&lt;mycomp</span>'.`
     }
   },
-  methods: mapMutations('events', {
-    inspect: 'INSPECT',
-    reset: 'RESET',
-    toggleRecording: 'TOGGLE'
-  }),
+  methods: {
+    ...mapMutations('events', {
+      inspect: 'INSPECT',
+      reset: 'RESET',
+      toggleRecording: 'TOGGLE'
+    }),
+    displayComponentName (name) {
+      return this.classifyComponents ? classify(name) : name
+    }
+  },
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
