@@ -1,7 +1,10 @@
 <template>
   <scroll-pane scroll-event="event:emit">
     <action-header slot="header">
-      <div class="search">
+      <div
+        class="search"
+        v-tooltip="searchTooltip"
+      >
         <i class="search-icon material-icons">search</i>
         <input placeholder="Filter events" v-model.trim="filter">
       </div>
@@ -64,7 +67,10 @@ export default {
     ]),
     ...mapGetters('events', [
       'filteredEvents'
-    ])
+    ]),
+    searchTooltip () {
+      return `To filter on components, type '<span class="mono">&lt;my-component&gt;</span>' or just '<span class="mono">&lt;comp</span>'.`
+    }
   },
   methods: mapMutations('events', {
     inspect: 'INSPECT',
