@@ -29,33 +29,51 @@ export default {
       'view'
     ]),
     leftStyles () {
-      return this.view === 'vertical'
-        ? { width: `${this.split}%` }
-        : 'auto'
+      return {
+        [this.view === 'vertical' ? 'width' : 'height']: `${this.boundSplit}%`
+      }
     },
     rightStyles () {
-      return this.view === 'vertical'
-        ? { width: `${100 - this.split}%` }
-        : 'auto'
+      return {
+        [this.view === 'vertical' ? 'width' : 'height']: `${100 - this.boundSplit}%`
+      }
     },
     classes () {
       return [
         { dragging: this.dragging },
         this.view
       ]
+    },
+    boundSplit () {
+      const split = this.split
+      if (split < 20) {
+        return 20
+      } else if (split > 80) {
+        return 80
+      } else {
+        return split
+      }
     }
   },
   methods: {
     dragStart (e) {
       this.dragging = true
-      this.startX = e.pageX
-      this.startSplit = this.split
+      this.startPosition = this.view === 'vertical' ? e.pageX : e.pageY
+      this.startSplit = this.boundSplit
     },
     dragMove (e) {
       if (this.dragging) {
-        const dx = e.pageX - this.startX
-        const totalWidth = this.$el.offsetWidth
-        this.split = this.startSplit + ~~(dx / totalWidth * 100)
+        let position
+        let totalSize
+        if (this.view === 'vertical') {
+          position = e.pageX
+          totalSize = this.$el.offsetWidth
+        } else {
+          position = e.pageY
+          totalSize = this.$el.offsetHeight
+        }
+        const dPosition = position - this.startPosition
+        this.split = this.startSplit + ~~(dPosition / totalSize * 100)
       }
     },
     dragEnd () {
@@ -73,26 +91,28 @@ export default {
   height 100%
   &.horizontal
     flex-direction column
-    .top, .bottom
-      height 50%
 
   &.dragging
-    cursor ew-resize
+    .left,
+    .right
+      pointer-events none
+    &.vertical
+      cursor ew-resize
+    &.horizontal
+      cursor ns-resize
 
-.left, .right
+.left,
+.right
   position relative
 
-&.horizontal
-  .dragger
-    pointer-events none
-
+.horizontal
   .bottom
     box-shadow 0 -2px 10px rgba(0, 0, 0, 0.1)
     border-top 1px solid $border-color
     .app.dark &
       border-top 1px solid $dark-border-color
 
-&.vertical
+.vertical
   .left
     border-right 1px solid $border-color
     .app.dark &
@@ -101,9 +121,19 @@ export default {
 .dragger
   position absolute
   z-index 99
-  top 0
-  bottom 0
-  right -5px
-  width 10px
-  cursor ew-resize
+
+  .vertical &
+    top 0
+    bottom 0
+    right -5px
+    width 10px
+    cursor ew-resize
+
+  .horizontal &
+    left 0
+    right 0
+    bottom -5px
+    height 10px
+    cursor ns-resize
+
 </style>
