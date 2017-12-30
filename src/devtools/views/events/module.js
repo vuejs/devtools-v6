@@ -45,7 +45,14 @@ const getters = {
     return state.events[state.inspectedIndex]
   },
   filteredEvents: state => {
-    return state.events.filter(e => (e.eventName + e.instanceName).indexOf(state.filter) > -1)
+    let searchText = state.filter
+    const searchComponent = /<|>/g.test(searchText)
+    if (searchComponent) {
+      searchText = searchText.replace(/<|>/g, '')
+    }
+    return state.events.filter(
+      e => (searchComponent ? e.instanceName : e.eventName).indexOf(searchText) > -1
+    )
   }
 }
 
