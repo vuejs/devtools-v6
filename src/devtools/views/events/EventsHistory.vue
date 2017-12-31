@@ -73,7 +73,7 @@ export default {
       'classifyComponents'
     ]),
     searchTooltip () {
-      return `To filter on components, type '<span class="mono">&lt;MyComponent&gt;</span>' or just '<span class="mono">&lt;mycomp</span>'.`
+      return `To filter on components, type <span class="input-example"><i class="material-icons">search</i> &lt;MyComponent&gt;</span> or just <span class="input-example"><i class="material-icons">search</i> &lt;mycomp</span>.`
     }
   },
   methods: {

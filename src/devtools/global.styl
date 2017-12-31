@@ -124,20 +124,6 @@ $arrow-color = #444
 .scroll
   position relative
 
-.keyboard
-  display inline-block
-  background rgba($grey, .3)
-  padding 2px 4px 0
-  border-radius 3px
-  margin-bottom 6px
-  box-shadow 0 3px 0 rgba($grey, .2)
-  .dark &
-    background rgba($grey, .7)
-    box-shadow 0 3px 0 rgba($grey, .4)
-
-.mono
-  font-family Menlo, Consolas, monospace
-
 // Tooltips & Popovers
 
 .tooltip
@@ -307,3 +293,37 @@ $arrow-color = #444
     visibility visible
     opacity 1
     transition opacity $tooltip-animation-duration
+
+.keyboard
+  display inline-block
+  background rgba($grey, .3)
+  padding 2px 4px 0
+  border-radius 3px
+  margin-bottom 6px
+  box-shadow 0 3px 0 rgba($grey, .2)
+  .dark &
+    background rgba($grey, .7)
+    box-shadow 0 3px 0 rgba($grey, .4)
+
+.mono
+  font-family Menlo, Consolas, monospace
+
+.input-example
+  background $white
+  color $green
+  font-size 12px
+  padding 4px 8px
+  margin 0 2px
+  border-radius 2px
+  display inline-block
+  .dark &
+    background $dark-background-color
+  &,
+  .tooltip .tooltip-inner &
+    .material-icons
+      color #444
+      vertical-align middle
+      position relative
+      top 0
+      .dark &
+        color #666
