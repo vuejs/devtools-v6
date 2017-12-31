@@ -78,7 +78,8 @@ export default {
       })
     },
     dataTypeTooltip () {
-      return '<span class="keyboard">Ctrl</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: Expand All'
+      let ctrlKey = navigator.platform === 'MacIntel' ? '&#8984;' : 'Ctrl'
+      return `<span class="keyboard">${ctrlKey}</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: Expand All`
     }
   },
   methods: {
@@ -95,7 +96,7 @@ export default {
     },
     toggle (dataType, event = null) {
       if (event) {
-        if (event.ctrlKey) {
+        if (event.ctrlKey || event.metaKey) {
           return this.setExpandToAll(false)
         } else if (event.shiftKey) {
           return this.setExpandToAll(true)
