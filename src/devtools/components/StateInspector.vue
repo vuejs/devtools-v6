@@ -138,15 +138,16 @@ export default {
     position relative
     cursor pointer
     border-radius 3px
+    display flex
+    align-items baseline
+    padding-left 9px
 
     .dark &
       color lighten(#486887, 30%)
 
     .arrow
-      position absolute
-      top 9px
-      left 7px
       transition transform .1s ease
+      margin-right 8px
       &.rotated
         transform rotate(90deg)
 
