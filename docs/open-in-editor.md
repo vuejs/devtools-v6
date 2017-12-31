@@ -12,11 +12,11 @@ var openInEditor = require('express-open-in-editor')
 
 ```js
 devServer: {
-	before (app) {
-		app.use('/_open', openInEditor({
-			editor: 'code'
-		}))
-	}
+  before (app) {
+    app.use('/_open', openInEditor({
+      editor: 'code'
+    }))
+  }
 }
 ```
 
