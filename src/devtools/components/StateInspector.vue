@@ -78,7 +78,7 @@ export default {
       })
     },
     dataTypeTooltip () {
-      let ctrlKey = navigator.platform === 'MacIntel' ? '&#8984;' : 'Ctrl'
+      const ctrlKey = navigator.platform === 'MacIntel' ? '&#8984;' : 'Ctrl'
       return `<span class="keyboard">${ctrlKey}</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: Expand All`
     }
   },
