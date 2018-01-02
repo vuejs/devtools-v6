@@ -55,6 +55,12 @@ export default {
 .left, .right
   position relative
 
+.right
+  background darken($white, 10%)
+
+  .app.dark &
+    background transparent
+
 .left
   border-right 1px solid $border-color
   .app.dark &
