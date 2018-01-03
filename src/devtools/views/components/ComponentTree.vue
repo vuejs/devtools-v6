@@ -24,6 +24,7 @@ import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
 import keyNavMixin from '../../mixins/key-nav'
+import { findPath } from 'src/util'
 
 export default {
   mixins: [keyNavMixin],
@@ -34,6 +35,11 @@ export default {
   },
   props: {
     instances: Array
+  },
+  watch: {
+    '$store.state.components.inspectedInstance.id':function (newVal) {
+        this.intoView(newVal)
+    }
   },
   methods: {
     filterInstances (e) {
@@ -68,7 +74,66 @@ export default {
       } else {
         findByIndex(all, currentIndex + 1).select()
       }
+    },
+    // listen element panel dom selected event
+    //and send select-dom event to notify content-script
+    listenDomSelected () {
+      let _this = this
+      function changeHandler () {
+        //return if not inspecting
+       /* if(!_this.$store.state.components.isInspectingComponent){
+          return
+        }*/
+        let uuid = Date.now()
+        chrome.devtools.inspectedWindow.eval(`$0.dataset.v_track_id=${uuid}`, ()=>{
+          bridge.send('element-inspected', uuid)
+        });
+      }
+      chrome.devtools.panels.elements.onSelectionChanged.addListener(changeHandler)
+    },
+    //scroll the selected component into view
+    intoView (selectedId) {
+      // if not inspect component from element panel, return
+      if (!this.$store.state.components.isSelectedByInspector) {
+        return
+      }
+      let root = {id: '-1:-1', children: this.instances}
+
+      let resolvedPaths = findPath(root, selectedId, (nodeId, id) => {
+        function getId (str) {
+          return str.split(':')[1]
+        }
+
+        return getId(nodeId) === getId(id)
+      })
+      resolvedPaths.slice(1).forEach((instance) => {
+        this.$store.dispatch('components/toggleInstance', {
+          instance,
+          expanded: true
+        })
+      })
+      function scrollIntoView (instance) {
+        if (instance.$el) {
+          instance.$el.scrollIntoView()
+        }
+      }
+
+      this.$nextTick(() => {
+        const all = getAllInstances(this.$refs.instances)
+        if (!all.length) {
+          return
+        }
+        all.forEach((instance) => {
+          if (instance.instance.id === selectedId) {
+            scrollIntoView(instance)
+          }
+        })
+      })
     }
+  },
+
+  mounted () {
+    this.listenDomSelected()
   }
 }
 

@@ -5,7 +5,8 @@ const state = {
   inspectedInstance: {},
   instances: [],
   expansionMap: {},
-  events: []
+  events: [],
+  isSelectByInspecting: false
 }
 
 const mutations = {
@@ -27,6 +28,9 @@ const mutations = {
   },
   TOGGLE_INSTANCE ({ expansionMap }, { id, expanded }) {
     Vue.set(expansionMap, id, expanded)
+  },
+  SELECT_BY_INSPECTOR (state, isPassive) {
+    state.isSelectedByInspector = isPassive
   }
 }
 
