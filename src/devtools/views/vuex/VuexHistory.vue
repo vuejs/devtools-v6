@@ -31,8 +31,14 @@
         <span class="time">
           {{ lastCommit | formatTime }}
         </span>
-        <span class="label active" v-if="activeIndex === -1">active</span>
-        <span class="label inspected" v-if="inspectedIndex === -1">inspected</span>
+        <span
+          v-if="activeIndex === -1"
+          class="label active"
+        >active</span>
+        <span
+          v-if="inspectedIndex === -1"
+          class="label inspected"
+        >inspected</span>
       </div>
       <div class="entry list-item"
         v-for="entry in filteredHistory"
