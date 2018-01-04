@@ -53,7 +53,7 @@ module.exports = {
   devServer: {
     quiet: true,
     before (app) {
-      app.use('/_open', openInEditor({
+      app.use('/__open-in-editor', openInEditor({
         editor: 'code'
       }))
     }

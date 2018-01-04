@@ -88,7 +88,7 @@ export default {
     onTitleClick () {
       const file = this.target.file
       if (file) {
-        const src = `fetch('/_open?file=${file}').then(() => {
+        const src = `fetch('/__open-in-editor?file=${file}').then(() => {
           console.log('File ${file} opened in editor')
         }).catch(e => {
           console.warn(e)

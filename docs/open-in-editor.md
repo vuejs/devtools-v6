@@ -8,12 +8,12 @@ In your Vue project, install the [express-open-in-editor](https://github.com/lah
 var openInEditor = require('express-open-in-editor')
 ```
 
-2. In the `devServer` option, register the `/_open` HTTP route:
+2. In the `devServer` option, register the `/__open-in-editor` HTTP route:
 
 ```js
 devServer: {
   before (app) {
-    app.use('/_open', openInEditor({
+    app.use('/__open-in-editor', openInEditor({
       editor: 'code'
     }))
   }
