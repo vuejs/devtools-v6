@@ -92,10 +92,11 @@ export default {
           if (response.ok) {
             console.log('File ${file} opened in editor')
           } else {
+            const msg = 'Opening component ${file} failed'
             if (__VUE_DEVTOOLS_TOAST__) {
-              __VUE_DEVTOOLS_TOAST__('Opening component ${file} failed', 'error')
+              __VUE_DEVTOOLS_TOAST__(msg, 'error')
             } else {
-              console.log('%cOpening component ${file} failed', 'color:red')
+              console.log('%c' + msg, 'color:red')
             }
             console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
           }
