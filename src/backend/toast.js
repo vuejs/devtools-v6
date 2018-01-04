@@ -36,7 +36,7 @@ export function installToast (window) {
           background: ${color};
           color: white;
           border-radius: 3px;
-          flex: auto 0 0;
+          flex: auto 0 1;
           box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
           cursor: pointer;
         ">
