@@ -2,11 +2,11 @@
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
       <span class="title" @click="onTitleClick">
-        <span style="color:#ccc">&lt;</span>
+        <span class="title__bracket">&lt;</span>
         <span v-tooltip="titleTooltip">{{ targetName }}</span>
-        <span style="color:#ccc">&gt;</span>
+        <span class="title__bracket">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
+      <a v-if="isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
         <i class="material-icons">find_in_page</i>
         <span>Inspect DOM</span>
       </a>
@@ -37,8 +37,6 @@ import StateInspector from 'components/StateInspector.vue'
 import { searchDeepInObject, sortByKey, classify } from 'src/util'
 import groupBy from 'lodash.groupby'
 
-const isChrome = typeof chrome !== 'undefined' && chrome.devtools
-
 export default {
   components: {
     ScrollPane,
@@ -50,7 +48,8 @@ export default {
   },
   data () {
     return {
-      filter: ''
+      filter: '',
+      isChrome: typeof chrome !== 'undefined' && chrome.devtools
     }
   },
   computed: {
@@ -77,7 +76,7 @@ export default {
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      if (isChrome) {
+      if (this.isChrome) {
         chrome.devtools.inspectedWindow.eval(
           `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.target.id}").$el)`
         )

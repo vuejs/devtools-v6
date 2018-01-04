@@ -26,6 +26,12 @@
   font-size 18px
   color $component-color
 
+  + .search
+    margin-left 10px
+
+  &__bracket
+    color #ccc
+
 .button
   cursor pointer
   display flex
