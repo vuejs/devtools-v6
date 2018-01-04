@@ -2,9 +2,9 @@
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
       <span class="title" @click="onTitleClick">
-        <span class="title__bracket">&lt;</span>
+        <span class="title-bracket">&lt;</span>
         <span v-tooltip="titleTooltip">{{ targetName }}</span>
-        <span class="title__bracket">&gt;</span>
+        <span class="title-bracket">&gt;</span>
       </span>
       <a v-if="isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
         <i class="material-icons">find_in_page</i>
@@ -49,7 +49,7 @@ export default {
   data () {
     return {
       filter: '',
-      isChrome: typeof chrome !== 'undefined' && chrome.devtools
+      isChrome: typeof chrome !== 'undefined' && !!chrome.devtools
     }
   },
   computed: {

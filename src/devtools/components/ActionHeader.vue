@@ -29,7 +29,7 @@
   + .search
     margin-left 10px
 
-  &__bracket
+  &-bracket
     color #ccc
 
 .button
