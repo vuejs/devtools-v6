@@ -88,12 +88,19 @@ export default {
     onTitleClick () {
       const file = this.target.file
       if (file) {
-        const src = `fetch('/__open-in-editor?file=${file}').then(() => {
-          console.log('File ${file} opened in editor')
-        }).catch(e => {
-          console.warn(e)
+        const src = `fetch('/__open-in-editor?file=${file}').then(response => {
+          if (response.ok) {
+            console.log('File ${file} opened in editor')
+          } else {
+            if (__VUE_DEVTOOLS_TOAST__) {
+              __VUE_DEVTOOLS_TOAST__('Opening component ${file} failed', 'error')
+            } else {
+              console.log('%cOpening component ${file} failed', 'color:red')
+            }
+            console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
+          }
         })`
-        if (chrome && chrome.devtools) {
+        if (isChrome) {
           chrome.devtools.inspectedWindow.eval(src)
         } else {
           // eslint-disable-next-line no-eval
