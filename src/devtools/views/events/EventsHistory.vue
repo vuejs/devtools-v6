@@ -1,5 +1,5 @@
 <template>
-  <scroll-pane scroll-event="event:emit">
+  <scroll-pane scroll-event="event:triggered">
     <action-header slot="header">
       <div
         class="search"
