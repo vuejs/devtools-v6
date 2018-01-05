@@ -25,7 +25,7 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 **Make sure you are using Node 6+ and NPM 3+**
 
 1. Clone this repo
-2. `npm install` (Or `yarn install` if you are using yarn as the package manager)
+2. `npm install --production` (Or `yarn install --prod` if you are using yarn as the package manager)
 3. `npm run build`
 4. Open Chrome extension page
 5. Check "developer mode"
