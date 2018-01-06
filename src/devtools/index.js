@@ -81,7 +81,7 @@ function initApp (shell) {
     })
 
     bridge.on('instance-details', details => {
-      store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details, true))
+      store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
     bridge.on('vuex:init', snapshot => {

@@ -70,16 +70,16 @@ export function parse (data, revive) {
     : CircularJSON.parse(data)
 }
 
-function reviver (key, val) {
+export function reviver (key, val) {
   if (val === UNDEFINED) {
     return undefined
   } else if (val === INFINITY) {
     return Infinity
   } else if (val === NAN) {
     return NaN
-  } else if (isString(val) && val.startsWith(SET)) {
+  } else if (isSerializedSet(val)) {
     return new Set(parse(val.substring(SET.length), true))
-  } else if (isString(val) && val.startsWith(MAP)) {
+  } else if (isSerializedMap(val)) {
     return new Map(parse(val.substring(MAP.length), true))
   } else {
     return val
@@ -119,6 +119,14 @@ export function isMap (obj) {
 
 export function isSet (obj) {
   return obj instanceof Set
+}
+
+export function isSerializedMap (obj) {
+  return isString(obj) && obj.startsWith(MAP)
+}
+
+export function isSerializedSet (obj) {
+  return isString(obj) && obj.startsWith(SET)
 }
 
 export function isString (obj) {

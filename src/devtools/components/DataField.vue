@@ -42,6 +42,7 @@ import {
   isPlainObject,
   isMap,
   isSet,
+  reviver,
   sortByKey
 } from 'src/util'
 
@@ -90,19 +91,19 @@ export default {
       }
     },
     isExpandableType () {
-      const value = this.field.value
+      const value = reviver(null, this.field.value)
       return Array.isArray(value) || isPlainObject(value) ||
         isSet(value) || isMap(value)
     },
     formattedValue () {
-      const value = this.field.value
+      const value = reviver(null, this.field.value)
       if (value === null) {
         return 'null'
-      } else if (value === UNDEFINED || value === undefined) {
+      } else if (value === undefined) {
         return 'undefined'
-      } else if (value === NAN || Number.isNaN(value)) {
+      } else if (Number.isNaN(value)) {
         return 'NaN'
-      } else if (value === INFINITY || value === Number.POSITIVE_INFINITY) {
+      } else if (value === Number.POSITIVE_INFINITY) {
         return 'Infinity'
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
@@ -126,7 +127,7 @@ export default {
       }
     },
     formattedSubFields () {
-      let value = this.field.value
+      let value = reviver(null, this.field.value)
       if (Array.isArray(value)) {
         value = value.map((item, i) => ({
           key: i,
@@ -138,7 +139,8 @@ export default {
           value: value[key]
         })))
       } else if (isSet(value)) {
-        value = Array.from(value.values()).map(v => ({ key: '_', value: v }))
+        // Use many zero-width spaces for keys to ensure each key is unique
+        value = Array.from(value.values()).map((v, i) => ({ key: '_' + '​'.repeat(i), value: v }))
       } else if (isMap(value)) {
         value = Array.from(value.entries()).map(([k, v]) => ({ key: k, value: v }))
       }
