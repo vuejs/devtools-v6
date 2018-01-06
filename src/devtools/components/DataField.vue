@@ -98,11 +98,11 @@ export default {
       const value = this.field.value
       if (value === null) {
         return 'null'
-      } else if (value === UNDEFINED) {
+      } else if (value === UNDEFINED || value === undefined) {
         return 'undefined'
-      } else if (value === NAN) {
+      } else if (value === NAN || Number.isNaN(value)) {
         return 'NaN'
-      } else if (value === INFINITY) {
+      } else if (value === INFINITY || value === Number.POSITIVE_INFINITY) {
         return 'Infinity'
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
