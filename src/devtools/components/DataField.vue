@@ -104,7 +104,7 @@ export default {
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
-        return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
+        return 'Object[' + Object.keys(value).length + ']'
       } else if (this.valueType === 'native') {
         return specialTypeRE.exec(value)[1]
       } else if (typeof value === 'string') {
