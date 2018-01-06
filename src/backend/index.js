@@ -377,7 +377,8 @@ export function getCustomInstanceDetails (instance) {
       type: 'component',
       id: instance.__VUE_DEVTOOLS_UID__,
       display: getInstanceName(instance),
-      state: reduceStateList(state)
+      state: reduceStateList(state),
+      abstract: true
     }
   }
 }

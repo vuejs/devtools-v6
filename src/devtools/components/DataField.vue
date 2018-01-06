@@ -27,7 +27,7 @@
           @keyup.enter="submitEdit()"
         >
       </span>
-      <span v-else class="key" :class="{ special: field.noDisplay }">{{ field.key }}</span><span class="colon" v-if="!field.noDisplay">:</span>
+      <span v-else class="key" :class="{ abstract: field.abstractField }">{{ field.key }}</span><span class="colon" v-if="!field.abstractField">:</span>
 
       <span
         v-if="editing"
@@ -272,7 +272,7 @@ export default {
     },
     isEditable () {
       return this.editable &&
-        !this.field.noDisplay &&
+        !this.field.abstractField &&
         (
           typeof this.field.key !== 'string' ||
           this.field.key.charAt(0) !== '$'
@@ -294,7 +294,7 @@ export default {
     },
     formattedValue () {
       const value = this.field.value
-      if (this.field.noDisplay) {
+      if (this.field.abstractField) {
         return ''
       } else if (value === null) {
         return 'null'
@@ -334,13 +334,15 @@ export default {
         }))
       } else if (typeof value === 'object') {
         const isCustom = this.valueType === 'custom'
+        let abstractField = false
         if (isCustom) {
+          abstractField = !!value._custom.abstract
           value = value._custom.state
         }
         value = sortByKey(Object.keys(value).map(key => ({
           key,
           value: value[key],
-          noDisplay: isCustom
+          abstractField
         })))
       }
       return value
@@ -588,7 +590,7 @@ export default {
   color #881391
   .dark &
     color: #e36eec
-  &.special
+  &.abstract
     color $blueishGrey
 .value
   display inline-block
