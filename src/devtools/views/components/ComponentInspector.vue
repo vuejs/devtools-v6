@@ -100,7 +100,7 @@ export default {
             console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
           }
         })`
-        if (isChrome) {
+        if (this.isChrome) {
           chrome.devtools.inspectedWindow.eval(src)
         } else {
           // eslint-disable-next-line no-eval
