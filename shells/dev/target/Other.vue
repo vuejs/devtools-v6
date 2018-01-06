@@ -21,12 +21,12 @@ export default {
   mixins: [ computedPropMixin ],
   data () {
     let a = { c: function () {} }
-    a.a = a
+    a.intentionalRecursion = a
     let b = []
     b[0] = b
     return {
       a: a,
-      b: b
+      intentionalRecusionArray: b
     }
   },
   components: {
