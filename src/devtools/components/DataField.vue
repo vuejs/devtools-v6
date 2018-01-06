@@ -27,7 +27,7 @@
           @keyup.enter="submitEdit()"
         >
       </span>
-      <span v-else class="key" :class="{ abstract: field.abstractField }">{{ field.key }}</span><span class="colon" v-if="!field.abstractField">:</span>
+      <span v-else class="key" :class="{ abstract: fieldOptions.abstract }">{{ field.key }}</span><span class="colon" v-if="!fieldOptions.abstract">:</span>
 
       <span
         v-if="editing"
@@ -266,13 +266,17 @@ export default {
     },
     isExpandableType () {
       const value = this.field.value
-      return Array.isArray(value) ||
-        (this.valueType === 'custom' && value._custom.state) ||
-        (this.valueType !== 'custom' && isPlainObject(value))
+      return (typeof this.fieldOptions.expandable === 'undefined' || this.fieldOptions.expandable) &&
+        (
+          Array.isArray(value) ||
+          (this.valueType === 'custom' && value._custom.expandable) ||
+          (this.valueType !== 'custom' && isPlainObject(value))
+        )
     },
     isEditable () {
       return this.editable &&
-        !this.field.abstractField &&
+        !this.fieldOptions.abstract &&
+        !this.fieldOptions.readOnly &&
         (
           typeof this.field.key !== 'string' ||
           this.field.key.charAt(0) !== '$'
@@ -294,7 +298,7 @@ export default {
     },
     formattedValue () {
       const value = this.field.value
-      if (this.field.abstractField) {
+      if (this.fieldOptions.abstract) {
         return ''
       } else if (value === null) {
         return 'null'
@@ -327,28 +331,39 @@ export default {
     },
     formattedSubFields () {
       let value = this.field.value
+
+      // CustomValue API
+      const isCustom = this.valueType === 'custom'
+      let inherit = {}
+      if (isCustom) {
+        inherit = value._custom.fields || {}
+        value = value._custom.value
+      }
+
       if (Array.isArray(value)) {
         value = value.map((item, i) => ({
           key: i,
-          value: item
+          value: item,
+          ...inherit
         }))
       } else if (typeof value === 'object') {
-        const isCustom = this.valueType === 'custom'
-        let abstractField = false
-        if (isCustom) {
-          abstractField = !!value._custom.abstract
-          value = value._custom.state
-        }
         value = sortByKey(Object.keys(value).map(key => ({
           key,
           value: value[key],
-          abstractField
+          ...inherit
         })))
       }
       return value
     },
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
+    },
+    fieldOptions () {
+      if (this.valueType === 'custom') {
+        return Object.assign({}, this.field, this.field.value._custom)
+      } else {
+        return this.field
+      }
     },
     valueValid () {
       try {
