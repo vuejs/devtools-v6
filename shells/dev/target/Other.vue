@@ -6,7 +6,7 @@
 </template>
 
 <script>
-// this computed property should be visible 
+// this computed property should be visible
 // even if component has no 'computed' defined
 const computedPropMixin = {
   computed: {
@@ -21,12 +21,12 @@ export default {
   mixins: [ computedPropMixin ],
   data () {
     let a = { c: function () {} }
-    a.a = a
+    a.intentionalRecursion = a
     let b = []
     b[0] = b
     return {
       a: a,
-      b: b
+      intentionalRecusionArray: b
     }
   },
   components: {
@@ -42,7 +42,9 @@ export default {
           e: undefined,
           f: true,
           g: 12345,
-          h: 'I am a really long string mostly just to see how the horizontal scrolling works.'
+          h: 'I am a really long string mostly just to see how the horizontal scrolling works.',
+          i: new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])]])]),
+          j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])], [8, new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])]])])]])
         }
       }
     }
