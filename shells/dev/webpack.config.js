@@ -1,8 +1,6 @@
-var path = require('path')
-var webpack = require('webpack')
 var alias = require('../alias')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var openInEditor = require('express-open-in-editor')
+var openInEditor = require('launch-editor-middleware')
 
 var bubleOptions = {
   target: { chrome: 52, firefox: 48 },
@@ -19,7 +17,7 @@ module.exports = {
   output: {
     path: __dirname + '/build',
     publicPath: '/build/',
-    filename: '[name].js',
+    filename: '[name].js'
   },
   resolve: {
     alias
@@ -28,7 +26,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader:  'buble-loader',
+        loader: 'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },
@@ -53,10 +51,8 @@ module.exports = {
   devServer: {
     quiet: true,
     before (app) {
-      app.use('/__open-in-editor', openInEditor({
-        editor: 'code'
-      }))
+      app.use('/__open-in-editor', openInEditor())
     }
   },
-  plugins: process.env.VUE_DEVTOOL_TEST ? [] :[new FriendlyErrorsPlugin()]
+  plugins: process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()]
 }
