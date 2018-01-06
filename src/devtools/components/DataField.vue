@@ -265,12 +265,20 @@ export default {
       return typeof this.field.value
     },
     isExpandableType () {
-      const value = this.field.value
-      return (typeof this.fieldOptions.expandable === 'undefined' || this.fieldOptions.expandable) &&
+      let value = this.field.value
+      if (this.valueType === 'custom') {
+        value = value._custom.value
+      }
+      const closed = this.fieldOptions.closed
+      const closedDefined = typeof closed !== 'undefined'
+      return (!closedDefined &&
         (
           Array.isArray(value) ||
-          (this.valueType === 'custom' && value._custom.expandable) ||
-          (this.valueType !== 'custom' && isPlainObject(value))
+          isPlainObject(value)
+        )) ||
+        (
+          closedDefined &&
+          !closed
         )
     },
     isEditable () {
