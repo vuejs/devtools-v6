@@ -40,6 +40,8 @@ import {
   INFINITY,
   NAN,
   isPlainObject,
+  isMap,
+  isSet,
   sortByKey
 } from 'src/util'
 
@@ -89,7 +91,8 @@ export default {
     },
     isExpandableType () {
       const value = this.field.value
-      return Array.isArray(value) || isPlainObject(value)
+      return Array.isArray(value) || isPlainObject(value) ||
+        isSet(value) || isMap(value)
     },
     formattedValue () {
       const value = this.field.value
@@ -105,6 +108,10 @@ export default {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
         return 'Object[' + Object.keys(value).length + ']'
+      } else if (isSet(value)) {
+        return 'Set[' + value.size + ']'
+      } else if (isMap(value)) {
+        return 'Map[' + value.size + ']'
       } else if (this.valueType === 'native') {
         return specialTypeRE.exec(value)[1]
       } else if (typeof value === 'string') {
@@ -125,11 +132,15 @@ export default {
           key: i,
           value: item
         }))
-      } else if (typeof value === 'object') {
+      } else if (isPlainObject(value)) {
         value = sortByKey(Object.keys(value).map(key => ({
           key,
           value: value[key]
         })))
+      } else if (isSet(value)) {
+        value = Array.from(value.values()).map(v => ({ key: '_', value: v }))
+      } else if (isMap(value)) {
+        value = Array.from(value.entries()).map(([k, v]) => ({ key: k, value: v }))
       }
       return value
     },

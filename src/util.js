@@ -38,6 +38,8 @@ export function inDoc (node) {
 export const UNDEFINED = '__vue_devtool_undefined__'
 export const INFINITY = '__vue_devtool_infinity__'
 export const NAN = '__vue_devtool_nan__'
+export const SET = '__vue_devtool_set__'
+export const MAP = '__vue_devtool_map__'
 
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
@@ -53,6 +55,10 @@ function replacer (key, val) {
   } else if (val instanceof RegExp) {
     // special handling of native type
     return `[native RegExp ${val.toString()}]`
+  } else if (isSet(val)) {
+    return SET + stringify(Array.from(val))
+  } else if (isMap(val)) {
+    return MAP + stringify(Array.from(val))
   } else {
     return sanitize(val)
   }
@@ -71,6 +77,10 @@ function reviver (key, val) {
     return Infinity
   } else if (val === NAN) {
     return NaN
+  } else if (isString(val) && val.startsWith(SET)) {
+    return new Set(parse(val.substring(SET.length), true))
+  } else if (isString(val) && val.startsWith(MAP)) {
+    return new Map(parse(val.substring(MAP.length), true))
   } else {
     return val
   }
@@ -101,6 +111,18 @@ function sanitize (data) {
 
 export function isPlainObject (obj) {
   return Object.prototype.toString.call(obj) === '[object Object]'
+}
+
+export function isMap (obj) {
+  return obj instanceof Map
+}
+
+export function isSet (obj) {
+  return obj instanceof Set
+}
+
+export function isString (obj) {
+  return obj instanceof String || typeof obj === 'string'
 }
 
 function isPrimitive (data) {
