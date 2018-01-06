@@ -569,7 +569,13 @@ function processRouteContext (instance) {
     if (route.meta) value.meta = route.meta
     return [{
       key: '$route',
-      value
+      value: {
+        _custom: {
+          type: 'router',
+          abstract: true,
+          value
+        }
+      }
     }]
   } else {
     return []
