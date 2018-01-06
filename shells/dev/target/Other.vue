@@ -43,8 +43,8 @@ export default {
           f: true,
           g: 12345,
           h: 'I am a really long string mostly just to see how the horizontal scrolling works.',
-          i: new Set([1, 2, 3, 4, new Set([5, 6, 7, 8])]),
-          j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])]])
+          i: new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])]])]),
+          j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])], [8, new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7,]])]])])]])
         }
       }
     }
