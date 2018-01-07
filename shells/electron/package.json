@@ -1,5 +1,5 @@
 {
-  "name": "vue-devtools",
+  "name": "vue-remote-devtools",
   "version": "0.0.1",
   "description": "StandAlone vue-devtools",
   "repository": {
@@ -9,6 +9,7 @@
   "bin": {
     "vue-devtools": "./bin.js"
   },
+  "main": "index.js",
   "scripts": {
     "start": "node bin.js",
     "dev": "webpack --watch --hide-modules",
