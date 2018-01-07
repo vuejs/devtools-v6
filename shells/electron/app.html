@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Vue Developer Tools</title>
   <style>
-    body {
+    #app {
       display: flex;
       flex-direction: column;
       position: absolute;
@@ -15,11 +15,71 @@
       margin: 0;
       padding: 0;
     }
+
+    #intro {
+      background-color: #fff;
+      margin: auto;
+      text-align: center;
+      font-family: Roboto, sans-serif;
+      color: #484848;
+    }
+
+    #intro .logo {
+      width: 120px;
+    }
+
+    #intro .title {
+      margin: 30px 0;
+      font-size: 26px;
+    }
+
+    #intro .content {
+      width: 370px;
+      font-size: 18px;
+      line-height: 45px;
+      text-align: center;
+    }
+
+    #intro .content-row {
+      display: flex;
+      align-items: center;
+    }
+
+    #intro .content-row label {
+      flex-basis: 35px;
+      text-align: right;
+    }
+
+    #intro .content-row input {
+      flex: 1;
+      margin-left: 10px;
+      font-size: 14px;
+      height: 32px;
+      border: 1px solid #cacaca;
+      border-radius: 2px;
+      padding: 0 10px;
+    }
   </style>
 </head>
 <body>
   <div id="app">
-    Loading...
+    <div id="intro">
+      <img src="icons/128.png" alt="" class="logo">
+      <h2 class="title">
+        Waiting for connection...
+      </h2>
+      <div class="content">
+        <div class="content-row">
+          <label for="script-localhost">Add</label>
+          <input type="text" id="script-localhost">
+        </div>
+        <div class="content-row">
+          <label for="script-byip">Or</label>
+          <input type="text" id="script-byip">
+        </div>
+        to the top of the page you want to debug.
+      </div>
+    </div>
   </div>
   <script src="build/devtools.js"></script>
 </body>

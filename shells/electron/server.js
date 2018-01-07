@@ -12,6 +12,9 @@ io.on('connection', function (socket) {
   socket.on('vue-message', data => {
     socket.broadcast.emit('vue-message', data)
   })
+  socket.on('vue-devtools-init', () => {
+    socket.broadcast.emit('vue-devtools-init')
+  })
 })
 
 http.listen(8098, () => {
