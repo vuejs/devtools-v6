@@ -1,23 +1,25 @@
 import { initDevTools } from 'src/devtools'
 import Bridge from 'src/bridge'
+import io from 'socket.io-client'
+
+const socket = io('http://localhost:8098')
 
 initDevTools({
-  connect(callback) {
-    console.log('connect has been called')
-
+  connect (callback) {
     const wall = {
-      listen(fn) {
-        console.log('wall.listen has been called')
+      listen (fn) {
+        socket.on('vue-message', data => fn(data))
       },
-      send(data) {
-        console.log('wall.send has been called', data)
+      send (data) {
+        console.log('devtools -> backend', data)
+        socket.emit('vue-message', data)
       }
     }
     const bridge = new Bridge(wall)
 
     callback(bridge)
   },
-  onReload(fn) {
+  onReload (fn) {
     console.log('onReload has been called')
   }
 })

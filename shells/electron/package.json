@@ -2,16 +2,26 @@
   "name": "vue-devtools",
   "version": "0.0.1",
   "description": "StandAlone vue-devtools",
+  "repository": {
+    "url": "https://github.com/vuejs/vue-devtools.git",
+    "type": "git"
+  },
   "bin": {
     "vue-devtools": "./bin.js"
   },
   "scripts": {
-    "start": "node bin.js"
+    "start": "node bin.js",
+    "dev": "webpack --watch --hide-modules"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "cross-spawn": "^5.1.0",
-    "electron": "^1.8.1"
+    "electron": "^1.8.1",
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "webpack": "^3.10.0"
   }
 }
