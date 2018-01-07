@@ -1,14 +1,24 @@
+import io from 'socket.io-client'
 import { initBackend } from 'src/backend'
+import { installHook } from 'src/backend/hook'
 import Bridge from 'src/bridge'
 
-const bridge = new Bridge({
-  listen (fn) {
-    window.addEventListener('message', evt => fn(evt.data))
-  },
-  send (data) {
-    console.log('backend -> devtools', data)
-    window.parent.postMessage(data, '*')
-  }
-})
+(function () {
+  const socket = io('http://localhost:8098')
 
-initBackend(bridge)
+  const bridge = new Bridge({
+    listen (fn) {
+      socket.on('vue-message', data => fn(data))
+    },
+    send (data) {
+      console.log('backend -> devtools', data)
+      socket.emit('vue-message', data)
+    }
+  })
+
+  if (!window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
+    installHook(window)
+  }
+
+  initBackend(bridge)
+}())
