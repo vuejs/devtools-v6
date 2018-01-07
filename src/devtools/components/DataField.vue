@@ -148,23 +148,14 @@ import {
   INFINITY,
   NEGATIVE_INFINITY,
   NAN,
-  SPECIAL_TOKENS,
   isPlainObject,
-  sortByKey,
-  parse
+  sortByKey
 } from 'src/util'
 
-const quickEditNumberTooltip = operator => `Quick Edit<br><br>
-<span class="keyboard">Ctrl</span> + <i class="material-icons">mouse</i>: ${operator}5<br>
-<span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: ${operator}10<br>
-<span class="keyboard">Alt</span> + <i class="material-icons">mouse</i>: ${operator}100`
-const QUICK_EDIT_NUMBER_REMOVE = quickEditNumberTooltip('-')
-const QUICK_EDIT_NUMBER_ADD = quickEditNumberTooltip('+')
+import DataFieldEdit from '../mixins/data-field-edit'
 
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
-
-let currentEditedField = null
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -176,63 +167,36 @@ function subFieldCount (value) {
   }
 }
 
-function numberQuickEditMod (event) {
-  let mod = 1
-  if (event.ctrlKey) {
-    mod *= 5
-  }
-  if (event.shiftKey) {
-    mod *= 10
-  }
-  if (event.altKey) {
-    mod *= 100
-  }
-  return mod
-}
-
 export default {
   name: 'DataField',
+
+  mixins: [
+    DataFieldEdit
+  ],
+
   props: {
     field: Object,
     parentField: Object,
     depth: Number,
-    path: String,
-    editable: {
-      type: Boolean,
-      default: false
-    },
-    removable: {
-      type: Boolean,
-      default: false
-    },
-    renamable: {
-      type: Boolean,
-      default: false
-    }
+    path: String
   },
+
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5),
-      editing: false,
-      editedValue: null,
-      editedKey: null,
-      addingValue: false,
-      newField: null
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
   },
+
   computed: {
     ...mapState('components', [
       'inspectedInstance'
     ]),
-    cssClass () {
-      return {
-        editing: this.editing
-      }
-    },
+
     depthMargin () {
       return (this.depth + 1) * 14 + 10
     },
+
     valueType () {
       const value = this.field.value
       const type = typeof value
@@ -261,9 +225,11 @@ export default {
         return 'unknown'
       }
     },
+
     rawValueType () {
       return typeof this.field.value
     },
+
     isExpandableType () {
       let value = this.field.value
       if (this.valueType === 'custom') {
@@ -281,29 +247,7 @@ export default {
           !closed
         )
     },
-    isEditable () {
-      return this.editable &&
-        !this.fieldOptions.abstract &&
-        !this.fieldOptions.readOnly &&
-        (
-          typeof this.field.key !== 'string' ||
-          this.field.key.charAt(0) !== '$'
-        )
-    },
-    isValueEditable () {
-      const type = this.valueType
-      return this.isEditable &&
-        (
-          type === 'null' ||
-          type === 'literal' ||
-          type === 'string' ||
-          type === 'array' ||
-          type === 'plain-object'
-        )
-    },
-    isSubfieldsEditable () {
-      return this.isEditable && (this.valueType === 'array' || this.valueType === 'plain-object')
-    },
+
     formattedValue () {
       const value = this.field.value
       if (this.fieldOptions.abstract) {
@@ -337,6 +281,7 @@ export default {
         return value
       }
     },
+
     formattedSubFields () {
       let value = this.field.value
 
@@ -363,9 +308,11 @@ export default {
       }
       return value
     },
+
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
     },
+
     fieldOptions () {
       if (this.valueType === 'custom') {
         return Object.assign({}, this.field, this.field.value._custom)
@@ -373,23 +320,7 @@ export default {
         return this.field
       }
     },
-    valueValid () {
-      try {
-        parse(this.transformSpecialTokens(this.editedValue, false))
-        return true
-      } catch (e) {
-        return false
-      }
-    },
-    duplicateKey () {
-      return this.parentField.value.hasOwnProperty(this.editedKey)
-    },
-    keyValid () {
-      return this.editedKey && (this.editedKey === this.field.key || !this.duplicateKey)
-    },
-    editValid () {
-      return this.valueValid && (!this.renamable || this.keyValid)
-    },
+
     editErrorMessage () {
       if (!this.valueValid) {
         return 'Invalid value'
@@ -401,34 +332,7 @@ export default {
         }
       }
     },
-    quickEdits () {
-      if (this.isValueEditable) {
-        const value = this.field.value
-        const type = typeof value
-        if (type === 'boolean') {
-          return [
-            {
-              icon: value ? 'check_box' : 'check_box_outline_blank',
-              newValue: !value
-            }
-          ]
-        } else if (type === 'number') {
-          return [
-            {
-              icon: 'remove',
-              title: QUICK_EDIT_NUMBER_REMOVE,
-              newValue: event => value - numberQuickEditMod(event)
-            },
-            {
-              icon: 'add',
-              title: QUICK_EDIT_NUMBER_ADD,
-              newValue: event => value + numberQuickEditMod(event)
-            }
-          ]
-        }
-      }
-      return null
-    },
+
     valueClass () {
       const cssClass = [this.valueType, `raw-${this.rawValueType}`]
       if (this.valueType === 'custom') {
@@ -437,14 +341,9 @@ export default {
         value._custom.class && cssClass.push(value._custom.class)
       }
       return cssClass
-    },
-    cancelEditTooltip () {
-      return '<span class="keyboard">Esc</span> Cancel'
-    },
-    submitEditTooltip () {
-      return '<span class="keyboard">Enter</span> Submit change'
     }
   },
+
   methods: {
     toggle (event) {
       if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
@@ -452,88 +351,12 @@ export default {
       }
       if (this.isExpandableType) {
         this.expanded = !this.expanded
+
+        !this.expanded && this.cancelCurrentEdition()
       }
     },
-    hyphen: v => v.replace(/\s/g, '-'),
-    openEdit (focusKey = false) {
-      if (this.isValueEditable) {
-        if (currentEditedField && currentEditedField !== this) {
-          currentEditedField.cancelEdit()
-        }
-        this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
-        this.editedKey = this.field.key
-        this.editing = true
-        currentEditedField = this
-        this.$nextTick(() => {
-          const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
-          el.focus()
-          el.setSelectionRange(0, el.value.length)
-        })
-      }
-    },
-    cancelEdit () {
-      this.editing = false
-      this.$emit('cancel-edit')
-    },
-    submitEdit () {
-      if (this.editValid) {
-        this.editing = false
-        const value = this.transformSpecialTokens(this.editedValue, false)
-        const newKey = this.editedKey !== this.field.key ? this.editedKey : undefined
-        this.sendEdit({ value, newKey })
-        this.$emit('submit-edit')
-      }
-    },
-    sendEdit (args) {
-      bridge.send('set-instance-data', {
-        id: this.inspectedInstance.id,
-        path: this.path,
-        ...args
-      })
-    },
-    transformSpecialTokens (str, display) {
-      Object.keys(SPECIAL_TOKENS).forEach(key => {
-        const value = JSON.stringify(SPECIAL_TOKENS[key])
-        let search
-        let replace
-        if (display) {
-          search = value
-          replace = key
-        } else {
-          search = key
-          replace = value
-        }
-        str = str.replace(new RegExp(search), replace)
-      })
-      return str
-    },
-    quickEdit (info, event) {
-      let newValue
-      if (typeof info.newValue === 'function') {
-        newValue = info.newValue(event)
-      } else {
-        newValue = info.newValue
-      }
-      this.sendEdit({ value: JSON.stringify(newValue) })
-    },
-    removeField () {
-      this.sendEdit({ remove: true })
-    },
-    addNewValue () {
-      let key
-      if (this.valueType === 'array') {
-        key = this.field.value.length
-      } else if (this.valueType === 'plain-object') {
-        let i = 1
-        while (this.field.value.hasOwnProperty(key = `prop${i}`)) i++
-      }
-      this.newField = { key, value: UNDEFINED }
-      this.expanded = true
-      this.addingValue = true
-      this.$nextTick(() => {
-        this.$refs.newField.openEdit(true)
-      })
-    }
+
+    hyphen: v => v.replace(/\s/g, '-')
   }
 }
 </script>

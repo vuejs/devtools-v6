@@ -4,10 +4,21 @@ import store from './store'
 import './plugins'
 import { parse } from '../util'
 
+// Env
+
 const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
-Object.defineProperty(Vue.prototype, '$isChrome', {
-  get () { return isChrome }
+const isMac = navigator.platform === 'MacIntel'
+const keys = {
+  ctrl: isMac ? '&#8984;' : 'Ctrl'
+}
+
+Object.defineProperties(Vue.prototype, {
+  '$isChrome': { get: () => isChrome },
+  '$isMac': { get: () => isMac },
+  '$keys': { get: () => keys }
 })
+
+// UI
 
 let panelShown = !isChrome
 let pendingAction = null
