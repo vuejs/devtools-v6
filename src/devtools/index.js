@@ -4,7 +4,10 @@ import store from './store'
 import './plugins'
 import { parse } from '../util'
 
-const isChrome = typeof chrome !== 'undefined' && chrome.devtools
+const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
+Object.defineProperty(Vue.prototype, '$isChrome', {
+  get () { return isChrome }
+})
 
 let panelShown = !isChrome
 let pendingAction = null

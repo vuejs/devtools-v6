@@ -6,7 +6,7 @@
         <span v-tooltip="titleTooltip">{{ targetName }}</span>
         <span class="title-bracket">&gt;</span>
       </span>
-      <a v-if="isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
+      <a v-if="$isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
         <i class="material-icons">find_in_page</i>
         <span>Inspect DOM</span>
       </a>
@@ -48,8 +48,7 @@ export default {
   },
   data () {
     return {
-      filter: '',
-      isChrome: typeof chrome !== 'undefined' && !!chrome.devtools
+      filter: ''
     }
   },
   computed: {
@@ -76,7 +75,7 @@ export default {
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      if (this.isChrome) {
+      if (this.$isChrome) {
         chrome.devtools.inspectedWindow.eval(
           `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.target.id}").$el)`
         )
@@ -100,7 +99,7 @@ export default {
             console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
           }
         })`
-        if (this.isChrome) {
+        if (this.$isChrome) {
           chrome.devtools.inspectedWindow.eval(src)
         } else {
           // eslint-disable-next-line no-eval
