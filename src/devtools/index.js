@@ -9,7 +9,9 @@ import { parse } from '../util'
 const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
 const isMac = navigator.platform === 'MacIntel'
 const keys = {
-  ctrl: isMac ? '&#8984;' : 'Ctrl'
+  ctrl: isMac ? '&#8984;' : 'Ctrl',
+  shift: 'Shift',
+  alt: isMac ? '&#8997;' : 'Alt'
 }
 
 Object.defineProperties(Vue.prototype, {

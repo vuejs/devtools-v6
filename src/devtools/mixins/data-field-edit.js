@@ -238,8 +238,8 @@ export default {
     quickEditNumberTooltip (operator) {
       return `Quick Edit<br><br>
 <span class="keyboard">${this.$keys.ctrl}</span> + <i class="material-icons">mouse</i>: ${operator}5<br>
-<span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: ${operator}10<br>
-<span class="keyboard">Alt</span> + <i class="material-icons">mouse</i>: ${operator}100`
+<span class="keyboard">${this.$keys.shift}</span> + <i class="material-icons">mouse</i>: ${operator}10<br>
+<span class="keyboard">${this.$keys.alt}</span> + <i class="material-icons">mouse</i>: ${operator}100`
     }
   }
 }

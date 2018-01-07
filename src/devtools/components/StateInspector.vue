@@ -78,7 +78,7 @@ export default {
       })
     },
     dataTypeTooltip () {
-      return `<span class="keyboard">${this.$keys.ctrl}</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">Shift</span> + <i class="material-icons">mouse</i>: Expand All`
+      return `<span class="keyboard">${this.$keys.ctrl}</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">${this.$keys.shift}</span> + <i class="material-icons">mouse</i>: Expand All`
     }
   },
   methods: {
