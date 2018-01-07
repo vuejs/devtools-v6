@@ -4,7 +4,8 @@ import { installHook } from 'src/backend/hook'
 import Bridge from 'src/bridge'
 
 (function () {
-  const socket = io('http://localhost:8098')
+  const port = process.env.PORT || 8098
+  const socket = io('http://localhost:' + port)
 
   const bridge = new Bridge({
     listen (fn) {
