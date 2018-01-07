@@ -3,6 +3,8 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const path = require('path')
 
+const port = process.env.PORT || 8098
+
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, '/build/backend.js'))
 })
@@ -17,6 +19,6 @@ io.on('connection', function (socket) {
   })
 })
 
-http.listen(8098, () => {
-  console.log('listening on *:8098')
+http.listen(port, () => {
+  console.log('listening on *:' + port)
 })
