@@ -1,6 +1,7 @@
+require('./build/hook.js')
+
 module.exports = {
   connect: () => {
-    require('./build/hook.js')
     require('./build/backend.js')
   }
 }
