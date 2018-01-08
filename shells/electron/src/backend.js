@@ -11,7 +11,6 @@ import Bridge from 'src/bridge'
       socket.on('vue-message', data => fn(data))
     },
     send (data) {
-      console.log('backend -> devtools', data)
       socket.emit('vue-message', data)
     }
   })
