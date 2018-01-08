@@ -1,6 +1,5 @@
 import io from 'socket.io-client'
 import { initBackend } from 'src/backend'
-import { installHook } from 'src/backend/hook'
 import Bridge from 'src/bridge'
 
 (function () {
@@ -20,10 +19,6 @@ import Bridge from 'src/bridge'
   bridge.on('shutdown', () => {
     socket.disconnect()
   })
-
-  if (!window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
-    installHook(window)
-  }
 
   initBackend(bridge)
   socket.emit('vue-devtools-init')

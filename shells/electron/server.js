@@ -2,11 +2,14 @@ const app = require('express')()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const path = require('path')
+const fs = require('fs')
 
 const port = process.env.PORT || 8098
 
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '/build/backend.js'))
+  const hookContent = fs.readFileSync(path.join(__dirname, '/build/hook.js'), 'utf8')
+  const backendContent = fs.readFileSync(path.join(__dirname, '/build/backend.js'), 'utf8')
+  res.send([hookContent, backendContent].join('\n'))
 })
 
 // Middleman
