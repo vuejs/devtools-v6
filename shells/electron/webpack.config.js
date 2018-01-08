@@ -12,11 +12,12 @@ module.exports = {
   entry: {
     devtools: './src/devtools.js',
     backend: './src/backend.js',
+    hook: './src/hook.js'
   },
   output: {
     path: __dirname + '/build',
     publicPath: '/build/',
-    filename: '[name].js',
+    filename: '[name].js'
   },
   resolve: {
     alias
@@ -25,7 +26,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader:  'buble-loader',
+        loader: 'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },
@@ -47,8 +48,5 @@ module.exports = {
     hints: false
   },
   devtool: '#cheap-module-source-map',
-  devServer: {
-    quiet: true
-  },
-  plugins: process.env.VUE_DEVTOOL_TEST ? [] :[new FriendlyErrorsPlugin()]
+  plugins: process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()]
 }
