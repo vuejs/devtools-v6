@@ -24,7 +24,7 @@ devServer: {
 }
 ```
 
-3. The editor to launch is guessed. You can also specify the editor app with the `editor` option. See the [supported editors list](https://github.com/lahmatiy/open-in-editor#editor).
+3. The editor to launch is guessed. You can also specify the editor app with the `editor` option. See the [supported editors list](https://github.com/yyx990803/launch-editor#supported-editors).
 
 ```js
 openInEditor({
