@@ -21,9 +21,10 @@ export function installHook (window) {
     },
 
     once (event, fn) {
+      const eventAlias = event
       event = '$' + event
       function on () {
-        this.off(event, on)
+        this.off(eventAlias, on)
         fn.apply(this, arguments)
       }
       ;(listeners[event] || (listeners[event] = [])).push(on)
@@ -66,6 +67,11 @@ export function installHook (window) {
 
   hook.once('init', Vue => {
     hook.Vue = Vue
+
+    Vue.prototype.$inspect = function () {
+      const fn = window.__VUE_DEVTOOLS_INSPECT__
+      fn && fn(this)
+    }
   })
 
   hook.once('vuex:init', store => {
@@ -76,5 +82,25 @@ export function installHook (window) {
     get () {
       return hook
     }
+  })
+
+  // Start recording context menu when Vue is detected
+  // event if Vue devtools are not loaded yet
+  document.addEventListener('contextmenu', event => {
+    let el = event.target
+    if (el) {
+      // Search for parent that "is" a component instance
+      while (!el.__vue__ && el.parentElement) {
+        el = el.parentElement
+      }
+      const instance = el.__vue__
+      if (instance) {
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance
+        return
+      }
+    }
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
   })
 }

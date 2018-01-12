@@ -5,6 +5,13 @@
         <i class="material-icons">search</i>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
+      <a class="button classify-names"
+         :class="{ active: classifyComponents }"
+         v-tooltip="'Format component names'"
+         @click="toggleClassifyComponents"
+      >
+        <i class="material-icons">text_fields</i>
+      </a>
     </action-header>
     <div slot="scroll" class="tree">
       <component-instance
@@ -19,10 +26,13 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
+import { classify } from '../../../util'
 import keyNavMixin from '../../mixins/key-nav'
 
 export default {
@@ -35,9 +45,18 @@ export default {
   props: {
     instances: Array
   },
+  computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ])
+  },
   methods: {
+    ...mapActions('components', [
+      'toggleClassifyComponents'
+    ]),
+
     filterInstances (e) {
-      bridge.send('filter-instances', e.target.value)
+      bridge.send('filter-instances', classify(e.target.value))
     },
 
     onKeyNav (dir) {

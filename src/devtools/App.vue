@@ -1,7 +1,8 @@
-<style lang="stylus" src="./global.styl"></style>
-
 <template>
-<div id="app" :class="{ app: true, dark: isDark }">
+<div id="app" class="app">
+  <datalist id="special-tokens">
+    <option v-for="(value, key) of specialTokens" :key="key" :value="key"></option>
+  </datalist>
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
@@ -12,28 +13,28 @@
     <a class="button components"
       :class="{ active: tab === 'components'}"
       @click="switchTab('components')"
-      title="Switch to Components">
+      v-tooltip="'Switch to Components'">
       <i class="material-icons">device_hub</i>
       <span class="pane-name">Components</span>
     </a>
     <a class="button vuex"
       :class="{ active: tab === 'vuex'}"
       @click="switchTab('vuex')"
-      title="Switch to Vuex">
+      v-tooltip="'Switch to Vuex'">
       <i class="material-icons">restore</i>
       <span class="pane-name">Vuex</span>
     </a>
     <a class="button events"
       :class="{ active: tab === 'events' }"
       @click="switchTab('events')"
-      title="Switch to Events">
+      v-tooltip="'Switch to Events'">
       <i class="material-icons">grain</i>
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
     <a class="button refresh"
       @click="refresh"
-      title="Force Refresh">
+      v-tooltip="'Force Refresh'">
       <i class="material-icons" ref="refresh">refresh</i>
       <span class="pane-name">Refresh</span>
     </a>
@@ -47,28 +48,28 @@
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
+import { SPECIAL_TOKENS } from '../util'
 
 import { mapState } from 'vuex'
 
 export default {
   name: 'app',
-  data () {
-    return {
-      isDark: typeof chrome !== 'undefined' &&
-        typeof chrome.devtools !== 'undefined' &&
-        chrome.devtools.panels.themeName === 'dark'
-    }
-  },
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
     events: EventsTab
   },
-  computed: mapState({
-    message: state => state.message,
-    tab: state => state.tab,
-    newEventCount: state => state.events.newEventCount
-  }),
+  computed: {
+    ...mapState({
+      message: state => state.message,
+      tab: state => state.tab,
+      newEventCount: state => state.events.newEventCount,
+      view: state => state.view
+    }),
+    specialTokens () {
+      return SPECIAL_TOKENS
+    }
+  },
   methods: {
     switchTab (tab) {
       bridge.send('switch-tab', tab)
@@ -86,6 +87,12 @@ export default {
         refreshIcon.style.animation = 'rotate 1s'
       })
     },
+    switchView (mediaQueryEvent) {
+      this.$store.commit(
+        'SWITCH_VIEW',
+        mediaQueryEvent.matches ? 'vertical' : 'horizontal'
+      )
+    },
     updateActiveBar () {
       const activeButton = this.$el.querySelector('.button.active')
       const activeBar = this.$el.querySelector('.active-bar')
@@ -94,11 +101,16 @@ export default {
     }
   },
   mounted () {
+    this.mediaQuery = window.matchMedia('(min-width: 685px)')
+    this.switchView(this.mediaQuery)
+    this.mediaQuery.addListener(this.switchView)
+
     this.updateActiveBar()
     window.addEventListener('resize', this.updateActiveBar)
   },
   destroyed () {
     window.removeEventListener('resize', this.updateActiveBar)
+    this.mediaQuery.removeListener(this.switchView)
   },
   watch: {
     tab () {
@@ -107,6 +119,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" src="./global.styl">
+</style>
 
 <style lang="stylus" scoped>
 @import "./variables"
@@ -120,7 +135,7 @@ export default {
   flex-direction column
   h1
     color #42b983
-  &.dark
+  .dark &
     background-color $dark-background-color
 
 .header
@@ -130,7 +145,7 @@ export default {
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
   position relative
-  .app.dark &
+  .dark &
     border-bottom 1px solid $dark-border-color
 
 .logo
@@ -141,6 +156,10 @@ export default {
 .message-container
   height 1em
   cursor default
+  display none
+  @media (min-width: $wide - 300px)
+    display block
+
 
 .message
   color $active-color
@@ -157,7 +176,7 @@ export default {
   background-color $background-color
   color #888
   transition color .35s ease
-  .app.dark &
+  .dark &
     background-color $dark-background-color
 
   &:hover
@@ -205,7 +224,7 @@ $event-count-bubble-size = 18px
   position absolute
   right 0
   top 12px
-  .app.dark &
+  .dark &
     background-color $dark-background-color
 
 .active-bar

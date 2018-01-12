@@ -14,7 +14,16 @@ import ComponentInspector from './ComponentInspector.vue'
 
 import { mapState } from 'vuex'
 
+const superDef = {
+  data () {
+    return {
+      foo: 'bar'
+    }
+  }
+}
+
 export default {
+  extends: superDef,
   components: {
     ComponentTree,
     ComponentInspector,

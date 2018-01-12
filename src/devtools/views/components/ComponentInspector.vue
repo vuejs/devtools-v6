@@ -1,13 +1,13 @@
 <template>
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
-      <span class="title">
-        <span style="color:#ccc">&lt;</span>
-        <span>{{ target.name }}</span>
-        <span style="color:#ccc">&gt;</span>
+      <span class="title" @click="onTitleClick">
+        <span class="title-bracket">&lt;</span>
+        <span v-tooltip="titleTooltip">{{ targetName }}</span>
+        <span class="title-bracket">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
-        <i class="material-icons">visibility</i>
+      <a v-if="$isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
+        <i class="material-icons">find_in_page</i>
         <span>Inspect DOM</span>
       </a>
       <div class="search">
@@ -30,13 +30,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
-import { searchDeepInObject, sortByKey } from 'src/util'
+import { searchDeepInObject, sortByKey, classify } from 'src/util'
 import groupBy from 'lodash.groupby'
-
-const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 export default {
   components: {
@@ -53,8 +52,14 @@ export default {
     }
   },
   computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
     hasTarget () {
       return this.target.id != null
+    },
+    targetName () {
+      return this.classifyComponents ? classify(this.target.name) : this.target.name
     },
     filteredState () {
       return groupBy(sortByKey(this.target.state.filter(el => {
@@ -62,19 +67,53 @@ export default {
           [el.key]: el.value
         }, this.filter)
       })), 'type')
+    },
+    titleTooltip () {
+      return this.target.file && `Open <i class="material-icons">insert_drive_file</i> <span class="mono">${this.target.file}</span>`
     }
   },
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      if (isChrome) {
+      if (this.$isChrome) {
         chrome.devtools.inspectedWindow.eval(
           `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.target.id}").$el)`
         )
       } else {
         window.alert('DOM inspection is not supported in this shell.')
       }
+    },
+    onTitleClick () {
+      const file = this.target.file
+      if (file) {
+        const src = `fetch('/__open-in-editor?file=${file}').then(response => {
+          if (response.ok) {
+            console.log('File ${file} opened in editor')
+          } else {
+            const msg = 'Opening component ${file} failed'
+            if (__VUE_DEVTOOLS_TOAST__) {
+              __VUE_DEVTOOLS_TOAST__(msg, 'error')
+            } else {
+              console.log('%c' + msg, 'color:red')
+            }
+            console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
+          }
+        })`
+        if (this.$isChrome) {
+          chrome.devtools.inspectedWindow.eval(src)
+        } else {
+          // eslint-disable-next-line no-eval
+          eval(src)
+        }
+      }
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.title
+  cursor pointer
+  white-space nowrap
+</style>
+

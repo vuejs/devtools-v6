@@ -29,11 +29,11 @@
   white-space nowrap
   direction ltr
   /* Support for all WebKit browsers. */
-  -webkit-font-smoothing: antialiased
+  -webkit-font-smoothing antialiased
   /* Support for Safari and Chrome. */
-  text-rendering: optimizeLegibility
+  text-rendering optimizeLegibility
   /* Support for Firefox. */
-  -moz-osx-font-smoothing: grayscale
+  -moz-osx-font-smoothing grayscale
   &.medium
     transform scale(0.9)
   &.small
@@ -51,6 +51,9 @@ html, body
   font-family Roboto
   font-size 16px
   color #444
+
+body
+  overflow hidden
 
 *
   box-sizing border-box
@@ -88,3 +91,242 @@ $arrow-color = #444
     text-align center
     padding 0.5em
     margin 0 auto
+
+.selectable-item
+  background-color $background-color
+  &:hover
+    background-color $hover-color
+  &.selected,
+  &.active
+    background-color $active-color
+    color #fff
+    .arrow
+      border-left-color #fff
+    .item-name
+      color #fff
+
+  .dark &
+    background-color $dark-background-color
+    &:hover
+      background-color $dark-hover-color
+      .arrow
+        border-left-color #666
+    &.selected,
+    &.active
+      background-color $active-color
+
+.list-item
+  color #881391
+  @extends .selectable-item
+
+.icon-button
+  cursor pointer
+  &:hover
+    color $green
+
+.scroll
+  position relative
+
+// Tooltips & Popovers
+
+.tooltip
+  $arrow-size = 5px
+  $tooltip-animation-duration = .15s
+  $popover-background = #f9f9f9
+  $popover-background-dark = #131313
+  display block !important
+  z-index 10000
+  font-size 14px
+  .tooltip-inner
+    background $black
+    color $white
+    border-radius 3px
+    padding 5px 10px
+    .material-icons
+      font-size 16px
+      line-height @font-size
+      position relative
+      top 3px
+  .tooltip-arrow
+    width $arrow-size
+    height $arrow-size
+    position absolute
+    margin $arrow-size
+    z-index 1
+    &::before,
+    &::after
+      content ''
+      width 0
+      height 0
+      border-style solid
+      position absolute
+      border-width inherit
+      top 0
+      left 0
+    &::before
+      border-color $grey
+      display none
+    &::after
+      border-color $black
+  .dark &
+    .tooltip-inner
+      background $white
+      color $black
+    .tooltip-arrow
+      &::before
+        border-color grey
+      &::after
+        border-color $white
+  &[x-placement^='top']
+    margin-bottom $arrow-size
+    .tooltip-arrow
+      bottom -($arrow-size)
+      left 'calc(50% - %s)' % $arrow-size
+      margin-top 0
+      margin-bottom 0
+      &::before,
+      &::after
+        left (-($arrow-size) / 2)
+      &::before
+        top 1px
+      &::after,
+      &::before
+        border-width $arrow-size $arrow-size 0 $arrow-size
+        border-left-color transparent !important
+        border-right-color transparent !important
+        border-bottom-color transparent !important
+  &[x-placement^='bottom']
+    margin-top $arrow-size
+    .tooltip-arrow
+      top -($arrow-size)
+      left 'calc(50% - %s)' % $arrow-size
+      margin-top 0
+      margin-bottom 0
+      &::before,
+      &::after
+        left (-($arrow-size) / 2)
+      &::before
+        top -1px
+      &::after,
+      &::before
+        border-width 0 $arrow-size $arrow-size $arrow-size
+        border-left-color transparent !important
+        border-right-color transparent !important
+        border-top-color transparent !important
+  &[x-placement^='right']
+    margin-left $arrow-size
+    .tooltip-arrow
+      left -($arrow-size)
+      top 'calc(50% - %s)' % $arrow-size
+      margin-left 0
+      margin-right 0
+      &::before,
+      &::after
+        top (-($arrow-size) / 2)
+      &::before
+        left -1px
+      &::after,
+      &::before
+        border-width $arrow-size $arrow-size $arrow-size 0
+        border-left-color transparent !important
+        border-top-color transparent !important
+        border-bottom-color transparent !important
+  &[x-placement^='left']
+    margin-right $arrow-size
+    .tooltip-arrow
+      right -($arrow-size)
+      top 'calc(50% - %s)' % $arrow-size
+      margin-left 0
+      margin-right 0
+      &::before,
+      &::after
+        top (-($arrow-size) / 2)
+      &::before
+        left 1px
+      &::after,
+      &::before
+        border-width $arrow-size 0 $arrow-size $arrow-size
+        border-top-color transparent !important
+        border-right-color transparent !important
+        border-bottom-color transparent !important
+  &.popover
+    $color = $popover-background
+    &[x-placement^='top']
+      .popover-inner
+        bottom -1px
+    &[x-placement^='bottom']
+      .popover-inner
+        top -1px
+    &[x-placement^='left']
+      .popover-inner
+        right -1px
+    &[x-placement^='right']
+      .popover-inner
+        left -1px
+    .popover-inner
+      background $color
+      color $black
+      padding 8px 12px
+      border-radius 3px
+      box-shadow 0 5px 30px rgba(black, .1)
+      border darken($color, 10%) solid 1px
+    .tooltip-arrow
+      &::before
+        display block
+        border-color darken($color, 10%)
+      &::after
+        border-color $color
+    .dark &
+      $color = $popover-background-dark
+      .popover-inner
+        background $color
+        color $white
+        border-color lighten($color, 10%)
+      .popover-arrow
+        &::before
+          border-color lighten($color, 10%)
+        &::after
+          border-color $color
+
+  &[aria-hidden='true']
+    visibility hidden
+    opacity 0
+    transition opacity $tooltip-animation-duration, visibility $tooltip-animation-duration
+  &[aria-hidden='false']
+    visibility visible
+    opacity 1
+    transition opacity $tooltip-animation-duration
+
+.keyboard
+  display inline-block
+  background rgba($grey, .3)
+  padding 2px 4px 0
+  border-radius 3px
+  margin-bottom 6px
+  box-shadow 0 3px 0 rgba($grey, .2)
+  .dark &
+    background rgba($grey, .7)
+    box-shadow 0 3px 0 rgba($grey, .4)
+
+.mono
+  font-family Menlo, Consolas, monospace
+
+.input-example
+  background $white
+  color $green
+  font-size 12px
+  padding 4px 8px
+  margin 0 2px
+  border-radius 2px
+  display inline-block
+  .dark &
+    background $dark-background-color
+  &,
+  .tooltip .tooltip-inner &
+    .material-icons
+      color #444
+      vertical-align middle
+      position relative
+      top 0
+      .dark &
+        color #666

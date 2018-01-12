@@ -1,6 +1,6 @@
 module.exports = {
   'vue-devtools e2e tests': function (browser) {
-    var baseInstanceCount = 6
+    var baseInstanceCount = 8
 
     browser
     .url('http://localhost:' + (process.env.PORT || 8081))
@@ -19,7 +19,7 @@ module.exports = {
       .assert.visible('.tree')
       .assert.containsText('.action-header .title', 'Root')
       .assert.elementPresent('.data-field')
-      .assert.containsText('.data-field', 'obj:Object')
+      .assert.containsText('.data-field', '$route:Object')
 
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
@@ -34,14 +34,22 @@ module.exports = {
       // prop types
       .click('.instance .instance:nth-child(2) .self')
       .assert.containsText('.action-header .title', 'Target')
-      .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
-      .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
-      .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
+      .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:Object')
+      .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:"hi"')
+      .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:undefined')
       // Regexp
-      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'regex:/(a\\w+b)/g')
+      .assert.containsText('.data-el.data .data-field:nth-child(7)', 'regex:/(a\\w+b)/g')
       // Literals
-      .assert.containsText('.data-el.data .data-field:nth-child(4)', 'NaN')
-      .assert.containsText('.data-el.data .data-field:nth-child(1)', 'Infinity')
+      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'NaN')
+      .assert.containsText('.data-el.data .data-field:nth-child(2)', 'Infinity')
+      .assert.containsText('.data-el.data .data-field:nth-child(6)', '-Infinity')
+
+      // Classify names
+      .assert.containsText('.instance .instance:nth-child(3)', 'OtherWithMine')
+      .click('.button.classify-names')
+      .assert.containsText('.instance .instance:nth-child(3)', 'other-with-mine')
+      .click('.button.classify-names')
+      .assert.containsText('.instance .instance:nth-child(3)', 'OtherWithMine')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
@@ -78,7 +86,15 @@ module.exports = {
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'inspected')
       .assert.cssClassPresent('.history .entry:nth-child(4)', 'active')
 
-      // filtering
+      // filtering state & getters
+      .setValue('.right .search input', 'cou')
+      .assert.count('.data-field', 1)
+      .clearValue('.right .search input')
+      .setValue('.right .search input', 'no value')
+      .assert.count('.data-field', 0)
+      .clearValue('.right .search input')
+
+      // filtering history
       .setValue('.search input', 'inc')
       .assert.count('.history .entry', 3)
       .assert.count('.history .entry.inspected', 0)
@@ -94,6 +110,10 @@ module.exports = {
       .assert.count('.history .entry', 4)
       .assert.count('.history .entry.inspected.active', 1)
       .clearValue('.search input')
+
+      // Clear filters (clearValue is buggy)
+      .click('.button.components')
+      .click('.button.vuex')
 
       // inspecting
       .click('.history .entry:nth-child(3) .mutation-type')
@@ -197,13 +217,37 @@ module.exports = {
       .click('.import')
       .assert.elementPresent('.import-state')
       .setValue('.import-state textarea', '{invalid: json}')
-      .waitForElementVisible('.message.invalid-json', 100)
+      .waitForElementVisible('.message.invalid-json', 200)
       .clearValue('.import-state textarea')
-      .setValue('.import-state textarea', '{"valid": "json"}')
+      .setValue('.import-state textarea', '{"count":42,"date":"[native Date Fri Dec 22 2017 10:12:04 GMT+0100 (CET)]"}')
       .waitForElementNotVisible('.message.invalid-json', 1000)
-      .assert.containsText('.vuex-state-inspector', 'valid:"json"')
+      .assert.containsText('.vuex-state-inspector', 'count:42')
+      .assert.containsText('.vuex-state-inspector', 'date:Fri Dec 22 2017 10:12:04 GMT+0100 (CET)')
       .click('.import')
       .waitForElementNotPresent('.import-state', 2000)
+
+      // Events
+      .frame('target')
+        .click('.btn-emit-event')
+        .click('.btn-emit-event1')
+        .click('.btn-emit-event2')
+        .frame(null)
+      .assert.containsText('.event-count', 3)
+      .click('.button.events')
+      .assert.elementNotPresent('.event-count')
+      .assert.count('.history .entry', 3)
+      .frame('target')
+        .click('.btn-emit-log-event')
+        .frame(null)
+      .assert.count('.history .entry', 4)
+      .setValue('.search input', 'event')
+      .assert.count('.history .entry', 3)
+      .clearValue('.search input')
+      .setValue('.search input', '<eventchild1>')
+      .assert.count('.history .entry', 1)
+      .clearValue('.search input')
+      .click('.button.reset')
+      .assert.count('.history .entry', 0)
 
       // done
       .end()

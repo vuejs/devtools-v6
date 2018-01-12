@@ -31,7 +31,8 @@
   "permissions": [
     "http://*/*",
     "https://*/*",
-    "file:///*"
+    "file:///*",
+    "contextMenus"
   ],
 
   "content_scripts": [

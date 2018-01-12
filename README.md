@@ -20,6 +20,10 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 - [Workaround for Safari](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-safari.md)
 
+#### Open component in editor
+
+To enable this feature, follow [this guide](./docs/open-in-editor.md).
+
 ### Manual Installation
 
 **Make sure you are using Node 6+ and NPM 3+**
@@ -66,7 +70,7 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 	~~~~
 
 	When using Yarn, just replace `npm` with `yarn`.
-	
+
 
 ### Commom problems and how to fix
 

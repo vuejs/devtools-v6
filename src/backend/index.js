@@ -4,7 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize } from '../util'
+import { stringify, classify, camelize, set, parse } from '../util'
 import path from 'path'
 
 // Use a custom basename functions instead of the shimed version
@@ -21,7 +21,7 @@ const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -62,13 +62,14 @@ function connect () {
   bridge.on('select-instance', id => {
     currentInspectedId = id
     const instance = instanceMap.get(id)
-    if (instance) {
-      scrollIntoView(instance)
-      highlight(instance)
-    }
     bindToConsole(instance)
     flush()
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
+  })
+
+  bridge.on('scroll-to-instance', id => {
+    const instance = instanceMap.get(id)
+    instance && scrollIntoView(instance)
   })
 
   bridge.on('filter-instances', _filter => {
@@ -77,8 +78,32 @@ function connect () {
   })
 
   bridge.on('refresh', scan)
+
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+
   bridge.on('leave-instance', unHighlight)
+
+  // Get the instance id that is targeted by context menu
+  bridge.on('get-context-menu-target', () => {
+    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
+
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
+
+    if (instance) {
+      const id = instance.__VUE_DEVTOOLS_UID__
+      if (id) {
+        return bridge.send('inspect-instance', id)
+      }
+    }
+
+    toast('No Vue component was found', 'warn')
+  })
+
+  bridge.on('set-instance-data', args => {
+    setStateValue(args)
+    flush()
+  })
 
   // vuex
   if (hook.store) {
@@ -91,6 +116,8 @@ function connect () {
 
   // events
   initEventsBackend(hook.Vue, bridge)
+
+  window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
@@ -234,7 +261,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = getInstanceName(instance).toLowerCase()
+  const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -317,19 +344,57 @@ function getInstanceDetails (id) {
   if (!instance) {
     return {}
   } else {
-    return {
+    const data = {
       id: id,
       name: getInstanceName(instance),
-      state: processProps(instance).concat(
-        processState(instance),
-        processComputed(instance),
-        processRouteContext(instance),
-        processVuexGetters(instance),
-        processFirebaseBindings(instance),
-        processObservables(instance)
-      )
+      state: getInstanceState(instance)
+    }
+
+    let i
+    if ((i = instance.$vnode) && (i = i.componentOptions) && (i = i.Ctor) && (i = i.options)) {
+      data.file = i.__file || null
+    }
+
+    return data
+  }
+}
+
+function getInstanceState (instance) {
+  return processProps(instance).concat(
+    processState(instance),
+    processComputed(instance),
+    processRouteContext(instance),
+    processVuexGetters(instance),
+    processFirebaseBindings(instance),
+    processObservables(instance)
+  )
+}
+
+export function getCustomInstanceDetails (instance) {
+  const state = getInstanceState(instance)
+  return {
+    _custom: {
+      type: 'component',
+      id: instance.__VUE_DEVTOOLS_UID__,
+      display: getInstanceName(instance),
+      value: reduceStateList(state),
+      fields: {
+        abstract: true
+      }
     }
   }
+}
+
+export function reduceStateList (list) {
+  if (!list.length) {
+    return undefined
+  }
+  return list.reduce((map, item) => {
+    const key = item.type || 'data'
+    const obj = map[key] = map[key] || {}
+    obj[item.key] = item.value
+    return map
+  }, {})
 }
 
 /**
@@ -342,7 +407,7 @@ function getInstanceDetails (id) {
 export function getInstanceName (instance) {
   const name = instance.$options.name || instance.$options._componentTag
   if (name) {
-    return classify(name)
+    return name
   }
   const file = instance.$options.__file // injected by vue-loader
   if (file) {
@@ -439,7 +504,8 @@ function processState (instance) {
     ))
     .map(key => ({
       key,
-      value: instance._data[key]
+      value: instance._data[key],
+      editable: true
     }))
 }
 
@@ -503,7 +569,13 @@ function processRouteContext (instance) {
     if (route.meta) value.meta = route.meta
     return [{
       key: '$route',
-      value
+      value: {
+        _custom: {
+          type: 'router',
+          abstract: true,
+          value
+        }
+      }
     }]
   } else {
     return []
@@ -587,7 +659,7 @@ function processObservables (instance) {
 function scrollIntoView (instance) {
   const rect = getInstanceRect(instance)
   if (rect) {
-    window.scrollBy(0, rect.top)
+    window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
 }
 
@@ -620,4 +692,36 @@ function bindToConsole (instance) {
 function getUniqueId (instance) {
   const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
   return `${rootVueId}:${instance._uid}`
+}
+
+/**
+ * Display a toast message.
+ * @param {any} message HTML content
+ */
+export function toast (message, type = 'normal') {
+  const fn = window.__VUE_DEVTOOLS_TOAST__
+  fn && fn(message, type)
+}
+
+export function inspectInstance (instance) {
+  const id = instance.__VUE_DEVTOOLS_UID__
+  id && bridge.send('inspect-instance', id)
+}
+
+function setStateValue ({ id, path, value, newKey, remove }) {
+  const instance = instanceMap.get(id)
+  if (instance) {
+    try {
+      let parsedValue
+      if (value) {
+        parsedValue = parse(value, true)
+      }
+      set(instance._data, path, parsedValue, (obj, field, value) => {
+        (remove || newKey) && instance.$delete(obj, field)
+        !remove && instance.$set(obj, newKey || field, value)
+      })
+    } catch (e) {
+      console.error(e)
+    }
+  }
 }

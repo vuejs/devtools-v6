@@ -17,7 +17,7 @@
   height 35px
   @media (min-height: $tall)
     height 50px
-  .app.dark &
+  .dark &
     border-bottom 1px solid $dark-border-color
 
 .title
@@ -25,6 +25,12 @@
   align-items center
   font-size 18px
   color $component-color
+
+  + .search
+    margin-left 10px
+
+  &-bracket
+    color #ccc
 
 .button
   cursor pointer
@@ -40,7 +46,8 @@
   &:first-of-type
     margin-left auto
 
-  &:not(.disabled):hover
+  &:not(.disabled):hover,
+  &:not(.disabled).active
     opacity 1
     color $active-color
 

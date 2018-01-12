@@ -1,15 +1,18 @@
 <template>
-  <scroll-pane scroll-event="event:emit">
+  <scroll-pane scroll-event="event:triggered">
     <action-header slot="header">
-      <div class="search">
+      <div
+        class="search"
+        v-tooltip="searchTooltip"
+      >
         <i class="search-icon material-icons">search</i>
         <input placeholder="Filter events" v-model.trim="filter">
       </div>
-      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" title="Clear Log">
+      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" v-tooltip="'Clear Log'">
         <i class="material-icons small">do_not_disturb</i>
         <span>Clear</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
@@ -18,7 +21,7 @@
       <div v-if="filteredEvents.length === 0" class="no-events">
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <div class="entry"
+      <div class="entry list-item"
         v-else
         v-for="event in filteredEvents"
         :class="{ active: inspectedIndex === events.indexOf(event) }"
@@ -28,7 +31,7 @@
         <span class="event-source">
           by
           <span>&lt;</span>
-          <span class="component-name">{{ event.instanceName }}</span>
+          <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
           <span>&gt;</span>
         </span>
         <span class="time">{{ event.timestamp | formatTime }}</span>
@@ -42,6 +45,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
 import { mapState, mapGetters, mapMutations } from 'vuex'
+import { classify } from 'src/util'
 
 export default {
   components: {
@@ -64,13 +68,24 @@ export default {
     ]),
     ...mapGetters('events', [
       'filteredEvents'
-    ])
+    ]),
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
+    searchTooltip () {
+      return `To filter on components, type <span class="input-example"><i class="material-icons">search</i> &lt;MyComponent&gt;</span> or just <span class="input-example"><i class="material-icons">search</i> &lt;mycomp</span>.`
+    }
   },
-  methods: mapMutations('events', {
-    inspect: 'INSPECT',
-    reset: 'RESET',
-    toggleRecording: 'TOGGLE'
-  }),
+  methods: {
+    ...mapMutations('events', {
+      inspect: 'INSPECT',
+      reset: 'RESET',
+      toggleRecording: 'TOGGLE'
+    }),
+    displayComponentName (name) {
+      return this.classifyComponents ? classify(name) : name
+    }
+  },
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
@@ -91,11 +106,9 @@ export default {
 .entry
   position relative;
   font-family Menlo, Consolas, monospace
-  color #881391
   cursor pointer
   padding 10px 20px
   font-size 12px
-  background-color $background-color
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   .event-name
     font-weight 600
@@ -107,21 +120,15 @@ export default {
     color #999
     margin-left 8px
   &.active
-    color #fff
-    background-color $active-color
     .time, .event-type, .component-name
       color lighten($active-color, 75%)
     .event-name
       color: #fff
     .event-source
       color #ddd
-  .app.dark &
-    color #e36eec
-    background-color $dark-background-color
 
 .time
   font-size 11px
   color #999
   float right
-  margin-top 3px
 </style>

@@ -5,25 +5,25 @@
         <i class="material-icons">search</i>
         <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
       </div>
-      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" title="Commit All">
+      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" v-tooltip="'Commit All'">
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" title="Revert All">
+      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" v-tooltip="'Revert All'">
         <i class="material-icons small">do_not_disturb</i>
         <span>Revert All</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" :title="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div class="entry" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
+      <div class="entry list-item" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a class="action"
-             @click.stop="timeTravelTo(null)" title="Time Travel to This State">
+             @click.stop="timeTravelTo(null)" v-tooltip="'Time Travel to This State'">
             <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
@@ -31,32 +31,38 @@
         <span class="time">
           {{ lastCommit | formatTime }}
         </span>
-        <span class="label active" v-if="activeIndex === -1">active</span>
-        <span class="label inspected" v-if="inspectedIndex === -1">inspected</span>
+        <span
+          v-if="activeIndex === -1"
+          class="label active"
+        >active</span>
+        <span
+          v-if="inspectedIndex === -1"
+          class="label inspected"
+        >inspected</span>
       </div>
-      <div class="entry"
+      <div class="entry list-item"
         v-for="entry in filteredHistory"
         :class="{ inspected: isInspected(entry), active: isActive(entry) }"
         @click="inspect(entry)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions">
-          <a class="action" @click.stop="commit(entry)" title="Commit This Mutation">
+          <a class="action" @click.stop="commit(entry)" v-tooltip="'Commit This Mutation'">
             <i class="material-icons medium">get_app</i>
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revert(entry)" title="Revert This Mutation">
+          <a class="action" @click.stop="revert(entry)" v-tooltip="'Revert This Mutation'">
             <i class="material-icons small">do_not_disturb</i>
             <span>Revert</span>
           </a>
           <a v-if="!isActive(entry)"
              class="action"
              @click.stop="timeTravelTo(entry)"
-             title="Time Travel to This State">
+             v-tooltip="'Time Travel to This State'">
             <i class="material-icons medium">restore</i>
             <span>Time Travel</span>
           </a>
         </span>
-        <span class="time" :title="entry.timestamp">
+        <span class="time" v-tooltip="entry.timestamp">
           {{ entry.timestamp | formatTime }}
         </span>
         <span class="label active" v-if="isActive(entry)">active</span>
@@ -141,16 +147,12 @@ $inspected_color = #af90d5
 
 .entry
   font-family Menlo, Consolas, monospace
-  color #881391
   cursor pointer
-  padding 10px 20px
+  padding 7px 20px
   font-size 12px
-  background-color $background-color
   box-shadow 0 1px 5px rgba(0,0,0,.12)
-  height 40px
+  height 34px
   &.active
-    color #fff
-    background-color $active-color
     .time
       color lighten($active-color, 75%)
     .action
@@ -179,12 +181,10 @@ $inspected_color = #af90d5
   &:hover
     .entry-actions
       display inline-block
-  .app.dark &
-    background-color $dark-background-color
+  .dark &
     .mutation-type
       color #e36eec
     &.active
-      background-color $active-color
       .mutation-type
         color #fff
 
