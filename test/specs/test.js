@@ -19,7 +19,7 @@ module.exports = {
       .assert.visible('.tree')
       .assert.containsText('.action-header .title', 'Root')
       .assert.elementPresent('.data-field')
-      .assert.containsText('.data-field', '$route:Object')
+      .assert.containsText('.data-field', '$route')
 
       // should expand root by default
       .assert.count('.instance', baseInstanceCount)
@@ -222,7 +222,7 @@ module.exports = {
       .setValue('.import-state textarea', '{"count":42,"date":"[native Date Fri Dec 22 2017 10:12:04 GMT+0100 (CET)]"}')
       .waitForElementNotVisible('.message.invalid-json', 1000)
       .assert.containsText('.vuex-state-inspector', 'count:42')
-      .assert.containsText('.vuex-state-inspector', 'date:Fri Dec 22 2017 10:12:04 GMT+0100 (CET)')
+      .assert.containsText('.vuex-state-inspector', 'date:' + new Date('Fri Dec 22 2017 10:12:04 GMT+0100 (CET)'))
       .click('.import')
       .waitForElementNotPresent('.import-state', 2000)
 
