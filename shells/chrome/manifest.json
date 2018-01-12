@@ -1,6 +1,6 @@
 {
   "name": "Vue.js devtools",
-  "version": "3.1.7",
+  "version": "4.0.0",
   "description": "Chrome and Firefox DevTools extension for debugging Vue.js applications.",
   "manifest_version": 2,
   "icons": {
@@ -8,7 +8,6 @@
     "48": "icons/48.png",
     "128": "icons/128.png"
   },
-
   "browser_action": {
     "default_icon": {
       "16": "icons/16-gray.png",
@@ -18,16 +17,18 @@
     "default_title": "Vue Devtools",
     "default_popup": "popups/not-found.html"
   },
-
-  "web_accessible_resources": [ "devtools.html", "devtools-background.html", "build/backend.js" ],
-
+  "web_accessible_resources": [
+    "devtools.html",
+    "devtools-background.html",
+    "build/backend.js"
+  ],
   "devtools_page": "devtools-background.html",
-
   "background": {
-    "scripts": [ "build/background.js" ],
+    "scripts": [
+      "build/background.js"
+    ],
     "persistent": false
   },
-
   "permissions": [
     "http://*/*",
     "https://*/*",
@@ -35,16 +36,23 @@
     "tabs",
     "contextMenus"
   ],
-
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["build/hook.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "build/hook.js"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["<all_urls>"],
-      "js": ["build/detector.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "build/detector.js"
+      ],
       "run_at": "document_idle"
     }
   ]
