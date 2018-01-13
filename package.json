@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "3.1.7",
+  "version": "4.0.0",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "zip": "npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
     "zip:firefox": "web-ext build -s shells/chrome -a dist -i src --overwrite-dest",
-    "release": "npm run test && npm run build && npm run zip",
+    "release": "node release.js && npm run test && npm run build && npm run zip",
     "test": "npm run lint && bash test/test.sh"
   },
   "repository": {
@@ -41,10 +41,12 @@
     "eslint-plugin-vue-libs": "^2.0.1",
     "file-loader": "^1.1.6",
     "friendly-errors-webpack-plugin": "^1.6.1",
+    "inquirer": "^5.0.0",
     "launch-editor-middleware": "^1.0.0",
     "nightwatch": "^0.9.19",
     "nightwatch-helpers": "^1.2.0",
     "selenium-server": "2.52.0",
+    "semver": "^5.4.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "url-loader": "^0.6.2",
