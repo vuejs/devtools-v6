@@ -8,7 +8,7 @@
       <a
         class="button select-component"
         :class="{active: selecting}"
-        v-tooltip="'Select component in the page'"
+        v-tooltip="selectTooltip"
         @click="setSelecting(!selecting)"
       >
         <i class="material-icons">
@@ -44,11 +44,11 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
-import { classify } from '../../../util'
-import keyNavMixin from '../../mixins/key-nav'
+import { classify } from 'src/util'
+import Keyboard, { UP, DOWN, LEFT, RIGHT, S } from '../../mixins/keyboard'
 
 export default {
-  mixins: [keyNavMixin],
+  mixins: [Keyboard],
 
   components: {
     ScrollPane,
@@ -69,7 +69,11 @@ export default {
   computed: {
     ...mapState('components', [
       'classifyComponents'
-    ])
+    ]),
+
+    selectTooltip () {
+      return '<span class="keyboard">S</span> Select component in the page'
+    }
   },
 
   mounted () {
@@ -91,43 +95,49 @@ export default {
       bridge.send('filter-instances', classify(e.target.value))
     },
 
-    onKeyNav (dir) {
-      const all = getAllInstances(this.$refs.instances)
-      if (!all.length) {
-        return
-      }
-
-      const { current, currentIndex } = findCurrent(all, i => i.selected)
-      if (!current) {
-        return
-      }
-
-      if (dir === 'left') {
-        if (current.expanded) {
-          current.collapse()
-        } else if (current.$parent && current.$parent.expanded) {
-          current.$parent.select()
+    onKeyUp ({ keyCode }) {
+      if ([LEFT, RIGHT, UP, DOWN].includes(keyCode)) {
+        const all = getAllInstances(this.$refs.instances)
+        if (!all.length) {
+          return
         }
-      } else if (dir === 'right') {
-        if (current.expanded && current.$children.length) {
+
+        const { current, currentIndex } = findCurrent(all, i => i.selected)
+        if (!current) {
+          return
+        }
+
+        if (keyCode === LEFT) {
+          if (current.expanded) {
+            current.collapse()
+          } else if (current.$parent && current.$parent.expanded) {
+            current.$parent.select()
+          }
+        } else if (keyCode === RIGHT) {
+          if (current.expanded && current.$children.length) {
+            findByIndex(all, currentIndex + 1).select()
+          } else {
+            current.expand()
+          }
+        } else if (keyCode === UP) {
+          findByIndex(all, currentIndex - 1).select()
+        } else if (keyCode === DOWN) {
           findByIndex(all, currentIndex + 1).select()
-        } else {
-          current.expand()
         }
-      } else if (dir === 'up') {
-        findByIndex(all, currentIndex - 1).select()
-      } else {
-        findByIndex(all, currentIndex + 1).select()
+      } else if (keyCode === S) {
+        this.setSelecting(!this.selecting)
       }
     },
 
     setSelecting (value) {
-      this.selecting = value
+      if (this.selecting !== value) {
+        this.selecting = value
 
-      if (this.selecting) {
-        bridge.send('start-component-selector')
-      } else {
-        bridge.send('stop-component-selector')
+        if (this.selecting) {
+          bridge.send('start-component-selector')
+        } else {
+          bridge.send('stop-component-selector')
+        }
       }
     }
   }
