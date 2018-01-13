@@ -9,7 +9,7 @@
         class="button select-component"
         :class="{active: selecting}"
         v-tooltip="'Select component in the page'"
-        @click="toggleSelecting"
+        @click="setSelecting(!selecting)"
       >
         <i class="material-icons">
           {{ selecting ? 'gps_fixed' : 'gps_not_fixed' }}
@@ -73,15 +73,13 @@ export default {
   },
 
   mounted () {
-    bridge.on('component-selected', () => {
-      this.selecting = false
+    bridge.on('instance-details', () => {
+      this.setSelecting(false)
     })
   },
 
   beforeDestroy () {
-    if (this.selecting) {
-      bridge.send('stop-component-selector')
-    }
+    this.setSelecting(false)
   },
 
   methods: {
@@ -123,8 +121,8 @@ export default {
       }
     },
 
-    toggleSelecting () {
-      this.selecting = !this.selecting
+    setSelecting (value) {
+      this.selecting = value
 
       if (this.selecting) {
         bridge.send('start-component-selector')

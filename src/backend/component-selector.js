@@ -69,7 +69,6 @@ export default class ComponentSelector {
       this.bridge.send('inspect-instance', this.selectedInstance.__VUE_DEVTOOLS_UID__)
     }
 
-    this.bridge.send('component-selected')
     this.stopSelecting()
   }
 
