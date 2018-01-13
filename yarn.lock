@@ -2947,15 +2947,15 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
 
-launch-editor-middleware@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/launch-editor-middleware/-/launch-editor-middleware-1.0.0.tgz#1336164fdfdffa5cdaa83612fdbd962af32a726e"
+launch-editor-middleware@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/launch-editor-middleware/-/launch-editor-middleware-2.1.0.tgz#31483e203e4fce952c1ea4e8e9e5e643a0fd08d5"
   dependencies:
-    launch-editor "^1.0.0"
+    launch-editor "^2.0.0"
 
-launch-editor@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/launch-editor/-/launch-editor-1.0.0.tgz#236b5d6891ca946c3544dcf2f82d3d7d7320ba76"
+launch-editor@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/launch-editor/-/launch-editor-2.0.0.tgz#24a978139e0e9747fec2b4115f09a684526e2b90"
   dependencies:
     chalk "^2.3.0"
     shell-quote "^1.6.1"

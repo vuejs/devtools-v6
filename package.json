@@ -42,7 +42,7 @@
     "file-loader": "^1.1.6",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "inquirer": "^5.0.0",
-    "launch-editor-middleware": "^1.0.0",
+    "launch-editor-middleware": "^2.1.0",
     "nightwatch": "^0.9.19",
     "nightwatch-helpers": "^1.2.0",
     "selenium-server": "2.52.0",
