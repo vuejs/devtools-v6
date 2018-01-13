@@ -38,7 +38,7 @@ module.exports = {
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:undefined')
       // Regexp
-      .assert.containsText('.data-el.data .data-field:nth-child(7)', 'regex:/(a\\w+b)/g')
+      .assert.containsText('.data-el.data .data-field:nth-child(8)', 'regex:/(a\\w+b)/g')
       // Literals
       .assert.containsText('.data-el.data .data-field:nth-child(5)', 'NaN')
       .assert.containsText('.data-el.data .data-field:nth-child(2)', 'Infinity')
@@ -75,9 +75,8 @@ module.exports = {
       // Select component
       .click('.select-component')
       .frame('target')
-        .useXpath()
-        .moveToElement("//*[contains(text(), 'mine')]", 0, 0)
-        .click('//*[contains(text(), "mine")]')
+        .moveToElement('.mine', 0, 0)
+        .click('.mine')
         .frame(null)
       .useCss()
       .assert.containsText('.tree', `<Mine>`)
