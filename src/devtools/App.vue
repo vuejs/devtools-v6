@@ -54,13 +54,6 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'app',
-  data () {
-    return {
-      isDark: typeof chrome !== 'undefined' &&
-        typeof chrome.devtools !== 'undefined' &&
-        chrome.devtools.panels.themeName === 'dark'
-    }
-  },
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
