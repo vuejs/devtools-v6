@@ -1,4 +1,5 @@
 import { highlight, unHighlight } from './highlighter'
+import { searchComponent } from './utils'
 
 export default class ComponentSelector {
   constructor (bridge, instanceMap) {
@@ -15,16 +16,26 @@ export default class ComponentSelector {
    * Adds event listeners for mouseover and mouseup
    */
   startSelecting () {
-    document.body.addEventListener('mouseover', this.elementMouseOver)
-    document.body.addEventListener('mouseup', this.elementClicked)
+    document.body.addEventListener('mouseover', this.elementMouseOver, true)
+    document.body.addEventListener('click', this.elementClicked, true)
+    document.body.addEventListener('mouseout', this.cancelEvent, true)
+    document.body.addEventListener('mouseenter', this.cancelEvent, true)
+    document.body.addEventListener('mouseleave', this.cancelEvent, true)
+    document.body.addEventListener('mousedown', this.cancelEvent, true)
+    document.body.addEventListener('mouseup', this.cancelEvent, true)
   }
 
   /**
    * Removes event listeners
    */
   stopSelecting () {
-    document.body.removeEventListener('mouseover', this.elementMouseOver)
-    document.body.removeEventListener('mouseup', this.elementClicked)
+    document.body.removeEventListener('mouseover', this.elementMouseOver, true)
+    document.body.removeEventListener('click', this.elementClicked, true)
+    document.body.removeEventListener('mouseout', this.cancelEvent, true)
+    document.body.removeEventListener('mouseenter', this.cancelEvent, true)
+    document.body.removeEventListener('mouseleave', this.cancelEvent, true)
+    document.body.removeEventListener('mousedown', this.cancelEvent, true)
+    document.body.removeEventListener('mouseup', this.cancelEvent, true)
 
     unHighlight()
   }
@@ -34,17 +45,12 @@ export default class ComponentSelector {
    * @param {MouseEvent} e
    */
   elementMouseOver (e) {
-    this.instanceMap.forEach(instance => {
-      if (instance.$el.isSameNode(e.target)) {
-        this.selectedInstance = instance
+    this.cancelEvent(e)
 
-        return
-      }
-
-      if (instance.$el.contains(e.target) && (!this.selectedInstance || !instance.$el.contains(this.selectedInstance.$el))) {
-        this.selectedInstance = instance
-      }
-    })
+    const el = e.target
+    if (el) {
+      this.selectedInstance = searchComponent(el)
+    }
 
     unHighlight()
     if (this.selectedInstance) {
@@ -57,7 +63,7 @@ export default class ComponentSelector {
    * @param {MouseEvent} e
    */
   elementClicked (e) {
-    e.preventDefault()
+    this.cancelEvent(e)
 
     if (this.selectedInstance) {
       this.bridge.send('inspect-instance', this.selectedInstance.__VUE_DEVTOOLS_UID__)
@@ -65,6 +71,15 @@ export default class ComponentSelector {
 
     this.bridge.send('component-selected')
     this.stopSelecting()
+  }
+
+  /**
+   * Cancel a mouse event
+   * @param {MouseEvent} e
+   */
+  cancelEvent (e) {
+    e.stopImmediatePropagation()
+    e.preventDefault()
   }
 
   /**
