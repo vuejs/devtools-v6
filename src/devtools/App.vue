@@ -133,8 +133,6 @@ export default {
   background-color $background-color
   display flex
   flex-direction column
-  h1
-    color #42b983
   .dark &
     background-color $dark-background-color
 
