@@ -1,5 +1,5 @@
 import { highlight, unHighlight } from './highlighter'
-import { searchComponent } from './utils'
+import { findRelatedComponent } from './utils'
 
 export default class ComponentSelector {
   constructor (bridge, instanceMap) {
@@ -49,7 +49,7 @@ export default class ComponentSelector {
 
     const el = e.target
     if (el) {
-      this.selectedInstance = searchComponent(el)
+      this.selectedInstance = findRelatedComponent(el)
     }
 
     unHighlight()

@@ -1,4 +1,4 @@
-import { searchComponent } from './utils'
+import { findRelatedComponent } from './utils'
 
 // this script is injected into every page.
 
@@ -92,7 +92,7 @@ export function installHook (window) {
     const el = event.target
     if (el) {
       // Search for parent that "is" a component instance
-      const instance = searchComponent(el)
+      const instance = findRelatedComponent(el)
       if (instance) {
         window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
         window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance

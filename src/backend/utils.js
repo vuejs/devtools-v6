@@ -1,4 +1,4 @@
-export function searchComponent (el) {
+export function findRelatedComponent (el) {
   while (!el.__vue__ && el.parentElement) {
     el = el.parentElement
   }
