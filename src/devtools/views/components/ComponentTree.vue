@@ -172,10 +172,10 @@ function findByIndex (all, index) {
 
 .tree
   padding 5px
+
 .select-component
-  display flex
-  align-items center
-  cursor pointer
   &.active
     color $active-color
+    .material-icons
+      animation pulse 2s infinite linear
 </style>
