@@ -33,7 +33,6 @@
     "http://*/*",
     "https://*/*",
     "file:///*",
-    "tabs",
     "contextMenus"
   ],
   "content_scripts": [
