@@ -60,7 +60,13 @@ function connect () {
     }
   })
 
-  bridge.on('select-instance', selectInstance)
+  bridge.on('select-instance', id => {
+    currentInspectedId = id
+    const instance = instanceMap.get(id)
+    bindToConsole(instance)
+    flush()
+    bridge.send('instance-details', stringify(getInstanceDetails(id)))
+  })
 
   bridge.on('scroll-to-instance', id => {
     const instance = instanceMap.get(id)
@@ -78,8 +84,7 @@ function connect () {
 
   bridge.on('leave-instance', unHighlight)
 
-  const componentSelector = new ComponentSelector(bridge, instanceMap)
-  componentSelector.onComponentSelected(selectInstance)
+  new ComponentSelector(bridge, instanceMap)
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
@@ -414,24 +419,6 @@ export function getInstanceName (instance) {
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'
-}
-
-/**
- * Select an instance in the component view
- *
- * @param {String} id
- * @param {Boolean} highlightElement
- */
-function selectInstance (id, highlightElement = true) {
-  currentInspectedId = id
-  const instance = instanceMap.get(id)
-  if (instance && highlightElement) {
-    scrollIntoView(instance)
-    highlight(instance)
-  }
-  bindToConsole(instance)
-  flush()
-  bridge.send('instance-details', stringify(getInstanceDetails(id)))
 }
 
 /**

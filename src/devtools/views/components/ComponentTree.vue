@@ -8,7 +8,7 @@
       <a 
         class="select-component" 
         :class="{active: selecting}"
-        v-tooltip="'Select component from dom'"
+        v-tooltip="'Select component from DOM tree'"
         @click="toggleSelecting"
       >
         <i class="material-icons">location_searching</i>

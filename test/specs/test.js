@@ -80,7 +80,8 @@ module.exports = {
         .click('//*[contains(text(), "mine")]')
         .frame(null)
       .useCss()
-      .assert.containsText('.tree', '<Mine> == $vm0')
+      .assert.containsText('.tree', `<Mine>`)
+      .assert.containsText('.right.bottom .action-header', `Mine`)
 
       // vuex
       .frame('target')

@@ -1,12 +1,10 @@
 import { highlight, unHighlight } from './highlighter'
-import { stringify } from '../util'
 
 export default class ComponentSelector {
   constructor (bridge, instanceMap) {
     const self = this
     self.bridge = bridge
     self.instanceMap = instanceMap
-    self.listeners = []
     self.bindMethods()
 
     bridge.on('start-component-selector', self.startSelecting)
@@ -62,36 +60,11 @@ export default class ComponentSelector {
     e.preventDefault()
 
     if (this.selectedInstance) {
-      this.listeners.forEach(listener => listener(this.selectedInstance.__VUE_DEVTOOLS_UID__, false))
-      this.expandParent(this.selectedInstance)
+      this.bridge.send('inspect-instance', this.selectedInstance.__VUE_DEVTOOLS_UID__)
     }
 
     this.bridge.send('component-selected')
     this.stopSelecting()
-  }
-
-  /**
-   * Fires event to expand an instance' tree
-   * @param {Vue} child
-   */
-  expandParent (child) {
-    const instance = child.$parent
-
-    if (instance) {
-      this.bridge.send('toggle-instance', stringify({
-        id: instance.__VUE_DEVTOOLS_UID__,
-        expanded: true
-      }))
-      this.expandParent(instance)
-    }
-  }
-
-  /**
-   * Used for listening to event when a component is selected
-   * @param {Function} method
-   */
-  onComponentSelected (method) {
-    this.listeners.push(method)
   }
 
   /**
