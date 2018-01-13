@@ -5,13 +5,16 @@
         <i class="material-icons">search</i>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
-      <a 
-        class="select-component" 
+      <a
+        class="button select-component"
         :class="{active: selecting}"
         v-tooltip="'Select component from DOM tree'"
         @click="toggleSelecting"
       >
-        <i class="material-icons">location_searching</i>
+        <i class="material-icons">
+          {{ selecting ? 'gps_fixed' : 'gps_not_fixed' }}
+        </i>
+        <span>Select</span>
       </a>
       <a class="button classify-names"
          :class="{ active: classifyComponents }"
@@ -19,6 +22,7 @@
          @click="toggleClassifyComponents"
       >
         <i class="material-icons">text_fields</i>
+        <span>Formatting</span>
       </a>
     </action-header>
     <div slot="scroll" class="tree">
@@ -45,24 +49,41 @@ import keyNavMixin from '../../mixins/key-nav'
 
 export default {
   mixins: [keyNavMixin],
+
   components: {
     ScrollPane,
     ActionHeader,
     ComponentInstance
   },
+
   props: {
     instances: Array
   },
+
   data () {
     return {
       selecting: false
     }
   },
+
   computed: {
     ...mapState('components', [
       'classifyComponents'
     ])
   },
+
+  mounted () {
+    bridge.on('component-selected', () => {
+      this.selecting = false
+    })
+  },
+
+  beforeDestroy () {
+    if (this.selecting) {
+      bridge.send('stop-component-selector')
+    }
+  },
+
   methods: {
     ...mapActions('components', [
       'toggleClassifyComponents'
@@ -101,6 +122,7 @@ export default {
         findByIndex(all, currentIndex + 1).select()
       }
     },
+
     toggleSelecting () {
       this.selecting = !this.selecting
 
@@ -110,11 +132,6 @@ export default {
         bridge.send('stop-component-selector')
       }
     }
-  },
-  mounted () {
-    bridge.on('component-selected', () => {
-      this.selecting = false
-    })
   }
 }
 
