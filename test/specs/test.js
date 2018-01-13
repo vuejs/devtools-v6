@@ -1,4 +1,8 @@
 module.exports = {
+  beforeEach (browser, done) {
+    browser.resizeWindow(1280, 800, done)
+  },
+
   'vue-devtools e2e tests': function (browser) {
     var baseInstanceCount = 8
 
