@@ -8,7 +8,7 @@
       <a
         class="button select-component"
         :class="{active: selecting}"
-        v-tooltip="'Select component from DOM tree'"
+        v-tooltip="'Select component in the page'"
         @click="toggleSelecting"
       >
         <i class="material-icons">
@@ -22,7 +22,7 @@
          @click="toggleClassifyComponents"
       >
         <i class="material-icons">text_fields</i>
-        <span>Formatting</span>
+        <span>Format</span>
       </a>
     </action-header>
     <div slot="scroll" class="tree">
