@@ -1,19 +1,33 @@
 <template>
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
-      <span class="title" @click="onTitleClick">
+      <span class="title">
         <span class="title-bracket">&lt;</span>
-        <span v-tooltip="titleTooltip">{{ targetName }}</span>
+        <span>{{ targetName }}</span>
         <span class="title-bracket">&gt;</span>
       </span>
-      <a v-if="$isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
-        <i class="material-icons">find_in_page</i>
-        <span>Inspect DOM</span>
-      </a>
       <div class="search">
         <i class="material-icons">search</i>
         <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
+      <a
+        v-if="$isChrome"
+        class="button inspect"
+        v-tooltip="'Inspect DOM'"
+        @click="inspectDOM"
+      >
+        <i class="material-icons">code</i>
+        <span>Inspect DOM</span>
+      </a>
+      <a
+        v-if="target.file"
+        class="button"
+        v-tooltip="openEditorTooltip"
+        @click="openInEditor"
+      >
+        <i class="material-icons">launch</i>
+        <span>Open in editor</span>
+      </a>
     </action-header>
     <template slot="scroll">
       <section v-if="!hasTarget" class="notice">
@@ -68,8 +82,8 @@ export default {
         }, this.filter)
       })), 'type')
     },
-    titleTooltip () {
-      return this.target.file && `Open <i class="material-icons">insert_drive_file</i> <span class="mono">${this.target.file}</span>`
+    openEditorTooltip () {
+      return this.target.file && `Open <span class="mono green"><i class="material-icons">insert_drive_file</i>${this.target.file}</span> in editor`
     }
   },
   methods: {
@@ -83,28 +97,26 @@ export default {
         window.alert('DOM inspection is not supported in this shell.')
       }
     },
-    onTitleClick () {
+    openInEditor () {
       const file = this.target.file
-      if (file) {
-        const src = `fetch('/__open-in-editor?file=${file}').then(response => {
-          if (response.ok) {
-            console.log('File ${file} opened in editor')
-          } else {
-            const msg = 'Opening component ${file} failed'
-            if (__VUE_DEVTOOLS_TOAST__) {
-              __VUE_DEVTOOLS_TOAST__(msg, 'error')
-            } else {
-              console.log('%c' + msg, 'color:red')
-            }
-            console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
-          }
-        })`
-        if (this.$isChrome) {
-          chrome.devtools.inspectedWindow.eval(src)
+      const src = `fetch('/__open-in-editor?file=${file}').then(response => {
+        if (response.ok) {
+          console.log('File ${file} opened in editor')
         } else {
-          // eslint-disable-next-line no-eval
-          eval(src)
+          const msg = 'Opening component ${file} failed'
+          if (__VUE_DEVTOOLS_TOAST__) {
+            __VUE_DEVTOOLS_TOAST__(msg, 'error')
+          } else {
+            console.log('%c' + msg, 'color:red')
+          }
+          console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
         }
+      })`
+      if (this.$isChrome) {
+        chrome.devtools.inspectedWindow.eval(src)
+      } else {
+        // eslint-disable-next-line no-eval
+        eval(src)
       }
     }
   }
@@ -113,7 +125,6 @@ export default {
 
 <style lang="stylus" scoped>
 .title
-  cursor pointer
   white-space nowrap
 </style>
 
