@@ -1,5 +1,7 @@
 import Vue from 'vue'
+import { sync } from 'vuex-router-sync'
 import store from './store'
+import router from './router'
 import Target from './Target.vue'
 import Other from './Other.vue'
 import Counter from './Counter.vue'
@@ -7,7 +9,8 @@ import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
 import MyClass from './MyClass.js'
 import Router from './Router.vue'
-import router from './router'
+
+sync(store, router)
 
 let items = []
 for (var i = 0; i < 100; i++) {
@@ -18,6 +21,7 @@ let circular = {}
 circular.self = circular
 
 new Vue({
+  name: 'Root',
   store,
   router,
   render (h) {
@@ -37,6 +41,28 @@ new Vue({
     }
   }
 }).$mount('#app')
+
+new Vue({
+  name: 'App2',
+  render (h) {
+    return h('div', { id: 'app2' }, [
+      h({
+        data () {
+          return { foo: 'bar' }
+        },
+        beforeCreate () {
+          this._routerRoot = null
+        },
+        render (h) {
+          return h('div', [
+            h('h1', 'App2'),
+            h('p', this.foo)
+          ])
+        }
+      })
+    ])
+  }
+}).$mount('#app2')
 
 // custom element instance
 const ce = document.querySelector('#shadow')
