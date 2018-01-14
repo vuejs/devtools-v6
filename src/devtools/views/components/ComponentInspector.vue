@@ -11,11 +11,11 @@
         <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
       <a v-if="$isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
-        <i class="material-icons">launch</i>
+        <i class="material-icons">code</i>
         <span>Inspect DOM</span>
       </a>
-      <a class="button" @click="openInEditor" v-tooltip="titleTooltip">
-        <i class="material-icons">code</i>
+      <a class="button" @click="openInEditor" v-tooltip="openEditorTooltip">
+        <i class="material-icons">launch</i>
         <span>Open in editor</span>
       </a>
     </action-header>
@@ -72,8 +72,8 @@ export default {
         }, this.filter)
       })), 'type')
     },
-    titleTooltip () {
-      return this.target.file && `Open <span class="mono">${this.target.file} in editor</span>`
+    openEditorTooltip () {
+      return this.target.file && `Open <span class="mono green"><i class="material-icons">insert_drive_file</i>${this.target.file}</span> in editor`
     }
   },
   methods: {
@@ -87,7 +87,7 @@ export default {
         window.alert('DOM inspection is not supported in this shell.')
       }
     },
-    openInEditor() {
+    openInEditor () {
       const file = this.target.file
       if (file) {
         const src = `fetch('/__open-in-editor?file=${file}').then(response => {
