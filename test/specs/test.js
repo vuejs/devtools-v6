@@ -1,4 +1,8 @@
 module.exports = {
+  beforeEach (browser, done) {
+    browser.resizeWindow(1280, 800, done)
+  },
+
   'vue-devtools e2e tests': function (browser) {
     var baseInstanceCount = 8
 
@@ -38,7 +42,7 @@ module.exports = {
       .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:"hi"')
       .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:undefined')
       // Regexp
-      .assert.containsText('.data-el.data .data-field:nth-child(7)', 'regex:/(a\\w+b)/g')
+      .assert.containsText('.data-el.data .data-field:nth-child(8)', 'regex:/(a\\w+b)/g')
       // Literals
       .assert.containsText('.data-el.data .data-field:nth-child(5)', 'NaN')
       .assert.containsText('.data-el.data .data-field:nth-child(2)', 'Infinity')
@@ -71,6 +75,16 @@ module.exports = {
       .clearValue('.search input')
       .setValue('.search input', 'target')
       .assert.count('.instance', 5)
+
+      // Select component
+      .click('.select-component')
+      .frame('target')
+        .moveToElement('.mine', 0, 0)
+        .click('.mine')
+        .frame(null)
+      .useCss()
+      .assert.containsText('.tree', `<Mine>`)
+      .assert.containsText('.right.bottom .action-header', `Mine`)
 
       // vuex
       .frame('target')

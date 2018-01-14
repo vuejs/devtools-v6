@@ -1,3 +1,5 @@
+import { findRelatedComponent } from './utils'
+
 // this script is injected into every page.
 
 /**
@@ -87,13 +89,10 @@ export function installHook (window) {
   // Start recording context menu when Vue is detected
   // event if Vue devtools are not loaded yet
   document.addEventListener('contextmenu', event => {
-    let el = event.target
+    const el = event.target
     if (el) {
       // Search for parent that "is" a component instance
-      while (!el.__vue__ && el.parentElement) {
-        el = el.parentElement
-      }
-      const instance = el.__vue__
+      const instance = findRelatedComponent(el)
       if (instance) {
         window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
         window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance

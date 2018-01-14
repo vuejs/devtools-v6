@@ -61,8 +61,10 @@
       display inline
 
 .material-icons
-  font-size 18px
+  font-size 16px
   margin-right 0
+  position relative
+  top 1px
   color inherit
   @media (min-width: $wide)
     margin-right 5px

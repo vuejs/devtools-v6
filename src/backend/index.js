@@ -6,6 +6,7 @@ import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
 import { stringify, classify, camelize, set, parse } from '../util'
 import path from 'path'
+import ComponentSelector from './component-selector'
 
 // Use a custom basename functions instead of the shimed version
 // because it doesn't work on Windows
@@ -82,6 +83,8 @@ function connect () {
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
 
   bridge.on('leave-instance', unHighlight)
+
+  new ComponentSelector(bridge, instanceMap)
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {

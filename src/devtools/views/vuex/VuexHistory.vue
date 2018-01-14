@@ -76,11 +76,11 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import keyNavMixin from '../../mixins/key-nav'
+import Keyboard, { UP, DOWN } from '../../mixins/keyboard'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
-  mixins: [keyNavMixin],
+  mixins: [Keyboard],
   components: {
     ActionHeader,
     ScrollPane
@@ -124,10 +124,10 @@ export default {
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
     },
-    onKeyNav (dir) {
-      if (dir === 'up') {
+    onKeyUp ({ keyCode }) {
+      if (keyCode === UP) {
         this.inspect(this.inspectedIndex - 1)
-      } else if (dir === 'down') {
+      } else if (keyCode === DOWN) {
         this.inspect(this.inspectedIndex + 1)
       }
     }

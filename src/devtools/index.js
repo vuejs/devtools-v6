@@ -122,6 +122,10 @@ function initApp (shell) {
       store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
+    bridge.on('toggle-instance', payload => {
+      store.commit('components/TOGGLE_INSTANCE', parse(payload))
+    })
+
     bridge.on('vuex:init', snapshot => {
       store.commit('vuex/INIT', snapshot)
     })

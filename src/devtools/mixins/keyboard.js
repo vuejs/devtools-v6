@@ -1,9 +1,8 @@
-const navMap = {
-  37: 'left',
-  38: 'up',
-  39: 'right',
-  40: 'down'
-}
+export const LEFT = 37
+export const UP = 38
+export const RIGHT = 39
+export const DOWN = 40
+export const S = 83
 
 const activeInstances = []
 
@@ -11,13 +10,11 @@ document.addEventListener('keyup', e => {
   if (e.target.tagName === 'INPUT') {
     return
   }
-  if (navMap[e.keyCode]) {
-    activeInstances.forEach(vm => {
-      if (vm.onKeyNav) {
-        vm.onKeyNav(navMap[e.keyCode])
-      }
-    })
-  }
+  activeInstances.forEach(vm => {
+    if (vm.onKeyUp) {
+      vm.onKeyUp(e)
+    }
+  })
 })
 
 export default {
