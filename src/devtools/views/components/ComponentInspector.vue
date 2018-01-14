@@ -10,11 +10,21 @@
         <i class="material-icons">search</i>
         <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
-      <a v-if="$isChrome" class="button inspect" @click="inspectDOM" v-tooltip="'Inspect DOM'">
+      <a
+        v-if="$isChrome"
+        class="button inspect"
+        v-tooltip="'Inspect DOM'"
+        @click="inspectDOM"
+      >
         <i class="material-icons">code</i>
         <span>Inspect DOM</span>
       </a>
-      <a class="button" @click="openInEditor" v-tooltip="openEditorTooltip">
+      <a
+        v-if="target.file"
+        class="button"
+        v-tooltip="openEditorTooltip"
+        @click="openInEditor"
+      >
         <i class="material-icons">launch</i>
         <span>Open in editor</span>
       </a>
