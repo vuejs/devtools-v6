@@ -117,7 +117,6 @@ export default {
 
 <style lang="stylus" scoped>
 .title
-  cursor pointer
   white-space nowrap
 </style>
 
