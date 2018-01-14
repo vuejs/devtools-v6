@@ -11,6 +11,15 @@
   </div>
 </template>
 
+<script>
+export default {
+  provide: {
+    provided: 'foo'
+  }
+}
+</script>
+
+
 <style scoped>
 a {
   margin-right: 6px;
