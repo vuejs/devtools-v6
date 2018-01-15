@@ -4,10 +4,19 @@ import Bridge from 'src/bridge'
 
 const port = process.env.PORT || 8098
 const socket = io('http://localhost:' + port)
+const $ = document.querySelector.bind(document)
+const $intro = $('#intro')
 
 let reload = null
 
+socket.on('vue-devtools-disconnect-devtools', () => {
+  $intro.classList.remove('hidden')
+})
+
 socket.on('vue-devtools-init', () => {
+  socket.off('vue-message')
+  $intro.classList.add('hidden')
+
   // If new page is opened reload devtools
   if (reload) return reload()
 

@@ -6,14 +6,14 @@
 
 Install the package globally:
 ```bash
-npm install -g vue-remote-devtools
+npm install -g @vue/devtools
 ```
 
 ### :rocket: Usage
 
 Once you installed the package globally, run:
 ```bash
-vue-remote-devtools
+vue-devtools
 ```
 
 Then add:
@@ -23,14 +23,14 @@ Then add:
 To the `<head>` section of your app. 
 **(Don't forget to remove it before deploying to production!)**
 
-Alternatively you can also install `vue-remote-devtools` as project dependency:
+Alternatively you can also install `@vue/devtools` as project dependency:
 ```bash
-npm install vue-remote-devtools --save-dev
+npm install @vue/devtools --save-dev
 ```
 
 And then directly import it in your app:
 ```js
-import devtools from 'vue-remote-devtools'
+import devtools from '@vue/devtools'
 
 if (process.env.NODE_ENV === 'development') {
   devtools.connect()

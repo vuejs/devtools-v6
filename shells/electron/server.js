@@ -14,6 +14,15 @@ app.get('/', function (req, res) {
 
 // Middleman
 io.on('connection', function (socket) {
+  // Disconnect any previously connected apps
+  socket.broadcast.emit('vue-devtools-disconnect-backend')
+
+  socket.on('disconnect', (reason) => {
+    if (reason.indexOf('client')) {
+      socket.broadcast.emit('vue-devtools-disconnect-devtools')
+    }
+  })
+
   socket.on('vue-message', data => {
     socket.broadcast.emit('vue-message', data)
   })
