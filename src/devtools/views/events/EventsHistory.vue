@@ -103,18 +103,22 @@ export default {
     displayComponentName (name) {
       return this.classifyComponents ? classify(name) : name
     },
-    onKeyUp ({ keyCode, ctrlKey, metaKey }) {
-      if (keyCode === UP) {
-        this.inspect(this.inspectedIndex - 1)
-      } else if (keyCode === DOWN) {
-        this.inspect(this.inspectedIndex + 1)
-      } else if (keyCode === F) {
-        focusInput(this.$refs.filterEvents)
-      } else if (keyCode === C && (ctrlKey || metaKey)) {
-        this.reset()
-        return false
-      } else if (keyCode === R) {
-        this.toggleRecording()
+    onKeyDown ({ keyCode, ctrlKey, metaKey, shiftKey }) {
+      if ((ctrlKey || metaKey) && !shiftKey) {
+        if (keyCode === C) {
+          this.reset()
+          return false
+        }
+      } else {
+        if (keyCode === UP) {
+          this.inspect(this.inspectedIndex - 1)
+        } else if (keyCode === DOWN) {
+          this.inspect(this.inspectedIndex + 1)
+        } else if (keyCode === F) {
+          focusInput(this.$refs.filterEvents)
+        } else if (keyCode === R) {
+          this.toggleRecording()
+        }
       }
     }
   },

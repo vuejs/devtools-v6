@@ -153,21 +153,25 @@ export default {
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
     },
-    onKeyUp ({ keyCode, ctrlKey, metaKey, preventDefault }) {
-      if (keyCode === UP) {
-        this.inspect(this.inspectedIndex - 1)
-      } else if (keyCode === DOWN) {
-        this.inspect(this.inspectedIndex + 1)
-      } else if (keyCode === F) {
-        focusInput(this.$refs.filterMutations)
-      } else if (keyCode === C && (ctrlKey || metaKey)) {
-        this.commitAll()
-        return false
-      } else if (keyCode === R && (ctrlKey || metaKey)) {
-        this.revertAll()
-        return false
-      } else if (keyCode === R) {
-        this.toggleRecording()
+    onKeyDown ({ keyCode, ctrlKey, metaKey, shiftKey }) {
+      if ((ctrlKey || metaKey) && !shiftKey) {
+        if (keyCode === C) {
+          this.commitAll()
+          return false
+        } else if (keyCode === R) {
+          this.revertAll()
+          return false
+        }
+      } else {
+        if (keyCode === UP) {
+          this.inspect(this.inspectedIndex - 1)
+        } else if (keyCode === DOWN) {
+          this.inspect(this.inspectedIndex + 1)
+        } else if (keyCode === F) {
+          focusInput(this.$refs.filterMutations)
+        } else if (keyCode === R) {
+          this.toggleRecording()
+        }
       }
     }
   },

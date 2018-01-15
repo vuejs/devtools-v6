@@ -1,4 +1,18 @@
 export default {
+  App: {
+    components: {
+      tooltip: '[{{keys.alt}}] + [C] Switch to Components'
+    },
+    events: {
+      tooltip: '[{{keys.alt}}] + [E] Switch to Events'
+    },
+    refresh: {
+      tooltip: '[{{keys.ctrl}}] + [{{keys.shift}}] + [R] Force Refresh'
+    },
+    vuex: {
+      tooltip: '[{{keys.alt}}] + [V] Switch to Vuex'
+    }
+  },
   StateInspector: {
     dataType: {
       tooltip: '[{{keys.ctrl}}] + |mouse|: Collapse All<br>[{{keys.shift}}] + |mouse|: Expand All'

@@ -105,7 +105,7 @@ export default {
       bridge.send('filter-instances', classify(e.target.value))
     },
 
-    onKeyUp ({ keyCode }) {
+    onKeyDown ({ keyCode }) {
       if ([LEFT, RIGHT, UP, DOWN].includes(keyCode)) {
         const all = getAllInstances(this.$refs.instances)
         if (!all.length) {
