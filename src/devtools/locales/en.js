@@ -33,11 +33,32 @@ export default {
   EventsHistory: {
     filter: {
       tooltip: '[F] To filter on components, type <span class="input-example"><i class="material-icons">search</i> &lt;MyComponent&gt;</span> or just <span class="input-example"><i class="material-icons">search</i> &lt;mycomp</span>.'
+    },
+    clear: {
+      tooltip: '[{{keys.ctrl}}] + [C] Clear Log'
+    },
+    startRecording: {
+      tooltip: '[R] Start recording'
+    },
+    stopRecording: {
+      tooltip: '[R] Stop recording'
     }
   },
   VuexHistory: {
     filter: {
       tooltip: '[F] Filter mutations'
+    },
+    commitAll: {
+      tooltip: '[{{keys.ctrl}}] + [C] Commit all'
+    },
+    revertAll: {
+      tooltip: '[{{keys.ctrl}}] + [R] Revert all'
+    },
+    startRecording: {
+      tooltip: '[R] Start recording'
+    },
+    stopRecording: {
+      tooltip: '[R] Stop recording'
     }
   }
 }

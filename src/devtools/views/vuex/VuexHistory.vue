@@ -13,15 +13,29 @@
           v-model.trim="filter"
         >
       </div>
-      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" v-tooltip="'Commit All'">
+      <a
+        class="button commit-all"
+        :class="{ disabled: !history.length }"
+        v-tooltip="$t('VuexHistory.commitAll.tooltip')"
+        @click="commitAll"
+      >
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" v-tooltip="'Revert All'">
+      <a
+        class="button reset"
+        :class="{ disabled: !history.length }"
+        v-tooltip="$t('VuexHistory.revertAll.tooltip')"
+        @click="revertAll"
+      >
         <i class="material-icons small">do_not_disturb</i>
         <span>Revert All</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a
+        class="button toggle-recording"
+        v-tooltip="$t(`VuexHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        @click="toggleRecording"
+      >
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
@@ -84,7 +98,13 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import Keyboard, { UP, DOWN, F } from '../../mixins/keyboard'
+import Keyboard, {
+  UP,
+  DOWN,
+  C,
+  F,
+  R
+} from '../../mixins/keyboard'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { focusInput } from 'src/util'
 
@@ -133,13 +153,21 @@ export default {
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
     },
-    onKeyUp ({ keyCode }) {
+    onKeyUp ({ keyCode, ctrlKey, metaKey, preventDefault }) {
       if (keyCode === UP) {
         this.inspect(this.inspectedIndex - 1)
       } else if (keyCode === DOWN) {
         this.inspect(this.inspectedIndex + 1)
       } else if (keyCode === F) {
         focusInput(this.$refs.filterMutations)
+      } else if (keyCode === C && (ctrlKey || metaKey)) {
+        this.commitAll()
+        return false
+      } else if (keyCode === R && (ctrlKey || metaKey)) {
+        this.revertAll()
+        return false
+      } else if (keyCode === R) {
+        this.toggleRecording()
       }
     }
   },

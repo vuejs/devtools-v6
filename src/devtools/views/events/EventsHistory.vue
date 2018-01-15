@@ -12,11 +12,20 @@
           v-model.trim="filter"
         >
       </div>
-      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" v-tooltip="'Clear Log'">
+      <a
+        class="button reset"
+        :class="{ disabled: !events.length }"
+        v-tooltip="$t('EventsHistory.clear.tooltip')"
+        @click="reset"
+      >
         <i class="material-icons small">do_not_disturb</i>
         <span>Clear</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a
+        class="button toggle-recording"
+        v-tooltip="$t(`EventsHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        @click="toggleRecording"
+      >
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
@@ -48,7 +57,13 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import Keyboard, { UP, DOWN, F } from '../../mixins/keyboard'
+import Keyboard, {
+  UP,
+  DOWN,
+  C,
+  F,
+  R
+} from '../../mixins/keyboard'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import { classify, focusInput } from 'src/util'
 
@@ -88,13 +103,18 @@ export default {
     displayComponentName (name) {
       return this.classifyComponents ? classify(name) : name
     },
-    onKeyUp ({ keyCode }) {
+    onKeyUp ({ keyCode, ctrlKey, metaKey }) {
       if (keyCode === UP) {
         this.inspect(this.inspectedIndex - 1)
       } else if (keyCode === DOWN) {
         this.inspect(this.inspectedIndex + 1)
       } else if (keyCode === F) {
         focusInput(this.$refs.filterEvents)
+      } else if (keyCode === C && (ctrlKey || metaKey)) {
+        this.reset()
+        return false
+      } else if (keyCode === R) {
+        this.toggleRecording()
       }
     }
   },
