@@ -101,27 +101,25 @@ export default {
       const file = this.target.file
       // Console display
       const fileName = file.replace(/\\/g, '\\\\')
-      if (file) {
-        const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
-          if (response.ok) {
-            console.log('File ${fileName} opened in editor')
+      const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
+        if (response.ok) {
+          console.log('File ${fileName} opened in editor')
+        } else {
+          const msg = 'Opening component ${fileName} failed'
+          if (__VUE_DEVTOOLS_TOAST__) {
+            __VUE_DEVTOOLS_TOAST__(msg, 'error')
           } else {
-            const msg = 'Opening component ${fileName} failed'
-            if (__VUE_DEVTOOLS_TOAST__) {
-              __VUE_DEVTOOLS_TOAST__(msg, 'error')
-            } else {
-              console.log('%c' + msg, 'color:red')
-            }
-            console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
+            console.log('%c' + msg, 'color:red')
           }
           console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
-        })`
-        if (this.$isChrome) {
-          chrome.devtools.inspectedWindow.eval(src)
-        } else {
-          // eslint-disable-next-line no-eval
-          eval(src)
         }
+        console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
+      })`
+      if (this.$isChrome) {
+        chrome.devtools.inspectedWindow.eval(src)
+      } else {
+        // eslint-disable-next-line no-eval
+        eval(src)
       }
     }
   }
