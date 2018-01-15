@@ -127,14 +127,6 @@ export default {
         }
       }
       return null
-    },
-
-    cancelEditTooltip () {
-      return '<span class="keyboard">Esc</span> Cancel'
-    },
-
-    submitEditTooltip () {
-      return '<span class="keyboard">Enter</span> Submit change'
     }
   },
 
@@ -236,10 +228,9 @@ export default {
     },
 
     quickEditNumberTooltip (operator) {
-      return `Quick Edit<br><br>
-<span class="keyboard">${this.$keys.ctrl}</span> + <i class="material-icons">mouse</i>: ${operator}5<br>
-<span class="keyboard">${this.$keys.shift}</span> + <i class="material-icons">mouse</i>: ${operator}10<br>
-<span class="keyboard">${this.$keys.alt}</span> + <i class="material-icons">mouse</i>: ${operator}100`
+      return this.$t('DataField.quickEdit.number.tooltip', {
+        operator
+      })
     }
   }
 }

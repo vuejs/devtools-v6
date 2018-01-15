@@ -208,6 +208,17 @@ export function set (object, path, value, cb = null) {
   }
 }
 
+export function get (object, path) {
+  const sections = path.split('.')
+  for (const section of sections) {
+    object = object[section]
+    if (!object) {
+      return undefined
+    }
+  }
+  return object
+}
+
 export function scrollIntoView (scrollParent, el) {
   const top = el.offsetTop
   const height = el.offsetHeight

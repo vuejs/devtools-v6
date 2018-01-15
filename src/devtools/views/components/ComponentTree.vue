@@ -8,7 +8,7 @@
       <a
         class="button select-component"
         :class="{active: selecting}"
-        v-tooltip="selectTooltip"
+        v-tooltip="$t('ComponentTree.select.tooltip')"
         @click="setSelecting(!selecting)"
       >
         <i class="material-icons">
@@ -69,11 +69,7 @@ export default {
   computed: {
     ...mapState('components', [
       'classifyComponents'
-    ]),
-
-    selectTooltip () {
-      return '<span class="keyboard">S</span> Select component in the page'
-    }
+    ])
   },
 
   mounted () {
