@@ -1,5 +1,7 @@
 import CircularJSON from 'circular-json-es6'
 
+import { instanceMap, getCustomInstanceDetails } from 'src/backend'
+
 function cached (fn) {
   const cache = Object.create(null)
   return function cachedFn (str) {
@@ -10,7 +12,7 @@ function cached (fn) {
 
 var classifyRE = /(?:^|[-_/])(\w)/g
 export const classify = cached((str) => {
-  return str.replace(classifyRE, toUpper)
+  return str && str.replace(classifyRE, toUpper)
 })
 
 const camelizeRE = /-(\w)/g
@@ -37,22 +39,40 @@ export function inDoc (node) {
 
 export const UNDEFINED = '__vue_devtool_undefined__'
 export const INFINITY = '__vue_devtool_infinity__'
+export const NEGATIVE_INFINITY = '__vue_devtool_negative_infinity__'
 export const NAN = '__vue_devtool_nan__'
+
+export const SPECIAL_TOKENS = {
+  'true': true,
+  'false': false,
+  'undefined': UNDEFINED,
+  'null': null,
+  '-Infinity': NEGATIVE_INFINITY,
+  'Infinity': INFINITY,
+  'NaN': NAN
+}
 
 export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
 }
 
-function replacer (key, val) {
+function replacer (key) {
+  const val = this[key]
   if (val === undefined) {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
+  } else if (val === -Infinity) {
+    return NEGATIVE_INFINITY
   } else if (Number.isNaN(val)) {
     return NAN
   } else if (val instanceof RegExp) {
     // special handling of native type
     return `[native RegExp ${val.toString()}]`
+  } else if (val instanceof Date) {
+    return `[native Date ${val.toString()}]`
+  } else if (val && val._isVue) {
+    return getCustomInstanceDetails(val)
   } else {
     return sanitize(val)
   }
@@ -64,13 +84,24 @@ export function parse (data, revive) {
     : CircularJSON.parse(data)
 }
 
+const specialTypeRE = /^\[native (\w+) (.*)\]$/
+
 function reviver (key, val) {
   if (val === UNDEFINED) {
     return undefined
   } else if (val === INFINITY) {
     return Infinity
+  } else if (val === NEGATIVE_INFINITY) {
+    return -Infinity
   } else if (val === NAN) {
     return NaN
+  } else if (val && val._custom) {
+    if (val._custom.type === 'component') {
+      return instanceMap.get(val._custom.id)
+    }
+  } else if (specialTypeRE.test(val)) {
+    const [, type, string] = specialTypeRE.exec(val)
+    return new window[type](string)
   } else {
     return val
   }
@@ -162,4 +193,23 @@ export function sortByKey (state) {
     if (a.key > b.key) return 1
     return 0
   })
+}
+
+export function set (object, path, value, cb = null) {
+  const sections = path.split('.')
+  while (sections.length > 1) {
+    object = object[sections.shift()]
+  }
+  const field = sections[0]
+  if (cb) {
+    cb(object, field, value)
+  } else {
+    object[field] = value
+  }
+}
+
+export function scrollIntoView (scrollParent, el) {
+  const top = el.offsetTop
+  const height = el.offsetHeight
+  scrollParent.scrollTop = top + (height - scrollParent.offsetHeight) / 2
 }

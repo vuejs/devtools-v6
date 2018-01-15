@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="emitLogEvent">Emit from cond</button>
+    <button class="btn-emit-event-cond" @click="emitLogEvent">Emit from cond</button>
   </div>
 </template>
 

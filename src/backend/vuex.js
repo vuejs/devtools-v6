@@ -1,4 +1,4 @@
-import { stringify } from 'src/util'
+import { stringify, parse } from 'src/util'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
@@ -29,11 +29,11 @@ export function initVuexBackend (hook, bridge) {
 
   // devtool -> application
   bridge.on('vuex:travel-to-state', state => {
-    hook.emit('vuex:travel-to-state', state)
+    hook.emit('vuex:travel-to-state', parse(state, true))
   })
 
   bridge.on('vuex:import-state', state => {
-    hook.emit('vuex:travel-to-state', state)
+    hook.emit('vuex:travel-to-state', parse(state, true))
     bridge.send('vuex:init', getSnapshot())
   })
 

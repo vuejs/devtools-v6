@@ -6,7 +6,7 @@
 </template>
 
 <script>
-// this computed property should be visible 
+// this computed property should be visible
 // even if component has no 'computed' defined
 const computedPropMixin = {
   computed: {
@@ -17,6 +17,7 @@ const computedPropMixin = {
 }
 
 export default {
+  name: 'other-with-mine',
   props: ['id'],
   mixins: [ computedPropMixin ],
   data () {
@@ -31,7 +32,7 @@ export default {
   },
   components: {
     mine: {
-      render: h => h('div', null, 'mine'),
+      render: h => h('div', { class: 'mine' }, 'mine'),
       data () {
         return {
           // testing all data types
@@ -49,3 +50,8 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.mine
+  display inline-block
+</style>
