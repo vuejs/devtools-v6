@@ -14,8 +14,10 @@ socket.on('vue-devtools-disconnect-devtools', () => {
 })
 
 socket.on('vue-devtools-init', () => {
-  socket.off('vue-message')
   $intro.classList.add('hidden')
+
+  // Reset attached listeners
+  socket.off('vue-message')
 
   // If new page is opened reload devtools
   if (reload) return reload()
