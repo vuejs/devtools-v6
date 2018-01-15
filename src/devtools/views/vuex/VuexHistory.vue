@@ -1,9 +1,17 @@
 <template>
   <scroll-pane scroll-event="vuex:mutation">
     <action-header slot="header">
-      <div class="search">
+      <div
+        class="search"
+        v-tooltip="$t('VuexHistory.filter.tooltip')"
+      >
         <i class="material-icons">search</i>
-        <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
+        <input
+          ref="filterMutations"
+          :class="{ invalid: filterRegexInvalid }"
+          placeholder="Filter mutations"
+          v-model.trim="filter"
+        >
       </div>
       <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" v-tooltip="'Commit All'">
         <i class="material-icons">get_app</i>
@@ -76,8 +84,9 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import Keyboard, { UP, DOWN } from '../../mixins/keyboard'
+import Keyboard, { UP, DOWN, F } from '../../mixins/keyboard'
 import { mapState, mapGetters, mapActions } from 'vuex'
+import { focusInput } from 'src/util'
 
 export default {
   mixins: [Keyboard],
@@ -129,6 +138,8 @@ export default {
         this.inspect(this.inspectedIndex - 1)
       } else if (keyCode === DOWN) {
         this.inspect(this.inspectedIndex + 1)
+      } else if (keyCode === F) {
+        focusInput(this.$refs.filterMutations)
       }
     }
   },

@@ -3,10 +3,14 @@
     <action-header slot="header">
       <div
         class="search"
-        v-tooltip="searchTooltip"
+        v-tooltip="$t('EventsHistory.filter.tooltip')"
       >
         <i class="search-icon material-icons">search</i>
-        <input placeholder="Filter events" v-model.trim="filter">
+        <input
+          ref="filterEvents"
+          placeholder="Filter events"
+          v-model.trim="filter"
+        >
       </div>
       <a class="button reset" :class="{ disabled: !events.length }" @click="reset" v-tooltip="'Clear Log'">
         <i class="material-icons small">do_not_disturb</i>
@@ -44,10 +48,12 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
+import Keyboard, { UP, DOWN, F } from '../../mixins/keyboard'
 import { mapState, mapGetters, mapMutations } from 'vuex'
-import { classify } from 'src/util'
+import { classify, focusInput } from 'src/util'
 
 export default {
+  mixins: [Keyboard],
   components: {
     ScrollPane,
     ActionHeader
@@ -71,10 +77,7 @@ export default {
     ]),
     ...mapState('components', [
       'classifyComponents'
-    ]),
-    searchTooltip () {
-      return `To filter on components, type <span class="input-example"><i class="material-icons">search</i> &lt;MyComponent&gt;</span> or just <span class="input-example"><i class="material-icons">search</i> &lt;mycomp</span>.`
-    }
+    ])
   },
   methods: {
     ...mapMutations('events', {
@@ -84,6 +87,15 @@ export default {
     }),
     displayComponentName (name) {
       return this.classifyComponents ? classify(name) : name
+    },
+    onKeyUp ({ keyCode }) {
+      if (keyCode === UP) {
+        this.inspect(this.inspectedIndex - 1)
+      } else if (keyCode === DOWN) {
+        this.inspect(this.inspectedIndex + 1)
+      } else if (keyCode === F) {
+        focusInput(this.$refs.filterEvents)
+      }
     }
   },
   filters: {

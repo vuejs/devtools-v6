@@ -1,9 +1,16 @@
 <template>
   <scroll-pane>
     <action-header slot="header">
-      <div class="search">
+      <div
+        class="search"
+        v-tooltip="$t('ComponentTree.filter.tooltip')"
+      >
         <i class="material-icons">search</i>
-        <input placeholder="Filter components" @input="filterInstances">
+        <input
+          ref="filterInstances"
+          placeholder="Filter components"
+          @input="filterInstances"
+        >
       </div>
       <a
         class="button select-component"
@@ -44,8 +51,15 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
-import { classify } from 'src/util'
-import Keyboard, { UP, DOWN, LEFT, RIGHT, S } from '../../mixins/keyboard'
+import { classify, focusInput } from 'src/util'
+import Keyboard, {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT,
+  F,
+  S
+} from '../../mixins/keyboard'
 
 export default {
   mixins: [Keyboard],
@@ -122,6 +136,8 @@ export default {
         }
       } else if (keyCode === S) {
         this.setSelecting(!this.selecting)
+      } else if (keyCode === F) {
+        focusInput(this.$refs.filterInstances)
       }
     },
 

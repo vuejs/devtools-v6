@@ -224,3 +224,8 @@ export function scrollIntoView (scrollParent, el) {
   const height = el.offsetHeight
   scrollParent.scrollTop = top + (height - scrollParent.offsetHeight) / 2
 }
+
+export function focusInput (el) {
+  el.focus()
+  el.setSelectionRange(0, el.value.length)
+}
