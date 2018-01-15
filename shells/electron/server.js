@@ -17,6 +17,10 @@ io.on('connection', function (socket) {
   // Disconnect any previously connected apps
   socket.broadcast.emit('vue-devtools-disconnect-backend')
 
+  socket.on('vue-devtools-init', () => {
+    socket.broadcast.emit('vue-devtools-init')
+  })
+
   socket.on('disconnect', (reason) => {
     if (reason.indexOf('client')) {
       socket.broadcast.emit('vue-devtools-disconnect-devtools')
@@ -25,9 +29,6 @@ io.on('connection', function (socket) {
 
   socket.on('vue-message', data => {
     socket.broadcast.emit('vue-message', data)
-  })
-  socket.on('vue-devtools-init', () => {
-    socket.broadcast.emit('vue-devtools-init')
   })
 })
 
