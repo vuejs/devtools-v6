@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Vue Developer Tools</title>
   <style>
-    #app {
+    #app,
+    #intro {
       display: flex;
       flex-direction: column;
       position: absolute;
@@ -17,11 +18,17 @@
     }
 
     #intro {
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
       background-color: #fff;
-      margin: auto;
       text-align: center;
       font-family: Roboto, sans-serif;
       color: #484848;
+    }
+
+    #intro.hidden {
+      display: none;
     }
 
     #intro .logo {
@@ -63,24 +70,24 @@
   </style>
 </head>
 <body>
-  <div id="app">
-    <div id="intro">
-      <img src="icons/128.png" alt="" class="logo">
-      <h2 class="title">
-        Waiting for connection...
-      </h2>
-      <div class="content">
-        <div class="content-row">
-          <label for="script-localhost">Add</label>
-          <input type="text" id="script-localhost">
-        </div>
-        <div class="content-row">
-          <label for="script-byip">Or</label>
-          <input type="text" id="script-byip">
-        </div>
-        to the top of the page you want to debug.
+  <div id="intro">
+    <img src="icons/128.png" alt="" class="logo">
+    <h2 class="title">
+      Waiting for connection...
+    </h2>
+    <div class="content">
+      <div class="content-row">
+        <label for="script-localhost">Add</label>
+        <input type="text" id="script-localhost">
       </div>
+      <div class="content-row">
+        <label for="script-byip">Or</label>
+        <input type="text" id="script-byip">
+      </div>
+      to the top of the page you want to debug.
     </div>
+  </div>
+  <div id="app">
   </div>
   <script>
     const port = process.env.PORT || 8098
@@ -89,7 +96,6 @@
 
     const $localhost = $('#script-localhost')
     const $byIp = $('#script-byip')
-    const $intro = $('#intro')
 
     $localhost.value = '<' + 'script src="http://localhost:' + port + '"><' + '/script>'
     $byIp.value = '<' + 'script src="http://' + localIp + ':' + port + '"><' + '/script>'
