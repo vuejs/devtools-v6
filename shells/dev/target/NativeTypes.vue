@@ -18,6 +18,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from 'vuex'
+import CompDef from './Other.vue'
 
 export default {
   components: {
@@ -30,7 +31,18 @@ export default {
   data () {
     return {
       localDate: new Date(),
-      testComponent: null
+      reg: /abc/gi,
+      testComponent: null,
+      hello: function foo (a, b, c) {},
+      hey: function empty () {},
+      def: CompDef,
+      def2: {
+        name: 'MyComponent',
+        render () {}
+      },
+      def3: {
+        render () {}
+      }
     }
   },
   computed: {

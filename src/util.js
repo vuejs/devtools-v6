@@ -1,3 +1,5 @@
+import path from 'path'
+
 import CircularJSON from 'circular-json-es6'
 
 import { instanceMap, getCustomInstanceDetails } from 'src/backend'
@@ -79,8 +81,66 @@ function replacer (key) {
     return getCustomRouterDetails(val)
   } else if (val && val._isVue) {
     return getCustomInstanceDetails(val)
+  } else if (isComponentDefinition(val)) {
+    return getCustomComponentDefinitionDetails(val)
   } else {
-    return sanitize(val)
+    const type = typeof val
+    if (type === 'function') {
+      return getCustomFunctionDetails(val)
+    }
+  }
+  return sanitize(val)
+}
+
+export function isComponentDefinition (val) {
+  return val && typeof val.render === 'function'
+}
+
+// Use a custom basename functions instead of the shimed version
+// because it doesn't work on Windows
+function basename (filename, ext) {
+  return path.basename(
+    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
+    ext
+  )
+}
+
+export function getComponentName (options) {
+  const name = options.name || options._componentTag
+  if (name) {
+    return name
+  }
+  const file = options.__file // injected by vue-loader
+  if (file) {
+    return classify(basename(file, '.vue'))
+  }
+}
+
+export function getCustomComponentDefinitionDetails (def) {
+  let display = getComponentName(def)
+  if (display) {
+    if (def.name && def.__file) {
+      display += ` <span>(${def.__file})</span>`
+    }
+  } else {
+    display = '<i>Unknown Component</i>'
+  }
+  return {
+    _custom: {
+      type: 'component-definition',
+      display,
+      tooltip: 'Component definition'
+    }
+  }
+}
+
+export function getCustomFunctionDetails (func) {
+  const args = func.toString().match(/\(.*\)/)[0]
+  return {
+    _custom: {
+      type: 'function',
+      display: `<span>${func.name}</span>${args}`
+    }
   }
 }
 

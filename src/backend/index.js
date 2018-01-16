@@ -4,18 +4,8 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize, set, parse } from '../util'
-import path from 'path'
+import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
-
-// Use a custom basename functions instead of the shimed version
-// because it doesn't work on Windows
-function basename (filename, ext) {
-  return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext
-  )
-}
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -380,6 +370,7 @@ export function getCustomInstanceDetails (instance) {
       type: 'component',
       id: instance.__VUE_DEVTOOLS_UID__,
       display: getInstanceName(instance),
+      tooltip: 'Component instance',
       value: reduceStateList(state),
       fields: {
         abstract: true
@@ -408,14 +399,8 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = instance.$options.name || instance.$options._componentTag
-  if (name) {
-    return name
-  }
-  const file = instance.$options.__file // injected by vue-loader
-  if (file) {
-    return classify(basename(file, '.vue'))
-  }
+  const name = getComponentName(instance.$options)
+  if (name) return name
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'

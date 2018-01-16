@@ -67,7 +67,9 @@
           class="value"
           :class="valueClass"
           @dblclick="openEdit()"
-        >{{ formattedValue }}</span>
+          v-tooltip="valueTooltip"
+          v-html="formattedValue"
+        />
         <span class="actions">
           <i
             v-if="isValueEditable"
@@ -313,6 +315,15 @@ export default {
       return this.formattedSubFields.slice(0, this.limit)
     },
 
+    valueTooltip () {
+      const type = this.valueType
+      if (type === 'custom') {
+        return this.field.value._custom.tooltip
+      } else if (type.indexOf('native ' === 0)) {
+        return type.substr('native '.length)
+      }
+    },
+
     fieldOptions () {
       if (this.valueType === 'custom') {
         return Object.assign({}, this.field, this.field.value._custom)
@@ -442,7 +453,7 @@ export default {
   display inline-block
   color #444
   &.string, &.native
-    color #c41a16
+    color $red
   &.null
     color #999
   &.literal
@@ -459,6 +470,13 @@ export default {
         content '<'
       &::after
         content '>'
+    &.type-function
+      >>> span
+        color $green
+    &.type-component-definition
+      color $green
+      >>> span
+        color $darkerGrey
   .dark &
     color #bdc6cf
     &.string, &.native
