@@ -14,7 +14,7 @@
     "start": "node bin.js",
     "dev": "webpack --watch --hide-modules",
     "build": "webpack",
-    "prepublish": "npm run build"
+    "prepare": "npm run build"
   },
   "author": "",
   "license": "MIT",
