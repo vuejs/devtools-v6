@@ -441,11 +441,11 @@ function processProps (instance) {
         type: 'props',
         key: prop.path,
         value: instance[prop.path],
-        meta: {
+        meta: options ? {
           type: options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
           mode: propModes[prop.mode]
-        }
+        } : {}
       }
     })
   } else if ((props = instance.$options.props)) {
@@ -458,9 +458,11 @@ function processProps (instance) {
         type: 'props',
         key,
         value: instance[key],
-        meta: {
+        meta: prop ? {
           type: prop.type ? getPropType(prop.type) : 'any',
           required: !!prop.required
+        } : {
+          type: 'invalid'
         }
       })
     }
@@ -562,27 +564,30 @@ function processComputed (instance) {
  */
 
 function processRouteContext (instance) {
-  const route = instance.$route
-  if (route) {
-    const { path, query, params } = route
-    const value = { path, query, params }
-    if (route.fullPath) value.fullPath = route.fullPath
-    if (route.hash) value.hash = route.hash
-    if (route.name) value.name = route.name
-    if (route.meta) value.meta = route.meta
-    return [{
-      key: '$route',
-      value: {
-        _custom: {
-          type: 'router',
-          abstract: true,
-          value
+  try {
+    const route = instance.$route
+    if (route) {
+      const { path, query, params } = route
+      const value = { path, query, params }
+      if (route.fullPath) value.fullPath = route.fullPath
+      if (route.hash) value.hash = route.hash
+      if (route.name) value.name = route.name
+      if (route.meta) value.meta = route.meta
+      return [{
+        key: '$route',
+        value: {
+          _custom: {
+            type: 'router',
+            abstract: true,
+            value
+          }
         }
-      }
-    }]
-  } else {
-    return []
+      }]
+    }
+  } catch (e) {
+    // Invalid $router
   }
+  return []
 }
 
 /**
