@@ -47,7 +47,13 @@ export default {
   },
   computed: {
     ...mapState(['date']),
-    ...mapGetters(['hours'])
+    ...mapGetters(['hours']),
+    theRouter () {
+      return this.$router
+    },
+    theStore () {
+      return this.$store
+    }
   },
   mounted () {
     this.testComponent = this.$refs.component
