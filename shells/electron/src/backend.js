@@ -16,8 +16,9 @@ const disconnectedMessage = () => {
 }
 
 (function () {
+  const host = window.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
   const port = process.env.PORT || 8098
-  const socket = io('http://localhost:' + port)
+  const socket = io(host + ':' + port)
 
   // Disconnect socket once other client is connected
   socket.on('vue-devtools-disconnect-backend', () => {
