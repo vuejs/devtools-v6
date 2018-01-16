@@ -12,7 +12,10 @@ export const V = 86
 const activeInstances = []
 
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') {
+  if (
+    e.target.tagName === 'INPUT' ||
+    e.target.tagName === 'TEXTAREA'
+  ) {
     return
   }
   let result = true
