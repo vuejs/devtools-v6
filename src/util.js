@@ -219,10 +219,18 @@ export function get (object, path) {
   return object
 }
 
-export function scrollIntoView (scrollParent, el) {
+export function scrollIntoView (scrollParent, el, center = true) {
   const top = el.offsetTop
   const height = el.offsetHeight
-  scrollParent.scrollTop = top + (height - scrollParent.offsetHeight) / 2
+  const parentTop = scrollParent.scrollTop
+  const parentHeight = scrollParent.offsetHeight
+  if (center) {
+    scrollParent.scrollTop = top + (height - parentHeight) / 2
+  } else if (top < parentTop) {
+    scrollParent.scrollTop = top
+  } else if (top + height > parentTop + parentHeight) {
+    scrollParent.scrollTop = top - parentHeight + height
+  }
 }
 
 export function focusInput (el) {

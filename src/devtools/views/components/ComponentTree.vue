@@ -117,27 +117,36 @@ export default {
           return
         }
 
+        let instanceToSelect
+
         if (keyCode === LEFT) {
           if (current.expanded) {
             current.collapse()
           } else if (current.$parent && current.$parent.expanded) {
-            current.$parent.select()
+            instanceToSelect = current.$parent
           }
         } else if (keyCode === RIGHT) {
           if (current.expanded && current.$children.length) {
-            findByIndex(all, currentIndex + 1).select()
+            instanceToSelect = findByIndex(all, currentIndex + 1)
           } else {
             current.expand()
           }
         } else if (keyCode === UP) {
-          findByIndex(all, currentIndex - 1).select()
+          instanceToSelect = findByIndex(all, currentIndex - 1)
         } else if (keyCode === DOWN) {
-          findByIndex(all, currentIndex + 1).select()
+          instanceToSelect = findByIndex(all, currentIndex + 1)
         }
+
+        if (instanceToSelect) {
+          instanceToSelect.select()
+          instanceToSelect.scrollIntoView(false)
+        }
+        return false
       } else if (keyCode === S) {
         this.setSelecting(!this.selecting)
       } else if (keyCode === F) {
         focusInput(this.$refs.filterInstances)
+        return false
       }
     },
 

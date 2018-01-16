@@ -1,5 +1,5 @@
 <template>
-  <scroll-pane scroll-event="event:triggered">
+  <scroll-pane>
     <action-header slot="header">
       <div
         class="search"
@@ -34,21 +34,24 @@
       <div v-if="filteredEvents.length === 0" class="no-events">
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <div class="entry list-item"
-        v-else
-        v-for="event in filteredEvents"
-        :class="{ active: inspectedIndex === events.indexOf(event) }"
-        @click="inspect(events.indexOf(event))">
-        <span class="event-name">{{ event.eventName }}</span>
-        <span class="event-type">{{ event.type }}</span>
-        <span class="event-source">
-          by
-          <span>&lt;</span>
-          <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
-          <span>&gt;</span>
-        </span>
-        <span class="time">{{ event.timestamp | formatTime }}</span>
-      </div>
+      <template v-else>
+        <div class="entry list-item"
+          ref="entries"
+          v-for="(event, index) in filteredEvents"
+          :key="index"
+          :class="{ active: inspectedIndex === events.indexOf(event) }"
+          @click="inspect(events.indexOf(event))">
+          <span class="event-name">{{ event.eventName }}</span>
+          <span class="event-type">{{ event.type }}</span>
+          <span class="event-source">
+            by
+            <span>&lt;</span>
+            <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
+            <span>&gt;</span>
+          </span>
+          <span class="time">{{ event.timestamp | formatTime }}</span>
+        </div>
+      </template>
     </div>
   </scroll-pane>
 </template>
@@ -64,16 +67,36 @@ import Keyboard, {
   F,
   R
 } from '../../mixins/keyboard'
+import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import { classify, focusInput } from 'src/util'
 
 export default {
-  mixins: [Keyboard],
+  mixins: [
+    Keyboard,
+    EntryList
+  ],
+
   components: {
     ScrollPane,
     ActionHeader
   },
+
   computed: {
+    ...mapState('events', [
+      'enabled',
+      'events',
+      'inspectedIndex'
+    ]),
+
+    ...mapGetters('events', [
+      'filteredEvents'
+    ]),
+
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
+
     filter: {
       get () {
         return this.$store.state.events.filter
@@ -81,28 +104,20 @@ export default {
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
       }
-    },
-    ...mapState('events', [
-      'enabled',
-      'events',
-      'inspectedIndex'
-    ]),
-    ...mapGetters('events', [
-      'filteredEvents'
-    ]),
-    ...mapState('components', [
-      'classifyComponents'
-    ])
+    }
   },
+
   methods: {
     ...mapMutations('events', {
       inspect: 'INSPECT',
       reset: 'RESET',
       toggleRecording: 'TOGGLE'
     }),
+
     displayComponentName (name) {
       return this.classifyComponents ? classify(name) : name
     },
+
     onKeyDown ({ keyCode, ctrlKey, metaKey, shiftKey }) {
       if ((ctrlKey || metaKey) && !shiftKey) {
         if (keyCode === C) {
@@ -112,16 +127,20 @@ export default {
       } else {
         if (keyCode === UP) {
           this.inspect(this.inspectedIndex - 1)
+          return false
         } else if (keyCode === DOWN) {
           this.inspect(this.inspectedIndex + 1)
+          return false
         } else if (keyCode === F) {
           focusInput(this.$refs.filterEvents)
+          return false
         } else if (keyCode === R) {
           this.toggleRecording()
         }
       }
     }
   },
+
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]

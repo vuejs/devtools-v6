@@ -1,5 +1,5 @@
 <template>
-  <scroll-pane scroll-event="vuex:mutation">
+  <scroll-pane>
     <action-header slot="header">
       <div
         class="search"
@@ -41,7 +41,12 @@
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div class="entry list-item" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
+      <div
+        ref="baseEntry"
+        class="entry list-item"
+        :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
+        @click="inspect(null)"
+      >
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a class="action"
@@ -63,7 +68,9 @@
         >inspected</span>
       </div>
       <div class="entry list-item"
-        v-for="entry in filteredHistory"
+        ref="entries"
+        v-for="(entry, index) in filteredHistory"
+        :key="index"
         :class="{ inspected: isInspected(entry), active: isActive(entry) }"
         @click="inspect(entry)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
@@ -105,24 +112,22 @@ import Keyboard, {
   F,
   R
 } from '../../mixins/keyboard'
+import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { focusInput } from 'src/util'
 
 export default {
-  mixins: [Keyboard],
+  mixins: [
+    Keyboard,
+    EntryList
+  ],
+
   components: {
     ActionHeader,
     ScrollPane
   },
+
   computed: {
-    filter: {
-      get () {
-        return this.$store.state.vuex.filter
-      },
-      set (filter) {
-        this.$store.dispatch('vuex/updateFilter', filter)
-      }
-    },
     ...mapState('vuex', [
       'enabled',
       'history',
@@ -132,10 +137,21 @@ export default {
       'filterRegex',
       'filterRegexInvalid'
     ]),
+
     ...mapGetters('vuex', [
       'filteredHistory'
-    ])
+    ]),
+
+    filter: {
+      get () {
+        return this.$store.state.vuex.filter
+      },
+      set (filter) {
+        this.$store.dispatch('vuex/updateFilter', filter)
+      }
+    }
   },
+
   methods: {
     ...mapActions('vuex', [
       'commitAll',
@@ -147,12 +163,15 @@ export default {
       'timeTravelTo',
       'updateFilter'
     ]),
+
     isActive (entry) {
       return this.activeIndex === this.history.indexOf(entry)
     },
+
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
     },
+
     onKeyDown ({ keyCode, ctrlKey, metaKey, shiftKey }) {
       if ((ctrlKey || metaKey) && !shiftKey) {
         if (keyCode === C) {
@@ -165,16 +184,20 @@ export default {
       } else {
         if (keyCode === UP) {
           this.inspect(this.inspectedIndex - 1)
+          return false
         } else if (keyCode === DOWN) {
           this.inspect(this.inspectedIndex + 1)
+          return false
         } else if (keyCode === F) {
           focusInput(this.$refs.filterMutations)
+          return false
         } else if (keyCode === R) {
           this.toggleRecording()
         }
       }
     }
   },
+
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
