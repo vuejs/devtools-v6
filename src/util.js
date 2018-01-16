@@ -1,7 +1,8 @@
 import CircularJSON from 'circular-json-es6'
 
 import { instanceMap, getCustomInstanceDetails } from 'src/backend'
-import { getCustomStoreDetails } from 'src/backend/vuex'
+import { isVuexStore, getCustomStoreDetails } from 'src/backend/vuex'
+import { isVueRouter, getCustomRouterDetails } from 'src/backend/router'
 
 function cached (fn) {
   const cache = Object.create(null)
@@ -74,15 +75,13 @@ function replacer (key) {
     return `[native Date ${val.toString()}]`
   } else if (isVuexStore(val)) {
     return getCustomStoreDetails(val)
+  } else if (isVueRouter(val)) {
+    return getCustomRouterDetails(val)
   } else if (val && val._isVue) {
     return getCustomInstanceDetails(val)
   } else {
     return sanitize(val)
   }
-}
-
-export function isVuexStore (val) {
-  return val && val.state && val._vm
 }
 
 export function parse (data, revive) {
