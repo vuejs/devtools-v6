@@ -1,7 +1,5 @@
 import Vue from 'vue'
 
-// Env
-
 export const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
 export const isMac = navigator.platform === 'MacIntel'
 export const keys = {

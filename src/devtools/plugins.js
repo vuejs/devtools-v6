@@ -13,16 +13,21 @@ Vue.use(VTooltip, {
 
 const currentLocale = 'en'
 const locales = require.context('./locales')
-const keyboardReg = /\[(\w+)\]/g
-const iconReg = /\|(\w+)\|/g
+const replacers = [
+  { reg: /\<input\>/g, replace: '<span class="input-example">' },
+  { reg: /\<\/input\>/g, replace: '</span>' },
+  { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
+  { reg: /\<\<(\S+)\>\>/g, replace: '<i class="material-icons">$1</i>' }
+]
 Vue.use(VI18n, {
   strings: locales(`./${currentLocale}`).default,
   defaultValues: {
     keys
   },
   replacer: text => {
-    text = text.replace(keyboardReg, '<span class="keyboard">$1</span>')
-    text = text.replace(iconReg, '<i class="material-icons">$1</i>')
+    for (const replacer of replacers) {
+      text = text.replace(replacer.reg, replacer.replace)
+    }
     return text
   }
 })
