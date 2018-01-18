@@ -6,6 +6,8 @@ import { instanceMap, getCustomInstanceDetails } from 'src/backend'
 import { isVuexStore, getCustomStoreDetails } from 'src/backend/vuex'
 import { isVueRouter, getCustomRouterDetails } from 'src/backend/router'
 
+import { isChrome } from './devtools/env'
+
 function cached (fn) {
   const cache = Object.create(null)
   return function cachedFn (str) {
@@ -129,7 +131,10 @@ export function getCustomComponentDefinitionDetails (def) {
     _custom: {
       type: 'component-definition',
       display,
-      tooltip: 'Component definition'
+      tooltip: 'Component definition',
+      ...def.__file ? {
+        file: def.__file
+      } : {}
     }
   }
 }
@@ -278,4 +283,26 @@ export function scrollIntoView (scrollParent, el) {
   const top = el.offsetTop
   const height = el.offsetHeight
   scrollParent.scrollTop = top + (height - scrollParent.offsetHeight) / 2
+}
+
+export function openInEditor (file) {
+  const src = `fetch('/__open-in-editor?file=${file}').then(response => {
+    if (response.ok) {
+      console.log('File ${file} opened in editor')
+    } else {
+      const msg = 'Opening component ${file} failed'
+      if (__VUE_DEVTOOLS_TOAST__) {
+        __VUE_DEVTOOLS_TOAST__(msg, 'error')
+      } else {
+        console.log('%c' + msg, 'color:red')
+      }
+      console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
+    }
+  })`
+  if (isChrome) {
+    chrome.devtools.inspectedWindow.eval(src)
+  } else {
+    // eslint-disable-next-line no-eval
+    eval(src)
+  }
 }

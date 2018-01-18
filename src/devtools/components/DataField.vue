@@ -8,7 +8,7 @@
       placement="left"
       offset="24"
       :disabled="!field.meta"
-      @click.native="toggle"
+      @click.native="onClick"
     >
       <span
         v-show="isExpandableType"
@@ -151,7 +151,8 @@ import {
   NEGATIVE_INFINITY,
   NAN,
   isPlainObject,
-  sortByKey
+  sortByKey,
+  openInEditor
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -356,10 +357,22 @@ export default {
   },
 
   methods: {
-    toggle (event) {
+    onClick (event) {
+      // Cancel if target is interactive
       if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
         return
       }
+
+      // CustomValue API `file`
+      if (this.valueType === 'custom' && this.fieldOptions.file) {
+        return openInEditor(this.fieldOptions.file)
+      }
+
+      // Default action
+      this.toggle()
+    },
+
+    toggle () {
       if (this.isExpandableType) {
         this.expanded = !this.expanded
 
