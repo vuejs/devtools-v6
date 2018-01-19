@@ -61,6 +61,12 @@ const mutations = {
 }
 
 const actions = {
+  init: {
+    handler ({ state }) {
+      bridge.send('config:classifyComponents', state.classifyComponents)
+    },
+    root: true
+  },
   toggleInstance ({ commit, dispatch, state }, { instance, expanded, recursive, parent = false } = {}) {
     const id = instance.id
 
@@ -98,6 +104,7 @@ const actions = {
     const newValue = !state.classifyComponents
     commit('CLASSIFY_COMPONENTS', newValue)
     storage.set(CLASSIFY_COMPONENTS_KEY, newValue)
+    bridge.send('config:classifyComponents', newValue)
   }
 }
 

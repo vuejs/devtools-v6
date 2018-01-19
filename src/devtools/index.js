@@ -166,6 +166,8 @@ function initApp (shell) {
         }
       }
     }).$mount('#app')
+
+    store.dispatch('init')
   })
 }
 
