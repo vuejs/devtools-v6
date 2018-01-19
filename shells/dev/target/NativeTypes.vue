@@ -23,8 +23,11 @@ import CompDef from './Other.vue'
 export default {
   components: {
     TestComponent: {
-      data: () => ({ foo: '42' }),
       props: { bar: { default: 'hey' }},
+      data: () => ({ foo: '42' }),
+      computed: {
+        parentComp () { return this.$parent }
+      },
       render: h => h('div', '<TestComponent />')
     }
   },

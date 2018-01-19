@@ -58,7 +58,27 @@ export const SPECIAL_TOKENS = {
   'NaN': NAN
 }
 
+class EncodeCache {
+  constructor () {
+    this.map = new Map()
+  }
+
+  cache (data, factory) {
+    const cached = this.map.get(data)
+    if (cached) {
+      return cached
+    } else {
+      const result = factory(data)
+      this.map.set(data, result)
+      return result
+    }
+  }
+}
+
+let encodeCache
+
 export function stringify (data) {
+  encodeCache = new EncodeCache()
   return CircularJSON.stringify(data, replacer)
 }
 
@@ -78,13 +98,13 @@ function replacer (key) {
   } else if (val instanceof Date) {
     return `[native Date ${val.toString()}]`
   } else if (isVuexStore(val)) {
-    return getCustomStoreDetails(val)
+    return encodeCache.cache(val, () => getCustomStoreDetails(val))
   } else if (isVueRouter(val)) {
-    return getCustomRouterDetails(val)
+    return encodeCache.cache(val, () => getCustomRouterDetails(val))
   } else if (val && val._isVue) {
-    return getCustomInstanceDetails(val)
+    return encodeCache.cache(val, () => getCustomInstanceDetails(val))
   } else if (isComponentDefinition(val)) {
-    return getCustomComponentDefinitionDetails(val)
+    return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))
   } else {
     const type = typeof val
     if (type === 'function') {
