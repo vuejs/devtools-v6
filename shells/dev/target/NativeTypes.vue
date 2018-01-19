@@ -11,8 +11,20 @@
     <TestComponent ref="component" />
 
     <p>
-      <button @click="sendComponent">Vuex mutation</button>
-      <button @click="createLargeArray">Create large array</button>
+      <button @click="sendComponent()">Vuex mutation</button>
+      <button @click="createLargeArray()">Create large array</button>
+    </p>
+
+    <h3>Set</h3>
+    <pre>{{ setDisplay() }}</pre>
+
+    <h3>Map</h3>
+    <pre>{{ mapDisplay() }}</pre>
+
+    <p>
+      <button @click="testVuexSet()">Vuex Set</button>
+      <button @click="testVuexMap()">Vuex Map</button>
+      <button @click="forceRefresh()">Refresh</button>
     </p>
   </div>
 </template>
@@ -54,8 +66,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['date']),
-    ...mapGetters(['hours']),
+    ...mapState([
+      'date',
+      'set',
+      'map'
+    ]),
+
+    ...mapGetters([
+      'hours'
+    ]),
 
     theRouter () {
       return this.$router
@@ -63,7 +82,7 @@ export default {
 
     theStore () {
       return this.$store
-    }
+    },
   },
 
   mounted () {
@@ -72,7 +91,9 @@ export default {
 
   methods: {
     ...mapMutations({
-      updateDate: 'UPDATE_DATE'
+      updateDate: 'UPDATE_DATE',
+      testVuexSet: 'TEST_SET',
+      testVuexMap: 'TEST_MAP'
     }),
 
     sendComponent () {
@@ -85,6 +106,18 @@ export default {
         list.push(i)
       }
       this.largeArray = list
+    },
+
+    setDisplay () {
+      return Array.from(this.set)
+    },
+
+    mapDisplay () {
+      return [...this.map]
+    },
+
+    forceRefresh () {
+      this.$forceUpdate()
     }
   },
 
