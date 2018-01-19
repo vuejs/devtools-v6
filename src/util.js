@@ -142,7 +142,7 @@ export function isMap (obj) {
 export function getCustomMapDetails (val) {
   const list = []
   val.forEach(
-    (key, value) => list.push({
+    (value, key) => list.push({
       key,
       value
     })
