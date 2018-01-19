@@ -54,7 +54,6 @@ function connect () {
     currentInspectedId = id
     const instance = instanceMap.get(id)
     bindToConsole(instance)
-    flush()
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
   })
 

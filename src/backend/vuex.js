@@ -42,10 +42,6 @@ export function initVuexBackend (hook, bridge) {
   })
 }
 
-export function isVuexStore (val) {
-  return val && val.state && val._vm
-}
-
 export function getCustomStoreDetails (store) {
   return {
     _custom: {

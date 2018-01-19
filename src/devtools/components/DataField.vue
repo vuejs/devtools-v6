@@ -215,11 +215,13 @@ export default {
         return 'literal'
       } else if (value && value._custom) {
         return 'custom'
-      } else if (specialTypeRE.test(value)) {
-        const [, type] = specialTypeRE.exec(value)
-        return `native ${type}`
-      } else if (type === 'string' && !rawTypeRE.test(value)) {
-        return 'string'
+      } else if (type === 'string') {
+        if (specialTypeRE.test(value)) {
+          const [, type] = specialTypeRE.exec(value)
+          return `native ${type}`
+        } else {
+          return 'string'
+        }
       } else if (Array.isArray(value)) {
         return 'array'
       } else if (isPlainObject(value)) {

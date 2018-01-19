@@ -1,10 +1,10 @@
 import path from 'path'
 
-import CircularJSON from 'circular-json-es6'
+import * as CircularJSON from './transfer'
 
 import { instanceMap, getCustomInstanceDetails } from 'src/backend'
-import { isVuexStore, getCustomStoreDetails } from 'src/backend/vuex'
-import { isVueRouter, getCustomRouterDetails } from 'src/backend/router'
+import { getCustomStoreDetails } from 'src/backend/vuex'
+import { getCustomRouterDetails } from 'src/backend/router'
 
 import { isChrome } from './devtools/env'
 
@@ -101,42 +101,38 @@ export function stringify (data) {
 
 function replacer (key) {
   const val = this[key]
-  if (val === undefined) {
+  const type = typeof val
+  if (type === 'undefined') {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
   } else if (val === -Infinity) {
     return NEGATIVE_INFINITY
+  } else if (type === 'function') {
+    return getCustomFunctionDetails(val)
+  } else if (val !== null && type === 'object') {
+    if (val instanceof Map) {
+      return encodeCache.cache(val, () => getCustomMapDetails(val))
+    } else if (val instanceof Set) {
+      return encodeCache.cache(val, () => getCustomSetDetails(val))
+    } else if (val instanceof RegExp) {
+      // special handling of native type
+      return `[native RegExp ${val.toString()}]`
+    } else if (val instanceof Date) {
+      return `[native Date ${val.toString()}]`
+    } else if (val.state && val._vm) {
+      return encodeCache.cache(val, () => getCustomStoreDetails(val))
+    } else if (val.constructor && val.constructor.name === 'VueRouter') {
+      return encodeCache.cache(val, () => getCustomRouterDetails(val))
+    } else if (val._isVue) {
+      return encodeCache.cache(val, () => getCustomInstanceDetails(val))
+    } else if (typeof val.render === 'function') {
+      return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))
+    }
   } else if (Number.isNaN(val)) {
     return NAN
-  } else if (isMap(val)) {
-    return encodeCache.cache(val, () => getCustomMapDetails(val))
-  } else if (isSet(val)) {
-    return encodeCache.cache(val, () => getCustomSetDetails(val))
-  } else if (val instanceof RegExp) {
-    // special handling of native type
-    return `[native RegExp ${val.toString()}]`
-  } else if (val instanceof Date) {
-    return `[native Date ${val.toString()}]`
-  } else if (isVuexStore(val)) {
-    return encodeCache.cache(val, () => getCustomStoreDetails(val))
-  } else if (isVueRouter(val)) {
-    return encodeCache.cache(val, () => getCustomRouterDetails(val))
-  } else if (val && val._isVue) {
-    return encodeCache.cache(val, () => getCustomInstanceDetails(val))
-  } else if (isComponentDefinition(val)) {
-    return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))
-  } else {
-    const type = typeof val
-    if (type === 'function') {
-      return getCustomFunctionDetails(val)
-    }
   }
   return sanitize(val)
-}
-
-export function isMap (obj) {
-  return obj instanceof Map
 }
 
 export function getCustomMapDetails (val) {
@@ -170,10 +166,6 @@ export function reviveMap (val) {
   return result
 }
 
-export function isSet (obj) {
-  return obj instanceof Set
-}
-
 export function getCustomSetDetails (val) {
   const list = Array.from(val)
   return {
@@ -194,10 +186,6 @@ export function reviveSet (val) {
     result.add(reviver(null, value))
   }
   return result
-}
-
-export function isComponentDefinition (val) {
-  return val && typeof val.render === 'function'
 }
 
 // Use a custom basename functions instead of the shimed version

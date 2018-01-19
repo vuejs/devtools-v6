@@ -1,7 +1,3 @@
-export function isVueRouter (router) {
-  return router && router.constructor && router.constructor.name === 'VueRouter'
-}
-
 export function getCustomRouterDetails (router) {
   return {
     _custom: {
