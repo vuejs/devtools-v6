@@ -303,11 +303,14 @@ export default {
           ...inherit
         }))
       } else if (typeof value === 'object') {
-        value = sortByKey(Object.keys(value).map(key => ({
+        value = Object.keys(value).map(key => ({
           key,
           value: value[key],
           ...inherit
-        })))
+        }))
+        if (this.valueType !== 'custom') {
+          value = sortByKey(value)
+        }
       }
       return value
     },
