@@ -85,13 +85,17 @@ class EncodeCache {
       return result
     }
   }
+
+  clear () {
+    this.map.clear()
+  }
 }
 
-let encodeCache
+const encodeCache = new EncodeCache()
 
 export function stringify (data) {
   // Create a fresh cache for each serialization
-  encodeCache = new EncodeCache()
+  encodeCache.clear()
   return CircularJSON.stringify(data, replacer)
 }
 
