@@ -109,6 +109,10 @@ function replacer (key) {
     return NEGATIVE_INFINITY
   } else if (Number.isNaN(val)) {
     return NAN
+  } else if (isMap(val)) {
+    return encodeCache.cache(val, () => getCustomMapDetails(val))
+  } else if (isSet(val)) {
+    return encodeCache.cache(val, () => getCustomSetDetails(val))
   } else if (val instanceof RegExp) {
     // special handling of native type
     return `[native RegExp ${val.toString()}]`
@@ -129,6 +133,67 @@ function replacer (key) {
     }
   }
   return sanitize(val)
+}
+
+export function isMap (obj) {
+  return obj instanceof Map
+}
+
+export function getCustomMapDetails (val) {
+  const list = []
+  val.forEach(
+    (key, value) => list.push({
+      key,
+      value
+    })
+  )
+  return {
+    _custom: {
+      type: 'map',
+      display: 'Map',
+      value: list,
+      readOnly: true,
+      fields: {
+        abstract: true
+      }
+    }
+  }
+}
+
+export function reviveMap (val) {
+  const result = new Map()
+  const list = val._custom.value
+  for (let i = 0; i < list.length; i++) {
+    const { key, value } = list[i]
+    result.set(key, reviver(null, value))
+  }
+  return result
+}
+
+export function isSet (obj) {
+  return obj instanceof Set
+}
+
+export function getCustomSetDetails (val) {
+  const list = Array.from(val)
+  return {
+    _custom: {
+      type: 'set',
+      display: `Set[${list.length}]`,
+      value: list,
+      readOnly: true
+    }
+  }
+}
+
+export function reviveSet (val) {
+  const result = new Set()
+  const list = val._custom.value
+  for (let i = 0; i < list.length; i++) {
+    const value = list[i]
+    result.add(reviver(null, value))
+  }
+  return result
 }
 
 export function isComponentDefinition (val) {
@@ -206,6 +271,10 @@ function reviver (key, val) {
   } else if (val && val._custom) {
     if (val._custom.type === 'component') {
       return instanceMap.get(val._custom.id)
+    } else if (val._custom.type === 'map') {
+      return reviveMap(val)
+    } else if (val._custom.type === 'set') {
+      return reviveSet(val)
     }
   } else if (specialTypeRE.test(val)) {
     const [, type, string] = specialTypeRE.exec(val)
