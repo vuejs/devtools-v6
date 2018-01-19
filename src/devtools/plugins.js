@@ -8,7 +8,11 @@ Vue.use(VTooltip, {
     show: 600,
     hide: 0
   },
-  defaultOffset: 2
+  defaultOffset: 2,
+  defaultBoundariesElement: document.body,
+  popover: {
+    defaultHandleResize: false
+  }
 })
 
 const currentLocale = 'en'
