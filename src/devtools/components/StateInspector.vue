@@ -46,8 +46,8 @@ import Vue from 'vue'
 import DataField from './DataField.vue'
 
 const keyOrder = {
-  undefined: 1,
-  props: 2,
+  props: 1,
+  undefined: 2,
   computed: 3,
   state: 1,
   getters: 2
