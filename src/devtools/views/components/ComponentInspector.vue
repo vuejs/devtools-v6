@@ -99,11 +99,13 @@ export default {
     },
     openInEditor () {
       const file = this.target.file
-      const src = `fetch('/__open-in-editor?file=${file}').then(response => {
+      // Console display
+      const fileName = file.replace(/\\/g, '\\\\')
+      const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
         if (response.ok) {
-          console.log('File ${file} opened in editor')
+          console.log('File ${fileName} opened in editor')
         } else {
-          const msg = 'Opening component ${file} failed'
+          const msg = 'Opening component ${fileName} failed'
           if (__VUE_DEVTOOLS_TOAST__) {
             __VUE_DEVTOOLS_TOAST__(msg, 'error')
           } else {
@@ -127,4 +129,3 @@ export default {
 .title
   white-space nowrap
 </style>
-

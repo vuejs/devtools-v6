@@ -23,8 +23,8 @@
           class="edit-input key-input"
           :class="{ error: !keyValid }"
           v-model="editedKey"
-          @keyup.esc="cancelEdit()"
-          @keyup.enter="submitEdit()"
+          @keydown.esc.capture.stop.prevent="cancelEdit()"
+          @keydown.enter="submitEdit()"
         >
       </span>
       <span v-else class="key" :class="{ abstract: fieldOptions.abstract }">{{ field.key }}</span><span class="colon" v-if="!fieldOptions.abstract">:</span>
@@ -39,8 +39,8 @@
           :class="{ error: !valueValid }"
           v-model="editedValue"
           list="special-tokens"
-          @keyup.esc="cancelEdit()"
-          @keyup.enter="submitEdit()"
+          @keydown.esc.capture.stop.prevent="cancelEdit()"
+          @keydown.enter="submitEdit()"
         >
         <span class="actions">
           <i
