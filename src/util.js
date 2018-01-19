@@ -392,11 +392,13 @@ export function scrollIntoView (scrollParent, el) {
 }
 
 export function openInEditor (file) {
-  const src = `fetch('/__open-in-editor?file=${file}').then(response => {
+  // Console display
+  const fileName = file.replace(/\\/g, '\\\\')
+  const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
     if (response.ok) {
-      console.log('File ${file} opened in editor')
+      console.log('File ${fileName} opened in editor')
     } else {
-      const msg = 'Opening component ${file} failed'
+      const msg = 'Opening component ${fileName} failed'
       if (__VUE_DEVTOOLS_TOAST__) {
         __VUE_DEVTOOLS_TOAST__(msg, 'error')
       } else {
