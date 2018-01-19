@@ -58,11 +58,23 @@ export const SPECIAL_TOKENS = {
   'NaN': NAN
 }
 
+/**
+ * Needed to prevent stack overflow
+ * while replacing complex objects
+ * like components because we create
+ * new objects with the CustomValue API
+ * (.i.e `{ _custom: { ... } }`)
+ */
 class EncodeCache {
   constructor () {
     this.map = new Map()
   }
 
+  /**
+   * Returns a result unique to each input data
+   * @param {*} data Input data
+   * @param {*} factory Function used to create the unique result
+   */
   cache (data, factory) {
     const cached = this.map.get(data)
     if (cached) {
@@ -78,6 +90,7 @@ class EncodeCache {
 let encodeCache
 
 export function stringify (data) {
+  // Create a fresh cache for each serialization
   encodeCache = new EncodeCache()
   return CircularJSON.stringify(data, replacer)
 }
