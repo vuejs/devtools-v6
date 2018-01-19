@@ -12,6 +12,7 @@
 
     <p>
       <button @click="sendComponent">Vuex mutation</button>
+      <button @click="createLargeArray">Create large array</button>
     </p>
   </div>
 </template>
@@ -31,6 +32,7 @@ export default {
       render: h => h('div', '<TestComponent />')
     }
   },
+
   data () {
     return {
       localDate: new Date(),
@@ -45,30 +47,45 @@ export default {
       },
       def3: {
         render () {}
-      }
+      },
+      largeArray: []
     }
   },
   computed: {
     ...mapState(['date']),
     ...mapGetters(['hours']),
+
     theRouter () {
       return this.$router
     },
+
     theStore () {
       return this.$store
     }
   },
+
   mounted () {
     this.testComponent = this.$refs.component
   },
+
   methods: {
     ...mapMutations({
       updateDate: 'UPDATE_DATE'
     }),
+
     sendComponent () {
       this.$store.commit('TEST_COMPONENT', this.testComponent)
+    },
+
+    createLargeArray () {
+      const list = []
+      for (let i = 0; i < 10000000; i++) {
+        list.push(i)
+      }
+      this.largeArray = list
     }
   },
+
   filters: {
     prototypeString: val => Object.prototype.toString.call(val)
   }
