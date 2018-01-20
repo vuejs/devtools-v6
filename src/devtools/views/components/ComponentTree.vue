@@ -56,9 +56,7 @@ import Keyboard, {
   UP,
   DOWN,
   LEFT,
-  RIGHT,
-  F,
-  S
+  RIGHT
 } from '../../mixins/keyboard'
 
 export default {
@@ -105,50 +103,54 @@ export default {
       bridge.send('filter-instances', classify(e.target.value))
     },
 
-    onKeyDown ({ keyCode, ctrlKey, metaKey }) {
-      if (ctrlKey || metaKey) {
-        if (keyCode === F) {
-          focusInput(this.$refs.filterInstances)
-          return false
-        }
-      } else if ([LEFT, RIGHT, UP, DOWN].includes(keyCode)) {
-        const all = getAllInstances(this.$refs.instances)
-        if (!all.length) {
-          return
-        }
-
-        const { current, currentIndex } = findCurrent(all, i => i.selected)
-        if (!current) {
-          return
-        }
-
-        let instanceToSelect
-
-        if (keyCode === LEFT) {
-          if (current.expanded) {
-            current.collapse()
-          } else if (current.$parent && current.$parent.expanded) {
-            instanceToSelect = current.$parent
+    onKeyDown ({ key, modifiers }) {
+      switch (modifiers) {
+        case 'ctrl':
+          if (key === 'f') {
+            focusInput(this.$refs.filterInstances)
+            return false
           }
-        } else if (keyCode === RIGHT) {
-          if (current.expanded && current.$children.length) {
-            instanceToSelect = findByIndex(all, currentIndex + 1)
-          } else {
-            current.expand()
-          }
-        } else if (keyCode === UP) {
-          instanceToSelect = findByIndex(all, currentIndex - 1)
-        } else if (keyCode === DOWN) {
-          instanceToSelect = findByIndex(all, currentIndex + 1)
-        }
+          break
+        case '':
+          if ([LEFT, RIGHT, UP, DOWN].includes(key)) {
+            const all = getAllInstances(this.$refs.instances)
+            if (!all.length) {
+              return
+            }
 
-        if (instanceToSelect) {
-          instanceToSelect.select()
-          instanceToSelect.scrollIntoView(false)
-        }
-        return false
-      } else if (keyCode === S) {
-        this.setSelecting(!this.selecting)
+            const { current, currentIndex } = findCurrent(all, i => i.selected)
+            if (!current) {
+              return
+            }
+
+            let instanceToSelect
+
+            if (key === LEFT) {
+              if (current.expanded) {
+                current.collapse()
+              } else if (current.$parent && current.$parent.expanded) {
+                instanceToSelect = current.$parent
+              }
+            } else if (key === RIGHT) {
+              if (current.expanded && current.$children.length) {
+                instanceToSelect = findByIndex(all, currentIndex + 1)
+              } else {
+                current.expand()
+              }
+            } else if (key === UP) {
+              instanceToSelect = findByIndex(all, currentIndex - 1)
+            } else if (key === DOWN) {
+              instanceToSelect = findByIndex(all, currentIndex + 1)
+            }
+
+            if (instanceToSelect) {
+              instanceToSelect.select()
+              instanceToSelect.scrollIntoView(false)
+            }
+            return false
+          } else if (key === 's') {
+            this.setSelecting(!this.selecting)
+          }
       }
     },
 

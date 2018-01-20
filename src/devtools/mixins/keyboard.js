@@ -1,15 +1,9 @@
-export const LEFT = 37
-export const UP = 38
-export const RIGHT = 39
-export const DOWN = 40
-export const ENTER = 13
-export const DEL = 46
-export const C = 67
-export const E = 69
-export const F = 70
-export const R = 82
-export const S = 83
-export const V = 86
+export const LEFT = 'ArrowLeft'
+export const UP = 'ArrowUp'
+export const RIGHT = 'ArrowRight'
+export const DOWN = 'ArrowDown'
+export const ENTER = 'Enter'
+export const DEL = 'Delete'
 
 const activeInstances = []
 
@@ -20,10 +14,18 @@ document.addEventListener('keydown', e => {
   ) {
     return
   }
+  const modifiers = []
+  if (e.ctrlKey || e.metaKey) modifiers.push('ctrl')
+  if (e.shiftKey) modifiers.push('shift')
+  if (e.altKey) modifiers.push('alt')
+  const info = {
+    key: e.key,
+    modifiers: modifiers.join('+')
+  }
   let result = true
   activeInstances.forEach(vm => {
     if (vm.onKeyDown) {
-      const r = vm.onKeyDown(e)
+      const r = vm.onKeyDown(info)
       if (r === false) {
         result = false
       }

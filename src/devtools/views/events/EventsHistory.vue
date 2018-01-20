@@ -63,9 +63,7 @@ import ActionHeader from 'components/ActionHeader.vue'
 import Keyboard, {
   UP,
   DOWN,
-  DEL,
-  F,
-  R
+  DEL
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapMutations } from 'vuex'
@@ -118,25 +116,27 @@ export default {
       return this.classifyComponents ? classify(name) : name
     },
 
-    onKeyDown ({ keyCode, ctrlKey, metaKey, shiftKey }) {
-      if ((ctrlKey || metaKey) && !shiftKey) {
-        if (keyCode === DEL) {
-          this.reset()
-          return false
-        } else if (keyCode === F) {
-          focusInput(this.$refs.filterEvents)
-          return false
-        }
-      } else {
-        if (keyCode === UP) {
-          this.inspect(this.inspectedIndex - 1)
-          return false
-        } else if (keyCode === DOWN) {
-          this.inspect(this.inspectedIndex + 1)
-          return false
-        } else if (keyCode === R) {
-          this.toggleRecording()
-        }
+    onKeyDown ({ key, modifiers }) {
+      switch (modifiers) {
+        case 'ctrl':
+          if (key === DEL) {
+            this.reset()
+            return false
+          } else if (key === 'f') {
+            focusInput(this.$refs.filterEvents)
+            return false
+          }
+          break
+        case '':
+          if (key === UP) {
+            this.inspect(this.inspectedIndex - 1)
+            return false
+          } else if (key === DOWN) {
+            this.inspect(this.inspectedIndex + 1)
+            return false
+          } else if (key === 'r') {
+            this.toggleRecording()
+          }
       }
     }
   },

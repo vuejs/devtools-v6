@@ -57,12 +57,7 @@ import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
 import { SPECIAL_TOKENS } from '../util'
-import Keyboard, {
-  C,
-  E,
-  R,
-  V
-} from './mixins/keyboard'
+import Keyboard from './mixins/keyboard'
 
 import { mapState } from 'vuex'
 
@@ -114,25 +109,25 @@ export default {
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
     },
-    onKeyDown ({ keyCode, altKey, ctrlKey, metaKey }) {
-      if (altKey) {
-        if (ctrlKey || metaKey) {
-          if (keyCode === R) {
+    onKeyDown ({ key, modifiers }) {
+      switch (modifiers) {
+        case 'ctrl+alt':
+          if (key === 'r') {
             this.refresh()
             return false
           }
-        } else {
-          if (keyCode === C) {
+          break
+        case 'alt':
+          if (key === 'c') {
             this.switchTab('components')
             return false
-          } else if (keyCode === V) {
+          } else if (key === 'v') {
             this.switchTab('vuex')
             return false
-          } else if (keyCode === E) {
+          } else if (key === 'e') {
             this.switchTab('events')
             return false
           }
-        }
       }
     }
   },
