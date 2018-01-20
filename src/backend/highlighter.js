@@ -32,8 +32,8 @@ export function highlight (instance) {
   if (rect) {
     let content = ''
     let name = getInstanceName(instance)
-    claissifyComponents && (name = classify(name))
-    name && (content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`)
+    if (claissifyComponents) name = classify(name)
+    if (name) content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`
     showOverlay(rect, content)
   }
 }

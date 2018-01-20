@@ -41,7 +41,7 @@ export function initBackend (_bridge) {
     hook.once('init', connect)
   }
 
-  bridge && config(bridge)
+  config(bridge)
 }
 
 function connect () {
