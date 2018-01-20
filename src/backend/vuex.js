@@ -6,7 +6,7 @@ export function initVuexBackend (hook, bridge) {
 
   const getSnapshot = () => stringify({
     state: store.state,
-    getters: store.getters
+    getters: store.getters || {}
   })
 
   bridge.send('vuex:init', getSnapshot())
