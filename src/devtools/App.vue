@@ -114,22 +114,24 @@ export default {
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
     },
-    onKeyDown ({ keyCode, altKey, ctrlKey, metaKey, shiftKey }) {
+    onKeyDown ({ keyCode, altKey, ctrlKey, metaKey }) {
       if (altKey) {
-        if (keyCode === C) {
-          this.switchTab('components')
-          return false
-        } else if (keyCode === V) {
-          this.switchTab('vuex')
-          return false
-        } else if (keyCode === E) {
-          this.switchTab('events')
-          return false
-        }
-      } else if (shiftKey && (ctrlKey || metaKey)) {
-        if (keyCode === R) {
-          this.refresh()
-          return false
+        if (ctrlKey || metaKey) {
+          if (keyCode === R) {
+            this.refresh()
+            return false
+          }
+        } else {
+          if (keyCode === C) {
+            this.switchTab('components')
+            return false
+          } else if (keyCode === V) {
+            this.switchTab('vuex')
+            return false
+          } else if (keyCode === E) {
+            this.switchTab('events')
+            return false
+          }
         }
       }
     }

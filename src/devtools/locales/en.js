@@ -7,7 +7,7 @@ export default {
       tooltip: '[[{{keys.alt}}]] + [[E]] Switch to Events'
     },
     refresh: {
-      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.shift}}]] + [[R]] Force Refresh'
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.alt}}]] + [[R]] Force Refresh'
     },
     vuex: {
       tooltip: '[[{{keys.alt}}]] + [[V]] Switch to Vuex'
