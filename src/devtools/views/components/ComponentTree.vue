@@ -105,8 +105,13 @@ export default {
       bridge.send('filter-instances', classify(e.target.value))
     },
 
-    onKeyDown ({ keyCode }) {
-      if ([LEFT, RIGHT, UP, DOWN].includes(keyCode)) {
+    onKeyDown ({ keyCode, ctrlKey, metaKey }) {
+      if (ctrlKey || metaKey) {
+        if (keyCode === F) {
+          focusInput(this.$refs.filterInstances)
+          return false
+        }
+      } else if ([LEFT, RIGHT, UP, DOWN].includes(keyCode)) {
         const all = getAllInstances(this.$refs.instances)
         if (!all.length) {
           return
@@ -144,9 +149,6 @@ export default {
         return false
       } else if (keyCode === S) {
         this.setSelecting(!this.selecting)
-      } else if (keyCode === F) {
-        focusInput(this.$refs.filterInstances)
-        return false
       }
     },
 

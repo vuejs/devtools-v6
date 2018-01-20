@@ -108,7 +108,8 @@ import ActionHeader from 'components/ActionHeader.vue'
 import Keyboard, {
   UP,
   DOWN,
-  C,
+  DEL,
+  ENTER,
   F,
   R
 } from '../../mixins/keyboard'
@@ -174,11 +175,14 @@ export default {
 
     onKeyDown ({ keyCode, ctrlKey, metaKey, shiftKey }) {
       if ((ctrlKey || metaKey) && !shiftKey) {
-        if (keyCode === C) {
+        if (keyCode === ENTER) {
           this.commitAll()
           return false
-        } else if (keyCode === R) {
+        } else if (keyCode === DEL) {
           this.revertAll()
+          return false
+        } else if (keyCode === F) {
+          focusInput(this.$refs.filterMutations)
           return false
         }
       } else {
@@ -187,9 +191,6 @@ export default {
           return false
         } else if (keyCode === DOWN) {
           this.inspect(this.inspectedIndex + 1)
-          return false
-        } else if (keyCode === F) {
-          focusInput(this.$refs.filterMutations)
           return false
         } else if (keyCode === R) {
           this.toggleRecording()

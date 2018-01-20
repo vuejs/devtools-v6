@@ -41,15 +41,15 @@ export default {
       tooltip: '[[S]] Select component in the page'
     },
     filter: {
-      tooltip: '[[F]] Filter components by name'
+      tooltip: '[[{{keys.ctrl}}]] + [[F]] Filter components by name'
     }
   },
   EventsHistory: {
     filter: {
-      tooltip: '[[F]] To filter on components, type <input><<search>> &lt;MyComponent&gt;</input> or just <input><<search>> &lt;mycomp</input>.'
+      tooltip: '[[{{keys.ctrl}}]] + [[F]] To filter on components, type <input><<search>> &lt;MyComponent&gt;</input> or just <input><<search>> &lt;mycomp</input>.'
     },
     clear: {
-      tooltip: '[[{{keys.ctrl}}]] + [[C]] Clear Log'
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.del}}]] Clear Log'
     },
     startRecording: {
       tooltip: '[[R]] Start recording'
@@ -60,13 +60,13 @@ export default {
   },
   VuexHistory: {
     filter: {
-      tooltip: '[[F]] Filter mutations'
+      tooltip: '[[{{keys.ctrl}}]] + [[F]] Filter mutations'
     },
     commitAll: {
-      tooltip: '[[{{keys.ctrl}}]] + [[C]] Commit all'
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.enter}}]] Commit all'
     },
     revertAll: {
-      tooltip: '[[{{keys.ctrl}}]] + [[R]] Revert all'
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.del}}]] Revert all'
     },
     startRecording: {
       tooltip: '[[R]] Start recording'

@@ -5,7 +5,9 @@ export const isMac = navigator.platform === 'MacIntel'
 export const keys = {
   ctrl: isMac ? '&#8984;' : 'Ctrl',
   shift: 'Shift',
-  alt: isMac ? '&#8997;' : 'Alt'
+  alt: isMac ? '&#8997;' : 'Alt',
+  del: 'Del',
+  enter: '&#11168;'
 }
 
 Object.defineProperties(Vue.prototype, {
