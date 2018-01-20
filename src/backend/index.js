@@ -719,9 +719,13 @@ function setStateValue ({ id, path, value, newKey, remove }) {
       if (value) {
         parsedValue = parse(value, true)
       }
+      const api = isLegacy ? {
+        $set: hook.Vue.set,
+        $delete: hook.Vue.delete
+      } : instance
       set(instance._data, path, parsedValue, (obj, field, value) => {
-        (remove || newKey) && instance.$delete(obj, field)
-        !remove && instance.$set(obj, newKey || field, value)
+        (remove || newKey) && api.$delete(obj, field)
+        !remove && api.$set(obj, newKey || field, value)
       })
     } catch (e) {
       console.error(e)
