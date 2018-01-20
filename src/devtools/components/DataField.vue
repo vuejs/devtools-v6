@@ -325,8 +325,10 @@ export default {
       const type = this.valueType
       if (type === 'custom') {
         return this.field.value._custom.tooltip
-      } else if (type.indexOf('native ' === 0)) {
+      } else if (type.indexOf('native ') === 0) {
         return type.substr('native '.length)
+      } else {
+        return null
       }
     },
 
