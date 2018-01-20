@@ -133,7 +133,7 @@ export default {
     padding 2px 9px 2px 21px
 
   .data-type
-    color $green
+    color lighten($blueishGrey, 30%)
     position relative
     cursor pointer
     border-radius 3px
@@ -147,6 +147,7 @@ export default {
     .arrow
       transition transform .1s ease
       margin-right 8px
+      opacity .3
       &.rotated
         transform rotate(90deg)
 

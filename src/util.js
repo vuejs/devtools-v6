@@ -234,7 +234,7 @@ export function getCustomFunctionDetails (func) {
   return {
     _custom: {
       type: 'function',
-      display: `<span>${func.name}</span>${args}`
+      display: `<span>ƒ</span> ${func.name}${args}`
     }
   }
 }

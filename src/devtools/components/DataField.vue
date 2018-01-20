@@ -280,7 +280,7 @@ export default {
         if (typeMatch) {
           return typeMatch[1]
         } else {
-          return JSON.stringify(value)
+          return `<span>"</span>${value}<span>"</span>`
         }
       } else {
         return value
@@ -474,10 +474,13 @@ export default {
   color #444
   &.string, &.native
     color $red
+  &.string
+    >>> span
+      color $black
   &.null
     color #999
   &.literal
-    color #0033cc
+    color $vividBlue
   &.raw-boolean
     width 36px
   &.custom
@@ -491,8 +494,10 @@ export default {
       &::after
         content '>'
     &.type-function
+      font-style italic
+      font-family dejavu sans mono, monospace
       >>> span
-        color $green
+        color $vividBlue
     &.type-component-definition
       color $green
       >>> span
