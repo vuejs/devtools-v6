@@ -1,0 +1,43 @@
+<html>
+<body>
+  <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
+
+  <div id="app"></div>
+
+  <script>
+    Vue.component('data-test', {
+      template: `<div>
+        {{ bool }} {{ text }} {{ number }}
+      </div>`,
+      data () {
+        return {
+          bool: false,
+          text: 'hello world',
+          number: 0,
+        }
+      },
+    })
+
+    Vue.component('event-test', {
+      template: `<div>
+        <button @click="$emit('foo', 'bar')">Emit event</button>
+        <button @click="$dispatch('foo', 'meow')">Dispatch event</button>
+        <button @click="$broadcast('foo', 'waf')">Broadcast event</button>
+      </div>`,
+    })
+
+    new Vue({
+      el: '#app',
+      template: `<div id="app">
+        <data-test></data-test>
+        <event-test @foo="onFoo"></event-test>
+      </div>`,
+      methods: {
+        onFoo (value) {
+          console.log(value)
+        },
+      },
+    })
+  </script>
+</body>
+</html>
