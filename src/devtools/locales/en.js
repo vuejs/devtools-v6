@@ -21,10 +21,10 @@ export default {
   DataField: {
     edit: {
       cancel: {
-        tooltip: '[[Esc]] Cancel'
+        tooltip: '[[{{keys.esc}}]] Cancel'
       },
       submit: {
-        tooltip: '[[Enter]] Submit change'
+        tooltip: '[[{{keys.enter}}]] Submit change'
       }
     },
     quickEdit: {

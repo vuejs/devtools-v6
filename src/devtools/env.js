@@ -7,7 +7,8 @@ export const keys = {
   shift: 'Shift',
   alt: isMac ? '&#8997;' : 'Alt',
   del: 'Del',
-  enter: '&#11168;'
+  enter: 'Enter',
+  esc: 'Esc'
 }
 
 Object.defineProperties(Vue.prototype, {
