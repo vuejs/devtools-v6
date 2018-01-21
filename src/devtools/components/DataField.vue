@@ -495,9 +495,13 @@ export default {
         content '>'
     &.type-function
       font-style italic
-      font-family dejavu sans mono, monospace
       >>> span
         color $vividBlue
+        font-family dejavu sans mono, monospace
+        .platform-mac &
+          font-family Menlo, monospace
+        .platform-windows &
+          font-family Consolas, Lucida Console, Courier New, monospace
     &.type-component-definition
       color $green
       >>> span
