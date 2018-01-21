@@ -129,5 +129,5 @@ export default {
 .title
   white-space nowrap
   position relative
-  top -2px
+  top -1px
 </style>
