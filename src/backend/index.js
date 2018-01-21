@@ -7,6 +7,7 @@ import { initEventsBackend } from './events'
 import { stringify, classify, camelize, set, parse } from '../util'
 import path from 'path'
 import ComponentSelector from './component-selector'
+import config from './config'
 
 // Use a custom basename functions instead of the shimed version
 // because it doesn't work on Windows
@@ -39,6 +40,8 @@ export function initBackend (_bridge) {
   } else {
     hook.once('init', connect)
   }
+
+  config(bridge)
 }
 
 function connect () {
