@@ -109,7 +109,7 @@ export default {
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
     },
-    onKeyDown ({ key, modifiers }) {
+    onKeyDown ({ key, code, modifiers }) {
       switch (modifiers) {
         case 'ctrl+alt':
           if (key === 'r') {
@@ -117,14 +117,14 @@ export default {
             return false
           }
           break
-        case 'alt':
-          if (key === 'c') {
+        case 'ctrl':
+          if (code === 'Digit1') {
             this.switchTab('components')
             return false
-          } else if (key === 'v') {
+          } else if (code === 'Digit2') {
             this.switchTab('vuex')
             return false
-          } else if (key === 'e') {
+          } else if (code === 'Digit3') {
             this.switchTab('events')
             return false
           }

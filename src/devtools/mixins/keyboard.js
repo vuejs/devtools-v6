@@ -20,6 +20,7 @@ document.addEventListener('keydown', e => {
   if (e.altKey) modifiers.push('alt')
   const info = {
     key: e.key,
+    code: e.code,
     modifiers: modifiers.join('+')
   }
   let result = true

@@ -1,16 +1,16 @@
 export default {
   App: {
     components: {
-      tooltip: '[[{{keys.alt}}]] + [[C]] Switch to Components'
+      tooltip: '[[{{keys.ctrl}}]] + [[1]] Switch to Components'
     },
     events: {
-      tooltip: '[[{{keys.alt}}]] + [[E]] Switch to Events'
+      tooltip: '[[{{keys.ctrl}}]] + [[3]] Switch to Events'
     },
     refresh: {
       tooltip: '[[{{keys.ctrl}}]] + [[{{keys.alt}}]] + [[R]] Force Refresh'
     },
     vuex: {
-      tooltip: '[[{{keys.alt}}]] + [[V]] Switch to Vuex'
+      tooltip: '[[{{keys.ctrl}}]] + [[2]] Switch to Vuex'
     }
   },
   StateInspector: {
