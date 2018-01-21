@@ -12,7 +12,7 @@
         @click="setSelecting(!selecting)"
       >
         <i class="material-icons">
-          {{ selecting ? 'gps_fixed' : 'gps_not_fixed' }}
+          gps_fixed
         </i>
         <span>Select</span>
       </a>
