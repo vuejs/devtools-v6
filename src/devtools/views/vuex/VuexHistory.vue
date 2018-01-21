@@ -109,6 +109,7 @@ import Keyboard, {
   UP,
   DOWN,
   DEL,
+  BACKSPACE,
   ENTER
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
@@ -177,7 +178,7 @@ export default {
           if (key === ENTER) {
             this.commitAll()
             return false
-          } else if (key === DEL) {
+          } else if (key === DEL || key === BACKSPACE) {
             this.revertAll()
             return false
           } else if (key === 'f') {

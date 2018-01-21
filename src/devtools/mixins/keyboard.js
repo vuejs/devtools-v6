@@ -4,6 +4,7 @@ export const RIGHT = 'ArrowRight'
 export const DOWN = 'ArrowDown'
 export const ENTER = 'Enter'
 export const DEL = 'Delete'
+export const BACKSPACE = 'Backspace'
 
 const activeInstances = []
 

@@ -63,7 +63,8 @@ import ActionHeader from 'components/ActionHeader.vue'
 import Keyboard, {
   UP,
   DOWN,
-  DEL
+  DEL,
+  BACKSPACE
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapMutations } from 'vuex'
@@ -119,7 +120,7 @@ export default {
     onKeyDown ({ key, modifiers }) {
       switch (modifiers) {
         case 'ctrl':
-          if (key === DEL) {
+          if (key === DEL || key === BACKSPACE) {
             this.reset()
             return false
           } else if (key === 'f') {
