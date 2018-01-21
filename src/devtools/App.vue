@@ -112,7 +112,7 @@ export default {
     onKeyDown ({ key, code, modifiers }) {
       switch (modifiers) {
         case 'ctrl+alt':
-          if (key === 'r') {
+          if (key === 'r' || code === 'KeyR') {
             this.refresh()
             return false
           }
