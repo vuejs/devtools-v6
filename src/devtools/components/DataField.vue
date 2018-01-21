@@ -84,6 +84,7 @@
               v-for="(info, index) of quickEdits"
               :key="index"
               class="quick-edit icon-button"
+              :class="info.class"
               :icon="info.icon"
               v-tooltip="info.title || 'Quick edit'"
               @click="quickEdit(info, $event)"

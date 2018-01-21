@@ -115,11 +115,13 @@ export default {
           return [
             {
               icon: 'remove',
+              class: 'big',
               title: this.quickEditNumberTooltip('-'),
               newValue: event => value - numberQuickEditMod(event)
             },
             {
               icon: 'add',
+              class: 'big',
               title: this.quickEditNumberTooltip('+'),
               newValue: event => value + numberQuickEditMod(event)
             }
