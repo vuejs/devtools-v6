@@ -18,7 +18,10 @@ Vue.component('BaseIcon', {
     }
   },
   render (h) {
-    return h('div', { staticClass: 'svg-icon' }, [
+    return h('div', {
+      staticClass: 'svg-icon',
+      on: { click: event => this.$emit('click', event) }
+    }, [
       h('svg', [
         h('use', { attrs: {
           'xlink:href': `#ic_${this.icon}_24px`

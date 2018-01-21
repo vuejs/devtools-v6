@@ -32,16 +32,26 @@
   &-bracket
     color #ccc
 
+.svg-icon
+  width 16px
+  height @width
+  margin-right 0
+  @media (min-width: $wide)
+    margin-right 5px
+
 .button
   cursor pointer
   display flex
   align-items center
   justify-content center
   padding 0 10px
-  transition opacity 0.25s
+  transition opacity .25s, color .25s
   white-space nowrap
-  opacity 0.8
+  opacity .8
   overflow hidden
+
+  .svg-icon >>> svg
+    transition fill .25s
 
   &:first-of-type
     margin-left auto
@@ -51,6 +61,9 @@
     opacity 1
     color $active-color
 
+    .svg-icon >>> svg
+      fill @color
+
   &.disabled
     opacity 0.45
     cursor not-allowed
@@ -59,15 +72,6 @@
     display none
     @media (min-width: $wide)
       display inline
-
-.material-icons
-  font-size 16px
-  margin-right 0
-  position relative
-  top 1px
-  color inherit
-  @media (min-width: $wide)
-    margin-right 5px
 
 .search
   display flex

@@ -7,7 +7,7 @@
         <span class="title-bracket">&gt;</span>
       </span>
       <div class="search">
-        <i class="material-icons">search</i>
+        <BaseIcon icon="search"/>
         <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
       <a
@@ -16,7 +16,7 @@
         v-tooltip="'Inspect DOM'"
         @click="inspectDOM"
       >
-        <i class="material-icons">code</i>
+        <BaseIcon icon="code"/>
         <span>Inspect DOM</span>
       </a>
       <a
@@ -25,7 +25,7 @@
         v-tooltip="openEditorTooltip"
         @click="openInEditor"
       >
-        <i class="material-icons">launch</i>
+        <BaseIcon icon="launch"/>
         <span>Open in editor</span>
       </a>
     </action-header>
@@ -128,4 +128,6 @@ export default {
 <style lang="stylus" scoped>
 .title
   white-space nowrap
+  position relative
+  top -2px
 </style>

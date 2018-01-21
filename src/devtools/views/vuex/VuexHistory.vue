@@ -2,19 +2,19 @@
   <scroll-pane scroll-event="vuex:mutation">
     <action-header slot="header">
       <div class="search">
-        <i class="material-icons">search</i>
+        <BaseIcon icon="search"/>
         <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
       </div>
       <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" v-tooltip="'Commit All'">
-        <i class="material-icons">get_app</i>
+        <BaseIcon icon="get_app"/>
         <span>Commit All</span>
       </a>
       <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" v-tooltip="'Revert All'">
-        <i class="material-icons small">do_not_disturb</i>
+        <BaseIcon class="small" icon="do_not_disturb"/>
         <span>Revert All</span>
       </a>
       <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
-        <i class="material-icons small" :class="{ enabled }">lens</i>
+        <BaseIcon class="small" :class="{ enabled }" icon="lens"/>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
@@ -24,7 +24,7 @@
         <span class="entry-actions">
           <a class="action"
              @click.stop="timeTravelTo(null)" v-tooltip="'Time Travel to This State'">
-            <i class="material-icons medium">restore</i>
+            <BaseIcon class="medium" icon="restore"/>
             <span>Time Travel</span>
           </a>
         </span>
@@ -47,18 +47,18 @@
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions">
           <a class="action" @click.stop="commit(entry)" v-tooltip="'Commit This Mutation'">
-            <i class="material-icons medium">get_app</i>
+            <BaseIcon class="medium" icon="get_app"/>
             <span>Commit</span>
           </a>
           <a class="action" @click.stop="revert(entry)" v-tooltip="'Revert This Mutation'">
-            <i class="material-icons small">do_not_disturb</i>
+            <BaseIcon class="small" icon="do_not_disturb"/>
             <span>Revert</span>
           </a>
           <a v-if="!isActive(entry)"
              class="action"
              @click.stop="timeTravelTo(entry)"
              v-tooltip="'Time Travel to This State'">
-            <i class="material-icons medium">restore</i>
+            <BaseIcon class="medium" icon="restore"/>
             <span>Time Travel</span>
           </a>
         </span>
@@ -157,12 +157,12 @@ $inspected_color = #af90d5
       color lighten($active-color, 75%)
     .action
       color lighten($active-color, 75%)
-      .material-icons
-        color lighten($active-color, 75%)
+      .svg-icon >>> svg
+        fill  lighten($active-color, 75%)
       &:hover
         color lighten($active-color, 95%)
-        .material-icons
-          color lighten($active-color, 95%)
+        .svg-icon >>> svg
+          fill  lighten($active-color, 95%)
     .label.inspected
       background-color darken($inspected_color, 10%)
   @media (max-width: $wide)
@@ -171,7 +171,7 @@ $inspected_color = #af90d5
     &.inspected
       border-left 4px solid darken($inspected_color, 15%)
       padding-left 16px
-  .material-icons, span, a
+  .svg-icon, span, a
     display inline-block
     vertical-align middle
   .mutation-type
@@ -199,13 +199,14 @@ $inspected_color = #af90d5
     display none
     @media (min-width: 1080px)
       display inline
-  .material-icons
-    font-size 20px
+  .svg-icon
+    width 18px
+    height @width
     margin-right 2px
   &:hover
     color $active-color
-    .material-icons
-      color $active-color
+    .svg-icon >>> svg
+      fill $active-color
 
 .time
   font-size 11px

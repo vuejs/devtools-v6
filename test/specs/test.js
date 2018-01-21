@@ -214,7 +214,7 @@ module.exports = {
       // toggle recording
       .click('.toggle-recording')
       .assert.containsText('.toggle-recording', 'Paused')
-      .assert.cssClassNotPresent('.toggle-recording .material-icons', 'enabled')
+      .assert.cssClassNotPresent('.toggle-recording .svg-icon', 'enabled')
       // should not record
       .frame('target')
         .click('.increment')

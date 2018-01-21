@@ -5,15 +5,15 @@
         class="search"
         v-tooltip="searchTooltip"
       >
-        <i class="search-icon material-icons">search</i>
+        <BaseIcon icon="search"/>
         <input placeholder="Filter events" v-model.trim="filter">
       </div>
       <a class="button reset" :class="{ disabled: !events.length }" @click="reset" v-tooltip="'Clear Log'">
-        <i class="material-icons small">do_not_disturb</i>
+        <BaseIcon class="small" icon="do_not_disturb"/>
         <span>Clear</span>
       </a>
       <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
-        <i class="material-icons small" :class="{ enabled }">lens</i>
+        <BaseIcon class="small" :class="{ enabled }" icon="lens"/>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>

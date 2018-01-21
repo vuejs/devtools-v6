@@ -2,7 +2,7 @@
   <scroll-pane>
     <action-header slot="header">
       <div class="search">
-        <i class="material-icons">search</i>
+        <BaseIcon icon="search"/>
         <input placeholder="Filter components" @input="filterInstances">
       </div>
       <a
@@ -11,9 +11,7 @@
         v-tooltip="selectTooltip"
         @click="setSelecting(!selecting)"
       >
-        <i class="material-icons">
-          {{ selecting ? 'gps_fixed' : 'gps_not_fixed' }}
-        </i>
+        <BaseIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
         <span>Select</span>
       </a>
       <a class="button classify-names"
@@ -21,7 +19,7 @@
          v-tooltip="'Format component names'"
          @click="toggleClassifyComponents"
       >
-        <i class="material-icons">text_fields</i>
+        <BaseIcon icon="text_fields"/>
         <span>Format</span>
       </a>
     </action-header>
@@ -184,6 +182,6 @@ function findByIndex (all, index) {
 .select-component
   &.active
     color $active-color
-    .material-icons
+    .svg-icon
       animation pulse 2s infinite linear
 </style>

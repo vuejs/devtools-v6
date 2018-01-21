@@ -2,11 +2,11 @@
   <scroll-pane>
     <action-header slot="header">
       <div class="search">
-        <i class="material-icons">search</i>
+        <BaseIcon icon="search"/>
         <input placeholder="Filter inspected state" v-model.trim="filter">
       </div>
       <a class="button export" @click="copyStateToClipboard" v-tooltip="'Export Vuex State'">
-        <i class="material-icons">content_copy</i>
+        <BaseIcon icon="content_copy"/>
         <span>Export</span>
         <transition name="slide-up">
           <span class="message" v-show="showStateCopiedMessage">
@@ -15,7 +15,7 @@
         </transition>
       </a>
       <a class="button import" @click="toggleImportStatePopup" v-tooltip="'Import Vuex State'">
-        <i class="material-icons">content_paste</i>
+        <BaseIcon icon="content_paste"/>
         <span>Import</span>
       </a>
       <transition name="slide-down">

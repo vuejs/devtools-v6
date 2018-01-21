@@ -7,37 +7,14 @@
   font-weight 400
   src local('Roboto'), local('Roboto-Regular'), url(./assets/Roboto-Regular.woff2) format('woff2')
 
-.material-icons
-  font-family 'Material Icons'
-  font-weight normal
-  font-style normal
-  font-size 22px
-  display inline-block
-  width 1em
-  height 1em
-  color #999
-  line-height 1
-  text-transform none
-  letter-spacing normal
-  word-wrap normal
-  white-space nowrap
-  direction ltr
-  /* Support for all WebKit browsers. */
-  -webkit-font-smoothing antialiased
-  /* Support for Safari and Chrome. */
-  text-rendering optimizeLegibility
-  /* Support for Firefox. */
-  -moz-osx-font-smoothing grayscale
-  &.medium
-    transform scale(0.9)
-  &.small
-    transform scale(0.8)
-
-.toggle-recording .material-icons
-  color #999 !important
+.toggle-recording .svg-icon
+  svg
+    fill #999 !important
   &.enabled
-    color red !important
-    text-shadow 0 0 3px rgba(255, 0, 0, .4)
+    border-radius 50%
+    filter: drop-shadow(0 0 3px rgba(255, 0, 0, .4))
+    svg
+      fill red !important
 
 .svg-icon
   display inline-block
@@ -47,9 +24,12 @@
     width 100%
     height 100%
     fill #999
+  &.big
+    transform scale(1.2)
   &.medium
-    width 16px
-    height @width
+    transform scale(0.9)
+  &.small
+    transform scale(0.8)
 
 html, body
   margin 0
@@ -127,8 +107,8 @@ $arrow-color = #444
 
 .icon-button
   cursor pointer
-  &:hover
-    color $green
+  &:hover svg
+    fill $green
 
 .scroll
   position relative
@@ -148,9 +128,9 @@ $arrow-color = #444
     color $white
     border-radius 3px
     padding 5px 10px
-    .material-icons
-      font-size 16px
-      line-height @font-size
+    .svg-icon
+      width 16px
+      height @width
       position relative
       top 3px
   .tooltip-arrow
@@ -318,9 +298,9 @@ $arrow-color = #444
   font-family Menlo, Consolas, monospace
 
 .green
-  &,
-  .material-icons
-    color $green
+  color $green
+  .svg-icon svg
+    fill @color
 
 .input-example
   background $white
@@ -334,10 +314,9 @@ $arrow-color = #444
     background $dark-background-color
   &,
   .tooltip .tooltip-inner &
-    .material-icons
-      color #444
+    .svg-icon
       vertical-align middle
-      position relative
-      top 0
-      .dark &
-        color #666
+      svg
+        fill #444
+        .dark &
+          fill #666
