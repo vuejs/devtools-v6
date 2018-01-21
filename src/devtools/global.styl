@@ -2,12 +2,6 @@
 @import "./transitions"
 
 @font-face
-  font-family 'Material Icons'
-  font-style normal
-  font-weight 400
-  src url(./assets/MaterialIcons-Regular.woff2) format('woff2')
-
-@font-face
   font-family 'Roboto'
   font-style normal
   font-weight 400
@@ -44,6 +38,18 @@
   &.enabled
     color red !important
     text-shadow 0 0 3px rgba(255, 0, 0, .4)
+
+.svg-icon
+  display inline-block
+  width 22px
+  height @width
+  svg
+    width 100%
+    height 100%
+    fill #999
+  &.medium
+    width 16px
+    height @width
 
 html, body
   margin 0
