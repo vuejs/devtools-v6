@@ -4,19 +4,9 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize, set, parse } from '../util'
-import path from 'path'
+import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import config from './config'
-
-// Use a custom basename functions instead of the shimed version
-// because it doesn't work on Windows
-function basename (filename, ext) {
-  return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext
-  )
-}
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -67,7 +57,6 @@ function connect () {
     currentInspectedId = id
     const instance = instanceMap.get(id)
     bindToConsole(instance)
-    flush()
     bridge.send('instance-details', stringify(getInstanceDetails(id)))
   })
 
@@ -383,6 +372,7 @@ export function getCustomInstanceDetails (instance) {
       type: 'component',
       id: instance.__VUE_DEVTOOLS_UID__,
       display: getInstanceName(instance),
+      tooltip: 'Component instance',
       value: reduceStateList(state),
       fields: {
         abstract: true
@@ -411,14 +401,8 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = instance.$options.name || instance.$options._componentTag
-  if (name) {
-    return name
-  }
-  const file = instance.$options.__file // injected by vue-loader
-  if (file) {
-    return classify(basename(file, '.vue'))
-  }
+  const name = getComponentName(instance.$options)
+  if (name) return name
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'
@@ -444,11 +428,11 @@ function processProps (instance) {
         type: 'props',
         key: prop.path,
         value: instance[prop.path],
-        meta: {
+        meta: options ? {
           type: options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
           mode: propModes[prop.mode]
-        }
+        } : {}
       }
     })
   } else if ((props = instance.$options.props)) {
@@ -461,9 +445,11 @@ function processProps (instance) {
         type: 'props',
         key,
         value: instance[key],
-        meta: {
+        meta: prop ? {
           type: prop.type ? getPropType(prop.type) : 'any',
           required: !!prop.required
+        } : {
+          type: 'invalid'
         }
       })
     }
@@ -565,27 +551,30 @@ function processComputed (instance) {
  */
 
 function processRouteContext (instance) {
-  const route = instance.$route
-  if (route) {
-    const { path, query, params } = route
-    const value = { path, query, params }
-    if (route.fullPath) value.fullPath = route.fullPath
-    if (route.hash) value.hash = route.hash
-    if (route.name) value.name = route.name
-    if (route.meta) value.meta = route.meta
-    return [{
-      key: '$route',
-      value: {
-        _custom: {
-          type: 'router',
-          abstract: true,
-          value
+  try {
+    const route = instance.$route
+    if (route) {
+      const { path, query, params } = route
+      const value = { path, query, params }
+      if (route.fullPath) value.fullPath = route.fullPath
+      if (route.hash) value.hash = route.hash
+      if (route.name) value.name = route.name
+      if (route.meta) value.meta = route.meta
+      return [{
+        key: '$route',
+        value: {
+          _custom: {
+            type: 'router',
+            abstract: true,
+            value
+          }
         }
-      }
-    }]
-  } else {
-    return []
+      }]
+    }
+  } catch (e) {
+    // Invalid $router
   }
+  return []
 }
 
 /**

@@ -41,3 +41,19 @@ export function initVuexBackend (hook, bridge) {
     recording = enabled
   })
 }
+
+export function getCustomStoreDetails (store) {
+  return {
+    _custom: {
+      type: 'store',
+      display: 'Store',
+      value: {
+        state: store.state,
+        getters: store.getters
+      },
+      fields: {
+        abstract: true
+      }
+    }
+  }
+}

@@ -48,7 +48,7 @@ import { mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
-import { searchDeepInObject, sortByKey, classify } from 'src/util'
+import { searchDeepInObject, sortByKey, classify, openInEditor } from 'src/util'
 import groupBy from 'lodash.groupby'
 
 export default {
@@ -99,27 +99,7 @@ export default {
     },
     openInEditor () {
       const file = this.target.file
-      // Console display
-      const fileName = file.replace(/\\/g, '\\\\')
-      const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
-        if (response.ok) {
-          console.log('File ${fileName} opened in editor')
-        } else {
-          const msg = 'Opening component ${fileName} failed'
-          if (__VUE_DEVTOOLS_TOAST__) {
-            __VUE_DEVTOOLS_TOAST__(msg, 'error')
-          } else {
-            console.log('%c' + msg, 'color:red')
-          }
-          console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
-        }
-      })`
-      if (this.$isChrome) {
-        chrome.devtools.inspectedWindow.eval(src)
-      } else {
-        // eslint-disable-next-line no-eval
-        eval(src)
-      }
+      openInEditor(file)
     }
   }
 }

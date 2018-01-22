@@ -8,7 +8,7 @@
       placement="left"
       offset="24"
       :disabled="!field.meta"
-      @click.native="toggle"
+      @click.native="onClick"
     >
       <span
         v-show="isExpandableType"
@@ -67,7 +67,9 @@
           class="value"
           :class="valueClass"
           @dblclick="openEdit()"
-        >{{ formattedValue }}</span>
+          v-tooltip="valueTooltip"
+          v-html="formattedValue"
+        />
         <span class="actions">
           <i
             v-if="isValueEditable"
@@ -149,7 +151,8 @@ import {
   NEGATIVE_INFINITY,
   NAN,
   isPlainObject,
-  sortByKey
+  sortByKey,
+  openInEditor
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -212,11 +215,13 @@ export default {
         return 'literal'
       } else if (value && value._custom) {
         return 'custom'
-      } else if (specialTypeRE.test(value)) {
-        const [, type] = specialTypeRE.exec(value)
-        return `native ${type}`
-      } else if (type === 'string' && !rawTypeRE.test(value)) {
-        return 'string'
+      } else if (type === 'string') {
+        if (specialTypeRE.test(value)) {
+          const [, type] = specialTypeRE.exec(value)
+          return `native ${type}`
+        } else {
+          return 'string'
+        }
       } else if (Array.isArray(value)) {
         return 'array'
       } else if (isPlainObject(value)) {
@@ -275,7 +280,7 @@ export default {
         if (typeMatch) {
           return typeMatch[1]
         } else {
-          return JSON.stringify(value)
+          return `<span>"</span>${value}<span>"</span>`
         }
       } else {
         return value
@@ -300,17 +305,31 @@ export default {
           ...inherit
         }))
       } else if (typeof value === 'object') {
-        value = sortByKey(Object.keys(value).map(key => ({
+        value = Object.keys(value).map(key => ({
           key,
           value: value[key],
           ...inherit
-        })))
+        }))
+        if (this.valueType !== 'custom') {
+          value = sortByKey(value)
+        }
       }
       return value
     },
 
     limitedSubFields () {
       return this.formattedSubFields.slice(0, this.limit)
+    },
+
+    valueTooltip () {
+      const type = this.valueType
+      if (type === 'custom') {
+        return this.field.value._custom.tooltip
+      } else if (type.indexOf('native ') === 0) {
+        return type.substr('native '.length)
+      } else {
+        return null
+      }
     },
 
     fieldOptions () {
@@ -345,10 +364,22 @@ export default {
   },
 
   methods: {
-    toggle (event) {
+    onClick (event) {
+      // Cancel if target is interactive
       if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
         return
       }
+
+      // CustomValue API `file`
+      if (this.valueType === 'custom' && this.fieldOptions.file) {
+        return openInEditor(this.fieldOptions.file)
+      }
+
+      // Default action
+      this.toggle()
+    },
+
+    toggle () {
       if (this.isExpandableType) {
         this.expanded = !this.expanded
 
@@ -442,11 +473,14 @@ export default {
   display inline-block
   color #444
   &.string, &.native
-    color #c41a16
+    color $red
+  &.string
+    >>> span
+      color $black
   &.null
     color #999
   &.literal
-    color #0033cc
+    color $vividBlue
   &.raw-boolean
     width 36px
   &.custom
@@ -459,6 +493,19 @@ export default {
         content '<'
       &::after
         content '>'
+    &.type-function
+      font-style italic
+      >>> span
+        color $vividBlue
+        font-family dejavu sans mono, monospace
+        .platform-mac &
+          font-family Menlo, monospace
+        .platform-windows &
+          font-family Consolas, Lucida Console, Courier New, monospace
+    &.type-component-definition
+      color $green
+      >>> span
+        color $darkerGrey
   .dark &
     color #bdc6cf
     &.string, &.native

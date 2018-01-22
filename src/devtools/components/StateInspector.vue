@@ -46,8 +46,8 @@ import Vue from 'vue'
 import DataField from './DataField.vue'
 
 const keyOrder = {
-  undefined: 1,
-  props: 2,
+  props: 1,
+  undefined: 2,
   computed: 3,
   state: 1,
   getters: 2
@@ -113,7 +113,7 @@ export default {
 @import "../variables"
 
 .data-el
-  font-size 14px
+  font-size 15px
 
   &:not(:last-child)
     border-bottom rgba($grey, .4) solid 1px
@@ -130,7 +130,7 @@ export default {
     padding 2px 9px 2px 21px
 
   .data-type
-    color $green
+    color $blueishGrey
     position relative
     cursor pointer
     border-radius 3px
@@ -144,6 +144,7 @@ export default {
     .arrow
       transition transform .1s ease
       margin-right 8px
+      opacity .7
       &.rotated
         transform rotate(90deg)
 
