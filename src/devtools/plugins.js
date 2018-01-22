@@ -1,7 +1,8 @@
 import Vue from 'vue'
+import { keys } from './env'
 import VTooltip from 'v-tooltip'
 import VI18n from './plugins/i18n'
-import { keys } from './env'
+import GlobalRefs from './plugins/global-refs'
 
 Vue.use(VTooltip, {
   defaultDelay: {
@@ -33,5 +34,12 @@ Vue.use(VI18n, {
       text = text.replace(replacer.reg, replacer.replace)
     }
     return text
+  }
+})
+
+Vue.use(GlobalRefs, {
+  refs: {
+    leftScroll: () => document.querySelector('.left .scroll'),
+    rightScroll: () => document.querySelector('.right .scroll')
   }
 })

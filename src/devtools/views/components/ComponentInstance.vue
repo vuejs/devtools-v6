@@ -134,7 +134,7 @@ export default {
     },
     scrollIntoView (center = true) {
       this.$nextTick(() => {
-        scrollIntoView(document.querySelector('.left .scroll'), this.$refs.self, center)
+        scrollIntoView(this.$globalRefs.leftScroll, this.$refs.self, center)
       })
     }
   }
