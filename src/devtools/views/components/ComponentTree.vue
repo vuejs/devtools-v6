@@ -111,7 +111,7 @@ export default {
               this.setSelecting(!this.selecting)
             }
         }
-      },
+      }
     })
   ],
 
