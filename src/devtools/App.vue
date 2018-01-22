@@ -10,31 +10,39 @@
         <span class="message" :key="message">{{ message }}</span>
       </transition>
     </span>
-    <a class="button components"
+    <a
+      class="button components"
       :class="{ active: tab === 'components'}"
+      v-tooltip="$t('App.components.tooltip')"
       @click="switchTab('components')"
-      v-tooltip="'Switch to Components'">
+    >
       <i class="material-icons">device_hub</i>
       <span class="pane-name">Components</span>
     </a>
-    <a class="button vuex"
+    <a
+      class="button vuex"
       :class="{ active: tab === 'vuex'}"
+      v-tooltip="$t('App.vuex.tooltip')"
       @click="switchTab('vuex')"
-      v-tooltip="'Switch to Vuex'">
+    >
       <i class="material-icons">restore</i>
       <span class="pane-name">Vuex</span>
     </a>
-    <a class="button events"
+    <a
+      class="button events"
       :class="{ active: tab === 'events' }"
+      v-tooltip="$t('App.events.tooltip')"
       @click="switchTab('events')"
-      v-tooltip="'Switch to Events'">
+    >
       <i class="material-icons">grain</i>
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
-    <a class="button refresh"
+    <a
+      class="button refresh"
+      v-tooltip="$t('App.refresh.tooltip')"
       @click="refresh"
-      v-tooltip="'Force Refresh'">
+    >
       <i class="material-icons" ref="refresh">refresh</i>
       <span class="pane-name">Refresh</span>
     </a>
@@ -49,11 +57,37 @@ import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
 import { SPECIAL_TOKENS } from '../util'
+import Keyboard from './mixins/keyboard'
 
 import { mapState } from 'vuex'
 
 export default {
   name: 'app',
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, code, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl+alt':
+            if (key === 'r' || code === 'KeyR') {
+              this.refresh()
+              return false
+            }
+            break
+          case 'ctrl':
+            if (code === 'Digit1') {
+              this.switchTab('components')
+              return false
+            } else if (code === 'Digit2') {
+              this.switchTab('vuex')
+              return false
+            } else if (code === 'Digit3') {
+              this.switchTab('events')
+              return false
+            }
+        }
+      }
+    })
+  ],
   components: {
     components: ComponentsTab,
     vuex: VuexTab,

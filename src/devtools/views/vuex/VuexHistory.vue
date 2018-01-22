@@ -1,25 +1,52 @@
 <template>
-  <scroll-pane scroll-event="vuex:mutation">
+  <scroll-pane>
     <action-header slot="header">
-      <div class="search">
+      <div
+        class="search"
+        v-tooltip="$t('VuexHistory.filter.tooltip')"
+      >
         <i class="material-icons">search</i>
-        <input :class="{ invalid: filterRegexInvalid }" placeholder="Filter mutations" v-model.trim="filter">
+        <input
+          ref="filterMutations"
+          :class="{ invalid: filterRegexInvalid }"
+          placeholder="Filter mutations"
+          v-model.trim="filter"
+        >
       </div>
-      <a class="button commit-all" :class="{ disabled: !history.length }" @click="commitAll" v-tooltip="'Commit All'">
+      <a
+        class="button commit-all"
+        :class="{ disabled: !history.length }"
+        v-tooltip="$t('VuexHistory.commitAll.tooltip')"
+        @click="commitAll"
+      >
         <i class="material-icons">get_app</i>
         <span>Commit All</span>
       </a>
-      <a class="button reset" :class="{ disabled: !history.length }" @click="revertAll" v-tooltip="'Revert All'">
+      <a
+        class="button reset"
+        :class="{ disabled: !history.length }"
+        v-tooltip="$t('VuexHistory.revertAll.tooltip')"
+        @click="revertAll"
+      >
         <i class="material-icons small">do_not_disturb</i>
         <span>Revert All</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a
+        class="button toggle-recording"
+        v-tooltip="$t(`VuexHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        @click="toggleRecording"
+      >
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div slot="scroll" class="history">
-      <div class="entry list-item" :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }" @click="inspect(null)">
+      <div
+        ref="baseEntry"
+        class="entry list-item"
+        :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
+        @click="inspect(null)"
+      >
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
           <a class="action"
@@ -41,7 +68,9 @@
         >inspected</span>
       </div>
       <div class="entry list-item"
-        v-for="entry in filteredHistory"
+        ref="entries"
+        v-for="(entry, index) in filteredHistory"
+        :key="index"
         :class="{ inspected: isInspected(entry), active: isActive(entry) }"
         @click="inspect(entry)">
         <span class="mutation-type">{{ entry.mutation.type }}</span>
@@ -76,24 +105,56 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
-import Keyboard, { UP, DOWN } from '../../mixins/keyboard'
+import Keyboard, {
+  UP,
+  DOWN,
+  DEL,
+  BACKSPACE,
+  ENTER
+} from '../../mixins/keyboard'
+import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapActions } from 'vuex'
+import { focusInput } from 'src/util'
 
 export default {
-  mixins: [Keyboard],
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === ENTER) {
+              this.commitAll()
+              return false
+            } else if (key === DEL || key === BACKSPACE) {
+              this.revertAll()
+              return false
+            } else if (key === 'f') {
+              focusInput(this.$refs.filterMutations)
+              return false
+            }
+            break
+          case '':
+            if (key === UP) {
+              this.inspect(this.inspectedIndex - 1)
+              return false
+            } else if (key === DOWN) {
+              this.inspect(this.inspectedIndex + 1)
+              return false
+            } else if (key === 'r') {
+              this.toggleRecording()
+            }
+        }
+      }
+    }),
+    EntryList
+  ],
+
   components: {
     ActionHeader,
     ScrollPane
   },
+
   computed: {
-    filter: {
-      get () {
-        return this.$store.state.vuex.filter
-      },
-      set (filter) {
-        this.$store.dispatch('vuex/updateFilter', filter)
-      }
-    },
     ...mapState('vuex', [
       'enabled',
       'history',
@@ -103,10 +164,21 @@ export default {
       'filterRegex',
       'filterRegexInvalid'
     ]),
+
     ...mapGetters('vuex', [
       'filteredHistory'
-    ])
+    ]),
+
+    filter: {
+      get () {
+        return this.$store.state.vuex.filter
+      },
+      set (filter) {
+        this.$store.dispatch('vuex/updateFilter', filter)
+      }
+    }
   },
+
   methods: {
     ...mapActions('vuex', [
       'commitAll',
@@ -118,20 +190,16 @@ export default {
       'timeTravelTo',
       'updateFilter'
     ]),
+
     isActive (entry) {
       return this.activeIndex === this.history.indexOf(entry)
     },
+
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
-    },
-    onKeyUp ({ keyCode }) {
-      if (keyCode === UP) {
-        this.inspect(this.inspectedIndex - 1)
-      } else if (keyCode === DOWN) {
-        this.inspect(this.inspectedIndex + 1)
-      }
     }
   },
+
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]

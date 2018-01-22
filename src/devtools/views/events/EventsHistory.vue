@@ -1,18 +1,31 @@
 <template>
-  <scroll-pane scroll-event="event:triggered">
+  <scroll-pane>
     <action-header slot="header">
       <div
         class="search"
-        v-tooltip="searchTooltip"
+        v-tooltip="$t('EventsHistory.filter.tooltip')"
       >
         <i class="search-icon material-icons">search</i>
-        <input placeholder="Filter events" v-model.trim="filter">
+        <input
+          ref="filterEvents"
+          placeholder="Filter events"
+          v-model.trim="filter"
+        >
       </div>
-      <a class="button reset" :class="{ disabled: !events.length }" @click="reset" v-tooltip="'Clear Log'">
+      <a
+        class="button reset"
+        :class="{ disabled: !events.length }"
+        v-tooltip="$t('EventsHistory.clear.tooltip')"
+        @click="reset"
+      >
         <i class="material-icons small">do_not_disturb</i>
         <span>Clear</span>
       </a>
-      <a class="button toggle-recording" @click="toggleRecording" v-tooltip="enabled ? 'Stop Recording' : 'Start Recording'">
+      <a
+        class="button toggle-recording"
+        v-tooltip="$t(`EventsHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        @click="toggleRecording"
+      >
         <i class="material-icons small" :class="{ enabled }">lens</i>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
@@ -21,21 +34,24 @@
       <div v-if="filteredEvents.length === 0" class="no-events">
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <div class="entry list-item"
-        v-else
-        v-for="event in filteredEvents"
-        :class="{ active: inspectedIndex === events.indexOf(event) }"
-        @click="inspect(events.indexOf(event))">
-        <span class="event-name">{{ event.eventName }}</span>
-        <span class="event-type">{{ event.type }}</span>
-        <span class="event-source">
-          by
-          <span>&lt;</span>
-          <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
-          <span>&gt;</span>
-        </span>
-        <span class="time">{{ event.timestamp | formatTime }}</span>
-      </div>
+      <template v-else>
+        <div class="entry list-item"
+          ref="entries"
+          v-for="(event, index) in filteredEvents"
+          :key="index"
+          :class="{ active: inspectedIndex === events.indexOf(event) }"
+          @click="inspect(events.indexOf(event))">
+          <span class="event-name">{{ event.eventName }}</span>
+          <span class="event-type">{{ event.type }}</span>
+          <span class="event-source">
+            by
+            <span>&lt;</span>
+            <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
+            <span>&gt;</span>
+          </span>
+          <span class="time">{{ event.timestamp | formatTime }}</span>
+        </div>
+      </template>
     </div>
   </scroll-pane>
 </template>
@@ -44,15 +60,66 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 
+import Keyboard, {
+  UP,
+  DOWN,
+  DEL,
+  BACKSPACE
+} from '../../mixins/keyboard'
+import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapMutations } from 'vuex'
-import { classify } from 'src/util'
+import { classify, focusInput } from 'src/util'
 
 export default {
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === DEL || key === BACKSPACE) {
+              this.reset()
+              return false
+            } else if (key === 'f') {
+              focusInput(this.$refs.filterEvents)
+              return false
+            }
+            break
+          case '':
+            if (key === UP) {
+              this.inspect(this.inspectedIndex - 1)
+              return false
+            } else if (key === DOWN) {
+              this.inspect(this.inspectedIndex + 1)
+              return false
+            } else if (key === 'r') {
+              this.toggleRecording()
+            }
+        }
+      }
+    }),
+    EntryList
+  ],
+
   components: {
     ScrollPane,
     ActionHeader
   },
+
   computed: {
+    ...mapState('events', [
+      'enabled',
+      'events',
+      'inspectedIndex'
+    ]),
+
+    ...mapGetters('events', [
+      'filteredEvents'
+    ]),
+
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
+
     filter: {
       get () {
         return this.$store.state.events.filter
@@ -60,32 +127,21 @@ export default {
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
       }
-    },
-    ...mapState('events', [
-      'enabled',
-      'events',
-      'inspectedIndex'
-    ]),
-    ...mapGetters('events', [
-      'filteredEvents'
-    ]),
-    ...mapState('components', [
-      'classifyComponents'
-    ]),
-    searchTooltip () {
-      return `To filter on components, type <span class="input-example"><i class="material-icons">search</i> &lt;MyComponent&gt;</span> or just <span class="input-example"><i class="material-icons">search</i> &lt;mycomp</span>.`
     }
   },
+
   methods: {
     ...mapMutations('events', {
       inspect: 'INSPECT',
       reset: 'RESET',
       toggleRecording: 'TOGGLE'
     }),
+
     displayComponentName (name) {
       return this.classifyComponents ? classify(name) : name
     }
   },
+
   filters: {
     formatTime (timestamp) {
       return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
