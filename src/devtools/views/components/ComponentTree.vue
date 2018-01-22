@@ -60,7 +60,60 @@ import Keyboard, {
 } from '../../mixins/keyboard'
 
 export default {
-  mixins: [Keyboard],
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === 'f') {
+              focusInput(this.$refs.filterInstances)
+              return false
+            }
+            break
+          case '':
+            if ([LEFT, RIGHT, UP, DOWN].includes(key)) {
+              const all = getAllInstances(this.$refs.instances)
+              if (!all.length) {
+                return
+              }
+
+              const { current, currentIndex } = findCurrent(all, i => i.selected)
+              if (!current) {
+                return
+              }
+
+              let instanceToSelect
+
+              if (key === LEFT) {
+                if (current.expanded) {
+                  current.collapse()
+                } else if (current.$parent && current.$parent.expanded) {
+                  instanceToSelect = current.$parent
+                }
+              } else if (key === RIGHT) {
+                if (current.expanded && current.$children.length) {
+                  instanceToSelect = findByIndex(all, currentIndex + 1)
+                } else {
+                  current.expand()
+                }
+              } else if (key === UP) {
+                instanceToSelect = findByIndex(all, currentIndex - 1)
+              } else if (key === DOWN) {
+                instanceToSelect = findByIndex(all, currentIndex + 1)
+              }
+
+              if (instanceToSelect) {
+                instanceToSelect.select()
+                instanceToSelect.scrollIntoView(false)
+              }
+              return false
+            } else if (key === 's') {
+              this.setSelecting(!this.selecting)
+            }
+        }
+      },
+    })
+  ],
 
   components: {
     ScrollPane,
@@ -101,57 +154,6 @@ export default {
 
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
-    },
-
-    onKeyDown ({ key, modifiers }) {
-      switch (modifiers) {
-        case 'ctrl':
-          if (key === 'f') {
-            focusInput(this.$refs.filterInstances)
-            return false
-          }
-          break
-        case '':
-          if ([LEFT, RIGHT, UP, DOWN].includes(key)) {
-            const all = getAllInstances(this.$refs.instances)
-            if (!all.length) {
-              return
-            }
-
-            const { current, currentIndex } = findCurrent(all, i => i.selected)
-            if (!current) {
-              return
-            }
-
-            let instanceToSelect
-
-            if (key === LEFT) {
-              if (current.expanded) {
-                current.collapse()
-              } else if (current.$parent && current.$parent.expanded) {
-                instanceToSelect = current.$parent
-              }
-            } else if (key === RIGHT) {
-              if (current.expanded && current.$children.length) {
-                instanceToSelect = findByIndex(all, currentIndex + 1)
-              } else {
-                current.expand()
-              }
-            } else if (key === UP) {
-              instanceToSelect = findByIndex(all, currentIndex - 1)
-            } else if (key === DOWN) {
-              instanceToSelect = findByIndex(all, currentIndex + 1)
-            }
-
-            if (instanceToSelect) {
-              instanceToSelect.select()
-              instanceToSelect.scrollIntoView(false)
-            }
-            return false
-          } else if (key === 's') {
-            this.setSelecting(!this.selecting)
-          }
-      }
     },
 
     setSelecting (value) {

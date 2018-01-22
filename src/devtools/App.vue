@@ -63,7 +63,31 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'app',
-  mixins: [Keyboard],
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, code, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl+alt':
+            if (key === 'r' || code === 'KeyR') {
+              this.refresh()
+              return false
+            }
+            break
+          case 'ctrl':
+            if (code === 'Digit1') {
+              this.switchTab('components')
+              return false
+            } else if (code === 'Digit2') {
+              this.switchTab('vuex')
+              return false
+            } else if (code === 'Digit3') {
+              this.switchTab('events')
+              return false
+            }
+        }
+      }
+    })
+  ],
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
@@ -108,27 +132,6 @@ export default {
       const activeBar = this.$el.querySelector('.active-bar')
       activeBar.style.left = activeButton.offsetLeft + 'px'
       activeBar.style.width = activeButton.offsetWidth + 'px'
-    },
-    onKeyDown ({ key, code, modifiers }) {
-      switch (modifiers) {
-        case 'ctrl+alt':
-          if (key === 'r' || code === 'KeyR') {
-            this.refresh()
-            return false
-          }
-          break
-        case 'ctrl':
-          if (code === 'Digit1') {
-            this.switchTab('components')
-            return false
-          } else if (code === 'Digit2') {
-            this.switchTab('vuex')
-            return false
-          } else if (code === 'Digit3') {
-            this.switchTab('events')
-            return false
-          }
-      }
     }
   },
   mounted () {

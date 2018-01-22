@@ -72,7 +72,31 @@ import { classify, focusInput } from 'src/util'
 
 export default {
   mixins: [
-    Keyboard,
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === DEL || key === BACKSPACE) {
+              this.reset()
+              return false
+            } else if (key === 'f') {
+              focusInput(this.$refs.filterEvents)
+              return false
+            }
+            break
+          case '':
+            if (key === UP) {
+              this.inspect(this.inspectedIndex - 1)
+              return false
+            } else if (key === DOWN) {
+              this.inspect(this.inspectedIndex + 1)
+              return false
+            } else if (key === 'r') {
+              this.toggleRecording()
+            }
+        }
+      }
+    }),
     EntryList
   ],
 
@@ -115,30 +139,6 @@ export default {
 
     displayComponentName (name) {
       return this.classifyComponents ? classify(name) : name
-    },
-
-    onKeyDown ({ key, modifiers }) {
-      switch (modifiers) {
-        case 'ctrl':
-          if (key === DEL || key === BACKSPACE) {
-            this.reset()
-            return false
-          } else if (key === 'f') {
-            focusInput(this.$refs.filterEvents)
-            return false
-          }
-          break
-        case '':
-          if (key === UP) {
-            this.inspect(this.inspectedIndex - 1)
-            return false
-          } else if (key === DOWN) {
-            this.inspect(this.inspectedIndex + 1)
-            return false
-          } else if (key === 'r') {
-            this.toggleRecording()
-          }
-      }
     }
   },
 

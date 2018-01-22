@@ -118,7 +118,34 @@ import { focusInput } from 'src/util'
 
 export default {
   mixins: [
-    Keyboard,
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === ENTER) {
+              this.commitAll()
+              return false
+            } else if (key === DEL || key === BACKSPACE) {
+              this.revertAll()
+              return false
+            } else if (key === 'f') {
+              focusInput(this.$refs.filterMutations)
+              return false
+            }
+            break
+          case '':
+            if (key === UP) {
+              this.inspect(this.inspectedIndex - 1)
+              return false
+            } else if (key === DOWN) {
+              this.inspect(this.inspectedIndex + 1)
+              return false
+            } else if (key === 'r') {
+              this.toggleRecording()
+            }
+        }
+      }
+    }),
     EntryList
   ],
 
@@ -170,33 +197,6 @@ export default {
 
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
-    },
-
-    onKeyDown ({ key, modifiers }) {
-      switch (modifiers) {
-        case 'ctrl':
-          if (key === ENTER) {
-            this.commitAll()
-            return false
-          } else if (key === DEL || key === BACKSPACE) {
-            this.revertAll()
-            return false
-          } else if (key === 'f') {
-            focusInput(this.$refs.filterMutations)
-            return false
-          }
-          break
-        case '':
-          if (key === UP) {
-            this.inspect(this.inspectedIndex - 1)
-            return false
-          } else if (key === DOWN) {
-            this.inspect(this.inspectedIndex + 1)
-            return false
-          } else if (key === 'r') {
-            this.toggleRecording()
-          }
-      }
     }
   },
 

@@ -8,44 +8,55 @@ export const BACKSPACE = 'Backspace'
 
 const activeInstances = []
 
-document.addEventListener('keydown', e => {
+function processEvent (event, type) {
   if (
-    e.target.tagName === 'INPUT' ||
-    e.target.tagName === 'TEXTAREA'
+    event.target.tagName === 'INPUT' ||
+    event.target.tagName === 'TEXTAREA'
   ) {
     return
   }
   const modifiers = []
-  if (e.ctrlKey || e.metaKey) modifiers.push('ctrl')
-  if (e.shiftKey) modifiers.push('shift')
-  if (e.altKey) modifiers.push('alt')
+  if (event.ctrlKey || event.metaKey) modifiers.push('ctrl')
+  if (event.shiftKey) modifiers.push('shift')
+  if (event.altKey) modifiers.push('alt')
   const info = {
-    key: e.key,
-    code: e.code,
+    key: event.key,
+    code: event.code,
     modifiers: modifiers.join('+')
   }
   let result = true
-  activeInstances.forEach(vm => {
-    if (vm.onKeyDown) {
-      const r = vm.onKeyDown(info)
+  activeInstances.forEach(opt => {
+    if (opt[type]) {
+      const r = opt[type].call(opt.vm, info)
       if (r === false) {
         result = false
       }
     }
   })
   if (!result) {
-    e.preventDefault()
+    event.preventDefault()
   }
+}
+
+document.addEventListener('keydown', (event) => {
+  processEvent(event, 'onKeyDown')
 })
 
-export default {
-  mounted () {
-    activeInstances.push(this)
-  },
-  destroyed () {
-    const i = activeInstances.indexOf(this)
-    if (i >= 0) {
-      activeInstances.splice(i, 1)
+export default function (options) {
+  return {
+    mounted () {
+      activeInstances.push({
+        vm: this,
+        ...options
+      })
+    },
+    destroyed () {
+      const i = activeInstances.findIndex(
+        o => o.vm === this
+      )
+      if (i >= 0) {
+        activeInstances.splice(i, 1)
+      }
     }
   }
 }
