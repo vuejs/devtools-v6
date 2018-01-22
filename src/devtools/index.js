@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
-import './icons'
 import './plugins'
 import { parse } from '../util'
 import { isChrome } from './env'
