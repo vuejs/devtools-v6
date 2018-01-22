@@ -469,6 +469,8 @@ export default {
     color: #e36eec
   &.abstract
     color $blueishGrey
+    .dark &
+      color lighten($blueishGrey, 20%)
 .value
   display inline-block
   color #444
@@ -502,6 +504,8 @@ export default {
           font-family Menlo, monospace
         .platform-windows &
           font-family Consolas, Lucida Console, Courier New, monospace
+        .dark &
+          color $purple
     &.type-component-definition
       color $green
       >>> span
@@ -513,7 +517,7 @@ export default {
     &.null
       color #999
     &.literal
-      color #997fff
+      color $purple
 
 .meta
   font-size 12px
