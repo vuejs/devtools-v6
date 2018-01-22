@@ -318,16 +318,18 @@ $arrow-color = #444
   background $white
   color $green
   font-size 12px
-  padding 4px 8px
+  padding 0px 8px 6px
   margin 0 2px
   border-radius 2px
   display inline-block
+  vertical-align baseline
   .dark &
     background $dark-background-color
   &,
   .tooltip .tooltip-inner &
     .svg-icon
-      vertical-align middle
+      top 4px
+      margin-right 4px
       svg
         fill #444
         .dark &
