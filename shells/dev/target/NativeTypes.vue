@@ -52,6 +52,8 @@ export default {
       testComponent: null,
       hello: function foo (a, b, c) {},
       hey: function empty () {},
+      anon: function (foo, bar) {},
+      arrow: (a, b) => {},
       def: CompDef,
       def2: {
         name: 'MyComponent',
