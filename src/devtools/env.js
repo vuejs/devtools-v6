@@ -14,7 +14,7 @@ Object.defineProperties(Vue.prototype, {
   '$isChrome': { get: () => isChrome },
   '$isWindows': { get: () => isWindows },
   '$isMac': { get: () => isMac },
-  '$isLinus': { get: () => isLinux },
+  '$isLinux': { get: () => isLinux },
   '$keys': { get: () => keys }
 })
 
