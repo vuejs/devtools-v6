@@ -7,7 +7,10 @@ export const isLinux = navigator.platform.indexOf('Linux') === 0
 export const keys = {
   ctrl: isMac ? '&#8984;' : 'Ctrl',
   shift: 'Shift',
-  alt: isMac ? '&#8997;' : 'Alt'
+  alt: isMac ? '&#8997;' : 'Alt',
+  del: 'Del',
+  enter: 'Enter',
+  esc: 'Esc'
 }
 
 Object.defineProperties(Vue.prototype, {

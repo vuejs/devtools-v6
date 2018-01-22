@@ -16,16 +16,16 @@ export default {
   },
   mounted () {
     if (this.scrollEvent) {
-      bridge.on(this.scrollEvent, this.scroll)
+      bridge.on(this.scrollEvent, this.scrollToBottom)
     }
   },
   destroyed () {
     if (this.scrollEvent) {
-      bridge.removeListener(this.scrollEvent, this.scroll)
+      bridge.removeListener(this.scrollEvent, this.scrollToBottom)
     }
   },
   methods: {
-    scroll () {
+    scrollToBottom () {
       this.$nextTick(() => {
         const container = this.$refs.scrollContainer
         if (container.children.length) {

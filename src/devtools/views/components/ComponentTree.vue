@@ -1,14 +1,21 @@
 <template>
   <scroll-pane>
     <action-header slot="header">
-      <div class="search">
+      <div
+        class="search"
+        v-tooltip="$t('ComponentTree.filter.tooltip')"
+      >
         <i class="material-icons">search</i>
-        <input placeholder="Filter components" @input="filterInstances">
+        <input
+          ref="filterInstances"
+          placeholder="Filter components"
+          @input="filterInstances"
+        >
       </div>
       <a
         class="button select-component"
         :class="{active: selecting}"
-        v-tooltip="selectTooltip"
+        v-tooltip="$t('ComponentTree.select.tooltip')"
         @click="setSelecting(!selecting)"
       >
         <i class="material-icons">
@@ -44,11 +51,69 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
-import { classify } from 'src/util'
-import Keyboard, { UP, DOWN, LEFT, RIGHT, S } from '../../mixins/keyboard'
+import { classify, focusInput } from 'src/util'
+import Keyboard, {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+} from '../../mixins/keyboard'
 
 export default {
-  mixins: [Keyboard],
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === 'f') {
+              focusInput(this.$refs.filterInstances)
+              return false
+            }
+            break
+          case '':
+            if ([LEFT, RIGHT, UP, DOWN].includes(key)) {
+              const all = getAllInstances(this.$refs.instances)
+              if (!all.length) {
+                return
+              }
+
+              const { current, currentIndex } = findCurrent(all, i => i.selected)
+              if (!current) {
+                return
+              }
+
+              let instanceToSelect
+
+              if (key === LEFT) {
+                if (current.expanded) {
+                  current.collapse()
+                } else if (current.$parent && current.$parent.expanded) {
+                  instanceToSelect = current.$parent
+                }
+              } else if (key === RIGHT) {
+                if (current.expanded && current.$children.length) {
+                  instanceToSelect = findByIndex(all, currentIndex + 1)
+                } else {
+                  current.expand()
+                }
+              } else if (key === UP) {
+                instanceToSelect = findByIndex(all, currentIndex - 1)
+              } else if (key === DOWN) {
+                instanceToSelect = findByIndex(all, currentIndex + 1)
+              }
+
+              if (instanceToSelect) {
+                instanceToSelect.select()
+                instanceToSelect.scrollIntoView(false)
+              }
+              return false
+            } else if (key === 's') {
+              this.setSelecting(!this.selecting)
+            }
+        }
+      }
+    })
+  ],
 
   components: {
     ScrollPane,
@@ -69,11 +134,7 @@ export default {
   computed: {
     ...mapState('components', [
       'classifyComponents'
-    ]),
-
-    selectTooltip () {
-      return '<span class="keyboard">S</span> Select component in the page'
-    }
+    ])
   },
 
   mounted () {
@@ -93,40 +154,6 @@ export default {
 
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
-    },
-
-    onKeyUp ({ keyCode }) {
-      if ([LEFT, RIGHT, UP, DOWN].includes(keyCode)) {
-        const all = getAllInstances(this.$refs.instances)
-        if (!all.length) {
-          return
-        }
-
-        const { current, currentIndex } = findCurrent(all, i => i.selected)
-        if (!current) {
-          return
-        }
-
-        if (keyCode === LEFT) {
-          if (current.expanded) {
-            current.collapse()
-          } else if (current.$parent && current.$parent.expanded) {
-            current.$parent.select()
-          }
-        } else if (keyCode === RIGHT) {
-          if (current.expanded && current.$children.length) {
-            findByIndex(all, currentIndex + 1).select()
-          } else {
-            current.expand()
-          }
-        } else if (keyCode === UP) {
-          findByIndex(all, currentIndex - 1).select()
-        } else if (keyCode === DOWN) {
-          findByIndex(all, currentIndex + 1).select()
-        }
-      } else if (keyCode === S) {
-        this.setSelecting(!this.selecting)
-      }
     },
 
     setSelecting (value) {

@@ -51,12 +51,12 @@
           <template v-else>
             <i
               class="icon-button material-icons"
-              v-tooltip="cancelEditTooltip"
+              v-tooltip="$t('DataField.edit.cancel.tooltip')"
               @click="cancelEdit()"
             >close</i>
             <i
               class="icon-button material-icons"
-              v-tooltip="submitEditTooltip"
+              v-tooltip="$t('DataField.edit.submit.tooltip')"
               @click="submitEdit()"
             >done</i>
           </template>
