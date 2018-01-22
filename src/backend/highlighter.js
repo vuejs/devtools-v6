@@ -1,5 +1,6 @@
-import { inDoc } from '../util'
+import { inDoc, classify } from '../util'
 import { getInstanceName } from './index'
+import { claissifyComponents } from './config'
 
 const overlay = document.createElement('div')
 overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
@@ -30,8 +31,9 @@ export function highlight (instance) {
   const rect = getInstanceRect(instance)
   if (rect) {
     let content = ''
-    const name = getInstanceName(instance)
-    name && (content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`)
+    let name = getInstanceName(instance)
+    if (claissifyComponents) name = classify(name)
+    if (name) content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`
     showOverlay(rect, content)
   }
 }

@@ -98,9 +98,7 @@ export default {
     scrollToExpanded: {
       handler (value, oldValue) {
         if (value !== oldValue && value === this.instance.id) {
-          this.$nextTick(() => {
-            scrollIntoView(document.querySelector('.left .scroll'), this.$refs.self)
-          })
+          this.scrollIntoView()
         }
       },
       immediate: true
@@ -134,6 +132,11 @@ export default {
     },
     scrollToInstance () {
       bridge.send('scroll-to-instance', this.instance.id)
+    },
+    scrollIntoView (center = true) {
+      this.$nextTick(() => {
+        scrollIntoView(this.$globalRefs.leftScroll, this.$refs.self, center)
+      })
     }
   }
 }
@@ -152,7 +155,6 @@ export default {
   position relative
   overflow hidden
   z-index 2
-  transition background-color .1s ease
   border-radius 3px
   font-size 14px
   line-height 22px
@@ -207,7 +209,7 @@ export default {
   position absolute
   top 5px
   left 4px
-  transition transform .1s ease, border-left-color .1s ease
+  transition transform .1s ease
   &.rotated
     transform rotate(90deg)
 
@@ -217,7 +219,6 @@ export default {
 .item-name
   color $component-color
   margin 0 1px
-  transition color .1s ease
 
 .spacer
   flex 100% 1 1

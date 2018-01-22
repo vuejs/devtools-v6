@@ -24,6 +24,8 @@ const mutations = {
     state.inspectedIndex = -1
   },
   'INSPECT' (state, index) {
+    if (index < 0) index = 0
+    if (index >= state.events.length) index = state.events.length - 1
     state.inspectedIndex = index
   },
   'RESET_NEW_EVENT_COUNT' (state) {

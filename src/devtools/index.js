@@ -4,22 +4,7 @@ import store from './store'
 import './icons'
 import './plugins'
 import { parse } from '../util'
-
-// Env
-
-const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
-const isMac = navigator.platform === 'MacIntel'
-const keys = {
-  ctrl: isMac ? '&#8984;' : 'Ctrl',
-  shift: 'Shift',
-  alt: isMac ? '&#8997;' : 'Alt'
-}
-
-Object.defineProperties(Vue.prototype, {
-  '$isChrome': { get: () => isChrome },
-  '$isMac': { get: () => isMac },
-  '$keys': { get: () => keys }
-})
+import { isChrome } from './env'
 
 // UI
 
@@ -167,6 +152,8 @@ function initApp (shell) {
         }
       }
     }).$mount('#app')
+
+    store.dispatch('init')
   })
 }
 

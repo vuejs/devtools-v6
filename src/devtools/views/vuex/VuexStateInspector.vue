@@ -151,7 +151,7 @@ function copyToClipboard (state) {
   left initial
   top 1px
   font-size 12px
-  color #c41a16
+  color $red
   background-color $background-color
   .dark &
     background-color $dark-background-color

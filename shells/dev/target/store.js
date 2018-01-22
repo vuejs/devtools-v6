@@ -6,7 +6,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     count: 0,
-    date: new Date()
+    date: new Date(),
+    set: new Set(),
+    map: new Map()
   },
   mutations: {
     INCREMENT: state => state.count++,
@@ -14,7 +16,13 @@ export default new Vuex.Store({
     UPDATE_DATE: state => {
       state.date = new Date()
     },
-    TEST_COMPONENT: state => {}
+    TEST_COMPONENT: state => {},
+    TEST_SET: state => {
+      state.set.add(Math.random())
+    },
+    TEST_MAP: state => {
+      state.map.set(`mykey_${state.map.size}`, state.map.size)
+    }
   },
   getters: {
     isPositive: state => state.count >= 0,

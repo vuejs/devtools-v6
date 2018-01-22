@@ -51,7 +51,7 @@ section:not(:last-child)
   margin 0 10px
 
 .string
-  color: #c41a16
+  color: $red
 
 .literal
   color: #03c
