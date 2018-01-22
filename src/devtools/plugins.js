@@ -3,6 +3,7 @@ import { keys } from './env'
 import VTooltip from 'v-tooltip'
 import VI18n from './plugins/i18n'
 import GlobalRefs from './plugins/global-refs'
+import Responsive from './plugins/responsive'
 
 Vue.use(VTooltip, {
   defaultDelay: {
@@ -43,3 +44,5 @@ Vue.use(GlobalRefs, {
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })
+
+Vue.use(Responsive)

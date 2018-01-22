@@ -15,6 +15,10 @@ const state = {
   classifyComponents: classifyComponents == null ? true : classifyComponents
 }
 
+const getters = {
+  totalCount: state => Object.keys(state.instancesMap).length
+}
+
 const mutations = {
   FLUSH (state, payload) {
     let start
@@ -111,6 +115,7 @@ const actions = {
 export default {
   namespaced: true,
   state,
+  getters,
   mutations,
   actions
 }

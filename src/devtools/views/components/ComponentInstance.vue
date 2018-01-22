@@ -145,7 +145,11 @@ export default {
 @import "../../variables"
 
 .instance
-  font-family Menlo, Consolas, monospace
+  font-family dejavu sans mono, monospace
+  .platform-mac &
+    font-family Menlo, monospace
+  .platform-windows &
+    font-family Consolas, Lucida Console, Courier New, monospace
   &.inactive
     opacity .5
 
@@ -166,6 +170,10 @@ export default {
   &:hidden
     display none
 
+  .high-density &
+    font-size 12px
+    height 15px
+
 .children
   position relative
   z-index 1
@@ -183,6 +191,9 @@ export default {
   border-radius 3px
   position relative
   top -1px
+  .high-density &
+    padding 1px 4px 0
+    top 0
   &.console
     color #fff
     background-color transparent

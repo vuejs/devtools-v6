@@ -128,6 +128,9 @@ export default {
   .data-fields
     margin 5px
     padding 2px 9px 2px 21px
+    @media (max-height: $tall)
+      margin 0
+      padding 0 9px 0 21px
 
   .data-type
     color $blueishGrey
@@ -150,5 +153,7 @@ export default {
 
   .data-fields
     padding-top 0
+    @media (max-height: $tall)
+      margin-bottom 4px
 
 </style>

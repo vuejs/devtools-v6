@@ -407,6 +407,9 @@ export default {
   position relative
   white-space nowrap
   padding-left 14px
+  @media (max-height: $tall)
+    height 16px
+    font-size 11px
   span, div
     display inline-block
     vertical-align middle

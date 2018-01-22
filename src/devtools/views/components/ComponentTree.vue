@@ -32,7 +32,11 @@
         <span>Format</span>
       </a>
     </action-header>
-    <div slot="scroll" class="tree">
+    <div
+      slot="scroll"
+      class="tree"
+      :class="{ 'high-density': highDensity }"
+    >
       <component-instance
         v-for="instance in instances"
         ref="instances"
@@ -45,7 +49,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
@@ -127,14 +131,30 @@ export default {
 
   data () {
     return {
-      selecting: false
+      selecting: false,
+      highDensity: false
     }
   },
 
   computed: {
     ...mapState('components', [
-      'classifyComponents'
+      'classifyComponents',
+      'expansionMap'
+    ]),
+
+    ...mapGetters('components', [
+      'totalCount'
     ])
+  },
+
+  watch: {
+    expansionMap: {
+      handler: 'updateAutoDensity',
+      deep: true,
+      immediate: true
+    },
+    totalCount: 'updateAutoDensity',
+    '$responsive.height': 'updateAutoDensity'
   },
 
   mounted () {
@@ -166,6 +186,16 @@ export default {
           bridge.send('stop-component-selector')
         }
       }
+    },
+    updateAutoDensity () {
+      console.log('updateAutoDensity')
+      this.$nextTick(() => {
+        const totalHeight = this.$isChrome ? this.$responsive.height : this.$root.$el.offsetHeight
+        const count = this.$el.querySelectorAll('.instance').length
+        const treeHeight = 22 * count
+        const scrollHeight = totalHeight - (totalHeight <= 350 ? 76 : 111)
+        this.highDensity = treeHeight >= scrollHeight
+      })
     }
   }
 }
