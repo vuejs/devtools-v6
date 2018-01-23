@@ -5547,8 +5547,8 @@ uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
 
 v-tooltip@^2.0.0-rc.25:
-  version "2.0.0-rc.28"
-  resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-2.0.0-rc.28.tgz#8f667433961da45117568b3d5fa40b5a251b340c"
+  version "2.0.0-rc.30"
+  resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-2.0.0-rc.30.tgz#05749f4732ecfb86f3ece93d6c3fb636a4b3c5b1"
   dependencies:
     lodash.merge "^4.6.0"
     popper.js "^1.12.9"
