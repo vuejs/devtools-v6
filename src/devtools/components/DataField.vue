@@ -8,6 +8,11 @@
       placement="left"
       offset="24"
       :disabled="!field.meta"
+      :delay="{
+        show: 300,
+        hide: 0
+      }"
+      :open-group="'id' + _uid"
       @click.native="onClick"
     >
       <span
