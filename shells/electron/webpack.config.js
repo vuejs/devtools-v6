@@ -4,8 +4,12 @@ var alias = require('../alias')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 var bubleOptions = {
-  target: { chrome: 52, firefox: 48 },
-  objectAssign: 'Object.assign'
+  target: { chrome: 52, firefox: 48, safari: 9, ie: 11 },
+  objectAssign: 'Object.assign',
+  transforms: {
+    forOf: false,
+    modules: false
+  }
 }
 
 module.exports = {
