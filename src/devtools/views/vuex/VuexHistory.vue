@@ -219,7 +219,11 @@ $inspected_color = #af90d5
   padding 7px 20px
   font-size 12px
   box-shadow 0 1px 5px rgba(0,0,0,.12)
-  height 34px
+  min-height 34px
+  &::after
+    content: ''
+    display table
+    clear both
   &.active
     .time
       color lighten($active-color, 75%)
@@ -244,6 +248,8 @@ $inspected_color = #af90d5
     vertical-align middle
   .mutation-type
     line-height 20px
+    overflow-wrap break-word
+    max-width 100%
   .entry-actions
     display none
   &:hover
