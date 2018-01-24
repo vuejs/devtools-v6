@@ -17,10 +17,10 @@ export default new Vuex.Store({
       state.date = new Date()
     },
     TEST_COMPONENT: state => {},
-    'TEST_SET/mutation_type_long_using_underscore_break': state => {
+    TEST_SET: state => {
       state.set.add(Math.random())
     },
-    'TEST_MAP/mutation-type-long-using-dash-will-break': state => {
+    TEST_MAP: state => {
       state.map.set(`mykey_${state.map.size}`, state.map.size)
     }
   },

@@ -94,8 +94,8 @@ export default {
   methods: {
     ...mapMutations({
       updateDate: 'UPDATE_DATE',
-      testVuexSet: 'TEST_SET/mutation_type_long_using_underscore_break',
-      testVuexMap: 'TEST_MAP/mutation-type-long-using-dash-will-break'
+      testVuexSet: 'TEST_SET',
+      testVuexMap: 'TEST_MAP'
     }),
 
     sendComponent () {
