@@ -58,6 +58,7 @@ function connect () {
     const instance = instanceMap.get(id)
     bindToConsole(instance)
     flush()
+    bridge.send('instance-selected')
   })
 
   bridge.on('scroll-to-instance', id => {
