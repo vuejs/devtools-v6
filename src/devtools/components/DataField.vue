@@ -157,7 +157,8 @@ import {
   NAN,
   isPlainObject,
   sortByKey,
-  openInEditor
+  openInEditor,
+  escape
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -285,7 +286,7 @@ export default {
         if (typeMatch) {
           return typeMatch[1]
         } else {
-          return `<span>"</span>${value}<span>"</span>`
+          return `<span>"</span>${escape(value)}<span>"</span>`
         }
       } else {
         return value

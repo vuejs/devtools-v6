@@ -426,3 +426,18 @@ export function openInEditor (file) {
     eval(src)
   }
 }
+
+const ESC = {
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  '&': '&amp;'
+}
+
+export function escape (s) {
+  return s.replace(/[<>"&]/g, escapeChar)
+}
+
+function escapeChar (a) {
+  return ESC[a] || a
+}
