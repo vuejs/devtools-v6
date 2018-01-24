@@ -138,7 +138,7 @@ export default {
   },
 
   mounted () {
-    bridge.on('instance-details', () => {
+    bridge.on('instance-selected', () => {
       this.setSelecting(false)
     })
   },
