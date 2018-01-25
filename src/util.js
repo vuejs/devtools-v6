@@ -230,7 +230,8 @@ export function getCustomComponentDefinitionDetails (def) {
 }
 
 export function getCustomFunctionDetails (func) {
-  const args = func.toString().match(/\(.*\)/)[0]
+  const matches = func.toString().match(/\(.*\)/)
+  const args = matches ? matches[0] : '(?)'
   return {
     _custom: {
       type: 'function',
