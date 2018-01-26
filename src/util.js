@@ -117,9 +117,9 @@ function replacer (key) {
       return encodeCache.cache(val, () => getCustomSetDetails(val))
     } else if (val instanceof RegExp) {
       // special handling of native type
-      return `[native RegExp ${val.toString()}]`
+      return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
     } else if (val instanceof Date) {
-      return `[native Date ${val.toString()}]`
+      return `[native Date ${Date.prototype.toString.call(val)}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
     } else if (val.constructor && val.constructor.name === 'VueRouter') {
@@ -230,7 +230,8 @@ export function getCustomComponentDefinitionDetails (def) {
 }
 
 export function getCustomFunctionDetails (func) {
-  const matches = func.toString().match(/\(.*\)/)
+  const string = Function.prototype.toString.call(func) || ''
+  const matches = string.match(/\(.*\)/)
   const args = matches ? matches[0] : '(?)'
   return {
     _custom: {
