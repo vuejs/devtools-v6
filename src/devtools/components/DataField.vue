@@ -485,6 +485,8 @@ export default {
   &.string
     >>> span
       color $black
+      .dark &
+        color $red
   &.null
     color #999
   &.literal
