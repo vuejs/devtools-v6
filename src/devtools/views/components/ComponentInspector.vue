@@ -22,7 +22,7 @@
       <a
         v-if="target.file"
         class="button"
-        v-tooltip="openEditorTooltip"
+        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         @click="openInEditor"
       >
         <BaseIcon icon="launch"/>
@@ -81,9 +81,6 @@ export default {
           [el.key]: el.value
         }, this.filter)
       })), 'type')
-    },
-    openEditorTooltip () {
-      return this.target.file && `Open <span class="mono green"><i class="material-icons">insert_drive_file</i>${this.target.file}</span> in editor`
     }
   },
   methods: {

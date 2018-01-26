@@ -21,7 +21,8 @@ const currentLocale = 'en'
 const locales = require.context('./locales')
 const replacers = [
   { reg: /\<input\>/g, replace: '<span class="input-example">' },
-  { reg: /\<\/input\>/g, replace: '</span>' },
+  { reg: /\<mono\>/g, replace: '<span class="mono">' },
+  { reg: /\<\/(input|mono)\>/g, replace: '</span>' },
   { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
   { reg: /\<\<(\S+)\>\>/g, replace: (match, p1) => generateHtmlIcon(p1) }
 ]
