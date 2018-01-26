@@ -48,22 +48,25 @@
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
-          <i
+          <BaseIcon
             v-if="!editValid"
-            class="icon-button material-icons warning"
+            class="icon-button warning"
             v-tooltip="editErrorMessage"
-          >warning</i>
+            icon="warning"
+          />
           <template v-else>
-            <i
-              class="icon-button material-icons"
+            <BaseIcon
+              class="icon-button medium"
+              icon="cancel"
               v-tooltip="$t('DataField.edit.cancel.tooltip')"
               @click="cancelEdit()"
-            >close</i>
-            <i
-              class="icon-button material-icons"
+            />
+            <BaseIcon
+              class="icon-button"
+              icon="save"
               v-tooltip="$t('DataField.edit.submit.tooltip')"
               @click="submitEdit()"
-            >done</i>
+            />
           </template>
         </span>
       </span>
@@ -76,33 +79,38 @@
           v-html="formattedValue"
         />
         <span class="actions">
-          <i
+          <BaseIcon
             v-if="isValueEditable"
-            class="edit-value icon-button material-icons"
+            class="edit-value icon-button"
+            icon="edit"
             v-tooltip="'Edit value'"
             @click="openEdit()"
-          >edit</i>
+          />
           <template v-if="quickEdits">
-            <i
+            <BaseIcon
               v-for="(info, index) of quickEdits"
               :key="index"
-              class="quick-edit icon-button material-icons"
+              class="quick-edit icon-button"
+              :class="info.class"
+              :icon="info.icon"
               v-tooltip="info.title || 'Quick edit'"
               @click="quickEdit(info, $event)"
-            >{{ info.icon }}</i>
+            />
           </template>
-          <i
+          <BaseIcon
             v-if="isSubfieldsEditable && !addingValue"
-            class="add-value icon-button material-icons"
+            class="add-value icon-button"
+            icon="add_circle"
             v-tooltip="'Add new value'"
             @click="addNewValue()"
-          >add_circle</i>
-          <i
+          />
+          <BaseIcon
             v-if="removable"
-            class="remove-field icon-button material-icons"
+            class="remove-field icon-button"
+            icon="delete"
             v-tooltip="'Remove value'"
             @click="removeField()"
-          >delete</i>
+          />
         </span>
       </template>
 
@@ -431,13 +439,14 @@ export default {
     top -1px
     .icon-button
       user-select none
-      font-size 14px
+      width 16px
+      height @width
       &:first-child
         margin-left 6px
       &:not(:last-child)
         margin-right 6px
-    .warning
-      color $orange
+    .warning >>> svg
+      fill $orange
   &:hover,
   &.editing
     .actions
