@@ -4,6 +4,7 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import config from './config'
@@ -32,6 +33,8 @@ export function initBackend (_bridge) {
   }
 
   config(bridge)
+
+  initRightClick()
 }
 
 function connect () {
@@ -57,7 +60,8 @@ function connect () {
     currentInspectedId = id
     const instance = instanceMap.get(id)
     bindToConsole(instance)
-    bridge.send('instance-details', stringify(getInstanceDetails(id)))
+    flush()
+    bridge.send('instance-selected')
   })
 
   bridge.on('scroll-to-instance', id => {
@@ -723,4 +727,23 @@ function setStateValue ({ id, path, value, newKey, remove }) {
       console.error(e)
     }
   }
+}
+
+function initRightClick () {
+  // Start recording context menu when Vue is detected
+  // event if Vue devtools are not loaded yet
+  document.addEventListener('contextmenu', event => {
+    const el = event.target
+    if (el) {
+      // Search for parent that "is" a component instance
+      const instance = findRelatedComponent(el)
+      if (instance) {
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance
+        return
+      }
+    }
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+  })
 }

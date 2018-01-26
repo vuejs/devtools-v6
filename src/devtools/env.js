@@ -21,6 +21,8 @@ Object.defineProperties(Vue.prototype, {
   '$keys': { get: () => keys }
 })
 
-if (isWindows) document.body.classList.add('platform-windows')
-if (isMac) document.body.classList.add('platform-mac')
-if (isLinux) document.body.classList.add('platform-linux')
+export function initBodyClass () {
+  if (isWindows) document.body.classList.add('platform-windows')
+  if (isMac) document.body.classList.add('platform-mac')
+  if (isLinux) document.body.classList.add('platform-linux')
+}

@@ -36,11 +36,12 @@
         inactive
       </span>
       <span class="spacer"></span>
-      <i
-        class="icon-button material-icons scroll-to-instance"
+      <BaseIcon
+        class="icon-button"
+        icon="visibility"
         v-tooltip="'Scroll into view'"
         @click="scrollToInstance"
-      >visibility</i>
+      />
     </div>
     <div v-if="expanded">
       <component-instance
@@ -229,6 +230,6 @@ export default {
   .self:not(:hover) &
     visibility hidden
 
-  .self.selected &
-    color $white
+  .self.selected & >>> svg
+    fill $white
 </style>

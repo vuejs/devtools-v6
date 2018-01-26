@@ -3,6 +3,7 @@ import { keys } from './env'
 import VTooltip from 'v-tooltip'
 import VI18n from './plugins/i18n'
 import GlobalRefs from './plugins/global-refs'
+import Icons, { generateHtmlIcon } from './plugins/icons'
 
 Vue.use(VTooltip, {
   defaultDelay: {
@@ -20,9 +21,10 @@ const currentLocale = 'en'
 const locales = require.context('./locales')
 const replacers = [
   { reg: /\<input\>/g, replace: '<span class="input-example">' },
-  { reg: /\<\/input\>/g, replace: '</span>' },
+  { reg: /\<mono\>/g, replace: '<span class="mono">' },
+  { reg: /\<\/(input|mono)\>/g, replace: '</span>' },
   { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
-  { reg: /\<\<(\S+)\>\>/g, replace: '<i class="material-icons">$1</i>' }
+  { reg: /\<\<(\S+)\>\>/g, replace: (match, p1) => generateHtmlIcon(p1) }
 ]
 Vue.use(VI18n, {
   strings: locales(`./${currentLocale}`).default,
@@ -43,3 +45,5 @@ Vue.use(GlobalRefs, {
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })
+
+Vue.use(Icons)

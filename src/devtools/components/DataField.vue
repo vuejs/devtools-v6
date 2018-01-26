@@ -8,6 +8,11 @@
       placement="left"
       offset="24"
       :disabled="!field.meta"
+      :delay="{
+        show: 300,
+        hide: 0
+      }"
+      :open-group="'id' + _uid"
       @click.native="onClick"
     >
       <span
@@ -43,22 +48,25 @@
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
-          <i
+          <BaseIcon
             v-if="!editValid"
-            class="icon-button material-icons warning"
+            class="icon-button warning"
             v-tooltip="editErrorMessage"
-          >warning</i>
+            icon="warning"
+          />
           <template v-else>
-            <i
-              class="icon-button material-icons"
+            <BaseIcon
+              class="icon-button medium"
+              icon="cancel"
               v-tooltip="$t('DataField.edit.cancel.tooltip')"
               @click="cancelEdit()"
-            >close</i>
-            <i
-              class="icon-button material-icons"
+            />
+            <BaseIcon
+              class="icon-button"
+              icon="save"
               v-tooltip="$t('DataField.edit.submit.tooltip')"
               @click="submitEdit()"
-            >done</i>
+            />
           </template>
         </span>
       </span>
@@ -71,33 +79,38 @@
           v-html="formattedValue"
         />
         <span class="actions">
-          <i
+          <BaseIcon
             v-if="isValueEditable"
-            class="edit-value icon-button material-icons"
+            class="edit-value icon-button"
+            icon="edit"
             v-tooltip="'Edit value'"
             @click="openEdit()"
-          >edit</i>
+          />
           <template v-if="quickEdits">
-            <i
+            <BaseIcon
               v-for="(info, index) of quickEdits"
               :key="index"
-              class="quick-edit icon-button material-icons"
+              class="quick-edit icon-button"
+              :class="info.class"
+              :icon="info.icon"
               v-tooltip="info.title || 'Quick edit'"
               @click="quickEdit(info, $event)"
-            >{{ info.icon }}</i>
+            />
           </template>
-          <i
+          <BaseIcon
             v-if="isSubfieldsEditable && !addingValue"
-            class="add-value icon-button material-icons"
+            class="add-value icon-button"
+            icon="add_circle"
             v-tooltip="'Add new value'"
             @click="addNewValue()"
-          >add_circle</i>
-          <i
+          />
+          <BaseIcon
             v-if="removable"
-            class="remove-field icon-button material-icons"
+            class="remove-field icon-button"
+            icon="delete"
             v-tooltip="'Remove value'"
             @click="removeField()"
-          >delete</i>
+          />
         </span>
       </template>
 
@@ -152,7 +165,8 @@ import {
   NAN,
   isPlainObject,
   sortByKey,
-  openInEditor
+  openInEditor,
+  escape
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -274,13 +288,13 @@ export default {
       } else if (this.valueType === 'plain-object') {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (this.valueType.includes('native')) {
-        return specialTypeRE.exec(value)[2]
+        return escape(specialTypeRE.exec(value)[2])
       } else if (typeof value === 'string') {
         var typeMatch = value.match(rawTypeRE)
         if (typeMatch) {
-          return typeMatch[1]
+          return escape(typeMatch[1])
         } else {
-          return `<span>"</span>${value}<span>"</span>`
+          return `<span>"</span>${escape(value)}<span>"</span>`
         }
       } else {
         return value
@@ -425,13 +439,14 @@ export default {
     top -1px
     .icon-button
       user-select none
-      font-size 14px
+      width 16px
+      height @width
       &:first-child
         margin-left 6px
       &:not(:last-child)
         margin-right 6px
-    .warning
-      color $orange
+    .warning >>> svg
+      fill $orange
   &:hover,
   &.editing
     .actions
@@ -479,6 +494,8 @@ export default {
   &.string
     >>> span
       color $black
+      .dark &
+        color $red
   &.null
     color #999
   &.literal

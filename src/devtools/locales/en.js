@@ -44,6 +44,11 @@ export default {
       tooltip: '[[{{keys.ctrl}}]] + [[F]] Filter components by name'
     }
   },
+  ComponentInspector: {
+    openInEditor: {
+      tooltip: 'Open <mono><<insert_drive_file>>{{file}}</mono> in editor'
+    }
+  },
   EventsHistory: {
     filter: {
       tooltip: '[[{{keys.ctrl}}]] + [[F]] To filter on components, type <input><<search>> &lt;MyComponent&gt;</input> or just <input><<search>> &lt;mycomp</input>.'
