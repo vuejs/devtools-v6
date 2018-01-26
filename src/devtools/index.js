@@ -3,7 +3,7 @@ import App from './App.vue'
 import store from './store'
 import './plugins'
 import { parse } from '../util'
-import { isChrome } from './env'
+import { isChrome, initBodyClass } from './env'
 
 // UI
 
@@ -134,10 +134,13 @@ function initApp (shell) {
 
     app = new Vue({
       extends: App,
+
       store,
+
       data: {
         isDark
       },
+
       watch: {
         isDark: {
           handler (value) {
@@ -149,6 +152,10 @@ function initApp (shell) {
           },
           immediate: true
         }
+      },
+
+      mounted () {
+        initBodyClass()
       }
     }).$mount('#app')
 

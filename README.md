@@ -72,7 +72,7 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 	When using Yarn, just replace `npm` with `yarn`.
 
 
-### Commom problems and how to fix
+### Common problems and how to fix
 
 1. Fixing "Download the Vue Devtools for a better development experience" console message when working locally over `file://` protocol:
   1.1 - Google Chrome: Right click on vue-devtools icon and click "Manage Extensions" then search for vue-devtools on the extensions list. Check the "Allow access to file URLs" box.

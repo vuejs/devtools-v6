@@ -8,6 +8,11 @@
       placement="left"
       offset="24"
       :disabled="!field.meta"
+      :delay="{
+        show: 300,
+        hide: 0
+      }"
+      :open-group="'id' + _uid"
       @click.native="onClick"
     >
       <span
@@ -160,7 +165,8 @@ import {
   NAN,
   isPlainObject,
   sortByKey,
-  openInEditor
+  openInEditor,
+  escape
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -288,7 +294,7 @@ export default {
         if (typeMatch) {
           return typeMatch[1]
         } else {
-          return `<span>"</span>${value}<span>"</span>`
+          return `<span>"</span>${escape(value)}<span>"</span>`
         }
       } else {
         return value
@@ -478,6 +484,8 @@ export default {
     color: #e36eec
   &.abstract
     color $blueishGrey
+    .dark &
+      color lighten($blueishGrey, 20%)
 .value
   display inline-block
   color #444
@@ -511,6 +519,8 @@ export default {
           font-family Menlo, monospace
         .platform-windows &
           font-family Consolas, Lucida Console, Courier New, monospace
+        .dark &
+          color $purple
     &.type-component-definition
       color $green
       >>> span
@@ -522,7 +532,7 @@ export default {
     &.null
       color #999
     &.literal
-      color #997fff
+      color $purple
 
 .meta
   font-size 12px

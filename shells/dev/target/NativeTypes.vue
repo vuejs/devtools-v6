@@ -33,6 +33,17 @@
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import CompDef from './Other.vue'
 
+function setToString (func, string) {
+  return Object.defineProperty(func, 'toString', {
+    configurable: true,
+    enumerable: false,
+    value: () => string,
+    writable: true
+  })
+}
+
+const aWeirdFunction = setToString(function weird (a, b, c) {}, 'foo')
+
 export default {
   components: {
     TestComponent: {
@@ -53,6 +64,7 @@ export default {
       hello: function foo (a, b, c) {},
       hey: function empty () {},
       anon: function (foo, bar) {},
+      aWeirdFunction,
       arrow: (a, b) => {},
       def: CompDef,
       def2: {
@@ -64,7 +76,8 @@ export default {
       },
       largeArray: [],
       i: new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])]])]),
-      j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])], [8, new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])]])])]])
+      j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])], [8, new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])]])])]]),
+      html: '<b>Bold</b> <i>Italic</i>'
     }
   },
   computed: {
