@@ -288,11 +288,11 @@ export default {
       } else if (this.valueType === 'plain-object') {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
       } else if (this.valueType.includes('native')) {
-        return specialTypeRE.exec(value)[2]
+        return escape(specialTypeRE.exec(value)[2])
       } else if (typeof value === 'string') {
         var typeMatch = value.match(rawTypeRE)
         if (typeMatch) {
-          return typeMatch[1]
+          return escape(typeMatch[1])
         } else {
           return `<span>"</span>${escape(value)}<span>"</span>`
         }
@@ -494,6 +494,8 @@ export default {
   &.string
     >>> span
       color $black
+      .dark &
+        color $red
   &.null
     color #999
   &.literal
