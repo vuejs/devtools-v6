@@ -58,6 +58,21 @@ export const SPECIAL_TOKENS = {
   'NaN': NAN
 }
 
+export function specialTokenToString (value) {
+  if (value === null) {
+    return 'null'
+  } else if (value === UNDEFINED) {
+    return 'undefined'
+  } else if (value === NAN) {
+    return 'NaN'
+  } else if (value === INFINITY) {
+    return 'Infinity'
+  } else if (value === NEGATIVE_INFINITY) {
+    return '-Infinity'
+  }
+  return false
+}
+
 /**
  * Needed to prevent stack overflow
  * while replacing complex objects
@@ -312,44 +327,70 @@ function isPrimitive (data) {
 }
 
 export function searchDeepInObject (obj, searchTerm) {
-  var match = false
+  return internalSearchObject(obj, searchTerm.toLowerCase(), new Map(), 0)
+}
+
+function internalSearchObject (obj, searchTerm, seen, depth) {
+  let match = false
   const keys = Object.keys(obj)
+  let key, value
   for (let i = 0; i < keys.length; i++) {
-    const key = keys[i]
-    const value = obj[key]
-    if (compare(key, searchTerm) || compare(value, searchTerm)) {
-      match = true
+    key = keys[i]
+    value = obj[key]
+    match = interalSearchCheck(searchTerm, key, value, seen, depth + 1)
+    if (match) {
       break
-    }
-    if (isPlainObject(value)) {
-      match = searchDeepInObject(value, searchTerm)
-      if (match) {
-        break
-      }
     }
   }
   return match
 }
 
-function compare (mixedValue, stringValue) {
-  if (Array.isArray(mixedValue) && searchInArray(mixedValue, stringValue.toLowerCase())) {
-    return true
-  }
-  if (('' + mixedValue).toLowerCase().indexOf(stringValue.toLowerCase()) !== -1) {
-    return true
-  }
-  return false
-}
-
-function searchInArray (arr, searchTerm) {
-  let found = false
-  for (let i = 0; i < arr.length; i++) {
-    if (('' + arr[i]).toLowerCase().indexOf(searchTerm) !== -1) {
-      found = true
+function internalSearchArray (array, searchTerm, seen, depth) {
+  let match = false
+  let value
+  for (let i = 0; i < array.length; i++) {
+    value = array[i]
+    match = interalSearchCheck(searchTerm, null, value, seen, depth + 1)
+    if (match) {
       break
     }
   }
-  return found
+  return match
+}
+
+function interalSearchCheck (searchTerm, key, value, seen, depth) {
+  if (depth > 10) {
+    return false
+  }
+  let match = false
+  let result
+  if (key === '_custom') {
+    key = value.display
+    value = value.value
+  }
+  (result = specialTokenToString(value)) && (value = result)
+  if (key && compare(key, searchTerm)) {
+    match = true
+    seen.set(value, true)
+  } else if (seen.has(value)) {
+    match = seen.get(value)
+  } else if (Array.isArray(value)) {
+    seen.set(value, null)
+    match = internalSearchArray(value, searchTerm, seen)
+    seen.set(value, match)
+  } else if (isPlainObject(value)) {
+    seen.set(value, null)
+    match = internalSearchObject(value, searchTerm, seen)
+    seen.set(value, match)
+  } else if (compare(value, searchTerm)) {
+    match = true
+    seen.set(value, true)
+  }
+  return match
+}
+
+function compare (value, stringValue) {
+  return ('' + value).toLowerCase().indexOf(stringValue) !== -1
 }
 
 export function sortByKey (state) {

@@ -85,7 +85,7 @@ export default {
 
     theStore () {
       return this.$store
-    },
+    }
   },
 
   mounted () {
