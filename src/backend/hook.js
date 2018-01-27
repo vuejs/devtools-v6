@@ -64,7 +64,7 @@ export function installHook (window) {
       }
     },
 
-    supportsVuexBuffer: true,
+    supportsVuexBuffer: true
   }
 
   hook.once('init', Vue => {
