@@ -61,7 +61,9 @@ export function installHook (window) {
           cbs[i].apply(this, args)
         }
       }
-    }
+    },
+
+    supportsVuexBuffer: true,
   }
 
   hook.once('init', Vue => {
