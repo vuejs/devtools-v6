@@ -38,6 +38,10 @@ new Vue({
   }
 }).$mount('#app')
 
+store.commit('TEST_INIT', {
+  foo: 'bar'
+})
+
 // custom element instance
 const ce = document.querySelector('#shadow')
 if (ce.attachShadow) {
