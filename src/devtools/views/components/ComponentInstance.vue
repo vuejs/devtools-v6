@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import { classify, scrollIntoView } from '../../../util'
 
 export default {
@@ -71,9 +70,6 @@ export default {
     }
   },
   computed: {
-    ...mapState('components', [
-      'classifyComponents'
-    ]),
     scrollToExpanded () {
       return this.$store.state.components.scrollToExpanded
     },
@@ -91,7 +87,7 @@ export default {
       })
     },
     displayName () {
-      return this.classifyComponents ? classify(this.instance.name) : this.instance.name
+      return this.$shared.classifyComponents ? classify(this.instance.name) : this.instance.name
     }
   },
   watch: {

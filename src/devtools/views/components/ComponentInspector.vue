@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
@@ -66,14 +65,11 @@ export default {
     }
   },
   computed: {
-    ...mapState('components', [
-      'classifyComponents'
-    ]),
     hasTarget () {
       return this.target.id != null
     },
     targetName () {
-      return this.classifyComponents ? classify(this.target.name) : this.target.name
+      return this.$shared.classifyComponents ? classify(this.target.name) : this.target.name
     },
     filteredState () {
       return groupBy(sortByKey(this.target.state.filter(el => {
