@@ -1,3 +1,5 @@
+import { installToast } from 'src/backend/toast'
+
 window.addEventListener('message', e => {
   if (e.source === window && e.data.vueDetected) {
     chrome.runtime.sendMessage(e.data)
@@ -29,8 +31,13 @@ function detect (win) {
 
 // inject the hook
 if (document instanceof HTMLDocument) {
+  installScript(detect)
+  installScript(installToast)
+}
+
+function installScript (fn) {
   const script = document.createElement('script')
-  script.textContent = ';(' + detect.toString() + ')(window)'
+  script.textContent = ';(' + fn.toString() + ')(window)'
   document.documentElement.appendChild(script)
   script.parentNode.removeChild(script)
 }

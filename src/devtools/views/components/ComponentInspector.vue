@@ -2,18 +2,32 @@
   <scroll-pane>
     <action-header v-show="hasTarget" slot="header">
       <span class="title">
-        <span style="color:#ccc">&lt;</span>
-        <span>{{ target.name }}</span>
-        <span style="color:#ccc">&gt;</span>
+        <span class="title-bracket">&lt;</span>
+        <span>{{ targetName }}</span>
+        <span class="title-bracket">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
-        <i class="material-icons">visibility</i>
-        <span>Inspect DOM</span>
-      </a>
       <div class="search">
-        <i class="material-icons">search</i>
+        <BaseIcon icon="search"/>
         <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
+      <a
+        v-if="$isChrome"
+        class="button inspect"
+        v-tooltip="'Inspect DOM'"
+        @click="inspectDOM"
+      >
+        <BaseIcon icon="code"/>
+        <span>Inspect DOM</span>
+      </a>
+      <a
+        v-if="target.file"
+        class="button"
+        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
+        @click="openInEditor"
+      >
+        <BaseIcon icon="launch"/>
+        <span>Open in editor</span>
+      </a>
     </action-header>
     <template slot="scroll">
       <section v-if="!hasTarget" class="notice">
@@ -30,13 +44,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
-import { searchDeepInObject, sortByKey } from 'src/util'
+import { searchDeepInObject, sortByKey, classify, openInEditor } from 'src/util'
 import groupBy from 'lodash.groupby'
-
-const isChrome = typeof chrome !== 'undefined' && chrome.devtools
 
 export default {
   components: {
@@ -53,8 +66,14 @@ export default {
     }
   },
   computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
     hasTarget () {
       return this.target.id != null
+    },
+    targetName () {
+      return this.classifyComponents ? classify(this.target.name) : this.target.name
     },
     filteredState () {
       return groupBy(sortByKey(this.target.state.filter(el => {
@@ -67,14 +86,25 @@ export default {
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      if (isChrome) {
+      if (this.$isChrome) {
         chrome.devtools.inspectedWindow.eval(
           `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.target.id}").$el)`
         )
       } else {
         window.alert('DOM inspection is not supported in this shell.')
       }
+    },
+    openInEditor () {
+      const file = this.target.file
+      openInEditor(file)
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.title
+  white-space nowrap
+  position relative
+  top -1px
+</style>

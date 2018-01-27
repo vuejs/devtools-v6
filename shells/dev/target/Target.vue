@@ -5,10 +5,19 @@
     <input @keyup.enter="regex = new RegExp($event.target.value)"/>
     <span>(Press enter to set)</span>
     <br/>
-    <button class="add" @click="add">Add</button>
-    <button class="remove" @click="rm">Remove</button>
+    <button class="add" @mouseup="add">Add</button>
+    <button class="remove" @mousedown="rm">Remove</button>
     <input v-model="localMsg">
-    <other v-for="item in items" :key="item"></other>
+    <other v-for="item in items" :key="item" :id="item"></other>
+    <div>
+      <button
+        class="inspect"
+        @click="inspect"
+        @mouseover="over = true"
+        @mouseout="over = false"
+      >Inspect component</button>
+      <span v-if="over" class="over">Mouse over</span>
+    </div>
   </div>
 </template>
 
@@ -28,7 +37,9 @@ export default {
       items: [1, 2],
       regex: /(a\w+b)/g,
       nan: NaN,
-      infinity: Infinity
+      infinity: Infinity,
+      negativeInfinity: -Infinity,
+      over: false
     }
   },
   computed: {
@@ -44,11 +55,36 @@ export default {
   },
   methods: {
     add () {
-      this.items.push(1, 2, 3)
+      const l = this.items.length
+      this.items.push(
+        l + 1,
+        l + 2,
+        l + 3
+      )
     },
     rm () {
       this.items.pop()
+    },
+    inspect () {
+      this.$inspect()
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.inspect
+  border solid 1px black
+  background #eee
+  color black
+  border-radius 2px
+  padding 6px 12px
+  cursor pointer
+  &:hover
+    border-color blue
+    color blue
+
+.over
+  pointer-events none
+  margin-left 12px
+</style>

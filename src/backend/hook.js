@@ -21,9 +21,10 @@ export function installHook (window) {
     },
 
     once (event, fn) {
+      const eventAlias = event
       event = '$' + event
       function on () {
-        this.off(event, on)
+        this.off(eventAlias, on)
         fn.apply(this, arguments)
       }
       ;(listeners[event] || (listeners[event] = [])).push(on)
@@ -68,6 +69,11 @@ export function installHook (window) {
 
   hook.once('init', Vue => {
     hook.Vue = Vue
+
+    Vue.prototype.$inspect = function () {
+      const fn = window.__VUE_DEVTOOLS_INSPECT__
+      fn && fn(this)
+    }
   })
 
   hook.once('vuex:init', store => {

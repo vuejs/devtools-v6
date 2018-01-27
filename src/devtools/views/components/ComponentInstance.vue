@@ -4,7 +4,9 @@
       inactive: instance.inactive,
       selected: selected
     }">
-    <div class="self"
+    <div
+      ref="self"
+      class="self selectable-item"
       @click.stop="select"
       @dblclick.stop="toggle"
       @mouseenter="enter"
@@ -19,7 +21,7 @@
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
-        <span class="angle-bracket">&lt;</span><span class="instance-name">{{ instance.name }}</span><span class="angle-bracket">&gt;</span>
+        <span class="angle-bracket">&lt;</span><span class="item-name">{{ displayName }}</span><span class="angle-bracket">&gt;</span>
       </span>
       <span class="info console" v-if="instance.consoleId === '$vm0'">
         == {{ instance.consoleId }}
@@ -33,6 +35,13 @@
       <span class="info inactive" v-if="instance.inactive">
         inactive
       </span>
+      <span class="spacer"></span>
+      <BaseIcon
+        class="icon-button"
+        icon="visibility"
+        v-tooltip="'Scroll into view'"
+        @click="scrollToInstance"
+      />
     </div>
     <div v-if="expanded">
       <component-instance
@@ -46,6 +55,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { classify, scrollIntoView } from '../../../util'
+
 export default {
   name: 'ComponentInstance',
   props: {
@@ -59,6 +71,12 @@ export default {
     }
   },
   computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ]),
+    scrollToExpanded () {
+      return this.$store.state.components.scrollToExpanded
+    },
     expanded () {
       return !!this.$store.state.components.expansionMap[this.instance.id]
     },
@@ -71,6 +89,19 @@ export default {
           ? a.id - b.id
           : a.top - b.top
       })
+    },
+    displayName () {
+      return this.classifyComponents ? classify(this.instance.name) : this.instance.name
+    }
+  },
+  watch: {
+    scrollToExpanded: {
+      handler (value, oldValue) {
+        if (value !== oldValue && value === this.instance.id) {
+          this.scrollIntoView()
+        }
+      },
+      immediate: true
     }
   },
   methods: {
@@ -98,6 +129,14 @@ export default {
     },
     leave () {
       bridge.send('leave-instance', this.instance.id)
+    },
+    scrollToInstance () {
+      bridge.send('scroll-to-instance', this.instance.id)
+    },
+    scrollIntoView (center = true) {
+      this.$nextTick(() => {
+        scrollIntoView(this.$globalRefs.leftScroll, this.$refs.self, center)
+      })
     }
   }
 }
@@ -116,29 +155,17 @@ export default {
   position relative
   overflow hidden
   z-index 2
-  background-color $background-color
-  transition background-color .1s ease
   border-radius 3px
   font-size 14px
   line-height 22px
   height 22px
   white-space nowrap
+  display flex
+  align-items center
+  padding-right 6px
+
   &:hidden
     display none
-  &:hover
-    background-color #E5F2FF
-  &.selected
-    background-color $active-color
-    .arrow
-      border-left-color #fff
-    .instance-name
-      color #fff
-  .app.dark &
-    background-color $dark-background-color
-    &:hover
-      background-color #444
-    &.selected
-      background-color $active-color
 
 .children
   position relative
@@ -160,6 +187,7 @@ export default {
   &.console
     color #fff
     background-color transparent
+    top 0px
   &.router-view
     background-color #ff8344
   &.fragment
@@ -174,22 +202,34 @@ export default {
   display inline-block
   width 16px
   height 16px
-  top 0
+  top 1px
   left 4px
 
 .arrow
   position absolute
   top 5px
   left 4px
-  transition transform .1s ease, border-left-color .1s ease
+  transition transform .1s ease
   &.rotated
     transform rotate(90deg)
 
 .angle-bracket
-  color #ccc
+  color $darkerGrey
 
-.instance-name
+.item-name
   color $component-color
   margin 0 1px
-  transition color .1s ease
+
+.spacer
+  flex 100% 1 1
+  width 0
+
+.icon-button
+  font-size 16px
+
+  .self:not(:hover) &
+    visibility hidden
+
+  .self.selected & >>> svg
+    fill $white
 </style>

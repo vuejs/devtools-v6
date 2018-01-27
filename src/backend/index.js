@@ -4,24 +4,17 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
-import { stringify, classify, camelize } from '../util'
-import path from 'path'
-
-// Use a custom basename functions instead of the shimed version
-// because it doesn't work on Windows
-function basename (filename, ext) {
-  return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext
-  )
-}
+import { findRelatedComponent } from './utils'
+import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
+import ComponentSelector from './component-selector'
+import config from './config'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -38,6 +31,10 @@ export function initBackend (_bridge) {
   } else {
     hook.once('init', connect)
   }
+
+  config(bridge)
+
+  initRightClick()
 }
 
 function connect () {
@@ -62,13 +59,14 @@ function connect () {
   bridge.on('select-instance', id => {
     currentInspectedId = id
     const instance = instanceMap.get(id)
-    if (instance) {
-      scrollIntoView(instance)
-      highlight(instance)
-    }
     bindToConsole(instance)
     flush()
-    bridge.send('instance-details', stringify(getInstanceDetails(id)))
+    bridge.send('instance-selected')
+  })
+
+  bridge.on('scroll-to-instance', id => {
+    const instance = instanceMap.get(id)
+    instance && scrollIntoView(instance)
   })
 
   bridge.on('filter-instances', _filter => {
@@ -77,8 +75,34 @@ function connect () {
   })
 
   bridge.on('refresh', scan)
+
   bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+
   bridge.on('leave-instance', unHighlight)
+
+  new ComponentSelector(bridge, instanceMap)
+
+  // Get the instance id that is targeted by context menu
+  bridge.on('get-context-menu-target', () => {
+    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
+
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
+
+    if (instance) {
+      const id = instance.__VUE_DEVTOOLS_UID__
+      if (id) {
+        return bridge.send('inspect-instance', id)
+      }
+    }
+
+    toast('No Vue component was found', 'warn')
+  })
+
+  bridge.on('set-instance-data', args => {
+    setStateValue(args)
+    flush()
+  })
 
   // vuex
   if (hook.store) {
@@ -91,6 +115,8 @@ function connect () {
 
   // events
   initEventsBackend(hook.Vue, bridge)
+
+  window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
@@ -234,7 +260,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = getInstanceName(instance).toLowerCase()
+  const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -317,19 +343,58 @@ function getInstanceDetails (id) {
   if (!instance) {
     return {}
   } else {
-    return {
+    const data = {
       id: id,
       name: getInstanceName(instance),
-      state: processProps(instance).concat(
-        processState(instance),
-        processComputed(instance),
-        processRouteContext(instance),
-        processVuexGetters(instance),
-        processFirebaseBindings(instance),
-        processObservables(instance)
-      )
+      state: getInstanceState(instance)
+    }
+
+    let i
+    if ((i = instance.$vnode) && (i = i.componentOptions) && (i = i.Ctor) && (i = i.options)) {
+      data.file = i.__file || null
+    }
+
+    return data
+  }
+}
+
+function getInstanceState (instance) {
+  return processProps(instance).concat(
+    processState(instance),
+    processComputed(instance),
+    processRouteContext(instance),
+    processVuexGetters(instance),
+    processFirebaseBindings(instance),
+    processObservables(instance)
+  )
+}
+
+export function getCustomInstanceDetails (instance) {
+  const state = getInstanceState(instance)
+  return {
+    _custom: {
+      type: 'component',
+      id: instance.__VUE_DEVTOOLS_UID__,
+      display: getInstanceName(instance),
+      tooltip: 'Component instance',
+      value: reduceStateList(state),
+      fields: {
+        abstract: true
+      }
     }
   }
+}
+
+export function reduceStateList (list) {
+  if (!list.length) {
+    return undefined
+  }
+  return list.reduce((map, item) => {
+    const key = item.type || 'data'
+    const obj = map[key] = map[key] || {}
+    obj[item.key] = item.value
+    return map
+  }, {})
 }
 
 /**
@@ -340,14 +405,8 @@ function getInstanceDetails (id) {
  */
 
 export function getInstanceName (instance) {
-  const name = instance.$options.name || instance.$options._componentTag
-  if (name) {
-    return classify(name)
-  }
-  const file = instance.$options.__file // injected by vue-loader
-  if (file) {
-    return classify(basename(file, '.vue'))
-  }
+  const name = getComponentName(instance.$options)
+  if (name) return name
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'
@@ -373,11 +432,11 @@ function processProps (instance) {
         type: 'props',
         key: prop.path,
         value: instance[prop.path],
-        meta: {
+        meta: options ? {
           type: options.type ? getPropType(options.type) : 'any',
           required: !!options.required,
           mode: propModes[prop.mode]
-        }
+        } : {}
       }
     })
   } else if ((props = instance.$options.props)) {
@@ -390,9 +449,11 @@ function processProps (instance) {
         type: 'props',
         key,
         value: instance[key],
-        meta: {
+        meta: prop ? {
           type: prop.type ? getPropType(prop.type) : 'any',
           required: !!prop.required
+        } : {
+          type: 'invalid'
         }
       })
     }
@@ -439,7 +500,8 @@ function processState (instance) {
     ))
     .map(key => ({
       key,
-      value: instance._data[key]
+      value: instance._data[key],
+      editable: true
     }))
 }
 
@@ -493,21 +555,30 @@ function processComputed (instance) {
  */
 
 function processRouteContext (instance) {
-  const route = instance.$route
-  if (route) {
-    const { path, query, params } = route
-    const value = { path, query, params }
-    if (route.fullPath) value.fullPath = route.fullPath
-    if (route.hash) value.hash = route.hash
-    if (route.name) value.name = route.name
-    if (route.meta) value.meta = route.meta
-    return [{
-      key: '$route',
-      value
-    }]
-  } else {
-    return []
+  try {
+    const route = instance.$route
+    if (route) {
+      const { path, query, params } = route
+      const value = { path, query, params }
+      if (route.fullPath) value.fullPath = route.fullPath
+      if (route.hash) value.hash = route.hash
+      if (route.name) value.name = route.name
+      if (route.meta) value.meta = route.meta
+      return [{
+        key: '$route',
+        value: {
+          _custom: {
+            type: 'router',
+            abstract: true,
+            value
+          }
+        }
+      }]
+    }
+  } catch (e) {
+    // Invalid $router
   }
+  return []
 }
 
 /**
@@ -587,7 +658,7 @@ function processObservables (instance) {
 function scrollIntoView (instance) {
   const rect = getInstanceRect(instance)
   if (rect) {
-    window.scrollBy(0, rect.top)
+    window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
 }
 
@@ -620,4 +691,59 @@ function bindToConsole (instance) {
 function getUniqueId (instance) {
   const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
   return `${rootVueId}:${instance._uid}`
+}
+
+/**
+ * Display a toast message.
+ * @param {any} message HTML content
+ */
+export function toast (message, type = 'normal') {
+  const fn = window.__VUE_DEVTOOLS_TOAST__
+  fn && fn(message, type)
+}
+
+export function inspectInstance (instance) {
+  const id = instance.__VUE_DEVTOOLS_UID__
+  id && bridge.send('inspect-instance', id)
+}
+
+function setStateValue ({ id, path, value, newKey, remove }) {
+  const instance = instanceMap.get(id)
+  if (instance) {
+    try {
+      let parsedValue
+      if (value) {
+        parsedValue = parse(value, true)
+      }
+      const api = isLegacy ? {
+        $set: hook.Vue.set,
+        $delete: hook.Vue.delete
+      } : instance
+      set(instance._data, path, parsedValue, (obj, field, value) => {
+        (remove || newKey) && api.$delete(obj, field)
+        !remove && api.$set(obj, newKey || field, value)
+      })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+}
+
+function initRightClick () {
+  // Start recording context menu when Vue is detected
+  // event if Vue devtools are not loaded yet
+  document.addEventListener('contextmenu', event => {
+    const el = event.target
+    if (el) {
+      // Search for parent that "is" a component instance
+      const instance = findRelatedComponent(el)
+      if (instance) {
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance
+        return
+      }
+    }
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+  })
 }

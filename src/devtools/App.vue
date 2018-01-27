@@ -1,7 +1,8 @@
-<style lang="stylus" src="./global.styl"></style>
-
 <template>
-<div id="app" :class="{ app: true, dark: isDark }">
+<div id="app" class="app">
+  <datalist id="special-tokens">
+    <option v-for="(value, key) of specialTokens" :key="key" :value="key"></option>
+  </datalist>
   <div class="header">
     <img class="logo" src="./assets/logo.png" alt="Vue">
     <span class="message-container">
@@ -9,32 +10,40 @@
         <span class="message" :key="message">{{ message }}</span>
       </transition>
     </span>
-    <a class="button components"
+    <a
+      class="button components"
       :class="{ active: tab === 'components'}"
+      v-tooltip="$t('App.components.tooltip')"
       @click="switchTab('components')"
-      title="Switch to Components">
-      <i class="material-icons">device_hub</i>
+    >
+      <BaseIcon icon="device_hub"/>
       <span class="pane-name">Components</span>
     </a>
-    <a class="button vuex"
+    <a
+      class="button vuex"
       :class="{ active: tab === 'vuex'}"
+      v-tooltip="$t('App.vuex.tooltip')"
       @click="switchTab('vuex')"
-      title="Switch to Vuex">
-      <i class="material-icons">restore</i>
+    >
+      <BaseIcon icon="restore"/>
       <span class="pane-name">Vuex</span>
     </a>
-    <a class="button events"
+    <a
+      class="button events"
       :class="{ active: tab === 'events' }"
+      v-tooltip="$t('App.events.tooltip')"
       @click="switchTab('events')"
-      title="Switch to Events">
-      <i class="material-icons">grain</i>
+    >
+      <BaseIcon icon="grain"/>
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
-    <a class="button refresh"
+    <a
+      class="button refresh"
+      v-tooltip="$t('App.refresh.tooltip')"
       @click="refresh"
-      title="Force Refresh">
-      <i class="material-icons" ref="refresh">refresh</i>
+    >
+      <BaseIcon ref="refresh" icon="refresh"/>
       <span class="pane-name">Refresh</span>
     </a>
     <span class="active-bar"></span>
@@ -47,28 +56,54 @@
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
+import { SPECIAL_TOKENS } from '../util'
+import Keyboard from './mixins/keyboard'
 
 import { mapState } from 'vuex'
 
 export default {
   name: 'app',
-  data () {
-    return {
-      isDark: typeof chrome !== 'undefined' &&
-        typeof chrome.devtools !== 'undefined' &&
-        chrome.devtools.panels.themeName === 'dark'
-    }
-  },
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, code, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl+alt':
+            if (key === 'r' || code === 'KeyR') {
+              this.refresh()
+              return false
+            }
+            break
+          case 'ctrl':
+            if (code === 'Digit1') {
+              this.switchTab('components')
+              return false
+            } else if (code === 'Digit2') {
+              this.switchTab('vuex')
+              return false
+            } else if (code === 'Digit3') {
+              this.switchTab('events')
+              return false
+            }
+        }
+      }
+    })
+  ],
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
     events: EventsTab
   },
-  computed: mapState({
-    message: state => state.message,
-    tab: state => state.tab,
-    newEventCount: state => state.events.newEventCount
-  }),
+  computed: {
+    ...mapState({
+      message: state => state.message,
+      tab: state => state.tab,
+      newEventCount: state => state.events.newEventCount,
+      view: state => state.view
+    }),
+    specialTokens () {
+      return SPECIAL_TOKENS
+    }
+  },
   methods: {
     switchTab (tab) {
       bridge.send('switch-tab', tab)
@@ -78,13 +113,19 @@ export default {
       }
     },
     refresh () {
-      const refreshIcon = this.$refs.refresh
+      const refreshIcon = this.$refs.refresh.$el
       refreshIcon.style.animation = 'none'
 
       bridge.send('refresh')
       bridge.once('flush', () => {
         refreshIcon.style.animation = 'rotate 1s'
       })
+    },
+    switchView (mediaQueryEvent) {
+      this.$store.commit(
+        'SWITCH_VIEW',
+        mediaQueryEvent.matches ? 'vertical' : 'horizontal'
+      )
     },
     updateActiveBar () {
       const activeButton = this.$el.querySelector('.button.active')
@@ -94,11 +135,16 @@ export default {
     }
   },
   mounted () {
+    this.mediaQuery = window.matchMedia('(min-width: 685px)')
+    this.switchView(this.mediaQuery)
+    this.mediaQuery.addListener(this.switchView)
+
     this.updateActiveBar()
     window.addEventListener('resize', this.updateActiveBar)
   },
   destroyed () {
     window.removeEventListener('resize', this.updateActiveBar)
+    this.mediaQuery.removeListener(this.switchView)
   },
   watch: {
     tab () {
@@ -107,6 +153,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" src="./global.styl">
+</style>
 
 <style lang="stylus" scoped>
 @import "./variables"
@@ -118,9 +167,7 @@ export default {
   background-color $background-color
   display flex
   flex-direction column
-  h1
-    color #42b983
-  &.dark
+  .dark &
     background-color $dark-background-color
 
 .header
@@ -130,7 +177,7 @@ export default {
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
   position relative
-  .app.dark &
+  .dark &
     border-bottom 1px solid $dark-border-color
 
 .logo
@@ -141,6 +188,10 @@ export default {
 .message-container
   height 1em
   cursor default
+  display none
+  @media (min-width: $wide - 300px)
+    display block
+
 
 .message
   color $active-color
@@ -157,22 +208,29 @@ export default {
   background-color $background-color
   color #888
   transition color .35s ease
-  .app.dark &
+  .dark &
     background-color $dark-background-color
+
+  .svg-icon
+    width 20px
+    height @width
+    margin-right 5px
+    >>> svg
+      fill @color
+      transition fill .35s ease
 
   &:hover
     color #555
+    .svg-icon >>> svg
+      fill @color
 
   &.active
     color $active-color
+    .svg-icon >>> svg
+      fill @color
 
   &:first-of-type
     margin-left auto
-
-  .material-icons
-    font-size 20px
-    margin-right 5px
-    color inherit
 
   .pane-name
     display none
@@ -205,7 +263,7 @@ $event-count-bubble-size = 18px
   position absolute
   right 0
   top 12px
-  .app.dark &
+  .dark &
     background-color $dark-background-color
 
 .active-bar

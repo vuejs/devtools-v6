@@ -68,10 +68,12 @@ function doublePipe (id, one, two) {
     one.disconnect()
     two.disconnect()
     ports[id] = null
+    updateContextMenuItem()
   }
   one.onDisconnect.addListener(shutdown)
   two.onDisconnect.addListener(shutdown)
   console.log('tab ' + id + ' connected.')
+  updateContextMenuItem()
 }
 
 chrome.runtime.onMessage.addListener((req, sender) => {
@@ -89,4 +91,31 @@ chrome.runtime.onMessage.addListener((req, sender) => {
       popup: req.devtoolsEnabled ? 'popups/enabled.html' : 'popups/disabled.html'
     })
   }
+})
+
+// Right-click inspect context menu entry
+let activeTabId
+chrome.tabs.onActivated.addListener(({ tabId }) => {
+  activeTabId = tabId
+  updateContextMenuItem()
+})
+
+function updateContextMenuItem () {
+  if (ports[activeTabId]) {
+    chrome.contextMenus.create({
+      id: 'vue-inspect-instance',
+      title: 'Inspect Vue component',
+      contexts: ['all']
+    })
+  } else {
+    chrome.contextMenus.remove('vue-inspect-instance')
+  }
+}
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  chrome.runtime.sendMessage({
+    vueContextMenu: {
+      id: info.menuItemId
+    }
+  })
 })

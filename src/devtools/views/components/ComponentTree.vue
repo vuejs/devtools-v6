@@ -1,10 +1,34 @@
 <template>
   <scroll-pane>
     <action-header slot="header">
-      <div class="search">
-        <i class="material-icons">search</i>
-        <input placeholder="Filter components" @input="filterInstances">
+      <div
+        class="search"
+        v-tooltip="$t('ComponentTree.filter.tooltip')"
+      >
+        <BaseIcon icon="search"/>
+        <input
+          ref="filterInstances"
+          placeholder="Filter components"
+          @input="filterInstances"
+        >
       </div>
+      <a
+        class="button select-component"
+        :class="{active: selecting}"
+        v-tooltip="$t('ComponentTree.select.tooltip')"
+        @click="setSelecting(!selecting)"
+      >
+        <BaseIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
+        <span>Select</span>
+      </a>
+      <a class="button classify-names"
+         :class="{ active: classifyComponents }"
+         v-tooltip="'Format component names'"
+         @click="toggleClassifyComponents"
+      >
+        <BaseIcon icon="text_fields"/>
+        <span>Format</span>
+      </a>
     </action-header>
     <div slot="scroll" class="tree">
       <component-instance
@@ -19,54 +43,126 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
 
-import keyNavMixin from '../../mixins/key-nav'
+import { classify, focusInput } from 'src/util'
+import Keyboard, {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+} from '../../mixins/keyboard'
 
 export default {
-  mixins: [keyNavMixin],
+  mixins: [
+    Keyboard({
+      onKeyDown ({ key, modifiers }) {
+        switch (modifiers) {
+          case 'ctrl':
+            if (key === 'f') {
+              focusInput(this.$refs.filterInstances)
+              return false
+            }
+            break
+          case '':
+            if ([LEFT, RIGHT, UP, DOWN].includes(key)) {
+              const all = getAllInstances(this.$refs.instances)
+              if (!all.length) {
+                return
+              }
+
+              const { current, currentIndex } = findCurrent(all, i => i.selected)
+              if (!current) {
+                return
+              }
+
+              let instanceToSelect
+
+              if (key === LEFT) {
+                if (current.expanded) {
+                  current.collapse()
+                } else if (current.$parent && current.$parent.expanded) {
+                  instanceToSelect = current.$parent
+                }
+              } else if (key === RIGHT) {
+                if (current.expanded && current.$children.length) {
+                  instanceToSelect = findByIndex(all, currentIndex + 1)
+                } else {
+                  current.expand()
+                }
+              } else if (key === UP) {
+                instanceToSelect = findByIndex(all, currentIndex - 1)
+              } else if (key === DOWN) {
+                instanceToSelect = findByIndex(all, currentIndex + 1)
+              }
+
+              if (instanceToSelect) {
+                instanceToSelect.select()
+                instanceToSelect.scrollIntoView(false)
+              }
+              return false
+            } else if (key === 's') {
+              this.setSelecting(!this.selecting)
+            }
+        }
+      }
+    })
+  ],
+
   components: {
     ScrollPane,
     ActionHeader,
     ComponentInstance
   },
+
   props: {
     instances: Array
   },
+
+  data () {
+    return {
+      selecting: false
+    }
+  },
+
+  computed: {
+    ...mapState('components', [
+      'classifyComponents'
+    ])
+  },
+
+  mounted () {
+    bridge.on('instance-selected', () => {
+      this.setSelecting(false)
+    })
+  },
+
+  beforeDestroy () {
+    this.setSelecting(false)
+  },
+
   methods: {
+    ...mapActions('components', [
+      'toggleClassifyComponents'
+    ]),
+
     filterInstances (e) {
-      bridge.send('filter-instances', e.target.value)
+      bridge.send('filter-instances', classify(e.target.value))
     },
 
-    onKeyNav (dir) {
-      const all = getAllInstances(this.$refs.instances)
-      if (!all.length) {
-        return
-      }
+    setSelecting (value) {
+      if (this.selecting !== value) {
+        this.selecting = value
 
-      const { current, currentIndex } = findCurrent(all, i => i.selected)
-      if (!current) {
-        return
-      }
-
-      if (dir === 'left') {
-        if (current.expanded) {
-          current.collapse()
-        } else if (current.$parent && current.$parent.expanded) {
-          current.$parent.select()
-        }
-      } else if (dir === 'right') {
-        if (current.expanded && current.$children.length) {
-          findByIndex(all, currentIndex + 1).select()
+        if (this.selecting) {
+          bridge.send('start-component-selector')
         } else {
-          current.expand()
+          bridge.send('stop-component-selector')
         }
-      } else if (dir === 'up') {
-        findByIndex(all, currentIndex - 1).select()
-      } else {
-        findByIndex(all, currentIndex + 1).select()
       }
     }
   }
@@ -105,6 +201,14 @@ function findByIndex (all, index) {
 </script>
 
 <style lang="stylus">
+@import "../../variables"
+
 .tree
   padding 5px
+
+.select-component
+  &.active
+    color $active-color
+    .svg-icon
+      animation pulse 2s infinite linear
 </style>

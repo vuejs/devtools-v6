@@ -2,48 +2,34 @@
 @import "./transitions"
 
 @font-face
-  font-family 'Material Icons'
-  font-style normal
-  font-weight 400
-  src url(./assets/MaterialIcons-Regular.woff2) format('woff2')
-
-@font-face
   font-family 'Roboto'
   font-style normal
   font-weight 400
   src local('Roboto'), local('Roboto-Regular'), url(./assets/Roboto-Regular.woff2) format('woff2')
 
-.material-icons
-  font-family 'Material Icons'
-  font-weight normal
-  font-style normal
-  font-size 22px
+.toggle-recording .svg-icon
+  svg
+    fill #999 !important
+  &.enabled
+    border-radius 50%
+    filter: drop-shadow(0 0 3px rgba(255, 0, 0, .4))
+    svg
+      fill red !important
+
+.svg-icon
   display inline-block
-  width 1em
-  height 1em
-  color #999
-  line-height 1
-  text-transform none
-  letter-spacing normal
-  word-wrap normal
-  white-space nowrap
-  direction ltr
-  /* Support for all WebKit browsers. */
-  -webkit-font-smoothing: antialiased
-  /* Support for Safari and Chrome. */
-  text-rendering: optimizeLegibility
-  /* Support for Firefox. */
-  -moz-osx-font-smoothing: grayscale
+  width 22px
+  height @width
+  svg
+    width 100%
+    height 100%
+    fill #999
+  &.big
+    transform scale(1.3)
   &.medium
     transform scale(0.9)
   &.small
     transform scale(0.8)
-
-.toggle-recording .material-icons
-  color #999 !important
-  &.enabled
-    color red !important
-    text-shadow 0 0 3px rgba(255, 0, 0, .4)
 
 html, body
   margin 0
@@ -51,6 +37,9 @@ html, body
   font-family Roboto
   font-size 16px
   color #444
+
+body
+  overflow hidden
 
 *
   box-sizing border-box
@@ -88,3 +77,260 @@ $arrow-color = #444
     text-align center
     padding 0.5em
     margin 0 auto
+
+.selectable-item
+  background-color $background-color
+  &:hover
+    background-color $hover-color
+  &.selected,
+  &.active
+    background-color $active-color
+    color #fff
+    .arrow
+      border-left-color #fff
+    .item-name
+      color #fff
+
+  .dark &
+    background-color $dark-background-color
+    &:hover
+      background-color $dark-hover-color
+      .arrow
+        border-left-color #666
+    &.selected,
+    &.active
+      background-color $active-color
+
+.list-item
+  color #881391
+  @extends .selectable-item
+
+.icon-button
+  cursor pointer
+  &:hover svg
+    fill $green
+
+.scroll
+  position relative
+
+// Tooltips & Popovers
+
+.tooltip
+  $arrow-size = 5px
+  $tooltip-animation-duration = .15s
+  $popover-background = #f9f9f9
+  $popover-background-dark = #131313
+  display block !important
+  z-index 10000
+  font-size 14px
+  .tooltip-inner
+    background $black
+    color $white
+    border-radius 3px
+    padding 5px 10px
+    .svg-icon
+      width 16px
+      height @width
+      position relative
+      top 3px
+  .tooltip-arrow
+    width $arrow-size
+    height $arrow-size
+    position absolute
+    margin $arrow-size
+    z-index 1
+    &::before,
+    &::after
+      content ''
+      width 0
+      height 0
+      border-style solid
+      position absolute
+      border-width inherit
+      top 0
+      left 0
+    &::before
+      border-color $grey
+      display none
+    &::after
+      border-color $black
+  .dark &
+    .tooltip-inner
+      background $white
+      color $black
+    .tooltip-arrow
+      &::before
+        border-color grey
+      &::after
+        border-color $white
+  &[x-placement^='top']
+    margin-bottom $arrow-size
+    .tooltip-arrow
+      bottom -($arrow-size)
+      left 'calc(50% - %s)' % $arrow-size
+      margin-top 0
+      margin-bottom 0
+      &::before,
+      &::after
+        left (-($arrow-size) / 2)
+      &::before
+        top 1px
+      &::after,
+      &::before
+        border-width $arrow-size $arrow-size 0 $arrow-size
+        border-left-color transparent !important
+        border-right-color transparent !important
+        border-bottom-color transparent !important
+  &[x-placement^='bottom']
+    margin-top $arrow-size
+    .tooltip-arrow
+      top -($arrow-size)
+      left 'calc(50% - %s)' % $arrow-size
+      margin-top 0
+      margin-bottom 0
+      &::before,
+      &::after
+        left (-($arrow-size) / 2)
+      &::before
+        top -1px
+      &::after,
+      &::before
+        border-width 0 $arrow-size $arrow-size $arrow-size
+        border-left-color transparent !important
+        border-right-color transparent !important
+        border-top-color transparent !important
+  &[x-placement^='right']
+    margin-left $arrow-size
+    .tooltip-arrow
+      left -($arrow-size)
+      top 'calc(50% - %s)' % $arrow-size
+      margin-left 0
+      margin-right 0
+      &::before,
+      &::after
+        top (-($arrow-size) / 2)
+      &::before
+        left -1px
+      &::after,
+      &::before
+        border-width $arrow-size $arrow-size $arrow-size 0
+        border-left-color transparent !important
+        border-top-color transparent !important
+        border-bottom-color transparent !important
+  &[x-placement^='left']
+    margin-right $arrow-size
+    .tooltip-arrow
+      right -($arrow-size)
+      top 'calc(50% - %s)' % $arrow-size
+      margin-left 0
+      margin-right 0
+      &::before,
+      &::after
+        top (-($arrow-size) / 2)
+      &::before
+        left 1px
+      &::after,
+      &::before
+        border-width $arrow-size 0 $arrow-size $arrow-size
+        border-top-color transparent !important
+        border-right-color transparent !important
+        border-bottom-color transparent !important
+  &.popover
+    $color = $popover-background
+    &[x-placement^='top']
+      .popover-inner
+        bottom -1px
+    &[x-placement^='bottom']
+      .popover-inner
+        top -1px
+    &[x-placement^='left']
+      .popover-inner
+        right -1px
+    &[x-placement^='right']
+      .popover-inner
+        left -1px
+    .popover-inner
+      background $color
+      color $black
+      padding 8px 12px
+      border-radius 3px
+      box-shadow 0 5px 30px rgba(black, .1)
+      border darken($color, 10%) solid 1px
+    .tooltip-arrow
+      &::before
+        display block
+        border-color darken($color, 10%)
+      &::after
+        border-color $color
+    .dark &
+      $color = $popover-background-dark
+      .popover-inner
+        background $color
+        color $white
+        border-color lighten($color, 10%)
+      .popover-arrow
+        &::before
+          border-color lighten($color, 10%)
+        &::after
+          border-color $color
+
+  &[aria-hidden='true']
+    visibility hidden
+    opacity 0
+    transition opacity $tooltip-animation-duration, visibility $tooltip-animation-duration
+  &[aria-hidden='false']
+    visibility visible
+    opacity 1
+    transition opacity $tooltip-animation-duration
+
+.keyboard
+  display inline-block
+  min-width 22px
+  text-align center
+  background rgba($grey, .3)
+  padding 2px 4px 0
+  border-radius 3px
+  margin-bottom 6px
+  box-shadow 0 3px 0 rgba($grey, .2)
+  .dark &
+    background rgba($grey, .9)
+    box-shadow 0 3px 0 rgba($grey, .6)
+
+.mono
+  font-family Menlo, Consolas, monospace
+
+.green
+  color $green
+  .svg-icon svg
+    fill @color
+
+.grey
+  &,
+  .material-icons
+    color $darkerGrey
+
+.red
+  &,
+  .material-icons
+    color $red
+
+.input-example
+  background $white
+  color $green
+  font-size 12px
+  padding 0px 8px 6px
+  margin 0 2px
+  border-radius 2px
+  display inline-block
+  vertical-align baseline
+  .dark &
+    background $dark-background-color
+  &,
+  .tooltip .tooltip-inner &
+    .svg-icon
+      top 4px
+      margin-right 4px
+      svg
+        fill #444
+        .dark &
+          fill #666
