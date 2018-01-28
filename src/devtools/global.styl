@@ -2,48 +2,34 @@
 @import "./transitions"
 
 @font-face
-  font-family 'Material Icons'
-  font-style normal
-  font-weight 400
-  src url(./assets/MaterialIcons-Regular.woff2) format('woff2')
-
-@font-face
   font-family 'Roboto'
   font-style normal
   font-weight 400
   src local('Roboto'), local('Roboto-Regular'), url(./assets/Roboto-Regular.woff2) format('woff2')
 
-.material-icons
-  font-family 'Material Icons'
-  font-weight normal
-  font-style normal
-  font-size 22px
+.toggle-recording .svg-icon
+  svg
+    fill #999 !important
+  &.enabled
+    border-radius 50%
+    filter: drop-shadow(0 0 3px rgba(255, 0, 0, .4))
+    svg
+      fill red !important
+
+.svg-icon
   display inline-block
-  width 1em
-  height 1em
-  color #999
-  line-height 1
-  text-transform none
-  letter-spacing normal
-  word-wrap normal
-  white-space nowrap
-  direction ltr
-  /* Support for all WebKit browsers. */
-  -webkit-font-smoothing antialiased
-  /* Support for Safari and Chrome. */
-  text-rendering optimizeLegibility
-  /* Support for Firefox. */
-  -moz-osx-font-smoothing grayscale
+  width 22px
+  height @width
+  svg
+    width 100%
+    height 100%
+    fill #999
+  &.big
+    transform scale(1.3)
   &.medium
     transform scale(0.9)
   &.small
     transform scale(0.8)
-
-.toggle-recording .material-icons
-  color #999 !important
-  &.enabled
-    color red !important
-    text-shadow 0 0 3px rgba(255, 0, 0, .4)
 
 html, body
   margin 0
@@ -121,8 +107,8 @@ $arrow-color = #444
 
 .icon-button
   cursor pointer
-  &:hover
-    color $green
+  &:hover svg
+    fill $green
 
 .scroll
   position relative
@@ -142,9 +128,9 @@ $arrow-color = #444
     color $white
     border-radius 3px
     padding 5px 10px
-    .material-icons
-      font-size 16px
-      line-height @font-size
+    .svg-icon
+      width 16px
+      height @width
       position relative
       top 3px
   .tooltip-arrow
@@ -314,9 +300,9 @@ $arrow-color = #444
   font-family Menlo, Consolas, monospace
 
 .green
-  &,
-  .material-icons
-    color $green
+  color $green
+  .svg-icon svg
+    fill @color
 
 .grey
   &,
@@ -332,18 +318,19 @@ $arrow-color = #444
   background $white
   color $green
   font-size 12px
-  padding 4px 8px
+  padding 0px 8px 6px
   margin 0 2px
   border-radius 2px
   display inline-block
+  vertical-align baseline
   .dark &
     background $dark-background-color
   &,
   .tooltip .tooltip-inner &
-    .material-icons
-      color #444
-      vertical-align middle
-      position relative
-      top 0
-      .dark &
-        color #666
+    .svg-icon
+      top 4px
+      margin-right 4px
+      svg
+        fill #444
+        .dark &
+          fill #666
