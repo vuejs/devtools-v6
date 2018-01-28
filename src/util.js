@@ -428,7 +428,7 @@ function interalSearchCheck (searchTerm, key, value, seen, depth) {
 }
 
 /**
- * Compare two values
+ * Compares two values
  * @param {*} value Mixed type value that will be cast to string
  * @param {string} searchTerm Search string
  * @returns {boolean} Search match
