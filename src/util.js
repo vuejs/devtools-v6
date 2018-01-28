@@ -414,11 +414,11 @@ function interalSearchCheck (searchTerm, key, value, seen, depth) {
     match = seen.get(value)
   } else if (Array.isArray(value)) {
     seen.set(value, null)
-    match = internalSearchArray(value, searchTerm, seen)
+    match = internalSearchArray(value, searchTerm, seen, depth)
     seen.set(value, match)
   } else if (isPlainObject(value)) {
     seen.set(value, null)
-    match = internalSearchObject(value, searchTerm, seen)
+    match = internalSearchObject(value, searchTerm, seen, depth)
     seen.set(value, match)
   } else if (compare(value, searchTerm)) {
     match = true
