@@ -328,11 +328,30 @@ function isPrimitive (data) {
   )
 }
 
+/**
+ * Searches a key or value in the object, with a maximum deepness
+ * @param {*} obj Search target
+ * @param {string} searchTerm Search string
+ * @returns {boolean} Search match
+ */
 export function searchDeepInObject (obj, searchTerm) {
   return internalSearchObject(obj, searchTerm.toLowerCase(), new Map(), 0)
 }
 
+const SEARCH_MAX_DEPTH = 10
+
+/**
+ * Executes a search on each field of the provided object
+ * @param {*} obj Search target
+ * @param {string} searchTerm Search string
+ * @param {Map<any,boolean>} seen Map containing the search result to prevent stack overflow by walking on the same object multiple times
+ * @param {number} depth Deep search depth level, which is capped to prevent performance issues
+ * @returns {boolean} Search match
+ */
 function internalSearchObject (obj, searchTerm, seen, depth) {
+  if (depth > SEARCH_MAX_DEPTH) {
+    return false
+  }
   let match = false
   const keys = Object.keys(obj)
   let key, value
@@ -347,7 +366,18 @@ function internalSearchObject (obj, searchTerm, seen, depth) {
   return match
 }
 
+/**
+ * Executes a search on each value of the provided array
+ * @param {*} array Search target
+ * @param {string} searchTerm Search string
+ * @param {Map<any,boolean>} seen Map containing the search result to prevent stack overflow by walking on the same object multiple times
+ * @param {number} depth Deep search depth level, which is capped to prevent performance issues
+ * @returns {boolean} Search match
+ */
 function internalSearchArray (array, searchTerm, seen, depth) {
+  if (depth > SEARCH_MAX_DEPTH) {
+    return false
+  }
   let match = false
   let value
   for (let i = 0; i < array.length; i++) {
@@ -360,10 +390,16 @@ function internalSearchArray (array, searchTerm, seen, depth) {
   return match
 }
 
+/**
+ * Checks if the provided field matches the search terms
+ * @param {string} searchTerm Search string
+ * @param {string} key Field key (null if from array)
+ * @param {*} value Field value
+ * @param {Map<any,boolean>} seen Map containing the search result to prevent stack overflow by walking on the same object multiple times
+ * @param {number} depth Deep search depth level, which is capped to prevent performance issues
+ * @returns {boolean} Search match
+ */
 function interalSearchCheck (searchTerm, key, value, seen, depth) {
-  if (depth > 10) {
-    return false
-  }
   let match = false
   let result
   if (key === '_custom') {
@@ -391,8 +427,14 @@ function interalSearchCheck (searchTerm, key, value, seen, depth) {
   return match
 }
 
-function compare (value, stringValue) {
-  return ('' + value).toLowerCase().indexOf(stringValue) !== -1
+/**
+ * Compare two values
+ * @param {*} value Mixed type value that will be cast to string
+ * @param {string} searchTerm Search string
+ * @returns {boolean} Search match
+ */
+function compare (value, searchTerm) {
+  return ('' + value).toLowerCase().indexOf(searchTerm) !== -1
 }
 
 export function sortByKey (state) {
