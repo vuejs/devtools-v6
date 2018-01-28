@@ -335,7 +335,10 @@ function isPrimitive (data) {
  * @returns {boolean} Search match
  */
 export function searchDeepInObject (obj, searchTerm) {
-  return internalSearchObject(obj, searchTerm.toLowerCase(), new Map(), 0)
+  const seen = new Map()
+  const result = internalSearchObject(obj, searchTerm.toLowerCase(), seen, 0)
+  seen.clear()
+  return result
 }
 
 const SEARCH_MAX_DEPTH = 10
