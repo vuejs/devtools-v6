@@ -1,6 +1,6 @@
 {
   "name": "@vue/devtools",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "StandAlone vue-devtools",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "cross-spawn": "^5.1.0",
-    "electron": "^1.8.1",
+    "electron": "^1.7.11",
     "express": "^4.16.2",
     "ip": "^1.1.5",
     "socket.io": "^2.0.4"
