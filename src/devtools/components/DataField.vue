@@ -111,6 +111,29 @@
             v-tooltip="'Remove value'"
             @click="removeField()"
           />
+          <v-popover
+            popoverClass="context-menu-popover"
+            placement="bottom"
+            :open.sync="contextMenuOpen"
+          >
+            <BaseIcon
+              class="context-field icon-button"
+              icon="more_horiz"
+            />
+          <div
+            slot="popover"
+            class="context-menu"
+            @mouseleave="contextMenuOpen = false"
+          >
+            <div
+              class="context-menu-item"
+              v-close-popover
+              @click="copyToClipboard"
+            >
+              {{ $t('DataField.contextMenu.copyValue') }}
+            </div>
+          </div>
+        </v-popover>
         </span>
       </template>
 
@@ -167,6 +190,7 @@ import {
   sortByKey,
   openInEditor,
   escape,
+  stringify,
   specialTokenToString
 } from 'src/util'
 
@@ -185,6 +209,15 @@ function subFieldCount (value) {
   }
 }
 
+function copyToClipboard (state) {
+  const dummyTextArea = document.createElement('textarea')
+  dummyTextArea.textContent = stringify(state)
+  document.body.appendChild(dummyTextArea)
+  dummyTextArea.select()
+  document.execCommand('copy')
+  document.body.removeChild(dummyTextArea)
+}
+
 export default {
   name: 'DataField',
 
@@ -201,6 +234,7 @@ export default {
 
   data () {
     return {
+      contextMenuOpen: false,
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
       expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
@@ -372,6 +406,9 @@ export default {
   },
 
   methods: {
+    copyToClipboard () {
+      copyToClipboard(this.field.value)
+    },
     onClick (event) {
       // Cancel if target is interactive
       if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
@@ -566,4 +603,17 @@ export default {
 
 .remove-field
   margin-left 10px
+
+.context-menu-item
+  padding 4px 8px
+  cursor pointer
+  background-color transparent
+  &:hover
+    background-color $hover-color
+</style>
+
+<style lang="stylus">
+.popover.context-menu-popover
+  .popover-inner
+    padding 6px 0
 </style>
