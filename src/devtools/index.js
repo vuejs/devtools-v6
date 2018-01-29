@@ -3,7 +3,7 @@ import App from './App.vue'
 import store from './store'
 import './plugins'
 import { parse } from '../util'
-import { isChrome, initBodyClass } from './env'
+import { isChrome, initEnv } from './env'
 
 // UI
 
@@ -132,6 +132,8 @@ function initApp (shell) {
       })
     })
 
+    initEnv(Vue)
+
     app = new Vue({
       extends: App,
 
@@ -152,10 +154,6 @@ function initApp (shell) {
           },
           immediate: true
         }
-      },
-
-      mounted () {
-        initBodyClass()
       }
     }).$mount('#app')
 

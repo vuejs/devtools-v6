@@ -18,7 +18,7 @@ export default {
     EventChild1,
     EventChildCond
   },
-  data() {
+  data () {
     return {
       toggleCond: false
     }
