@@ -18,7 +18,7 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 - [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
 
-- [Get standalone app](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
+- [Get standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
 
 - [Workaround for Safari](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-safari.md)
 
