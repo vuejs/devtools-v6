@@ -166,7 +166,8 @@ import {
   isPlainObject,
   sortByKey,
   openInEditor,
-  escape
+  escape,
+  specialTokenToString
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -269,18 +270,11 @@ export default {
 
     formattedValue () {
       const value = this.field.value
+      let result
       if (this.fieldOptions.abstract) {
         return ''
-      } else if (value === null) {
-        return 'null'
-      } else if (value === UNDEFINED) {
-        return 'undefined'
-      } else if (value === NAN) {
-        return 'NaN'
-      } else if (value === INFINITY) {
-        return 'Infinity'
-      } else if (value === NEGATIVE_INFINITY) {
-        return '-Infinity'
+      } else if ((result = specialTokenToString(value))) {
+        return result
       } else if (this.valueType === 'custom') {
         return value._custom.display
       } else if (this.valueType === 'array') {
