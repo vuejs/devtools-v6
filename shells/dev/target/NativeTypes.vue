@@ -79,7 +79,11 @@ export default {
       j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])], [8, new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])]])])]]),
       html: '<b>Bold</b> <i>Italic</i>',
       htmlReg: /<b>hey<\/b>/i,
-      'html <b>key</b>': (h, t, m, l) => {}
+      'html <b>key</b>': (h, t, m, l) => {},
+      sym: Symbol('test'),
+      multiLineParameterFunction: function(a,
+                                  b,
+                                  c) {}
     }
   },
   computed: {

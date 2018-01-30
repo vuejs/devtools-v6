@@ -125,6 +125,8 @@ function replacer (key) {
     return NEGATIVE_INFINITY
   } else if (type === 'function') {
     return getCustomFunctionDetails(val)
+  } else if (type === 'symbol') {
+    return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
     if (val instanceof Map) {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
@@ -246,8 +248,9 @@ export function getCustomComponentDefinitionDetails (def) {
 
 export function getCustomFunctionDetails (func) {
   const string = Function.prototype.toString.call(func) || ''
-  const matches = string.match(/\(.*\)/)
-  const args = matches ? matches[0] : '(?)'
+  const matches = string.match(/\([\s\S]*?\)/)
+  // Trim any excess whitespace from the argument string
+  const args = matches ? `(${matches[0].substr(1, matches[0].length - 2).split(',').map(a => a.trim()).join(', ')})` : '(?)'
   return {
     _custom: {
       type: 'function',
@@ -263,6 +266,7 @@ export function parse (data, revive) {
 }
 
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
+const symbolRE = /^\[native Symbol Symbol\((.*)\)\]$/
 
 function reviver (key, val) {
   if (val === UNDEFINED) {
@@ -281,6 +285,9 @@ function reviver (key, val) {
     } else if (val._custom.type === 'set') {
       return reviveSet(val)
     }
+  } else if (symbolRE.test(val)) {
+    const [, string] = symbolRE.exec(val)
+    return Symbol.for(string)
   } else if (specialTypeRE.test(val)) {
     const [, type, string] = specialTypeRE.exec(val)
     return new window[type](string)
