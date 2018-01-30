@@ -12,6 +12,8 @@
 export function installHook (window) {
   let listeners = {}
 
+  if (window.hasOwnProperty('__VUE_DEVTOOLS_GLOBAL_HOOK__')) return
+
   const hook = {
     Vue: null,
 

@@ -29,14 +29,16 @@ export default {
       'view'
     ]),
     leftStyles () {
-      return {
+      const obj = {
         [this.view === 'vertical' ? 'width' : 'height']: `${this.boundSplit}%`
       }
+      return obj
     },
     rightStyles () {
-      return {
+      const obj = {
         [this.view === 'vertical' ? 'width' : 'height']: `${100 - this.boundSplit}%`
       }
+      return obj
     },
     classes () {
       return [
