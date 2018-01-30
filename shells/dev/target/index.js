@@ -9,8 +9,8 @@ import MyClass from './MyClass.js'
 import Router from './Router.vue'
 import router from './router'
 
-Vue.config.devtoolsConfig = {
-  openInEditorHost: 'http://localhost:8080/'
+window.VUE_DEVTOOLS_CONFIG = {
+  openInEditorHost: '/'
 }
 
 const items = []

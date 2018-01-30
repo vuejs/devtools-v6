@@ -43,7 +43,7 @@ You can change the request host (default `/`) with the following code in your fr
 ```js
 // App served from port 4000
 // Webpack dev server on port 9000
-Vue.config.devtoolsConfig = {
+window.VUE_DEVTOOLS_CONFIG = {
   openInEditorHost: 'http://localhost:9000/'
 }
 ```

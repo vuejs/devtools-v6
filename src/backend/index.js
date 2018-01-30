@@ -122,8 +122,8 @@ function connect () {
   window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   // User project devtools config
-  if (hook.Vue.config.hasOwnProperty('devtoolsConfig')) {
-    const config = hook.Vue.config.devtoolsConfig
+  if (window.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+    const config = window.VUE_DEVTOOLS_CONFIG
 
     // Open in editor
     if (config.hasOwnProperty('openInEditorHost')) {
