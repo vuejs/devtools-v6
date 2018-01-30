@@ -41,9 +41,11 @@ You can use the [launch-editor](https://github.com/yyx990803/launch-editor#usage
 You can change the request host (default `/`) with the following code in your frontend app:
 
 ```js
-// App served from port 4000
-// Webpack dev server on port 9000
-window.VUE_DEVTOOLS_CONFIG = {
-  openInEditorHost: 'http://localhost:9000/'
+if (process.env.NODE_ENV !== 'production')
+  // App served from port 4000
+  // Webpack dev server on port 9000
+  window.VUE_DEVTOOLS_CONFIG = {
+    openInEditorHost: 'http://localhost:9000/'
+  }
 }
 ```
