@@ -12,6 +12,8 @@ export const keys = {
 }
 
 export function initEnv (Vue) {
+  if (Vue.prototype.hasOwnProperty('$isChrome')) return
+
   Object.defineProperties(Vue.prototype, {
     '$isChrome': { get: () => isChrome },
     '$isWindows': { get: () => isWindows },
