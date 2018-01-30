@@ -48,7 +48,14 @@ export function init (params) {
   })
 
   // Update value from other shared data clients
-  bridge.on('shared-data:set', ({ key, value }) => setValue(key, value))
+  bridge.on('shared-data:set', ({ key, value }) => {
+    setValue(key, value)
+  })
+}
+
+export function destroy () {
+  bridge.removeAllListeners('shared-data:set')
+  vm.$destroy()
 }
 
 function setValue (key, value) {
