@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>Author</key>
-	<string>Jared Hobbs</string>
+	<string>Evan You</string>
 	<key>Builder Version</key>
-	<string>13604.1.21.7</string>
+	<string>12604.1.38.1.7</string>
 	<key>CFBundleDisplayName</key>
 	<string>Vue.js devtools</string>
 	<key>CFBundleIdentifier</key>
@@ -75,13 +75,10 @@
 	<dict>
 		<key>Website Access</key>
 		<dict>
-			<key>Allowed Domains</key>
-			<array>
-				<string>localhost</string>
-				<string>127.0.0.1</string>
-			</array>
+			<key>Include Secure Pages</key>
+			<true/>
 			<key>Level</key>
-			<string>Some</string>
+			<string>All</string>
 		</dict>
 	</dict>
 </dict>
