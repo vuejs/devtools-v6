@@ -23,7 +23,7 @@
         </span>
         <span class="angle-bracket">&lt;</span><span class="item-name">{{ displayName }}</span><span class="angle-bracket">&gt;</span>
       </span>
-      <span class="info console" v-if="instance.consoleId === '$vm0'" title="Availble as $vm0 in the console.">
+      <span class="info console" v-if="instance.consoleId === '$vm0'" title="Available as $vm0 in the console.">
         = {{ instance.consoleId }}
       </span>
       <span class="info router-view" v-if="instance.isRouterView">
