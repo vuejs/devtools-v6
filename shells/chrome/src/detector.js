@@ -1,4 +1,5 @@
 import { installToast } from 'src/backend/toast'
+import { isFirefox } from 'src/devtools/env'
 
 window.addEventListener('message', e => {
   if (e.source === window && e.data.vueDetected) {
@@ -36,8 +37,16 @@ if (document instanceof HTMLDocument) {
 }
 
 function installScript (fn) {
-  const script = document.createElement('script')
-  script.textContent = ';(' + fn.toString() + ')(window)'
-  document.documentElement.appendChild(script)
-  script.parentNode.removeChild(script)
+  const source = ';(' + fn.toString() + ')(window)'
+
+  if (isFirefox) {
+    /* eslint-disable no-eval */
+    window.eval(source) // in Firefox, this evaluates on the content window
+    /* eslint-enable no-eval */
+  } else {
+    const script = document.createElement('script')
+    script.textContent = source
+    document.documentElement.appendChild(script)
+    script.parentNode.removeChild(script)
+  }
 }
