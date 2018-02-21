@@ -2,7 +2,7 @@ import io from 'socket.io-client'
 import { initDevTools } from 'src/devtools'
 import Bridge from 'src/bridge'
 
-const port = process.env.PORT || 8098
+const port = window.process.env.PORT || 8098
 const socket = io('http://localhost:' + port)
 const $ = document.querySelector.bind(document)
 const $intro = $('#intro')
