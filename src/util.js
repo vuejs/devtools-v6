@@ -245,7 +245,12 @@ export function getCustomComponentDefinitionDetails (def) {
 }
 
 export function getCustomFunctionDetails (func) {
-  const string = Function.prototype.toString.call(func) || ''
+  const string = ''
+  try {
+    string = Function.prototype.toString.call(func)
+  } catch (e) {
+    // Func is probably a Proxy, which can break Function.prototype.toString()
+  }
   const matches = string.match(/\(.*\)/)
   const args = matches ? matches[0] : '(?)'
   return {
