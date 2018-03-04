@@ -245,7 +245,7 @@ export function getCustomComponentDefinitionDetails (def) {
 }
 
 export function getCustomFunctionDetails (func) {
-  const string = ''
+  let string = ''
   try {
     string = Function.prototype.toString.call(func)
   } catch (e) {
