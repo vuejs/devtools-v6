@@ -23,16 +23,29 @@
         </span>
         <span class="angle-bracket">&lt;</span><span class="item-name">{{ displayName }}</span><span class="angle-bracket">&gt;</span>
       </span>
-      <span class="info console" v-if="instance.consoleId === '$vm0'" title="Available as $vm0 in the console.">
+      <span
+        v-if="instance.consoleId"
+        class="info console"
+        v-tooltip="$t('ComponentInstance.consoleId.tooltip', { id: instance.consoleId })"
+      >
         = {{ instance.consoleId }}
       </span>
-      <span class="info router-view" v-if="instance.isRouterView">
+      <span
+        v-if="instance.isRouterView"
+        class="info router-view"
+      >
         router-view{{ instance.matchedRouteSegment ? ': ' + instance.matchedRouteSegment : null }}
       </span>
-      <span class="info fragment" v-if="instance.isFragment">
+      <span
+        v-if="instance.isFragment"
+        class="info fragment"
+      >
         fragment
       </span>
-      <span class="info inactive" v-if="instance.inactive">
+      <span
+        v-if="instance.inactive"
+        class="info inactive"
+      >
         inactive
       </span>
       <span class="spacer"></span>
