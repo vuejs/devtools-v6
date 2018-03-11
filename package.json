@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "4.1.3",
+  "version": "4.1.4",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
-    "buble": "^0.18.0",
+    "buble": "^0.19.0",
     "buble-loader": "^0.4.1",
     "chromedriver": "^2.34.0",
     "cross-env": "^5.1.3",
@@ -46,12 +46,12 @@
     "nightwatch": "^0.9.19",
     "nightwatch-helpers": "^1.2.0",
     "raw-loader": "^0.5.1",
-    "selenium-server": "2.52.0",
+    "selenium-server": "2.53.1",
     "semver": "^5.4.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "url-loader": "^0.6.2",
-    "vue-loader": "^13.6.1",
+    "vue-loader": "^14.2.1",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
