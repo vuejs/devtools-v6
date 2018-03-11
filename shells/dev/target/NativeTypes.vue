@@ -93,7 +93,11 @@ export default {
       html: '<b>Bold</b> <i>Italic</i>',
       htmlReg: /<b>hey<\/b>/i,
       'html <b>key</b>': (h, t, m, l) => {},
-      proxy1
+      proxy1,
+      sym: Symbol('test'),
+      multiLineParameterFunction: function(a,
+                                  b,
+                                  c) {}
     }
   },
   computed: {
