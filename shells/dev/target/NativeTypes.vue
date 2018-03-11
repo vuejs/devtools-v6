@@ -44,6 +44,19 @@ function setToString (func, string) {
 
 const aWeirdFunction = setToString(function weird (a, b, c) {}, 'foo')
 
+function sum (a, b) {
+  return a + b
+}
+
+const handler = {
+  apply: function (target, thisArg, argumentsList) {
+    console.log(`Calculate sum: ${argumentsList}`)
+    return argumentsList[0] + argumentsList[1]
+  }
+}
+
+const proxy1 = new Proxy(sum, handler)
+
 export default {
   components: {
     TestComponent: {
@@ -79,7 +92,8 @@ export default {
       j: new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])], [8, new Set([1, 2, 3, 4, new Set([5, 6, 7, 8]), new Map([[1, 2], [3, 4], [5, new Map([[6, 7]])]])])]]),
       html: '<b>Bold</b> <i>Italic</i>',
       htmlReg: /<b>hey<\/b>/i,
-      'html <b>key</b>': (h, t, m, l) => {}
+      'html <b>key</b>': (h, t, m, l) => {},
+      proxy1
     }
   },
   computed: {
