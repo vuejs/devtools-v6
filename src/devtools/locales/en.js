@@ -44,6 +44,11 @@ export default {
       tooltip: '[[{{keys.ctrl}}]] + [[F]] Filter components by name'
     }
   },
+  ComponentInstance: {
+    consoleId: {
+      tooltip: 'Available as <mono>{{id}}</mono> in the console.'
+    }
+  },
   ComponentInspector: {
     openInEditor: {
       tooltip: 'Open <mono><<insert_drive_file>>{{file}}</mono> in editor'
