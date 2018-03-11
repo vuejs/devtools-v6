@@ -31,7 +31,8 @@ Then add:
 Or if you want to debug your device remotely:
 ```html
 <script>
-  window.__VUE_DEVTOOLS_HOST__ = '<your-local-ip>'
+  window.__VUE_DEVTOOLS_HOST__ = '<your-local-ip>' // default: localhost
+  window.__VUE_DEVTOOLS_PORT__ = '<devtools-port>' // default: 8098
 </script>
 <script src="http://<your-local-ip>:8098"></script>
 ```
@@ -60,11 +61,52 @@ import devtools from '@vue/devtools'
 And connect to host:
 ```js
 if (process.env.NODE_ENV === 'development') {
-  devtools.connect(/* host */)
+  devtools.connect(/* host, port */)
 }
 ```
 
 **host** - is an optional argument that tells your application where devtools middleware server is running, if you debug you app on your computer you don't have to set this (the default is `http://localhost`), but if you want to debug your app on mobile devices, you might want to pass your local IP (e.g. `192.168.1.12`).
+
+**port** - is an optional argument that tells your application on what port devtools middleware server is running. If you use proxy server, you might want to set it to `null` so the port won't be added to connection URL.
+
+#### FAQ:
+
+**1. How to change port devtools server is running on?**
+
+You can change it by setting environment variable before running it:
+```
+PORT=8000 vue-devtools
+```
+
+Then in your app you'll have to set either:
+```
+window.__VUE_DEVTOOLS_PORT__ = 8000
+```
+
+Or update connect method with new port:
+```
+devtools.connect(/* host */, 8000)
+```
+
+**2. How to remotely inspect page on the server?**
+
+For that you can use `ngrok` proxy. You can download it [here](https://ngrok.com/).
+
+Once you start vue-devtools run:
+```
+ngrok http 8098
+```
+
+Then update your host and port accordingly:
+```
+devtools.connect('example.ngrok.io', null)
+```
+
+Make sure to set port to `null` or `false`, because ngrok host already proxies to proper port that we defined in the first command.
+
+**3. How to inspect page served through `HTTPS`?**
+
+For that you can also use ngrok, as it automatically proxies https requests to http. Take a look at question number 2 for instructions.
 
 ### :beers: Development
 
