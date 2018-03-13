@@ -29,7 +29,7 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 **Make sure you are using Node 6+ and NPM 3+**
 
 1. Clone this repo
-2. `npm install` (Or `yarn install` if you are using yarn as the package manager)
+2. `npm install --production` (Or `yarn install --prod` if you are using yarn as the package manager)
 3. `npm run build`
 4. Open Chrome extension page
 5. Check "developer mode"
