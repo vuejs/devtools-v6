@@ -163,8 +163,9 @@ function scan () {
         if (typeof instance.__VUE_DEVTOOLS_ROOT_UID__ === 'undefined') {
           instance.__VUE_DEVTOOLS_ROOT_UID__ = ++rootUID
         }
-        if( rootInstances.indexOf(instance.$root) == -1 )
-        rootInstances.push(instance.$root)
+        if(rootInstances.indexOf(instance.$root) == -1) {
+           rootInstances.push(instance.$root)
+        }
       }
 
       return true
