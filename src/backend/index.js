@@ -165,6 +165,8 @@ function scan () {
         }
         if (rootInstances.indexOf(instance.$root) === -1) {
           rootInstances.push(instance.$root)
+        } else {
+          rootInstances.push(instance)
         }
       }
 
