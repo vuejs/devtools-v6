@@ -49,10 +49,11 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "url-loader": "^0.6.2",
-    "vue-loader": "^14.2.1",
+    "vue-loader": "^15.0.0-beta.1",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7"
+    "webpack-dev-server": "^2.9.7",
+    "webpack-merge": "^4.1.2"
   },
   "dependencies": {
     "circular-json-es6": "^2.0.1",
