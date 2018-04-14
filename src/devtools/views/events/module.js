@@ -24,8 +24,6 @@ const mutations = {
     state.inspectedIndex = -1
   },
   'INSPECT' (state, index) {
-    if (index < 0) index = 0
-    if (index >= state.events.length) index = state.events.length - 1
     state.inspectedIndex = index
   },
   'RESET_NEW_EVENT_COUNT' (state) {
@@ -44,8 +42,8 @@ const mutations = {
 }
 
 const getters = {
-  activeEvent: state => {
-    return state.events[state.inspectedIndex]
+  activeEvent: (state, getters) => {
+    return getters.filteredEvents[state.inspectedIndex]
   },
   filteredEvents: (state, getters, rootState) => {
     const classifyComponents = rootState.components.classifyComponents
@@ -60,9 +58,18 @@ const getters = {
   }
 }
 
+const actions = {
+  inspect: ({ commit, getters }, index) => {
+    if (index < 0) index = 0
+    if (index >= getters.filteredEvents.length) index = getters.filteredEvents.length - 1
+    commit('INSPECT', index)
+  }
+}
+
 export default {
   namespaced: true,
   state,
   mutations,
-  getters
+  getters,
+  actions
 }

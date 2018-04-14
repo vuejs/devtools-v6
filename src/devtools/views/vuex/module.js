@@ -91,8 +91,8 @@ function escapeStringForRegExp (str) {
 }
 
 const getters = {
-  inspectedState ({ base, history, inspectedIndex }) {
-    const entry = history[inspectedIndex]
+  inspectedState ({ base, inspectedIndex }, getters) {
+    const entry = getters.filteredHistory[inspectedIndex]
     const res = {}
 
     if (entry) {
