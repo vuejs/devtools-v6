@@ -83,6 +83,8 @@ export default {
             } else if (code === 'Digit3') {
               this.switchTab('events')
               return false
+            } else if (key === 'p' || code === 'KeyP') {
+              return false
             }
         }
       }
