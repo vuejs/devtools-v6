@@ -21,7 +21,12 @@
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
-        <span class="angle-bracket">&lt;</span><span class="item-name">{{ displayName }}</span><span class="angle-bracket">&gt;</span>
+        <span class="angle-bracket">&lt;</span>
+          <span class="item-name">{{ displayName }}</span>
+        <span class="item-key" v-if="componentHasKey">
+          <span class="item-key-title"> key</span>=<span class="item-key-value">{ {{componentKey}} }</span>
+        </span>
+        <span class="angle-bracket">&gt;</span>
       </span>
       <span
         v-if="instance.consoleId"
@@ -69,7 +74,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { classify, scrollIntoView } from '../../../util'
+import {classify, scrollIntoView, UNDEFINED} from '../../../util'
 
 export default {
   name: 'ComponentInstance',
@@ -105,6 +110,15 @@ export default {
     },
     displayName () {
       return this.classifyComponents ? classify(this.instance.name) : this.instance.name
+    },
+    componentHasKey(){
+        return !!this.instance.forKey && this.instance.forKey !== UNDEFINED; //this.$parent.$vnode.data.refInFor;
+    },
+    componentKey(){
+        // warn("ComponentKey id: ",this.instance.id, this.$vnode.data);
+        // console.log("ComponentKey id: ",this .instance.id, this.$vnode.data);
+        // console.log(this.instance);
+        return this.instance.forKey; //this.instance.$vnode ? this.instance.$vnode['key'] : 'null';// + this.$vnode.data.key + ':::' + this.instance.id;
     }
   },
   watch: {
@@ -232,6 +246,9 @@ export default {
 .item-name
   color $component-color
   margin 0 1px
+
+.item-key-title
+  color purple
 
 .spacer
   flex 100% 1 1
