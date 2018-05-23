@@ -283,7 +283,7 @@ function capture (instance, _, list) {
   const ret = {
     id: instance.__VUE_DEVTOOLS_UID__,
     name: getInstanceName(instance),
-    forKey: !!instance.$vnode ? instance.$vnode['key'] : null,
+    forKey: instance.$vnode ? instance.$vnode['key'] : null,
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
     children: instance.$children

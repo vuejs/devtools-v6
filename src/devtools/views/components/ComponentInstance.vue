@@ -74,7 +74,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import {classify, scrollIntoView, UNDEFINED} from '../../../util'
+import { classify, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
   name: 'ComponentInstance',
@@ -111,14 +111,11 @@ export default {
     displayName () {
       return this.classifyComponents ? classify(this.instance.name) : this.instance.name
     },
-    componentHasKey(){
-        return !!this.instance.forKey && this.instance.forKey !== UNDEFINED; //this.$parent.$vnode.data.refInFor;
+    componentHasKey () {
+      return !!this.instance.forKey && this.instance.forKey !== UNDEFINED
     },
-    componentKey(){
-        // warn("ComponentKey id: ",this.instance.id, this.$vnode.data);
-        // console.log("ComponentKey id: ",this .instance.id, this.$vnode.data);
-        // console.log(this.instance);
-        return this.instance.forKey; //this.instance.$vnode ? this.instance.$vnode['key'] : 'null';// + this.$vnode.data.key + ':::' + this.instance.id;
+    componentKey () {
+      return this.instance.forKey
     }
   },
   watch: {
