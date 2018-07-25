@@ -4,7 +4,7 @@
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
-    "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
+    "dev": "cd shells/dev && webpack-dev-server --inline --hot --progress",
     "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src && eslint shells/electron/src",
     "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
