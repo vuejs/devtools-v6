@@ -350,7 +350,7 @@ export default {
 
     editErrorMessage () {
       if (!this.valueValid) {
-        return 'Invalid value'
+        return 'Invalid value (must be valid JSON)'
       } else if (!this.keyValid) {
         if (this.duplicateKey) {
           return 'Duplicate key'
