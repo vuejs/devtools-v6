@@ -48,20 +48,20 @@
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
-          <BaseIcon
+          <VueIcon
             v-if="!editValid"
             class="icon-button warning"
             v-tooltip="editErrorMessage"
             icon="warning"
           />
           <template v-else>
-            <BaseIcon
+            <VueIcon
               class="icon-button medium"
               icon="cancel"
               v-tooltip="$t('DataField.edit.cancel.tooltip')"
               @click="cancelEdit()"
             />
-            <BaseIcon
+            <VueIcon
               class="icon-button"
               icon="save"
               v-tooltip="$t('DataField.edit.submit.tooltip')"
@@ -79,7 +79,7 @@
           v-html="formattedValue"
         />
         <span class="actions">
-          <BaseIcon
+          <VueIcon
             v-if="isValueEditable"
             class="edit-value icon-button"
             icon="edit"
@@ -87,7 +87,7 @@
             @click="openEdit()"
           />
           <template v-if="quickEdits">
-            <BaseIcon
+            <VueIcon
               v-for="(info, index) of quickEdits"
               :key="index"
               class="quick-edit icon-button"
@@ -97,14 +97,14 @@
               @click="quickEdit(info, $event)"
             />
           </template>
-          <BaseIcon
+          <VueIcon
             v-if="isSubfieldsEditable && !addingValue"
             class="add-value icon-button"
             icon="add_circle"
             v-tooltip="'Add new value'"
             @click="addNewValue()"
           />
-          <BaseIcon
+          <VueIcon
             v-if="removable"
             class="remove-field icon-button"
             icon="delete"

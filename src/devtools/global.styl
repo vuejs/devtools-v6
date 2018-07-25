@@ -7,7 +7,7 @@
   font-weight 400
   src local('Roboto'), local('Roboto-Regular'), url(./assets/Roboto-Regular.woff2) format('woff2')
 
-.toggle-recording .svg-icon
+.toggle-recording .vue-ui-icon
   svg
     fill #999 !important
   &.enabled
@@ -16,7 +16,7 @@
     svg
       fill red !important
 
-.svg-icon
+.vue-ui-icon
   display inline-block
   width 22px
   height @width
@@ -129,7 +129,7 @@ $arrow-color = #444
     color $white
     border-radius 3px
     padding 5px 10px
-    .svg-icon
+    .vue-ui-icon
       width 16px
       height @width
       position relative
@@ -302,7 +302,7 @@ $arrow-color = #444
 
 .green
   color $green
-  .svg-icon svg
+  .vue-ui-icon svg
     fill @color
 
 .grey
@@ -328,7 +328,7 @@ $arrow-color = #444
     background $dark-background-color
   &,
   .tooltip .tooltip-inner &
-    .svg-icon
+    .vue-ui-icon
       top 4px
       margin-right 4px
       svg

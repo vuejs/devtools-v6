@@ -56,12 +56,11 @@
     "webpack-merge": "^4.1.2"
   },
   "dependencies": {
+    "@vue/ui": "^0.4.7",
     "circular-json-es6": "^2.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
-    "material-design-icons": "^3.0.1",
     "uglifyjs-webpack-plugin": "^1.1.4",
-    "v-tooltip": "^2.0.0-rc.25",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

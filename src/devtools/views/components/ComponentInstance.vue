@@ -49,7 +49,7 @@
         inactive
       </span>
       <span class="spacer"></span>
-      <BaseIcon
+      <VueIcon
         class="icon-button"
         icon="visibility"
         v-tooltip="'Scroll into view'"

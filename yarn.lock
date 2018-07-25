@@ -16,6 +16,15 @@
     source-map "^0.5.6"
     vue-template-es2015-compiler "^1.6.0"
 
+"@vue/ui@^0.4.7":
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.4.7.tgz#4343b8132ecf714484e044604cb93b29dde34b31"
+  dependencies:
+    focus-visible "^4.1.4"
+    material-design-icons "^3.0.1"
+    v-tooltip "^2.0.0-rc.33"
+    vue-resize "^0.4.4"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -1981,6 +1990,10 @@ flush-write-stream@^1.0.0:
   dependencies:
     inherits "^2.0.1"
     readable-stream "^2.0.4"
+
+focus-visible@^4.1.4:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/focus-visible/-/focus-visible-4.1.4.tgz#f9963bcf5784b1d9dcde62ba53214d38a4f3f9af"
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
@@ -5572,7 +5585,7 @@ uuid@^3.1.0:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
 
-v-tooltip@^2.0.0-rc.25:
+v-tooltip@^2.0.0-rc.33:
   version "2.0.0-rc.33"
   resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-2.0.0-rc.33.tgz#78f7d8e9c34265622be65ba9dc78c67f1dc02b73"
   dependencies:
@@ -5631,7 +5644,7 @@ vue-loader@^15.0.0-beta.1:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
-vue-resize@^0.4.3:
+vue-resize@^0.4.3, vue-resize@^0.4.4:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-0.4.4.tgz#dee9b8dd1b189e7e3f6ec47f86c60694a241bb17"
 

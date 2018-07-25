@@ -16,7 +16,7 @@
       v-tooltip="$t('App.components.tooltip')"
       @click="switchTab('components')"
     >
-      <BaseIcon icon="device_hub"/>
+      <VueIcon icon="device_hub"/>
       <span class="pane-name">Components</span>
     </a>
     <a
@@ -25,7 +25,7 @@
       v-tooltip="$t('App.vuex.tooltip')"
       @click="switchTab('vuex')"
     >
-      <BaseIcon icon="restore"/>
+      <VueIcon icon="restore"/>
       <span class="pane-name">Vuex</span>
     </a>
     <a
@@ -34,7 +34,7 @@
       v-tooltip="$t('App.events.tooltip')"
       @click="switchTab('events')"
     >
-      <BaseIcon icon="grain"/>
+      <VueIcon icon="grain"/>
       <span class="pane-name">Events</span>
       <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
     </a>
@@ -43,7 +43,7 @@
       v-tooltip="$t('App.refresh.tooltip')"
       @click="refresh"
     >
-      <BaseIcon ref="refresh" icon="refresh"/>
+      <VueIcon ref="refresh" icon="refresh"/>
       <span class="pane-name">Refresh</span>
     </a>
     <span class="active-bar"></span>
@@ -211,7 +211,7 @@ export default {
   .dark &
     background-color $dark-background-color
 
-  .svg-icon
+  .vue-ui-icon
     width 20px
     height @width
     margin-right 5px
@@ -221,12 +221,12 @@ export default {
 
   &:hover
     color #555
-    .svg-icon >>> svg
+    .vue-ui-icon >>> svg
       fill @color
 
   &.active
     color $active-color
-    .svg-icon >>> svg
+    .vue-ui-icon >>> svg
       fill @color
 
   &:first-of-type

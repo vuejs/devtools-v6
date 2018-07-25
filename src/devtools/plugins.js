@@ -1,21 +1,10 @@
 import Vue from 'vue'
+import VueUi, { generateHtmlIcon } from '@vue/ui'
 import { keys } from './env'
-import VTooltip from 'v-tooltip'
 import VI18n from './plugins/i18n'
 import GlobalRefs from './plugins/global-refs'
-import Icons, { generateHtmlIcon } from './plugins/icons'
 
-Vue.use(VTooltip, {
-  defaultDelay: {
-    show: 600,
-    hide: 0
-  },
-  defaultOffset: 2,
-  defaultBoundariesElement: document.body,
-  popover: {
-    defaultHandleResize: false
-  }
-})
+Vue.use(VueUi)
 
 const currentLocale = 'en'
 const locales = require.context('./locales')
@@ -45,5 +34,3 @@ Vue.use(GlobalRefs, {
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })
-
-Vue.use(Icons)

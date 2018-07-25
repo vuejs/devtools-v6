@@ -5,7 +5,7 @@
         class="search"
         v-tooltip="$t('VuexHistory.filter.tooltip')"
       >
-        <BaseIcon icon="search"/>
+        <VueIcon icon="search"/>
         <input
           ref="filterMutations"
           :class="{ invalid: filterRegexInvalid }"
@@ -19,7 +19,7 @@
         v-tooltip="$t('VuexHistory.commitAll.tooltip')"
         @click="commitAll"
       >
-        <BaseIcon icon="get_app"/>
+        <VueIcon icon="get_app"/>
         <span>Commit All</span>
       </a>
       <a
@@ -28,7 +28,7 @@
         v-tooltip="$t('VuexHistory.revertAll.tooltip')"
         @click="revertAll"
       >
-        <BaseIcon class="small" icon="do_not_disturb"/>
+        <VueIcon class="small" icon="do_not_disturb"/>
         <span>Revert All</span>
       </a>
       <a
@@ -36,7 +36,7 @@
         v-tooltip="$t(`VuexHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
         @click="toggleRecording"
       >
-        <BaseIcon class="small" :class="{ enabled }" icon="lens"/>
+        <VueIcon class="small" :class="{ enabled }" icon="lens"/>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
@@ -51,7 +51,7 @@
         <span class="entry-actions">
           <a class="action"
              @click.stop="timeTravelTo(null)" v-tooltip="'Time Travel to This State'">
-            <BaseIcon class="medium" icon="restore"/>
+            <VueIcon class="medium" icon="restore"/>
             <span>Time Travel</span>
           </a>
         </span>
@@ -76,18 +76,18 @@
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions">
           <a class="action" @click.stop="commit(entry)" v-tooltip="'Commit This Mutation'">
-            <BaseIcon class="medium" icon="get_app"/>
+            <VueIcon class="medium" icon="get_app"/>
             <span>Commit</span>
           </a>
           <a class="action" @click.stop="revert(entry)" v-tooltip="'Revert This Mutation'">
-            <BaseIcon class="small" icon="do_not_disturb"/>
+            <VueIcon class="small" icon="do_not_disturb"/>
             <span>Revert</span>
           </a>
           <a v-if="!isActive(entry)"
              class="action"
              @click.stop="timeTravelTo(entry)"
              v-tooltip="'Time Travel to This State'">
-            <BaseIcon class="medium" icon="restore"/>
+            <VueIcon class="medium" icon="restore"/>
             <span>Time Travel</span>
           </a>
         </span>
@@ -229,11 +229,11 @@ $inspected_color = #af90d5
       color lighten($active-color, 75%)
     .action
       color lighten($active-color, 75%)
-      .svg-icon >>> svg
+      .vue-ui-icon >>> svg
         fill  lighten($active-color, 75%)
       &:hover
         color lighten($active-color, 95%)
-        .svg-icon >>> svg
+        .vue-ui-icon >>> svg
           fill  lighten($active-color, 95%)
     .label.inspected
       background-color darken($inspected_color, 10%)
@@ -243,7 +243,7 @@ $inspected_color = #af90d5
     &.inspected
       border-left 4px solid darken($inspected_color, 15%)
       padding-left 16px
-  .svg-icon, span, a
+  .vue-ui-icon, span, a
     display inline-block
     vertical-align middle
   .mutation-type
@@ -273,13 +273,13 @@ $inspected_color = #af90d5
     display none
     @media (min-width: 1080px)
       display inline
-  .svg-icon
+  .vue-ui-icon
     width 18px
     height @width
     margin-right 2px
   &:hover
     color $active-color
-    .svg-icon >>> svg
+    .vue-ui-icon >>> svg
       fill $active-color
 
 .time
