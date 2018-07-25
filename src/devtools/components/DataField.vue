@@ -1,9 +1,9 @@
 <template>
   <div class="data-field">
     <v-popover
-      class="self"
-      :class="cssClass"
       :style="{ marginLeft: depth * 14 + 'px' }"
+      class="self"
+      popover-class="force-tooltip"
       trigger="hover"
       placement="left"
       offset="24"
@@ -533,11 +533,17 @@ export default {
 .meta
   font-size 12px
   font-family Menlo, Consolas, monospace
-  color #444
   min-width 150px
   .key
     display inline-block
     width 80px
+    color lighten(#881391, 60%)
+    .vue-ui-dark-mode &
+      color #881391
+  .value
+    color white
+    .vue-ui-dark-mode &
+      color black
 .meta-field
   &:not(:last-child)
     margin-bottom 4px
