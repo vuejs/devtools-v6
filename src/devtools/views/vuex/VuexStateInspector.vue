@@ -153,7 +153,7 @@ function copyToClipboard (state) {
   font-size 12px
   color $red
   background-color $background-color
-  .dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
 
 .import-state
@@ -168,7 +168,7 @@ function copyToClipboard (state) {
   border 1px solid $border-color
   padding 3px
   background-color $background-color
-  .dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
     box-shadow 4px 4px 6px 0 $dark-border-color
     border 1px solid $dark-border-color
@@ -187,7 +187,7 @@ function copyToClipboard (state) {
     outline none
     border none
     resize vertical
-    .dark &
+    .vue-ui-dark-mode &
       color #DDD
       background-color $dark-background-color
 </style>

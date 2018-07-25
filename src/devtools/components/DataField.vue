@@ -469,16 +469,16 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
-    .dark &
+    .vue-ui-dark-mode &
       color: #242424
 
 .key
   color #881391
-  .dark &
+  .vue-ui-dark-mode &
     color: #e36eec
   &.abstract
     color $blueishGrey
-    .dark &
+    .vue-ui-dark-mode &
       color lighten($blueishGrey, 20%)
 .value
   display inline-block
@@ -488,7 +488,7 @@ export default {
   &.string
     >>> span
       color $black
-      .dark &
+      .vue-ui-dark-mode &
         color $red
   &.null
     color #999
@@ -515,13 +515,13 @@ export default {
           font-family Menlo, monospace
         .platform-windows &
           font-family Consolas, Lucida Console, Courier New, monospace
-        .dark &
+        .vue-ui-dark-mode &
           color $purple
     &.type-component-definition
       color $green
       >>> span
         color $darkerGrey
-  .dark &
+  .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
       color #e33e3a

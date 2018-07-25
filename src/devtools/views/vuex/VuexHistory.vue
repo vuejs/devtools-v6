@@ -255,7 +255,7 @@ $inspected_color = #af90d5
   &:hover
     .entry-actions
       display inline-block
-  .dark &
+  .vue-ui-dark-mode &
     .mutation-type
       color #e36eec
     &.active

@@ -17,7 +17,7 @@
   height 35px
   @media (min-height: $tall)
     height 50px
-  .dark &
+  .vue-ui-dark-mode &
     border-bottom 1px solid $dark-border-color
 
 .title

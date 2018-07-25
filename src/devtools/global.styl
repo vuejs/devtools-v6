@@ -1,5 +1,8 @@
-@import "./variables"
-@import "./transitions"
+@import '~@vue/ui/dist/vue-ui.css'
+
+@import './variables'
+@import './transitions'
+
 
 @font-face
   font-family 'Roboto'
@@ -92,7 +95,7 @@ $arrow-color = #444
     .item-name
       color #fff
 
-  .dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
     &:hover
       background-color $dark-hover-color
@@ -114,176 +117,6 @@ $arrow-color = #444
 .scroll
   position relative
 
-// Tooltips & Popovers
-
-.tooltip
-  $arrow-size = 5px
-  $tooltip-animation-duration = .15s
-  $popover-background = #f9f9f9
-  $popover-background-dark = #131313
-  display block !important
-  z-index 10000
-  font-size 14px
-  .tooltip-inner
-    background $black
-    color $white
-    border-radius 3px
-    padding 5px 10px
-    .vue-ui-icon
-      width 16px
-      height @width
-      position relative
-      top 3px
-  .tooltip-arrow
-    width $arrow-size
-    height $arrow-size
-    position absolute
-    margin $arrow-size
-    z-index 1
-    &::before,
-    &::after
-      content ''
-      width 0
-      height 0
-      border-style solid
-      position absolute
-      border-width inherit
-      top 0
-      left 0
-    &::before
-      border-color $grey
-      display none
-    &::after
-      border-color $black
-  .dark &
-    .tooltip-inner
-      background $white
-      color $black
-    .tooltip-arrow
-      &::before
-        border-color grey
-      &::after
-        border-color $white
-  &[x-placement^='top']
-    margin-bottom $arrow-size
-    .tooltip-arrow
-      bottom -($arrow-size)
-      left 'calc(50% - %s)' % $arrow-size
-      margin-top 0
-      margin-bottom 0
-      &::before,
-      &::after
-        left (-($arrow-size) / 2)
-      &::before
-        top 1px
-      &::after,
-      &::before
-        border-width $arrow-size $arrow-size 0 $arrow-size
-        border-left-color transparent !important
-        border-right-color transparent !important
-        border-bottom-color transparent !important
-  &[x-placement^='bottom']
-    margin-top $arrow-size
-    .tooltip-arrow
-      top -($arrow-size)
-      left 'calc(50% - %s)' % $arrow-size
-      margin-top 0
-      margin-bottom 0
-      &::before,
-      &::after
-        left (-($arrow-size) / 2)
-      &::before
-        top -1px
-      &::after,
-      &::before
-        border-width 0 $arrow-size $arrow-size $arrow-size
-        border-left-color transparent !important
-        border-right-color transparent !important
-        border-top-color transparent !important
-  &[x-placement^='right']
-    margin-left $arrow-size
-    .tooltip-arrow
-      left -($arrow-size)
-      top 'calc(50% - %s)' % $arrow-size
-      margin-left 0
-      margin-right 0
-      &::before,
-      &::after
-        top (-($arrow-size) / 2)
-      &::before
-        left -1px
-      &::after,
-      &::before
-        border-width $arrow-size $arrow-size $arrow-size 0
-        border-left-color transparent !important
-        border-top-color transparent !important
-        border-bottom-color transparent !important
-  &[x-placement^='left']
-    margin-right $arrow-size
-    .tooltip-arrow
-      right -($arrow-size)
-      top 'calc(50% - %s)' % $arrow-size
-      margin-left 0
-      margin-right 0
-      &::before,
-      &::after
-        top (-($arrow-size) / 2)
-      &::before
-        left 1px
-      &::after,
-      &::before
-        border-width $arrow-size 0 $arrow-size $arrow-size
-        border-top-color transparent !important
-        border-right-color transparent !important
-        border-bottom-color transparent !important
-  &.popover
-    $color = $popover-background
-    &[x-placement^='top']
-      .popover-inner
-        bottom -1px
-    &[x-placement^='bottom']
-      .popover-inner
-        top -1px
-    &[x-placement^='left']
-      .popover-inner
-        right -1px
-    &[x-placement^='right']
-      .popover-inner
-        left -1px
-    .popover-inner
-      background $color
-      color $black
-      padding 8px 12px
-      border-radius 3px
-      box-shadow 0 5px 30px rgba(black, .1)
-      border darken($color, 10%) solid 1px
-    .tooltip-arrow
-      &::before
-        display block
-        border-color darken($color, 10%)
-      &::after
-        border-color $color
-    .dark &
-      $color = $popover-background-dark
-      .popover-inner
-        background $color
-        color $white
-        border-color lighten($color, 10%)
-      .popover-arrow
-        &::before
-          border-color lighten($color, 10%)
-        &::after
-          border-color $color
-
-  &[aria-hidden='true']
-    visibility hidden
-    opacity 0
-    transition opacity $tooltip-animation-duration, visibility $tooltip-animation-duration
-  &[aria-hidden='false']
-    visibility visible
-    opacity 1
-    transition opacity $tooltip-animation-duration
-
 .keyboard
   display inline-block
   min-width 22px
@@ -293,7 +126,7 @@ $arrow-color = #444
   border-radius 3px
   margin-bottom 6px
   box-shadow 0 3px 0 rgba($grey, .2)
-  .dark &
+  .vue-ui-dark-mode &
     background rgba($grey, .9)
     box-shadow 0 3px 0 rgba($grey, .6)
 
@@ -324,7 +157,7 @@ $arrow-color = #444
   border-radius 2px
   display inline-block
   vertical-align baseline
-  .dark &
+  .vue-ui-dark-mode &
     background $dark-background-color
   &,
   .tooltip .tooltip-inner &
@@ -333,5 +166,5 @@ $arrow-color = #444
       margin-right 4px
       svg
         fill #444
-        .dark &
+        .vue-ui-dark-mode &
           fill #666

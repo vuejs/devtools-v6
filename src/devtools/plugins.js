@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueUi, { generateHtmlIcon } from '@vue/ui'
 import { keys } from './env'
 import VI18n from './plugins/i18n'
+import Responsive from './plugins/responsive'
 import GlobalRefs from './plugins/global-refs'
 
 Vue.use(VueUi)
@@ -25,6 +26,17 @@ Vue.use(VI18n, {
       text = text.replace(replacer.reg, replacer.replace)
     }
     return text
+  }
+})
+
+Vue.use(Responsive, {
+  computed: {
+    wide () {
+      return this.width >= 1050
+    },
+    tall () {
+      return this.height >= 350
+    }
   }
 })
 
