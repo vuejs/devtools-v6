@@ -40,12 +40,13 @@
           Vuex
         </VueGroupButton>
         <VueGroupButton
+          :tag="newEventCount > 0 ? newEventCount : null"
           :class="{
             'icon-button': !$responsive.wide
           }"
           value="events"
           icon-left="grain"
-          class="flat"
+          class="flat big-tag"
           v-tooltip="$t('App.events.tooltip')"
         >
           Events
@@ -238,23 +239,6 @@ export default {
 
 .vue-ui-group /deep/ > .indicator
   padding-bottom 0 !important
-
-$event-count-bubble-size = 18px
-
-.event-count
-  background-color $active-color
-  color #fff
-  border-radius 50%
-  width $event-count-bubble-size
-  height $event-count-bubble-size
-  text-align center
-  padding-top 4px
-  font-size $event-count-bubble-size * 0.5
-  position absolute
-  right 0
-  top 12px
-  .vue-ui-dark-mode &
-    background-color $dark-background-color
 
 .container
   overflow hidden

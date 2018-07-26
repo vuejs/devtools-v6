@@ -16,9 +16,9 @@
     source-map "^0.5.6"
     vue-template-es2015-compiler "^1.6.0"
 
-"@vue/ui@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.5.0.tgz#05220e7e3a05e2254efdd5266852f6a471327e0a"
+"@vue/ui@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.5.1.tgz#c1d9c7c2951d90ecb7d53c4cd29f3c9055eb521c"
   dependencies:
     focus-visible "^4.1.4"
     material-design-icons "^3.0.1"
