@@ -182,6 +182,7 @@ suite('vuex tab', () => {
     cy.get('.import-state textarea').clear().type('{{}invalid: json}')
     cy.get('.message.invalid-json').should('be.visible')
     cy.get('.import-state textarea').clear().type('{{}"count":42,"date":"[native Date Fri Dec 22 2017 10:12:04 GMT+0100 (CET)]"}')
+    cy.wait(500)
     cy.get('.message.invalid-json').should('not.be.visible')
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('count:42')
