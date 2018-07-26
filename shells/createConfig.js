@@ -67,7 +67,10 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
     plugins: [
       new VueLoaderPlugin(),
       ...(process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()])
-    ]
+    ],
+    devServer: {
+      port: process.env.PORT
+    }
   }
 
   if (process.env.NODE_ENV === 'production') {

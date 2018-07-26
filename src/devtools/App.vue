@@ -23,7 +23,7 @@
           }"
           value="components"
           icon-left="device_hub"
-          class="flat"
+          class="components-tab flat"
           v-tooltip="$t('App.components.tooltip')"
         >
           Components
@@ -34,7 +34,7 @@
           }"
           value="vuex"
           icon-left="restore"
-          class="flat"
+          class="vuex-tab flat"
           v-tooltip="$t('App.vuex.tooltip')"
         >
           Vuex
@@ -46,7 +46,7 @@
           }"
           value="events"
           icon-left="grain"
-          class="flat big-tag"
+          class="events-tab flat big-tag"
           v-tooltip="$t('App.events.tooltip')"
         >
           Events
@@ -60,7 +60,7 @@
         }"
         icon-left="refresh"
         v-tooltip="$t('App.refresh.tooltip')"
-        class="flat"
+        class="refresh-button flat"
         @click="refresh"
       >
         Refresh
