@@ -25,9 +25,9 @@ new Vue({
       h(Counter),
       h(Target, { props: { msg: 'hi', ins: new MyClass() }}),
       h(Other),
-      h(Events),
-      h(NativeTypes),
-      h(Router)
+      h(Events, { key: 'foo' }),
+      h(NativeTypes, { key: new Date() }),
+      h(Router, { key: [] })
     ])
   },
   data: {
