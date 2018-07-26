@@ -161,7 +161,9 @@ function scan () {
     }
     let instance = node.__vue__
     if (instance) {
-      instance = instance.$root
+      if (rootInstances.indexOf(instance.$root) === -1) {
+        instance = instance.$root
+      }
       if (instance._isFragment) {
         inFragment = true
         currentFragment = instance
