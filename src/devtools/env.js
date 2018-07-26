@@ -17,6 +17,7 @@ export function initEnv (Vue) {
 
   Object.defineProperties(Vue.prototype, {
     '$isChrome': { get: () => isChrome },
+    '$isFirefox': { get: () => isFirefox },
     '$isWindows': { get: () => isWindows },
     '$isMac': { get: () => isMac },
     '$isLinux': { get: () => isLinux },
