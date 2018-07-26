@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
+import router from './router'
 import store from './store'
 import './plugins'
 import { parse } from '../util'
 import { isChrome, initEnv } from './env'
+import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
+import storage from './storage'
 
 // UI
 
@@ -79,6 +82,23 @@ function initApp (shell) {
   shell.connect(bridge => {
     window.bridge = bridge
 
+    if (Vue.prototype.hasOwnProperty('$shared')) {
+      destroySharedData()
+    } else {
+      Object.defineProperty(Vue.prototype, '$shared', {
+        get: () => SharedData
+      })
+    }
+
+    initSharedData({
+      bridge,
+      Vue,
+      storage,
+      persist: [
+        'classifyComponents'
+      ]
+    })
+
     bridge.once('ready', version => {
       store.commit(
         'SHOW_MESSAGE',
@@ -121,7 +141,7 @@ function initApp (shell) {
 
     bridge.on('event:triggered', payload => {
       store.commit('events/RECEIVE_EVENT', parse(payload))
-      if (store.state.tab !== 'events') {
+      if (router.currentRoute.name !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }
     })
@@ -136,7 +156,7 @@ function initApp (shell) {
 
     app = new Vue({
       extends: App,
-
+      router,
       store,
 
       data: {
@@ -147,17 +167,15 @@ function initApp (shell) {
         isDark: {
           handler (value) {
             if (value) {
-              document.body.classList.add('dark')
+              document.body.classList.add('vue-ui-dark-mode')
             } else {
-              document.body.classList.remove('dark')
+              document.body.classList.remove('vue-ui-dark-mode')
             }
           },
           immediate: true
         }
       }
     }).$mount('#app')
-
-    store.dispatch('init')
   })
 }
 
@@ -167,7 +185,7 @@ function getContextMenuInstance () {
 
 function inspectInstance (id) {
   bridge.send('select-instance', id)
-  store.commit('SWITCH_TAB', 'components')
+  router.push({ name: 'components' })
   const instance = store.state.components.instancesMap[id]
   instance && store.dispatch('components/toggleInstance', {
     instance,

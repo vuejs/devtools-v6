@@ -78,17 +78,19 @@ function doublePipe (id, one, two) {
 
 chrome.runtime.onMessage.addListener((req, sender) => {
   if (sender.tab && req.vueDetected) {
+    const suffix = req.nuxtDetected ? '.nuxt' : ''
+
     chrome.browserAction.setIcon({
       tabId: sender.tab.id,
       path: {
-        16: 'icons/16.png',
-        48: 'icons/48.png',
-        128: 'icons/128.png'
+        16: `icons/16${suffix}.png`,
+        48: `icons/48${suffix}.png`,
+        128: `icons/128${suffix}.png`
       }
     })
     chrome.browserAction.setPopup({
       tabId: sender.tab.id,
-      popup: req.devtoolsEnabled ? 'popups/enabled.html' : 'popups/disabled.html'
+      popup: req.devtoolsEnabled ? `popups/enabled${suffix}.html` : `popups/disabled${suffix}.html`
     })
   }
 })

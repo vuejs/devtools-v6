@@ -5,6 +5,7 @@ import * as CircularJSON from './transfer'
 import { instanceMap, getCustomInstanceDetails } from 'src/backend'
 import { getCustomStoreDetails } from 'src/backend/vuex'
 import { getCustomRouterDetails } from 'src/backend/router'
+import SharedData from 'src/shared-data'
 
 import { isChrome } from './devtools/env'
 
@@ -506,7 +507,7 @@ export function focusInput (el) {
 export function openInEditor (file) {
   // Console display
   const fileName = file.replace(/\\/g, '\\\\')
-  const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
+  const src = `fetch('${SharedData.openInEditorHost}__open-in-editor?file=${encodeURI(file)}').then(response => {
     if (response.ok) {
       console.log('File ${fileName} opened in editor')
     } else {

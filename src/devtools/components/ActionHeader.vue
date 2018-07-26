@@ -1,6 +1,6 @@
 <template>
   <div class="action-header">
-    <slot></slot>
+    <slot/>
   </div>
 </template>
 
@@ -17,7 +17,7 @@
   height 35px
   @media (min-height: $tall)
     height 50px
-  .dark &
+  .vue-ui-dark-mode &
     border-bottom 1px solid $dark-border-color
 
 .title
@@ -32,7 +32,7 @@
   &-bracket
     color #ccc
 
-.svg-icon
+.vue-ui-icon
   width 16px
   height @width
   margin-right 0
@@ -50,7 +50,7 @@
   opacity .8
   overflow hidden
 
-  .svg-icon >>> svg
+  .vue-ui-icon >>> svg
     transition fill .25s
 
   &:first-of-type
@@ -61,7 +61,7 @@
     opacity 1
     color $active-color
 
-    .svg-icon >>> svg
+    .vue-ui-icon >>> svg
       fill @color
 
   &.disabled

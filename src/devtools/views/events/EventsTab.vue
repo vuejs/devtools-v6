@@ -1,8 +1,8 @@
 <template>
   <div>
     <split-pane>
-      <events-history slot="left"></events-history>
-      <event-inspector slot="right"></event-inspector>
+      <events-history slot="left"/>
+      <event-inspector slot="right"/>
     </split-pane>
   </div>
 </template>
@@ -15,13 +15,14 @@ import EventInspector from './EventInspector.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState('events', [
-    'enabled'
-  ]),
   components: {
     SplitPane,
     EventsHistory,
     EventInspector
-  }
+  },
+
+  computed: mapState('events', [
+    'enabled'
+  ])
 }
 </script>

@@ -9,12 +9,16 @@ import MyClass from './MyClass.js'
 import Router from './Router.vue'
 import router from './router'
 
-let items = []
+window.VUE_DEVTOOLS_CONFIG = {
+  openInEditorHost: '/'
+}
+
+const items = []
 for (var i = 0; i < 100; i++) {
   items.push({ id: i })
 }
 
-let circular = {}
+const circular = {}
 circular.self = circular
 
 new Vue({
@@ -23,11 +27,11 @@ new Vue({
   render (h) {
     return h('div', null, [
       h(Counter),
-      h(Target, {props:{msg: 'hi', ins: new MyClass()}}),
+      h(Target, { props: { msg: 'hi', ins: new MyClass() }}),
       h(Other),
-      h(Events),
-      h(NativeTypes),
-      h(Router)
+      h(Events, { key: 'foo' }),
+      h(NativeTypes, { key: new Date() }),
+      h(Router, { key: [] })
     ])
   },
   data: {
