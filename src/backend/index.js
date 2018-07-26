@@ -83,6 +83,7 @@ function connect () {
 
   bridge.on('leave-instance', unHighlight)
 
+  // eslint-disable-next-line no-new
   new ComponentSelector(bridge, instanceMap)
 
   // Get the instance id that is targeted by context menu
@@ -488,7 +489,7 @@ const fnTypeRE = /^(?:function|class) (\w+)/
 function getPropType (type) {
   const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
-    ? match && match[1] || 'any'
+    ? (match && match[1]) || 'any'
     : 'any'
 }
 

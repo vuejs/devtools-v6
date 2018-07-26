@@ -1,8 +1,14 @@
 <template>
   <div>
     <split-pane>
-      <component-tree slot="left" :instances="instances"></component-tree>
-      <component-inspector slot="right" :target="inspectedInstance"></component-inspector>
+      <component-tree
+        slot="left"
+        :instances="instances"
+      />
+      <component-inspector
+        slot="right"
+        :target="inspectedInstance"
+      />
     </split-pane>
   </div>
 </template>
@@ -23,16 +29,19 @@ const superDef = {
 }
 
 export default {
-  extends: superDef,
   components: {
     ComponentTree,
     ComponentInspector,
     SplitPane
   },
+
+  extends: superDef,
+
   computed: mapState('components', {
     instances: state => state.instances,
     inspectedInstance: state => state.inspectedInstance
   }),
+
   methods: {
     filter (e) {
       bridge.send('filter-instances', e.target.value)

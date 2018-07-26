@@ -1,43 +1,52 @@
 <template>
-  <div class="instance"
+  <div
     :class="{
       inactive: instance.inactive,
       selected: selected
-    }">
+    }"
+    class="instance"
+  >
     <div
       ref="self"
+      :class="{ selected: selected }"
+      :style="{ paddingLeft: depth * 15 + 'px' }"
       class="self selectable-item"
       @click.stop="select"
       @dblclick.stop="toggle"
       @mouseenter="enter"
       @mouseleave="leave"
-      :class="{ selected: selected }"
-      :style="{ paddingLeft: depth * 15 + 'px' }"
     >
       <!-- Component tag -->
       <span class="content">
         <!-- arrow wrapper for better hit box -->
-        <span class="arrow-wrapper"
+        <span
           v-if="instance.children.length"
-          @click.stop="toggle">
-          <span class="arrow right" :class="{ rotated: expanded }">
-          </span>
+          class="arrow-wrapper"
+          @click.stop="toggle"
+        >
+          <span
+            :class="{ rotated: expanded }"
+            class="arrow right"
+          />
         </span>
 
         <span class="angle-bracket">&lt;</span>
 
         <span class="item-name">{{ displayName }}</span>
 
-        <span v-if="componentHasKey" class="attr">
-          <span class="attr-title"> key</span>=<span class="attr-value">{{instance.renderKey}}</span>
+        <span
+          v-if="componentHasKey"
+          class="attr"
+        >
+          <span class="attr-title"> key</span>=<span class="attr-value">{{ instance.renderKey }}</span>
         </span>
 
         <span class="angle-bracket">&gt;</span>
       </span>
       <span
+        v-tooltip="$t('ComponentInstance.consoleId.tooltip', { id: instance.consoleId })"
         v-if="instance.consoleId"
         class="info console"
-        v-tooltip="$t('ComponentInstance.consoleId.tooltip', { id: instance.consoleId })"
       >
         = {{ instance.consoleId }}
       </span>
@@ -60,12 +69,12 @@
         inactive
       </span>
 
-      <span class="spacer"></span>
+      <span class="spacer"/>
 
       <VueIcon
+        v-tooltip="'Scroll into view'"
         class="icon-button"
         icon="visibility"
-        v-tooltip="'Scroll into view'"
         @click="scrollToInstance"
       />
     </div>
@@ -75,8 +84,8 @@
         v-for="child in sortedChildren"
         :key="child.id"
         :instance="child"
-        :depth="depth + 1">
-      </component-instance>
+        :depth="depth + 1"
+      />
     </div>
   </div>
 </template>
@@ -88,14 +97,13 @@ export default {
   name: 'ComponentInstance',
 
   props: {
-    instance: Object,
-    depth: Number
-  },
-
-  created () {
-    // expand root by default
-    if (this.depth === 0) {
-      this.expand()
+    instance: {
+      type: Object,
+      required: true
+    },
+    depth: {
+      type: Number,
+      required: true
     }
   },
 
@@ -137,6 +145,13 @@ export default {
         }
       },
       immediate: true
+    }
+  },
+
+  created () {
+    // expand root by default
+    if (this.depth === 0) {
+      this.expand()
     }
   },
 

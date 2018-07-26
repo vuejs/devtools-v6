@@ -1,10 +1,13 @@
 <template>
   <div class="scroll-pane">
     <div class="header">
-      <slot name="header"></slot>
+      <slot name="header"/>
     </div>
-    <div ref="scrollContainer" class="scroll">
-      <slot name="scroll"></slot>
+    <div
+      ref="scrollContainer"
+      class="scroll"
+    >
+      <slot name="scroll"/>
     </div>
   </div>
 </template>
@@ -12,18 +15,24 @@
 <script>
 export default {
   props: {
-    scrollEvent: String
+    scrollEvent: {
+      type: String,
+      default: undefined
+    }
   },
+
   mounted () {
     if (this.scrollEvent) {
       bridge.on(this.scrollEvent, this.scrollToBottom)
     }
   },
+
   destroyed () {
     if (this.scrollEvent) {
       bridge.removeListener(this.scrollEvent, this.scrollToBottom)
     }
   },
+
   methods: {
     scrollToBottom () {
       this.$nextTick(() => {

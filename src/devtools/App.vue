@@ -1,75 +1,91 @@
 <template>
-<div id="app" class="app">
-  <datalist id="special-tokens">
-    <option v-for="(value, key) of specialTokens" :key="key" :value="key"></option>
-  </datalist>
-  <div class="header">
-    <img class="logo" src="./assets/logo.png" alt="Vue">
-    <span class="message-container">
-      <transition name="slide-up">
-        <span class="message" :key="message">{{ message }}</span>
-      </transition>
-    </span>
-
-    <div class="actions">
-      <VueGroup
-        v-model="routeModel"
-        class="primary inline"
-        indicator
+  <div
+    id="app"
+    class="app"
+  >
+    <datalist id="special-tokens">
+      <option
+        v-for="(value, key) of specialTokens"
+        :key="key"
+        :value="key"
+      />
+    </datalist>
+    <div class="header">
+      <img
+        class="logo"
+        src="./assets/logo.png"
+        alt="Vue"
       >
-        <VueGroupButton
-          :class="{
-            'icon-button': !$responsive.wide
-          }"
-          value="components"
-          icon-left="device_hub"
-          class="components-tab flat"
-          v-tooltip="$t('App.components.tooltip')"
-        >
-          Components
-        </VueGroupButton>
-        <VueGroupButton
-          :class="{
-            'icon-button': !$responsive.wide
-          }"
-          value="vuex"
-          icon-left="restore"
-          class="vuex-tab flat"
-          v-tooltip="$t('App.vuex.tooltip')"
-        >
-          Vuex
-        </VueGroupButton>
-        <VueGroupButton
-          :tag="newEventCount > 0 ? newEventCount : null"
-          :class="{
-            'icon-button': !$responsive.wide
-          }"
-          value="events"
-          icon-left="grain"
-          class="events-tab flat big-tag"
-          v-tooltip="$t('App.events.tooltip')"
-        >
-          Events
-        </VueGroupButton>
-      </VueGroup>
+      <span class="message-container">
+        <transition name="slide-up">
+          <span
+            :key="message"
+            class="message"
+          >
+            {{ message }}
+          </span>
+        </transition>
+      </span>
 
-      <VueButton
-        ref="refresh"
-        :class="{
-          'icon-button': !$responsive.wide
-        }"
-        icon-left="refresh"
-        v-tooltip="$t('App.refresh.tooltip')"
-        class="refresh-button flat"
-        @click="refresh"
-      >
-        Refresh
-      </VueButton>
+      <div class="actions">
+        <VueGroup
+          v-model="routeModel"
+          class="primary inline"
+          indicator
+        >
+          <VueGroupButton
+            v-tooltip="$t('App.components.tooltip')"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="components"
+            icon-left="device_hub"
+            class="components-tab flat"
+          >
+            Components
+          </VueGroupButton>
+          <VueGroupButton
+            v-tooltip="$t('App.vuex.tooltip')"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="vuex"
+            icon-left="restore"
+            class="vuex-tab flat"
+          >
+            Vuex
+          </VueGroupButton>
+          <VueGroupButton
+            v-tooltip="$t('App.events.tooltip')"
+            :tag="newEventCount > 0 ? newEventCount : null"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="events"
+            icon-left="grain"
+            class="events-tab flat big-tag"
+          >
+            Events
+          </VueGroupButton>
+        </VueGroup>
+
+        <VueButton
+          v-tooltip="$t('App.refresh.tooltip')"
+          ref="refresh"
+          :class="{
+            'icon-button': !$responsive.wide
+          }"
+          icon-left="refresh"
+          class="refresh-button flat"
+          @click="refresh"
+        >
+          Refresh
+        </VueButton>
+      </div>
     </div>
-  </div>
 
-  <router-view class="container"/>
-</div>
+    <router-view class="container"/>
+  </div>
 </template>
 
 <script>
@@ -82,7 +98,13 @@ import Keyboard from './mixins/keyboard'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'app',
+  name: 'App',
+
+  components: {
+    components: ComponentsTab,
+    vuex: VuexTab,
+    events: EventsTab
+  },
 
   mixins: [
     Keyboard({
@@ -109,12 +131,6 @@ export default {
       }
     })
   ],
-
-  components: {
-    components: ComponentsTab,
-    vuex: VuexTab,
-    events: EventsTab
-  },
 
   computed: {
     ...mapState({
@@ -144,6 +160,16 @@ export default {
     }
   },
 
+  mounted () {
+    this.mediaQuery = window.matchMedia('(min-width: 685px)')
+    this.switchView(this.mediaQuery)
+    this.mediaQuery.addListener(this.switchView)
+  },
+
+  destroyed () {
+    this.mediaQuery.removeListener(this.switchView)
+  },
+
   methods: {
     refresh () {
       const refreshIcon = this.$refs.refresh.$el.querySelector('.vue-ui-icon')
@@ -161,16 +187,6 @@ export default {
         mediaQueryEvent.matches ? 'vertical' : 'horizontal'
       )
     }
-  },
-
-  mounted () {
-    this.mediaQuery = window.matchMedia('(min-width: 685px)')
-    this.switchView(this.mediaQuery)
-    this.mediaQuery.addListener(this.switchView)
-  },
-
-  destroyed () {
-    this.mediaQuery.removeListener(this.switchView)
   }
 }
 </script>

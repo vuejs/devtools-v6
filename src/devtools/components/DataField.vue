@@ -2,37 +2,44 @@
   <div class="data-field">
     <v-popover
       :style="{ marginLeft: depth * 14 + 'px' }"
-      class="self"
-      popover-class="force-tooltip"
-      trigger="hover"
-      placement="left"
-      offset="24"
       :disabled="!field.meta"
       :delay="{
         show: 300,
         hide: 0
       }"
       :open-group="'id' + _uid"
+      class="self"
+      popover-class="force-tooltip"
+      trigger="hover"
+      placement="left"
+      offset="24"
       @click.native="onClick"
     >
       <span
         v-show="isExpandableType"
-        class="arrow right"
         :class="{ rotated: expanded }"
-      ></span>
+        class="arrow right"
+      />
       <span
         v-if="editing && renamable"
       >
         <input
           ref="keyInput"
-          class="edit-input key-input"
           :class="{ error: !keyValid }"
           v-model="editedKey"
+          class="edit-input key-input"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
       </span>
-      <span v-else class="key" :class="{ abstract: fieldOptions.abstract }">{{ field.key }}</span><span class="colon" v-if="!fieldOptions.abstract">:</span>
+      <span
+        v-else
+        :class="{ abstract: fieldOptions.abstract }"
+        class="key"
+      >{{ field.key }}</span><span
+        v-if="!fieldOptions.abstract"
+        class="colon"
+      >:</span>
 
       <span
         v-if="editing"
@@ -40,31 +47,31 @@
       >
         <input
           ref="editInput"
-          class="edit-input value-input"
           :class="{ error: !valueValid }"
           v-model="editedValue"
+          class="edit-input value-input"
           list="special-tokens"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
           <VueIcon
+            v-tooltip="editErrorMessage"
             v-if="!editValid"
             class="icon-button warning"
-            v-tooltip="editErrorMessage"
             icon="warning"
           />
           <template v-else>
             <VueIcon
+              v-tooltip="$t('DataField.edit.cancel.tooltip')"
               class="icon-button medium"
               icon="cancel"
-              v-tooltip="$t('DataField.edit.cancel.tooltip')"
               @click="cancelEdit()"
             />
             <VueIcon
+              v-tooltip="$t('DataField.edit.submit.tooltip')"
               class="icon-button"
               icon="save"
-              v-tooltip="$t('DataField.edit.submit.tooltip')"
               @click="submitEdit()"
             />
           </template>
@@ -72,56 +79,67 @@
       </span>
       <template v-else>
         <span
-          class="value"
-          :class="valueClass"
-          @dblclick="openEdit()"
           v-tooltip="valueTooltip"
+          :class="valueClass"
+          class="value"
+          @dblclick="openEdit()"
           v-html="formattedValue"
         />
         <span class="actions">
           <VueIcon
+            v-tooltip="'Edit value'"
             v-if="isValueEditable"
             class="edit-value icon-button"
             icon="edit"
-            v-tooltip="'Edit value'"
             @click="openEdit()"
           />
           <template v-if="quickEdits">
             <VueIcon
+              v-tooltip="info.title || 'Quick edit'"
               v-for="(info, index) of quickEdits"
               :key="index"
-              class="quick-edit icon-button"
               :class="info.class"
               :icon="info.icon"
-              v-tooltip="info.title || 'Quick edit'"
+              class="quick-edit icon-button"
               @click="quickEdit(info, $event)"
             />
           </template>
           <VueIcon
+            v-tooltip="'Add new value'"
             v-if="isSubfieldsEditable && !addingValue"
             class="add-value icon-button"
             icon="add_circle"
-            v-tooltip="'Add new value'"
             @click="addNewValue()"
           />
           <VueIcon
+            v-tooltip="'Remove value'"
             v-if="removable"
             class="remove-field icon-button"
             icon="delete"
-            v-tooltip="'Remove value'"
             @click="removeField()"
           />
         </span>
       </template>
 
-      <div slot="popover" class="meta" v-if="field.meta">
-        <div class="meta-field" v-for="(val, key) in field.meta">
+      <div
+        v-if="field.meta"
+        slot="popover"
+        class="meta"
+      >
+        <div
+          v-for="(val, key) in field.meta"
+          :key="key"
+          class="meta-field"
+        >
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>
       </div>
     </v-popover>
-    <div class="children" v-if="expanded && isExpandableType">
+    <div
+      v-if="expanded && isExpandableType"
+      class="children"
+    >
       <data-field
         v-for="subField in limitedSubFields"
         :key="subField.key"
@@ -133,22 +151,23 @@
         :removable="isSubfieldsEditable"
         :renamable="editable && valueType === 'plain-object'"
       />
-      <span class="more"
+      <span
         v-if="formattedSubFields.length > limit"
+        :style="{ marginLeft: depthMargin + 'px' }"
+        class="more"
         @click="limit += 10"
-        :style="{ marginLeft: depthMargin + 'px' }">
+      >
         ...
       </span>
       <data-field
         v-if="isSubfieldsEditable && addingValue"
         ref="newField"
         :field="newField"
-        :parent-field="field"
         :depth="depth + 1"
         :path="`${path}.${newField.key}`"
+        :renamable="valueType === 'plain-object'"
         editable
         removable
-        :renamable="valueType === 'plain-object'"
         @cancel-edit="addingValue = false"
         @submit-edit="addingValue = false"
       />
@@ -193,10 +212,18 @@ export default {
   ],
 
   props: {
-    field: Object,
-    parentField: Object,
-    depth: Number,
-    path: String
+    field: {
+      type: Object,
+      required: true
+    },
+    depth: {
+      type: Number,
+      required: true
+    },
+    path: {
+      type: String,
+      required: true
+    }
   },
 
   data () {

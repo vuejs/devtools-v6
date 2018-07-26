@@ -2,56 +2,72 @@
   <scroll-pane>
     <action-header slot="header">
       <div
-        class="search"
         v-tooltip="$t('VuexHistory.filter.tooltip')"
+        class="search"
       >
         <VueIcon icon="search"/>
         <input
           ref="filterMutations"
           :class="{ invalid: filterRegexInvalid }"
-          placeholder="Filter mutations"
           v-model.trim="filter"
+          placeholder="Filter mutations"
         >
       </div>
       <a
-        class="button commit-all"
-        :class="{ disabled: !history.length }"
         v-tooltip="$t('VuexHistory.commitAll.tooltip')"
+        :class="{ disabled: !history.length }"
+        class="button commit-all"
         @click="commitAll"
       >
         <VueIcon icon="get_app"/>
         <span>Commit All</span>
       </a>
       <a
-        class="button reset"
-        :class="{ disabled: !history.length }"
         v-tooltip="$t('VuexHistory.revertAll.tooltip')"
+        :class="{ disabled: !history.length }"
+        class="button reset"
         @click="revertAll"
       >
-        <VueIcon class="small" icon="do_not_disturb"/>
+        <VueIcon
+          class="small"
+          icon="do_not_disturb"
+        />
         <span>Revert All</span>
       </a>
       <a
-        class="button toggle-recording"
         v-tooltip="$t(`VuexHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        class="button toggle-recording"
         @click="toggleRecording"
       >
-        <VueIcon class="small" :class="{ enabled }" icon="lens"/>
+        <VueIcon
+          :class="{ enabled }"
+          class="small"
+          icon="lens"
+        />
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <div slot="scroll" class="history">
+    <div
+      slot="scroll"
+      class="history"
+    >
       <div
         ref="baseEntry"
-        class="entry list-item"
         :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
+        class="entry list-item"
         @click="inspect(null)"
       >
         <span class="mutation-type">Base State</span>
         <span class="entry-actions">
-          <a class="action"
-             @click.stop="timeTravelTo(null)" v-tooltip="'Time Travel to This State'">
-            <VueIcon class="medium" icon="restore"/>
+          <a
+            v-tooltip="'Time Travel to This State'"
+            class="action"
+            @click.stop="timeTravelTo(null)"
+          >
+            <VueIcon
+              class="medium"
+              icon="restore"
+            />
             <span>Time Travel</span>
           </a>
         </span>
@@ -67,35 +83,65 @@
           class="label inspected"
         >inspected</span>
       </div>
-      <div class="entry list-item"
-        ref="entries"
+      <div
         v-for="(entry, index) in filteredHistory"
+        ref="entries"
         :key="index"
         :class="{ inspected: isInspected(entry), active: isActive(entry) }"
-        @click="inspect(entry)">
+        class="entry list-item"
+        @click="inspect(entry)"
+      >
         <span class="mutation-type">{{ entry.mutation.type }}</span>
         <span class="entry-actions">
-          <a class="action" @click.stop="commit(entry)" v-tooltip="'Commit This Mutation'">
-            <VueIcon class="medium" icon="get_app"/>
+          <a
+            v-tooltip="'Commit This Mutation'"
+            class="action"
+            @click.stop="commit(entry)"
+          >
+            <VueIcon
+              class="medium"
+              icon="get_app"
+            />
             <span>Commit</span>
           </a>
-          <a class="action" @click.stop="revert(entry)" v-tooltip="'Revert This Mutation'">
-            <VueIcon class="small" icon="do_not_disturb"/>
+          <a
+            v-tooltip="'Revert This Mutation'"
+            class="action"
+            @click.stop="revert(entry)"
+          >
+            <VueIcon
+              class="small"
+              icon="do_not_disturb"
+            />
             <span>Revert</span>
           </a>
-          <a v-if="!isActive(entry)"
-             class="action"
-             @click.stop="timeTravelTo(entry)"
-             v-tooltip="'Time Travel to This State'">
-            <VueIcon class="medium" icon="restore"/>
+          <a
+            v-tooltip="'Time Travel to This State'"
+            v-if="!isActive(entry)"
+            class="action"
+            @click.stop="timeTravelTo(entry)"
+          >
+            <VueIcon
+              class="medium"
+              icon="restore"
+            />
             <span>Time Travel</span>
           </a>
         </span>
-        <span class="time" v-tooltip="entry.timestamp">
+        <span
+          v-tooltip="entry.timestamp"
+          class="time"
+        >
           {{ entry.timestamp | formatTime }}
         </span>
-        <span class="label active" v-if="isActive(entry)">active</span>
-        <span class="label inspected" v-if="isInspected(entry)">inspected</span>
+        <span
+          v-if="isActive(entry)"
+          class="label active"
+        >active</span>
+        <span
+          v-if="isInspected(entry)"
+          class="label inspected"
+        >inspected</span>
       </div>
     </div>
   </scroll-pane>
@@ -117,6 +163,17 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import { focusInput } from 'src/util'
 
 export default {
+  components: {
+    ActionHeader,
+    ScrollPane
+  },
+
+  filters: {
+    formatTime (timestamp) {
+      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    }
+  },
+
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {
@@ -148,11 +205,6 @@ export default {
     }),
     EntryList
   ],
-
-  components: {
-    ActionHeader,
-    ScrollPane
-  },
 
   computed: {
     ...mapState('vuex', [
@@ -197,12 +249,6 @@ export default {
 
     isInspected (entry) {
       return this.inspectedIndex === this.history.indexOf(entry)
-    }
-  },
-
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
     }
   }
 }

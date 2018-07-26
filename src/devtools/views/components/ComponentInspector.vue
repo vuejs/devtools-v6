@@ -1,6 +1,9 @@
 <template>
   <scroll-pane>
-    <action-header v-show="hasTarget" slot="header">
+    <action-header
+      v-show="hasTarget"
+      slot="header"
+    >
       <span class="title">
         <span class="title-bracket">&lt;</span>
         <span>{{ targetName }}</span>
@@ -8,21 +11,24 @@
       </span>
       <div class="search">
         <VueIcon icon="search"/>
-        <input placeholder="Filter inspected data" v-model.trim="filter">
+        <input
+          v-model.trim="filter"
+          placeholder="Filter inspected data"
+        >
       </div>
       <a
+        v-tooltip="'Inspect DOM'"
         v-if="$isChrome"
         class="button inspect"
-        v-tooltip="'Inspect DOM'"
         @click="inspectDOM"
       >
         <VueIcon icon="code"/>
         <span>Inspect DOM</span>
       </a>
       <a
+        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         v-if="target.file"
         class="button"
-        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         @click="openInEditor"
       >
         <VueIcon icon="launch"/>
@@ -30,13 +36,22 @@
       </a>
     </action-header>
     <template slot="scroll">
-      <section v-if="!hasTarget" class="notice">
+      <section
+        v-if="!hasTarget"
+        class="notice"
+      >
         <div>Select a component instance to inspect.</div>
       </section>
-      <div v-else-if="!target.state || !target.state.length" class="notice">
+      <div
+        v-else-if="!target.state || !target.state.length"
+        class="notice"
+      >
         <div>This instance has no reactive state.</div>
       </div>
-      <section v-else class="data">
+      <section
+        v-else
+        class="data"
+      >
         <state-inspector :state="filteredState" />
       </section>
     </template>
@@ -56,21 +71,29 @@ export default {
     ActionHeader,
     StateInspector
   },
+
   props: {
-    target: Object
+    target: {
+      type: Object,
+      required: true
+    }
   },
+
   data () {
     return {
       filter: ''
     }
   },
+
   computed: {
     hasTarget () {
       return this.target.id != null
     },
+
     targetName () {
       return this.$shared.classifyComponents ? classify(this.target.name) : this.target.name
     },
+
     filteredState () {
       return groupBy(sortByKey(this.target.state.filter(el => {
         return searchDeepInObject({
@@ -79,6 +102,7 @@ export default {
       })), 'type')
     }
   },
+
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
@@ -90,6 +114,7 @@ export default {
         window.alert('DOM inspection is not supported in this shell.')
       }
     },
+
     openInEditor () {
       const file = this.target.file
       openInEditor(file)

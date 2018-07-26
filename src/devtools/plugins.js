@@ -10,11 +10,11 @@ Vue.use(VueUi)
 const currentLocale = 'en'
 const locales = require.context('./locales')
 const replacers = [
-  { reg: /\<input\>/g, replace: '<span class="input-example">' },
-  { reg: /\<mono\>/g, replace: '<span class="mono">' },
-  { reg: /\<\/(input|mono)\>/g, replace: '</span>' },
+  { reg: /<input>/g, replace: '<span class="input-example">' },
+  { reg: /<mono>/g, replace: '<span class="mono">' },
+  { reg: /<\/(input|mono)>/g, replace: '</span>' },
   { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
-  { reg: /\<\<(\S+)\>\>/g, replace: (match, p1) => generateHtmlIcon(p1) }
+  { reg: /<<(\S+)>>/g, replace: (match, p1) => generateHtmlIcon(p1) }
 ]
 Vue.use(VI18n, {
   strings: locales(`./${currentLocale}`).default,

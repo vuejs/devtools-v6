@@ -2,20 +2,24 @@
   <div class="data-wrapper">
     <div
       v-for="dataType in dataTypes"
+      :key="dataType"
       :class="['data-el', toDisplayType(dataType, true)]"
     >
       <div
-        class="data-type selectable-item"
         v-tooltip="$t('StateInspector.dataType.tooltip')"
+        class="data-type selectable-item"
         @click="toggle(dataType, $event)"
       >
         <span
-          class="arrow right"
           :class="{ rotated: isExpanded(dataType) }"
-        ></span>
+          class="arrow right"
+        />
         <span class="key">{{ toDisplayType(dataType) }}</span>
       </div>
-      <div v-show="isExpanded(dataType)" class="data-fields">
+      <div
+        v-show="isExpanded(dataType)"
+        class="data-fields"
+      >
         <template v-if="Array.isArray(state[dataType])">
           <data-field
             v-for="field in state[dataType]"
@@ -23,8 +27,8 @@
             :field="field"
             :depth="0"
             :path="field.key"
-            :editable="field.editable">
-          </data-field>
+            :editable="field.editable"
+          />
         </template>
         <template v-else>
           <data-field
@@ -33,8 +37,8 @@
             :field="{ value, key }"
             :depth="0"
             :path="key"
-            :editable="false">
-          </data-field>
+            :editable="false"
+          />
         </template>
       </div>
     </div>
@@ -57,17 +61,20 @@ export default {
   components: {
     DataField
   },
+
   props: {
     state: {
       type: Object,
       required: true
     }
   },
+
   data () {
     return {
       expandedState: {}
     }
   },
+
   computed: {
     dataTypes () {
       return Object.keys(this.state).sort((a, b) => {
@@ -78,6 +85,7 @@ export default {
       })
     }
   },
+
   methods: {
     toDisplayType (dataType, asClass) {
       return dataType === 'undefined'
@@ -86,10 +94,12 @@ export default {
           ? dataType.replace(/\s/g, '-')
           : dataType
     },
+
     isExpanded (dataType) {
       const value = this.expandedState[dataType]
       return typeof value === 'undefined' || value
     },
+
     toggle (dataType, event = null) {
       if (event) {
         if (event.ctrlKey || event.metaKey) {
@@ -100,6 +110,7 @@ export default {
       }
       Vue.set(this.expandedState, dataType, !this.isExpanded(dataType))
     },
+
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
         Vue.set(this.expandedState, key, value)

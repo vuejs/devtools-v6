@@ -2,8 +2,8 @@
   <scroll-pane>
     <action-header slot="header">
       <div
-        class="search"
         v-tooltip="$t('ComponentTree.filter.tooltip')"
+        class="search"
       >
         <VueIcon icon="search"/>
         <input
@@ -13,31 +13,35 @@
         >
       </div>
       <a
-        class="button select-component"
-        :class="{active: selecting}"
         v-tooltip="$t('ComponentTree.select.tooltip')"
+        :class="{active: selecting}"
+        class="button select-component"
         @click="setSelecting(!selecting)"
       >
         <VueIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
         <span>Select</span>
       </a>
-      <a class="button classify-names"
-         :class="{ active: $shared.classifyComponents }"
-         v-tooltip="'Format component names'"
-         @click="$shared.classifyComponents = !$shared.classifyComponents"
+      <a
+        v-tooltip="'Format component names'"
+        :class="{ active: $shared.classifyComponents }"
+        class="button classify-names"
+        @click="$shared.classifyComponents = !$shared.classifyComponents"
       >
         <VueIcon icon="text_fields"/>
         <span>Format</span>
       </a>
     </action-header>
-    <div slot="scroll" class="tree">
+    <div
+      slot="scroll"
+      class="tree"
+    >
       <component-instance
         v-for="instance in instances"
         ref="instances"
         :key="instance.id"
         :instance="instance"
-        :depth="0">
-      </component-instance>
+        :depth="0"
+      />
     </div>
   </scroll-pane>
 </template>
@@ -56,6 +60,12 @@ import Keyboard, {
 } from '../../mixins/keyboard'
 
 export default {
+  components: {
+    ScrollPane,
+    ActionHeader,
+    ComponentInstance
+  },
+
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {
@@ -111,14 +121,11 @@ export default {
     })
   ],
 
-  components: {
-    ScrollPane,
-    ActionHeader,
-    ComponentInstance
-  },
-
   props: {
-    instances: Array
+    instances: {
+      type: Array,
+      required: true
+    }
   },
 
   data () {

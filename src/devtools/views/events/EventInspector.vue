@@ -1,9 +1,16 @@
 <template>
   <scroll-pane>
-    <div v-if="activeEvent" slot="scroll">
+    <div
+      v-if="activeEvent"
+      slot="scroll"
+    >
       <state-inspector :state="{ 'event info': sortedEventData }" />
     </div>
-    <div v-else slot="scroll" class="no-event-data">
+    <div
+      v-else
+      slot="scroll"
+      class="no-event-data"
+    >
       No event selected
     </div>
   </scroll-pane>
@@ -20,10 +27,12 @@ export default {
     ScrollPane,
     StateInspector
   },
+
   computed: {
     ...mapGetters('events', [
       'activeEvent'
     ]),
+
     sortedEventData () {
       if (!this.activeEvent) {
         return {}

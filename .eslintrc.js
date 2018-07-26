@@ -4,12 +4,19 @@ module.exports = {
     'browser': true
   },
   'extends': [
-    'plugin:vue-libs/recommended'
+    'standard',
+    'plugin:vue/recommended'
   ],
   'globals': {
     'bridge': true,
     'chrome': true,
     'localStorage': true,
     'HTMLDocument': true
+  },
+  'rules': {
+    'vue/html-closing-bracket-newline': ['error', {
+      'singleline': 'never',
+      'multiline': 'always'
+    }]
   }
 }

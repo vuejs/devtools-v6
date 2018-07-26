@@ -1,10 +1,13 @@
 <template>
   <div>
     <split-pane v-if="hasVuex">
-      <vuex-history slot="left"></vuex-history>
-      <vuex-state-inspector slot="right"></vuex-state-inspector>
+      <vuex-history slot="left"/>
+      <vuex-state-inspector slot="right"/>
     </split-pane>
-    <div v-else class="notice">
+    <div
+      v-else
+      class="notice"
+    >
       <div>
         No Vuex store detected.
       </div>
@@ -19,14 +22,15 @@ import VuexStateInspector from './VuexStateInspector.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState('vuex', {
-    hasVuex: state => state.hasVuex
-  }),
   components: {
     SplitPane,
     VuexHistory,
     VuexStateInspector
-  }
+  },
+
+  computed: mapState('vuex', {
+    hasVuex: state => state.hasVuex
+  })
 }
 </script>
 

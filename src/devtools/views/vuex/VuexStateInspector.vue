@@ -3,33 +3,58 @@
     <action-header slot="header">
       <div class="search">
         <VueIcon icon="search"/>
-        <input placeholder="Filter inspected state" v-model.trim="filter">
+        <input
+          v-model.trim="filter"
+          placeholder="Filter inspected state"
+        >
       </div>
-      <a class="button export" @click="copyStateToClipboard" v-tooltip="'Export Vuex State'">
+      <a
+        v-tooltip="'Export Vuex State'"
+        class="button export"
+        @click="copyStateToClipboard"
+      >
         <VueIcon icon="content_copy"/>
         <span>Export</span>
         <transition name="slide-up">
-          <span class="message" v-show="showStateCopiedMessage">
+          <span
+            v-show="showStateCopiedMessage"
+            class="message"
+          >
             (Copied to clipboard!)
           </span>
         </transition>
       </a>
-      <a class="button import" @click="toggleImportStatePopup" v-tooltip="'Import Vuex State'">
+      <a
+        v-tooltip="'Import Vuex State'"
+        class="button import"
+        @click="toggleImportStatePopup"
+      >
         <VueIcon icon="content_paste"/>
         <span>Import</span>
       </a>
       <transition name="slide-down">
-        <div class="import-state" v-if="showImportStatePopup">
-          <textarea placeholder="Paste state object here to import it..."
+        <div
+          v-if="showImportStatePopup"
+          class="import-state"
+        >
+          <textarea
+            placeholder="Paste state object here to import it..."
             @input="importState"
-            @keydown.esc="closeImportStatePopup"></textarea>
-          <span class="message invalid-json" v-show="showBadJSONMessage">
+            @keydown.esc="closeImportStatePopup"
+          />
+          <span
+            v-show="showBadJSONMessage"
+            class="message invalid-json"
+          >
             INVALID JSON!
           </span>
         </div>
       </transition>
     </action-header>
-    <div slot="scroll" class="vuex-state-inspector">
+    <div
+      slot="scroll"
+      class="vuex-state-inspector"
+    >
       <state-inspector :state="filteredState" />
     </div>
   </scroll-pane>
@@ -51,6 +76,7 @@ export default {
     ActionHeader,
     StateInspector
   },
+
   data () {
     return {
       showStateCopiedMessage: false,
@@ -59,10 +85,12 @@ export default {
       filter: ''
     }
   },
+
   computed: {
     ...mapGetters('vuex', [
       'inspectedState'
     ]),
+
     filteredState () {
       const inspectedState = [].concat(
         ...Object.keys(this.inspectedState).map(
@@ -83,6 +111,7 @@ export default {
       )), 'type')
     }
   },
+
   watch: {
     showImportStatePopup (val) {
       if (val) {
@@ -92,6 +121,7 @@ export default {
       }
     }
   },
+
   methods: {
     copyStateToClipboard () {
       copyToClipboard(this.inspectedState.state)
@@ -100,6 +130,7 @@ export default {
         this.showStateCopiedMessage = false
       }, 2000)
     },
+
     toggleImportStatePopup () {
       if (this.showImportStatePopup) {
         this.closeImportStatePopup()
@@ -107,9 +138,11 @@ export default {
         this.showImportStatePopup = true
       }
     },
+
     closeImportStatePopup () {
       this.showImportStatePopup = false
     },
+
     importState: debounce(function (e) {
       const importedStr = e.target.value
       if (importedStr.length === 0) {
