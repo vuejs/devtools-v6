@@ -29,6 +29,6 @@ jobs:
       - run: yarn test
 
       - store_artifacts:
-          path: packages/@vue/cli-ui/tests/e2e/videos
+          path: cypress/videos
       - store_artifacts:
-          path: packages/@vue/cli-ui/tests/e2e/screenshots
+          path: cypress/screenshots
