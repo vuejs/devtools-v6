@@ -1,5 +1,6 @@
 import storage from '../../storage'
 import { classify } from 'src/util'
+import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
@@ -48,7 +49,7 @@ const getters = {
     return state.events[state.inspectedIndex]
   },
   filteredEvents: (state, getters, rootState) => {
-    const classifyComponents = rootState.components.classifyComponents
+    const classifyComponents = SharedData.classifyComponents
     let searchText = state.filter.toLowerCase()
     const searchComponent = /<|>/g.test(searchText)
     if (searchComponent) {

@@ -22,9 +22,9 @@
         <span>Select</span>
       </a>
       <a class="button classify-names"
-         :class="{ active: classifyComponents }"
+         :class="{ active: $shared.classifyComponents }"
          v-tooltip="'Format component names'"
-         @click="toggleClassifyComponents"
+         @click="$shared.classifyComponents = !$shared.classifyComponents"
       >
         <VueIcon icon="text_fields"/>
         <span>Format</span>
@@ -43,8 +43,6 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
@@ -129,12 +127,6 @@ export default {
     }
   },
 
-  computed: {
-    ...mapState('components', [
-      'classifyComponents'
-    ])
-  },
-
   mounted () {
     bridge.on('instance-selected', () => {
       this.setSelecting(false)
@@ -146,10 +138,6 @@ export default {
   },
 
   methods: {
-    ...mapActions('components', [
-      'toggleClassifyComponents'
-    ]),
-
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
     },

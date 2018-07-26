@@ -116,10 +116,6 @@ export default {
       'filteredEvents'
     ]),
 
-    ...mapState('components', [
-      'classifyComponents'
-    ]),
-
     filter: {
       get () {
         return this.$store.state.events.filter
@@ -138,7 +134,7 @@ export default {
     }),
 
     displayComponentName (name) {
-      return this.classifyComponents ? classify(name) : name
+      return this.$shared.classifyComponents ? classify(name) : name
     }
   },
 

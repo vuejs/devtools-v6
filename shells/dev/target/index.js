@@ -9,6 +9,10 @@ import MyClass from './MyClass.js'
 import Router from './Router.vue'
 import router from './router'
 
+window.VUE_DEVTOOLS_CONFIG = {
+  openInEditorHost: '/'
+}
+
 const items = []
 for (var i = 0; i < 100; i++) {
   items.push({ id: i })

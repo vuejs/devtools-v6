@@ -5,6 +5,8 @@ import store from './store'
 import './plugins'
 import { parse } from '../util'
 import { isChrome, initEnv } from './env'
+import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
+import storage from './storage'
 
 // UI
 
@@ -79,6 +81,23 @@ export function initDevTools (shell) {
 function initApp (shell) {
   shell.connect(bridge => {
     window.bridge = bridge
+
+    if (Vue.prototype.hasOwnProperty('$shared')) {
+      destroySharedData()
+    } else {
+      Object.defineProperty(Vue.prototype, '$shared', {
+        get: () => SharedData
+      })
+    }
+
+    initSharedData({
+      bridge,
+      Vue,
+      storage,
+      persist: [
+        'classifyComponents'
+      ]
+    })
 
     bridge.once('ready', version => {
       store.commit(
@@ -157,8 +176,6 @@ function initApp (shell) {
         }
       }
     }).$mount('#app')
-
-    store.dispatch('init')
   })
 }
 

@@ -7,7 +7,7 @@ import { initEventsBackend } from './events'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
-import config from './config'
+import SharedData, { init as initSharedData } from 'src/shared-data'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -32,12 +32,15 @@ export function initBackend (_bridge) {
     hook.once('init', connect)
   }
 
-  config(bridge)
-
   initRightClick()
 }
 
 function connect () {
+  initSharedData({
+    bridge,
+    Vue: hook.Vue
+  })
+
   hook.currentTab = 'components'
   bridge.on('switch-tab', tab => {
     hook.currentTab = tab
@@ -117,6 +120,16 @@ function connect () {
   initEventsBackend(hook.Vue, bridge)
 
   window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
+
+  // User project devtools config
+  if (window.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+    const config = window.VUE_DEVTOOLS_CONFIG
+
+    // Open in editor
+    if (config.hasOwnProperty('openInEditorHost')) {
+      SharedData.openInEditorHost = config.openInEditorHost
+    }
+  }
 
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
