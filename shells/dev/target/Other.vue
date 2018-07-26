@@ -10,7 +10,7 @@
 // even if component has no 'computed' defined
 const computedPropMixin = {
   computed: {
-    computedPropFromMixin() {
+    computedPropFromMixin () {
       return null
     }
   }
@@ -19,11 +19,11 @@ const computedPropMixin = {
 export default {
   name: 'other-with-mine',
   props: ['id'],
-  mixins: [ computedPropMixin ],
+  mixins: [computedPropMixin],
   data () {
-    let a = { c: function () {} }
+    const a = { c: function () {} }
     a.a = a
-    let b = []
+    const b = []
     b[0] = b
     return {
       a: a,

@@ -72,6 +72,11 @@ export default {
 }
 </script>
 
+<style lang="stylus">
+body
+  background white
+</style>
+
 <style lang="stylus" scoped>
 .inspect
   border solid 1px black

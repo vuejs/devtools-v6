@@ -8,7 +8,7 @@
 export default {
   methods: {
     emitLogEvent () {
-      let data = {
+      const data = {
         componentName: 'EventChild1',
         string: 'Lorem ipsum',
         complex: {
@@ -16,7 +16,7 @@ export default {
           object: {
             number: 23,
             boolean: true,
-            array: [1,2,3,4,5]
+            array: [1, 2, 3, 4, 5]
           }
         }
       }

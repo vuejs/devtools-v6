@@ -48,10 +48,10 @@ export default {
 .scroll
   flex 1
   overflow auto
-  .dark &::-webkit-scrollbar
+  .vue-ui-dark-mode &::-webkit-scrollbar
     background: $dark-background-color
     border-left: 1px solid $dark-border-color
-  .dark &::-webkit-scrollbar-thumb
+  .vue-ui-dark-mode &::-webkit-scrollbar-thumb
     background: lighten($dark-background-color, 7%);
     border: 1px solid lighten($dark-border-color, 7%)
 

@@ -12,7 +12,9 @@
       @mouseenter="enter"
       @mouseleave="leave"
       :class="{ selected: selected }"
-      :style="{ paddingLeft: depth * 15 + 'px' }">
+      :style="{ paddingLeft: depth * 15 + 'px' }"
+    >
+      <!-- Component tag -->
       <span class="content">
         <!-- arrow wrapper for better hit box -->
         <span class="arrow-wrapper"
@@ -21,28 +23,53 @@
           <span class="arrow right" :class="{ rotated: expanded }">
           </span>
         </span>
-        <span class="angle-bracket">&lt;</span><span class="item-name">{{ displayName }}</span><span class="angle-bracket">&gt;</span>
+
+        <span class="angle-bracket">&lt;</span>
+
+        <span class="item-name">{{ displayName }}</span>
+
+        <span v-if="componentHasKey" class="attr">
+          <span class="attr-title"> key</span>=<span class="attr-value">{{instance.renderKey}}</span>
+        </span>
+
+        <span class="angle-bracket">&gt;</span>
       </span>
-      <span class="info console" v-if="instance.consoleId === '$vm0'">
-        == {{ instance.consoleId }}
+      <span
+        v-if="instance.consoleId"
+        class="info console"
+        v-tooltip="$t('ComponentInstance.consoleId.tooltip', { id: instance.consoleId })"
+      >
+        = {{ instance.consoleId }}
       </span>
-      <span class="info router-view" v-if="instance.isRouterView">
+      <span
+        v-if="instance.isRouterView"
+        class="info router-view"
+      >
         router-view{{ instance.matchedRouteSegment ? ': ' + instance.matchedRouteSegment : null }}
       </span>
-      <span class="info fragment" v-if="instance.isFragment">
+      <span
+        v-if="instance.isFragment"
+        class="info fragment"
+      >
         fragment
       </span>
-      <span class="info inactive" v-if="instance.inactive">
+      <span
+        v-if="instance.inactive"
+        class="info inactive"
+      >
         inactive
       </span>
+
       <span class="spacer"></span>
-      <BaseIcon
+
+      <VueIcon
         class="icon-button"
         icon="visibility"
         v-tooltip="'Scroll into view'"
         @click="scrollToInstance"
       />
     </div>
+
     <div v-if="expanded">
       <component-instance
         v-for="child in sortedChildren"
@@ -55,30 +82,36 @@
 </template>
 
 <script>
-import { classify, scrollIntoView } from '../../../util'
+import { classify, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
   name: 'ComponentInstance',
+
   props: {
     instance: Object,
     depth: Number
   },
+
   created () {
     // expand root by default
     if (this.depth === 0) {
       this.expand()
     }
   },
+
   computed: {
     scrollToExpanded () {
       return this.$store.state.components.scrollToExpanded
     },
+
     expanded () {
       return !!this.$store.state.components.expansionMap[this.instance.id]
     },
+
     selected () {
       return this.instance.id === this.$store.state.components.inspectedInstance.id
     },
+
     sortedChildren () {
       return this.instance.children.slice().sort((a, b) => {
         return a.top === b.top
@@ -86,10 +119,16 @@ export default {
           : a.top - b.top
       })
     },
+
     displayName () {
       return this.$shared.classifyComponents ? classify(this.instance.name) : this.instance.name
+    },
+
+    componentHasKey () {
+      return !!this.instance.renderKey && this.instance.renderKey !== UNDEFINED
     }
   },
+
   watch: {
     scrollToExpanded: {
       handler (value, oldValue) {
@@ -100,16 +139,20 @@ export default {
       immediate: true
     }
   },
+
   methods: {
     toggle (event) {
       this.toggleWithValue(!this.expanded, event.altKey)
     },
+
     expand () {
       this.toggleWithValue(true)
     },
+
     collapse () {
       this.toggleWithValue(false)
     },
+
     toggleWithValue (val, recursive = false) {
       this.$store.dispatch('components/toggleInstance', {
         instance: this.instance,
@@ -117,18 +160,23 @@ export default {
         recursive
       })
     },
+
     select () {
       bridge.send('select-instance', this.instance.id)
     },
+
     enter () {
       bridge.send('enter-instance', this.instance.id)
     },
+
     leave () {
       bridge.send('leave-instance', this.instance.id)
     },
+
     scrollToInstance () {
       bridge.send('scroll-to-instance', this.instance.id)
     },
+
     scrollIntoView (center = true) {
       this.$nextTick(() => {
         scrollIntoView(this.$globalRefs.leftScroll, this.$refs.self, center)
@@ -183,7 +231,7 @@ export default {
   &.console
     color #fff
     background-color transparent
-    top 0px
+    top 0
   &.router-view
     background-color #ff8344
   &.fragment
@@ -216,16 +264,29 @@ export default {
   color $component-color
   margin 0 1px
 
+.attr
+  opacity .5
+  font-size 12px
+
+.attr-title
+  color purple
+
 .spacer
-  flex 100% 1 1
-  width 0
+  flex auto 1 1
 
 .icon-button
-  font-size 16px
+  width 16px
+  height 16px
 
   .self:not(:hover) &
     visibility hidden
 
   .self.selected & >>> svg
     fill $white
+
+.self.selected
+  .attr
+    opacity 1
+  .attr-title
+    color lighten($purple, 70%)
 </style>

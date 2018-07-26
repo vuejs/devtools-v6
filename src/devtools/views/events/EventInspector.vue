@@ -44,7 +44,7 @@ export default {
 
 section:not(:last-child)
   border-bottom 1px solid $border-color
-  .dark &
+  .vue-ui-dark-mode &
     border-bottom 1px solid $dark-border-color
 
 .component-name

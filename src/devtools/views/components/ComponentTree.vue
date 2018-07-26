@@ -5,7 +5,7 @@
         class="search"
         v-tooltip="$t('ComponentTree.filter.tooltip')"
       >
-        <BaseIcon icon="search"/>
+        <VueIcon icon="search"/>
         <input
           ref="filterInstances"
           placeholder="Filter components"
@@ -18,7 +18,7 @@
         v-tooltip="$t('ComponentTree.select.tooltip')"
         @click="setSelecting(!selecting)"
       >
-        <BaseIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
+        <VueIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
         <span>Select</span>
       </a>
       <a class="button classify-names"
@@ -26,7 +26,7 @@
          v-tooltip="'Format component names'"
          @click="$shared.classifyComponents = !$shared.classifyComponents"
       >
-        <BaseIcon icon="text_fields"/>
+        <VueIcon icon="text_fields"/>
         <span>Format</span>
       </a>
     </action-header>
@@ -197,6 +197,6 @@ function findByIndex (all, index) {
 .select-component
   &.active
     color $active-color
-    .svg-icon
+    .vue-ui-icon
       animation pulse 2s infinite linear
 </style>

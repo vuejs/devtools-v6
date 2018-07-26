@@ -2,11 +2,11 @@
   <scroll-pane>
     <action-header slot="header">
       <div class="search">
-        <BaseIcon icon="search"/>
+        <VueIcon icon="search"/>
         <input placeholder="Filter inspected state" v-model.trim="filter">
       </div>
       <a class="button export" @click="copyStateToClipboard" v-tooltip="'Export Vuex State'">
-        <BaseIcon icon="content_copy"/>
+        <VueIcon icon="content_copy"/>
         <span>Export</span>
         <transition name="slide-up">
           <span class="message" v-show="showStateCopiedMessage">
@@ -15,7 +15,7 @@
         </transition>
       </a>
       <a class="button import" @click="toggleImportStatePopup" v-tooltip="'Import Vuex State'">
-        <BaseIcon icon="content_paste"/>
+        <VueIcon icon="content_paste"/>
         <span>Import</span>
       </a>
       <transition name="slide-down">
@@ -153,7 +153,7 @@ function copyToClipboard (state) {
   font-size 12px
   color $red
   background-color $background-color
-  .dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
 
 .import-state
@@ -168,7 +168,7 @@ function copyToClipboard (state) {
   border 1px solid $border-color
   padding 3px
   background-color $background-color
-  .dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
     box-shadow 4px 4px 6px 0 $dark-border-color
     border 1px solid $dark-border-color
@@ -187,7 +187,7 @@ function copyToClipboard (state) {
     outline none
     border none
     resize vertical
-    .dark &
+    .vue-ui-dark-mode &
       color #DDD
       background-color $dark-background-color
 </style>

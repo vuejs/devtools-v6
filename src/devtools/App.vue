@@ -10,45 +10,65 @@
         <span class="message" :key="message">{{ message }}</span>
       </transition>
     </span>
-    <a
-      class="button components"
-      :class="{ active: tab === 'components'}"
-      v-tooltip="$t('App.components.tooltip')"
-      @click="switchTab('components')"
-    >
-      <BaseIcon icon="device_hub"/>
-      <span class="pane-name">Components</span>
-    </a>
-    <a
-      class="button vuex"
-      :class="{ active: tab === 'vuex'}"
-      v-tooltip="$t('App.vuex.tooltip')"
-      @click="switchTab('vuex')"
-    >
-      <BaseIcon icon="restore"/>
-      <span class="pane-name">Vuex</span>
-    </a>
-    <a
-      class="button events"
-      :class="{ active: tab === 'events' }"
-      v-tooltip="$t('App.events.tooltip')"
-      @click="switchTab('events')"
-    >
-      <BaseIcon icon="grain"/>
-      <span class="pane-name">Events</span>
-      <span class="event-count" v-if="newEventCount > 0">{{ newEventCount }}</span>
-    </a>
-    <a
-      class="button refresh"
-      v-tooltip="$t('App.refresh.tooltip')"
-      @click="refresh"
-    >
-      <BaseIcon ref="refresh" icon="refresh"/>
-      <span class="pane-name">Refresh</span>
-    </a>
-    <span class="active-bar"></span>
+
+    <div class="actions">
+      <VueGroup
+        v-model="routeModel"
+        class="primary inline"
+        indicator
+      >
+        <VueGroupButton
+          :class="{
+            'icon-button': !$responsive.wide
+          }"
+          value="components"
+          icon-left="device_hub"
+          class="components-tab flat"
+          v-tooltip="$t('App.components.tooltip')"
+        >
+          Components
+        </VueGroupButton>
+        <VueGroupButton
+          :class="{
+            'icon-button': !$responsive.wide
+          }"
+          value="vuex"
+          icon-left="restore"
+          class="vuex-tab flat"
+          v-tooltip="$t('App.vuex.tooltip')"
+        >
+          Vuex
+        </VueGroupButton>
+        <VueGroupButton
+          :tag="newEventCount > 0 ? newEventCount : null"
+          :class="{
+            'icon-button': !$responsive.wide
+          }"
+          value="events"
+          icon-left="grain"
+          class="events-tab flat big-tag"
+          v-tooltip="$t('App.events.tooltip')"
+        >
+          Events
+        </VueGroupButton>
+      </VueGroup>
+
+      <VueButton
+        ref="refresh"
+        :class="{
+          'icon-button': !$responsive.wide
+        }"
+        icon-left="refresh"
+        v-tooltip="$t('App.refresh.tooltip')"
+        class="refresh-button flat"
+        @click="refresh"
+      >
+        Refresh
+      </VueButton>
+    </div>
   </div>
-  <component :is="tab" class="container"></component>
+
+  <router-view class="container"/>
 </div>
 </template>
 
@@ -63,6 +83,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'app',
+
   mixins: [
     Keyboard({
       onKeyDown ({ key, code, modifiers }) {
@@ -75,45 +96,57 @@ export default {
             break
           case 'ctrl':
             if (code === 'Digit1') {
-              this.switchTab('components')
+              this.$router.push({ name: 'components' })
               return false
             } else if (code === 'Digit2') {
-              this.switchTab('vuex')
+              this.$router.push({ name: 'vuex' })
               return false
             } else if (code === 'Digit3') {
-              this.switchTab('events')
+              this.$router.push({ name: 'events' })
               return false
             }
         }
       }
     })
   ],
+
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
     events: EventsTab
   },
+
   computed: {
     ...mapState({
       message: state => state.message,
-      tab: state => state.tab,
       newEventCount: state => state.events.newEventCount,
       view: state => state.view
     }),
+
     specialTokens () {
       return SPECIAL_TOKENS
+    },
+
+    routeModel: {
+      get () { return this.$route.name },
+      set (value) {
+        this.$router.push({ name: value })
+      }
     }
   },
-  methods: {
-    switchTab (tab) {
+
+  watch: {
+    '$route.name' (tab) {
       bridge.send('switch-tab', tab)
-      this.$store.commit('SWITCH_TAB', tab)
       if (tab === 'events') {
         this.$store.commit('events/RESET_NEW_EVENT_COUNT')
       }
-    },
+    }
+  },
+
+  methods: {
     refresh () {
-      const refreshIcon = this.$refs.refresh.$el
+      const refreshIcon = this.$refs.refresh.$el.querySelector('.vue-ui-icon')
       refreshIcon.style.animation = 'none'
 
       bridge.send('refresh')
@@ -121,35 +154,23 @@ export default {
         refreshIcon.style.animation = 'rotate 1s'
       })
     },
+
     switchView (mediaQueryEvent) {
       this.$store.commit(
         'SWITCH_VIEW',
         mediaQueryEvent.matches ? 'vertical' : 'horizontal'
       )
-    },
-    updateActiveBar () {
-      const activeButton = this.$el.querySelector('.button.active')
-      const activeBar = this.$el.querySelector('.active-bar')
-      activeBar.style.left = activeButton.offsetLeft + 'px'
-      activeBar.style.width = activeButton.offsetWidth + 'px'
     }
   },
+
   mounted () {
     this.mediaQuery = window.matchMedia('(min-width: 685px)')
     this.switchView(this.mediaQuery)
     this.mediaQuery.addListener(this.switchView)
+  },
 
-    this.updateActiveBar()
-    window.addEventListener('resize', this.updateActiveBar)
-  },
   destroyed () {
-    window.removeEventListener('resize', this.updateActiveBar)
     this.mediaQuery.removeListener(this.switchView)
-  },
-  watch: {
-    tab () {
-      this.$nextTick(this.updateActiveBar)
-    }
   }
 }
 </script>
@@ -167,7 +188,7 @@ export default {
   background-color $background-color
   display flex
   flex-direction column
-  .dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
 
 .header
@@ -177,7 +198,7 @@ export default {
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
   position relative
-  .dark &
+  .vue-ui-dark-mode &
     border-bottom 1px solid $dark-border-color
 
 .logo
@@ -192,85 +213,34 @@ export default {
   @media (min-width: $wide - 300px)
     display block
 
-
 .message
   color $active-color
   transition all .3s ease
   position absolute
 
-.button
-  padding 10px
+.actions
+  flex auto 1 1
   display flex
-  align-items center
-  cursor pointer
-  position relative
-  border-bottom-color transparent
-  background-color $background-color
-  color #888
-  transition color .35s ease
-  .dark &
-    background-color $dark-background-color
+  justify-content flex-end
 
-  .svg-icon
-    width 20px
-    height @width
-    margin-right 5px
-    >>> svg
-      fill @color
-      transition fill .35s ease
-
-  &:hover
-    color #555
-    .svg-icon >>> svg
-      fill @color
-
-  &.active
-    color $active-color
-    .svg-icon >>> svg
-      fill @color
-
-  &:first-of-type
-    margin-left auto
-
-  .pane-name
-    display none
-
-  @media (min-width: $wide)
-    padding-right 20px
-    padding-left 20px
-    .pane-name
-      display block
-
+.vue-ui-button
+  height 38px
+  @media (max-width: $wide)
+    width 38px
+    /deep/
+      .button-icon.left
+        margin-right 0 !important
+      .default-slot
+        display none
   @media (min-height: $tall)
-    padding-top 20px
-    padding-bottom 20px
+    height 48px
+    @media (max-width: $wide)
+      width @height
+
+.vue-ui-group /deep/ > .indicator
+  padding-bottom 0 !important
 
 .container
   overflow hidden
   flex 1
-
-$event-count-bubble-size = 18px
-
-.event-count
-  background-color $active-color
-  color #fff
-  border-radius 50%
-  width $event-count-bubble-size
-  height $event-count-bubble-size
-  text-align center
-  padding-top 4px
-  font-size $event-count-bubble-size * 0.5
-  position absolute
-  right 0
-  top 12px
-  .dark &
-    background-color $dark-background-color
-
-.active-bar
-  position absolute
-  bottom 0
-  width 0px
-  height 3px
-  background-color $active-color
-  transition all .32s cubic-bezier(0,.9,.6,1)
 </style>

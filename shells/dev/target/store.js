@@ -8,7 +8,8 @@ export default new Vuex.Store({
     count: 0,
     date: new Date(),
     set: new Set(),
-    map: new Map()
+    map: new Map(),
+    sym: Symbol('test')
   },
   mutations: {
     INCREMENT: state => state.count++,

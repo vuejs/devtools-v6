@@ -7,7 +7,7 @@
         <span class="title-bracket">&gt;</span>
       </span>
       <div class="search">
-        <BaseIcon icon="search"/>
+        <VueIcon icon="search"/>
         <input placeholder="Filter inspected data" v-model.trim="filter">
       </div>
       <a
@@ -16,7 +16,7 @@
         v-tooltip="'Inspect DOM'"
         @click="inspectDOM"
       >
-        <BaseIcon icon="code"/>
+        <VueIcon icon="code"/>
         <span>Inspect DOM</span>
       </a>
       <a
@@ -25,7 +25,7 @@
         v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         @click="openInEditor"
       >
-        <BaseIcon icon="launch"/>
+        <VueIcon icon="launch"/>
         <span>Open in editor</span>
       </a>
     </action-header>

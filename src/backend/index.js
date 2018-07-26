@@ -158,8 +158,9 @@ function scan () {
       }
       return true
     }
-    const instance = node.__vue__
+    let instance = node.__vue__
     if (instance) {
+      instance = instance.$root
       if (instance._isFragment) {
         inFragment = true
         currentFragment = instance
@@ -296,6 +297,7 @@ function capture (instance, _, list) {
   const ret = {
     id: instance.__VUE_DEVTOOLS_UID__,
     name: getInstanceName(instance),
+    renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
     children: instance.$children
@@ -704,6 +706,20 @@ function bindToConsole (instance) {
 function getUniqueId (instance) {
   const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
   return `${rootVueId}:${instance._uid}`
+}
+
+function getRenderKey (value) {
+  if (value == null) return
+  const type = typeof value
+  if (type === 'number') {
+    return value
+  } else if (type === 'string') {
+    return `'${value}'`
+  } else if (Array.isArray(value)) {
+    return 'Array'
+  } else {
+    return 'Object'
+  }
 }
 
 /**
