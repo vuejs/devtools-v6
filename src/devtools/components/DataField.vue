@@ -1,9 +1,9 @@
 <template>
   <div class="data-field">
     <v-popover
-      class="self"
-      :class="cssClass"
       :style="{ marginLeft: depth * 14 + 'px' }"
+      class="self"
+      popover-class="force-tooltip"
       trigger="hover"
       placement="left"
       offset="24"
@@ -48,20 +48,20 @@
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
-          <BaseIcon
+          <VueIcon
             v-if="!editValid"
             class="icon-button warning"
             v-tooltip="editErrorMessage"
             icon="warning"
           />
           <template v-else>
-            <BaseIcon
+            <VueIcon
               class="icon-button medium"
               icon="cancel"
               v-tooltip="$t('DataField.edit.cancel.tooltip')"
               @click="cancelEdit()"
             />
-            <BaseIcon
+            <VueIcon
               class="icon-button"
               icon="save"
               v-tooltip="$t('DataField.edit.submit.tooltip')"
@@ -79,7 +79,7 @@
           v-html="formattedValue"
         />
         <span class="actions">
-          <BaseIcon
+          <VueIcon
             v-if="isValueEditable"
             class="edit-value icon-button"
             icon="edit"
@@ -87,7 +87,7 @@
             @click="openEdit()"
           />
           <template v-if="quickEdits">
-            <BaseIcon
+            <VueIcon
               v-for="(info, index) of quickEdits"
               :key="index"
               class="quick-edit icon-button"
@@ -97,14 +97,14 @@
               @click="quickEdit(info, $event)"
             />
           </template>
-          <BaseIcon
+          <VueIcon
             v-if="isSubfieldsEditable && !addingValue"
             class="add-value icon-button"
             icon="add_circle"
             v-tooltip="'Add new value'"
             @click="addNewValue()"
           />
-          <BaseIcon
+          <VueIcon
             v-if="removable"
             class="remove-field icon-button"
             icon="delete"
@@ -350,7 +350,7 @@ export default {
 
     editErrorMessage () {
       if (!this.valueValid) {
-        return 'Invalid value'
+        return 'Invalid value (must be valid JSON)'
       } else if (!this.keyValid) {
         if (this.duplicateKey) {
           return 'Duplicate key'
@@ -469,16 +469,16 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
-    .dark &
+    .vue-ui-dark-mode &
       color: #242424
 
 .key
   color #881391
-  .dark &
+  .vue-ui-dark-mode &
     color: #e36eec
   &.abstract
     color $blueishGrey
-    .dark &
+    .vue-ui-dark-mode &
       color lighten($blueishGrey, 20%)
 .value
   display inline-block
@@ -488,7 +488,7 @@ export default {
   &.string
     >>> span
       color $black
-      .dark &
+      .vue-ui-dark-mode &
         color $red
   &.null
     color #999
@@ -515,13 +515,13 @@ export default {
           font-family Menlo, monospace
         .platform-windows &
           font-family Consolas, Lucida Console, Courier New, monospace
-        .dark &
+        .vue-ui-dark-mode &
           color $purple
     &.type-component-definition
       color $green
       >>> span
         color $darkerGrey
-  .dark &
+  .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
       color #e33e3a
@@ -533,11 +533,17 @@ export default {
 .meta
   font-size 12px
   font-family Menlo, Consolas, monospace
-  color #444
   min-width 150px
   .key
     display inline-block
     width 80px
+    color lighten(#881391, 60%)
+    .vue-ui-dark-mode &
+      color #881391
+  .value
+    color white
+    .vue-ui-dark-mode &
+      color black
 .meta-field
   &:not(:last-child)
     margin-bottom 4px

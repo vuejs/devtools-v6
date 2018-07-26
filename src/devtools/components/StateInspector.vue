@@ -118,10 +118,10 @@ export default {
   &:not(:last-child)
     border-bottom rgba($grey, .4) solid 1px
 
-    .dark &
+    .vue-ui-dark-mode &
       border-bottom-color rgba($grey, .07)
 
-  .dark &
+  .vue-ui-dark-mode &
     box-shadow none
 
   .data-type,
@@ -138,7 +138,7 @@ export default {
     align-items baseline
     padding-left 9px
 
-    .dark &
+    .vue-ui-dark-mode &
       color lighten(#486887, 30%)
 
     .arrow

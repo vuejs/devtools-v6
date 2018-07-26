@@ -4,7 +4,7 @@
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
-    "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
+    "dev": "cd shells/dev && webpack-dev-server --inline --hot --progress",
     "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src && eslint shells/electron/src",
     "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
@@ -27,6 +27,16 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vuejs/vue-devtools/issues"
+  },
+  "dependencies": {
+    "@vue/ui": "^0.5.1",
+    "circular-json-es6": "^2.0.1",
+    "lodash.debounce": "^4.0.8",
+    "lodash.groupby": "^4.6.0",
+    "uglifyjs-webpack-plugin": "^1.1.4",
+    "vue": "^2.5.13",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
   },
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
@@ -54,16 +64,5 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7",
     "webpack-merge": "^4.1.2"
-  },
-  "dependencies": {
-    "circular-json-es6": "^2.0.1",
-    "lodash.debounce": "^4.0.8",
-    "lodash.groupby": "^4.6.0",
-    "material-design-icons": "^3.0.1",
-    "uglifyjs-webpack-plugin": "^1.1.4",
-    "v-tooltip": "^2.0.0-rc.25",
-    "vue": "^2.5.13",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
   }
 }

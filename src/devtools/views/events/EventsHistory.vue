@@ -5,7 +5,7 @@
         class="search"
         v-tooltip="$t('EventsHistory.filter.tooltip')"
       >
-        <BaseIcon icon="search"/>
+        <VueIcon icon="search"/>
         <input
           ref="filterEvents"
           placeholder="Filter events"
@@ -18,7 +18,7 @@
         v-tooltip="$t('EventsHistory.clear.tooltip')"
         @click="reset"
       >
-        <BaseIcon class="small" icon="do_not_disturb"/>
+        <VueIcon class="small" icon="do_not_disturb"/>
         <span>Clear</span>
       </a>
       <a
@@ -26,7 +26,7 @@
         v-tooltip="$t(`EventsHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
         @click="toggleRecording"
       >
-        <BaseIcon class="small" :class="{ enabled }" icon="lens"/>
+        <VueIcon class="small" :class="{ enabled }" icon="lens"/>
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>

@@ -145,8 +145,9 @@ function scan () {
       }
       return true
     }
-    const instance = node.__vue__
+    let instance = node.__vue__
     if (instance) {
+      instance = instance.$root
       if (instance._isFragment) {
         inFragment = true
         currentFragment = instance
@@ -163,7 +164,7 @@ function scan () {
         if (typeof instance.__VUE_DEVTOOLS_ROOT_UID__ === 'undefined') {
           instance.__VUE_DEVTOOLS_ROOT_UID__ = ++rootUID
         }
-        rootInstances.push(instance.$root)
+        rootInstances.push(instance)
       }
 
       return true

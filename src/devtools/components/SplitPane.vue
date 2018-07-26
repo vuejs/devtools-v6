@@ -111,13 +111,13 @@ export default {
   .bottom
     box-shadow 0 -2px 10px rgba(0, 0, 0, 0.1)
     border-top 1px solid $border-color
-    .dark &
+    .vue-ui-dark-mode &
       border-top 1px solid $dark-border-color
 
 .vertical
   .left
     border-right 1px solid $border-color
-    .dark &
+    .vue-ui-dark-mode &
       border-right 1px solid $dark-border-color
 
 .dragger
