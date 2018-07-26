@@ -1,7 +1,7 @@
 <template>
   <div>
     Other {{ id }}
-    <mine></mine>
+    <mine/>
   </div>
 </template>
 
@@ -18,8 +18,13 @@ const computedPropMixin = {
 
 export default {
   name: 'other-with-mine',
-  props: ['id'],
   mixins: [computedPropMixin],
+  provide: {
+    foo: 'bar',
+    noop: (a, b, c) => {},
+    answer: 42
+  },
+  props: ['id'],
   data () {
     const a = { c: function () {} }
     a.a = a
@@ -32,6 +37,7 @@ export default {
   },
   components: {
     mine: {
+      inject: ['foo', 'noop', 'answer'],
       render: h => h('div', { class: 'mine' }, 'mine'),
       data () {
         return {
