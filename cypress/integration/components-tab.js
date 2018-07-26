@@ -92,4 +92,16 @@ suite('components tab', () => {
     cy.get('.instance .self .attr-title').contains('key')
     cy.get('.instance .self .attr-value').contains('1')
   })
+
+  it('should display injected props', () => {
+    cy.get('.left .search input').clear().type('Mine')
+    cy.get('.instance').eq(1).click()
+    cy.get('.right .data-wrapper').then(el => {
+      expect(el.text()).to.contain('injected')
+      expect(el.text()).to.contain('answer:42')
+      expect(el.text()).to.contain('foo:"bar"')
+      expect(el.text()).to.contain('noop:ƒ noop(a, b, c)')
+    })
+    cy.get('.left .search input').clear()
+  })
 })

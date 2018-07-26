@@ -378,6 +378,7 @@ function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
     processComputed(instance),
+    processInjected(instance),
     processRouteContext(instance),
     processVuexGetters(instance),
     processFirebaseBindings(instance),
@@ -561,6 +562,29 @@ function processComputed (instance) {
   }
 
   return computed
+}
+
+/**
+ * Process Vuex getters.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processInjected (instance) {
+  const injected = instance.$options.inject
+
+  if (injected) {
+    return Object.keys(injected).map(key => {
+      return {
+        key,
+        type: 'injected',
+        value: instance[key]
+      }
+    })
+  } else {
+    return []
+  }
 }
 
 /**
