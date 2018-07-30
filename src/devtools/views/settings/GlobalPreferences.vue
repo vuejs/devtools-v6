@@ -28,12 +28,12 @@
           label="Auto"
         />
         <VueGroupButton
-          value="dark"
-          label="Dark"
-        />
-        <VueGroupButton
           value="light"
           label="Light"
+        />
+        <VueGroupButton
+          value="dark"
+          label="Dark"
         />
       </VueGroup>
     </VueFormField>
