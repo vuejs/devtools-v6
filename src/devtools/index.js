@@ -96,7 +96,8 @@ function initApp (shell) {
       Vue,
       storage,
       persist: [
-        'classifyComponents'
+        'classifyComponents',
+        'theme'
       ]
     })
 
