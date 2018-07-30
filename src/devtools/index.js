@@ -14,7 +14,7 @@ let panelShown = !isChrome
 let pendingAction = null
 
 const isDark = isChrome ? chrome.devtools.panels.themeName === 'dark' : false
-const isBeta = process.env.CHANNEL === 'beta'
+const isBeta = process.env.RELEASE_CHANNEL === 'beta'
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.

@@ -14,7 +14,7 @@
     "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
     "zip:firefox": "web-ext build -s shells/chrome -a dist -i src --overwrite-dest",
     "release": "node release.js && npm run test && npm run build && npm run zip",
-    "release:beta": "cross-env CHANNEL=beta && npm run release",
+    "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release",
     "test": "npm run lint && npm run test:e2e",
     "test:e2e": "cross-env PORT=4040 start-server-and-test dev:shell http://localhost:4040 test:e2e:run",
     "test:e2e:run": "cypress run --config baseUrl=http://localhost:4040",
