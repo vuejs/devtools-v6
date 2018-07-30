@@ -27,6 +27,9 @@ export default {
         tooltip: '[[{{keys.enter}}]] Submit change'
       }
     },
+    contextMenu: {
+      copyValue: 'Copy Value'
+    },
     quickEdit: {
       number: {
         tooltip: `Quick Edit<br><br>

@@ -8,12 +8,17 @@
         hide: 0
       }"
       :open-group="'id' + _uid"
+      :class="{
+        'force-toolbar': contextMenuOpen || editing,
+      }"
       class="self"
       popover-class="force-tooltip"
       trigger="hover"
       placement="left"
       offset="24"
       @click.native="onClick"
+      @mouseenter.native="onContextMenuMouseEnter"
+      @mouseleave.native="onContextMenuMouseLeave"
     >
       <span
         v-show="isExpandableType"
@@ -58,20 +63,20 @@
           <VueIcon
             v-tooltip="editErrorMessage"
             v-if="!editValid"
-            class="icon-button warning"
+            class="small-icon warning"
             icon="warning"
           />
           <template v-else>
-            <VueIcon
+            <VueButton
               v-tooltip="$t('DataField.edit.cancel.tooltip')"
-              class="icon-button medium"
-              icon="cancel"
+              class="icon-button flat"
+              icon-left="cancel"
               @click="cancelEdit()"
             />
-            <VueIcon
+            <VueButton
               v-tooltip="$t('DataField.edit.submit.tooltip')"
-              class="icon-button"
-              icon="save"
+              class="icon-button flat"
+              icon-left="save"
               @click="submitEdit()"
             />
           </template>
@@ -86,38 +91,62 @@
           v-html="formattedValue"
         />
         <span class="actions">
-          <VueIcon
+          <VueButton
             v-tooltip="'Edit value'"
             v-if="isValueEditable"
-            class="edit-value icon-button"
-            icon="edit"
+            class="edit-value icon-button flat"
+            icon-left="edit"
             @click="openEdit()"
           />
           <template v-if="quickEdits">
-            <VueIcon
+            <VueButton
               v-tooltip="info.title || 'Quick edit'"
               v-for="(info, index) of quickEdits"
               :key="index"
               :class="info.class"
-              :icon="info.icon"
+              :icon-left="info.icon"
               class="quick-edit icon-button"
               @click="quickEdit(info, $event)"
             />
           </template>
-          <VueIcon
+          <VueButton
             v-tooltip="'Add new value'"
             v-if="isSubfieldsEditable && !addingValue"
-            class="add-value icon-button"
-            icon="add_circle"
+            class="add-value icon-button flat"
+            icon-left="add_circle"
             @click="addNewValue()"
           />
-          <VueIcon
+          <VueButton
             v-tooltip="'Remove value'"
             v-if="removable"
-            class="remove-field icon-button"
-            icon="delete"
+            class="remove-field icon-button flat"
+            icon-left="delete"
             @click="removeField()"
           />
+
+          <!-- Context menu -->
+          <VueDropdown
+            :open.sync="contextMenuOpen"
+          >
+            <VueButton
+              slot="trigger"
+              icon-left="more_vert"
+              class="icon-button flat"
+            />
+
+            <div
+              class="context-menu-dropdown"
+              @mouseenter="onContextMenuMouseEnter"
+              @mouseleave="onContextMenuMouseLeave"
+            >
+              <VueDropdownButton
+                icon-left="flip_to_front"
+                @click="copyToClipboard"
+              >
+                {{ $t('DataField.contextMenu.copyValue') }}
+              </VueDropdownButton>
+            </div>
+          </VueDropdown>
         </span>
       </template>
 
@@ -186,7 +215,8 @@ import {
   sortByKey,
   openInEditor,
   escape,
-  specialTokenToString
+  specialTokenToString,
+  copyToClipboard
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -228,6 +258,7 @@ export default {
 
   data () {
     return {
+      contextMenuOpen: false,
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
       expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
@@ -399,6 +430,10 @@ export default {
   },
 
   methods: {
+    copyToClipboard () {
+      copyToClipboard(this.field.value)
+    },
+
     onClick (event) {
       // Cancel if target is interactive
       if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
@@ -422,7 +457,18 @@ export default {
       }
     },
 
-    hyphen: v => v.replace(/\s/g, '-')
+    hyphen: v => v.replace(/\s/g, '-'),
+
+    onContextMenuMouseEnter () {
+      clearTimeout(this.$_contextMenuTimer)
+    },
+
+    onContextMenuMouseLeave () {
+      clearTimeout(this.$_contextMenuTimer)
+      this.$_contextMenuTimer = setTimeout(() => {
+        this.contextMenuOpen = false
+      }, 4000)
+    }
   }
 }
 </script>
@@ -460,16 +506,20 @@ export default {
     top -1px
     .icon-button
       user-select none
-      width 16px
+      width 20px
       height @width
       &:first-child
         margin-left 6px
       &:not(:last-child)
         margin-right 6px
+    .icon-button >>> .vue-ui-icon,
+    .small-icon
+      width 16px
+      height @width
     .warning >>> svg
       fill $orange
   &:hover,
-  &.editing
+  &.force-toolbar
     .actions
       visibility visible
   .colon
@@ -498,6 +548,10 @@ export default {
       background-color #ff9999
     .vue-ui-dark-mode &
       color: #242424
+
+  .edit-overlay
+    display inline-flex
+    align-items center
 
 .key
   color #881391
@@ -599,4 +653,9 @@ export default {
 
 .remove-field
   margin-left 10px
+
+.context-menu-dropdown
+  .vue-ui-button
+    display block
+    width 100%
 </style>
