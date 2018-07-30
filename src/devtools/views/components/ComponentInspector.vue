@@ -10,28 +10,28 @@
         <span class="title-bracket">&gt;</span>
       </span>
       <div class="search">
-        <VueIcon icon="search"/>
+        <VueIcon icon="search" />
         <input
           v-model.trim="filter"
           placeholder="Filter inspected data"
         >
       </div>
       <a
-        v-tooltip="'Inspect DOM'"
         v-if="$isChrome"
+        v-tooltip="'Inspect DOM'"
         class="button inspect"
         @click="inspectDOM"
       >
-        <VueIcon icon="code"/>
+        <VueIcon icon="code" />
         <span>Inspect DOM</span>
       </a>
       <a
-        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         v-if="target.file"
+        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         class="button"
         @click="openInEditor"
       >
-        <VueIcon icon="launch"/>
+        <VueIcon icon="launch" />
         <span>Open in editor</span>
       </a>
     </action-header>

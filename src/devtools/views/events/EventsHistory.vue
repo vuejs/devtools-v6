@@ -5,7 +5,7 @@
         v-tooltip="$t('EventsHistory.filter.tooltip')"
         class="search"
       >
-        <VueIcon icon="search"/>
+        <VueIcon icon="search" />
         <input
           ref="filterEvents"
           v-model.trim="filter"

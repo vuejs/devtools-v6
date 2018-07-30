@@ -44,8 +44,8 @@
         <span class="angle-bracket">&gt;</span>
       </span>
       <span
-        v-tooltip="$t('ComponentInstance.consoleId.tooltip', { id: instance.consoleId })"
         v-if="instance.consoleId"
+        v-tooltip="$t('ComponentInstance.consoleId.tooltip', { id: instance.consoleId })"
         class="info console"
       >
         = {{ instance.consoleId }}
@@ -69,7 +69,7 @@
         inactive
       </span>
 
-      <span class="spacer"/>
+      <span class="spacer" />
 
       <VueIcon
         v-tooltip="'Scroll into view'"

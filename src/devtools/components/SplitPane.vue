@@ -10,7 +10,7 @@
       :style="leftStyles"
       class="left top"
     >
-      <slot name="left"/>
+      <slot name="left" />
       <div
         class="dragger"
         @mousedown.prevent="dragStart"
@@ -20,7 +20,7 @@
       :style="rightStyles"
       class="right bottom"
     >
-      <slot name="right"/>
+      <slot name="right" />
     </div>
   </div>
 </template>

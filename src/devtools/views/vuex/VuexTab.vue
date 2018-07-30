@@ -1,8 +1,8 @@
 <template>
   <div>
     <split-pane v-if="hasVuex">
-      <vuex-history slot="left"/>
-      <vuex-state-inspector slot="right"/>
+      <vuex-history slot="left" />
+      <vuex-state-inspector slot="right" />
     </split-pane>
     <div
       v-else

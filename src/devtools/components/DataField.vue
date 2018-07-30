@@ -30,9 +30,9 @@
       >
         <input
           ref="keyInput"
-          :class="{ error: !keyValid }"
           v-model="editedKey"
           class="edit-input key-input"
+          :class="{ error: !keyValid }"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
@@ -52,17 +52,17 @@
       >
         <input
           ref="editInput"
-          :class="{ error: !valueValid }"
           v-model="editedValue"
           class="edit-input value-input"
+          :class="{ error: !valueValid }"
           list="special-tokens"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
           <VueIcon
-            v-tooltip="editErrorMessage"
             v-if="!editValid"
+            v-tooltip="editErrorMessage"
             class="small-icon warning"
             icon="warning"
           />
@@ -83,6 +83,7 @@
         </span>
       </span>
       <template v-else>
+        <!-- eslint-disable vue/no-v-html -->
         <span
           v-tooltip="valueTooltip"
           :class="valueClass"
@@ -90,19 +91,20 @@
           @dblclick="openEdit()"
           v-html="formattedValue"
         />
+        <!-- eslint-enable vue/no-v-html -->
         <span class="actions">
           <VueButton
-            v-tooltip="'Edit value'"
             v-if="isValueEditable"
+            v-tooltip="'Edit value'"
             class="edit-value icon-button flat"
             icon-left="edit"
             @click="openEdit()"
           />
           <template v-if="quickEdits">
             <VueButton
-              v-tooltip="info.title || 'Quick edit'"
               v-for="(info, index) of quickEdits"
               :key="index"
+              v-tooltip="info.title || 'Quick edit'"
               :class="info.class"
               :icon-left="info.icon"
               class="quick-edit icon-button"
@@ -110,15 +112,15 @@
             />
           </template>
           <VueButton
-            v-tooltip="'Add new value'"
             v-if="isSubfieldsEditable && !addingValue"
+            v-tooltip="'Add new value'"
             class="add-value icon-button flat"
             icon-left="add_circle"
             @click="addNewValue()"
           />
           <VueButton
-            v-tooltip="'Remove value'"
             v-if="removable"
+            v-tooltip="'Remove value'"
             class="remove-field icon-button flat"
             icon-left="delete"
             @click="removeField()"

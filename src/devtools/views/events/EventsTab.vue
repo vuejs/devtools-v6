@@ -1,8 +1,8 @@
 <template>
   <div>
     <split-pane>
-      <events-history slot="left"/>
-      <event-inspector slot="right"/>
+      <events-history slot="left" />
+      <event-inspector slot="right" />
     </split-pane>
   </div>
 </template>

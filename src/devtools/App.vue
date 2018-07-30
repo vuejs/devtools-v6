@@ -70,13 +70,13 @@
         </VueGroup>
 
         <VueButton
-          v-tooltip="$t('App.refresh.tooltip')"
           ref="refresh"
+          v-tooltip="$t('App.refresh.tooltip')"
+          class="refresh-button flat"
           :class="{
             'icon-button': !$responsive.wide
           }"
           icon-left="refresh"
-          class="refresh-button flat"
           @click="refresh"
         >
           Refresh
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <router-view class="container"/>
+    <router-view class="container" />
   </div>
 </template>
 

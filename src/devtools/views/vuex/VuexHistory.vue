@@ -5,11 +5,11 @@
         v-tooltip="$t('VuexHistory.filter.tooltip')"
         class="search"
       >
-        <VueIcon icon="search"/>
+        <VueIcon icon="search" />
         <input
           ref="filterMutations"
-          :class="{ invalid: filterRegexInvalid }"
           v-model.trim="filter"
+          :class="{ invalid: filterRegexInvalid }"
           placeholder="Filter mutations"
         >
       </div>
@@ -19,7 +19,7 @@
         class="button commit-all"
         @click="commitAll"
       >
-        <VueIcon icon="get_app"/>
+        <VueIcon icon="get_app" />
         <span>Commit All</span>
       </a>
       <a
@@ -116,8 +116,8 @@
             <span>Revert</span>
           </a>
           <a
-            v-tooltip="'Time Travel to This State'"
             v-if="!isActive(entry)"
+            v-tooltip="'Time Travel to This State'"
             class="action"
             @click.stop="timeTravelTo(entry)"
           >

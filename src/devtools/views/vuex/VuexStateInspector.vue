@@ -2,7 +2,7 @@
   <scroll-pane>
     <action-header slot="header">
       <div class="search">
-        <VueIcon icon="search"/>
+        <VueIcon icon="search" />
         <input
           v-model.trim="filter"
           placeholder="Filter inspected state"
@@ -13,7 +13,7 @@
         class="button export"
         @click="copyStateToClipboard"
       >
-        <VueIcon icon="content_copy"/>
+        <VueIcon icon="content_copy" />
         <span>Export</span>
         <transition name="slide-up">
           <span
@@ -29,7 +29,7 @@
         class="button import"
         @click="toggleImportStatePopup"
       >
-        <VueIcon icon="content_paste"/>
+        <VueIcon icon="content_paste" />
         <span>Import</span>
       </a>
       <transition name="slide-down">

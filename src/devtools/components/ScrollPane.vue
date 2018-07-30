@@ -1,13 +1,13 @@
 <template>
   <div class="scroll-pane">
     <div class="header">
-      <slot name="header"/>
+      <slot name="header" />
     </div>
     <div
       ref="scrollContainer"
       class="scroll"
     >
-      <slot name="scroll"/>
+      <slot name="scroll" />
     </div>
   </div>
 </template>
