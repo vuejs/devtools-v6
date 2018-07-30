@@ -84,6 +84,7 @@ export default {
               this.switchTab('events')
               return false
             } else if (key === 'p' || code === 'KeyP') {
+              // Prevent chrome devtools from opening the print modal
               return false
             }
         }
