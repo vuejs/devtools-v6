@@ -21,15 +21,6 @@
         <VueIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'" />
         <span>Select</span>
       </a>
-      <a
-        v-tooltip="'Format component names'"
-        :class="{ active: $shared.classifyComponents }"
-        class="button classify-names"
-        @click="$shared.classifyComponents = !$shared.classifyComponents"
-      >
-        <VueIcon icon="text_fields" />
-        <span>Format</span>
-      </a>
     </action-header>
     <div
       slot="scroll"
