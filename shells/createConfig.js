@@ -66,7 +66,12 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
     },
     plugins: [
       new VueLoaderPlugin(),
-      ...(process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()])
+      ...(process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()]),
+      new webpack.DefinePlugin({
+        'process.env': {
+          CHANNEL: JSON.stringify(process.env.CHANNEL || 'stable')
+        }
+      })
     ],
     devServer: {
       port: process.env.PORT

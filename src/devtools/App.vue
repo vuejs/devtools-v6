@@ -2,6 +2,9 @@
   <div
     id="app"
     class="app"
+    :class="{
+      beta: isBeta
+    }"
   >
     <datalist id="special-tokens">
       <option
@@ -22,7 +25,16 @@
             :key="message"
             class="message"
           >
-            {{ message }}
+            <span>{{ message }}</span>
+
+            <span class="badges">
+              <span
+                v-if="isBeta"
+                class="badge"
+              >
+                beta devtools
+              </span>
+            </span>
           </span>
         </transition>
       </span>
@@ -207,8 +219,18 @@ export default {
   background-color $background-color
   display flex
   flex-direction column
+  position relative
   .vue-ui-dark-mode &
     background-color $dark-background-color
+  &.beta
+    &::after
+      display block
+      content ''
+      position absolute
+      top 0
+      left 0
+      width 100%
+      border-top 2px rgba($orange, .4) solid
 
 .header
   display flex
@@ -236,6 +258,23 @@ export default {
   color $active-color
   transition all .3s ease
   position absolute
+  display flex
+  align-items center
+
+.badges
+  display flex
+  align-items center
+
+.badge
+  background rgba($orange, .7)
+  color white
+  font-size 10px
+  line-height 10px
+  padding 2px 6px
+  border-radius 8px
+  margin-left 6px
+  .vue-ui-dark-mode &
+    opacity .75
 
 .actions
   flex auto 1 1
