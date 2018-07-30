@@ -2,10 +2,10 @@
   <scroll-pane>
     <action-header slot="header">
       <div
-        class="search"
         v-tooltip="$t('ComponentTree.filter.tooltip')"
+        class="search"
       >
-        <BaseIcon icon="search"/>
+        <VueIcon icon="search"/>
         <input
           ref="filterInstances"
           placeholder="Filter components"
@@ -13,38 +13,40 @@
         >
       </div>
       <a
-        class="button select-component"
-        :class="{active: selecting}"
         v-tooltip="$t('ComponentTree.select.tooltip')"
+        :class="{active: selecting}"
+        class="button select-component"
         @click="setSelecting(!selecting)"
       >
-        <BaseIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
+        <VueIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'"/>
         <span>Select</span>
       </a>
-      <a class="button classify-names"
-         :class="{ active: classifyComponents }"
-         v-tooltip="'Format component names'"
-         @click="toggleClassifyComponents"
+      <a
+        v-tooltip="'Format component names'"
+        :class="{ active: $shared.classifyComponents }"
+        class="button classify-names"
+        @click="$shared.classifyComponents = !$shared.classifyComponents"
       >
-        <BaseIcon icon="text_fields"/>
+        <VueIcon icon="text_fields"/>
         <span>Format</span>
       </a>
     </action-header>
-    <div slot="scroll" class="tree">
+    <div
+      slot="scroll"
+      class="tree"
+    >
       <component-instance
         v-for="instance in instances"
         ref="instances"
         :key="instance.id"
         :instance="instance"
-        :depth="0">
-      </component-instance>
+        :depth="0"
+      />
     </div>
   </scroll-pane>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
@@ -58,6 +60,12 @@ import Keyboard, {
 } from '../../mixins/keyboard'
 
 export default {
+  components: {
+    ScrollPane,
+    ActionHeader,
+    ComponentInstance
+  },
+
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {
@@ -113,26 +121,17 @@ export default {
     })
   ],
 
-  components: {
-    ScrollPane,
-    ActionHeader,
-    ComponentInstance
-  },
-
   props: {
-    instances: Array
+    instances: {
+      type: Array,
+      required: true
+    }
   },
 
   data () {
     return {
       selecting: false
     }
-  },
-
-  computed: {
-    ...mapState('components', [
-      'classifyComponents'
-    ])
   },
 
   mounted () {
@@ -146,10 +145,6 @@ export default {
   },
 
   methods: {
-    ...mapActions('components', [
-      'toggleClassifyComponents'
-    ]),
-
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
     },
@@ -209,6 +204,6 @@ function findByIndex (all, index) {
 .select-component
   &.active
     color $active-color
-    .svg-icon
+    .vue-ui-icon
       animation pulse 2s infinite linear
 </style>

@@ -1,8 +1,4 @@
 import Vue from 'vue'
-import storage from '../../storage'
-
-const CLASSIFY_COMPONENTS_KEY = 'CLASSIFY_COMPONENTS'
-const classifyComponents = storage.get(CLASSIFY_COMPONENTS_KEY)
 
 const state = {
   selected: null,
@@ -11,8 +7,7 @@ const state = {
   instancesMap: {},
   expansionMap: {},
   events: [],
-  scrollToExpanded: null,
-  classifyComponents: classifyComponents == null ? true : classifyComponents
+  scrollToExpanded: null
 }
 
 const mutations = {
@@ -54,19 +49,10 @@ const mutations = {
   TOGGLE_INSTANCE (state, { id, expanded, scrollTo = null } = {}) {
     Vue.set(state.expansionMap, id, expanded)
     state.scrollToExpanded = scrollTo
-  },
-  CLASSIFY_COMPONENTS (state, value) {
-    state.classifyComponents = value
   }
 }
 
 const actions = {
-  init: {
-    handler ({ state }) {
-      bridge.send('config:classifyComponents', state.classifyComponents)
-    },
-    root: true
-  },
   toggleInstance ({ commit, dispatch, state }, { instance, expanded, recursive, parent = false } = {}) {
     const id = instance.id
 
@@ -98,13 +84,6 @@ const actions = {
         })
       }
     }
-  },
-
-  toggleClassifyComponents ({ state, commit }) {
-    const newValue = !state.classifyComponents
-    commit('CLASSIFY_COMPONENTS', newValue)
-    storage.set(CLASSIFY_COMPONENTS_KEY, newValue)
-    bridge.send('config:classifyComponents', newValue)
   }
 }
 

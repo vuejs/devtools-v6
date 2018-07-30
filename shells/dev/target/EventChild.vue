@@ -10,19 +10,19 @@
 export default {
   methods: {
     emitEvent () {
-      let data = {
+      const data = {
         eventName: 'event'
       }
       this.$emit('event', data)
     },
     emitEvent1 () {
-      let data = {
+      const data = {
         eventName: 'event-1'
       }
       this.$emit('event-1', data)
     },
     emitEvent2 () {
-      let complexData = {
+      const complexData = {
         componentName: 'EventChild',
         string: 'Lorem ipsum',
         complex: {
@@ -30,7 +30,7 @@ export default {
           object: {
             number: 23,
             boolean: true,
-            array: [1,2,3,4,5]
+            array: [1, 2, 3, 4, 5]
           }
         }
       }

@@ -5,6 +5,7 @@ import * as CircularJSON from './transfer'
 import { instanceMap, getCustomInstanceDetails } from 'src/backend'
 import { getCustomStoreDetails } from 'src/backend/vuex'
 import { getCustomRouterDetails } from 'src/backend/router'
+import SharedData from 'src/shared-data'
 
 import { isChrome } from './devtools/env'
 
@@ -125,6 +126,8 @@ function replacer (key) {
     return NEGATIVE_INFINITY
   } else if (type === 'function') {
     return getCustomFunctionDetails(val)
+  } else if (type === 'symbol') {
+    return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
     if (val instanceof Map) {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
@@ -245,13 +248,23 @@ export function getCustomComponentDefinitionDetails (def) {
 }
 
 export function getCustomFunctionDetails (func) {
-  const string = Function.prototype.toString.call(func) || ''
-  const matches = string.match(/\(.*\)/)
-  const args = matches ? matches[0] : '(?)'
+  let string = ''
+  let matches = null
+  try {
+    string = Function.prototype.toString.call(func)
+    matches = String.prototype.match.call(string, /\([\s\S]*?\)/)
+  } catch (e) {
+    // Func is probably a Proxy, which can break Function.prototype.toString()
+  }
+  // Trim any excess whitespace from the argument string
+  const match = matches && matches[0]
+  const args = typeof match === 'string'
+    ? `(${match.substr(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})` : '(?)'
+  const name = typeof func.name === 'string' ? func.name : ''
   return {
     _custom: {
       type: 'function',
-      display: `<span>ƒ</span> ${escape(func.name)}${args}`
+      display: `<span>ƒ</span> ${escape(name)}${args}`
     }
   }
 }
@@ -263,6 +276,7 @@ export function parse (data, revive) {
 }
 
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
+const symbolRE = /^\[native Symbol Symbol\((.*)\)\]$/
 
 function reviver (key, val) {
   if (val === UNDEFINED) {
@@ -281,6 +295,9 @@ function reviver (key, val) {
     } else if (val._custom.type === 'set') {
       return reviveSet(val)
     }
+  } else if (symbolRE.test(val)) {
+    const [, string] = symbolRE.exec(val)
+    return Symbol.for(string)
   } else if (specialTypeRE.test(val)) {
     const [, type, string] = specialTypeRE.exec(val)
     return new window[type](string)
@@ -494,7 +511,7 @@ export function focusInput (el) {
 export function openInEditor (file) {
   // Console display
   const fileName = file.replace(/\\/g, '\\\\')
-  const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
+  const src = `fetch('${SharedData.openInEditorHost}__open-in-editor?file=${encodeURI(file)}').then(response => {
     if (response.ok) {
       console.log('File ${fileName} opened in editor')
     } else {

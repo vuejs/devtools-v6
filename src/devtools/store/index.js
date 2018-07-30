@@ -9,15 +9,11 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     message: '',
-    tab: 'components',
     view: 'vertical'
   },
   mutations: {
     SHOW_MESSAGE (state, message) {
       state.message = message
-    },
-    SWITCH_TAB (state, tab) {
-      state.tab = tab
     },
     SWITCH_VIEW (state, view) {
       state.view = view

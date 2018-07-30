@@ -4,8 +4,9 @@ import Bridge from 'src/bridge'
 import { installToast } from 'src/backend/toast'
 
 const host = window.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
-const port = process.env.PORT || 8098
-const socket = io(host + ':' + port)
+const port = window.__VUE_DEVTOOLS_PORT__ !== undefined ? window.__VUE_DEVTOOLS_PORT__ : 8098
+const fullHost = port ? host + ':' + port : host
+const socket = io(fullHost)
 
 const connectedMessage = () => {
   if (window.__VUE_DEVTOOLS_TOAST__) {

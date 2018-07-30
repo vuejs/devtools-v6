@@ -1,6 +1,6 @@
 import { inDoc, classify } from '../util'
 import { getInstanceName } from './index'
-import { claissifyComponents } from './config'
+import SharedData from 'src/shared-data'
 
 const overlay = document.createElement('div')
 overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
@@ -32,7 +32,7 @@ export function highlight (instance) {
   if (rect) {
     let content = ''
     let name = getInstanceName(instance)
-    if (claissifyComponents) name = classify(name)
+    if (SharedData.classifyComponents) name = classify(name)
     if (name) content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`
     showOverlay(rect, content)
   }
