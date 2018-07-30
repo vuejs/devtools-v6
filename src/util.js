@@ -546,3 +546,12 @@ export function escape (s) {
 function escapeChar (a) {
   return ESC[a] || a
 }
+
+export function copyToClipboard (state) {
+  const dummyTextArea = document.createElement('textarea')
+  dummyTextArea.textContent = stringify(state)
+  document.body.appendChild(dummyTextArea)
+  dummyTextArea.select()
+  document.execCommand('copy')
+  document.body.removeChild(dummyTextArea)
+}
