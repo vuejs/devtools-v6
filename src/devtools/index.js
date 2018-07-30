@@ -13,8 +13,8 @@ import storage from './storage'
 let panelShown = !isChrome
 let pendingAction = null
 
-const isDark = isChrome ? chrome.devtools.panels.themeName === 'dark' : false
 const isBeta = process.env.CHANNEL === 'beta'
+const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.
@@ -159,16 +159,19 @@ function initApp (shell) {
       extends: App,
       router,
       store,
-
       data: {
-        isDark,
         isBeta
+      },
+      computed: {
+        theme () {
+          return this.$shared.theme
+        }
       },
 
       watch: {
-        isDark: {
+        theme: {
           handler (value) {
-            if (value) {
+            if (value === 'dark' || (value === 'auto' && chromeTheme === 'dark')) {
               document.body.classList.add('vue-ui-dark-mode')
             } else {
               document.body.classList.remove('vue-ui-dark-mode')
