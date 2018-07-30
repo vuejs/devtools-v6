@@ -1,30 +1,20 @@
 import Vue from 'vue'
+import VueUi, { generateHtmlIcon } from '@vue/ui'
 import { keys } from './env'
-import VTooltip from 'v-tooltip'
 import VI18n from './plugins/i18n'
+import Responsive from './plugins/responsive'
 import GlobalRefs from './plugins/global-refs'
-import Icons, { generateHtmlIcon } from './plugins/icons'
 
-Vue.use(VTooltip, {
-  defaultDelay: {
-    show: 600,
-    hide: 0
-  },
-  defaultOffset: 2,
-  defaultBoundariesElement: document.body,
-  popover: {
-    defaultHandleResize: false
-  }
-})
+Vue.use(VueUi)
 
 const currentLocale = 'en'
 const locales = require.context('./locales')
 const replacers = [
-  { reg: /\<input\>/g, replace: '<span class="input-example">' },
-  { reg: /\<mono\>/g, replace: '<span class="mono">' },
-  { reg: /\<\/(input|mono)\>/g, replace: '</span>' },
+  { reg: /<input>/g, replace: '<span class="input-example">' },
+  { reg: /<mono>/g, replace: '<span class="mono">' },
+  { reg: /<\/(input|mono)>/g, replace: '</span>' },
   { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
-  { reg: /\<\<(\S+)\>\>/g, replace: (match, p1) => generateHtmlIcon(p1) }
+  { reg: /<<(\S+)>>/g, replace: (match, p1) => generateHtmlIcon(p1) }
 ]
 Vue.use(VI18n, {
   strings: locales(`./${currentLocale}`).default,
@@ -39,11 +29,20 @@ Vue.use(VI18n, {
   }
 })
 
+Vue.use(Responsive, {
+  computed: {
+    wide () {
+      return this.width >= 1050
+    },
+    tall () {
+      return this.height >= 350
+    }
+  }
+})
+
 Vue.use(GlobalRefs, {
   refs: {
     leftScroll: () => document.querySelector('.left .scroll'),
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })
-
-Vue.use(Icons)

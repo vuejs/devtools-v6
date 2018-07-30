@@ -1,38 +1,50 @@
 <template>
   <div class="data-field">
     <v-popover
-      class="self"
-      :class="cssClass"
       :style="{ marginLeft: depth * 14 + 'px' }"
-      trigger="hover"
-      placement="left"
-      offset="24"
       :disabled="!field.meta"
       :delay="{
         show: 300,
         hide: 0
       }"
       :open-group="'id' + _uid"
+      :class="{
+        'force-toolbar': contextMenuOpen || editing,
+      }"
+      class="self"
+      popover-class="force-tooltip"
+      trigger="hover"
+      placement="left"
+      offset="24"
       @click.native="onClick"
+      @mouseenter.native="onContextMenuMouseEnter"
+      @mouseleave.native="onContextMenuMouseLeave"
     >
       <span
         v-show="isExpandableType"
-        class="arrow right"
         :class="{ rotated: expanded }"
-      ></span>
+        class="arrow right"
+      />
       <span
         v-if="editing && renamable"
       >
         <input
           ref="keyInput"
-          class="edit-input key-input"
           :class="{ error: !keyValid }"
           v-model="editedKey"
+          class="edit-input key-input"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
       </span>
-      <span v-else class="key" :class="{ abstract: fieldOptions.abstract }">{{ field.key }}</span><span class="colon" v-if="!fieldOptions.abstract">:</span>
+      <span
+        v-else
+        :class="{ abstract: fieldOptions.abstract }"
+        class="key"
+      >{{ field.key }}</span><span
+        v-if="!fieldOptions.abstract"
+        class="colon"
+      >:</span>
 
       <span
         v-if="editing"
@@ -40,31 +52,31 @@
       >
         <input
           ref="editInput"
-          class="edit-input value-input"
           :class="{ error: !valueValid }"
           v-model="editedValue"
+          class="edit-input value-input"
           list="special-tokens"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
         <span class="actions">
-          <BaseIcon
-            v-if="!editValid"
-            class="icon-button warning"
+          <VueIcon
             v-tooltip="editErrorMessage"
+            v-if="!editValid"
+            class="small-icon warning"
             icon="warning"
           />
           <template v-else>
-            <BaseIcon
-              class="icon-button medium"
-              icon="cancel"
+            <VueButton
               v-tooltip="$t('DataField.edit.cancel.tooltip')"
+              class="icon-button flat"
+              icon-left="cancel"
               @click="cancelEdit()"
             />
-            <BaseIcon
-              class="icon-button"
-              icon="save"
+            <VueButton
               v-tooltip="$t('DataField.edit.submit.tooltip')"
+              class="icon-button flat"
+              icon-left="save"
               @click="submitEdit()"
             />
           </template>
@@ -72,56 +84,91 @@
       </span>
       <template v-else>
         <span
-          class="value"
-          :class="valueClass"
-          @dblclick="openEdit()"
           v-tooltip="valueTooltip"
+          :class="valueClass"
+          class="value"
+          @dblclick="openEdit()"
           v-html="formattedValue"
         />
         <span class="actions">
-          <BaseIcon
-            v-if="isValueEditable"
-            class="edit-value icon-button"
-            icon="edit"
+          <VueButton
             v-tooltip="'Edit value'"
+            v-if="isValueEditable"
+            class="edit-value icon-button flat"
+            icon-left="edit"
             @click="openEdit()"
           />
           <template v-if="quickEdits">
-            <BaseIcon
+            <VueButton
+              v-tooltip="info.title || 'Quick edit'"
               v-for="(info, index) of quickEdits"
               :key="index"
-              class="quick-edit icon-button"
               :class="info.class"
-              :icon="info.icon"
-              v-tooltip="info.title || 'Quick edit'"
+              :icon-left="info.icon"
+              class="quick-edit icon-button"
               @click="quickEdit(info, $event)"
             />
           </template>
-          <BaseIcon
-            v-if="isSubfieldsEditable && !addingValue"
-            class="add-value icon-button"
-            icon="add_circle"
+          <VueButton
             v-tooltip="'Add new value'"
+            v-if="isSubfieldsEditable && !addingValue"
+            class="add-value icon-button flat"
+            icon-left="add_circle"
             @click="addNewValue()"
           />
-          <BaseIcon
-            v-if="removable"
-            class="remove-field icon-button"
-            icon="delete"
+          <VueButton
             v-tooltip="'Remove value'"
+            v-if="removable"
+            class="remove-field icon-button flat"
+            icon-left="delete"
             @click="removeField()"
           />
+
+          <!-- Context menu -->
+          <VueDropdown
+            :open.sync="contextMenuOpen"
+          >
+            <VueButton
+              slot="trigger"
+              icon-left="more_vert"
+              class="icon-button flat"
+            />
+
+            <div
+              class="context-menu-dropdown"
+              @mouseenter="onContextMenuMouseEnter"
+              @mouseleave="onContextMenuMouseLeave"
+            >
+              <VueDropdownButton
+                icon-left="flip_to_front"
+                @click="copyToClipboard"
+              >
+                {{ $t('DataField.contextMenu.copyValue') }}
+              </VueDropdownButton>
+            </div>
+          </VueDropdown>
         </span>
       </template>
 
-      <div slot="popover" class="meta" v-if="field.meta">
-        <div class="meta-field" v-for="(val, key) in field.meta">
+      <div
+        v-if="field.meta"
+        slot="popover"
+        class="meta"
+      >
+        <div
+          v-for="(val, key) in field.meta"
+          :key="key"
+          class="meta-field"
+        >
           <span class="key">{{ key }}</span>
           <span class="value">{{ val }}</span>
         </div>
       </div>
     </v-popover>
-    <div class="children" v-if="expanded && isExpandableType">
+    <div
+      v-if="expanded && isExpandableType"
+      class="children"
+    >
       <data-field
         v-for="subField in limitedSubFields"
         :key="subField.key"
@@ -133,22 +180,23 @@
         :removable="isSubfieldsEditable"
         :renamable="editable && valueType === 'plain-object'"
       />
-      <span class="more"
+      <span
         v-if="formattedSubFields.length > limit"
+        :style="{ marginLeft: depthMargin + 'px' }"
+        class="more"
         @click="limit += 10"
-        :style="{ marginLeft: depthMargin + 'px' }">
+      >
         ...
       </span>
       <data-field
         v-if="isSubfieldsEditable && addingValue"
         ref="newField"
         :field="newField"
-        :parent-field="field"
         :depth="depth + 1"
         :path="`${path}.${newField.key}`"
+        :renamable="valueType === 'plain-object'"
         editable
         removable
-        :renamable="valueType === 'plain-object'"
         @cancel-edit="addingValue = false"
         @submit-edit="addingValue = false"
       />
@@ -167,7 +215,8 @@ import {
   sortByKey,
   openInEditor,
   escape,
-  specialTokenToString
+  specialTokenToString,
+  copyToClipboard
 } from 'src/util'
 
 import DataFieldEdit from '../mixins/data-field-edit'
@@ -193,14 +242,23 @@ export default {
   ],
 
   props: {
-    field: Object,
-    parentField: Object,
-    depth: Number,
-    path: String
+    field: {
+      type: Object,
+      required: true
+    },
+    depth: {
+      type: Number,
+      required: true
+    },
+    path: {
+      type: String,
+      required: true
+    }
   },
 
   data () {
     return {
+      contextMenuOpen: false,
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
       expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
@@ -350,7 +408,7 @@ export default {
 
     editErrorMessage () {
       if (!this.valueValid) {
-        return 'Invalid value'
+        return 'Invalid value (must be valid JSON)'
       } else if (!this.keyValid) {
         if (this.duplicateKey) {
           return 'Duplicate key'
@@ -372,6 +430,10 @@ export default {
   },
 
   methods: {
+    copyToClipboard () {
+      copyToClipboard(this.field.value)
+    },
+
     onClick (event) {
       // Cancel if target is interactive
       if (event.target.tagName === 'INPUT' || event.target.className.includes('button')) {
@@ -395,7 +457,18 @@ export default {
       }
     },
 
-    hyphen: v => v.replace(/\s/g, '-')
+    hyphen: v => v.replace(/\s/g, '-'),
+
+    onContextMenuMouseEnter () {
+      clearTimeout(this.$_contextMenuTimer)
+    },
+
+    onContextMenuMouseLeave () {
+      clearTimeout(this.$_contextMenuTimer)
+      this.$_contextMenuTimer = setTimeout(() => {
+        this.contextMenuOpen = false
+      }, 4000)
+    }
   }
 }
 </script>
@@ -433,16 +506,20 @@ export default {
     top -1px
     .icon-button
       user-select none
-      width 16px
+      width 20px
       height @width
       &:first-child
         margin-left 6px
       &:not(:last-child)
         margin-right 6px
+    .icon-button >>> .vue-ui-icon,
+    .small-icon
+      width 16px
+      height @width
     .warning >>> svg
       fill $orange
   &:hover,
-  &.editing
+  &.force-toolbar
     .actions
       visibility visible
   .colon
@@ -469,16 +546,20 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
-    .dark &
+    .vue-ui-dark-mode &
       color: #242424
+
+  .edit-overlay
+    display inline-flex
+    align-items center
 
 .key
   color #881391
-  .dark &
+  .vue-ui-dark-mode &
     color: #e36eec
   &.abstract
     color $blueishGrey
-    .dark &
+    .vue-ui-dark-mode &
       color lighten($blueishGrey, 20%)
 .value
   display inline-block
@@ -488,7 +569,7 @@ export default {
   &.string
     >>> span
       color $black
-      .dark &
+      .vue-ui-dark-mode &
         color $red
   &.null
     color #999
@@ -515,13 +596,13 @@ export default {
           font-family Menlo, monospace
         .platform-windows &
           font-family Consolas, Lucida Console, Courier New, monospace
-        .dark &
+        .vue-ui-dark-mode &
           color $purple
     &.type-component-definition
       color $green
       >>> span
         color $darkerGrey
-  .dark &
+  .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
       color #e33e3a
@@ -533,11 +614,17 @@ export default {
 .meta
   font-size 12px
   font-family Menlo, Consolas, monospace
-  color #444
   min-width 150px
   .key
     display inline-block
     width 80px
+    color lighten(#881391, 60%)
+    .vue-ui-dark-mode &
+      color #881391
+  .value
+    color white
+    .vue-ui-dark-mode &
+      color black
 .meta-field
   &:not(:last-child)
     margin-bottom 4px
@@ -566,4 +653,9 @@ export default {
 
 .remove-field
   margin-left 10px
+
+.context-menu-dropdown
+  .vue-ui-button
+    display block
+    width 100%
 </style>
