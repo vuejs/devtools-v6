@@ -29,16 +29,18 @@ suite('vuex tab', () => {
   it('should filter history', () => {
     cy.get('.left .search input').clear().type('inc')
     cy.get('.history .entry').should('have.length', 3)
-    cy.get('.history .entry.inspected').should('have.length', 0)
+    cy.get('.history .entry.inspected').should('have.length', 1)
     cy.get('.history .entry.active').should('have.length', 0)
 
     cy.get('.left .search input').clear().type('/dec/i')
     cy.get('.history .entry').should('have.length', 2)
-    cy.get('.history .entry.inspected.active').should('have.length', 1)
+    cy.get('.history .entry.inspected').should('have.length', 1)
+    cy.get('.history .entry.active').should('have.length', 0)
 
     cy.get('.left .search input').clear().type('/dec)/i')
     cy.get('.history .entry').should('have.length', 4)
-    cy.get('.history .entry.inspected.active').should('have.length', 1)
+    cy.get('.history .entry.inspected').should('have.length', 1)
+    cy.get('.history .entry.active').should('have.length', 1)
 
     cy.get('.left .search input').clear()
   })
