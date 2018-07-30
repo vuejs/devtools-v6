@@ -285,6 +285,8 @@ export default {
 
 .attr-title
   color purple
+  .vue-ui-dark-mode &
+    color lighten(purple, 60%)
 
 .spacer
   flex auto 1 1
