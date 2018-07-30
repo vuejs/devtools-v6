@@ -91,13 +91,13 @@ export default {
               let instanceToSelect
 
               if (key === LEFT) {
-                if (current.expanded) {
+                if (current.expanded && current.$children.filter(isComponentInstance).length) {
                   current.collapse()
                 } else if (current.$parent && current.$parent.expanded) {
                   instanceToSelect = current.$parent
                 }
               } else if (key === RIGHT) {
-                if (current.expanded && current.$children.length) {
+                if (current.expanded && current.$children.filter(isComponentInstance).length) {
                   instanceToSelect = findByIndex(all, currentIndex + 1)
                 } else {
                   current.expand()
@@ -163,11 +163,15 @@ export default {
   }
 }
 
-function getAllInstances (list) {
-  return Array.prototype.concat.apply([], list.map(instance => {
-    return [instance, ...getAllInstances(instance.$children)]
-  }))
-}
+const isComponentInstance = object => typeof object !== 'undefined' && typeof object.instance !== 'undefined'
+
+const getAllInstances = list => list.reduce((instances, i) => {
+  if (isComponentInstance(i)) {
+    instances.push(i)
+  }
+  instances = instances.concat(getAllInstances(i.$children))
+  return instances
+}, [])
 
 function findCurrent (all, check) {
   for (let i = 0; i < all.length; i++) {
