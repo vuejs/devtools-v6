@@ -85,8 +85,8 @@
               'icon-button': !$responsive.wide
             }"
             value="settings"
-            icon-left="settings"
-            class="settings-tab flat big-tag"
+            icon-left="settings_applications"
+            class="settings-tab flat"
           >
             Settings
           </VueGroupButton>

@@ -160,17 +160,13 @@ function initApp (shell) {
       extends: App,
       router,
       store,
+
       data: {
         isBeta
       },
-      computed: {
-        theme () {
-          return this.$shared.theme
-        }
-      },
 
       watch: {
-        theme: {
+        '$shared.theme': {
           handler (value) {
             if (value === 'dark' || (value === 'auto' && chromeTheme === 'dark')) {
               document.body.classList.add('vue-ui-dark-mode')

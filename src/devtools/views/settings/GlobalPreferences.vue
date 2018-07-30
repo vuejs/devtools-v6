@@ -1,22 +1,44 @@
 <template>
   <div class="global-preferences">
     <VueFormField title="Component Name Format">
-      <VueGroup :value="$shared.classifyComponents" @input="$shared.classifyComponents = $event" class="extend">
-        <VueGroupButton :value="false" label="kebab-case"/>
-        <VueGroupButton :value="true" label="PascalCase"/>
+      <VueGroup
+        :value="$shared.classifyComponents"
+        class="extend"
+        @input="$shared.classifyComponents = $event"
+      >
+        <VueGroupButton
+          :value="false"
+          label="kebab-case"
+        />
+        <VueGroupButton
+          :value="true"
+          label="PascalCase"
+        />
       </VueGroup>
     </VueFormField>
 
     <VueFormField title="Theme">
-      <VueGroup :value="$shared.theme" @input="$shared.theme = $event" class="extend">
-        <VueGroupButton value="auto" label="Auto"/>
-        <VueGroupButton value="dark" label="Dark"/>
-        <VueGroupButton value="light" label="Light"/>
+      <VueGroup
+        :value="$shared.theme"
+        class="extend"
+        @input="$shared.theme = $event"
+      >
+        <VueGroupButton
+          value="auto"
+          label="Auto"
+        />
+        <VueGroupButton
+          value="dark"
+          label="Dark"
+        />
+        <VueGroupButton
+          value="light"
+          label="Light"
+        />
       </VueGroup>
     </VueFormField>
   </div>
 </template>
-
 
 <style lang="stylus" scoped>
 .global-preferences

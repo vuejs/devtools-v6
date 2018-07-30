@@ -10,7 +10,7 @@ export default {
       tooltip: '[[{{keys.ctrl}}]] + [[{{keys.alt}}]] + [[R]] Force Refresh'
     },
     settings: {
-      tooltip: '[[{{keys.ctrl}}]] + [[4]] Switch to Events'
+      tooltip: '[[{{keys.ctrl}}]] + [[4]] Switch to Settings'
     },
     vuex: {
       tooltip: '[[{{keys.ctrl}}]] + [[2]] Switch to Vuex'

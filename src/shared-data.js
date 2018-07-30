@@ -2,7 +2,7 @@
 const internalSharedData = {
   openInEditorHost: '/',
   classifyComponents: true,
-  theme: 'light'
+  theme: 'auto'
 }
 
 // ---- INTERNALS ---- //
