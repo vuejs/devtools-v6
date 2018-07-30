@@ -107,7 +107,7 @@
               v-tooltip="info.title || 'Quick edit'"
               :class="info.class"
               :icon-left="info.icon"
-              class="quick-edit icon-button"
+              class="quick-edit icon-button flat"
               @click="quickEdit(info, $event)"
             />
           </template>
