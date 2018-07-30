@@ -227,6 +227,7 @@ export default {
       },
       set (filter) {
         this.$store.dispatch('vuex/updateFilter', filter)
+        this.$store.commit('vuex/INSPECT', -1)
       }
     }
   },
@@ -244,11 +245,11 @@ export default {
     ]),
 
     isActive (entry) {
-      return this.activeIndex === this.history.indexOf(entry)
+      return this.activeIndex === this.filteredHistory.indexOf(entry)
     },
 
     isInspected (entry) {
-      return this.inspectedIndex === this.history.indexOf(entry)
+      return this.inspectedIndex === this.filteredHistory.indexOf(entry)
     }
   }
 }

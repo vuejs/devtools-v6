@@ -52,9 +52,9 @@
           v-for="(event, index) in filteredEvents"
           ref="entries"
           :key="index"
-          :class="{ active: inspectedIndex === events.indexOf(event) }"
+          :class="{ active: inspectedIndex === filteredEvents.indexOf(event) }"
           class="entry list-item"
-          @click="inspect(events.indexOf(event))"
+          @click="inspect(filteredEvents.indexOf(event))"
         >
           <span class="event-name">{{ event.eventName }}</span>
           <span class="event-type">{{ event.type }}</span>
@@ -82,7 +82,7 @@ import Keyboard, {
   BACKSPACE
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { classify, focusInput } from 'src/util'
 
 export default {
@@ -143,16 +143,20 @@ export default {
       },
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
+        this.$store.commit('events/INSPECT', -1)
       }
     }
   },
 
   methods: {
     ...mapMutations('events', {
-      inspect: 'INSPECT',
       reset: 'RESET',
       toggleRecording: 'TOGGLE'
     }),
+
+    ...mapActions('events', [
+      'inspect'
+    ]),
 
     displayComponentName (name) {
       return this.$shared.classifyComponents ? classify(name) : name
