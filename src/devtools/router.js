@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
+import SettingsTab from './views/settings/SettingsTab.vue'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,11 @@ const routes = [
     path: '/events',
     name: 'events',
     component: EventsTab
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: SettingsTab
   },
   {
     path: '*',

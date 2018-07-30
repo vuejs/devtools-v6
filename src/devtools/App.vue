@@ -79,6 +79,17 @@
           >
             Events
           </VueGroupButton>
+          <VueGroupButton
+            v-tooltip="$t('App.settings.tooltip')"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="settings"
+            icon-left="settings_applications"
+            class="settings-tab flat"
+          >
+            Settings
+          </VueGroupButton>
         </VueGroup>
 
         <VueButton
@@ -137,6 +148,9 @@ export default {
               return false
             } else if (code === 'Digit3') {
               this.$router.push({ name: 'events' })
+              return false
+            } else if (code === 'Digit4') {
+              this.$router.push({ name: 'settings' })
               return false
             } else if (key === 'p' || code === 'KeyP') {
               // Prevent chrome devtools from opening the print modal

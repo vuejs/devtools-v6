@@ -1,7 +1,8 @@
 // Initial state
 const internalSharedData = {
   openInEditorHost: '/',
-  classifyComponents: true
+  classifyComponents: true,
+  theme: 'auto'
 }
 
 // ---- INTERNALS ---- //
