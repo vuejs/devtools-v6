@@ -68,9 +68,7 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
       new VueLoaderPlugin(),
       ...(process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()]),
       new webpack.DefinePlugin({
-        'process.env': {
-          CHANNEL: JSON.stringify(process.env.CHANNEL || 'stable')
-        }
+        'process.env.CHANNEL': JSON.stringify(process.env.CHANNEL || 'stable')
       })
     ],
     devServer: {
@@ -82,9 +80,7 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
     const UglifyPlugin = require('uglifyjs-webpack-plugin')
     baseConfig.plugins.push(
       new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: '"production"'
-        }
+        'process.env.NODE_ENV': '"production"'
       }),
       new UglifyPlugin()
     )
