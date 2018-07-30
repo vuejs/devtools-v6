@@ -33,6 +33,7 @@
   "bugs": {
     "url": "https://github.com/vuejs/vue-devtools/issues"
   },
+  "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "dependencies": {
     "@vue/ui": "^0.5.1",
     "circular-json-es6": "^2.0.1",
@@ -43,7 +44,6 @@
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
-  "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
     "buble": "^0.19.0",
     "buble-loader": "^0.4.1",
@@ -73,5 +73,8 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7",
     "webpack-merge": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=8.10"
   }
 }
