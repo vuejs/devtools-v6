@@ -13,8 +13,8 @@ import storage from './storage'
 let panelShown = !isChrome
 let pendingAction = null
 
-const isBeta = process.env.CHANNEL === 'beta'
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
+const isBeta = process.env.RELEASE_CHANNEL === 'beta'
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.

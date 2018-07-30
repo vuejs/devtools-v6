@@ -4,8 +4,7 @@ const semver = require('semver')
 const pkg = require('./package.json')
 const manifest = require('./shells/chrome/manifest.json')
 
-const curVersion = manifest.version
-const newVersion = process.argv[2]
+const curVersion = pkg.version
 
 ;(async () => {
   const { newVersion } = await inquirer.prompt([{
@@ -31,11 +30,26 @@ const newVersion = process.argv[2]
   }])
 
   if (yes) {
+    const isBeta = newVersion.includes('beta')
     pkg.version = newVersion
-    manifest.version = newVersion
+    if (isBeta) {
+      const [, baseVersion, betaVersion] = /(.*)-beta\.(\w+)/.exec(newVersion)
+      manifest.version = `${baseVersion}.${betaVersion}`
+      applyIcons(manifest, '-beta')
+    } else {
+      manifest.version = newVersion
+      applyIcons(manifest)
+    }
+
     fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2))
     fs.writeFileSync('./shells/chrome/manifest.json', JSON.stringify(manifest, null, 2))
   } else {
     process.exit(1)
   }
 })()
+
+function applyIcons (manifest, suffix = '') {
+  [16, 48, 128].forEach(size => {
+    manifest.icons[size] = `icons/${size}${suffix}.png`
+  })
+}

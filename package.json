@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "4.1.4",
+  "version": "4.1.5-beta.2",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
     "zip:firefox": "web-ext build -s shells/chrome -a dist -i src --overwrite-dest",
     "release": "node release.js && npm run test && npm run build && npm run zip",
-    "release:beta": "cross-env CHANNEL=beta && npm run release",
+    "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release",
     "test": "npm run lint && npm run test:e2e",
     "test:e2e": "cross-env PORT=4040 start-server-and-test dev:shell http://localhost:4040 test:e2e:run",
     "test:e2e:run": "cypress run --config baseUrl=http://localhost:4040",
@@ -33,6 +33,7 @@
   "bugs": {
     "url": "https://github.com/vuejs/vue-devtools/issues"
   },
+  "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "dependencies": {
     "@vue/ui": "^0.5.1",
     "circular-json-es6": "^2.0.1",
@@ -43,7 +44,6 @@
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
-  "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
     "buble": "^0.19.0",
     "buble-loader": "^0.4.1",
@@ -73,5 +73,8 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7",
     "webpack-merge": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=8.10"
   }
 }

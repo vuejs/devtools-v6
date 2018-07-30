@@ -301,6 +301,13 @@ export default {
   .self.selected & >>> svg
     fill $white
 
+.self:not(.selected)
+  .info
+    &.console
+      color lighten(black, 80%)
+      .vue-ui-dark-mode &
+        color darken(white, 70%)
+
 .self.selected
   .attr
     opacity 1
