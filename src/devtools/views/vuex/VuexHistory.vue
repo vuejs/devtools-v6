@@ -227,6 +227,7 @@ export default {
       },
       set (filter) {
         this.$store.dispatch('vuex/updateFilter', filter)
+        this.$store.commit('vuex/INSPECT', -1)
       }
     }
   },

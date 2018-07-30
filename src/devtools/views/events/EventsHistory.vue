@@ -143,6 +143,7 @@ export default {
       },
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
+        this.$store.commit('events/INSPECT', -1)
       }
     }
   },
