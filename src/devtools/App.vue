@@ -126,6 +126,9 @@ export default {
             } else if (code === 'Digit3') {
               this.$router.push({ name: 'events' })
               return false
+            } else if (key === 'p' || code === 'KeyP') {
+              // Prevent chrome devtools from opening the print modal
+              return false
             }
         }
       }
