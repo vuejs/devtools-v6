@@ -58,10 +58,11 @@ import DataField from './DataField.vue'
 
 const keyOrder = {
   props: 1,
-  undefined: 2,
-  computed: 3,
-  state: 1,
-  getters: 2
+  undefined: 3,
+  computed: 4,
+  state: 2,
+  getters: 3,
+  mutation: 1
 }
 
 export default {

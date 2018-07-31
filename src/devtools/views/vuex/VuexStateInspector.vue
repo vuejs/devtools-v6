@@ -55,15 +55,38 @@
       slot="scroll"
       class="vuex-state-inspector"
     >
-      <div>
-        <div v-if="$shared.snapshotLoading">
-          Loading...
+      <state-inspector :state="filteredState" />
+
+      <div
+        v-if="$shared.snapshotLoading"
+        class="state-info"
+      >
+        <div class="label">Loading state...</div>
+
+        <VueLoadingBar
+          :value="$shared.snapshotLoading.current / $shared.snapshotLoading.total"
+        />
+      </div>
+      <div
+        v-else-if="isOnlyMutationPayload"
+        class="state-info"
+      >
+        <div class="label">
+          <VueIcon
+            class="big"
+            icon="cached"
+          />
+          <span>Recording state...</span>
         </div>
-        <div v-else-if="isOnlyMutationPayload">
-          Recording...
+
+        <div>
+          <VueButton
+            @click="loadState()"
+          >
+            Load state
+          </VueButton>
         </div>
       </div>
-      <state-inspector :state="filteredState" />
     </div>
   </scroll-pane>
 </template>
@@ -76,7 +99,7 @@ import StateInspector from 'components/StateInspector.vue'
 import { searchDeepInObject, sortByKey, stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
 import groupBy from 'lodash.groupby'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -96,7 +119,12 @@ export default {
 
   computed: {
     ...mapGetters('vuex', [
-      'inspectedState'
+      'inspectedState',
+      'inspectedIndex'
+    ]),
+
+    ...mapGetters('vuex', [
+      'filteredHistory'
     ]),
 
     filteredState () {
@@ -135,6 +163,10 @@ export default {
   },
 
   methods: {
+    ...mapActions('vuex', [
+      'inspect'
+    ]),
+
     copyStateToClipboard () {
       copyToClipboard(this.inspectedState.state)
       this.showStateCopiedMessage = true
@@ -169,7 +201,12 @@ export default {
           this.showBadJSONMessage = true
         }
       }
-    }, 250)
+    }, 250),
+
+    loadState () {
+      const history = this.filteredHistory
+      this.inspect(history[history.length - 1])
+    }
   }
 }
 
@@ -184,6 +221,28 @@ function copyToClipboard (state) {
 </script>
 
 <style lang="stylus" scoped>
+.state-info
+  display flex
+  flex-direction column
+  box-center()
+  min-height 140px
+  font-size 24px
+  margin 0 42px
+
+  .label
+    display flex
+    align-items center
+    font-weight lighter
+    color $blueishGrey
+    margin-bottom 12px
+
+    .vue-ui-icon
+      margin-right 12px
+      >>> svg
+        fill @color
+  .vue-ui-loading-bar
+    width 100%
+
 .message
   margin-left 5px
   transition all .3s ease

@@ -1,5 +1,6 @@
 import { parse, stringify } from 'src/util'
 import { snapshotsCache } from './cache'
+import SharedData from 'src/shared-data'
 
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
@@ -45,6 +46,10 @@ export function inspect ({ commit, getters }, entryOrIndex) {
   if (cached) {
     commit('UPDATE_INSPECTED_STATE', cached)
   } else {
+    SharedData.snapshotLoading = {
+      current: 0,
+      total: 1
+    }
     commit('UPDATE_INSPECTED_STATE', null)
     bridge.send('vuex:inspect-state', mutationIndex)
   }

@@ -140,6 +140,9 @@ function initApp (shell) {
     bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
       snapshotsCache.set(index, snapshot)
       store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+      requestAnimationFrame(() => {
+        SharedData.snapshotLoading = null
+      })
     })
 
     bridge.on('event:triggered', payload => {

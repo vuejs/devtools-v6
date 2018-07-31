@@ -55,11 +55,6 @@ export function initVuexBackend (hook, bridge) {
   })
 
   bridge.on('vuex:inspect-state', index => {
-    SharedData.snapshotLoading = {
-      current: 0,
-      total: 1
-    }
-
     const currentState = store.state
 
     // Get most recent snapshot for target index
@@ -79,18 +74,18 @@ export function initVuexBackend (hook, bridge) {
         index,
         snapshot: snapshot.state
       })
-      SharedData.snapshotLoading = null
       return
     }
 
     const { state } = parse(snapshot.state, true)
     store.replaceState(state)
 
-    const total = snapshot.index - index
+    const total = index - snapshot.index
     SharedData.snapshotLoading = {
       current: 0,
       total
     }
+    let time = Date.now()
 
     // Replay mutations
     for (let i = snapshot.index + 1; i <= index; i++) {
@@ -99,9 +94,15 @@ export function initVuexBackend (hook, bridge) {
       if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
         takeSnapshot(i, state)
       }
-      SharedData.snapshotLoading = {
-        current: i - snapshot.index,
-        total
+
+      const now = Date.now()
+      if (now - time <= 100) {
+        time = now
+        SharedData.snapshotLoading = {
+          current: i - snapshot.index,
+          total
+        }
+        console.log(SharedData.snapshotLoading.current, '/', SharedData.snapshotLoading.total)
       }
     }
 
@@ -114,8 +115,6 @@ export function initVuexBackend (hook, bridge) {
 
     // Restore user state
     store.replaceState(currentState)
-
-    SharedData.snapshotLoading = null
   })
 
   function takeSnapshot (index, state) {
