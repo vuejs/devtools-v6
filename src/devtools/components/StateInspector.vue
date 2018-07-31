@@ -103,6 +103,12 @@ export default {
     }
   },
 
+  watch: {
+    state () {
+      this.forceCollapse = null
+    }
+  },
+
   methods: {
     toDisplayType (dataType, asClass) {
       return dataType === 'undefined'
