@@ -25,7 +25,9 @@
     <div
       slot="scroll"
       class="tree"
-      :class="{ 'high-density': finalHighDensity }"
+      :class="{
+        'high-density': finalHighDensity
+      }"
     >
       <component-instance
         v-for="instance in instances"
