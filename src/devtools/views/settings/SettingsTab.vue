@@ -1,5 +1,5 @@
 <template>
-  <div class="grid">
+  <div class="settings grid">
     <GlobalPreferences />
   </div>
 </template>
@@ -16,3 +16,15 @@ export default {
   ])
 }
 </script>
+
+<style lang="stylus" scoped>
+.settings
+  >>> .preferences
+    display flex
+    flex-wrap wrap
+    padding 1rem 1.5rem
+
+    > *
+      flex-basis 300px
+      margin 10px 18px
+</style>
