@@ -293,6 +293,8 @@ export default {
 .attr
   opacity .5
   font-size 12px
+  .high-density &
+    font-size 10px
 
 .attr-title
   color purple
