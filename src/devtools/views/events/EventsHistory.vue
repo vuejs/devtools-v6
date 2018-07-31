@@ -40,6 +40,9 @@
     <div
       slot="scroll"
       class="history"
+      :class="{
+        'high-density': highDensity
+      }"
     >
       <div
         v-if="filteredEvents.length === 0"
@@ -145,6 +148,11 @@ export default {
         this.$store.commit('events/UPDATE_FILTER', filter)
         this.$store.commit('events/INSPECT', -1)
       }
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.filteredEvents.length > 8) || pref === 'high'
     }
   },
 
@@ -197,6 +205,8 @@ export default {
       color: #fff
     .event-source
       color #ddd
+  .high-density &
+    padding 4px 20px
 
 .time
   font-size 11px

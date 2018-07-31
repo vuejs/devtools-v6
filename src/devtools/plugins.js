@@ -46,3 +46,5 @@ Vue.use(GlobalRefs, {
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })
+
+Vue.use(Responsive)

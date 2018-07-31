@@ -2,8 +2,15 @@
 const internalSharedData = {
   openInEditorHost: '/',
   classifyComponents: true,
-  theme: 'auto'
+  theme: 'auto',
+  displayDensity: 'low'
 }
+
+const persisted = [
+  'classifyComponents',
+  'theme',
+  'displayDensity'
+]
 
 // ---- INTERNALS ---- //
 
@@ -22,13 +29,9 @@ export function init (params) {
   bridge = params.bridge
   Vue = params.Vue
 
-  if (params.hasOwnProperty('persist')) {
-    persist = params.persist
-
-    if (!params.hasOwnProperty('storage')) {
-      throw new Error('Missing `storage` params.')
-    }
+  if (params.hasOwnProperty('storage')) {
     storage = params.storage
+    persist = persisted
   }
 
   // Load persisted fields

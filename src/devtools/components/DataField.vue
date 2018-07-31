@@ -490,6 +490,9 @@ export default {
   position relative
   white-space nowrap
   padding-left 14px
+  .high-density &
+    height 14px
+    line-height 14px
   span, div
     display inline-block
     vertical-align middle
