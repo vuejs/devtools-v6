@@ -35,16 +35,16 @@
         <span>Revert All</span>
       </a>
       <a
-        v-tooltip="$t(`VuexHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        v-tooltip="$t(`VuexHistory.${$shared.recordVuex ? 'stopRecording' : 'startRecording'}.tooltip`)"
         class="button toggle-recording"
         @click="toggleRecording"
       >
         <VueIcon
-          :class="{ enabled }"
+          :class="{ enabled: $shared.recordVuex }"
           class="small"
           icon="lens"
         />
-        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
+        <span>{{ $shared.recordVuex ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
     <div
@@ -244,7 +244,6 @@ export default {
     ...mapActions('vuex', [
       'commitAll',
       'revertAll',
-      'toggleRecording',
       'commit',
       'revert',
       'inspect',
@@ -258,6 +257,10 @@ export default {
 
     isInspected (entry) {
       return this.inspectedIndex === this.filteredHistory.indexOf(entry)
+    },
+
+    toggleRecording () {
+      this.$shared.recordVuex = !this.$shared.recordVuex
     }
   }
 }

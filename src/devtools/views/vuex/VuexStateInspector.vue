@@ -55,6 +55,14 @@
       slot="scroll"
       class="vuex-state-inspector"
     >
+      <div>
+        <div v-if="$shared.snapshotLoading">
+          Loading...
+        </div>
+        <div v-else-if="isOnlyMutationPayload">
+          Recording...
+        </div>
+      </div>
       <state-inspector :state="filteredState" />
     </div>
   </scroll-pane>
@@ -109,6 +117,10 @@ export default {
           [el.key]: el.value
         }, this.filter)
       )), 'type')
+    },
+
+    isOnlyMutationPayload () {
+      return Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation
     }
   },
 

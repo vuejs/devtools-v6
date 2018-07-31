@@ -3,13 +3,17 @@ const internalSharedData = {
   openInEditorHost: '/',
   classifyComponents: true,
   theme: 'auto',
-  displayDensity: 'low'
+  displayDensity: 'low',
+  recordVuex: true,
+  cacheVuexSnapshotsEvery: 10,
+  snapshotLoading: null
 }
 
 const persisted = [
   'classifyComponents',
   'theme',
-  'displayDensity'
+  'displayDensity',
+  'recordVuex'
 ]
 
 // ---- INTERNALS ---- //

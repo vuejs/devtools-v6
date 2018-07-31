@@ -102,7 +102,6 @@ function initApp (shell) {
         'SHOW_MESSAGE',
         'Ready. Detected Vue ' + version + '.'
       )
-      bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
       bridge.send('events:toggle-recording', store.state.events.enabled)
 
       if (isChrome) {
@@ -135,6 +134,10 @@ function initApp (shell) {
 
     bridge.on('vuex:mutation', payload => {
       store.commit('vuex/RECEIVE_MUTATION', payload)
+    })
+
+    bridge.on('vuex:inspected-state', payload => {
+      store.commit('vuex/UPDATE_INSPECTED_STATE', payload)
     })
 
     bridge.on('event:triggered', payload => {

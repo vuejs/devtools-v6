@@ -37,15 +37,13 @@ export function inspect ({ commit, getters }, entryOrIndex) {
   if (index < -1) index = -1
   if (index >= getters.filteredHistory.length) index = getters.filteredHistory.length - 1
   commit('INSPECT', index)
+
+  const entry = getters.filteredHistory[index]
+  bridge.send('vuex:inspect-state', entry ? entry.mutation.index : -1)
 }
 
 export function timeTravelTo ({ state, commit }, entry) {
   travelTo(state, commit, state.history.indexOf(entry))
-}
-
-export function toggleRecording ({ state, commit }) {
-  commit('TOGGLE')
-  bridge.send('vuex:toggle-recording', state.enabled)
 }
 
 export function updateFilter ({ commit }, filter) {
