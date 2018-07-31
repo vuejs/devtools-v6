@@ -79,6 +79,7 @@ export function initVuexBackend (hook, bridge) {
         index,
         snapshot: snapshot.state
       })
+      SharedData.snapshotLoading = null
       return
     }
 
