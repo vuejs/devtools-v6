@@ -2,10 +2,10 @@
   <scroll-pane>
     <action-header slot="header">
       <div
-        class="search"
         v-tooltip="$t('ComponentTree.filter.tooltip')"
+        class="search"
       >
-        <i class="material-icons">search</i>
+        <VueIcon icon="search" />
         <input
           ref="filterInstances"
           placeholder="Filter components"
@@ -13,44 +13,33 @@
         >
       </div>
       <a
-        class="button select-component"
-        :class="{active: selecting}"
         v-tooltip="$t('ComponentTree.select.tooltip')"
+        :class="{active: selecting}"
+        class="button select-component"
         @click="setSelecting(!selecting)"
       >
-        <i class="material-icons">
-          gps_fixed
-        </i>
+        <VueIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'" />
         <span>Select</span>
-      </a>
-      <a class="button classify-names"
-         :class="{ active: classifyComponents }"
-         v-tooltip="'Format component names'"
-         @click="toggleClassifyComponents"
-      >
-        <i class="material-icons">text_fields</i>
-        <span>Format</span>
       </a>
     </action-header>
     <div
       slot="scroll"
       class="tree"
-      :class="{ 'high-density': highDensity }"
+      :class="{ 'high-density': finalHighDensity }"
     >
       <component-instance
         v-for="instance in instances"
         ref="instances"
         :key="instance.id"
         :instance="instance"
-        :depth="0">
-      </component-instance>
+        :depth="0"
+      />
     </div>
   </scroll-pane>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex'
-
+import { mapGetters, mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
@@ -64,6 +53,12 @@ import Keyboard, {
 } from '../../mixins/keyboard'
 
 export default {
+  components: {
+    ScrollPane,
+    ActionHeader,
+    ComponentInstance
+  },
+
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {
@@ -89,13 +84,13 @@ export default {
               let instanceToSelect
 
               if (key === LEFT) {
-                if (current.expanded) {
+                if (current.expanded && current.$children.filter(isComponentInstance).length) {
                   current.collapse()
                 } else if (current.$parent && current.$parent.expanded) {
                   instanceToSelect = current.$parent
                 }
               } else if (key === RIGHT) {
-                if (current.expanded && current.$children.length) {
+                if (current.expanded && current.$children.filter(isComponentInstance).length) {
                   instanceToSelect = findByIndex(all, currentIndex + 1)
                 } else {
                   current.expand()
@@ -119,14 +114,11 @@ export default {
     })
   ],
 
-  components: {
-    ScrollPane,
-    ActionHeader,
-    ComponentInstance
-  },
-
   props: {
-    instances: Array
+    instances: {
+      type: Array,
+      required: true
+    }
   },
 
   data () {
@@ -138,13 +130,19 @@ export default {
 
   computed: {
     ...mapState('components', [
-      'classifyComponents',
       'expansionMap'
     ]),
 
     ...mapGetters('components', [
       'totalCount'
-    ])
+    ]),
+
+    finalHighDensity () {
+      if (this.$shared.displayDensity === 'auto') {
+        return this.highDensity
+      }
+      return this.$shared.displayDensity === 'high'
+    }
   },
 
   watch: {
@@ -158,7 +156,7 @@ export default {
   },
 
   mounted () {
-    bridge.on('instance-details', () => {
+    bridge.on('instance-selected', () => {
       this.setSelecting(false)
     })
   },
@@ -168,10 +166,6 @@ export default {
   },
 
   methods: {
-    ...mapActions('components', [
-      'toggleClassifyComponents'
-    ]),
-
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
     },
@@ -188,23 +182,28 @@ export default {
       }
     },
     updateAutoDensity () {
-      console.log('updateAutoDensity')
-      this.$nextTick(() => {
-        const totalHeight = this.$isChrome ? this.$responsive.height : this.$root.$el.offsetHeight
-        const count = this.$el.querySelectorAll('.instance').length
-        const treeHeight = 22 * count
-        const scrollHeight = totalHeight - (totalHeight <= 350 ? 76 : 111)
-        this.highDensity = treeHeight >= scrollHeight
-      })
+      if (this.$shared.displayDensity === 'auto') {
+        this.$nextTick(() => {
+          const totalHeight = this.$isChrome ? this.$responsive.height : this.$root.$el.offsetHeight
+          const count = this.$el.querySelectorAll('.instance').length
+          const treeHeight = 22 * count
+          const scrollHeight = totalHeight - (totalHeight <= 350 ? 76 : 111)
+          this.highDensity = treeHeight >= scrollHeight
+        })
+      }
     }
   }
 }
 
-function getAllInstances (list) {
-  return Array.prototype.concat.apply([], list.map(instance => {
-    return [instance, ...getAllInstances(instance.$children)]
-  }))
-}
+const isComponentInstance = object => typeof object !== 'undefined' && typeof object.instance !== 'undefined'
+
+const getAllInstances = list => list.reduce((instances, i) => {
+  if (isComponentInstance(i)) {
+    instances.push(i)
+  }
+  instances = instances.concat(getAllInstances(i.$children))
+  return instances
+}, [])
 
 function findCurrent (all, check) {
   for (let i = 0; i < all.length; i++) {
@@ -241,6 +240,6 @@ function findByIndex (all, index) {
 .select-component
   &.active
     color $active-color
-    .material-icons
+    .vue-ui-icon
       animation pulse 2s infinite linear
 </style>

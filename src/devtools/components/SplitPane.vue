@@ -1,15 +1,26 @@
 <template>
-  <div class="split-pane"
+  <div
+    :class="classes"
+    class="split-pane"
     @mousemove="dragMove"
     @mouseup="dragEnd"
     @mouseleave="dragEnd"
-    :class="classes">
-    <div class="left top" :style="leftStyles">
-      <slot name="left"></slot>
-      <div class="dragger" @mousedown.prevent="dragStart"></div>
+  >
+    <div
+      :style="leftStyles"
+      class="left top"
+    >
+      <slot name="left" />
+      <div
+        class="dragger"
+        @mousedown.prevent="dragStart"
+      />
     </div>
-    <div class="right bottom" :style="rightStyles">
-      <slot name="right"></slot>
+    <div
+      :style="rightStyles"
+      class="right bottom"
+    >
+      <slot name="right" />
     </div>
   </div>
 </template>
@@ -24,26 +35,33 @@ export default {
       dragging: false
     }
   },
+
   computed: {
     ...mapState([
       'view'
     ]),
+
     leftStyles () {
-      return {
+      const obj = {
         [this.view === 'vertical' ? 'width' : 'height']: `${this.boundSplit}%`
       }
+      return obj
     },
+
     rightStyles () {
-      return {
+      const obj = {
         [this.view === 'vertical' ? 'width' : 'height']: `${100 - this.boundSplit}%`
       }
+      return obj
     },
+
     classes () {
       return [
         { dragging: this.dragging },
         this.view
       ]
     },
+
     boundSplit () {
       const split = this.split
       if (split < 20) {
@@ -55,12 +73,14 @@ export default {
       }
     }
   },
+
   methods: {
     dragStart (e) {
       this.dragging = true
       this.startPosition = this.view === 'vertical' ? e.pageX : e.pageY
       this.startSplit = this.boundSplit
     },
+
     dragMove (e) {
       if (this.dragging) {
         let position
@@ -76,6 +96,7 @@ export default {
         this.split = this.startSplit + ~~(dPosition / totalSize * 100)
       }
     },
+
     dragEnd () {
       this.dragging = false
     }
@@ -109,13 +130,13 @@ export default {
   .bottom
     box-shadow 0 -2px 10px rgba(0, 0, 0, 0.1)
     border-top 1px solid $border-color
-    .dark &
+    .vue-ui-dark-mode &
       border-top 1px solid $dark-border-color
 
 .vertical
   .left
     border-right 1px solid $border-color
-    .dark &
+    .vue-ui-dark-mode &
       border-right 1px solid $dark-border-color
 
 .dragger

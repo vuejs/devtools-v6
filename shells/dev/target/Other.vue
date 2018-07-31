@@ -1,7 +1,7 @@
 <template>
   <div>
     Other {{ id }}
-    <mine></mine>
+    <mine/>
   </div>
 </template>
 
@@ -10,7 +10,7 @@
 // even if component has no 'computed' defined
 const computedPropMixin = {
   computed: {
-    computedPropFromMixin() {
+    computedPropFromMixin () {
       return null
     }
   }
@@ -18,12 +18,17 @@ const computedPropMixin = {
 
 export default {
   name: 'other-with-mine',
+  mixins: [computedPropMixin],
+  provide: {
+    foo: 'bar',
+    noop: (a, b, c) => {},
+    answer: 42
+  },
   props: ['id'],
-  mixins: [ computedPropMixin ],
   data () {
-    let a = { c: function () {} }
+    const a = { c: function () {} }
     a.a = a
-    let b = []
+    const b = []
     b[0] = b
     return {
       a: a,
@@ -32,6 +37,7 @@ export default {
   },
   components: {
     mine: {
+      inject: ['foo', 'noop', 'answer'],
       render: h => h('div', { class: 'mine' }, 'mine'),
       data () {
         return {

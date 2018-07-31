@@ -6,7 +6,7 @@
 
 2. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
-<p align="center"><img width="600px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot.png" alt="demo"></p>
+<p align="center"><img width="720px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot-shadow.png" alt="screenshot"></p>
 
 Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
@@ -14,11 +14,11 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 ### Installation
 
-- [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+- [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) ([beta](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg))
 
-- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) ([beta](https://github.com/vuejs/vue-devtools/releases))
 
-- [Workaround for Safari](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-safari.md)
+- [Get standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
 
 #### Open component in editor
 
@@ -72,10 +72,12 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 	When using Yarn, just replace `npm` with `yarn`.
 
 
-### Commom problems and how to fix
+### Common problems and how to fix
 
 1. Fixing "Download the Vue Devtools for a better development experience" console message when working locally over `file://` protocol:
   1.1 - Google Chrome: Right click on vue-devtools icon and click "Manage Extensions" then search for vue-devtools on the extensions list. Check the "Allow access to file URLs" box.
+
+2. How to use the devtools in IE/Edge/Safari or any other browser? [Get the standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
 
 
 ### License

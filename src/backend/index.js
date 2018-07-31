@@ -4,9 +4,10 @@
 import { highlight, unHighlight, getInstanceRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
-import config from './config'
+import SharedData, { init as initSharedData } from 'src/shared-data'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -31,10 +32,15 @@ export function initBackend (_bridge) {
     hook.once('init', connect)
   }
 
-  config(bridge)
+  initRightClick()
 }
 
 function connect () {
+  initSharedData({
+    bridge,
+    Vue: hook.Vue
+  })
+
   hook.currentTab = 'components'
   bridge.on('switch-tab', tab => {
     hook.currentTab = tab
@@ -57,7 +63,8 @@ function connect () {
     currentInspectedId = id
     const instance = instanceMap.get(id)
     bindToConsole(instance)
-    bridge.send('instance-details', stringify(getInstanceDetails(id)))
+    flush()
+    bridge.send('instance-selected')
   })
 
   bridge.on('scroll-to-instance', id => {
@@ -76,6 +83,7 @@ function connect () {
 
   bridge.on('leave-instance', unHighlight)
 
+  // eslint-disable-next-line no-new
   new ComponentSelector(bridge, instanceMap)
 
   // Get the instance id that is targeted by context menu
@@ -114,6 +122,16 @@ function connect () {
 
   window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
+  // User project devtools config
+  if (window.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+    const config = window.VUE_DEVTOOLS_CONFIG
+
+    // Open in editor
+    if (config.hasOwnProperty('openInEditorHost')) {
+      SharedData.openInEditorHost = config.openInEditorHost
+    }
+  }
+
   bridge.log('backend ready.')
   bridge.send('ready', hook.Vue.version)
   console.log(
@@ -141,8 +159,11 @@ function scan () {
       }
       return true
     }
-    const instance = node.__vue__
+    let instance = node.__vue__
     if (instance) {
+      if (rootInstances.indexOf(instance.$root) === -1) {
+        instance = instance.$root
+      }
       if (instance._isFragment) {
         inFragment = true
         currentFragment = instance
@@ -279,6 +300,7 @@ function capture (instance, _, list) {
   const ret = {
     id: instance.__VUE_DEVTOOLS_UID__,
     name: getInstanceName(instance),
+    renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
     children: instance.$children
@@ -358,6 +380,7 @@ function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
     processComputed(instance),
+    processInjected(instance),
     processRouteContext(instance),
     processVuexGetters(instance),
     processFirebaseBindings(instance),
@@ -469,7 +492,7 @@ const fnTypeRE = /^(?:function|class) (\w+)/
 function getPropType (type) {
   const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
-    ? match && match[1] || 'any'
+    ? (match && match[1]) || 'any'
     : 'any'
 }
 
@@ -541,6 +564,29 @@ function processComputed (instance) {
   }
 
   return computed
+}
+
+/**
+ * Process Vuex getters.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processInjected (instance) {
+  const injected = instance.$options.inject
+
+  if (injected) {
+    return Object.keys(injected).map(key => {
+      return {
+        key,
+        type: 'injected',
+        value: instance[key]
+      }
+    })
+  } else {
+    return []
+  }
 }
 
 /**
@@ -689,6 +735,20 @@ function getUniqueId (instance) {
   return `${rootVueId}:${instance._uid}`
 }
 
+function getRenderKey (value) {
+  if (value == null) return
+  const type = typeof value
+  if (type === 'number') {
+    return value
+  } else if (type === 'string') {
+    return `'${value}'`
+  } else if (Array.isArray(value)) {
+    return 'Array'
+  } else {
+    return 'Object'
+  }
+}
+
 /**
  * Display a toast message.
  * @param {any} message HTML content
@@ -723,4 +783,23 @@ function setStateValue ({ id, path, value, newKey, remove }) {
       console.error(e)
     }
   }
+}
+
+function initRightClick () {
+  // Start recording context menu when Vue is detected
+  // event if Vue devtools are not loaded yet
+  document.addEventListener('contextmenu', event => {
+    const el = event.target
+    if (el) {
+      // Search for parent that "is" a component instance
+      const instance = findRelatedComponent(el)
+      if (instance) {
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = true
+        window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = instance
+        return
+      }
+    }
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = null
+    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+  })
 }

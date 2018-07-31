@@ -5,6 +5,7 @@ import * as CircularJSON from './transfer'
 import { instanceMap, getCustomInstanceDetails } from 'src/backend'
 import { getCustomStoreDetails } from 'src/backend/vuex'
 import { getCustomRouterDetails } from 'src/backend/router'
+import SharedData from 'src/shared-data'
 
 import { isChrome } from './devtools/env'
 
@@ -56,6 +57,21 @@ export const SPECIAL_TOKENS = {
   '-Infinity': NEGATIVE_INFINITY,
   'Infinity': INFINITY,
   'NaN': NAN
+}
+
+export function specialTokenToString (value) {
+  if (value === null) {
+    return 'null'
+  } else if (value === UNDEFINED) {
+    return 'undefined'
+  } else if (value === NAN) {
+    return 'NaN'
+  } else if (value === INFINITY) {
+    return 'Infinity'
+  } else if (value === NEGATIVE_INFINITY) {
+    return '-Infinity'
+  }
+  return false
 }
 
 /**
@@ -110,6 +126,8 @@ function replacer (key) {
     return NEGATIVE_INFINITY
   } else if (type === 'function') {
     return getCustomFunctionDetails(val)
+  } else if (type === 'symbol') {
+    return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
     if (val instanceof Map) {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
@@ -117,9 +135,9 @@ function replacer (key) {
       return encodeCache.cache(val, () => getCustomSetDetails(val))
     } else if (val instanceof RegExp) {
       // special handling of native type
-      return `[native RegExp ${val.toString()}]`
+      return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
     } else if (val instanceof Date) {
-      return `[native Date ${val.toString()}]`
+      return `[native Date ${Date.prototype.toString.call(val)}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
     } else if (val.constructor && val.constructor.name === 'VueRouter') {
@@ -230,11 +248,23 @@ export function getCustomComponentDefinitionDetails (def) {
 }
 
 export function getCustomFunctionDetails (func) {
-  const args = func.toString().match(/\(.*\)/)[0]
+  let string = ''
+  let matches = null
+  try {
+    string = Function.prototype.toString.call(func)
+    matches = String.prototype.match.call(string, /\([\s\S]*?\)/)
+  } catch (e) {
+    // Func is probably a Proxy, which can break Function.prototype.toString()
+  }
+  // Trim any excess whitespace from the argument string
+  const match = matches && matches[0]
+  const args = typeof match === 'string'
+    ? `(${match.substr(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})` : '(?)'
+  const name = typeof func.name === 'string' ? func.name : ''
   return {
     _custom: {
       type: 'function',
-      display: `<span>ƒ</span> ${func.name}${args}`
+      display: `<span>ƒ</span> ${escape(name)}${args}`
     }
   }
 }
@@ -246,6 +276,7 @@ export function parse (data, revive) {
 }
 
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
+const symbolRE = /^\[native Symbol Symbol\((.*)\)\]$/
 
 function reviver (key, val) {
   if (val === UNDEFINED) {
@@ -264,6 +295,9 @@ function reviver (key, val) {
     } else if (val._custom.type === 'set') {
       return reviveSet(val)
     }
+  } else if (symbolRE.test(val)) {
+    const [, string] = symbolRE.exec(val)
+    return Symbol.for(string)
   } else if (specialTypeRE.test(val)) {
     const [, type, string] = specialTypeRE.exec(val)
     return new window[type](string)
@@ -311,45 +345,116 @@ function isPrimitive (data) {
   )
 }
 
+/**
+ * Searches a key or value in the object, with a maximum deepness
+ * @param {*} obj Search target
+ * @param {string} searchTerm Search string
+ * @returns {boolean} Search match
+ */
 export function searchDeepInObject (obj, searchTerm) {
-  var match = false
+  const seen = new Map()
+  const result = internalSearchObject(obj, searchTerm.toLowerCase(), seen, 0)
+  seen.clear()
+  return result
+}
+
+const SEARCH_MAX_DEPTH = 10
+
+/**
+ * Executes a search on each field of the provided object
+ * @param {*} obj Search target
+ * @param {string} searchTerm Search string
+ * @param {Map<any,boolean>} seen Map containing the search result to prevent stack overflow by walking on the same object multiple times
+ * @param {number} depth Deep search depth level, which is capped to prevent performance issues
+ * @returns {boolean} Search match
+ */
+function internalSearchObject (obj, searchTerm, seen, depth) {
+  if (depth > SEARCH_MAX_DEPTH) {
+    return false
+  }
+  let match = false
   const keys = Object.keys(obj)
+  let key, value
   for (let i = 0; i < keys.length; i++) {
-    const key = keys[i]
-    const value = obj[key]
-    if (compare(key, searchTerm) || compare(value, searchTerm)) {
-      match = true
+    key = keys[i]
+    value = obj[key]
+    match = interalSearchCheck(searchTerm, key, value, seen, depth + 1)
+    if (match) {
       break
-    }
-    if (isPlainObject(value)) {
-      match = searchDeepInObject(value, searchTerm)
-      if (match) {
-        break
-      }
     }
   }
   return match
 }
 
-function compare (mixedValue, stringValue) {
-  if (Array.isArray(mixedValue) && searchInArray(mixedValue, stringValue.toLowerCase())) {
-    return true
+/**
+ * Executes a search on each value of the provided array
+ * @param {*} array Search target
+ * @param {string} searchTerm Search string
+ * @param {Map<any,boolean>} seen Map containing the search result to prevent stack overflow by walking on the same object multiple times
+ * @param {number} depth Deep search depth level, which is capped to prevent performance issues
+ * @returns {boolean} Search match
+ */
+function internalSearchArray (array, searchTerm, seen, depth) {
+  if (depth > SEARCH_MAX_DEPTH) {
+    return false
   }
-  if (('' + mixedValue).toLowerCase().indexOf(stringValue.toLowerCase()) !== -1) {
-    return true
-  }
-  return false
-}
-
-function searchInArray (arr, searchTerm) {
-  let found = false
-  for (let i = 0; i < arr.length; i++) {
-    if (('' + arr[i]).toLowerCase().indexOf(searchTerm) !== -1) {
-      found = true
+  let match = false
+  let value
+  for (let i = 0; i < array.length; i++) {
+    value = array[i]
+    match = interalSearchCheck(searchTerm, null, value, seen, depth + 1)
+    if (match) {
       break
     }
   }
-  return found
+  return match
+}
+
+/**
+ * Checks if the provided field matches the search terms
+ * @param {string} searchTerm Search string
+ * @param {string} key Field key (null if from array)
+ * @param {*} value Field value
+ * @param {Map<any,boolean>} seen Map containing the search result to prevent stack overflow by walking on the same object multiple times
+ * @param {number} depth Deep search depth level, which is capped to prevent performance issues
+ * @returns {boolean} Search match
+ */
+function interalSearchCheck (searchTerm, key, value, seen, depth) {
+  let match = false
+  let result
+  if (key === '_custom') {
+    key = value.display
+    value = value.value
+  }
+  (result = specialTokenToString(value)) && (value = result)
+  if (key && compare(key, searchTerm)) {
+    match = true
+    seen.set(value, true)
+  } else if (seen.has(value)) {
+    match = seen.get(value)
+  } else if (Array.isArray(value)) {
+    seen.set(value, null)
+    match = internalSearchArray(value, searchTerm, seen, depth)
+    seen.set(value, match)
+  } else if (isPlainObject(value)) {
+    seen.set(value, null)
+    match = internalSearchObject(value, searchTerm, seen, depth)
+    seen.set(value, match)
+  } else if (compare(value, searchTerm)) {
+    match = true
+    seen.set(value, true)
+  }
+  return match
+}
+
+/**
+ * Compares two values
+ * @param {*} value Mixed type value that will be cast to string
+ * @param {string} searchTerm Search string
+ * @returns {boolean} Search match
+ */
+function compare (value, searchTerm) {
+  return ('' + value).toLowerCase().indexOf(searchTerm) !== -1
 }
 
 export function sortByKey (state) {
@@ -406,7 +511,7 @@ export function focusInput (el) {
 export function openInEditor (file) {
   // Console display
   const fileName = file.replace(/\\/g, '\\\\')
-  const src = `fetch('/__open-in-editor?file=${encodeURI(file)}').then(response => {
+  const src = `fetch('${SharedData.openInEditorHost}__open-in-editor?file=${encodeURI(file)}').then(response => {
     if (response.ok) {
       console.log('File ${fileName} opened in editor')
     } else {
@@ -425,4 +530,28 @@ export function openInEditor (file) {
     // eslint-disable-next-line no-eval
     eval(src)
   }
+}
+
+const ESC = {
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  '&': '&amp;'
+}
+
+export function escape (s) {
+  return s.replace(/[<>"&]/g, escapeChar)
+}
+
+function escapeChar (a) {
+  return ESC[a] || a
+}
+
+export function copyToClipboard (state) {
+  const dummyTextArea = document.createElement('textarea')
+  dummyTextArea.textContent = stringify(state)
+  document.body.appendChild(dummyTextArea)
+  dummyTextArea.select()
+  document.execCommand('copy')
+  document.body.removeChild(dummyTextArea)
 }

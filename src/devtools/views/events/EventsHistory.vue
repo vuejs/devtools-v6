@@ -2,45 +2,60 @@
   <scroll-pane>
     <action-header slot="header">
       <div
-        class="search"
         v-tooltip="$t('EventsHistory.filter.tooltip')"
+        class="search"
       >
-        <i class="search-icon material-icons">search</i>
+        <VueIcon icon="search" />
         <input
           ref="filterEvents"
-          placeholder="Filter events"
           v-model.trim="filter"
+          placeholder="Filter events"
         >
       </div>
       <a
-        class="button reset"
-        :class="{ disabled: !events.length }"
         v-tooltip="$t('EventsHistory.clear.tooltip')"
+        :class="{ disabled: !events.length }"
+        class="button reset"
         @click="reset"
       >
-        <i class="material-icons small">do_not_disturb</i>
+        <VueIcon
+          class="small"
+          icon="do_not_disturb"
+        />
         <span>Clear</span>
       </a>
       <a
-        class="button toggle-recording"
         v-tooltip="$t(`EventsHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        class="button toggle-recording"
         @click="toggleRecording"
       >
-        <i class="material-icons small" :class="{ enabled }">lens</i>
+        <VueIcon
+          :class="{ enabled }"
+          class="small"
+          icon="lens"
+        />
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <div slot="scroll" class="history">
-      <div v-if="filteredEvents.length === 0" class="no-events">
+    <div
+      slot="scroll"
+      class="history"
+    >
+      <div
+        v-if="filteredEvents.length === 0"
+        class="no-events"
+      >
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
       <template v-else>
-        <div class="entry list-item"
-          ref="entries"
+        <div
           v-for="(event, index) in filteredEvents"
+          ref="entries"
           :key="index"
-          :class="{ active: inspectedIndex === events.indexOf(event) }"
-          @click="inspect(events.indexOf(event))">
+          :class="{ active: inspectedIndex === filteredEvents.indexOf(event) }"
+          class="entry list-item"
+          @click="inspect(filteredEvents.indexOf(event))"
+        >
           <span class="event-name">{{ event.eventName }}</span>
           <span class="event-type">{{ event.type }}</span>
           <span class="event-source">
@@ -67,10 +82,21 @@ import Keyboard, {
   BACKSPACE
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { classify, focusInput } from 'src/util'
 
 export default {
+  components: {
+    ScrollPane,
+    ActionHeader
+  },
+
+  filters: {
+    formatTime (timestamp) {
+      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    }
+  },
+
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {
@@ -100,11 +126,6 @@ export default {
     EntryList
   ],
 
-  components: {
-    ScrollPane,
-    ActionHeader
-  },
-
   computed: {
     ...mapState('events', [
       'enabled',
@@ -116,35 +137,29 @@ export default {
       'filteredEvents'
     ]),
 
-    ...mapState('components', [
-      'classifyComponents'
-    ]),
-
     filter: {
       get () {
         return this.$store.state.events.filter
       },
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
+        this.$store.commit('events/INSPECT', -1)
       }
     }
   },
 
   methods: {
     ...mapMutations('events', {
-      inspect: 'INSPECT',
       reset: 'RESET',
       toggleRecording: 'TOGGLE'
     }),
 
-    displayComponentName (name) {
-      return this.classifyComponents ? classify(name) : name
-    }
-  },
+    ...mapActions('events', [
+      'inspect'
+    ]),
 
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    displayComponentName (name) {
+      return this.$shared.classifyComponents ? classify(name) : name
     }
   }
 }
