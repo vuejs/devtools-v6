@@ -37,6 +37,27 @@
         />
       </VueGroup>
     </VueFormField>
+
+    <VueFormField title="Display density">
+      <VueGroup
+        :value="$shared.displayDensity"
+        class="extend"
+        @input="$shared.displayDensity = $event"
+      >
+        <VueGroupButton
+          value="auto"
+          label="Auto"
+        />
+        <VueGroupButton
+          value="low"
+          label="Low"
+        />
+        <VueGroupButton
+          value="high"
+          label="High"
+        />
+      </VueGroup>
+    </VueFormField>
   </div>
 </template>
 
