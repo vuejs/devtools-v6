@@ -440,7 +440,7 @@ export default {
   watch: {
     forceCollapse: {
       handler (value) {
-        if (value === 'expand') {
+        if (value === 'expand' && this.depth < 4) {
           this.expanded = true
         } else if (value === 'collapse') {
           this.expanded = false
