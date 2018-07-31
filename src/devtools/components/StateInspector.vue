@@ -136,8 +136,6 @@ export default {
 </script>
 
 <style lang="stylus">
-@import "../variables"
-
 .data-el
   font-size 15px
 

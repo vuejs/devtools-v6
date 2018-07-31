@@ -476,8 +476,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../variables"
-
 .data-field
   user-select text
   font-size 12px

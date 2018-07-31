@@ -172,8 +172,6 @@ function copyToClipboard (state) {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
-
 .message
   margin-left 5px
   transition all .3s ease

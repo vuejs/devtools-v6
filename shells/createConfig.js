@@ -52,7 +52,15 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
           use: [
             'vue-style-loader',
             'css-loader',
-            'stylus-loader'
+            'stylus-loader',
+            {
+              loader: 'style-resources-loader',
+              options: {
+                patterns: [
+                  path.resolve(__dirname, '../src/devtools/style/imports.styl')
+                ]
+              }
+            }
           ]
         },
         {

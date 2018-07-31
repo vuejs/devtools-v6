@@ -220,12 +220,10 @@ export default {
 }
 </script>
 
-<style lang="stylus" src="./global.styl">
+<style lang="stylus" src="./style/global.styl">
 </style>
 
 <style lang="stylus" scoped>
-@import "./variables"
-
 .app
   width 100%
   height 100%

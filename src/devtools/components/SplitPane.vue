@@ -105,8 +105,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../variables"
-
 .split-pane
   display flex
   height 100%

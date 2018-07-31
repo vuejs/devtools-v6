@@ -47,8 +47,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../variables"
-
 .scroll-pane
   display flex
   flex-direction column

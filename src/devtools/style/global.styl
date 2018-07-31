@@ -1,14 +1,14 @@
 @import '~@vue/ui/dist/vue-ui.css'
 
-@import './variables'
-@import './transitions'
+@import 'imports'
+@import 'transitions'
 
 
 @font-face
   font-family 'Roboto'
   font-style normal
   font-weight 400
-  src local('Roboto'), local('Roboto-Regular'), url(./assets/Roboto-Regular.woff2) format('woff2')
+  src local('Roboto'), local('Roboto-Regular'), url(../assets/Roboto-Regular.woff2) format('woff2')
 
 .toggle-recording .vue-ui-icon
   svg
@@ -48,7 +48,7 @@ body
 *
   box-sizing border-box
 
-$arrow-color = #444
+$arrow-color = $vue-ui-color-dark
 
 .arrow
   display inline-block

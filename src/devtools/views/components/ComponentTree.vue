@@ -234,8 +234,6 @@ function findByIndex (all, index) {
 </script>
 
 <style lang="stylus">
-@import "../../variables"
-
 .tree
   padding 5px
 

@@ -202,8 +202,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
-
 .instance
   font-family dejavu sans mono, monospace
   .platform-mac &

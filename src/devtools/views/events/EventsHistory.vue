@@ -174,8 +174,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
-
 .no-events
   color #ccc
   text-align center

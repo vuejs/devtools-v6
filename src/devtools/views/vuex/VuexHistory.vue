@@ -264,8 +264,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
-
 $inspected_color = #af90d5
 
 .entry
