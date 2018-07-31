@@ -175,6 +175,7 @@ export default {
     display flex
     align-items baseline
     padding-left 9px
+    user-select none
 
     .vue-ui-dark-mode &
       color lighten(#486887, 30%)
