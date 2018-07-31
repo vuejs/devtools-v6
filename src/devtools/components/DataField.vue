@@ -490,9 +490,6 @@ export default {
   position relative
   white-space nowrap
   padding-left 14px
-  @media (max-height: $tall)
-    height 16px
-    font-size 11px
   .high-density &
     height 14px
     line-height 14px
