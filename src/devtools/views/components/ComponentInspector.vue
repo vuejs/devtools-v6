@@ -26,8 +26,8 @@
         <span>Inspect DOM</span>
       </a>
       <a
-        v-if="target.file"
-        v-tooltip="target.file && $t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
+        v-if="fileIsPath"
+        v-tooltip="$t('ComponentInspector.openInEditor.tooltip', { file: target.file })"
         class="button"
         @click="openInEditor"
       >
@@ -100,6 +100,12 @@ export default {
           [el.key]: el.value
         }, this.filter)
       })), 'type')
+    },
+
+    // Checks if the file is actually a path (e.g. '/path/to/file.vue'), or
+    // only the basename of a pre-compiled 3rd-party component (e.g. 'file.vue')
+    fileIsPath () {
+      return this.target.file && /[/\\]/.test(this.target.file)
     }
   },
 
