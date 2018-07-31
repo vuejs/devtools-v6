@@ -7,6 +7,7 @@ import { parse } from '../util'
 import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
 import storage from './storage'
+import { snapshotsCache } from './views/vuex/cache'
 
 // UI
 
@@ -136,8 +137,9 @@ function initApp (shell) {
       store.commit('vuex/RECEIVE_MUTATION', payload)
     })
 
-    bridge.on('vuex:inspected-state', payload => {
-      store.commit('vuex/UPDATE_INSPECTED_STATE', payload)
+    bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
+      snapshotsCache.set(index, snapshot)
+      store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
     })
 
     bridge.on('event:triggered', payload => {

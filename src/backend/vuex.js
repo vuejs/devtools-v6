@@ -75,7 +75,10 @@ export function initVuexBackend (hook, bridge) {
 
     // Snapshot was already replayed
     if (snapshot.index === index) {
-      bridge.send('vuex:inspected-state', snapshot.state)
+      bridge.send('vuex:inspected-state', {
+        index,
+        snapshot: snapshot.state
+      })
       return
     }
 
@@ -103,7 +106,10 @@ export function initVuexBackend (hook, bridge) {
 
     // Send final state after replay
     const resultState = takeSnapshot(index, state)
-    bridge.send('vuex:inspected-state', resultState)
+    bridge.send('vuex:inspected-state', {
+      index,
+      snapshot: resultState
+    })
 
     // Restore user state
     store.replaceState(currentState)

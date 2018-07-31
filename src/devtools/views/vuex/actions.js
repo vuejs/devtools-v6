@@ -1,4 +1,5 @@
 import { parse, stringify } from 'src/util'
+import { snapshotsCache } from './cache'
 
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
@@ -39,7 +40,14 @@ export function inspect ({ commit, getters }, entryOrIndex) {
   commit('INSPECT', index)
 
   const entry = getters.filteredHistory[index]
-  bridge.send('vuex:inspect-state', entry ? entry.mutation.index : -1)
+  const mutationIndex = entry ? entry.mutation.index : -1
+  const cached = snapshotsCache.get(mutationIndex)
+  if (cached) {
+    commit('UPDATE_INSPECTED_STATE', cached)
+  } else {
+    commit('UPDATE_INSPECTED_STATE', null)
+    bridge.send('vuex:inspect-state', mutationIndex)
+  }
 }
 
 export function timeTravelTo ({ state, commit }, entry) {
