@@ -4,7 +4,6 @@ import { keys } from './env'
 import VI18n from './plugins/i18n'
 import Responsive from './plugins/responsive'
 import GlobalRefs from './plugins/global-refs'
-import Responsive from './plugins/responsive'
 
 Vue.use(VueUi)
 
