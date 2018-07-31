@@ -3,7 +3,13 @@
     <div
       v-for="dataType in dataTypes"
       :key="dataType"
-      :class="['data-el', toDisplayType(dataType, true)]"
+      :class="[
+        'data-el',
+        toDisplayType(dataType, true),
+        {
+          'high-density': highDensity
+        }
+      ]"
     >
       <div
         v-tooltip="$t('StateInspector.dataType.tooltip')"
@@ -83,6 +89,15 @@ export default {
           (keyOrder[b] || (b.charCodeAt(0) + 999))
         )
       })
+    },
+
+    totalCount () {
+      return Object.keys(this.state).reduce((total, state) => total + state.length, 0)
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.totalCount > 12) || pref === 'high'
     }
   },
 

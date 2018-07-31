@@ -493,6 +493,9 @@ export default {
   @media (max-height: $tall)
     height 16px
     font-size 11px
+  .high-density &
+    height 14px
+    line-height 14px
   span, div
     display inline-block
     vertical-align middle
