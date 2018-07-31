@@ -37,6 +37,7 @@
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "dependencies": {
     "@vue/ui": "^0.5.1",
+    "autoprefixer": "^9.0.2",
     "circular-json-es6": "^2.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
@@ -63,6 +64,7 @@
     "friendly-errors-webpack-plugin": "^1.6.1",
     "inquirer": "^5.0.0",
     "launch-editor-middleware": "^2.1.0",
+    "postcss-loader": "^2.1.6",
     "raw-loader": "^0.5.1",
     "semver": "^5.4.1",
     "start-server-and-test": "^1.5.0",
