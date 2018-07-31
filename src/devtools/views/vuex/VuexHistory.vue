@@ -50,6 +50,9 @@
     <div
       slot="scroll"
       class="history"
+      :class="{
+        'high-density': highDensity
+      }"
     >
       <div
         ref="baseEntry"
@@ -229,6 +232,11 @@ export default {
         this.$store.dispatch('vuex/updateFilter', filter)
         this.$store.commit('vuex/INSPECT', -1)
       }
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.filteredHistory.length > 8) || pref === 'high'
     }
   },
 
@@ -308,6 +316,9 @@ $inspected_color = #af90d5
     &.active
       .mutation-type
         color #fff
+  .high-density &
+    padding 1px 20px
+    min-height 22px
 
 .action
   color #999

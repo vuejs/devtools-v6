@@ -206,7 +206,7 @@ export default {
     .event-source
       color #ddd
   .high-density &
-    padding 6px 20px
+    padding 4px 20px
 
 .time
   font-size 11px
