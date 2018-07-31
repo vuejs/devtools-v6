@@ -236,7 +236,7 @@ export default {
 
     highDensity () {
       const pref = this.$shared.displayDensity
-      return (pref === 'auto' && this.filteredHistory.length > 8) || pref === 'high'
+      return (pref === 'auto' && this.filteredHistory.length > 7) || pref === 'high'
     }
   },
 
@@ -275,6 +275,7 @@ $inspected_color = #af90d5
   font-size 12px
   box-shadow 0 1px 5px rgba(0,0,0,.12)
   min-height 34px
+  transition padding .15s, min-height .15s
   &::after
     content: ''
     display table

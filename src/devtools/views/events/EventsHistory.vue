@@ -189,6 +189,7 @@ export default {
   padding 10px 20px
   font-size 12px
   box-shadow 0 1px 5px rgba(0,0,0,.12)
+  transition padding .15s
   .event-name
     font-weight 600
   .event-source

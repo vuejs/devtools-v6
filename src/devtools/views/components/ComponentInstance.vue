@@ -226,6 +226,7 @@ export default {
   display flex
   align-items center
   padding-right 6px
+  transition font-size .15s, height .15s
 
   &:hidden
     display none
