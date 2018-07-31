@@ -490,10 +490,12 @@ export function get (object, path) {
 }
 
 export function scrollIntoView (scrollParent, el, center = true) {
-  const top = el.offsetTop
-  const height = el.offsetHeight
   const parentTop = scrollParent.scrollTop
   const parentHeight = scrollParent.offsetHeight
+  const elBounds = el.getBoundingClientRect()
+  const parentBounds = scrollParent.getBoundingClientRect()
+  const top = elBounds.top - parentBounds.top + scrollParent.scrollTop
+  const height = el.offsetHeight
   if (center) {
     scrollParent.scrollTop = top + (height - parentHeight) / 2
   } else if (top < parentTop) {

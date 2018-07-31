@@ -37,8 +37,10 @@
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <div
+    <recycle-list
       slot="scroll"
+      :items="filteredEvents"
+      :item-height="highDensity ? 22 : 34"
       class="history"
       :class="{
         'high-density': highDensity
@@ -46,17 +48,16 @@
     >
       <div
         v-if="filteredEvents.length === 0"
+        slot="after-container"
         class="no-events"
       >
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <template v-else>
+      <template slot-scope="{ item: event, index }">
         <div
-          v-for="(event, index) in filteredEvents"
-          ref="entries"
-          :key="index"
-          :class="{ active: inspectedIndex === filteredEvents.indexOf(event) }"
+          :data-index="index"
           class="entry list-item"
+          :class="{ active: inspectedIndex === filteredEvents.indexOf(event) }"
           @click="inspect(filteredEvents.indexOf(event))"
         >
           <span class="event-name">{{ event.eventName }}</span>
@@ -70,7 +71,7 @@
           <span class="time">{{ event.timestamp | formatTime }}</span>
         </div>
       </template>
-    </div>
+    </recycle-list>
   </scroll-pane>
 </template>
 
@@ -126,7 +127,7 @@ export default {
         }
       }
     }),
-    EntryList
+    EntryList()
   ],
 
   computed: {
@@ -174,6 +175,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.recycle-list
+  height 100%
+
 .no-events
   color #ccc
   text-align center
@@ -186,7 +190,7 @@ export default {
   cursor pointer
   padding 10px 20px
   font-size 12px
-  box-shadow 0 1px 5px rgba(0,0,0,.12)
+  box-shadow inset 0 1px 0px rgba(0, 0, 0, .08)
   transition padding .15s
   .event-name
     font-weight 600

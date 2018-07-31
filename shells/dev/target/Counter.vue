@@ -36,10 +36,10 @@ export default {
       this.$store.commit('DECREMENT', 2)
     },
     doLotMutations () {
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 1000; i++) {
         this.increment()
       }
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 1000; i++) {
         this.decrement()
       }
     }
