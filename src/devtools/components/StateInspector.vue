@@ -34,6 +34,7 @@
             :depth="0"
             :path="field.key"
             :editable="field.editable"
+            :force-collapse="forceCollapse"
           />
         </template>
         <template v-else>
@@ -77,7 +78,8 @@ export default {
 
   data () {
     return {
-      expandedState: {}
+      expandedState: {},
+      forceCollapse: null
     }
   },
 
@@ -128,6 +130,7 @@ export default {
 
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
+        this.forceCollapse = value ? 'expand' : 'collapse'
         Vue.set(this.expandedState, key, value)
       })
     }
