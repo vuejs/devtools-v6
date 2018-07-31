@@ -16,7 +16,7 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 - [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) ([beta](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg))
 
-- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) ([beta](https://addons.mozilla.org/fr/firefox/addon/vuejs-devtools30/))
+- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) ([beta](https://github.com/vuejs/vue-devtools/releases))
 
 - [Get standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
 
