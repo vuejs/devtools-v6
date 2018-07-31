@@ -181,6 +181,7 @@
         :editable="isEditable"
         :removable="isSubfieldsEditable"
         :renamable="editable && valueType === 'plain-object'"
+        :force-collapse="forceCollapse"
       />
       <span
         v-if="formattedSubFields.length > limit"
@@ -197,6 +198,7 @@
         :depth="depth + 1"
         :path="`${path}.${newField.key}`"
         :renamable="valueType === 'plain-object'"
+        :force-collapse="forceCollapse"
         editable
         removable
         @cancel-edit="addingValue = false"
@@ -255,6 +257,10 @@ export default {
     path: {
       type: String,
       required: true
+    },
+    forceCollapse: {
+      type: String,
+      default: null
     }
   },
 
@@ -428,6 +434,19 @@ export default {
         value._custom.class && cssClass.push(value._custom.class)
       }
       return cssClass
+    }
+  },
+
+  watch: {
+    forceCollapse: {
+      handler (value) {
+        if (value === 'expand' && this.depth < 4) {
+          this.expanded = true
+        } else if (value === 'collapse') {
+          this.expanded = false
+        }
+      },
+      immediate: true
     }
   },
 

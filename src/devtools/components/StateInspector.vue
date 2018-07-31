@@ -34,6 +34,7 @@
             :depth="0"
             :path="field.key"
             :editable="field.editable"
+            :force-collapse="forceCollapse"
           />
         </template>
         <template v-else>
@@ -77,7 +78,8 @@ export default {
 
   data () {
     return {
-      expandedState: {}
+      expandedState: {},
+      forceCollapse: null
     }
   },
 
@@ -98,6 +100,12 @@ export default {
     highDensity () {
       const pref = this.$shared.displayDensity
       return (pref === 'auto' && this.totalCount > 12) || pref === 'high'
+    }
+  },
+
+  watch: {
+    state () {
+      this.forceCollapse = null
     }
   },
 
@@ -128,6 +136,7 @@ export default {
 
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
+        this.forceCollapse = value ? 'expand' : 'collapse'
         Vue.set(this.expandedState, key, value)
       })
     }
@@ -164,6 +173,7 @@ export default {
     display flex
     align-items baseline
     padding-left 9px
+    user-select none
 
     .vue-ui-dark-mode &
       color lighten(#486887, 30%)
