@@ -40,7 +40,7 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 1. Clone this repo
 2. `npm install`
 3. `npm run dev`
-4. A plain shell with a test app will be available at `localhost:8080`.
+4. A plain shell with a test app will be available at `localhost:8100`.
 
 ### Testing as Firefox addon
 
