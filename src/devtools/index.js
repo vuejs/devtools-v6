@@ -94,11 +94,7 @@ function initApp (shell) {
     initSharedData({
       bridge,
       Vue,
-      storage,
-      persist: [
-        'classifyComponents',
-        'theme'
-      ]
+      storage
     })
 
     bridge.once('ready', version => {
