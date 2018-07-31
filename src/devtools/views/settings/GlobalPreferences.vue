@@ -1,6 +1,6 @@
 <template>
   <div class="global-preferences">
-    <VueFormField title="Component Name Format">
+    <VueFormField title="Normalize Component Names">
       <VueGroup
         :value="$shared.classifyComponents"
         class="extend"
@@ -8,11 +8,11 @@
       >
         <VueGroupButton
           :value="false"
-          label="kebab-case"
+          label="Original name"
         />
         <VueGroupButton
           :value="true"
-          label="PascalCase"
+          label="Pascal case"
         />
       </VueGroup>
     </VueFormField>
