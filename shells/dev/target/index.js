@@ -2,6 +2,7 @@ import Vue from 'vue'
 import store from './store'
 import Target from './Target.vue'
 import Other from './Other.vue'
+import Init from './Init.vue'
 import Counter from './Counter.vue'
 import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
@@ -26,6 +27,7 @@ new Vue({
   router,
   render (h) {
     return h('div', null, [
+      h(Init),
       h(Counter),
       h(Target, { props: { msg: 'hi', ins: new MyClass() }}),
       h(Other),

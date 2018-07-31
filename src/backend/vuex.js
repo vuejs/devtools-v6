@@ -4,15 +4,16 @@ import SharedData from 'src/shared-data'
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
 
-  const getSnapshot = () => stringify({
-    state: store.state,
-    getters: store.getters || {}
+  const getSnapshot = (_store = store) => stringify({
+    state: _store.state,
+    getters: _store.getters || {}
   })
 
   let baseSnapshot, snapshots, mutations, lastState
 
   function reset () {
-    baseSnapshot = getSnapshot()
+    baseSnapshot = getSnapshot(hook.initialStore)
+    hook.initialStore = undefined
     mutations = []
     resetSnapshotCache()
   }
