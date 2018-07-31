@@ -42,13 +42,6 @@ suite('components tab', () => {
     cy.get('.data-el.data .data-field:nth-child(5)').contains('NaN')
     cy.get('.data-el.data .data-field:nth-child(2)').contains('Infinity')
     cy.get('.data-el.data .data-field:nth-child(6)').contains('-Infinity')
-
-    // Classify names
-    cy.get('.instance .instance:nth-child(3)').contains('OtherWithMine')
-    cy.get('.button.classify-names').click()
-    cy.get('.instance .instance:nth-child(3)').contains('other-with-mine')
-    cy.get('.button.classify-names').click()
-    cy.get('.instance .instance:nth-child(3)').contains('OtherWithMine')
   })
 
   it('should expand child instance', () => {
