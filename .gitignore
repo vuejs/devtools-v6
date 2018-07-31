@@ -2,7 +2,9 @@ node_modules
 .DS_Store
 build
 *.zip
+*.xpi
 tests_output
 selenium-debug.log
 TODOs.md
 .idea
+.web-extension-id
