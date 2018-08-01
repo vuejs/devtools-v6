@@ -9,12 +9,21 @@ export function initVuexBackend (hook, bridge) {
     getters: store.getters || {}
   })
 
-  let mutationIndex = 0
-  const baseSnapshot = getSnapshot()
-  const snapshots = [
-    { index: -1, state: baseSnapshot }
-  ]
-  const mutations = []
+  let baseSnapshot, snapshots, mutations, lastState
+
+  function reset () {
+    baseSnapshot = getSnapshot()
+    mutations = []
+    resetSnapshotCache()
+  }
+
+  function resetSnapshotCache () {
+    snapshots = [
+      { index: -1, state: baseSnapshot }
+    ]
+  }
+
+  reset()
 
   bridge.send('vuex:init', baseSnapshot)
 
@@ -25,7 +34,7 @@ export function initVuexBackend (hook, bridge) {
   hook.on('vuex:mutation', ({ type, payload }) => {
     if (!SharedData.recordVuex) return
 
-    const index = mutationIndex++
+    const index = mutations.length
 
     mutations.push({
       type,
@@ -45,14 +54,38 @@ export function initVuexBackend (hook, bridge) {
   })
 
   // devtool -> application
-  bridge.on('vuex:travel-to-state', index => {
+  bridge.on('vuex:travel-to-state', ({ index, apply }) => {
     const snapshot = replayMutations(index)
     const { state } = parse(snapshot, true)
-    hook.emit('vuex:travel-to-state', state)
     bridge.send('vuex:inspected-state', {
       index,
       snapshot
     })
+    if (apply) {
+      hook.emit('vuex:travel-to-state', state)
+    }
+  })
+
+  bridge.on('vuex:commit-all', () => {
+    reset()
+  })
+
+  bridge.on('vuex:revert-all', () => {
+    reset()
+  })
+
+  bridge.on('vuex:commit', index => {
+    baseSnapshot = lastState
+    resetSnapshotCache()
+    mutations = mutations.slice(index + 1)
+    mutations.forEach((mutation, index) => {
+      mutation.index = index
+    })
+  })
+
+  bridge.on('vuex:revert', index => {
+    resetSnapshotCache()
+    mutations = mutations.slice(0, index)
   })
 
   bridge.on('vuex:import-state', state => {
@@ -117,6 +150,8 @@ export function initVuexBackend (hook, bridge) {
 
     // Send final state after replay
     const resultState = getSnapshot()
+
+    lastState = resultState
 
     // Restore user state
     store.replaceState(currentState)

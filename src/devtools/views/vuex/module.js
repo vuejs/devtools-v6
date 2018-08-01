@@ -35,7 +35,7 @@ const mutations = {
   },
 
   'COMMIT_ALL' (state) {
-    state.base = state.history[state.history.length - 1].snapshot
+    state.base = state.inspectedState
     state.lastCommit = Date.now()
     reset(state)
   },
@@ -45,9 +45,12 @@ const mutations = {
   },
 
   'COMMIT' (state, index) {
-    state.base = state.history[index].snapshot
+    state.base = state.inspectedState
     state.lastCommit = Date.now()
     state.history = state.history.slice(index + 1)
+    state.history.forEach(({ mutation }, index) => {
+      mutation.index = index
+    })
     state.inspectedIndex = -1
   },
 

@@ -8,6 +8,7 @@ import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
 import storage from './storage'
 import { snapshotsCache } from './views/vuex/cache'
+import VuexResolve from './views/vuex/resolve'
 
 // UI
 
@@ -140,6 +141,11 @@ function initApp (shell) {
     bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
       snapshotsCache.set(index, snapshot)
       store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+
+      if (VuexResolve.travel) {
+        VuexResolve.travel(snapshot)
+      }
+
       requestAnimationFrame(() => {
         SharedData.snapshotLoading = null
       })

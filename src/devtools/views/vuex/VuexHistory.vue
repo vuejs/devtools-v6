@@ -58,7 +58,7 @@
     >
       <template slot-scope="{ item: entry, index }">
         <div
-          v-if="index === 0"
+          v-if="index <= 0"
           :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
           class="entry list-item"
           @click="inspect(null)"
