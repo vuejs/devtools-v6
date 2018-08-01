@@ -141,7 +141,8 @@ function connect (Vue) {
     'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
     'background:transparent'
   )
-  scan()
+
+  setTimeout(scan, 0)
 }
 
 /**
@@ -152,6 +153,7 @@ function scan () {
   rootInstances.length = 0
   let inFragment = false
   let currentFragment = null
+
   walk(document, function (node) {
     if (inFragment) {
       if (node === currentFragment._fragmentEnd) {
