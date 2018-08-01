@@ -35,6 +35,7 @@
             :path="field.key"
             :editable="field.editable"
             :force-collapse="forceCollapse"
+            :is-state-field="isStateField(field)"
           />
         </template>
         <template v-else>
@@ -140,6 +141,10 @@ export default {
         this.forceCollapse = value ? 'expand' : 'collapse'
         Vue.set(this.expandedState, key, value)
       })
+    },
+
+    isStateField (field) {
+      return field && field.type === 'state'
     }
   }
 }

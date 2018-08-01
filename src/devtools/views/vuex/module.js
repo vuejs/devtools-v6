@@ -72,6 +72,10 @@ const mutations = {
     state.lastReceivedState = value
   },
 
+  'UPDATE_BASE_STATE' (state, value) {
+    state.base = value
+  },
+
   'TIME_TRAVEL' (state, index) {
     state.activeIndex = index
   },

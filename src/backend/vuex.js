@@ -1,5 +1,6 @@
 import { stringify, parse } from 'src/util'
 import SharedData from 'src/shared-data'
+import { set } from '../util'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
@@ -158,6 +159,18 @@ export function initVuexBackend (hook, bridge) {
 
     return resultState
   }
+
+  bridge.on('vuex:edit-state', ({ index, value, path }) => {
+    let parsedValue
+    if (value) {
+      parsedValue = parse(value, true)
+    }
+    set(store.state, path, parsedValue)
+    bridge.send('vuex:inspected-state', {
+      index,
+      snapshot: getSnapshot()
+    })
+  })
 
   function takeSnapshot (index) {
     snapshots.push({
