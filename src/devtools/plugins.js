@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import VueUi, { generateHtmlIcon } from '@vue/ui'
+import VueVirtualScroller from 'vue-virtual-scroller'
 import { keys } from './env'
 import VI18n from './plugins/i18n'
 import Responsive from './plugins/responsive'
 import GlobalRefs from './plugins/global-refs'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 Vue.use(VueUi)
+
+Vue.use(VueVirtualScroller)
 
 const currentLocale = 'en'
 const locales = require.context('./locales')
@@ -43,6 +47,7 @@ Vue.use(Responsive, {
 Vue.use(GlobalRefs, {
   refs: {
     leftScroll: () => document.querySelector('.left .scroll'),
+    leftRecycleList: () => document.querySelector('.left .recycle-list'),
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })

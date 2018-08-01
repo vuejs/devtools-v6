@@ -7,6 +7,8 @@ import { parse } from '../util'
 import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
 import storage from './storage'
+import { snapshotsCache } from './views/vuex/cache'
+import VuexResolve from './views/vuex/resolve'
 
 // UI
 
@@ -102,7 +104,6 @@ function initApp (shell) {
         'SHOW_MESSAGE',
         'Ready. Detected Vue ' + version + '.'
       )
-      bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
       bridge.send('events:toggle-recording', store.state.events.enabled)
 
       if (isChrome) {
@@ -135,6 +136,22 @@ function initApp (shell) {
 
     bridge.on('vuex:mutation', payload => {
       store.commit('vuex/RECEIVE_MUTATION', payload)
+    })
+
+    bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
+      snapshotsCache.set(index, snapshot)
+      store.commit('vuex/RECEIVE_STATE', snapshot)
+      if (store.state.vuex.inspectedIndex === index) {
+        store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+      }
+
+      if (VuexResolve.travel) {
+        VuexResolve.travel(snapshot)
+      }
+
+      requestAnimationFrame(() => {
+        SharedData.snapshotLoading = null
+      })
     })
 
     bridge.on('event:triggered', payload => {

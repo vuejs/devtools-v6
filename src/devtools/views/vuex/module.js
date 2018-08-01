@@ -1,14 +1,10 @@
 import { parse } from 'src/util'
 import * as actions from './actions'
-import storage from '../../storage'
 
 const REGEX_RE = /^\/(.*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
-const ENABLED_KEY = 'VUEX_ENABLED'
-const enabled = storage.get(ENABLED_KEY)
 
 const state = {
-  enabled: enabled == null ? true : enabled,
   hasVuex: false,
   initial: null,
   base: null, // type Snapshot = { state: {}, getters: {} }
@@ -19,7 +15,9 @@ const state = {
   lastCommit: Date.now(),
   filter: '',
   filterRegex: ANY_RE,
-  filterRegexInvalid: false
+  filterRegexInvalid: false,
+  inspectedState: null,
+  lastReceivedState: null
 }
 
 const mutations = {
@@ -28,39 +26,56 @@ const mutations = {
     state.hasVuex = true
     reset(state)
   },
+
   'RECEIVE_MUTATION' (state, entry) {
     state.history.push(entry)
     if (!state.filter) {
       state.inspectedIndex = state.activeIndex = state.history.length - 1
+      state.inspectedState = null
     }
   },
+
   'COMMIT_ALL' (state) {
-    state.base = state.history[state.history.length - 1].snapshot
+    state.base = state.lastReceivedState
     state.lastCommit = Date.now()
     reset(state)
   },
+
   'REVERT_ALL' (state) {
     reset(state)
   },
+
   'COMMIT' (state, index) {
-    state.base = state.history[index].snapshot
+    state.base = state.lastReceivedState
     state.lastCommit = Date.now()
     state.history = state.history.slice(index + 1)
+    state.history.forEach(({ mutation }, index) => {
+      mutation.index = index
+    })
     state.inspectedIndex = -1
   },
+
   'REVERT' (state, index) {
     state.history = state.history.slice(0, index)
     state.inspectedIndex = state.history.length - 1
   },
+
   'INSPECT' (state, index) {
     state.inspectedIndex = index
   },
+
+  'UPDATE_INSPECTED_STATE' (state, value) {
+    state.inspectedState = value
+  },
+
+  'RECEIVE_STATE' (state, value) {
+    state.lastReceivedState = value
+  },
+
   'TIME_TRAVEL' (state, index) {
     state.activeIndex = index
   },
-  'TOGGLE' (state) {
-    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
-  },
+
   'UPDATE_FILTER' (state, filter) {
     state.filter = filter
     const regexParts = filter.match(REGEX_RE)
@@ -84,6 +99,7 @@ const mutations = {
 function reset (state) {
   state.history = []
   state.inspectedIndex = state.activeIndex = -1
+  state.inspectedState = null
 }
 
 function escapeStringForRegExp (str) {
@@ -91,7 +107,7 @@ function escapeStringForRegExp (str) {
 }
 
 const getters = {
-  inspectedState ({ base, inspectedIndex }, getters) {
+  inspectedState ({ base, inspectedIndex, inspectedState }, getters) {
     const entry = getters.filteredHistory[inspectedIndex]
     const res = {}
 
@@ -102,10 +118,13 @@ const getters = {
       }
     }
 
-    const snapshot = parse(entry ? entry.snapshot : base)
-    if (snapshot) {
-      res.state = snapshot.state
-      res.getters = snapshot.getters
+    const data = entry ? inspectedState : base
+    if (data) {
+      const snapshot = parse(data)
+      if (snapshot) {
+        res.state = snapshot.state
+        res.getters = snapshot.getters
+      }
     }
 
     return res

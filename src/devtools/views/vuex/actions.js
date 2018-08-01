@@ -1,32 +1,47 @@
-import { parse, stringify } from 'src/util'
+import { snapshotsCache } from './cache'
+import Resolve from './resolve'
+import SharedData from 'src/shared-data'
 
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {
-    commit('COMMIT_ALL')
-    travelTo(state, commit, -1)
+    travelTo(state, commit, state.history.length - 1).then(() => {
+      snapshotsCache.reset()
+      bridge.send('vuex:commit-all')
+      commit('COMMIT_ALL')
+    })
   }
 }
 
 export function revertAll ({ commit, state }) {
   if (state.history.length > 0) {
-    commit('REVERT_ALL')
-    travelTo(state, commit, -1)
+    travelTo(state, commit, -1).then(() => {
+      snapshotsCache.reset()
+      bridge.send('vuex:revert-all')
+      commit('REVERT_ALL')
+    })
   }
 }
 
 export function commit ({ commit, state }, entry) {
   const index = state.history.indexOf(entry)
   if (index > -1) {
-    commit('COMMIT', index)
-    travelTo(state, commit, -1)
+    travelTo(state, commit, index, false).then(() => {
+      snapshotsCache.reset()
+      bridge.send('vuex:commit', index)
+      commit('COMMIT', index)
+      travelTo(state, commit, state.history.length - 1)
+    })
   }
 }
 
 export function revert ({ commit, state }, entry) {
   const index = state.history.indexOf(entry)
   if (index > -1) {
-    commit('REVERT', index)
-    travelTo(state, commit, state.history.length - 1)
+    travelTo(state, commit, index - 1).then(() => {
+      snapshotsCache.reset()
+      bridge.send('vuex:revert', index)
+      commit('REVERT', index)
+    })
   }
 }
 
@@ -37,28 +52,45 @@ export function inspect ({ commit, getters }, entryOrIndex) {
   if (index < -1) index = -1
   if (index >= getters.filteredHistory.length) index = getters.filteredHistory.length - 1
   commit('INSPECT', index)
+
+  const entry = getters.filteredHistory[index]
+  const mutationIndex = entry ? entry.mutation.index : -1
+  const cached = snapshotsCache.get(mutationIndex)
+  if (cached) {
+    commit('UPDATE_INSPECTED_STATE', cached)
+  } else {
+    SharedData.snapshotLoading = {
+      current: 0,
+      total: 1
+    }
+    commit('UPDATE_INSPECTED_STATE', null)
+    bridge.send('vuex:inspect-state', mutationIndex)
+  }
 }
 
 export function timeTravelTo ({ state, commit }, entry) {
-  travelTo(state, commit, state.history.indexOf(entry))
-}
-
-export function toggleRecording ({ state, commit }) {
-  commit('TOGGLE')
-  bridge.send('vuex:toggle-recording', state.enabled)
+  return travelTo(state, commit, state.history.indexOf(entry))
 }
 
 export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
-function travelTo (state, commit, index) {
-  const { history, base, inspectedIndex } = state
-  const targetSnapshot = index > -1 ? history[index].snapshot : base
+function travelTo (state, commit, index, apply = true) {
+  return new Promise((resolve) => {
+    Resolve.travel = resolve
+    const { inspectedIndex } = state
 
-  bridge.send('vuex:travel-to-state', stringify(parse(targetSnapshot).state))
-  if (index !== inspectedIndex) {
-    commit('INSPECT', index)
-  }
-  commit('TIME_TRAVEL', index)
+    commit('UPDATE_INSPECTED_STATE', null)
+    SharedData.snapshotLoading = {
+      current: 0,
+      total: 1
+    }
+    bridge.send('vuex:travel-to-state', { index, apply })
+
+    if (index !== inspectedIndex) {
+      commit('INSPECT', index)
+    }
+    commit('TIME_TRAVEL', index)
+  })
 }

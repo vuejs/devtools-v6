@@ -35,118 +35,124 @@
         <span>Revert All</span>
       </a>
       <a
-        v-tooltip="$t(`VuexHistory.${enabled ? 'stopRecording' : 'startRecording'}.tooltip`)"
+        v-tooltip="$t(`VuexHistory.${$shared.recordVuex ? 'stopRecording' : 'startRecording'}.tooltip`)"
         class="button toggle-recording"
         @click="toggleRecording"
       >
         <VueIcon
-          :class="{ enabled }"
+          :class="{ enabled: $shared.recordVuex }"
           class="small"
           icon="lens"
         />
-        <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
+        <span>{{ $shared.recordVuex ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <div
+    <recycle-list
       slot="scroll"
+      :items="filter ? filteredHistory : [{}].concat(filteredHistory)"
+      :item-height="highDensity ? 22 : 34"
       class="history"
       :class="{
         'high-density': highDensity
       }"
     >
-      <div
-        ref="baseEntry"
-        :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
-        class="entry list-item"
-        @click="inspect(null)"
-      >
-        <span class="mutation-type">Base State</span>
-        <span class="entry-actions">
-          <a
-            v-tooltip="'Time Travel to This State'"
-            class="action"
-            @click.stop="timeTravelTo(null)"
-          >
-            <VueIcon
-              class="medium"
-              icon="restore"
-            />
-            <span>Time Travel</span>
-          </a>
-        </span>
-        <span class="time">
-          {{ lastCommit | formatTime }}
-        </span>
-        <span
-          v-if="activeIndex === -1"
-          class="label active"
-        >active</span>
-        <span
-          v-if="inspectedIndex === -1"
-          class="label inspected"
-        >inspected</span>
-      </div>
-      <div
-        v-for="(entry, index) in filteredHistory"
-        ref="entries"
-        :key="index"
-        :class="{ inspected: isInspected(entry), active: isActive(entry) }"
-        class="entry list-item"
-        @click="inspect(entry)"
-      >
-        <span class="mutation-type">{{ entry.mutation.type }}</span>
-        <span class="entry-actions">
-          <a
-            v-tooltip="'Commit This Mutation'"
-            class="action"
-            @click.stop="commit(entry)"
-          >
-            <VueIcon
-              class="medium"
-              icon="get_app"
-            />
-            <span>Commit</span>
-          </a>
-          <a
-            v-tooltip="'Revert This Mutation'"
-            class="action"
-            @click.stop="revert(entry)"
-          >
-            <VueIcon
-              class="small"
-              icon="do_not_disturb"
-            />
-            <span>Revert</span>
-          </a>
-          <a
-            v-if="!isActive(entry)"
-            v-tooltip="'Time Travel to This State'"
-            class="action"
-            @click.stop="timeTravelTo(entry)"
-          >
-            <VueIcon
-              class="medium"
-              icon="restore"
-            />
-            <span>Time Travel</span>
-          </a>
-        </span>
-        <span
-          v-tooltip="entry.timestamp"
-          class="time"
+      <template slot-scope="{ item: entry, index, active }">
+        <div
+          v-if="!entry.mutation"
+          :data-active="active"
+          :data-index="index"
+          :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
+          class="entry list-item"
+          @click="inspect(null)"
         >
-          {{ entry.timestamp | formatTime }}
-        </span>
-        <span
-          v-if="isActive(entry)"
-          class="label active"
-        >active</span>
-        <span
-          v-if="isInspected(entry)"
-          class="label inspected"
-        >inspected</span>
-      </div>
-    </div>
+          <span class="mutation-type">Base State</span>
+          <span class="entry-actions">
+            <a
+              v-tooltip="'Time Travel to This State'"
+              class="action"
+              @click.stop="timeTravelTo(null)"
+            >
+              <VueIcon
+                class="medium"
+                icon="restore"
+              />
+              <span>Time Travel</span>
+            </a>
+          </span>
+          <span class="time">
+            {{ lastCommit | formatTime }}
+          </span>
+          <span
+            v-if="activeIndex === -1"
+            class="label active"
+          >active</span>
+          <span
+            v-if="inspectedIndex === -1"
+            class="label inspected"
+          >inspected</span>
+        </div>
+        <div
+          v-else
+          :data-active="active"
+          :data-index="index"
+          :class="{ inspected: isInspected(index, entry), active: isActive(index, entry) }"
+          class="entry list-item"
+          @click="inspect(entry)"
+        >
+          <span class="mutation-type">{{ entry.mutation.type }}</span>
+          <span class="entry-actions">
+            <a
+              v-tooltip="'Commit This Mutation'"
+              class="action"
+              @click.stop="commit(entry)"
+            >
+              <VueIcon
+                class="medium"
+                icon="get_app"
+              />
+              <span>Commit</span>
+            </a>
+            <a
+              v-tooltip="'Revert This Mutation'"
+              class="action"
+              @click.stop="revert(entry)"
+            >
+              <VueIcon
+                class="small"
+                icon="do_not_disturb"
+              />
+              <span>Revert</span>
+            </a>
+            <a
+              v-if="!isActive(index, entry)"
+              v-tooltip="'Time Travel to This State'"
+              class="action"
+              @click.stop="timeTravelTo(entry)"
+            >
+              <VueIcon
+                class="medium"
+                icon="restore"
+              />
+              <span>Time Travel</span>
+            </a>
+          </span>
+          <span
+            v-tooltip="entry.timestamp"
+            class="time"
+          >
+            {{ entry.timestamp | formatTime }}
+          </span>
+          <span
+            v-if="isActive(index, entry)"
+            class="label active"
+          >active</span>
+          <span
+            v-if="isInspected(index, entry)"
+            class="label inspected"
+          >inspected</span>
+        </div>
+      </template>
+    </recycle-list>
   </scroll-pane>
 </template>
 
@@ -206,7 +212,9 @@ export default {
         }
       }
     }),
-    EntryList
+    EntryList({
+      indexOffset: 1
+    })
   ],
 
   computed: {
@@ -230,7 +238,7 @@ export default {
       },
       set (filter) {
         this.$store.dispatch('vuex/updateFilter', filter)
-        this.$store.commit('vuex/INSPECT', -1)
+        this.$store.dispatch('vuex/inspect', filter ? -1 : this.history.length - 1)
       }
     },
 
@@ -244,7 +252,6 @@ export default {
     ...mapActions('vuex', [
       'commitAll',
       'revertAll',
-      'toggleRecording',
       'commit',
       'revert',
       'inspect',
@@ -252,12 +259,18 @@ export default {
       'updateFilter'
     ]),
 
-    isActive (entry) {
-      return this.activeIndex === this.filteredHistory.indexOf(entry)
+    isActive (index, entry) {
+      if (this.filter) return this.activeIndex === this.filteredHistory.indexOf(entry)
+      return this.activeIndex === index - 1
     },
 
-    isInspected (entry) {
-      return this.inspectedIndex === this.filteredHistory.indexOf(entry)
+    isInspected (index, entry) {
+      if (this.filter) return this.inspectedIndex === this.filteredHistory.indexOf(entry)
+      return this.inspectedIndex === index - 1
+    },
+
+    toggleRecording () {
+      this.$shared.recordVuex = !this.$shared.recordVuex
     }
   }
 }
@@ -266,12 +279,15 @@ export default {
 <style lang="stylus" scoped>
 $inspected_color = #af90d5
 
+.recycle-list
+  height 100%
+
 .entry
   font-family Menlo, Consolas, monospace
   cursor pointer
   padding 7px 20px
   font-size 12px
-  box-shadow 0 1px 5px rgba(0,0,0,.12)
+  box-shadow inset 0 1px 0px rgba(0, 0, 0, .08)
   min-height 34px
   transition padding .15s, min-height .15s
   &::after
