@@ -76,8 +76,8 @@ export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
-export function updateState ({ state }, { path, args }) {
-  bridge.send('vuex:update-state', {
+export function editState ({ state }, { path, args }) {
+  bridge.send('vuex:edit-state', {
     index: state.inspectedIndex,
     path,
     ...args

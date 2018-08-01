@@ -168,7 +168,7 @@ export default {
 
     sendEdit (args) {
       if (this.isStateField) {
-        this.$store.dispatch('vuex/updateState', {
+        this.$store.dispatch('vuex/editState', {
           path: this.path,
           args
         })
