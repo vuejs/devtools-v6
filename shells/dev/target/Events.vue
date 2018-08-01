@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     log (data) {
-      console.log('Event fired from child component with data', data)
+      // console.log('Event fired from child component with data', data)
     }
   }
 }
