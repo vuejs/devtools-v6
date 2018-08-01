@@ -279,7 +279,7 @@ function findQualifiedChildren (instance) {
     ? capture(instance)
     : findQualifiedChildrenFromList(instance.$children).concat(
       instance._vnode && instance._vnode.children
-        ? instance._vnode.children.filter(child => child.fnContext).map(capture)
+        ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
         : []
     )
 }
@@ -294,6 +294,25 @@ function findQualifiedChildren (instance) {
 function isQualified (instance) {
   const name = classify(instance.fnContext ? getComponentName(instance) : getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
+}
+
+function flatten (items) {
+  return items.reduce((acc, item) => {
+    if (item instanceof Array) acc.push(...flatten(item))
+    else if (item) acc.push(item)
+
+    return acc
+  }, [])
+}
+
+function captureChild (child) {
+  if (child.fnContext) {
+    return capture(child)
+  } else if (child.componentInstance) {
+    if (!child._isBeingDestroyed) return capture(child.componentInstance)
+  } else if (child.children) {
+    return flatten(child.children.map(captureChild))
+  }
 }
 
 /**
@@ -338,15 +357,9 @@ function capture (instance, _, list) {
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: [
-      ...(instance._vnode.children ? [] : instance.$children)
-        .filter(child => !child._isBeingDestroyed)
-        .map(capture),
-      ...(instance._vnode.children || [])
-        .map((child, index) => {
-          if (child.fnContext) return capture(child)
-          else if (child.componentInstance) return capture(child.componentInstance)
-        }).filter(Boolean)]
+    children: instance._vnode.children
+      ? flatten((instance._vnode.children).map(captureChild))
+      : instance.$children.filter(child => !child._isBeingDestroyed).map(capture)
   }
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {
