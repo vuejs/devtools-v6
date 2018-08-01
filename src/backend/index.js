@@ -25,9 +25,10 @@ let rootUID = 0
 
 export function initBackend (_bridge) {
   bridge = _bridge
+
   if (hook.Vue) {
     isLegacy = hook.Vue.version && hook.Vue.version.split('.')[0] === '1'
-    connect()
+    connect(hook.Vue)
   } else {
     hook.once('init', connect)
   }
@@ -35,10 +36,10 @@ export function initBackend (_bridge) {
   initRightClick()
 }
 
-function connect () {
+function connect (Vue) {
   initSharedData({
     bridge,
-    Vue: hook.Vue
+    Vue
   })
 
   hook.currentTab = 'components'
@@ -118,7 +119,7 @@ function connect () {
   }
 
   // events
-  initEventsBackend(hook.Vue, bridge)
+  initEventsBackend(Vue, bridge)
 
   window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
@@ -133,14 +134,15 @@ function connect () {
   }
 
   bridge.log('backend ready.')
-  bridge.send('ready', hook.Vue.version)
+  bridge.send('ready', Vue.version)
   console.log(
-    `%c vue-devtools %c Detected Vue v${hook.Vue.version} %c`,
+    `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
     'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
     'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
     'background:transparent'
   )
-  scan()
+
+  setTimeout(scan, 0)
 }
 
 /**
@@ -151,6 +153,7 @@ function scan () {
   rootInstances.length = 0
   let inFragment = false
   let currentFragment = null
+
   walk(document, function (node) {
     if (inFragment) {
       if (node === currentFragment._fragmentEnd) {
