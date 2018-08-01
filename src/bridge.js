@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 
-const BATCH_DURATION = 200
+const BATCH_DURATION = 100
 
 export default class Bridge extends EventEmitter {
   constructor (wall) {
