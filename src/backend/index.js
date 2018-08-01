@@ -64,8 +64,8 @@ function connect () {
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
-    const instance = instanceMap.get(id)
-    bindToConsole(instance)
+    const instance = findInstanceOrVnode(id)
+    if (!/:functional:/.test(id)) bindToConsole(instance)
     flush()
     bridge.send('instance-selected')
   })
@@ -409,7 +409,17 @@ function markFunctional (id, vnode) {
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
   if (!instance) {
-    return {}
+    const vnode = findInstanceOrVnode(id)
+
+    if (!vnode) return {}
+
+    return {
+      id,
+      name: getComponentName(vnode.fnOptions),
+      file: vnode.fnOptions.__file || null,
+      state: [],
+      functional: true
+    }
   } else {
     const data = {
       id: id,
