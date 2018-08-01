@@ -55,9 +55,8 @@
       </div>
       <template slot-scope="{ item: event, index }">
         <div
-          :data-index="index"
           class="entry list-item"
-          :class="{ active: inspectedIndex === filteredEvents.indexOf(event) }"
+          :class="{ active: inspectedIndex === index }"
           @click="inspect(filteredEvents.indexOf(event))"
         >
           <span class="event-name">{{ event.eventName }}</span>

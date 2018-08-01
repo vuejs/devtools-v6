@@ -59,7 +59,6 @@
       <template slot-scope="{ item: entry, index }">
         <div
           v-if="index === 0"
-          data-index="-1"
           :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
           class="entry list-item"
           @click="inspect(null)"
@@ -92,8 +91,7 @@
         </div>
         <div
           v-else
-          :data-index="index - 1"
-          :class="{ inspected: isInspected(entry), active: isActive(entry) }"
+          :class="{ inspected: isInspected(index), active: isActive(index) }"
           class="entry list-item"
           @click="inspect(entry)"
         >
@@ -122,7 +120,7 @@
               <span>Revert</span>
             </a>
             <a
-              v-if="!isActive(entry)"
+              v-if="!isActive(index)"
               v-tooltip="'Time Travel to This State'"
               class="action"
               @click.stop="timeTravelTo(entry)"
@@ -141,11 +139,11 @@
             {{ entry.timestamp | formatTime }}
           </span>
           <span
-            v-if="isActive(entry)"
+            v-if="isActive(index)"
             class="label active"
           >active</span>
           <span
-            v-if="isInspected(entry)"
+            v-if="isInspected(index)"
             class="label inspected"
           >inspected</span>
         </div>
@@ -257,12 +255,12 @@ export default {
       'updateFilter'
     ]),
 
-    isActive (entry) {
-      return this.activeIndex === this.filteredHistory.indexOf(entry)
+    isActive (index) {
+      return this.activeIndex === index - 1
     },
 
-    isInspected (entry) {
-      return this.inspectedIndex === this.filteredHistory.indexOf(entry)
+    isInspected (index) {
+      return this.inspectedIndex === index - 1
     },
 
     toggleRecording () {
