@@ -45,8 +45,14 @@ export function initVuexBackend (hook, bridge) {
   })
 
   // devtool -> application
-  bridge.on('vuex:travel-to-state', state => {
-    hook.emit('vuex:travel-to-state', parse(state, true))
+  bridge.on('vuex:travel-to-state', index => {
+    const snapshot = replayMutations(index)
+    const { state } = parse(snapshot, true)
+    hook.emit('vuex:travel-to-state', state)
+    bridge.send('vuex:inspected-state', {
+      index,
+      snapshot
+    })
   })
 
   bridge.on('vuex:import-state', state => {
@@ -55,6 +61,14 @@ export function initVuexBackend (hook, bridge) {
   })
 
   bridge.on('vuex:inspect-state', index => {
+    const snapshot = replayMutations(index)
+    bridge.send('vuex:inspected-state', {
+      index,
+      snapshot
+    })
+  })
+
+  function replayMutations (index) {
     const currentState = store.state
 
     // Get most recent snapshot for target index
@@ -70,11 +84,7 @@ export function initVuexBackend (hook, bridge) {
 
     // Snapshot was already replayed
     if (snapshot.index === index) {
-      bridge.send('vuex:inspected-state', {
-        index,
-        snapshot: snapshot.state
-      })
-      return
+      return snapshot.state
     }
 
     const { state } = parse(snapshot.state, true)
@@ -107,14 +117,12 @@ export function initVuexBackend (hook, bridge) {
 
     // Send final state after replay
     const resultState = getSnapshot()
-    bridge.send('vuex:inspected-state', {
-      index,
-      snapshot: resultState
-    })
 
     // Restore user state
     store.replaceState(currentState)
-  })
+
+    return resultState
+  }
 
   function takeSnapshot (index) {
     snapshots.push({

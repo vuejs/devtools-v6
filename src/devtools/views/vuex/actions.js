@@ -1,4 +1,3 @@
-import { parse, stringify } from 'src/util'
 import { snapshotsCache } from './cache'
 import SharedData from 'src/shared-data'
 
@@ -64,10 +63,15 @@ export function updateFilter ({ commit }, filter) {
 }
 
 function travelTo (state, commit, index) {
-  const { history, base, inspectedIndex } = state
-  const targetSnapshot = index > -1 ? history[index].snapshot : base
+  const { inspectedIndex } = state
 
-  bridge.send('vuex:travel-to-state', stringify(parse(targetSnapshot).state))
+  commit('UPDATE_INSPECTED_STATE', null)
+  SharedData.snapshotLoading = {
+    current: 0,
+    total: 1
+  }
+  bridge.send('vuex:travel-to-state', index)
+
   if (index !== inspectedIndex) {
     commit('INSPECT', index)
   }
