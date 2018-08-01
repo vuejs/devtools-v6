@@ -160,13 +160,16 @@ export function initVuexBackend (hook, bridge) {
     return resultState
   }
 
-  bridge.on('vuex:update-state', ({value, path}) => {
+  bridge.on('vuex:update-state', ({ index, value, path }) => {
     let parsedValue
     if (value) {
       parsedValue = parse(value, true)
     }
     set(store.state, path, parsedValue)
-    bridge.send('vuex:init', getSnapshot())
+    bridge.send('vuex:inspected-state', {
+      index,
+      snapshot: getSnapshot()
+    })
   })
 
   function takeSnapshot (index) {

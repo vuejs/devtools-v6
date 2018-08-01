@@ -76,6 +76,14 @@ export function updateFilter ({ commit }, filter) {
   commit('UPDATE_FILTER', filter)
 }
 
+export function updateState ({ state }, { path, args }) {
+  bridge.send('vuex:update-state', {
+    index: state.inspectedIndex,
+    path,
+    ...args
+  })
+}
+
 function travelTo (state, commit, index, apply = true) {
   return new Promise((resolve) => {
     Resolve.travel = resolve
