@@ -42,12 +42,6 @@
       >
         <div>Select a component instance to inspect.</div>
       </section>
-      <section
-        v-else-if="target.functional"
-        class="notice"
-      >
-        <div>Functional components have no instance and therefore no state to be inspected.</div>
-      </section>
       <div
         v-else-if="!target.state || !target.state.length"
         class="notice"

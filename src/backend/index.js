@@ -38,7 +38,6 @@ export function initBackend (_bridge) {
 }
 
 function connect () {
-  console.log('BACKEND: ', hook.Vue)
   initSharedData({
     bridge,
     Vue: hook.Vue
@@ -271,25 +270,29 @@ function findQualifiedChildrenFromList (instances) {
  * If the instance itself is qualified, just return itself.
  * This is ok because [].concat works in both cases.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Vue|Array}
  */
 
 function findQualifiedChildren (instance) {
   return isQualified(instance)
     ? capture(instance)
-    : findQualifiedChildrenFromList(instance.$children)
+    : findQualifiedChildrenFromList(instance.$children).concat(
+      instance._vnode && instance._vnode.children
+        ? instance._vnode.children.filter(child => child.fnContext).map(capture)
+        : []
+    )
 }
 
 /**
  * Check if an instance is qualified.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Boolean}
  */
 
 function isQualified (instance) {
-  const name = classify(getInstanceName(instance)).toLowerCase()
+  const name = classify(instance.fnContext ? getComponentName(instance) : getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -413,13 +416,15 @@ function getInstanceDetails (id) {
 
     if (!vnode) return {}
 
-    return {
+    const data = {
       id,
       name: getComponentName(vnode.fnOptions),
       file: vnode.fnOptions.__file || null,
-      state: [],
+      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.props) }),
       functional: true
     }
+
+    return data
   } else {
     const data = {
       id: id,
