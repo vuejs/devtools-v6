@@ -27,18 +27,20 @@ export default class Bridge extends EventEmitter {
 
   send (event, payload) {
     if (this._time === null) {
+      this.wall.send([{ event, payload }])
       this._time = Date.now()
-    }
-    this._queue.push({
-      event,
-      payload
-    })
-
-    const now = Date.now()
-    if (now - this._time > BATCH_DURATION) {
-      this._flush()
     } else {
-      this._timer = setTimeout(() => this._flush(), BATCH_DURATION)
+      this._queue.push({
+        event,
+        payload
+      })
+
+      const now = Date.now()
+      if (now - this._time > BATCH_DURATION) {
+        this._flush()
+      } else {
+        this._timer = setTimeout(() => this._flush(), BATCH_DURATION)
+      }
     }
   }
 
