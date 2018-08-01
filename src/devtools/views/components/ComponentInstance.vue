@@ -68,6 +68,12 @@
       >
         inactive
       </span>
+      <span
+        v-if="instance.functional"
+        class="info functional"
+      >
+        functional
+      </span>
 
       <span class="spacer" />
 
@@ -263,6 +269,9 @@ export default {
     background-color #b3cbf7
   &.inactive
     background-color #aaa
+  &.functional
+    background-color #f1f1f1
+    color: #aaa
   &:not(.console)
     margin-left 6px
 

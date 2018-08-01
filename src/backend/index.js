@@ -1,13 +1,14 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
-import { highlight, unHighlight, getInstanceRect } from './highlighter'
+import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
+import cuid from 'cuid'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -15,6 +16,7 @@ const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
 export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const functionalVnodeMap = window.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -36,6 +38,7 @@ export function initBackend (_bridge) {
 }
 
 function connect () {
+  console.log('BACKEND: ', hook.Vue)
   initSharedData({
     bridge,
     Vue: hook.Vue
@@ -68,7 +71,7 @@ function connect () {
   })
 
   bridge.on('scroll-to-instance', id => {
-    const instance = instanceMap.get(id)
+    const instance = findInstanceOrVnode(id)
     instance && scrollIntoView(instance)
   })
 
@@ -79,7 +82,7 @@ function connect () {
 
   bridge.on('refresh', scan)
 
-  bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+  bridge.on('enter-instance', id => highlight(findInstanceOrVnode(id)))
 
   bridge.on('leave-instance', unHighlight)
 
@@ -141,6 +144,15 @@ function connect () {
     'background:transparent'
   )
   scan()
+}
+
+export function findInstanceOrVnode (id) {
+  if (/:functional:/.test(id)) {
+    const [refId] = id.split(':functional:')
+
+    return functionalVnodeMap.get(refId)[id]
+  }
+  return instanceMap.get(id)
 }
 
 /**
@@ -292,6 +304,26 @@ function capture (instance, _, list) {
   if (process.env.NODE_ENV !== 'production') {
     captureCount++
   }
+
+  // Functional component.
+  if (instance.fnContext) {
+    const functionalId = instance.fnContext.__VUE_DEVTOOLS_UID__ + ':functional:' + cuid()
+    markFunctional(functionalId, instance)
+    return {
+      id: functionalId,
+      functional: true,
+      name: getComponentName(instance.fnOptions) || 'Anonymous Component',
+      renderKey: getRenderKey(instance.key),
+      children: instance.children ? instance.children.map(
+        child => child.fnContext
+          ? capture(child)
+          : child.componentInstance
+            ? capture(child.componentInstance)
+            : undefined).filter(Boolean) : [],
+      inactive: false, // TODO: Check what is it for.
+      isFragment: false // TODO: Check what is it for.
+    }
+  }
   // instance._uid is not reliable in devtools as there
   // may be 2 roots with same _uid which causes unexpected
   // behaviour
@@ -303,13 +335,19 @@ function capture (instance, _, list) {
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: instance.$children
-      .filter(child => !child._isBeingDestroyed)
-      .map(capture)
+    children: [
+      ...(instance._vnode.children ? [] : instance.$children)
+        .filter(child => !child._isBeingDestroyed)
+        .map(capture),
+      ...(instance._vnode.children || [])
+        .map((child, index) => {
+          if (child.fnContext) return capture(child)
+          else if (child.componentInstance) return capture(child.componentInstance)
+        }).filter(Boolean)]
   }
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {
-    const rect = getInstanceRect(instance)
+    const rect = getInstanceOrVnodeRect(instance)
     ret.top = rect ? rect.top : Infinity
   } else {
     ret.top = Infinity
@@ -348,6 +386,18 @@ function mark (instance) {
       instanceMap.delete(instance.__VUE_DEVTOOLS_UID__)
     })
   }
+}
+
+function markFunctional (id, vnode) {
+  const refId = vnode.fnContext.__VUE_DEVTOOLS_UID__
+  if (!functionalVnodeMap.has(refId)) {
+    functionalVnodeMap.set(refId, {})
+    vnode.fnContext.$on('hook:beforeDestroy', function () {
+      functionalVnodeMap.delete(refId)
+    })
+  }
+
+  functionalVnodeMap.get(refId)[id] = vnode
 }
 
 /**
@@ -698,7 +748,7 @@ function processObservables (instance) {
  */
 
 function scrollIntoView (instance) {
-  const rect = getInstanceRect(instance)
+  const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
     window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
@@ -712,6 +762,7 @@ function scrollIntoView (instance) {
  */
 
 function bindToConsole (instance) {
+  if (!instance) return
   const id = instance.__VUE_DEVTOOLS_UID__
   const index = consoleBoundInstances.indexOf(id)
   if (index > -1) {

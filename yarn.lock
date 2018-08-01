@@ -1392,6 +1392,10 @@ csso@~2.3.1:
     clap "^1.0.9"
     source-map "^0.5.3"
 
+cuid@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/cuid/-/cuid-2.1.1.tgz#3b0fccbda1089ff123a127320c860b975200d62b"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
