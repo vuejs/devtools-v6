@@ -16,7 +16,8 @@ const state = {
   filter: '',
   filterRegex: ANY_RE,
   filterRegexInvalid: false,
-  inspectedState: null
+  inspectedState: null,
+  lastReceivedState: null
 }
 
 const mutations = {
@@ -35,7 +36,7 @@ const mutations = {
   },
 
   'COMMIT_ALL' (state) {
-    state.base = state.inspectedState
+    state.base = state.lastReceivedState
     state.lastCommit = Date.now()
     reset(state)
   },
@@ -45,7 +46,7 @@ const mutations = {
   },
 
   'COMMIT' (state, index) {
-    state.base = state.inspectedState
+    state.base = state.lastReceivedState
     state.lastCommit = Date.now()
     state.history = state.history.slice(index + 1)
     state.history.forEach(({ mutation }, index) => {
@@ -65,6 +66,10 @@ const mutations = {
 
   'UPDATE_INSPECTED_STATE' (state, value) {
     state.inspectedState = value
+  },
+
+  'RECEIVE_STATE' (state, value) {
+    state.lastReceivedState = value
   },
 
   'TIME_TRAVEL' (state, index) {

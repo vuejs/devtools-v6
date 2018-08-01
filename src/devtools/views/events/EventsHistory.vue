@@ -53,10 +53,11 @@
       >
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <template slot-scope="{ item: event, index }">
+      <template slot-scope="{ item: event, index, active }">
         <div
           class="entry list-item"
           :class="{ active: inspectedIndex === index }"
+          :data-active="active"
           @click="inspect(filteredEvents.indexOf(event))"
         >
           <span class="event-name">{{ event.eventName }}</span>
@@ -146,7 +147,7 @@ export default {
       },
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
-        this.$store.commit('events/INSPECT', -1)
+        this.$store.dispatch('events/inspect', filter ? -1 : this.events.length - 1)
       }
     },
 

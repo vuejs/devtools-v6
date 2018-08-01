@@ -56,9 +56,11 @@
         'high-density': highDensity
       }"
     >
-      <template slot-scope="{ item: entry, index }">
+      <template slot-scope="{ item: entry, index, active }">
         <div
-          v-if="index <= 0"
+          v-if="!entry.mutation"
+          :data-active="active"
+          :data-index="index"
           :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
           class="entry list-item"
           @click="inspect(null)"
@@ -91,7 +93,9 @@
         </div>
         <div
           v-else
-          :class="{ inspected: isInspected(index), active: isActive(index) }"
+          :data-active="active"
+          :data-index="index"
+          :class="{ inspected: isInspected(index, entry), active: isActive(index, entry) }"
           class="entry list-item"
           @click="inspect(entry)"
         >
@@ -120,7 +124,7 @@
               <span>Revert</span>
             </a>
             <a
-              v-if="!isActive(index)"
+              v-if="!isActive(index, entry)"
               v-tooltip="'Time Travel to This State'"
               class="action"
               @click.stop="timeTravelTo(entry)"
@@ -139,11 +143,11 @@
             {{ entry.timestamp | formatTime }}
           </span>
           <span
-            v-if="isActive(index)"
+            v-if="isActive(index, entry)"
             class="label active"
           >active</span>
           <span
-            v-if="isInspected(index)"
+            v-if="isInspected(index, entry)"
             class="label inspected"
           >inspected</span>
         </div>
@@ -234,7 +238,7 @@ export default {
       },
       set (filter) {
         this.$store.dispatch('vuex/updateFilter', filter)
-        this.$store.commit('vuex/INSPECT', -1)
+        this.$store.dispatch('vuex/inspect', filter ? -1 : this.history.length - 1)
       }
     },
 
@@ -255,11 +259,13 @@ export default {
       'updateFilter'
     ]),
 
-    isActive (index) {
+    isActive (index, entry) {
+      if (this.filter) return this.activeIndex === this.filteredHistory.indexOf(entry)
       return this.activeIndex === index - 1
     },
 
-    isInspected (index) {
+    isInspected (index, entry) {
+      if (this.filter) return this.inspectedIndex === this.filteredHistory.indexOf(entry)
       return this.inspectedIndex === index - 1
     },
 

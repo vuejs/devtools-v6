@@ -6,7 +6,7 @@
 
     <br>
 
-    <button class="increment" @click="doLotMutations">Do a lot of mutations</button>
+    <button @click="doLotMutations">Do a lot of mutations</button>
 
     <p>Your counter is {{ $store.getters.isPositive ? 'positive' : 'negative' }}</p>
   </div>

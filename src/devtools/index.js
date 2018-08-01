@@ -140,7 +140,10 @@ function initApp (shell) {
 
     bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
       snapshotsCache.set(index, snapshot)
-      store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+      store.commit('vuex/RECEIVE_STATE', snapshot)
+      if (store.state.vuex.inspectedIndex === index) {
+        store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+      }
 
       if (VuexResolve.travel) {
         VuexResolve.travel(snapshot)

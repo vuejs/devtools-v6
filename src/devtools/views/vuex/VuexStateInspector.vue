@@ -59,7 +59,7 @@
 
       <div
         v-if="$shared.snapshotLoading"
-        class="state-info"
+        class="state-info loading-vuex-state"
       >
         <div class="label">Loading state...</div>
 
@@ -69,7 +69,7 @@
       </div>
       <div
         v-else-if="isOnlyMutationPayload"
-        class="state-info"
+        class="state-info recording-vuex-state"
       >
         <div class="label">
           <VueIcon
@@ -81,6 +81,7 @@
 
         <div>
           <VueButton
+            data-id="load-vuex-state"
             @click="loadState()"
           >
             Load state
