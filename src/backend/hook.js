@@ -82,7 +82,7 @@ export function installHook (window) {
         }
       } else {
         const allArgs = [].slice.call(arguments)
-        this._buffer.push(allArgs);
+        this._buffer.push(allArgs)
       }
     }
   }
@@ -110,167 +110,160 @@ export function installHook (window) {
   // Clone deep utility for cloning initial state of the store
   // REFERENCE: https://github.com/buunguyen/node-clone/commit/63afda9de9d94b9332586e34a646a13e8d719244
 
-  function clone(parent, circular, depth, prototype) {
-    var filter;
+  function clone (parent, circular, depth, prototype) {
     if (typeof circular === 'object') {
-      depth = circular.depth;
-      prototype = circular.prototype;
-      filter = circular.filter;
-      circular = circular.circular;
+      depth = circular.depth
+      prototype = circular.prototype
+      circular = circular.circular
     }
     // maintain two arrays for circular references, where corresponding parents
     // and children have the same index
-    var allParents = [];
-    var allChildren = [];
+    var allParents = []
+    var allChildren = []
 
-    var useBuffer = typeof Buffer != 'undefined';
+    var useBuffer = typeof Buffer !== 'undefined'
 
-    if (typeof circular == 'undefined')
-      circular = true;
+    if (typeof circular === 'undefined') { circular = true }
 
-    if (typeof depth == 'undefined')
-      depth = Infinity;
+    if (typeof depth === 'undefined') { depth = Infinity }
 
     // recurse this function so we don't reset allParents and allChildren
-    function _clone(parent, depth) {
+    function _clone (parent, depth) {
       // cloning null always returns null
-      if (parent === null)
-        return null;
+      if (parent === null) { return null }
 
-      if (depth === 0)
-        return parent;
+      if (depth === 0) { return parent }
 
-      var child;
-      var proto;
-      if (typeof parent != 'object') {
-        return parent;
+      var child
+      var proto
+      if (typeof parent !== 'object') {
+        return parent
       }
 
       if (parent instanceof Map) {
-        child = new Map();
+        child = new Map()
       } else if (parent instanceof Set) {
-        child = new Set();
+        child = new Set()
       } else if (parent instanceof Promise) {
         child = new Promise(function (resolve, reject) {
-          parent.then(function(value) {
-            resolve(_clone(value, depth - 1));
-          }, function(err) {
-            reject(_clone(err, depth - 1));
-          });
-        });
+          parent.then(function (value) {
+            resolve(_clone(value, depth - 1))
+          }, function (err) {
+            reject(_clone(err, depth - 1))
+          })
+        })
       } else if (_isArray(parent)) {
-        child = [];
+        child = []
       } else if (_isRegExp(parent)) {
-        child = new RegExp(parent.source, _getRegExpFlags(parent));
-        if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+        child = new RegExp(parent.source, _getRegExpFlags(parent))
+        if (parent.lastIndex) child.lastIndex = parent.lastIndex
       } else if (_isDate(parent)) {
-        child = new Date(parent.getTime());
+        child = new Date(parent.getTime())
       } else if (useBuffer && Buffer.isBuffer(parent)) {
-        child = new Buffer(parent.length);
-        parent.copy(child);
-        return child;
+        child = Buffer.alloc(parent.length)
+        parent.copy(child)
+        return child
       } else if (parent instanceof Error) {
-        child = Object.create(parent);
+        child = Object.create(parent)
       } else {
-        if (typeof prototype == 'undefined') {
-          proto = Object.getPrototypeOf(parent);
-          child = Object.create(proto);
-        }
-        else {
-          child = Object.create(prototype);
-          proto = prototype;
+        if (typeof prototype === 'undefined') {
+          proto = Object.getPrototypeOf(parent)
+          child = Object.create(proto)
+        } else {
+          child = Object.create(prototype)
+          proto = prototype
         }
       }
 
       if (circular) {
-        var index = allParents.indexOf(parent);
+        var index = allParents.indexOf(parent)
 
-        if (index != -1) {
-          return allChildren[index];
+        if (index !== -1) {
+          return allChildren[index]
         }
-        allParents.push(parent);
-        allChildren.push(child);
+        allParents.push(parent)
+        allChildren.push(child)
       }
 
       if (parent instanceof Map) {
-        var keyIterator = parent.keys();
-        while(true) {
-          var next = keyIterator.next();
+        var keyIterator = parent.keys()
+        while (true) {
+          let next = keyIterator.next()
           if (next.done) {
-            break;
+            break
           }
-          var keyChild = _clone(next.value, depth - 1);
-          var valueChild = _clone(parent.get(next.value), depth - 1);
-          child.set(keyChild, valueChild);
+          var keyChild = _clone(next.value, depth - 1)
+          var valueChild = _clone(parent.get(next.value), depth - 1)
+          child.set(keyChild, valueChild)
         }
       }
       if (parent instanceof Set) {
-        var iterator = parent.keys();
-        while(true) {
-          var next = iterator.next();
+        var iterator = parent.keys()
+        while (true) {
+          let next = iterator.next()
           if (next.done) {
-            break;
+            break
           }
-          var entryChild = _clone(next.value, depth - 1);
-          child.add(entryChild);
+          var entryChild = _clone(next.value, depth - 1)
+          child.add(entryChild)
         }
       }
 
-      for (var i in parent) {
-        var attrs;
+      for (let i in parent) {
+        var attrs
         if (proto) {
-          attrs = Object.getOwnPropertyDescriptor(proto, i);
+          attrs = Object.getOwnPropertyDescriptor(proto, i)
         }
 
         if (attrs && attrs.set == null) {
-          continue;
+          continue
         }
-        child[i] = _clone(parent[i], depth - 1);
+        child[i] = _clone(parent[i], depth - 1)
       }
 
       if (Object.getOwnPropertySymbols) {
-        var symbols = Object.getOwnPropertySymbols(parent);
-        for (var i = 0; i < symbols.length; i++) {
+        var symbols = Object.getOwnPropertySymbols(parent)
+        for (let i = 0; i < symbols.length; i++) {
           // Don't need to worry about cloning a symbol because it is a primitive,
           // like a number or string.
-          var symbol = symbols[i];
-          var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
+          var symbol = symbols[i]
+          var descriptor = Object.getOwnPropertyDescriptor(parent, symbol)
           if (descriptor && !descriptor.enumerable) {
-            continue;
+            continue
           }
-          child[symbol] = _clone(parent[symbol], depth - 1);
+          child[symbol] = _clone(parent[symbol], depth - 1)
         }
       }
 
-      return child;
+      return child
     }
 
-    return _clone(parent, depth);
+    return _clone(parent, depth)
   }
 
   // private utility functions
 
-  function _objToStr(o) {
-    return Object.prototype.toString.call(o);
+  function _objToStr (o) {
+    return Object.prototype.toString.call(o)
   }
 
-  function _isDate(o) {
-    return typeof o === 'object' && _objToStr(o) === '[object Date]';
+  function _isDate (o) {
+    return typeof o === 'object' && _objToStr(o) === '[object Date]'
   }
 
-  function _isArray(o) {
-    return typeof o === 'object' && _objToStr(o) === '[object Array]';
+  function _isArray (o) {
+    return typeof o === 'object' && _objToStr(o) === '[object Array]'
   }
 
-  function _isRegExp(o) {
-    return typeof o === 'object' && _objToStr(o) === '[object RegExp]';
+  function _isRegExp (o) {
+    return typeof o === 'object' && _objToStr(o) === '[object RegExp]'
   }
 
-  function _getRegExpFlags(re) {
-    var flags = '';
-    if (re.global) flags += 'g';
-    if (re.ignoreCase) flags += 'i';
-    if (re.multiline) flags += 'm';
-    return flags;
+  function _getRegExpFlags (re) {
+    var flags = ''
+    if (re.global) flags += 'g'
+    if (re.ignoreCase) flags += 'i'
+    if (re.multiline) flags += 'm'
+    return flags
   }
 }
