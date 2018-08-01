@@ -102,12 +102,11 @@ export function initVuexBackend (hook, bridge) {
           current: i - snapshot.index,
           total
         }
-        console.log(SharedData.snapshotLoading.current, '/', SharedData.snapshotLoading.total)
       }
     }
 
     // Send final state after replay
-    const resultState = takeSnapshot(index, state)
+    const resultState = getSnapshot()
     bridge.send('vuex:inspected-state', {
       index,
       snapshot: resultState
@@ -117,17 +116,15 @@ export function initVuexBackend (hook, bridge) {
     store.replaceState(currentState)
   })
 
-  function takeSnapshot (index, state) {
-    const snapshot = getSnapshot()
+  function takeSnapshot (index) {
     snapshots.push({
       index,
-      state: snapshot
+      state: getSnapshot()
     })
     // Delete old cached snapshots
-    if (snapshots.length > 5) {
+    if (snapshots.length > SharedData.cacheVuexSnapshotsLimit) {
       snapshots.splice(1, 1)
     }
-    return snapshot
   }
 }
 

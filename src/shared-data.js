@@ -5,7 +5,8 @@ const internalSharedData = {
   theme: 'auto',
   displayDensity: 'low',
   recordVuex: true,
-  cacheVuexSnapshotsEvery: 10,
+  cacheVuexSnapshotsEvery: 50,
+  cacheVuexSnapshotsLimit: 10,
   snapshotLoading: null
 }
 
