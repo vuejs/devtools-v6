@@ -75,4 +75,13 @@ suite('component data edit', () => {
     cy.get('.data-field').eq(8).find('.key').should('contain', 'count')
     cy.get('.data-field').eq(8).find('.value').should('contain', 42)
   })
+
+  it('should rename object\'s property', () => {
+    cy.get('.instance:nth-child(1) .instance:nth-child(2)').eq(0).click()
+    cy.get('.data-field').eq(8).find('.actions .vue-ui-button').eq(0).click({force: true})
+    cy.get('.edit-input.key-input').clear().type('name')
+    cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
+
+    cy.get('.data-field').eq(8).find('.key').should('contain', 'name')
+  })
 })
