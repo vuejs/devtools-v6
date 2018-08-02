@@ -61,4 +61,18 @@ suite('component data edit', () => {
 
     cy.get('.data-field').eq(6).find('.children .data-field').should('have.length', '2')
   })
+
+  it('should parse object through edit input', () => {
+    cy.get('.instance:nth-child(1) .instance:nth-child(2)').eq(0).click()
+    cy.get('.data-field').eq(7).find('.actions .vue-ui-button').eq(0).click({force: true})
+
+    cy.get('.edit-input').type('{{}"count":42}')
+    cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
+
+    cy.get('.data-field').eq(7).should('contain', 'Object')
+    // expand object
+    cy.get('.data-field').eq(7).click()
+    cy.get('.data-field').eq(8).find('.key').should('contain', 'count')
+    cy.get('.data-field').eq(8).find('.value').should('contain', 42)
+  })
 })
