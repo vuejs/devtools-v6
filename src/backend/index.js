@@ -283,7 +283,10 @@ function findQualifiedChildren (instance) {
     ? capture(instance)
     : findQualifiedChildrenFromList(instance.$children).concat(
       instance._vnode && instance._vnode.children
+        // Find functional components in recursively in non-functional vnodes.
         ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
+          // Filter qualified children.
+          .filter(({ name }) => name.indexOf(filter) > -1)
         : []
     )
 }
@@ -296,7 +299,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = classify(instance.fnContext ? getComponentName(instance) : getInstanceName(instance)).toLowerCase()
+  const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -514,7 +517,7 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options)
+  const name = getComponentName(instance.$options || instance.fnOptions)
   if (name) return name
   return instance.$root === instance
     ? 'Root'

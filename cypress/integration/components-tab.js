@@ -46,25 +46,25 @@ suite('components tab', () => {
 
   it('should expand child instance', () => {
     cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
-    cy.get('.instance').should('have.length', baseInstanceCount + 2)
+    cy.get('.instance').should('have.length', baseInstanceCount + 7)
   })
 
   it('should add/remove component from app side', () => {
     cy.get('#target').iframe().then(({ get }) => {
       get('.add').click({ force: true })
     })
-    cy.get('.instance').should('have.length', baseInstanceCount + 5)
+    cy.get('.instance').should('have.length', baseInstanceCount + 10)
     cy.get('#target').iframe().then(({ get }) => {
       get('.remove').click({ force: true })
     })
-    cy.get('.instance').should('have.length', baseInstanceCount + 4)
+    cy.get('.instance').should('have.length', baseInstanceCount + 9)
   })
 
   it('should filter components', () => {
     cy.get('.left .search input').clear().type('counter')
     cy.get('.instance').should('have.length', 1)
     cy.get('.left .search input').clear().type('target')
-    cy.get('.instance').should('have.length', 5)
+    cy.get('.instance').should('have.length', 10)
     cy.get('.left .search input').clear()
   })
 
