@@ -2,14 +2,18 @@
   <div
     :class="{
       inactive: instance.inactive,
-      selected: selected
+      selected
     }"
     class="instance"
   >
     <div
       ref="self"
-      :class="{ selected: selected }"
-      :style="{ paddingLeft: depth * 15 + 'px' }"
+      :class="{
+        selected
+      }"
+      :style="{
+        paddingLeft: depth * 15 + 'px'
+      }"
       class="self selectable-item"
       @click.stop="select"
       @dblclick.stop="toggle"
@@ -97,6 +101,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { classify, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
@@ -114,16 +119,18 @@ export default {
   },
 
   computed: {
-    scrollToExpanded () {
-      return this.$store.state.components.scrollToExpanded
-    },
+    ...mapState('components', [
+      'expansionMap',
+      'inspectedInstance',
+      'scrollToExpanded'
+    ]),
 
     expanded () {
-      return !!this.$store.state.components.expansionMap[this.instance.id]
+      return !!this.expansionMap[this.instance.id]
     },
 
     selected () {
-      return this.instance.id === this.$store.state.components.inspectedInstance.id
+      return this.instance.id === this.inspectedInstance.id
     },
 
     sortedChildren () {
@@ -270,8 +277,11 @@ export default {
   &.inactive
     background-color #aaa
   &.functional
-    background-color #f1f1f1
-    color: #aaa
+    background-color rgba($md-black, .06)
+    color: rgba($md-black, .5)
+    .vue-ui-dark-mode &
+      background-color rgba($md-white, .06)
+      color rgba($md-white, .5)
   &:not(.console)
     margin-left 6px
 

@@ -8,7 +8,6 @@ import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
-import cuid from 'cuid'
 
 // hook should have been injected before this executes.
 const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -24,6 +23,7 @@ let filter = ''
 let captureCount = 0
 let isLegacy = false
 let rootUID = 0
+let functionalIds = new Map()
 
 export function initBackend (_bridge) {
   bridge = _bridge
@@ -233,6 +233,7 @@ function walk (node, fn) {
 
 function flush () {
   let start
+  functionalIds.clear()
   if (process.env.NODE_ENV !== 'production') {
     captureCount = 0
     start = window.performance.now()
@@ -322,14 +323,22 @@ function captureChild (child) {
  * @return {Object}
  */
 
-function capture (instance, _, list) {
+function capture (instance, index, list) {
   if (process.env.NODE_ENV !== 'production') {
     captureCount++
   }
 
   // Functional component.
   if (instance.fnContext) {
-    const functionalId = instance.fnContext.__VUE_DEVTOOLS_UID__ + ':functional:' + cuid()
+    const contextUid = instance.fnContext.__VUE_DEVTOOLS_UID__
+    let id = functionalIds.get(contextUid)
+    if (id == null) {
+      id = 0
+    } else {
+      id++
+    }
+    functionalIds.set(contextUid, id)
+    const functionalId = contextUid + ':functional:' + id
     markFunctional(functionalId, instance)
     return {
       id: functionalId,
