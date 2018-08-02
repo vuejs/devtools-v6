@@ -131,13 +131,25 @@ export default {
     filteredState () {
       const inspectedState = [].concat(
         ...Object.keys(this.inspectedState).map(
-          type => Object.keys(this.inspectedState[type]).map(
-            key => ({
-              key,
-              type,
-              value: this.inspectedState[type][key]
-            })
-          )
+          type => {
+            let processedState
+            if (!Array.isArray(this.inspectedState[type])) {
+              processedState = Object.keys(this.inspectedState[type]).map(key => ({
+                key,
+                editable: type === 'state',
+                value: this.inspectedState[type][key]
+              }))
+            } else {
+              processedState = this.inspectedState[type]
+            }
+
+            return processedState.map(
+              item => ({
+                type,
+                ...item
+              })
+            )
+          }
         )
       )
 

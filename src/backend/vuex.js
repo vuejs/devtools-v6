@@ -1,8 +1,19 @@
 import { stringify, parse } from 'src/util'
 import SharedData from 'src/shared-data'
+import { set } from '../util'
+import Vue from 'vue'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
+  console.log(store)
+
+  let originalVm = store._vm
+  const snapshotsVm = new Vue({
+    data: {
+      $$state: {}
+    },
+    computed: originalVm.$options.computed
+  })
 
   const getSnapshot = (_store = store) => stringify({
     state: _store.state,
@@ -103,7 +114,7 @@ export function initVuexBackend (hook, bridge) {
   })
 
   function replayMutations (index) {
-    const currentState = store.state
+    store._vm = snapshotsVm
 
     // Get most recent snapshot for target index
     // for faster replay
@@ -155,10 +166,22 @@ export function initVuexBackend (hook, bridge) {
     lastState = resultState
 
     // Restore user state
-    store.replaceState(currentState)
+    store._vm = originalVm
 
     return resultState
   }
+
+  bridge.on('vuex:edit-state', ({ index, value, path }) => {
+    let parsedValue
+    if (value) {
+      parsedValue = parse(value, true)
+    }
+    set(store.state, path, parsedValue)
+    bridge.send('vuex:inspected-state', {
+      index,
+      snapshot: getSnapshot()
+    })
+  })
 
   function takeSnapshot (index) {
     snapshots.push({

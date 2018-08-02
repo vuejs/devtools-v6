@@ -141,7 +141,10 @@ function initApp (shell) {
     bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
       snapshotsCache.set(index, snapshot)
       store.commit('vuex/RECEIVE_STATE', snapshot)
-      if (store.state.vuex.inspectedIndex === index) {
+
+      if (index === -1) {
+        store.commit('vuex/UPDATE_BASE_STATE', snapshot)
+      } else if (store.state.vuex.inspectedIndex === index) {
         store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
       }
 
@@ -159,6 +162,10 @@ function initApp (shell) {
       if (router.currentRoute.name !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }
+    })
+
+    bridge.on('events:reset', () => {
+      store.commit('events/RESET')
     })
 
     bridge.on('inspect-instance', id => {

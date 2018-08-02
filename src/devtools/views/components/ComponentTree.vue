@@ -183,6 +183,7 @@ export default {
         }
       }
     },
+
     updateAutoDensity () {
       if (this.$shared.displayDensity === 'auto') {
         this.$nextTick(() => {

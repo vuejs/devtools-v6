@@ -1,4 +1,4 @@
-import { inDoc, classify } from '../util'
+import { inDoc, classify, getComponentName } from '../util'
 import { getInstanceName } from './index'
 import SharedData from 'src/shared-data'
 
@@ -28,10 +28,10 @@ overlay.appendChild(overlayContent)
 
 export function highlight (instance) {
   if (!instance) return
-  const rect = getInstanceRect(instance)
+  const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
     let content = ''
-    let name = getInstanceName(instance)
+    let name = instance.fnContext ? getComponentName(instance.fnOptions) : getInstanceName(instance)
     if (SharedData.classifyComponents) name = classify(name)
     if (name) content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`
     showOverlay(rect, content)
@@ -55,14 +55,15 @@ export function unHighlight () {
  * @return {Object}
  */
 
-export function getInstanceRect (instance) {
-  if (!inDoc(instance.$el)) {
+export function getInstanceOrVnodeRect (instance) {
+  const el = instance.$el || instance.elm
+  if (!inDoc(el)) {
     return
   }
   if (instance._isFragment) {
     return getFragmentRect(instance)
-  } else if (instance.$el.nodeType === 1) {
-    return instance.$el.getBoundingClientRect()
+  } else if (el.nodeType === 1) {
+    return el.getBoundingClientRect()
   }
 }
 

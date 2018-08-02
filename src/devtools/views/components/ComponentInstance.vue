@@ -2,14 +2,18 @@
   <div
     :class="{
       inactive: instance.inactive,
-      selected: selected
+      selected
     }"
     class="instance"
   >
     <div
       ref="self"
-      :class="{ selected: selected }"
-      :style="{ paddingLeft: depth * 15 + 'px' }"
+      :class="{
+        selected
+      }"
+      :style="{
+        paddingLeft: depth * 15 + 'px'
+      }"
       class="self selectable-item"
       @click.stop="select"
       @dblclick.stop="toggle"
@@ -68,6 +72,12 @@
       >
         inactive
       </span>
+      <span
+        v-if="instance.functional"
+        class="info functional"
+      >
+        functional
+      </span>
 
       <span class="spacer" />
 
@@ -91,6 +101,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { classify, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
@@ -108,16 +119,18 @@ export default {
   },
 
   computed: {
-    scrollToExpanded () {
-      return this.$store.state.components.scrollToExpanded
-    },
+    ...mapState('components', [
+      'expansionMap',
+      'inspectedInstance',
+      'scrollToExpanded'
+    ]),
 
     expanded () {
-      return !!this.$store.state.components.expansionMap[this.instance.id]
+      return !!this.expansionMap[this.instance.id]
     },
 
     selected () {
-      return this.instance.id === this.$store.state.components.inspectedInstance.id
+      return this.instance.id === this.inspectedInstance.id
     },
 
     sortedChildren () {
@@ -263,6 +276,12 @@ export default {
     background-color #b3cbf7
   &.inactive
     background-color #aaa
+  &.functional
+    background-color rgba($md-black, .06)
+    color: rgba($md-black, .5)
+    .vue-ui-dark-mode &
+      background-color rgba($md-white, .06)
+      color rgba($md-white, .5)
   &:not(.console)
     margin-left 6px
 
@@ -325,4 +344,6 @@ export default {
     opacity 1
   .attr-title
     color lighten($purple, 70%)
+  .info.functional
+    color $md-white
 </style>

@@ -182,6 +182,7 @@
         :removable="isSubfieldsEditable"
         :renamable="editable && valueType === 'plain-object'"
         :force-collapse="forceCollapse"
+        :is-state-field="isStateField"
       />
       <span
         v-if="formattedSubFields.length > limit"
@@ -201,6 +202,7 @@
         :force-collapse="forceCollapse"
         editable
         removable
+        :is-state-field="isStateField"
         @cancel-edit="addingValue = false"
         @submit-edit="addingValue = false"
       />
@@ -261,6 +263,10 @@ export default {
     forceCollapse: {
       type: String,
       default: null
+    },
+    isStateField: {
+      type: Boolean,
+      default: false
     }
   },
 
