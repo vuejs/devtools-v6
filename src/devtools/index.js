@@ -164,6 +164,10 @@ function initApp (shell) {
       }
     })
 
+    bridge.on('events:reset', () => {
+      store.commit('events/RESET')
+    })
+
     bridge.on('inspect-instance', id => {
       ensurePaneShown(() => {
         inspectInstance(id)
