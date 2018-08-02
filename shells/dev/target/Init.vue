@@ -1,6 +1,6 @@
 <template>
   <div id="init">
-    <p>Inited: {{ initCount }}</p>
+    <p>Inited: {{ inited }}</p>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import { mapState } from 'vuex'
 export default {
   computed: {
     ...mapState({
-      initCount: state => state.initCount
+      inited: state => state.inited
     })
   },
   created() {
