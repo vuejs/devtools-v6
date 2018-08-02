@@ -1,7 +1,7 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
-import { highlight, unHighlight, getInstanceRect } from './highlighter'
+import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
 import { findRelatedComponent } from './utils'
@@ -15,6 +15,7 @@ const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
 export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const functionalVnodeMap = window.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -22,6 +23,7 @@ let filter = ''
 let captureCount = 0
 let isLegacy = false
 let rootUID = 0
+let functionalIds = new Map()
 
 export function initBackend (_bridge) {
   bridge = _bridge
@@ -62,14 +64,14 @@ function connect (Vue) {
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
-    const instance = instanceMap.get(id)
-    bindToConsole(instance)
+    const instance = findInstanceOrVnode(id)
+    if (!/:functional:/.test(id)) bindToConsole(instance)
     flush()
     bridge.send('instance-selected')
   })
 
   bridge.on('scroll-to-instance', id => {
-    const instance = instanceMap.get(id)
+    const instance = findInstanceOrVnode(id)
     instance && scrollIntoView(instance)
   })
 
@@ -80,7 +82,7 @@ function connect (Vue) {
 
   bridge.on('refresh', scan)
 
-  bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+  bridge.on('enter-instance', id => highlight(findInstanceOrVnode(id)))
 
   bridge.on('leave-instance', unHighlight)
 
@@ -143,6 +145,15 @@ function connect (Vue) {
   )
 
   setTimeout(scan, 0)
+}
+
+export function findInstanceOrVnode (id) {
+  if (/:functional:/.test(id)) {
+    const [refId] = id.split(':functional:')
+
+    return functionalVnodeMap.get(refId)[id]
+  }
+  return instanceMap.get(id)
 }
 
 /**
@@ -225,6 +236,7 @@ function walk (node, fn) {
 
 function flush () {
   let start
+  functionalIds.clear()
   if (process.env.NODE_ENV !== 'production') {
     captureCount = 0
     start = window.performance.now()
@@ -262,26 +274,52 @@ function findQualifiedChildrenFromList (instances) {
  * If the instance itself is qualified, just return itself.
  * This is ok because [].concat works in both cases.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Vue|Array}
  */
 
 function findQualifiedChildren (instance) {
   return isQualified(instance)
     ? capture(instance)
-    : findQualifiedChildrenFromList(instance.$children)
+    : findQualifiedChildrenFromList(instance.$children).concat(
+      instance._vnode && instance._vnode.children
+        // Find functional components in recursively in non-functional vnodes.
+        ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
+          // Filter qualified children.
+          .filter(({ name }) => name.indexOf(filter) > -1)
+        : []
+    )
 }
 
 /**
  * Check if an instance is qualified.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Boolean}
  */
 
 function isQualified (instance) {
   const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
+}
+
+function flatten (items) {
+  return items.reduce((acc, item) => {
+    if (item instanceof Array) acc.push(...flatten(item))
+    else if (item) acc.push(item)
+
+    return acc
+  }, [])
+}
+
+function captureChild (child) {
+  if (child.fnContext) {
+    return capture(child)
+  } else if (child.componentInstance) {
+    if (!child._isBeingDestroyed) return capture(child.componentInstance)
+  } else if (child.children) {
+    return flatten(child.children.map(captureChild))
+  }
 }
 
 /**
@@ -291,9 +329,37 @@ function isQualified (instance) {
  * @return {Object}
  */
 
-function capture (instance, _, list) {
+function capture (instance, index, list) {
   if (process.env.NODE_ENV !== 'production') {
     captureCount++
+  }
+
+  // Functional component.
+  if (instance.fnContext) {
+    const contextUid = instance.fnContext.__VUE_DEVTOOLS_UID__
+    let id = functionalIds.get(contextUid)
+    if (id == null) {
+      id = 0
+    } else {
+      id++
+    }
+    functionalIds.set(contextUid, id)
+    const functionalId = contextUid + ':functional:' + id
+    markFunctional(functionalId, instance)
+    return {
+      id: functionalId,
+      functional: true,
+      name: getComponentName(instance.fnOptions) || 'Anonymous Component',
+      renderKey: getRenderKey(instance.key),
+      children: instance.children ? instance.children.map(
+        child => child.fnContext
+          ? capture(child)
+          : child.componentInstance
+            ? capture(child.componentInstance)
+            : undefined).filter(Boolean) : [],
+      inactive: false, // TODO: Check what is it for.
+      isFragment: false // TODO: Check what is it for.
+    }
   }
   // instance._uid is not reliable in devtools as there
   // may be 2 roots with same _uid which causes unexpected
@@ -306,13 +372,13 @@ function capture (instance, _, list) {
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: instance.$children
-      .filter(child => !child._isBeingDestroyed)
-      .map(capture)
+    children: instance._vnode.children
+      ? flatten((instance._vnode.children).map(captureChild))
+      : instance.$children.filter(child => !child._isBeingDestroyed).map(capture)
   }
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {
-    const rect = getInstanceRect(instance)
+    const rect = getInstanceOrVnodeRect(instance)
     ret.top = rect ? rect.top : Infinity
   } else {
     ret.top = Infinity
@@ -353,6 +419,18 @@ function mark (instance) {
   }
 }
 
+function markFunctional (id, vnode) {
+  const refId = vnode.fnContext.__VUE_DEVTOOLS_UID__
+  if (!functionalVnodeMap.has(refId)) {
+    functionalVnodeMap.set(refId, {})
+    vnode.fnContext.$on('hook:beforeDestroy', function () {
+      functionalVnodeMap.delete(refId)
+    })
+  }
+
+  functionalVnodeMap.get(refId)[id] = vnode
+}
+
 /**
  * Get the detailed information of an inspected instance.
  *
@@ -362,7 +440,19 @@ function mark (instance) {
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
   if (!instance) {
-    return {}
+    const vnode = findInstanceOrVnode(id)
+
+    if (!vnode) return {}
+
+    const data = {
+      id,
+      name: getComponentName(vnode.fnOptions),
+      file: vnode.fnOptions.__file || null,
+      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.props) }),
+      functional: true
+    }
+
+    return data
   } else {
     const data = {
       id: id,
@@ -427,7 +517,7 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options)
+  const name = getComponentName(instance.$options || instance.fnOptions)
   if (name) return name
   return instance.$root === instance
     ? 'Root'
@@ -701,7 +791,7 @@ function processObservables (instance) {
  */
 
 function scrollIntoView (instance) {
-  const rect = getInstanceRect(instance)
+  const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
     window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
@@ -715,6 +805,7 @@ function scrollIntoView (instance) {
  */
 
 function bindToConsole (instance) {
+  if (!instance) return
   const id = instance.__VUE_DEVTOOLS_UID__
   const index = consoleBoundInstances.indexOf(id)
   if (index > -1) {
