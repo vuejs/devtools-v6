@@ -2,23 +2,34 @@ import { inDoc, classify, getComponentName } from '../util'
 import { getInstanceName } from './index'
 import SharedData from 'src/shared-data'
 
-const overlay = document.createElement('div')
-overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
-overlay.style.position = 'fixed'
-overlay.style.zIndex = '99999999999999'
-overlay.style.pointerEvents = 'none'
-overlay.style.display = 'flex'
-overlay.style.alignItems = 'center'
-overlay.style.justifyContent = 'center'
-overlay.style.borderRadius = '3px'
-const overlayContent = document.createElement('div')
-overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)'
-overlayContent.style.fontFamily = 'monospace'
-overlayContent.style.fontSize = '11px'
-overlayContent.style.padding = '2px 3px'
-overlayContent.style.borderRadius = '3px'
-overlayContent.style.color = 'white'
-overlay.appendChild(overlayContent)
+const isBrowser = typeof window !== 'undefined'
+const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
+let overlay
+let overlayContent
+
+function init () {
+  if (init.isInitialized) return
+  if (!isBrowser) return
+  overlay = document.createElement('div')
+  overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
+  overlay.style.position = 'fixed'
+  overlay.style.zIndex = '99999999999999'
+  overlay.style.pointerEvents = 'none'
+  overlay.style.display = 'flex'
+  overlay.style.alignItems = 'center'
+  overlay.style.justifyContent = 'center'
+  overlay.style.borderRadius = '3px'
+  overlayContent = document.createElement('div')
+  overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)'
+  overlayContent.style.fontFamily = 'monospace'
+  overlayContent.style.fontSize = '11px'
+  overlayContent.style.padding = '2px 3px'
+  overlayContent.style.borderRadius = '3px'
+  overlayContent.style.color = 'white'
+  overlay.appendChild(overlayContent)
+
+  init.isInitialized = true
+}
 
 /**
  * Highlight an instance.
@@ -29,6 +40,13 @@ overlay.appendChild(overlayContent)
 export function highlight (instance) {
   if (!instance) return
   const rect = getInstanceOrVnodeRect(instance)
+
+  if (!isBrowser) {
+    // TODO: Highlight rect area.
+    return
+  }
+
+  init()
   if (rect) {
     let content = ''
     let name = instance.fnContext ? getComponentName(instance.fnOptions) : getInstanceName(instance)
@@ -43,7 +61,7 @@ export function highlight (instance) {
  */
 
 export function unHighlight () {
-  if (overlay.parentNode) {
+  if (overlay && overlay.parentNode) {
     document.body.removeChild(overlay)
   }
 }
@@ -51,12 +69,17 @@ export function unHighlight () {
 /**
  * Get the client rect for an instance.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Object}
  */
 
 export function getInstanceOrVnodeRect (instance) {
   const el = instance.$el || instance.elm
+  if (!isBrowser) {
+    // TODO: Find position from instance or a vnode (for functional components).
+
+    return
+  }
   if (!inDoc(el)) {
     return
   }
@@ -114,10 +137,12 @@ function getFragmentRect ({ _fragmentStart, _fragmentEnd }) {
  * @return {Rect}
  */
 
-const range = document.createRange()
 function getTextRect (node) {
-  range.selectNode(node)
-  return range.getBoundingClientRect()
+  if (!isBrowser) return
+  if (getTextRect.range) getTextRect.range = document.createRange()
+  getTextRect.range.selectNode(node)
+
+  return getTextRect.range.getBoundingClientRect()
 }
 
 /**
@@ -127,6 +152,7 @@ function getTextRect (node) {
  */
 
 function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = '') {
+  if (!isBrowser) return
   overlay.style.width = ~~width + 'px'
   overlay.style.height = ~~height + 'px'
   overlay.style.top = ~~top + 'px'
@@ -142,5 +168,5 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = ''
  */
 
 function util () {
-  return window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue.util
+  return target.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue.util
 }

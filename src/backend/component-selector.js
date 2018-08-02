@@ -1,6 +1,8 @@
 import { highlight, unHighlight } from './highlighter'
 import { findRelatedComponent } from './utils'
 
+const isBrowser = typeof window !== 'undefined'
+
 export default class ComponentSelector {
   constructor (bridge, instanceMap) {
     const self = this
@@ -16,6 +18,7 @@ export default class ComponentSelector {
    * Adds event listeners for mouseover and mouseup
    */
   startSelecting () {
+    if (!isBrowser) return
     document.body.addEventListener('mouseover', this.elementMouseOver, true)
     document.body.addEventListener('click', this.elementClicked, true)
     document.body.addEventListener('mouseout', this.cancelEvent, true)
@@ -29,6 +32,7 @@ export default class ComponentSelector {
    * Removes event listeners
    */
   stopSelecting () {
+    if (!isBrowser) return
     document.body.removeEventListener('mouseover', this.elementMouseOver, true)
     document.body.removeEventListener('click', this.elementClicked, true)
     document.body.removeEventListener('mouseout', this.cancelEvent, true)

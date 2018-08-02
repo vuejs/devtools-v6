@@ -3,26 +3,29 @@ import { initBackend } from 'src/backend'
 import Bridge from 'src/bridge'
 import { installToast } from 'src/backend/toast'
 
-const host = window.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
-const port = window.__VUE_DEVTOOLS_PORT__ !== undefined ? window.__VUE_DEVTOOLS_PORT__ : 8098
+const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
+const host = target.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
+const port = target.__VUE_DEVTOOLS_PORT__ !== undefined ? target.__VUE_DEVTOOLS_PORT__ : 8098
 const fullHost = port ? host + ':' + port : host
-const socket = io(fullHost)
+const createSocket = target.__VUE_DEVTOOLS_SOCKET__ || io
+const socket = createSocket(fullHost)
 
 const connectedMessage = () => {
-  if (window.__VUE_DEVTOOLS_TOAST__) {
-    window.__VUE_DEVTOOLS_TOAST__('Remote Devtools Connected', 'normal')
+  if (target.__VUE_DEVTOOLS_TOAST__) {
+    target.__VUE_DEVTOOLS_TOAST__('Remote Devtools Connected', 'normal')
   }
 }
 
 const disconnectedMessage = () => {
-  if (window.__VUE_DEVTOOLS_TOAST__) {
-    window.__VUE_DEVTOOLS_TOAST__('Remote Devtools Disconnected', 'error')
+  if (target.__VUE_DEVTOOLS_TOAST__) {
+    target.__VUE_DEVTOOLS_TOAST__('Remote Devtools Disconnected', 'error')
   }
 }
 
 socket.on('connect', () => {
   connectedMessage()
   initBackend(bridge)
+  socket.emit('vue-devtools-init')
 })
 
 // Global disconnect handler. Fires in two cases:
@@ -40,9 +43,13 @@ socket.on('vue-devtools-disconnect-backend', () => {
 
 const bridge = new Bridge({
   listen (fn) {
-    socket.on('vue-message', data => fn(data))
+    socket.on('vue-message', data => {
+      console.log('>>> ', data)
+      fn(data)
+    })
   },
   send (data) {
+    console.log('<<< ', data)
     socket.emit('vue-message', data)
   }
 })
@@ -52,5 +59,4 @@ bridge.on('shutdown', () => {
   disconnectedMessage()
 })
 
-installToast(window)
-socket.emit('vue-devtools-init')
+installToast(target)
