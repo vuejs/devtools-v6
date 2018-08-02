@@ -167,11 +167,18 @@ export default {
     },
 
     sendEdit (args) {
-      bridge.send('set-instance-data', {
-        id: this.inspectedInstance.id,
-        path: this.path,
-        ...args
-      })
+      if (this.isStateField) {
+        this.$store.dispatch('vuex/editState', {
+          path: this.path,
+          args
+        })
+      } else {
+        bridge.send('set-instance-data', {
+          id: this.inspectedInstance.id,
+          path: this.path,
+          ...args
+        })
+      }
     },
 
     transformSpecialTokens (str, display) {

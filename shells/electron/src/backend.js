@@ -22,6 +22,7 @@ const disconnectedMessage = () => {
 
 socket.on('connect', () => {
   connectedMessage()
+  initBackend(bridge)
 })
 
 // Global disconnect handler. Fires in two cases:
@@ -52,5 +53,4 @@ bridge.on('shutdown', () => {
 })
 
 installToast(window)
-initBackend(bridge)
 socket.emit('vue-devtools-init')

@@ -41,9 +41,11 @@
     "circular-json-es6": "^2.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
+    "lru-cache": "^4.1.3",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
+    "vue-virtual-scroller": "^0.12.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
