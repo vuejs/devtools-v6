@@ -28,6 +28,11 @@ export default {
       count: state => state.count
     })
   },
+  watch: {
+    count (value) {
+      console.log('%ccount new value', 'font-weight: bold;', value)
+    }
+  },
   methods: {
     increment () {
       this.$store.commit('INCREMENT', { a: 1, b: { c: 3 }})
