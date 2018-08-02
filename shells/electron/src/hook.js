@@ -1,3 +1,5 @@
 import { installHook } from 'src/backend/hook'
 
-installHook(window)
+const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
+
+installHook(target)

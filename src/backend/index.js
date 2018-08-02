@@ -9,13 +9,16 @@ import { stringify, classify, camelize, set, parse, getComponentName } from '../
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
 
+const isBrowser = typeof window !== 'undefined'
+const target = isBrowser ? window : typeof global !== 'undefined' ? global : {}
 // hook should have been injected before this executes.
-const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
+const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
-export const functionalVnodeMap = window.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
+export const instanceMap = target.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const functionalVnodeMap = target.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
+
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -29,9 +32,11 @@ export function initBackend (_bridge) {
   bridge = _bridge
 
   if (hook.Vue) {
+    console.log('INIT BACKEND: LEGACY')
     isLegacy = hook.Vue.version && hook.Vue.version.split('.')[0] === '1'
     connect(hook.Vue)
   } else {
+    console.log('INIT BACKEND: NEW')
     hook.once('init', connect)
   }
 
@@ -39,6 +44,7 @@ export function initBackend (_bridge) {
 }
 
 function connect (Vue) {
+  console.log('GOT INIT EVENT!!')
   initSharedData({
     bridge,
     Vue
@@ -91,10 +97,10 @@ function connect (Vue) {
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
-    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
+    const instance = target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
 
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
+    target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+    target.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
 
     if (instance) {
       const id = instance.__VUE_DEVTOOLS_UID__
@@ -123,11 +129,11 @@ function connect (Vue) {
   // events
   initEventsBackend(Vue, bridge)
 
-  window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
+  target.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   // User project devtools config
-  if (window.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
-    const config = window.VUE_DEVTOOLS_CONFIG
+  if (target.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+    const config = target.VUE_DEVTOOLS_CONFIG
 
     // Open in editor
     if (config.hasOwnProperty('openInEditorHost')) {
@@ -165,15 +171,7 @@ function scan () {
   let inFragment = false
   let currentFragment = null
 
-  walk(document, function (node) {
-    if (inFragment) {
-      if (node === currentFragment._fragmentEnd) {
-        inFragment = false
-        currentFragment = null
-      }
-      return true
-    }
-    let instance = node.__vue__
+  function processInstance (instance) {
     if (instance) {
       if (rootInstances.indexOf(instance.$root) === -1) {
         instance = instance.$root
@@ -199,7 +197,26 @@ function scan () {
 
       return true
     }
-  })
+  }
+
+  if (isBrowser) {
+    walk(document, function (node) {
+      if (inFragment) {
+        if (node === currentFragment._fragmentEnd) {
+          inFragment = false
+          currentFragment = null
+        }
+        return true
+      }
+      let instance = node.__vue__
+      
+      return processInstance(instance)
+    })
+  } else {
+    if (Array.isArray(target.__VUE_ROOT_INSTANCES__)) {
+      target.__VUE_ROOT_INSTANCES__.map(processInstance)
+    }
+  }
   flush()
 }
 
@@ -239,14 +256,14 @@ function flush () {
   functionalIds.clear()
   if (process.env.NODE_ENV !== 'production') {
     captureCount = 0
-    start = window.performance.now()
+    start = isBrowser ? window.performance.now() : 0
   }
   const payload = stringify({
     inspectedInstance: getInstanceDetails(currentInspectedId),
     instances: findQualifiedChildrenFromList(rootInstances)
   })
   if (process.env.NODE_ENV !== 'production') {
-    console.log(`[flush] serialized ${captureCount} instances, took ${window.performance.now() - start}ms.`)
+    console.log(`[flush] serialized ${captureCount} instances${isBrowser ? `, took ${window.performance.now() - start}ms.` : ''}.`)
   }
   bridge.send('flush', payload)
 }
@@ -793,6 +810,7 @@ function processObservables (instance) {
 function scrollIntoView (instance) {
   const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
+    // TODO: Handle this for non-browser environments.
     window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
 }
@@ -806,6 +824,8 @@ function scrollIntoView (instance) {
 
 function bindToConsole (instance) {
   if (!instance) return
+  if (!isBrowser) return
+
   const id = instance.__VUE_DEVTOOLS_UID__
   const index = consoleBoundInstances.indexOf(id)
   if (index > -1) {
@@ -813,6 +833,7 @@ function bindToConsole (instance) {
   } else {
     consoleBoundInstances.pop()
   }
+
   consoleBoundInstances.unshift(id)
   for (var i = 0; i < 5; i++) {
     window['$vm' + i] = instanceMap.get(consoleBoundInstances[i])
@@ -848,7 +869,7 @@ function getRenderKey (value) {
  * @param {any} message HTML content
  */
 export function toast (message, type = 'normal') {
-  const fn = window.__VUE_DEVTOOLS_TOAST__
+  const fn = target.__VUE_DEVTOOLS_TOAST__
   fn && fn(message, type)
 }
 
@@ -880,6 +901,7 @@ function setStateValue ({ id, path, value, newKey, remove }) {
 }
 
 function initRightClick () {
+  if (!isBrowser) return
   // Start recording context menu when Vue is detected
   // event if Vue devtools are not loaded yet
   document.addEventListener('contextmenu', event => {

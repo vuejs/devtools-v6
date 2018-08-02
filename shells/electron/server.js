@@ -14,6 +14,7 @@ app.get('/', function (req, res) {
 
 // Middleman
 io.on('connection', function (socket) {
+  console.log('>>>>>>>>>>>>>>>> CONNECTED!!!!')
   // Disconnect any previously connected apps
   socket.broadcast.emit('vue-devtools-disconnect-backend')
 

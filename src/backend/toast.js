@@ -1,4 +1,5 @@
-export function installToast (window) {
+export function installToast (target) {
+  if (typeof document === 'undefined') return
   let toastEl = null
   let toastTimer = 0
 
@@ -8,7 +9,7 @@ export function installToast (window) {
     error: '#DB2600'
   }
 
-  window.__VUE_DEVTOOLS_TOAST__ = (message, type) => {
+  target.__VUE_DEVTOOLS_TOAST__ = (message, type) => {
     const color = colors[type] || colors.normal
     console.log(`%c vue-devtools %c ${message} %c `,
       'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
