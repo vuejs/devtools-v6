@@ -344,4 +344,6 @@ export default {
     opacity 1
   .attr-title
     color lighten($purple, 70%)
+  .info.functional
+    color $md-white
 </style>
