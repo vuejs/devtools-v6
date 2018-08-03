@@ -112,8 +112,9 @@ suite('vuex tab', () => {
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('1')
     })
-    cy.get('.history .entry[data-index="0"] .entry-actions .action:nth-child(1)').click({ force: true })
-    cy.get('.history .entry[data-index="0"]')
+
+    cy.get('.history .entry[data-index="1"] .entry-actions .action:nth-child(3)').click({ force: true })
+    cy.get('.history .entry[data-index="1"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
     cy.get('#target').iframe().then(({ get }) => {

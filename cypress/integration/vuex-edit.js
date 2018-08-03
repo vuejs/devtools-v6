@@ -3,8 +3,10 @@ import { suite } from '../utils/suite'
 suite('vuex edit', () => {
   it('should edit state', () => {
     cy.get('.vuex-tab').click()
+    cy.get('[data-id="load-vuex-state"]').click()
+
     // using the decrease button
-    cy.get('.data-field').eq(0)
+    cy.get('.state .data-field').eq(0)
       .find('.actions .vue-ui-button').eq(1)
       .click({ force: true })
       .click({ force: true })
@@ -14,7 +16,7 @@ suite('vuex edit', () => {
     })
 
     // using the increase button
-    cy.get('.data-field').eq(0).click()
+    cy.get('.state .data-field').eq(0).click()
       .find('.actions .vue-ui-button').eq(2)
       .click({ force: true })
       .click({ force: true })
@@ -24,7 +26,7 @@ suite('vuex edit', () => {
     })
 
     // using the edit input
-    cy.get('.data-field').eq(0).click()
+    cy.get('.state .data-field').eq(0).click()
       .find('.actions .vue-ui-button').eq(0).click({ force: true })
     cy.get('.edit-input').type('12')
     cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
@@ -34,7 +36,7 @@ suite('vuex edit', () => {
     })
 
     // change count back to 1
-    cy.get('.data-field').eq(0).click()
+    cy.get('.state .data-field').eq(0).click()
       .find('.actions .vue-ui-button').eq(0).click({ force: true })
     cy.get('.edit-input').type('0')
     cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
