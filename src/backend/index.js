@@ -370,10 +370,12 @@ function capture (instance, index, list) {
       renderKey: getRenderKey(instance.key),
       children: instance.children ? instance.children.map(
         child => child.fnContext
-          ? capture(child)
+          ? captureChild(child)
           : child.componentInstance
             ? capture(child.componentInstance)
-            : undefined).filter(Boolean) : [],
+            : undefined
+      ).filter(Boolean) : 
+        instance.componentInstance ? [capture(instance.componentInstance)] : [],
       inactive: false, // TODO: Check what is it for.
       isFragment: false // TODO: Check what is it for.
     }

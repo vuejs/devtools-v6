@@ -43,13 +43,9 @@ socket.on('vue-devtools-disconnect-backend', () => {
 
 const bridge = new Bridge({
   listen (fn) {
-    socket.on('vue-message', data => {
-      console.log('>>> ', data)
-      fn(data)
-    })
+    socket.on('vue-message', data => fn(data))
   },
   send (data) {
-    console.log('<<< ', data)
     socket.emit('vue-message', data)
   }
 })
