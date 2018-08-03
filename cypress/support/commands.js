@@ -33,7 +33,7 @@ Cypress.Commands.add('vueCheckInit', () => {
 
 // Add iframe support until becomes part of the framework
 Cypress.Commands.add('iframe', { prevSubject: 'element' }, $iframe => {
-  const get = selector => cy.wrap($iframe.contents().find(selector))
+  const get = selector => cy.wait(500).wrap($iframe.contents().find(selector))
 
   const el = $iframe[0]
   const iframeDoc = el.contentDocument || el.contentWindow.document

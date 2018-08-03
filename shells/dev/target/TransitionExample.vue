@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="demo">
+    <div data-test-id="transition">
       <button v-on:click="show = !show">
         Toggle
       </button>
@@ -9,7 +9,7 @@
       </transition>
     </div>
 
-    <div id="list-demo">
+    <div data-test-id="transition-list">
       <button v-on:click="++count">Add</button>
       <button v-on:click="--count">Remove</button>
       <transition-group name="list" tag="p">
@@ -25,7 +25,7 @@
 export default {
   data() {
     return {
-      show: false,
+      show: true,
       count: 5
     }
   },
