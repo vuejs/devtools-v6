@@ -209,7 +209,7 @@ function scan () {
         return true
       }
       let instance = node.__vue__
-      
+
       return processInstance(instance)
     })
   } else {
@@ -351,6 +351,10 @@ function capture (instance, index, list) {
     captureCount++
   }
 
+  if (instance.componentInstance) {
+    instance = instance.componentInstance
+  }
+
   // Functional component.
   if (instance.fnContext) {
     const contextUid = instance.fnContext.__VUE_DEVTOOLS_UID__
@@ -374,9 +378,10 @@ function capture (instance, index, list) {
           : child.componentInstance
             ? capture(child.componentInstance)
             : undefined
-      ).filter(Boolean) : 
-        instance.componentInstance ? [capture(instance.componentInstance)] : [],
-      inactive: false, // TODO: Check what is it for.
+      ).filter(Boolean)
+        // router-view has both fnContext and componentInstance on vnode.
+        : instance.componentInstance ? [capture(instance.componentInstance)] : [],
+      inactive: false,
       isFragment: false // TODO: Check what is it for.
     }
   }
@@ -385,15 +390,25 @@ function capture (instance, index, list) {
   // behaviour
   instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
   mark(instance)
+  const name = getInstanceName(instance)
   const ret = {
     id: instance.__VUE_DEVTOOLS_UID__,
-    name: getInstanceName(instance),
+    name,
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: instance._vnode.children
+    children: (instance._vnode.children // prefer vnode.children over $children, as $children does not have functional components.
       ? flatten((instance._vnode.children).map(captureChild))
-      : instance.$children.filter(child => !child._isBeingDestroyed).map(capture)
+      : instance.$children.filter(child => !child._isBeingDestroyed).map(capture))
+      .concat(
+        name === 'keep-alive' && instance.cache
+          // keep-alive maintains a cache of components.
+          ? Object.values(instance.cache).map(capture)
+          // A vnode with different instance.
+          : instance._vnode.componentInstance && instance._vnode.componentInstance !== instance
+            ? [capture(instance._vnode.componentInstance)]
+            : []
+      )
   }
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {

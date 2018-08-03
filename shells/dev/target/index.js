@@ -8,6 +8,7 @@ import Events from './Events.vue'
 import MyClass from './MyClass.js'
 import Router from './Router.vue'
 import router from './router'
+import TransitionExample from './TransitionExample.vue'
 
 window.VUE_DEVTOOLS_CONFIG = {
   openInEditorHost: '/'
@@ -31,7 +32,8 @@ new Vue({
       h(Other),
       h(Events, { key: 'foo' }),
       h(NativeTypes, { key: new Date() }),
-      h(Router, { key: [] })
+      h(Router, { key: [] }),
+      h(TransitionExample)
     ])
   },
   data: {
