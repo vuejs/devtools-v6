@@ -26,10 +26,7 @@ socket.on('vue-devtools-init', () => {
     connect (callback) {
       const wall = {
         listen (fn) {
-          socket.on('vue-message', data => {
-            console.log('devtools <- backend', data)
-            fn(data)
-          })
+          socket.on('vue-message', data => fn(data))
         },
         send (data) {
           console.log('devtools -> backend', data)

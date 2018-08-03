@@ -32,11 +32,9 @@ export function initBackend (_bridge) {
   bridge = _bridge
 
   if (hook.Vue) {
-    console.log('INIT BACKEND: LEGACY')
     isLegacy = hook.Vue.version && hook.Vue.version.split('.')[0] === '1'
     connect(hook.Vue)
   } else {
-    console.log('INIT BACKEND: NEW')
     hook.once('init', connect)
   }
 
@@ -44,7 +42,6 @@ export function initBackend (_bridge) {
 }
 
 function connect (Vue) {
-  console.log('GOT INIT EVENT!!')
   initSharedData({
     bridge,
     Vue
