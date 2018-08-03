@@ -5,8 +5,6 @@
 </template>
 
 <style lang="stylus" scoped>
-@import "../variables"
-
 .action-header
   display flex
   align-items stretch

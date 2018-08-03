@@ -2,7 +2,11 @@
   <div>
     <button class="btn-emit-event" @click="emitEvent">Emit</button>
     <button class="btn-emit-event1" @click="emitEvent1">Emit</button>
-    <button  class="btn-emit-event2" @click="emitEvent2">Emit</button>
+    <button class="btn-emit-event2" @click="emitEvent2">Emit</button>
+
+    <br>
+
+    <button @click="emitManyEvents">Emit a lot of events</button>
   </div>
 </template>
 
@@ -35,6 +39,12 @@ export default {
         }
       }
       this.$emit('event-2', complexData)
+    },
+
+    emitManyEvents () {
+      for (let i = 0; i < 10000; i++) {
+        this.$emit('event', i)
+      }
     }
   }
 }

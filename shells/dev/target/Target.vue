@@ -18,14 +18,25 @@
       >Inspect component</button>
       <span v-if="over" class="over">Mouse over</span>
     </div>
+    <div>
+      <Functional
+        v-for="n in 5"
+        :key="n"
+        :name="`Row ${n}`"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import Other from './Other.vue'
 import MyClass from './MyClass.js'
+import Functional from './Functional.vue'
 export default {
-  components: { Other },
+  components: {
+    Other,
+    Functional
+  },
   props: {
     msg: String,
     obj: null,

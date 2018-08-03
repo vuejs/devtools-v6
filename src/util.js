@@ -490,10 +490,12 @@ export function get (object, path) {
 }
 
 export function scrollIntoView (scrollParent, el, center = true) {
-  const top = el.offsetTop
-  const height = el.offsetHeight
   const parentTop = scrollParent.scrollTop
   const parentHeight = scrollParent.offsetHeight
+  const elBounds = el.getBoundingClientRect()
+  const parentBounds = scrollParent.getBoundingClientRect()
+  const top = elBounds.top - parentBounds.top + scrollParent.scrollTop
+  const height = el.offsetHeight
   if (center) {
     scrollParent.scrollTop = top + (height - parentHeight) / 2
   } else if (top < parentTop) {
@@ -516,8 +518,9 @@ export function openInEditor (file) {
       console.log('File ${fileName} opened in editor')
     } else {
       const msg = 'Opening component ${fileName} failed'
-      if (__VUE_DEVTOOLS_TOAST__) {
-        __VUE_DEVTOOLS_TOAST__(msg, 'error')
+      const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
+      if (target.__VUE_DEVTOOLS_TOAST__) {
+        target.__VUE_DEVTOOLS_TOAST__(msg, 'error')
       } else {
         console.log('%c' + msg, 'color:red')
       }
@@ -548,6 +551,7 @@ function escapeChar (a) {
 }
 
 export function copyToClipboard (state) {
+  if (typeof document === 'undefined') return
   const dummyTextArea = document.createElement('textarea')
   dummyTextArea.textContent = stringify(state)
   document.body.appendChild(dummyTextArea)

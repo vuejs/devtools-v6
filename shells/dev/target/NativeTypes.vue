@@ -60,7 +60,7 @@ const proxy1 = new Proxy(sum, handler)
 export default {
   components: {
     TestComponent: {
-      props: { bar: { default: 'hey' }},
+      props: { bar: { default: 'hey' } },
       data: () => ({ foo: '42' }),
       computed: {
         parentComp () { return this.$parent }

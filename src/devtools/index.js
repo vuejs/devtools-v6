@@ -7,13 +7,15 @@ import { parse } from '../util'
 import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
 import storage from './storage'
+import { snapshotsCache } from './views/vuex/cache'
+import VuexResolve from './views/vuex/resolve'
 
 // UI
 
 let panelShown = !isChrome
 let pendingAction = null
 
-const isDark = isChrome ? chrome.devtools.panels.themeName === 'dark' : false
+const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 const isBeta = process.env.RELEASE_CHANNEL === 'beta'
 
 // Capture and log devtool errors when running as actual extension
@@ -94,10 +96,7 @@ function initApp (shell) {
     initSharedData({
       bridge,
       Vue,
-      storage,
-      persist: [
-        'classifyComponents'
-      ]
+      storage
     })
 
     bridge.once('ready', version => {
@@ -105,7 +104,6 @@ function initApp (shell) {
         'SHOW_MESSAGE',
         'Ready. Detected Vue ' + version + '.'
       )
-      bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
       bridge.send('events:toggle-recording', store.state.events.enabled)
 
       if (isChrome) {
@@ -140,11 +138,34 @@ function initApp (shell) {
       store.commit('vuex/RECEIVE_MUTATION', payload)
     })
 
+    bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
+      snapshotsCache.set(index, snapshot)
+      store.commit('vuex/RECEIVE_STATE', snapshot)
+
+      if (index === -1) {
+        store.commit('vuex/UPDATE_BASE_STATE', snapshot)
+      } else if (store.state.vuex.inspectedIndex === index) {
+        store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+      }
+
+      if (VuexResolve.travel) {
+        VuexResolve.travel(snapshot)
+      }
+
+      requestAnimationFrame(() => {
+        SharedData.snapshotLoading = null
+      })
+    })
+
     bridge.on('event:triggered', payload => {
       store.commit('events/RECEIVE_EVENT', parse(payload))
       if (router.currentRoute.name !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }
+    })
+
+    bridge.on('events:reset', () => {
+      store.commit('events/RESET')
     })
 
     bridge.on('inspect-instance', id => {
@@ -161,14 +182,13 @@ function initApp (shell) {
       store,
 
       data: {
-        isDark,
         isBeta
       },
 
       watch: {
-        isDark: {
+        '$shared.theme': {
           handler (value) {
-            if (value) {
+            if (value === 'dark' || (value === 'auto' && chromeTheme === 'dark')) {
               document.body.classList.add('vue-ui-dark-mode')
             } else {
               document.body.classList.remove('vue-ui-dark-mode')

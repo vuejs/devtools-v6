@@ -49,8 +49,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
-
 section:not(:last-child)
   border-bottom 1px solid $border-color
   .vue-ui-dark-mode &

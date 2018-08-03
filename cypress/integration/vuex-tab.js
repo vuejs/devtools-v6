@@ -11,11 +11,14 @@ suite('vuex tab', () => {
     })
     cy.get('.vuex-tab').click()
     cy.get('.history .entry').should('have.length', 4)
+    cy.get('[data-id="load-vuex-state"]').click()
+    cy.get('.recording-vuex-state').should('not.be.visible')
+    cy.get('.loading-vuex-state').should('not.be.visible')
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('type:"DECREMENT"')
       expect(el.text()).to.include('count:1')
     })
-    cy.get('.history .entry:nth-child(4)').should('have.class', 'inspected').should('have.class', 'active')
+    cy.get('.history .entry').eq(3).should('have.class', 'inspected').should('have.class', 'active')
   })
 
   it('should filter state & getters', () => {
@@ -28,28 +31,30 @@ suite('vuex tab', () => {
 
   it('should filter history', () => {
     cy.get('.left .search input').clear().type('inc')
-    cy.get('.history .entry').should('have.length', 3)
-    cy.get('.history .entry.inspected').should('have.length', 1)
-    cy.get('.history .entry.active').should('have.length', 0)
+    cy.get('.history .entry[data-active="true"]').should('have.length', 2)
+    cy.get('.history .entry[data-active="true"].inspected').should('have.length', 0)
+    cy.get('.history .entry[data-active="true"].active').should('have.length', 0)
 
     cy.get('.left .search input').clear().type('/dec/i')
-    cy.get('.history .entry').should('have.length', 2)
-    cy.get('.history .entry.inspected').should('have.length', 1)
-    cy.get('.history .entry.active').should('have.length', 0)
+    cy.get('.history .entry[data-active="true"]').should('have.length', 1)
+    cy.get('.history .entry[data-active="true"].inspected').should('have.length', 0)
+    cy.get('.history .entry[data-active="true"].active').should('have.length', 0)
 
     cy.get('.left .search input').clear().type('/dec)/i')
-    cy.get('.history .entry').should('have.length', 4)
-    cy.get('.history .entry.inspected').should('have.length', 1)
-    cy.get('.history .entry.active').should('have.length', 1)
+    cy.get('.history .entry[data-active="true"]').should('have.length', 3)
+    cy.get('.history .entry[data-active="true"].inspected').should('have.length', 0)
+    cy.get('.history .entry[data-active="true"].active').should('have.length', 1)
 
     cy.get('.left .search input').clear()
   })
 
   it('should inspect state', () => {
-    cy.get('.history .entry:nth-child(3) .mutation-type').click()
-    cy.get('.history .entry:nth-child(3)')
+    cy.get('.history .entry .mutation-type').eq(2).click()
+    cy.get('.history .entry').eq(2)
       .should('have.class', 'inspected')
       .should('not.have.class', 'active')
+    cy.get('.recording-vuex-state').should('not.be.visible')
+    cy.get('.loading-vuex-state').should('not.be.visible')
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('type:"INCREMENT"')
       expect(el.text()).to.include('count:2')
@@ -60,21 +65,24 @@ suite('vuex tab', () => {
   })
 
   it('should time-travel', () => {
-    cy.get('.history .entry:nth-child(3) .entry-actions .action:nth-child(3)').click({ force: true })
-    cy.get('.history .entry:nth-child(3)')
+    cy.get('.history .entry[data-index="2"] .entry-actions .action:nth-child(3)').click({ force: true })
+    cy.get('.history .entry[data-index="2"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('2')
     })
 
-    cy.get('.history .entry:nth-child(2) .mutation-type').click({ force: true })
-    cy.get('.history .entry:nth-child(2)')
+    cy.get('.history .entry[data-index="1"] .mutation-type').click({ force: true })
+    cy.get('.history .entry[data-index="1"]')
       .should('have.class', 'inspected')
       .should('not.have.class', 'active')
-    cy.get('.history .entry:nth-child(3)')
+    cy.get('.history .entry[data-index="2"]')
       .should('not.have.class', 'inspected')
       .should('have.class', 'active')
+    cy.get('.recording-vuex-state').should('not.be.visible')
+    cy.get('.loading-vuex-state').should('not.be.visible')
+    cy.get('.recording-vuex-state').should('not.be.visible')
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('type:"INCREMENT"')
       expect(el.text()).to.include('count:1')
@@ -82,11 +90,11 @@ suite('vuex tab', () => {
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('2')
     })
-    cy.get('.history .entry:nth-child(2) .entry-actions .action:nth-child(3)').click({ force: true })
-    cy.get('.history .entry:nth-child(2)')
+    cy.get('.history .entry[data-index="1"] .entry-actions .action:nth-child(3)').click({ force: true })
+    cy.get('.history .entry[data-index="1"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
-    cy.get('.history .entry:nth-child(3)')
+    cy.get('.history .entry[data-index="2"]')
       .should('not.have.class', 'inspected')
       .should('not.have.class', 'active')
     cy.get('#target').iframe().then(({ get }) => {
@@ -94,8 +102,8 @@ suite('vuex tab', () => {
     })
 
     // Base state
-    cy.get('.history .entry:nth-child(1) .mutation-type').click({ force: true })
-    cy.get('.history .entry:nth-child(1)')
+    cy.get('.history .entry[data-index="0"] .mutation-type').click({ force: true })
+    cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
       .should('not.have.class', 'active')
     cy.get('.vuex-state-inspector').then(el => {
@@ -104,8 +112,8 @@ suite('vuex tab', () => {
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('1')
     })
-    cy.get('.history .entry:nth-child(1) .entry-actions .action:nth-child(1)').click({ force: true })
-    cy.get('.history .entry:nth-child(1)')
+    cy.get('.history .entry[data-index="0"] .entry-actions .action:nth-child(1)').click({ force: true })
+    cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
     cy.get('#target').iframe().then(({ get }) => {
@@ -114,10 +122,10 @@ suite('vuex tab', () => {
   })
 
   it('should revert', () => {
-    cy.get('.history .entry:nth-child(4) .mutation-type').click({ force: true })
-    cy.get('.history .entry:nth-child(4) .action:nth-child(2)').click({ force: true })
-    cy.get('.history .entry').should('have.length', 3)
-    cy.get('.history .entry:nth-child(3)')
+    cy.get('.history .entry[data-index="3"] .mutation-type').click({ force: true })
+    cy.get('.history .entry[data-index="3"]').find('.action:nth-child(2)').click({ force: true })
+    cy.get('.history .entry[data-active="true"]').should('have.length', 3)
+    cy.get('.history .entry[data-index="2"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
     cy.get('.vuex-state-inspector').then(el => {
@@ -129,10 +137,10 @@ suite('vuex tab', () => {
   })
 
   it('should commit', () => {
-    cy.get('.history .entry:nth-child(3) .mutation-type').click({ force: true })
-    cy.get('.history .entry:nth-child(3) .action:nth-child(1)').click({ force: true })
-    cy.get('.history .entry').should('have.length', 1)
-    cy.get('.history .entry:nth-child(1)')
+    cy.get('.history .entry[data-index="2"] .mutation-type').click({ force: true })
+    cy.get('.history .entry[data-index="2"] .action:nth-child(1)').click({ force: true })
+    cy.get('.history .entry[data-active="true"]').should('have.length', 1)
+    cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
     cy.get('.vuex-state-inspector').then(el => {
@@ -153,7 +161,9 @@ suite('vuex tab', () => {
         .click({ force: true })
         .click({ force: true })
     })
-    cy.get('.history .entry:nth-child(4)').click({ force: true })
+    cy.get('.history .entry[data-index="3"]').click({ force: true })
+    cy.get('.recording-vuex-state').should('not.be.visible')
+    cy.get('.loading-vuex-state').should('not.be.visible')
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('isPositive:false')
     })
