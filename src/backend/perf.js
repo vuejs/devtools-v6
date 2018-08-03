@@ -43,6 +43,6 @@ function frameInterval () {
     end: frameTime = performance.now()
   }
   metric.value = Math.round(frames / (metric.end - metric.start) * 1000)
-  bridge.send('perf:add-metric', metric)
   frames = 0
+  bridge.send('perf:add-metric', metric)
 }

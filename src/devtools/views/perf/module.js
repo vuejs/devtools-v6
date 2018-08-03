@@ -1,3 +1,5 @@
+import { parse } from 'src/util'
+
 export default {
   namespaced: true,
 
@@ -14,7 +16,7 @@ export default {
       let markers = {}
       if (!currentBenchmark) return markers
 
-      const addEntries = (type, list) => {
+      const addEntries = (type, list, getInfo) => {
         for (const entry of list) {
           if (
             entry.timestamp < currentBenchmark.start ||
@@ -31,15 +33,35 @@ export default {
             type,
             entries: []
           }
-          bubble.entries.push(entry)
+          bubble.entries.push({
+            ...getInfo(entry),
+            timestamp: entry.timestamp
+          })
         }
       }
 
       const { history } = rootState.vuex
-      addEntries('mutations', history)
+      addEntries('mutations', history, entry => ({
+        label: entry.mutation.type,
+        state: {
+          'mutation info': {
+            payload: parse(entry.mutation.payload)
+          }
+        }
+      }))
 
       const { events } = rootState.events
-      addEntries('events', events)
+      addEntries('events', events, entry => ({
+        label: entry.eventName,
+        state: {
+          'event info': {
+            name: entry.eventName,
+            type: entry.type,
+            source: `<${entry.instanceName}>`,
+            payload: entry.payload
+          }
+        }
+      }))
 
       return markers
     }

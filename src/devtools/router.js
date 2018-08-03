@@ -6,7 +6,7 @@ import VuexTab from './views/vuex/VuexTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import PerfTab from './views/perf/PerfTab.vue'
 import ComponentRenderStats from './views/perf/ComponentRenderStats.vue'
-import FramesPerSecondGraph from './views/perf/FramesPerSecondGraph.vue'
+import FramerateGraph from './views/perf/FramerateGraph.vue'
 import SettingsTab from './views/settings/SettingsTab.vue'
 
 Vue.use(VueRouter)
@@ -39,7 +39,7 @@ const routes = [
       {
         path: 'fps',
         name: 'fps',
-        component: FramesPerSecondGraph
+        component: FramerateGraph
       },
       {
         path: 'component-render',

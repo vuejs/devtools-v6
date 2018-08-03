@@ -1,58 +1,75 @@
 <template>
-  <div class="fps">
+  <SplitPane class="fps">
     <div
-      v-if="metrics.fps"
-      ref="chart"
-      class="chart"
-      :class="{
-        recording: $shared.recordPerf
-      }"
-      @wheel="onMouseWheel"
+      slot="left"
+      style="height: 100%"
     >
-      <div class="markers">
-        <div
-          v-for="marker of fpsMarkers"
-          :key="marker.time"
-          :style="getMarkerStyle(marker)"
-          class="marker"
-        >
+      <div
+        v-if="metrics.fps"
+        ref="chart"
+        class="chart"
+        :class="{
+          recording: $shared.recordPerf
+        }"
+        @wheel="onMouseWheel"
+      >
+        <div class="markers">
           <div
-            v-for="bubble of marker.bubbles"
-            :key="bubble.type"
-            v-tooltip="`${bubble.entries.length} ${bubble.type}`"
-            :style="getBubbleStyle(bubble)"
-            class="bubble"
+            v-for="marker of fpsMarkers"
+            :key="marker.time"
+            :style="getMarkerStyle(marker)"
+            class="marker"
+            :class="{
+              selected: selectedMarker === marker
+            }"
+            @click="selectedMarker = marker"
           >
-            <div class="label">
-              {{ bubble.type.charAt(0) }}
+            <div
+              v-for="bubble of marker.bubbles"
+              :key="bubble.type"
+              v-tooltip="`${bubble.entries.length} ${bubble.type}`"
+              :style="getBubbleStyle(bubble)"
+              class="bubble"
+            >
+              <div class="label">
+                {{ bubble.type.charAt(0) }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="row bars">
-        <div
-          v-for="(metric, index) of metrics.fps"
-          :key="index"
-          v-tooltip="{
-            content: getBarTootip(metric),
-            delay: { show: 100, hide: 0 }
-          }"
-          class="bar-wrapper"
-        >
+        <div class="row bars">
           <div
-            :style="getMetricStyle(metric)"
-            class="bar"
-          />
+            v-for="(metric, index) of metrics.fps"
+            :key="index"
+            v-tooltip="{
+              content: getBarTootip(metric),
+              delay: { show: 100, hide: 0 }
+            }"
+            class="bar-wrapper"
+          >
+            <div
+              :style="getMetricStyle(metric)"
+              class="bar"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <FramerateMarkerInspector
+      slot="right"
+      :marker="selectedMarker"
+    />
+  </SplitPane>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex'
 import * as d3 from 'd3'
+
+import SplitPane from 'components/SplitPane.vue'
+import FramerateMarkerInspector from './FramerateMarkerInspector.vue'
 
 const BUBBLE_COLORS = {
   mutations: '#FF6B00',
@@ -62,6 +79,17 @@ const BUBBLE_COLORS = {
 const WIDTH_HALF_SECOND = 12
 
 export default {
+  components: {
+    SplitPane,
+    FramerateMarkerInspector
+  },
+
+  data () {
+    return {
+      selectedMarker: null
+    }
+  },
+
   computed: {
     ...mapState('perf', [
       'currentBenchmark'
@@ -165,15 +193,20 @@ export default {
 .marker
   position absolute
   top 0
-  padding-top 10px
+  padding-top 8px
   display flex
   flex-direction column
   align-items center
+  cursor pointer
+  height 100%
+  &:hover
+    background rgba($vue-ui-color-primary, .1)
+  &.selected
+    background $vue-ui-color-primary
   .bubble
     width 11px
     height @width
     border-radius 50%
-    cursor pointer
     &:not(:last-child)
       margin-bottom 5px
   .label
