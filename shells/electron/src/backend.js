@@ -2,8 +2,8 @@ import io from 'socket.io-client'
 import { initBackend } from 'src/backend'
 import Bridge from 'src/bridge'
 import { installToast } from 'src/backend/toast'
+import { target } from 'src/devtools/env'
 
-const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
 const host = target.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
 const port = target.__VUE_DEVTOOLS_PORT__ !== undefined ? target.__VUE_DEVTOOLS_PORT__ : 8098
 const fullHost = port ? host + ':' + port : host

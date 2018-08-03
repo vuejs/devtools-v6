@@ -1,15 +1,13 @@
 import { inDoc, classify, getComponentName } from '../util'
 import { getInstanceName } from './index'
 import SharedData from 'src/shared-data'
+import { isBrowser, target } from '../devtools/env'
 
-const isBrowser = typeof window !== 'undefined'
-const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
 let overlay
 let overlayContent
 
 function init () {
-  if (init.isInitialized) return
-  if (!isBrowser) return
+  if (overlay || !isBrowser) return
   overlay = document.createElement('div')
   overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
   overlay.style.position = 'fixed'
@@ -27,8 +25,6 @@ function init () {
   overlayContent.style.borderRadius = '3px'
   overlayContent.style.color = 'white'
   overlay.appendChild(overlayContent)
-
-  init.isInitialized = true
 }
 
 /**
@@ -130,19 +126,20 @@ function getFragmentRect ({ _fragmentStart, _fragmentEnd }) {
   }
 }
 
+let range
 /**
  * Get the bounding rect for a text node using a Range.
  *
  * @param {Text} node
  * @return {Rect}
  */
-
 function getTextRect (node) {
   if (!isBrowser) return
-  if (getTextRect.range) getTextRect.range = document.createRange()
-  getTextRect.range.selectNode(node)
+  if (!range) range = document.createRange()
 
-  return getTextRect.range.getBoundingClientRect()
+  range.selectNode(node)
+
+  return range.getBoundingClientRect()
 }
 
 /**
@@ -153,6 +150,7 @@ function getTextRect (node) {
 
 function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = '') {
   if (!isBrowser) return
+
   overlay.style.width = ~~width + 'px'
   overlay.style.height = ~~height + 'px'
   overlay.style.top = ~~top + 'px'

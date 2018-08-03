@@ -1,6 +1,10 @@
 require('./build/hook.js')
 
-const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
+const target = typeof window !== 'undefined'
+  ? window
+  : typeof global !== 'undefined'
+    ? global
+    : {}
 
 module.exports = {
   connect: function (host, port, { io, showToast, app } = {}) {

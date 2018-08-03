@@ -1,7 +1,6 @@
 import { highlight, unHighlight } from './highlighter'
 import { findRelatedComponent } from './utils'
-
-const isBrowser = typeof window !== 'undefined'
+import { isBrowser } from '../devtools/env'
 
 export default class ComponentSelector {
   constructor (bridge, instanceMap) {

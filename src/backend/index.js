@@ -8,9 +8,8 @@ import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
+import { isBrowser, target } from 'src/devtools/env'
 
-const isBrowser = typeof window !== 'undefined'
-const target = isBrowser ? window : typeof global !== 'undefined' ? global : {}
 // hook should have been injected before this executes.
 const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
