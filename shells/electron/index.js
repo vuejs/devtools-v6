@@ -13,7 +13,8 @@ module.exports = {
     require('./build/backend.js')
   },
   init: (Vue) => {
-    console.log('FORCE INIT!')
-    target.__VUE_DEVTOOLS_GLOBAL_HOOK__.emit('init', Vue)
+    const tools = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
+
+    tools.emit('init', Vue)
   }
 }
