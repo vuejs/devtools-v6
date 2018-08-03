@@ -24,7 +24,7 @@ export default {
           ) {
             continue
           }
-          const time = Math.round(entry.timestamp / 500) * 500
+          const time = Math.round(entry.timestamp / 2000) * 2000
           let marker = markers[time] = markers[time] || {
             time,
             bubbles: {}

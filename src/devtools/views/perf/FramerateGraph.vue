@@ -8,9 +8,6 @@
         v-if="metrics.fps"
         ref="chart"
         class="chart"
-        :class="{
-          recording: $shared.recordPerf
-        }"
         @wheel="onMouseWheel"
       >
         <div class="markers">
@@ -158,7 +155,7 @@ export default {
     },
 
     getMarkerStyle (marker) {
-      const start = Math.round(this.currentBenchmark.start / 500) * 500
+      const start = Math.round(this.currentBenchmark.start / 2000) * 2000
       return {
         left: `${(marker.time - start) / 500 * WIDTH_HALF_SECOND - 12}px`
       }
@@ -177,7 +174,7 @@ export default {
     },
 
     onMetricClick (metric) {
-      const index = Math.round(metric.time / 500) * 500
+      const index = Math.round(metric.time / 2000) * 2000
       this.selectedMarker = this.fpsMarkers[index]
     }
   }
@@ -193,64 +190,49 @@ export default {
   flex-direction column
   height 100%
   overflow-x auto
-  &.recording
-    .bar
-      animation bar .15s ease-out
 
 .row
   display flex
 
 .markers
-  position absolute
-  top 0
-  left 0
-  height 100%
+  flex 80px 0 0
+  position relative
 
 .marker
   position absolute
   top 0
-  padding-top 8px
+  padding-bottom 8px
   display flex
   flex-direction column
+  justify-content flex-end
   align-items center
   cursor pointer
   height 100%
   pointer-events none
   &:hover
-    &::before
-      background rgba($vue-ui-color-primary, .5)
     .bubble
       transform scale(1.2)
   &.selected
-    &::before
-      background $vue-ui-color-primary
     .bubble
       background $vue-ui-color-primary !important
-  &::before
-    content ''
-    display block
-    position absolute
-    top 0
-    left 4px
-    width 3px
-    height 100%
+      transform scale(1.3)
   .bubble
     position relative
     z-index 1
     pointer-events all
-    width 11px
+    width 18px
     height @width
     border-radius 50%
     transition transform .2s ease-in-out
     &:not(:last-child)
       margin-bottom 5px
   .label
-    font-size 9px
+    font-size 11px
     line-height @font-size
     color $md-white
     text-align center
     position relative
-    top 2px
+    top 4px
     text-transform uppercase
     font-weight bold
 
@@ -261,7 +243,6 @@ export default {
   display flex
   align-items flex-end
   height 100%
-  padding-top 60px
   &:hover
     background rgba($vue-ui-color-primary, .1)
     .bar
@@ -270,13 +251,4 @@ export default {
 .bar
   flex auto 0 0
   min-width 12px
-  transform-origin bottom center
-
-@keyframes bar
-  0%
-    transform scaleY(.8)
-    opacity 0
-  100%
-    transform none
-    opacity 1
 </style>
