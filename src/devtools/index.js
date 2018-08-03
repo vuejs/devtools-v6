@@ -174,6 +174,10 @@ function initApp (shell) {
       })
     })
 
+    bridge.on('perf:add-metric', data => {
+      store.commit('perf/ADD_METRIC', data)
+    })
+
     initEnv(Vue)
 
     app = new Vue({

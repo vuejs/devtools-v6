@@ -4,6 +4,7 @@
 import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
@@ -122,6 +123,9 @@ function connect (Vue) {
 
   // events
   initEventsBackend(Vue, bridge)
+
+  // perf
+  initPerfBackend(Vue, bridge)
 
   window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 

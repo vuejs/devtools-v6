@@ -7,7 +7,8 @@ const internalSharedData = {
   recordVuex: true,
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
-  snapshotLoading: null
+  snapshotLoading: null,
+  recordPerf: false
 }
 
 const persisted = [
@@ -82,6 +83,10 @@ function sendValue (key, value) {
     key,
     value
   })
+}
+
+export function watch (...args) {
+  vm.$watch(...args)
 }
 
 // Proxy traps
