@@ -27,7 +27,10 @@
             <div
               v-for="bubble of marker.bubbles"
               :key="bubble.type"
-              v-tooltip="`${bubble.entries.length} ${bubble.type}`"
+              v-tooltip="{
+                content: `${bubble.entries.length} ${bubble.type}`,
+                delay: { show: 100, hide: 0 }
+              }"
               :style="getBubbleStyle(bubble)"
               class="bubble"
             >
@@ -47,6 +50,7 @@
               delay: { show: 100, hide: 0 }
             }"
             class="bar-wrapper"
+            @click="onMetricClick(metric)"
           >
             <div
               :style="getMetricStyle(metric)"
@@ -128,6 +132,10 @@ export default {
         const el = this.$refs.chart
         el.scrollLeft = 9999
       })
+    },
+
+    currentBenchmark () {
+      this.selectedMarker = null
     }
   },
 
@@ -150,8 +158,9 @@ export default {
     },
 
     getMarkerStyle (marker) {
+      const start = Math.round(this.currentBenchmark.start / 500) * 500
       return {
-        left: `${(marker.time - this.currentBenchmark.start) / 500 * WIDTH_HALF_SECOND}px`
+        left: `${(marker.time - start) / 500 * WIDTH_HALF_SECOND - 12}px`
       }
     },
 
@@ -165,6 +174,11 @@ export default {
       const el = this.$refs.chart
       el.scrollLeft += ((event.deltaX || event.deltaY) * 5)
       event.preventDefault()
+    },
+
+    onMetricClick (metric) {
+      const index = Math.round(metric.time / 500) * 500
+      this.selectedMarker = this.fpsMarkers[index]
     }
   }
 }
@@ -181,14 +195,16 @@ export default {
   overflow-x auto
   &.recording
     .bar
-      animation bar .3s ease-out
+      animation bar .15s ease-out
 
 .row
   display flex
 
 .markers
-  flex 60px 0 0
-  position relative
+  position absolute
+  top 0
+  left 0
+  height 100%
 
 .marker
   position absolute
@@ -199,14 +215,33 @@ export default {
   align-items center
   cursor pointer
   height 100%
+  pointer-events none
   &:hover
-    background rgba($vue-ui-color-primary, .1)
+    &::before
+      background rgba($vue-ui-color-primary, .5)
+    .bubble
+      transform scale(1.2)
   &.selected
-    background $vue-ui-color-primary
+    &::before
+      background $vue-ui-color-primary
+    .bubble
+      background $vue-ui-color-primary !important
+  &::before
+    content ''
+    display block
+    position absolute
+    top 0
+    left 4px
+    width 3px
+    height 100%
   .bubble
+    position relative
+    z-index 1
+    pointer-events all
     width 11px
     height @width
     border-radius 50%
+    transition transform .2s ease-in-out
     &:not(:last-child)
       margin-bottom 5px
   .label
@@ -226,6 +261,7 @@ export default {
   display flex
   align-items flex-end
   height 100%
+  padding-top 60px
   &:hover
     background rgba($vue-ui-color-primary, .1)
     .bar
@@ -238,7 +274,7 @@ export default {
 
 @keyframes bar
   0%
-    transform scaleY(0)
+    transform scaleY(.8)
     opacity 0
   100%
     transform none

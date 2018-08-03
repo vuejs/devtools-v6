@@ -28,7 +28,8 @@
             }"
             @click="selectedEntry = entry"
           >
-            {{ entry.label }}
+            <div class="label">{{ entry.label }}</div>
+            <div class="time">{{ entry.timestamp | formatTime }}</div>
           </div>
         </div>
       </div>
@@ -37,6 +38,7 @@
         v-if="selectedEntry"
         slot="right"
         :state="selectedEntry.state"
+        class="state-inspector"
       />
     </SplitPane>
   </div>
@@ -74,6 +76,15 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.framerate-marker-inspector
+  height 100%
+  overflow hidden
+
+.entries,
+.state-inspector
+  height 100%
+  overflow-y auto
+
 .group-title,
 .entry
   padding 7px 12px 6px
@@ -88,8 +99,15 @@ export default {
 
 .entry
   font-size 12px
-  color $pink
   font-family Menlo, Consolas, monospace
+  display flex
+  .label
+    flex auto 1 1
+    color $pink
+  .time
+    color $md-grey-500
   &.selected
-    color $white
+    .label,
+    .time
+      color $white
 </style>
