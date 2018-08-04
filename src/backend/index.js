@@ -124,9 +124,6 @@ function connect (Vue) {
   // events
   initEventsBackend(Vue, bridge)
 
-  // perf
-  initPerfBackend(Vue, bridge)
-
   window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   // User project devtools config
@@ -148,7 +145,12 @@ function connect (Vue) {
     'background:transparent'
   )
 
-  setTimeout(scan, 0)
+  setTimeout(() => {
+    scan()
+
+    // perf
+    initPerfBackend(Vue, bridge, instanceMap)
+  }, 0)
 }
 
 export function findInstanceOrVnode (id) {

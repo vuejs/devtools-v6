@@ -183,6 +183,10 @@ function initApp (shell) {
       store.commit('perf/ADD_METRIC', data)
     })
 
+    bridge.on('perf:upsert-metric', ({ type, data }) => {
+      store.commit('perf/UPSERT_METRIC', { type, data })
+    })
+
     initEnv(Vue)
 
     app = new Vue({

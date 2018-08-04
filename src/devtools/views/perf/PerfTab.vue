@@ -8,15 +8,15 @@
         <VueButton
           v-if="!$shared.recordPerf"
           v-tooltip="'Start benchmark'"
-          icon-left="play_arrow"
+          icon-left="lens"
           class="icon-button flat"
           @click="start()"
         />
         <VueButton
           v-else
           v-tooltip="'Stop benchmark'"
-          icon-left="stop"
-          class="icon-button flat"
+          icon-left="lens"
+          class="icon-button flat stop-button"
           @click="stop()"
         />
 
@@ -38,9 +38,16 @@
             v-if="!benchmarks.length"
             class="vue-ui-empty"
           >
-            No saved benchmark
+            No saved benchmark yet
           </div>
         </VueSelect>
+
+        <div
+          v-if="currentBenchmark && $responsive.width > 900"
+          class="benchmark-duration"
+        >
+          Total duration: {{ Math.round(benchmarkDuration / 1000) }}s
+        </div>
 
         <div class="vue-ui-spacer" />
 
@@ -81,6 +88,12 @@ export default {
     ActionHeader
   },
 
+  data () {
+    return {
+      now: Date.now()
+    }
+  },
+
   computed: {
     ...mapState('perf', [
       'currentBenchmark',
@@ -96,6 +109,18 @@ export default {
       get () { return this.$route.name },
       set (value) {
         this.$router.push({ name: value })
+      }
+    },
+
+    benchmarkDuration () {
+      if (this.currentBenchmark) {
+        let end
+        if (this.currentBenchmark.end) {
+          end = this.currentBenchmark.end
+        } else {
+          end = this.now
+        }
+        return end - this.currentBenchmark.start
       }
     }
   },
@@ -126,7 +151,11 @@ export default {
       this.addBenchmark(benchmark)
       this.currentBenchmarkModel = benchmark
       this.$shared.recordPerf = true
+      this.now = Date.now()
       this.$_timer = setTimeout(() => this.stop(), MAX_DURATION)
+      this.$_secondTimer = setInterval(() => {
+        this.now = Date.now()
+      }, 1000)
     },
 
     stop () {
@@ -134,6 +163,7 @@ export default {
         end: Date.now()
       })
       clearTimeout(this.$_timer)
+      clearInterval(this.$_secondTimer)
       this.$shared.recordPerf = false
     }
   }
@@ -143,4 +173,23 @@ export default {
 <style lang="stylus" scoped>
 .saved-benchmarks-select
   width 250px
+
+.stop-button
+  >>> .vue-ui-icon
+    border-radius 50%
+    filter drop-shadow(0 0 3px rgba(255, 0, 0, .4))
+    animation pulse 3s linear infinite
+    svg
+      fill red !important
+
+@keyframes pulse
+  0%
+    opacity 1
+  50%
+    opacity .5
+  100%
+    opacity 1
+
+.benchmark-duration
+  margin-left 32px
 </style>

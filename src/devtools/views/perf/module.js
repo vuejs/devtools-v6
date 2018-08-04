@@ -84,6 +84,16 @@ export default {
 
     'ADD_METRIC' (state, metric) {
       state.currentBenchmark.metrics[metric.type].push(metric)
+    },
+
+    'UPSERT_METRIC' (state, { type, data }) {
+      const list = state.currentBenchmark.metrics[type]
+      const metric = list.find(m => m.id === data.id)
+      if (metric) {
+        Object.assign(metric, data)
+      } else {
+        list.push(data)
+      }
     }
   }
 }
