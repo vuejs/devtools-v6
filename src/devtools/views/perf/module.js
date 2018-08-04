@@ -1,5 +1,7 @@
 import { parse } from 'src/util'
 
+export const FPS_MARKERS_PRECISION = 1000
+
 export default {
   namespaced: true,
 
@@ -24,7 +26,7 @@ export default {
           ) {
             continue
           }
-          const time = Math.round(entry.timestamp / 2000) * 2000
+          const time = Math.round(entry.timestamp / FPS_MARKERS_PRECISION) * FPS_MARKERS_PRECISION
           let marker = markers[time] = markers[time] || {
             time,
             bubbles: {}

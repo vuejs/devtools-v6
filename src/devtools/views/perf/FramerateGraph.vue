@@ -68,6 +68,8 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import * as d3 from 'd3'
+import { FPS_MARKERS_PRECISION } from './module'
+import { formatTime } from 'filters'
 
 import SplitPane from 'components/SplitPane.vue'
 import FramerateMarkerInspector from './FramerateMarkerInspector.vue'
@@ -77,7 +79,10 @@ const BUBBLE_COLORS = {
   events: '#997fff'
 }
 
-const WIDTH_HALF_SECOND = 12
+// In ms
+const SLICE_TIME = 500
+// In pixels
+const SLICE_WIDTH = 12
 
 export default {
   components: {
@@ -125,10 +130,12 @@ export default {
 
   watch: {
     'metrics.fps' () {
-      requestAnimationFrame(() => {
-        const el = this.$refs.chart
-        el.scrollLeft = 9999
-      })
+      const el = this.$refs.chart
+      if (el.scrollLeft === el.scrollWidth - el.offsetWidth) {
+        requestAnimationFrame(() => {
+          el.scrollLeft = 9999
+        })
+      }
     },
 
     currentBenchmark () {
@@ -141,7 +148,7 @@ export default {
       const { value, start, end } = metric
       const duration = end - start
       return {
-        width: `${duration / 500 * WIDTH_HALF_SECOND}px`,
+        width: `${duration / SLICE_TIME * SLICE_WIDTH}px`,
         height: `${this.scale(value)}%`,
         backgroundColor: this.interpolateColor(this.scale(value) / 100)
       }
@@ -150,14 +157,14 @@ export default {
     getBarTootip (metric) {
       return `
       <div>${metric.value} frames per second</div>
-      <div style="color:grey;">${new Date(metric.time).toLocaleString()}</div>
+      <div style="color:#999;">${formatTime(metric.time)}</div>
       `
     },
 
     getMarkerStyle (marker) {
-      const start = Math.round(this.currentBenchmark.start / 2000) * 2000
+      const start = Math.round(this.currentBenchmark.start / FPS_MARKERS_PRECISION) * FPS_MARKERS_PRECISION
       return {
-        left: `${(marker.time - start) / 500 * WIDTH_HALF_SECOND - 12}px`
+        left: `${(marker.time - start) / SLICE_TIME * SLICE_WIDTH - 12}px`
       }
     },
 
@@ -174,7 +181,7 @@ export default {
     },
 
     onMetricClick (metric) {
-      const index = Math.round(metric.time / 2000) * 2000
+      const index = Math.round(metric.time / FPS_MARKERS_PRECISION) * FPS_MARKERS_PRECISION
       this.selectedMarker = this.fpsMarkers[index]
     }
   }
