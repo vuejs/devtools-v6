@@ -132,9 +132,7 @@ export default {
     'metrics.fps' () {
       const el = this.$refs.chart
       if (el && el.scrollLeft >= el.scrollWidth - el.offsetWidth - 100) {
-        requestAnimationFrame(() => {
-          el.scrollLeft = 9999
-        })
+        this.scrollToEnd()
       }
     },
 
@@ -143,7 +141,18 @@ export default {
     }
   },
 
+  mounted () {
+    this.scrollToEnd()
+  },
+
   methods: {
+    scrollToEnd () {
+      requestAnimationFrame(() => {
+        const el = this.$refs.chart
+        if (el) el.scrollLeft = 9999
+      })
+    },
+
     getMetricStyle (metric) {
       const { value, start, end } = metric
       const duration = end - start
