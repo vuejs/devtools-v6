@@ -131,7 +131,7 @@ export default {
   watch: {
     'metrics.fps' () {
       const el = this.$refs.chart
-      if (el.scrollLeft === el.scrollWidth - el.offsetWidth) {
+      if (el && el.scrollLeft >= el.scrollWidth - el.offsetWidth - 100) {
         requestAnimationFrame(() => {
           el.scrollLeft = 9999
         })
