@@ -7,7 +7,7 @@
 <style lang="stylus" scoped>
 .action-header
   display flex
-  align-items stretch
+  align-items center
   padding 0 10px
   font-size 12px
   border-bottom 1px solid $border-color
@@ -17,6 +17,10 @@
     height 50px
   .vue-ui-dark-mode &
     border-bottom 1px solid $dark-border-color
+  &.no-search
+    .button
+      &:first-of-type
+        margin-left 0
 
 .title
   display flex
@@ -70,6 +74,10 @@
     display none
     @media (min-width: $wide)
       display inline
+
+.vue-ui-button
+  &:not(:last-child)
+    margin-right 6px
 
 .search
   display flex

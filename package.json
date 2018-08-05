@@ -39,6 +39,7 @@
     "@vue/ui": "^0.5.1",
     "autoprefixer": "^9.0.2",
     "circular-json-es6": "^2.0.1",
+    "d3": "^5.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
     "lru-cache": "^4.1.3",

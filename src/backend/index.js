@@ -4,6 +4,7 @@
 import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
@@ -144,7 +145,12 @@ function connect (Vue) {
     'background:transparent'
   )
 
-  setTimeout(scan, 0)
+  setTimeout(() => {
+    scan()
+
+    // perf
+    initPerfBackend(Vue, bridge, instanceMap)
+  }, 0)
 }
 
 export function findInstanceOrVnode (id) {
