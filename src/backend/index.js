@@ -478,7 +478,7 @@ function getInstanceDetails (id) {
       id,
       name: getComponentName(vnode.fnOptions),
       file: vnode.fnOptions.__file || null,
-      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.props) }),
+      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.renderContext.props) }),
       functional: true
     }
 
