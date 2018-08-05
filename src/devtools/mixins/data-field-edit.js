@@ -89,7 +89,7 @@ export default {
     },
 
     duplicateKey () {
-      return this.parentField.value.hasOwnProperty(this.editedKey)
+      return this.parentField && this.parentField.value.hasOwnProperty(this.editedKey)
     },
 
     keyValid () {
