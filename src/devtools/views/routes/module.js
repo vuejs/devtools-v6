@@ -40,6 +40,13 @@ const getters = {
     }
     return state.routeChanges[state.inspectedIndex]
   },
+  activeRoute: (state, getters, rootState) => {
+    return state.routeChanges.find(
+      change => rootState.router.routeChanges.find(
+        historyChange => historyChange.to.path === change.path
+      )
+    )
+  },
   filteredRoutes: state => {
     return state.routeChanges.filter(routeChange => {
       return routeChange.path.indexOf(state.filter) > -1

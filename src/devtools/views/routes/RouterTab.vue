@@ -1,11 +1,14 @@
 <template>
   <div>
     <triple-pane v-if="hasRouter">
-      <routes-tree slot="left"></routes-tree>
-      <routes-history slot="middle"></routes-history>
-      <route-meta slot="right"></route-meta>
+      <routes-tree slot="left" />
+      <routes-history slot="middle" />
+      <routes-meta slot="right" />
     </triple-pane>
-    <div v-else class="notice">
+    <div
+      v-else
+      class="notice"
+    >
       <div>
         No routes detected.
       </div>
@@ -18,19 +21,19 @@ import SplitPane from 'components/SplitPane.vue'
 import TriplePane from 'components/TriplePane.vue'
 import RoutesHistory from './RoutesHistory.vue'
 import RoutesTree from './RoutesTree.vue'
-import RouteMeta from './RouteMeta.vue'
+import RoutesMeta from './RoutesMeta.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState('routes', {
-    hasRouter: state => state.hasRouter
-  }),
   components: {
     SplitPane,
     TriplePane,
     RoutesHistory,
-    RouteMeta,
+    RoutesMeta,
     RoutesTree
-  }
+  },
+  computed: mapState('routes', {
+    hasRouter: state => state.hasRouter
+  })
 }
 </script>

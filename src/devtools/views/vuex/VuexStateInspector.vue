@@ -1,34 +1,93 @@
 <template>
   <scroll-pane>
     <action-header slot="header">
-      <a class="button export" @click="copyStateToClipboard" title="Export Vuex State">
-        <i class="material-icons">content_copy</i>
+      <div class="search">
+        <VueIcon icon="search" />
+        <input
+          v-model.trim="filter"
+          placeholder="Filter inspected state"
+        >
+      </div>
+      <a
+        v-tooltip="'Export Vuex State'"
+        class="button export"
+        @click="copyStateToClipboard"
+      >
+        <VueIcon icon="content_copy" />
         <span>Export</span>
         <transition name="slide-up">
-          <span class="message" v-show="showStateCopiedMessage">
+          <span
+            v-show="showStateCopiedMessage"
+            class="message"
+          >
             (Copied to clipboard!)
           </span>
         </transition>
       </a>
-      <a class="button import" @click="toggleImportStatePopup" title="Import Vuex State">
-        <i class="material-icons">content_paste</i>
+      <a
+        v-tooltip="'Import Vuex State'"
+        class="button import"
+        @click="toggleImportStatePopup"
+      >
+        <VueIcon icon="content_paste" />
         <span>Import</span>
       </a>
-      <transition name="slide-up">
-        <div class="import-state" v-if="showImportStatePopup">
-          <textarea placeholder="Paste state object here to import it..."
+      <transition name="slide-down">
+        <div
+          v-if="showImportStatePopup"
+          class="import-state"
+        >
+          <textarea
+            placeholder="Paste state object here to import it..."
             @input="importState"
-            @keydown.esc="closeImportStatePopup"></textarea>
-          <transition name="slide-up">
-            <span class="message invalid-json" v-show="showBadJSONMessage">
-              INVALID JSON!
-            </span>
-          </transition>
+            @keydown.esc="closeImportStatePopup"
+          />
+          <span
+            v-show="showBadJSONMessage"
+            class="message invalid-json"
+          >
+            INVALID JSON!
+          </span>
         </div>
       </transition>
     </action-header>
-    <div slot="scroll" class="vuex-state-inspector">
-      <state-inspector :state="inspectedState" />
+    <div
+      slot="scroll"
+      class="vuex-state-inspector"
+    >
+      <state-inspector :state="filteredState" />
+
+      <div
+        v-if="$shared.snapshotLoading"
+        class="state-info loading-vuex-state"
+      >
+        <div class="label">Loading state...</div>
+
+        <VueLoadingBar
+          :value="$shared.snapshotLoading.current / $shared.snapshotLoading.total"
+        />
+      </div>
+      <div
+        v-else-if="isOnlyMutationPayload"
+        class="state-info recording-vuex-state"
+      >
+        <div class="label">
+          <VueIcon
+            class="big"
+            icon="cached"
+          />
+          <span>Recording state...</span>
+        </div>
+
+        <div>
+          <VueButton
+            data-id="load-vuex-state"
+            @click="loadState()"
+          >
+            Load state
+          </VueButton>
+        </div>
+      </div>
     </div>
   </scroll-pane>
 </template>
@@ -38,9 +97,10 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
 
-import { stringify, parse } from 'src/util'
+import { searchDeepInObject, sortByKey, stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
-import { mapGetters } from 'vuex'
+import groupBy from 'lodash.groupby'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -48,16 +108,63 @@ export default {
     ActionHeader,
     StateInspector
   },
+
   data () {
     return {
       showStateCopiedMessage: false,
       showBadJSONMessage: false,
-      showImportStatePopup: false
+      showImportStatePopup: false,
+      filter: ''
     }
   },
-  computed: mapGetters('vuex', [
-    'inspectedState'
-  ]),
+
+  computed: {
+    ...mapGetters('vuex', [
+      'inspectedState',
+      'inspectedIndex'
+    ]),
+
+    ...mapGetters('vuex', [
+      'filteredHistory'
+    ]),
+
+    filteredState () {
+      const inspectedState = [].concat(
+        ...Object.keys(this.inspectedState).map(
+          type => {
+            let processedState
+            if (!Array.isArray(this.inspectedState[type])) {
+              processedState = Object.keys(this.inspectedState[type]).map(key => ({
+                key,
+                editable: type === 'state',
+                value: this.inspectedState[type][key]
+              }))
+            } else {
+              processedState = this.inspectedState[type]
+            }
+
+            return processedState.map(
+              item => ({
+                type,
+                ...item
+              })
+            )
+          }
+        )
+      )
+
+      return groupBy(sortByKey(inspectedState.filter(
+        el => searchDeepInObject({
+          [el.key]: el.value
+        }, this.filter)
+      )), 'type')
+    },
+
+    isOnlyMutationPayload () {
+      return Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation
+    }
+  },
+
   watch: {
     showImportStatePopup (val) {
       if (val) {
@@ -67,7 +174,12 @@ export default {
       }
     }
   },
+
   methods: {
+    ...mapActions('vuex', [
+      'inspect'
+    ]),
+
     copyStateToClipboard () {
       copyToClipboard(this.inspectedState.state)
       this.showStateCopiedMessage = true
@@ -75,6 +187,7 @@ export default {
         this.showStateCopiedMessage = false
       }, 2000)
     },
+
     toggleImportStatePopup () {
       if (this.showImportStatePopup) {
         this.closeImportStatePopup()
@@ -82,9 +195,11 @@ export default {
         this.showImportStatePopup = true
       }
     },
+
     closeImportStatePopup () {
       this.showImportStatePopup = false
     },
+
     importState: debounce(function (e) {
       const importedStr = e.target.value
       if (importedStr.length === 0) {
@@ -92,14 +207,19 @@ export default {
       } else {
         try {
           // Try to parse here so we can provide invalid feedback
-          const parsedState = parse(importedStr, true)
-          bridge.send('vuex:import-state', parsedState)
+          parse(importedStr, true)
+          bridge.send('vuex:import-state', importedStr)
           this.showBadJSONMessage = false
         } catch (e) {
           this.showBadJSONMessage = true
         }
       }
-    }, 250)
+    }, 250),
+
+    loadState () {
+      const history = this.filteredHistory
+      this.inspect(history[history.length - 1])
+    }
   }
 }
 
@@ -114,7 +234,27 @@ function copyToClipboard (state) {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
+.state-info
+  display flex
+  flex-direction column
+  box-center()
+  min-height 140px
+  font-size 24px
+  margin 0 42px
+
+  .label
+    display flex
+    align-items center
+    font-weight lighter
+    color $blueishGrey
+    margin-bottom 12px
+
+    .vue-ui-icon
+      margin-right 12px
+      >>> svg
+        fill @color
+  .vue-ui-loading-bar
+    width 100%
 
 .message
   margin-left 5px
@@ -126,26 +266,34 @@ function copyToClipboard (state) {
   left initial
   top 1px
   font-size 12px
-  color #c41a16
+  color $red
   background-color $background-color
-  .app.dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
 
 .import-state
-  transition all .3s ease
+  transition all .2s ease
+  width 300px
   position absolute
   z-index 1
   left 220px
   right 10px
-  top 5px
+  top 45px
   box-shadow 4px 4px 6px 0 $border-color
   border 1px solid $border-color
   padding 3px
   background-color $background-color
-  .app.dark &
+  .vue-ui-dark-mode &
     background-color $dark-background-color
     box-shadow 4px 4px 6px 0 $dark-border-color
     border 1px solid $dark-border-color
+  &:after
+    content 'Press ESC to close'
+    position absolute
+    bottom 0
+    padding 5px
+    color inherit
+    opacity .5
 
   textarea
     width 100%
@@ -154,7 +302,7 @@ function copyToClipboard (state) {
     outline none
     border none
     resize vertical
-    .app.dark &
+    .vue-ui-dark-mode &
       color #DDD
       background-color $dark-background-color
 </style>

@@ -83,11 +83,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
-
 .no-route-data
-  color: #ccc;
-  text-align: center;
-  margin-top: 50px;
-  line-height: 30px;
+  color: #ccc
+  text-align: center
+  margin-top: 50px
+  line-height: 30px
 </style>

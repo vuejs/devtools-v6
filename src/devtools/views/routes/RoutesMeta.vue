@@ -1,9 +1,16 @@
 <template>
   <scroll-pane>
-    <div v-if="activeRouteChange" slot="scroll">
+    <div
+      v-if="activeRouteChange"
+      slot="scroll"
+    >
       <state-inspector :state="{ options }" />
     </div>
-    <div v-else slot="scroll" class="no-route-data">
+    <div
+      v-else
+      slot="scroll"
+      class="no-route-data"
+    >
       No route selected
     </div>
   </scroll-pane>
@@ -28,6 +35,12 @@ export default {
     ]),
     options () {
       return this.sanitizeRouteData(this.activeRouteChange)
+    },
+    to () {
+      return this.sanitizeRouteData(this.activeRouteChange.to)
+    },
+    from () {
+      return this.sanitizeRouteData(this.activeRouteChange.from)
     }
   },
   methods: {
@@ -79,11 +92,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
-
 .no-route-data
-  color: #ccc;
-  text-align: center;
-  margin-top: 50px;
-  line-height: 30px;
+  color: #ccc
+  text-align: center
+  margin-top: 50px
+  line-height: 30px
 </style>

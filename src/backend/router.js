@@ -24,6 +24,7 @@ export function initRouterBackend (Vue, bridge, rootInstances) {
 
   rootInstances.forEach(instance => {
     const router = instance._router
+
     if (router) {
       router.afterEach((to, from) => {
         if (!recording) return
@@ -34,7 +35,12 @@ export function initRouterBackend (Vue, bridge, rootInstances) {
         }))
       })
       bridge.send('router:init', stringify({
-        mode: router.mode
+        mode: router.mode,
+        current: {
+          from: router.history.current,
+          to: router.history.current,
+          timestamp: Date.now()
+        }
       }))
 
       if (router.matcher && router.matcher.addRoutes) {
@@ -48,4 +54,20 @@ export function initRouterBackend (Vue, bridge, rootInstances) {
       }
     }
   })
+}
+
+export function getCustomRouterDetails (router) {
+  return {
+    _custom: {
+      type: 'router',
+      display: 'VueRouter',
+      value: {
+        options: router.options,
+        currentRoute: router.currentRoute
+      },
+      fields: {
+        abstract: true
+      }
+    }
+  }
 }

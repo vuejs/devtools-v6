@@ -1,38 +1,64 @@
 <template>
-  <div class="instance"
-      :class="{ selected: selected }">
-    <div class="self"
-      @click.stop="inspect(routeId)"
+  <div
+    class="instance"
+    :class="{ selected: selected }"
+  >
+    <div
+      class="self"
       :class="{ selected: selected }"
-      :style="{ paddingLeft: depth * 15 + 'px' }">
+      :style="{ paddingLeft: depth * 15 + 'px' }"
+      @click.stop="inspect(routeId)"
+      @dblclick="toggleExpand"
+    >
       <span class="content">
         <!-- arrow wrapper for better hit box -->
-        <span class="arrow-wrapper" v-if="route.children && route.children.length">
-          <span class="arrow right" :class="{ rotated: expanded }">
-          </span>
+        <span
+          v-if="route.children && route.children.length"
+          class="arrow-wrapper"
+          @click="toggleExpand"
+        >
+          <span
+            class="arrow right"
+            :class="{ rotated: expanded }"
+          />
         </span>
         <span class="instance-name">
           {{ route.path }}
         </span>
       </span>
-      <span class="info name" v-if="route.name">
+      <span
+        v-if="route.name"
+        class="info name"
+      >
         {{ route.name }}
       </span>
-      <span class="info alias" v-if="route.alias">
+      <span
+        v-if="route.alias"
+        class="info alias"
+      >
         alias: <b>{{ route.alias }}</b>
       </span>
-      <span class="info redirect" v-if="route.redirect">
+      <span
+        v-if="route.redirect"
+        class="info redirect"
+      >
         redirect: <b>{{ route.redirect }}</b>
+      </span>
+      <span
+        v-if="isActive"
+        class="info active"
+      >
+        active
       </span>
     </div>
     <div v-if="expanded">
       <routes-tree-item
         v-for="(child, key) in route.children"
-        :key="child"
+        :key="child.path"
         :route="child"
-        :routeId="routeId + '_' + key"
-        :depth="depth + 1">
-      </routes-tree-item>
+        :route-id="routeId + '_' + key"
+        :depth="depth + 1"
+      />
     </div>
   </div>
 
@@ -44,38 +70,50 @@ import { mapState, mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'RoutesTreeItem',
   props: {
-    routeId: String|Number,
-    route: Object,
-    depth: Number
+    routeId: {
+      type: [String, Number],
+      required: true
+    },
+    route: {
+      type: Object,
+      required: true
+    },
+    depth: {
+      type: Number,
+      required: true
+    }
   },
-  created () {
-    // expand root by default
-    if (this.depth === 0) {
-      // this.expand()
+  data () {
+    return {
+      expanded: false
     }
   },
   computed: {
     ...mapState('routes', [
       'inspectedIndex'
     ]),
-    expanded () {
-      return !!this.route.children && this.route.children.length
-    },
+    ...mapGetters('routes', [
+      'activeRoute'
+    ]),
     selected () {
       return this.inspectedIndex === this.routeId
+    },
+    isActive () {
+      return this.activeRoute && this.activeRoute.path === this.route.path
     }
   },
   methods: {
     ...mapMutations('routes', {
       inspect: 'INSPECT'
-    })
+    }),
+    toggleExpand () {
+      this.expanded = !this.expanded
+    }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
-
 .instance
   font-family Menlo, Consolas, monospace
 
@@ -143,4 +181,6 @@ export default {
     background-color #ff8344
   &.redirect
     background-color #aaa
+  &.active
+    background-color: #2c7d59
 </style>

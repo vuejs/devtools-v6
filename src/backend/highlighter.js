@@ -1,10 +1,24 @@
-import { inDoc } from '../util'
+import { inDoc, classify, getComponentName } from '../util'
+import { getInstanceName } from './index'
+import SharedData from 'src/shared-data'
 
 const overlay = document.createElement('div')
 overlay.style.backgroundColor = 'rgba(104, 182, 255, 0.35)'
 overlay.style.position = 'fixed'
 overlay.style.zIndex = '99999999999999'
 overlay.style.pointerEvents = 'none'
+overlay.style.display = 'flex'
+overlay.style.alignItems = 'center'
+overlay.style.justifyContent = 'center'
+overlay.style.borderRadius = '3px'
+const overlayContent = document.createElement('div')
+overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)'
+overlayContent.style.fontFamily = 'monospace'
+overlayContent.style.fontSize = '11px'
+overlayContent.style.padding = '2px 3px'
+overlayContent.style.borderRadius = '3px'
+overlayContent.style.color = 'white'
+overlay.appendChild(overlayContent)
 
 /**
  * Highlight an instance.
@@ -14,9 +28,13 @@ overlay.style.pointerEvents = 'none'
 
 export function highlight (instance) {
   if (!instance) return
-  const rect = getInstanceRect(instance)
+  const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
-    showOverlay(rect)
+    let content = ''
+    let name = instance.fnContext ? getComponentName(instance.fnOptions) : getInstanceName(instance)
+    if (SharedData.classifyComponents) name = classify(name)
+    if (name) content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`
+    showOverlay(rect, content)
   }
 }
 
@@ -37,14 +55,15 @@ export function unHighlight () {
  * @return {Object}
  */
 
-export function getInstanceRect (instance) {
-  if (!inDoc(instance.$el)) {
+export function getInstanceOrVnodeRect (instance) {
+  const el = instance.$el || instance.elm
+  if (!inDoc(el)) {
     return
   }
   if (instance._isFragment) {
     return getFragmentRect(instance)
-  } else if (instance.$el.nodeType === 1) {
-    return instance.$el.getBoundingClientRect()
+  } else if (el.nodeType === 1) {
+    return el.getBoundingClientRect()
   }
 }
 
@@ -107,11 +126,14 @@ function getTextRect (node) {
  * @param {Rect}
  */
 
-function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }) {
+function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = '') {
   overlay.style.width = ~~width + 'px'
   overlay.style.height = ~~height + 'px'
   overlay.style.top = ~~top + 'px'
   overlay.style.left = ~~left + 'px'
+
+  overlayContent.innerHTML = content
+
   document.body.appendChild(overlay)
 }
 

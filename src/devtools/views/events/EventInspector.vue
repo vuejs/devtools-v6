@@ -1,9 +1,16 @@
 <template>
   <scroll-pane>
-    <div v-if="activeEvent" slot="scroll">
+    <div
+      v-if="activeEvent"
+      slot="scroll"
+    >
       <state-inspector :state="{ 'event info': sortedEventData }" />
     </div>
-    <div v-else slot="scroll" class="no-event-data">
+    <div
+      v-else
+      slot="scroll"
+      class="no-event-data"
+    >
       No event selected
     </div>
   </scroll-pane>
@@ -11,7 +18,6 @@
 
 <script>
 import ScrollPane from 'components/ScrollPane.vue'
-import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
 
 import { mapGetters } from 'vuex'
@@ -19,13 +25,14 @@ import { mapGetters } from 'vuex'
 export default {
   components: {
     ScrollPane,
-    ActionHeader,
     StateInspector
   },
+
   computed: {
     ...mapGetters('events', [
       'activeEvent'
     ]),
+
     sortedEventData () {
       if (!this.activeEvent) {
         return {}
@@ -42,18 +49,16 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
-
 section:not(:last-child)
   border-bottom 1px solid $border-color
-  .app.dark &
+  .vue-ui-dark-mode &
     border-bottom 1px solid $dark-border-color
 
 .component-name
   margin 0 10px
 
 .string
-  color: #c41a16
+  color: $red
 
 .literal
   color: #03c

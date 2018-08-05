@@ -2,17 +2,21 @@
   <scroll-pane scroll-event="routes:init">
     <action-header slot="header">
       <div class="search">
-        <i class="material-icons">search</i>
-        <input placeholder="Filter routes" v-model.trim="filter">
+        <VueIcon icon="search" />
+        <input
+          ref="filterRoutes"
+          v-model.trim="filter"
+          placeholder="Filter routes"
+        >
       </div>
     </action-header>
     <div slot="scroll" class="tree">
       <routes-tree-item
-        v-for="(route, key) in filteredRoutes"
+        v-for="(route, index) in filteredRoutes"
         ref="instances"
-        :key="key"
+        :key="route.path"
         :route="route"
-        :routeId="key"
+        :routeId="index"
         :depth="0">
       </routes-tree-item>
     </div>
@@ -49,7 +53,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../common"
 .route-heading
   padding: 0px 10px
 .tree

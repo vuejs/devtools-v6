@@ -15,7 +15,7 @@ const state = {
 const mutations = {
   'INIT' (state, payload) {
     state.instances = []
-    state.routeChanges = []
+    state.routeChanges = [payload.current]
     state.inspectedIndex = -1
     state.hasRouter = true
     state.instances.push(payload)
