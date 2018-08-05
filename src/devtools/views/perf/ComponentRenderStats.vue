@@ -160,7 +160,7 @@ export default {
     height 22px
 
   .name
-    flex 200px 0 0
+    flex 300px 0 0
     font-family Menlo, Consolas, monospace
     color $green
 
