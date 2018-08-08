@@ -116,6 +116,17 @@
             </template>
           </GroupDropdown>
           <VueGroupButton
+            v-tooltip="$t('App.perf.tooltip')"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="perf"
+            icon-left="assessment"
+            class="settings-tab flat"
+          >
+            Performance
+          </VueGroupButton>
+          <VueGroupButton
             v-tooltip="$t('App.settings.tooltip')"
             :class="{
               'icon-button': !$responsive.wide
@@ -193,6 +204,9 @@ export default {
               this.$router.push({ name: 'events' })
               return false
             } else if (code === 'Digit4') {
+              this.$router.push({ name: 'perf' })
+              return false
+            } else if (code === 'Digit5') {
               this.$router.push({ name: 'settings' })
               return false
             } else if (key === 'p' || code === 'KeyP') {
@@ -226,7 +240,7 @@ export default {
     },
 
     routeModel: {
-      get () { return this.$route.name },
+      get () { return this.$route.matched[0].name },
       set (value) {
         this.$router.push({ name: value })
       }
@@ -300,7 +314,6 @@ export default {
 .header
   display flex
   align-items center
-  border-bottom 1px solid $border-color
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
   position relative

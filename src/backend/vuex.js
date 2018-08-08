@@ -5,7 +5,6 @@ import Vue from 'vue'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
-  console.log(store)
 
   let originalVm = store._vm
   const snapshotsVm = new Vue({

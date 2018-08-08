@@ -95,12 +95,6 @@ export default {
     ActionHeader
   },
 
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  },
-
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {
