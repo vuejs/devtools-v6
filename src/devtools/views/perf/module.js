@@ -65,6 +65,15 @@ export default {
         }
       }))
 
+      const { routeChanges } = rootState.router
+      addEntries('routes', routeChanges, entry => ({
+        label: entry.to.fullPath,
+        state: {
+          'from': entry.from,
+          'to': entry.to
+        }
+      }))
+
       return markers
     }
   },
