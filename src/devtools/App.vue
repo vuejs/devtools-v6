@@ -81,6 +81,7 @@
             Events
           </VueGroupButton>
           <GroupDropdown
+            v-tooltip="$t('App.routing.tooltip')"
             :is-open="isRouterGroupOpen"
             :options="routingTabs"
             :value="routeModel"
@@ -204,9 +205,15 @@ export default {
               this.$router.push({ name: 'events' })
               return false
             } else if (code === 'Digit4') {
+              if (this.$route.name !== 'router') {
+                this.$router.push({ name: 'router' })
+              } else {
+                this.$router.push({ name: 'routes' })
+              }
+            } else if (code === 'Digit5') {
               this.$router.push({ name: 'perf' })
               return false
-            } else if (code === 'Digit5') {
+            } else if (code === 'Digit6') {
               this.$router.push({ name: 'settings' })
               return false
             } else if (key === 'p' || code === 'KeyP') {
