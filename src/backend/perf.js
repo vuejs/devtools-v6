@@ -95,8 +95,10 @@ function applyHooks (vm) {
         if (renderHook && renderHook.before) {
           // Render hook ends before one hook
           const metric = renderMetrics[renderHook.before]
-          metric.end = time
-          addComponentMetric(vm.$options, renderHook.before, metric.start, metric.end)
+          if (metric) {
+            metric.end = time
+            addComponentMetric(vm.$options, renderHook.before, metric.start, metric.end)
+          }
         }
 
         // After
