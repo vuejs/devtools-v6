@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "4.1.5-beta.2",
+  "version": "4.1.5",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "zip": "npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
     "zip:firefox": "web-ext build -s shells/chrome -a dist -i src --overwrite-dest",
-    "sign:firefox": "web-ext sign -s shells/chrome -a dist -i src --id {f0beaa66-17d0-42e9-b1c9-c52da6252db8}",
+    "sign:firefox": "cross-env WEB_EXT_API_KEY=VUE_DEVTOOLS_AMO_KEY WEB_EXT_API_SECRET=VUE_DEVTOOLS_AMO_SECRET web-ext sign -s shells/chrome -a dist -i src --id {f0beaa66-17d0-42e9-b1c9-c52da6252db8}",
     "release": "node release.js && npm run test && npm run build && npm run zip",
     "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox",
     "test": "npm run lint && npm run test:e2e",
