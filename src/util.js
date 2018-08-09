@@ -480,8 +480,8 @@ export function set (object, path, value, cb = null) {
 
 export function get (object, path) {
   const sections = path.split('.')
-  for (const section of sections) {
-    object = object[section]
+  for (let i = 0; i < sections.length; i++) {
+    object = object[sections[i]]
     if (!object) {
       return undefined
     }

@@ -89,17 +89,16 @@ export function watch (...args) {
   vm.$watch(...args)
 }
 
-// Proxy traps
-const traps = {
-  get (target, key) {
-    return vm && vm.$data[key]
-  },
-  set (target, key, value) {
-    sendValue(key, value)
-    return setValue(key, value)
-  }
-}
+const proxy = {}
+Object.keys(internalSharedData).forEach(key => {
+  Object.defineProperty(proxy, key, {
+    configurable: false,
+    get: () => vm && vm.$data[key],
+    set: (value) => {
+      sendValue(key, value)
+      setValue(key, value)
+    }
+  })
+})
 
-const SharedDataProxy = new Proxy({}, traps)
-
-export default SharedDataProxy
+export default proxy
