@@ -23,7 +23,8 @@ export default new Vuex.Store({
     },
     TEST_MAP: state => {
       state.map.set(`mykey_${state.map.size}`, state.map.size)
-    }
+    },
+    TEST_INIT: state => {}
   },
   getters: {
     isPositive: state => state.count >= 0,

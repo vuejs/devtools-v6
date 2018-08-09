@@ -9,7 +9,33 @@ export function initVuexBackend (hook, bridge) {
     getters: store.getters || {}
   })
 
+  const serializeMutation = mutation => {
+    return {
+      mutation: {
+        type: mutation.type,
+        payload: stringify(mutation.payload)
+      },
+      timestamp: Date.now(),
+      snapshot: getSnapshot()
+    }
+  }
+
+  // get store buffer with buffered mutations
+  // (it may be undefined, if Vuex uses version <2.x) // TODO: fill Vuex version
+  let storeBuffer = store._devtoolBuffer
+  // remove buffer from store so it doesn't leak memory
+  store._devtoolBuffer = undefined
+
   bridge.send('vuex:init', getSnapshot())
+
+  if (recording && Array.isArray(storeBuffer)) {
+    storeBuffer.forEach(mutation => {
+      bridge.send('vuex:mutation', serializeMutation(mutation))
+    })
+  }
+
+  // release buffer memory
+  storeBuffer = null
 
   // deal with multiple backend injections
   hook.off('vuex:mutation')
@@ -17,14 +43,7 @@ export function initVuexBackend (hook, bridge) {
   // application -> devtool
   hook.on('vuex:mutation', mutation => {
     if (!recording) return
-    bridge.send('vuex:mutation', {
-      mutation: {
-        type: mutation.type,
-        payload: stringify(mutation.payload)
-      },
-      timestamp: Date.now(),
-      snapshot: getSnapshot()
-    })
+    bridge.send('vuex:mutation', serializeMutation(mutation))
   })
 
   // devtool -> application
