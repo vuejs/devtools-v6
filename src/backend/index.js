@@ -541,7 +541,6 @@ function processRefs (instance) {
       key: key,
       value: {
           _custom: {
-              clickable: true,
               display: '&lt;' + instance.$refs[key].tagName.toLowerCase() +
                        ' id="' + instance.$refs[key].id + '"' +
                     ' class="' + instance.$refs[key].className + '"&gt;',
