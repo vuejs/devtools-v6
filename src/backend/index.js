@@ -379,6 +379,7 @@ function getInstanceDetails (id) {
 function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
+    processRefs(instance),
     processComputed(instance),
     processInjected(instance),
     processRouteContext(instance),
@@ -522,6 +523,34 @@ function processState (instance) {
       value: instance._data[key],
       editable: true
     }))
+}
+
+/**
+ * Process refs
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processRefs (instance) {
+  if (Object.keys(instance.$refs).length === 0){
+    return [];
+  }
+  let refs = Object.keys(instance.$refs).map(key => ({
+      type: '$refs',
+      key: key,
+      value: {
+          _custom: {
+              clickable: true,
+              display: '&lt;' + instance.$refs[key].tagName.toLowerCase() +
+                       ' id="' + instance.$refs[key].id + '"' +
+                    ' class="' + instance.$refs[key].className + '"&gt;',
+              uid: instance.__VUE_DEVTOOLS_UID__,
+          }
+      },
+      editable: false,
+  }));
+  return refs.length > 0 ? refs : [];
 }
 
 /**

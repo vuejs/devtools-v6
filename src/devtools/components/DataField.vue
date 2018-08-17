@@ -446,6 +446,15 @@ export default {
       if (this.valueType === 'custom' && this.fieldOptions.file) {
         return openInEditor(this.fieldOptions.file)
       }
+      if (this.valueType === 'custom' && this.fieldOptions['type'] === '$refs') {
+        if (this.$isChrome) {
+            const evl = `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.fieldOptions.uid}").$refs["${this.fieldOptions.key}"])`;
+            console.log(evl);
+            chrome.devtools.inspectedWindow.eval(evl);
+        } else {
+            window.alert('DOM inspection is not supported in this shell.')
+        }
+      }
 
       // Default action
       this.toggle()
