@@ -7,7 +7,8 @@ const internalSharedData = {
   recordVuex: true,
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
-  snapshotLoading: null
+  snapshotLoading: null,
+  recordPerf: false
 }
 
 const persisted = [
@@ -84,17 +85,20 @@ function sendValue (key, value) {
   })
 }
 
-// Proxy traps
-const traps = {
-  get (target, key) {
-    return vm && vm.$data[key]
-  },
-  set (target, key, value) {
-    sendValue(key, value)
-    return setValue(key, value)
-  }
+export function watch (...args) {
+  vm.$watch(...args)
 }
 
-const SharedDataProxy = new Proxy({}, traps)
+const proxy = {}
+Object.keys(internalSharedData).forEach(key => {
+  Object.defineProperty(proxy, key, {
+    configurable: false,
+    get: () => vm && vm.$data[key],
+    set: (value) => {
+      sendValue(key, value)
+      setValue(key, value)
+    }
+  })
+})
 
-export default SharedDataProxy
+export default proxy

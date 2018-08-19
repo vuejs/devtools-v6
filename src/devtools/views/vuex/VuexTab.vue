@@ -33,12 +33,3 @@ export default {
   })
 }
 </script>
-
-<style lang="stylus" scoped>
-.message
-  text-align center
-  color #ccc
-  font-size 14px
-  line-height 1.5em
-  margin-top 50px
-</style>

@@ -9,8 +9,11 @@ export default {
     refresh: {
       tooltip: '[[{{keys.ctrl}}]] + [[{{keys.alt}}]] + [[R]] Force Refresh'
     },
+    perf: {
+      tooltip: '[[{{keys.ctrl}}]] + [[4]] Switch to Performance'
+    },
     settings: {
-      tooltip: '[[{{keys.ctrl}}]] + [[4]] Switch to Settings'
+      tooltip: '[[{{keys.ctrl}}]] + [[5]] Switch to Settings'
     },
     vuex: {
       tooltip: '[[{{keys.ctrl}}]] + [[2]] Switch to Vuex'
