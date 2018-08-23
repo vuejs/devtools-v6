@@ -613,7 +613,11 @@ export default {
       color $green
       >>> span
         color $darkerGrey
-  .vue-ui-dark-mode &
+    &.type-reference
+        opacity 0.5
+      >>> .attr-title
+        color #800080
+.vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
       color #e33e3a

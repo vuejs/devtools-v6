@@ -542,9 +542,11 @@ function processRefs (instance) {
       value: {
           _custom: {
               display: '&lt;' + instance.$refs[key].tagName.toLowerCase() +
-                       ' id="' + instance.$refs[key].id + '"' +
-                    ' class="' + instance.$refs[key].className + '"&gt;',
+                       " <span class='attr-title'>ref</span>=" + key +
+                       ( instance.$refs[key].id ? " <span class='attr-title'>id</span>='" + instance.$refs[key].id + "'" : '') +
+                       ( instance.$refs[key].className ? " <span class='attr-title'>class</span>='" + instance.$refs[key].className + "'" : '') + '&gt;',
               uid: instance.__VUE_DEVTOOLS_UID__,
+              type: 'reference'
           }
       },
       editable: false,
