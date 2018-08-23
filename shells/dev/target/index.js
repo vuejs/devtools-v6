@@ -28,12 +28,12 @@ new Vue({
   render (h) {
     return h('div', null, [
       h(Counter),
-      h(RefTester),
       h(Target, { props: { msg: 'hi', ins: new MyClass() }}),
       h(Other),
       h(Events, { key: 'foo' }),
       h(NativeTypes, { key: new Date() }),
-      h(Router, { key: [] })
+      h(Router, { key: [] }),
+      h(RefTester)
     ])
   },
   data: {

@@ -1,6 +1,6 @@
 import { suite } from '../utils/suite'
 
-const baseInstanceCount = 8
+const baseInstanceCount = 9
 
 suite('components tab', () => {
   it('should detect instances inside shadow DOM', () => {
