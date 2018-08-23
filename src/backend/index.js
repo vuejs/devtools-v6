@@ -533,25 +533,25 @@ function processState (instance) {
  */
 
 function processRefs (instance) {
-  if (Object.keys(instance.$refs).length === 0){
-    return [];
+  if (Object.keys(instance.$refs).length === 0) {
+    return []
   }
   let refs = Object.keys(instance.$refs).map(key => ({
-      type: '$refs',
-      key: key,
-      value: {
-          _custom: {
-              display: '&lt;' + instance.$refs[key].tagName.toLowerCase() +
-                       " <span class='attr-title'>ref</span>=" + key +
-                       ( instance.$refs[key].id ? " <span class='attr-title'>id</span>='" + instance.$refs[key].id + "'" : '') +
-                       ( instance.$refs[key].className ? " <span class='attr-title'>class</span>='" + instance.$refs[key].className + "'" : '') + '&gt;',
-              uid: instance.__VUE_DEVTOOLS_UID__,
-              type: 'reference'
-          }
-      },
-      editable: false,
-  }));
-  return refs.length > 0 ? refs : [];
+    type: '$refs',
+    key: key,
+    value: {
+      _custom: {
+        display: '&lt;' + instance.$refs[key].tagName.toLowerCase() +
+          " <span class='attr-title'>ref</span>=" + key +
+          (instance.$refs[key].id ? " <span class='attr-title'>id</span>='" + instance.$refs[key].id + "'" : '') +
+          (instance.$refs[key].className ? " <span class='attr-title'>class</span>='" + instance.$refs[key].className + "'" : '') + '&gt;',
+        uid: instance.__VUE_DEVTOOLS_UID__,
+        type: 'reference'
+      }
+    },
+    editable: false
+  }))
+  return refs.length > 0 ? refs : []
 }
 
 /**
