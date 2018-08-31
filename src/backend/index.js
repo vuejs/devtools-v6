@@ -4,6 +4,7 @@
 import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { initRouterBackend } from './router'
 import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
@@ -121,6 +122,10 @@ function connect (Vue) {
     })
   }
 
+  hook.once('router:init', () => {
+    initRouterBackend(hook.Vue, bridge, rootInstances)
+  })
+
   // events
   initEventsBackend(Vue, bridge)
 
@@ -206,6 +211,7 @@ function scan () {
       return true
     }
   })
+  hook.emit('router:init')
   flush()
 }
 
@@ -340,7 +346,7 @@ function capture (instance, index, list) {
     captureCount++
   }
 
-  if (instance.$options && instance.$options.abstract) {
+  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
     instance = instance._vnode.componentInstance
   }
 

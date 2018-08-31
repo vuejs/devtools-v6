@@ -7,8 +7,8 @@ import VuexObject from './VuexObject.vue'
 import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
 import MyClass from './MyClass.js'
-import Router from './Router.vue'
 import router from './router'
+import Router from './router/Router.vue'
 
 window.VUE_DEVTOOLS_CONFIG = {
   openInEditorHost: '/'
@@ -25,6 +25,12 @@ circular.self = circular
 new Vue({
   store,
   router,
+  data: {
+    obj: {
+      items: items,
+      circular
+    }
+  },
   render (h) {
     return h('div', null, [
       h(Counter),
@@ -35,12 +41,6 @@ new Vue({
       h(Router, { key: [] }),
       h(VuexObject)
     ])
-  },
-  data: {
-    obj: {
-      items: items,
-      circular
-    }
   }
 }).$mount('#app')
 

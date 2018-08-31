@@ -76,7 +76,8 @@ import FramerateMarkerInspector from './FramerateMarkerInspector.vue'
 
 const BUBBLE_COLORS = {
   mutations: '#FF6B00',
-  events: '#997fff'
+  events: '#997fff',
+  routes: '#42B983'
 }
 
 // In ms

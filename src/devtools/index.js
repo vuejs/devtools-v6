@@ -169,6 +169,27 @@ function initApp (shell) {
       }
     })
 
+    bridge.on('router:init', payload => {
+      store.commit('router/INIT', parse(payload))
+    })
+
+    bridge.on('router:changed', payload => {
+      store.commit('router/CHANGED', parse(payload))
+    })
+
+    bridge.on('routes:init', payload => {
+      store.commit('routes/INIT', parse(payload))
+    })
+
+    bridge.on('routes:changed', payload => {
+      store.commit('routes/CHANGED', parse(payload))
+    })
+
+    // register filters
+    Vue.filter('formatTime', function (timestamp) {
+      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    })
+
     bridge.on('events:reset', () => {
       store.commit('events/RESET')
     })

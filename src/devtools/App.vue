@@ -76,9 +76,46 @@
             value="events"
             icon-left="grain"
             class="events-tab flat big-tag"
+            @focus.native="isRouterGroupOpen = false"
           >
             Events
           </VueGroupButton>
+          <GroupDropdown
+            v-tooltip="$t('App.routing.tooltip')"
+            :is-open="isRouterGroupOpen"
+            :options="routingTabs"
+            :value="routeModel"
+            @update="isRouterGroupOpen = $event"
+            @select="routeModel = $event"
+          >
+            <template slot="header">
+              <VueIcon
+                icon="directions"
+                style="margin-right: 6px"
+              />
+              <span class="hide-below-wide">
+                Routing
+              </span>
+              <VueIcon
+                icon="keyboard_arrow_down"
+                style="margin-left: 6px"
+              />
+            </template>
+            <template
+              slot="option"
+              slot-scope="{ option }"
+            >
+              <VueGroupButton
+                :value="option.name"
+                :icon-left="option.icon"
+                style="width: 100%;"
+                class="events-tab flat big-tag"
+                @selected="isRouterGroupOpen = false"
+              >
+                {{ option.label }}
+              </VueGroupButton>
+            </template>
+          </GroupDropdown>
           <VueGroupButton
             v-tooltip="$t('App.perf.tooltip')"
             :class="{
@@ -98,6 +135,7 @@
             value="settings"
             icon-left="settings_applications"
             class="settings-tab flat"
+            @focus.native="isRouterGroupOpen = false"
           >
             Settings
           </VueGroupButton>
@@ -126,8 +164,11 @@
 import ComponentsTab from './views/components/ComponentsTab.vue'
 import EventsTab from './views/events/EventsTab.vue'
 import VuexTab from './views/vuex/VuexTab.vue'
+import RouterTab from './views/router/RouterTab.vue'
+import RoutesTab from './views/routes/RoutesTab.vue'
 import { SPECIAL_TOKENS } from '../util'
 import Keyboard from './mixins/keyboard'
+import GroupDropdown from 'components/GroupDropdown.vue'
 
 import { mapState } from 'vuex'
 
@@ -137,7 +178,10 @@ export default {
   components: {
     components: ComponentsTab,
     vuex: VuexTab,
-    events: EventsTab
+    events: EventsTab,
+    router: RouterTab,
+    routes: RoutesTab,
+    GroupDropdown
   },
 
   mixins: [
@@ -161,9 +205,15 @@ export default {
               this.$router.push({ name: 'events' })
               return false
             } else if (code === 'Digit4') {
+              if (this.$route.name !== 'router') {
+                this.$router.push({ name: 'router' })
+              } else {
+                this.$router.push({ name: 'routes' })
+              }
+            } else if (code === 'Digit5') {
               this.$router.push({ name: 'perf' })
               return false
-            } else if (code === 'Digit5') {
+            } else if (code === 'Digit6') {
               this.$router.push({ name: 'settings' })
               return false
             } else if (key === 'p' || code === 'KeyP') {
@@ -174,6 +224,16 @@ export default {
       }
     })
   ],
+
+  data () {
+    return {
+      isRouterGroupOpen: false,
+      routingTabs: [
+        { name: 'router', label: 'History', icon: 'directions' },
+        { name: 'routes', label: 'Routes', icon: 'book' }
+      ]
+    }
+  },
 
   computed: {
     ...mapState({
@@ -326,4 +386,8 @@ export default {
 .container
   overflow hidden
   flex 1
+
+.hide-below-wide
+  @media (max-width: $wide)
+    display: none
 </style>

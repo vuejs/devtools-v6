@@ -154,5 +154,4 @@ export default {
     bottom -5px
     height 10px
     cursor ns-resize
-
 </style>
