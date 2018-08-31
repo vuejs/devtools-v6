@@ -326,8 +326,6 @@ $inspected_color = #af90d5
     .entry-actions
       display inline-block
   .vue-ui-dark-mode &
-    .mutation-type
-      color #e36eec
     &.active
       .mutation-type
         color #fff

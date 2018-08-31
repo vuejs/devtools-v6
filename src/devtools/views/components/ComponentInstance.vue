@@ -302,7 +302,7 @@ export default {
     transform rotate(90deg)
 
 .angle-bracket
-  color $darkerGrey
+  color $darkGrey
 
 .item-name
   color $component-color

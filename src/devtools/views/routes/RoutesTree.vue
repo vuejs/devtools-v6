@@ -10,15 +10,21 @@
         >
       </div>
     </action-header>
-    <div slot="scroll" class="tree">
+    <div
+      slot="scroll"
+      class="tree"
+      :class="{
+        'high-density': finalHighDensity
+      }"
+    >
       <routes-tree-item
         v-for="(route, index) in filteredRoutes"
         ref="instances"
         :key="route.path"
         :route="route"
-        :routeId="index"
-        :depth="0">
-      </routes-tree-item>
+        :route-id="index"
+        :depth="0"
+      />
     </div>
   </scroll-pane>
 </template>
@@ -36,7 +42,12 @@ export default {
     ActionHeader,
     RoutesTreeItem
   },
+
   computed: {
+    ...mapGetters('routes', [
+      'filteredRoutes'
+    ]),
+
     filter: {
       get () {
         return this.$store.state.routes.filter
@@ -45,16 +56,22 @@ export default {
         this.$store.commit('routes/UPDATE_FILTER', filter)
       }
     },
-    ...mapGetters('routes', [
-      'filteredRoutes'
-    ])
+
+    finalHighDensity () {
+      if (this.$shared.displayDensity === 'auto') {
+        // TODO auto density
+        return true
+      }
+      return this.$shared.displayDensity === 'high'
+    }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
 .route-heading
-  padding: 0px 10px
+  padding 0px 10px
+
 .tree
   padding 5px
 </style>

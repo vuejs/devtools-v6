@@ -122,19 +122,24 @@ export default {
   position relative
   overflow hidden
   z-index 2
-  background-color $background-color
   transition background-color .1s ease
   border-radius 3px
   font-size 14px
   line-height 22px
   height 22px
   white-space nowrap
+  display flex
+  align-items center
   &.selected
     background-color $active-color
     .arrow
       border-left-color #fff
     .instance-name
       color #fff
+
+  .high-density &
+    font-size 12px
+    height 15px
 
 .arrow
   position absolute
@@ -175,12 +180,15 @@ export default {
   position relative
   top -1px
   margin-left 6px
+  .high-density &
+    padding 1px 4px 0
+    top 0
   &.name
-    background-color #b3cbf7
+    background-color $purple
   &.alias
-    background-color #ff8344
+    background-color $orange
   &.redirect
-    background-color #aaa
+    background-color $darkerGrey
   &.active
-    background-color: #2c7d59
+    background-color $red
 </style>
