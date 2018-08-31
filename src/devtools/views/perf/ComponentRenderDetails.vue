@@ -19,6 +19,9 @@
       <div
         slot="scroll"
         class="metrics"
+        :class="{
+          'high-density': highDensity
+        }"
       >
         <div class="header">
           <div
@@ -124,6 +127,11 @@ export default {
 
     componentName () {
       return (this.$shared.classifyComponents ? classify(this.entry.id) : this.entry.id) || 'Anonymous Component'
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.entries.length > 8) || pref === 'high'
     }
   },
 
@@ -142,6 +150,8 @@ export default {
 .metrics
   padding 6px 0
   font-size 14px
+  &.high-density
+    font-size 12px
 
 .header,
 .metric
@@ -149,6 +159,8 @@ export default {
   /deep/ > *
     flex 25% 0 0
     padding 4px 10px
+    .high-density &
+      padding 2px 10px
     &:not(:first-child)
       text-align right
 

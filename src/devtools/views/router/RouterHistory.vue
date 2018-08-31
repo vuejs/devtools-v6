@@ -159,7 +159,8 @@ export default {
         .vue-ui-icon >>> svg
           fill  lighten($active-color, 95%)
   .high-density &
-    padding 4px 20px
+    padding 1px 20px
+    min-height 22px
   span
     display inline-block
     vertical-align middle
@@ -182,9 +183,9 @@ export default {
   line-height: 1
   color: #fff
   &.name
-    background-color #aaa
+    background-color $purple
   &.alias
-    background-color #ff8344
+    background-color $orange
   &.redirect
-    background-color #af90d5
+    background-color $darkerGrey
 </style>
