@@ -13,9 +13,11 @@
     <p><router-link to="/route-with-props-default">Go to route with props (default)</router-link></p>
     <p><router-link to="/route-parent">Go to route parent</router-link></p>
     <p><router-link to="/route-child">Go to route child</router-link></p>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view />
+    </keep-alive>
     <p><button @click="addRoutes">Add new routes</button></p>
-   </div>
+  </div>
 </template>
 
 <script>
