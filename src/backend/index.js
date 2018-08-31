@@ -346,7 +346,7 @@ function capture (instance, index, list) {
     captureCount++
   }
 
-  if (instance.$options && instance.$options.abstract) {
+  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
     instance = instance._vnode.componentInstance
   }
 
