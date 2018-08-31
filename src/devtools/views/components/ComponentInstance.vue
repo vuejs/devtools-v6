@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{
-      inactive: instance.inactive,
+      inactive: instance.inactive && !instance.parent.inactive,
       selected
     }"
     class="instance"
