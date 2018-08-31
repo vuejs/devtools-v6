@@ -117,7 +117,8 @@ export function initVuexBackend (hook, bridge) {
     // Get most recent snapshot for target index
     // for faster replay
     let snapshot
-    for (const s of snapshots) {
+    for (let i = 0; i < snapshots.length; i++) {
+      const s = snapshots[i]
       if (s.index > index) {
         break
       } else {
@@ -126,7 +127,7 @@ export function initVuexBackend (hook, bridge) {
     }
 
     // Snapshot was already replayed
-    if (snapshot.index === index) {
+    if (snapshot.index === index && index !== -1) {
       return snapshot.state
     }
 
