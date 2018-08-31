@@ -1,10 +1,13 @@
 <template>
   <div>
     <split-pane v-if="hasRouter">
-      <routes-tree slot="left"></routes-tree>
-      <routes-meta slot="right"></routes-meta>
+      <routes-tree slot="left" />
+      <routes-meta slot="right" />
     </split-pane>
-    <div v-else class="notice">
+    <div
+      v-else
+      class="notice"
+    >
       <div>
         No routes detected.
       </div>
@@ -19,13 +22,14 @@ import RoutesMeta from './RoutesMeta.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState('routes', {
-    hasRouter: state => state.hasRouter
-  }),
   components: {
     SplitPane,
     RoutesMeta,
     RoutesTree
-  }
+  },
+
+  computed: mapState('routes', {
+    hasRouter: state => state.hasRouter
+  })
 }
 </script>

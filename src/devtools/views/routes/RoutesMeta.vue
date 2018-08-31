@@ -18,7 +18,6 @@
 
 <script>
 import StateInspector from 'components/StateInspector.vue'
-import ActionHeader from 'components/ActionHeader.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import { mapGetters } from 'vuex'
 import { UNDEFINED } from 'src/util'
@@ -26,7 +25,6 @@ import { UNDEFINED } from 'src/util'
 export default {
   components: {
     ScrollPane,
-    ActionHeader,
     StateInspector
   },
   computed: {

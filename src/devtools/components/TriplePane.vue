@@ -1,19 +1,37 @@
 <template>
-  <div style="height: 100%;" class="split-pane"
+  <div
+    style="height: 100%;"
+    class="split-pane"
+    :class="{ dragging: dragging }"
     @mousemove="dragMove"
     @mouseup="dragEnd"
     @mouseleave="dragEnd"
-    :class="{ dragging: dragging }">
-    <div class="left" :style="{ width: widthLeft + '%' }">
-      <slot name="left"></slot>
-      <div class="dragger" @mousedown="dragStartLeft"></div>
+  >
+    <div
+      class="left"
+      :style="{ width: widthLeft + '%' }"
+    >
+      <slot name="left" />
+      <div
+        class="dragger"
+        @mousedown="dragStartLeft"
+      />
     </div>
-    <div class="middle" :style="{ width: widthMiddle + '%' }">
-      <slot name="middle"></slot>
-      <div class="dragger" @mousedown="dragStartRight"></div>
+    <div
+      class="middle"
+      :style="{ width: widthMiddle + '%' }"
+    >
+      <slot name="middle" />
+      <div
+        class="dragger"
+        @mousedown="dragStartRight"
+      />
     </div>
-    <div class="right" :style="{ width: widthRight + '%' }">
-      <slot name="right"></slot>
+    <div
+      class="right"
+      :style="{ width: widthRight + '%' }"
+    >
+      <slot name="right" />
     </div>
   </div>
 </template>

@@ -1,9 +1,16 @@
 <template>
   <scroll-pane>
-    <div v-if="activeRouteChange" slot="scroll">
+    <div
+      v-if="activeRouteChange"
+      slot="scroll"
+    >
       <state-inspector :state="{ from, to }" />
     </div>
-    <div v-else slot="scroll" class="no-route-data">
+    <div
+      v-else
+      slot="scroll"
+      class="no-route-data"
+    >
       No route transition selected
     </div>
   </scroll-pane>
@@ -11,7 +18,6 @@
 
 <script>
 import StateInspector from 'components/StateInspector.vue'
-import ActionHeader from 'components/ActionHeader.vue'
 import ScrollPane from 'components/ScrollPane.vue'
 import { mapGetters } from 'vuex'
 import { UNDEFINED } from 'src/util'
@@ -19,7 +25,6 @@ import { UNDEFINED } from 'src/util'
 export default {
   components: {
     ScrollPane,
-    ActionHeader,
     StateInspector
   },
   computed: {

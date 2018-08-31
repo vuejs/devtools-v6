@@ -1,10 +1,13 @@
 <template>
   <div>
     <split-pane v-if="hasRouter">
-      <router-history slot="left"></router-history>
-      <router-meta slot="right"></router-meta>
+      <router-history slot="left" />
+      <router-meta slot="right" />
     </split-pane>
-    <div v-else class="notice">
+    <div
+      v-else
+      class="notice"
+    >
       <div>
         No router detected.
       </div>
@@ -19,13 +22,14 @@ import RouterMeta from './RouterMeta.vue'
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState('router', {
-    hasRouter: state => state.hasRouter
-  }),
   components: {
     SplitPane,
     RouterHistory,
     RouterMeta
-  }
+  },
+
+  computed: mapState('router', {
+    hasRouter: state => state.hasRouter
+  })
 }
 </script>

@@ -33,44 +33,44 @@
           </div>
         </div>
         <div
-          v-for="entry of entries"
-          :key="entry.id"
+          v-for="e of entries"
+          :key="e.id"
           class="metric selectable-item"
         >
           <div
             class="type"
             :class="{
-              dim: entry.count === 0
+              dim: e.count === 0
             }"
           >
-            {{ entry.id }}
+            {{ e.id }}
           </div>
 
           <div
             class="count"
             :class="{
-              dim: entry.count === 0
+              dim: e.count === 0
             }"
           >
-            {{ entry.count }}
+            {{ e.count }}
           </div>
 
           <div
             class="total-time"
             :class="{
-              dim: entry.totalTime === 0
+              dim: e.totalTime === 0
             }"
           >
-            {{ Math.round(entry.totalTime) }} ms
+            {{ Math.round(e.totalTime) }} ms
           </div>
 
           <div
             class="average-time"
             :class="{
-              dim: entry.totalTime === 0
+              dim: e.totalTime === 0
             }"
           >
-            {{ Math.round(entry.totalTime / Math.max(entry.count, 1)) }} ms
+            {{ Math.round(e.totalTime / Math.max(e.count, 1)) }} ms
           </div>
         </div>
       </div>

@@ -161,11 +161,6 @@
 </template>
 
 <script>
-import ComponentsTab from './views/components/ComponentsTab.vue'
-import EventsTab from './views/events/EventsTab.vue'
-import VuexTab from './views/vuex/VuexTab.vue'
-import RouterTab from './views/router/RouterTab.vue'
-import RoutesTab from './views/routes/RoutesTab.vue'
 import { SPECIAL_TOKENS } from '../util'
 import Keyboard from './mixins/keyboard'
 import GroupDropdown from 'components/GroupDropdown.vue'
@@ -176,11 +171,6 @@ export default {
   name: 'App',
 
   components: {
-    components: ComponentsTab,
-    vuex: VuexTab,
-    events: EventsTab,
-    router: RouterTab,
-    routes: RoutesTab,
     GroupDropdown
   },
 
