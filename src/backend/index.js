@@ -311,7 +311,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = classify(getInstanceName(instance)).toLowerCase()
+  const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -548,7 +548,7 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options || instance.fnOptions)
+  const name = getComponentName(instance.$options || instance.fnOptions || {})
   if (name) return name
   return instance.$root === instance
     ? 'Root'

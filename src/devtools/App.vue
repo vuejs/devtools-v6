@@ -109,7 +109,7 @@
                 :value="option.name"
                 :icon-left="option.icon"
                 style="width: 100%;"
-                class="events-tab flat big-tag"
+                class="router-tab flat big-tag"
                 @selected="isRouterGroupOpen = false"
               >
                 {{ option.label }}
@@ -123,7 +123,7 @@
             }"
             value="perf"
             icon-left="assessment"
-            class="settings-tab flat"
+            class="perf-tab flat"
           >
             Performance
           </VueGroupButton>
