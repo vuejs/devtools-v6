@@ -9,6 +9,7 @@ suite('vuex edit', () => {
       .click({ force: true })
       .click({ force: true })
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('-2')
     })
@@ -21,6 +22,7 @@ suite('vuex edit', () => {
       .click({ force: true })
       .click({ force: true })
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('0')
     })
@@ -33,6 +35,7 @@ suite('vuex edit', () => {
     cy.get('.edit-input').type('12')
     cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('12')
     })
@@ -43,6 +46,7 @@ suite('vuex edit', () => {
     cy.get('.edit-input').type('0')
     cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('0')
     })
@@ -55,6 +59,7 @@ suite('vuex edit', () => {
       .click({ force: true })
       .click({ force: true })
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#vuex-object pre').contains('-2')
     })
@@ -65,6 +70,7 @@ suite('vuex edit', () => {
       .click({ force: true })
       .click({ force: true })
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#vuex-object pre').contains('0')
     })
@@ -75,6 +81,7 @@ suite('vuex edit', () => {
     cy.get('.edit-input').eq(1).type('12')
     cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
 
+    cy.wait(200)
     cy.get('#target').iframe().then(({ get }) => {
       get('#vuex-object pre').contains('12')
     })
