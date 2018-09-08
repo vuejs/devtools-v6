@@ -123,6 +123,7 @@ export default {
 .left,
 .right
   position relative
+  height 100%
 
 .horizontal
   .bottom
