@@ -103,10 +103,13 @@ $arrow-color = $vue-ui-color-dark
         border-left-color #666
     &.selected,
     &.active
+      color #fff
       background-color $active-color
 
 .list-item
   color $pink
+  .vue-ui-dark-mode &
+    color $lightPink
   @extends .selectable-item
 
 .icon-button
@@ -141,7 +144,7 @@ $arrow-color = $vue-ui-color-dark
 .grey
   &,
   .material-icons
-    color $darkerGrey
+    color $darkGrey
 
 .red
   &,

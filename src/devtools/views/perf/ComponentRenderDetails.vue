@@ -19,6 +19,9 @@
       <div
         slot="scroll"
         class="metrics"
+        :class="{
+          'high-density': highDensity
+        }"
       >
         <div class="header">
           <div
@@ -30,44 +33,44 @@
           </div>
         </div>
         <div
-          v-for="entry of entries"
-          :key="entry.id"
+          v-for="e of entries"
+          :key="e.id"
           class="metric selectable-item"
         >
           <div
             class="type"
             :class="{
-              dim: entry.count === 0
+              dim: e.count === 0
             }"
           >
-            {{ entry.id }}
+            {{ e.id }}
           </div>
 
           <div
             class="count"
             :class="{
-              dim: entry.count === 0
+              dim: e.count === 0
             }"
           >
-            {{ entry.count }}
+            {{ e.count }}
           </div>
 
           <div
             class="total-time"
             :class="{
-              dim: entry.totalTime === 0
+              dim: e.totalTime === 0
             }"
           >
-            {{ Math.round(entry.totalTime) }} ms
+            {{ Math.round(e.totalTime) }} ms
           </div>
 
           <div
             class="average-time"
             :class="{
-              dim: entry.totalTime === 0
+              dim: e.totalTime === 0
             }"
           >
-            {{ Math.round(entry.totalTime / Math.max(entry.count, 1)) }} ms
+            {{ Math.round(e.totalTime / Math.max(e.count, 1)) }} ms
           </div>
         </div>
       </div>
@@ -124,6 +127,11 @@ export default {
 
     componentName () {
       return (this.$shared.classifyComponents ? classify(this.entry.id) : this.entry.id) || 'Anonymous Component'
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.entries.length > 8) || pref === 'high'
     }
   },
 
@@ -142,6 +150,8 @@ export default {
 .metrics
   padding 6px 0
   font-size 14px
+  &.high-density
+    font-size 12px
 
 .header,
 .metric
@@ -149,6 +159,8 @@ export default {
   /deep/ > *
     flex 25% 0 0
     padding 4px 10px
+    .high-density &
+      padding 2px 10px
     &:not(:first-child)
       text-align right
 

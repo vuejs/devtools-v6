@@ -8,6 +8,8 @@ import PerfTab from './views/perf/PerfTab.vue'
 import ComponentRenderStats from './views/perf/ComponentRenderStats.vue'
 import FramerateGraph from './views/perf/FramerateGraph.vue'
 import SettingsTab from './views/settings/SettingsTab.vue'
+import RouterTab from './views/router/RouterTab.vue'
+import RoutesTab from './views/routes/RoutesTab.vue'
 
 Vue.use(VueRouter)
 
@@ -30,6 +32,16 @@ const routes = [
     path: '/events',
     name: 'events',
     component: EventsTab
+  },
+  {
+    path: '/router',
+    name: 'router',
+    component: RouterTab
+  },
+  {
+    path: '/routes',
+    name: 'routes',
+    component: RoutesTab
   },
   {
     path: '/perf',

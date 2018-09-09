@@ -12,7 +12,12 @@
 
     <p>
       <button @click="sendComponent()">Vuex mutation</button>
-      <button @click="createLargeArray()">Create large array</button>
+      <button
+        style="background: red; color: white;"
+        @click="createLargeArray()"
+      >
+        Create large array
+      </button>
     </p>
 
     <h3>Set</h3>

@@ -85,7 +85,7 @@ function applyHooks (vm) {
 
   const renderMetrics = {}
 
-  for (const hook of COMPONENT_HOOKS) {
+  COMPONENT_HOOKS.forEach(hook => {
     const renderHook = RENDER_HOOKS[hook]
 
     const handler = function () {
@@ -95,8 +95,10 @@ function applyHooks (vm) {
         if (renderHook && renderHook.before) {
           // Render hook ends before one hook
           const metric = renderMetrics[renderHook.before]
-          metric.end = time
-          addComponentMetric(vm.$options, renderHook.before, metric.start, metric.end)
+          if (metric) {
+            metric.end = time
+            addComponentMetric(vm.$options, renderHook.before, metric.start, metric.end)
+          }
         }
 
         // After
@@ -121,7 +123,7 @@ function applyHooks (vm) {
     } else {
       vm.$options[hook] = [handler]
     }
-  }
+  })
 }
 
 function addComponentMetric (options, type, start, end) {

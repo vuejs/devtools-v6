@@ -68,7 +68,7 @@ suite('components tab', () => {
 
   it('should expand child instance', () => {
     cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
-    cy.get('.instance').should('have.length', baseInstanceCount + 7)
+    cy.get('.instance').should('have.length', baseInstanceCount + 10)
   })
 
   it('should add/remove component from app side', () => {
@@ -77,18 +77,19 @@ suite('components tab', () => {
       get('.add').click({ force: true })
       cy.get('.instance').should('have.length', baseInstanceCount + 10)
     })
-
+    cy.get('.instance').should('have.length', baseInstanceCount + 13)
     cy.get('#target').iframe().then(({ get }) => {
       get('.remove').click({ force: true })
       cy.get('.instance').should('have.length', baseInstanceCount + 9)
     })
+    cy.get('.instance').should('have.length', baseInstanceCount + 12)
   })
 
   it('should filter components', () => {
     cy.get('.left .search input').clear().type('counter')
     cy.get('.instance').should('have.length', 1)
     cy.get('.left .search input').clear().type('target')
-    cy.get('.instance').should('have.length', 8)
+    cy.get('.instance').should('have.length', 15)
     cy.get('.left .search input').clear()
   })
 
