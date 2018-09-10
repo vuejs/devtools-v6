@@ -40,7 +40,7 @@
           <textarea
             placeholder="Paste state object here to import it..."
             @input="importState"
-            @keydown.esc="closeImportStatePopup"
+            @keydown.esc.stop="closeImportStatePopup"
           />
           <span
             v-show="showBadJSONMessage"
