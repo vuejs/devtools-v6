@@ -95,7 +95,7 @@ export default {
     display flex
     align-items center
     padding 0 14px
-    height 48px
+    height 100%
     cursor pointer
   & /deep/ svg
     fill #2c3e50
