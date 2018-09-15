@@ -137,7 +137,6 @@ suite('vuex tab', () => {
   })
 
   it('should commit', () => {
-    cy.get('.history .entry[data-index="3"] .mutation-type').click({ force: true })
     cy.get('.history .entry[data-index="3"] .action-commit').click({ force: true })
     cy.get('.history .entry[data-active="true"]').should('have.length', 1)
     cy.get('.history .entry[data-index="0"]')
@@ -163,8 +162,6 @@ suite('vuex tab', () => {
         .click({ force: true })
       get('#counter p').contains('-1')
     })
-    // TODO hack
-    cy.wait(1000)
     cy.get('.history .entry[data-index="3"]').click({ force: true })
     cy.get('.recording-vuex-state').should('not.be.visible')
     cy.get('.loading-vuex-state').should('not.be.visible')

@@ -73,7 +73,6 @@ export function initVuexBackend (hook, bridge) {
       snapshot
     })
     if (apply) {
-      console.log('vuex:travel-to-state', state)
       hook.emit('vuex:travel-to-state', state)
     }
   })
