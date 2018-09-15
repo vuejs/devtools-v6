@@ -152,20 +152,25 @@ suite('vuex tab', () => {
   })
 
   it('should display getters', () => {
-    cy.get('.vuex-state-inspector').then(el => {
-      expect(el.text()).to.include('isPositive:true')
+    cy.get('.vuex-state-inspector').within(() => {
+      cy.get('.key').contains('count').parent().contains('2')
+      cy.get('.key').contains('isPositive').parent().contains('true')
     })
     cy.get('#target').iframe().then(({ get }) => {
       get('.decrement')
         .click({ force: true })
         .click({ force: true })
         .click({ force: true })
+      get('#counter p').contains('-1')
     })
+    // TODO hack
+    cy.wait(1000)
     cy.get('.history .entry[data-index="3"]').click({ force: true })
     cy.get('.recording-vuex-state').should('not.be.visible')
     cy.get('.loading-vuex-state').should('not.be.visible')
-    cy.get('.vuex-state-inspector').then(el => {
-      expect(el.text()).to.include('isPositive:false')
+    cy.get('.vuex-state-inspector').within(() => {
+      cy.get('.key').contains('count').parent().contains('-1')
+      cy.get('.key').contains('isPositive').parent().contains('false')
     })
   })
 
