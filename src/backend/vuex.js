@@ -5,7 +5,6 @@ import Vue from 'vue'
 
 export function initVuexBackend (hook, bridge) {
   const store = hook.store
-  console.log(store)
 
   let originalVm = store._vm
   const snapshotsVm = new Vue({
@@ -74,6 +73,7 @@ export function initVuexBackend (hook, bridge) {
       snapshot
     })
     if (apply) {
+      console.log('vuex:travel-to-state', state)
       hook.emit('vuex:travel-to-state', state)
     }
   })
@@ -119,7 +119,8 @@ export function initVuexBackend (hook, bridge) {
     // Get most recent snapshot for target index
     // for faster replay
     let snapshot
-    for (const s of snapshots) {
+    for (let i = 0; i < snapshots.length; i++) {
+      const s = snapshots[i]
       if (s.index > index) {
         break
       } else {
@@ -127,41 +128,43 @@ export function initVuexBackend (hook, bridge) {
       }
     }
 
+    let resultState
+
     // Snapshot was already replayed
     if (snapshot.index === index) {
-      return snapshot.state
-    }
+      resultState = snapshot.state
+    } else {
+      const { state } = parse(snapshot.state, true)
+      store.replaceState(state)
 
-    const { state } = parse(snapshot.state, true)
-    store.replaceState(state)
-
-    const total = index - snapshot.index
-    SharedData.snapshotLoading = {
-      current: 0,
-      total
-    }
-    let time = Date.now()
-
-    // Replay mutations
-    for (let i = snapshot.index + 1; i <= index; i++) {
-      const mutation = mutations[i]
-      mutation.handlers.forEach(handler => handler(state, mutation.payload))
-      if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
-        takeSnapshot(i, state)
+      const total = index - snapshot.index
+      SharedData.snapshotLoading = {
+        current: 0,
+        total
       }
+      let time = Date.now()
 
-      const now = Date.now()
-      if (now - time <= 100) {
-        time = now
-        SharedData.snapshotLoading = {
-          current: i - snapshot.index,
-          total
+      // Replay mutations
+      for (let i = snapshot.index + 1; i <= index; i++) {
+        const mutation = mutations[i]
+        mutation.handlers.forEach(handler => handler(state, mutation.payload))
+        if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
+          takeSnapshot(i, state)
+        }
+
+        const now = Date.now()
+        if (now - time <= 100) {
+          time = now
+          SharedData.snapshotLoading = {
+            current: i - snapshot.index,
+            total
+          }
         }
       }
-    }
 
-    // Send final state after replay
-    const resultState = getSnapshot()
+      // Send final state after replay
+      resultState = getSnapshot()
+    }
 
     lastState = resultState
 

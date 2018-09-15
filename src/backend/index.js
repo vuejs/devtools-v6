@@ -4,6 +4,8 @@
 import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { initRouterBackend } from './router'
+import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
@@ -120,6 +122,10 @@ function connect (Vue) {
     })
   }
 
+  hook.once('router:init', () => {
+    initRouterBackend(hook.Vue, bridge, rootInstances)
+  })
+
   // events
   initEventsBackend(Vue, bridge)
 
@@ -144,7 +150,12 @@ function connect (Vue) {
     'background:transparent'
   )
 
-  setTimeout(scan, 0)
+  setTimeout(() => {
+    scan()
+
+    // perf
+    initPerfBackend(Vue, bridge, instanceMap)
+  }, 0)
 }
 
 export function findInstanceOrVnode (id) {
@@ -200,6 +211,7 @@ function scan () {
       return true
     }
   })
+  hook.emit('router:init')
   flush()
 }
 
@@ -286,7 +298,7 @@ function findQualifiedChildren (instance) {
         // Find functional components in recursively in non-functional vnodes.
         ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
           // Filter qualified children.
-          .filter(({ name }) => name.indexOf(filter) > -1)
+          .filter(instance => isQualified(instance))
         : []
     )
 }
@@ -299,7 +311,7 @@ function findQualifiedChildren (instance) {
  */
 
 function isQualified (instance) {
-  const name = classify(getInstanceName(instance)).toLowerCase()
+  const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
@@ -313,10 +325,10 @@ function flatten (items) {
 }
 
 function captureChild (child) {
-  if (child.fnContext) {
+  if (child.fnContext && !child.componentInstance) {
     return capture(child)
   } else if (child.componentInstance) {
-    if (!child._isBeingDestroyed) return capture(child.componentInstance)
+    if (!child.componentInstance._isBeingDestroyed) return capture(child.componentInstance)
   } else if (child.children) {
     return flatten(child.children.map(captureChild))
   }
@@ -334,8 +346,12 @@ function capture (instance, index, list) {
     captureCount++
   }
 
+  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
+    instance = instance._vnode.componentInstance
+  }
+
   // Functional component.
-  if (instance.fnContext) {
+  if (instance.fnContext && !instance.componentInstance) {
     const contextUid = instance.fnContext.__VUE_DEVTOOLS_UID__
     let id = functionalIds.get(contextUid)
     if (id == null) {
@@ -349,7 +365,7 @@ function capture (instance, index, list) {
     return {
       id: functionalId,
       functional: true,
-      name: getComponentName(instance.fnOptions) || 'Anonymous Component',
+      name: getInstanceName(instance),
       renderKey: getRenderKey(instance.key),
       children: instance.children ? instance.children.map(
         child => child.fnContext
@@ -366,16 +382,31 @@ function capture (instance, index, list) {
   // behaviour
   instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
   mark(instance)
+
   const ret = {
+    uid: instance._uid,
     id: instance.__VUE_DEVTOOLS_UID__,
     name: getInstanceName(instance),
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: instance._vnode.children
-      ? flatten((instance._vnode.children).map(captureChild))
-      : instance.$children.filter(child => !child._isBeingDestroyed).map(capture)
+    children: instance.$children
+      .filter(child => !child._isBeingDestroyed)
+      .map(capture)
   }
+
+  if (instance._vnode.children) {
+    // For dedupe
+    const childrenUids = {}
+    ret.children.forEach(child => {
+      childrenUids[child.uid] = true
+    })
+    ret.children = ret.children.concat(
+      flatten(instance._vnode.children.map(captureChild))
+        .filter(child => !childrenUids[child.uid])
+    )
+  }
+
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {
     const rect = getInstanceOrVnodeRect(instance)
@@ -517,7 +548,7 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options || instance.fnOptions)
+  const name = getComponentName(instance.$options || instance.fnOptions || {})
   if (name) return name
   return instance.$root === instance
     ? 'Root'

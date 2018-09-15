@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import * as filters from './filters'
 import './plugins'
 import { parse } from '../util'
 import { isChrome, initEnv } from './env'
@@ -9,6 +10,10 @@ import SharedData, { init as initSharedData, destroy as destroySharedData } from
 import storage from './storage'
 import { snapshotsCache } from './views/vuex/cache'
 import VuexResolve from './views/vuex/resolve'
+
+for (const key in filters) {
+  Vue.filter(key, filters[key])
+}
 
 // UI
 
@@ -164,6 +169,27 @@ function initApp (shell) {
       }
     })
 
+    bridge.on('router:init', payload => {
+      store.commit('router/INIT', parse(payload))
+    })
+
+    bridge.on('router:changed', payload => {
+      store.commit('router/CHANGED', parse(payload))
+    })
+
+    bridge.on('routes:init', payload => {
+      store.commit('routes/INIT', parse(payload))
+    })
+
+    bridge.on('routes:changed', payload => {
+      store.commit('routes/CHANGED', parse(payload))
+    })
+
+    // register filters
+    Vue.filter('formatTime', function (timestamp) {
+      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
+    })
+
     bridge.on('events:reset', () => {
       store.commit('events/RESET')
     })
@@ -172,6 +198,14 @@ function initApp (shell) {
       ensurePaneShown(() => {
         inspectInstance(id)
       })
+    })
+
+    bridge.on('perf:add-metric', data => {
+      store.commit('perf/ADD_METRIC', data)
+    })
+
+    bridge.on('perf:upsert-metric', ({ type, data }) => {
+      store.commit('perf/UPSERT_METRIC', { type, data })
     })
 
     initEnv(Vue)

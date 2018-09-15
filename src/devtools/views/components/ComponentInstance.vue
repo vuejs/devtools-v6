@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{
-      inactive: instance.inactive,
+      inactive: instance.inactive && !instance.parent.inactive,
       selected
     }"
     class="instance"
@@ -302,7 +302,7 @@ export default {
     transform rotate(90deg)
 
 .angle-bracket
-  color $darkerGrey
+  color $darkGrey
 
 .item-name
   color $component-color

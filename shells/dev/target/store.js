@@ -10,7 +10,16 @@ export default new Vuex.Store({
     date: new Date(),
     set: new Set(),
     map: new Map(),
-    sym: Symbol('test')
+    sym: Symbol('test'),
+    object: {
+      name: 'I am Object',
+      number: 0,
+      children: [
+        {
+          number: 0
+        }
+      ]
+    }
   },
   mutations: {
     TEST_INIT: state => state.inited++,

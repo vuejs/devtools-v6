@@ -584,7 +584,7 @@ export default {
 .key
   color #881391
   .vue-ui-dark-mode &
-    color: #e36eec
+    color: $lightPink
   &.abstract
     color $blueishGrey
     .vue-ui-dark-mode &
@@ -610,7 +610,7 @@ export default {
       color $green
       &::before,
       &::after
-        color $darkerGrey
+        color $darkGrey
       &::before
         content '<'
       &::after
@@ -629,7 +629,7 @@ export default {
     &.type-component-definition
       color $green
       >>> span
-        color $darkerGrey
+        color $darkGrey
   .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native

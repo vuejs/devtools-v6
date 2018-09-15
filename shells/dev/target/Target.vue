@@ -24,6 +24,16 @@
         :key="n"
         :name="`Row ${n}`"
       />
+      <Functional
+        name="Embed component"
+      >
+        <Other />
+      </Functional>
+      <Functional
+        name="Embed functional component"
+      >
+        <Functional name="Child" />
+      </Functional>
     </div>
   </div>
 </template>

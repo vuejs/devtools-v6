@@ -7,6 +7,7 @@
     <br>
 
     <button @click="emitManyEvents">Emit a lot of events</button>
+    <button @click="emitAndCommit">Emit and event and commit a mutation</button>
   </div>
 </template>
 
@@ -45,6 +46,11 @@ export default {
       for (let i = 0; i < 10000; i++) {
         this.$emit('event', i)
       }
+    },
+
+    emitAndCommit () {
+      this.$emit('event-1', 'foobar')
+      this.$store.commit('DECREMENT', 'barfoo')
     }
   }
 }

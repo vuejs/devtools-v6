@@ -65,7 +65,7 @@ suite('vuex tab', () => {
   })
 
   it('should time-travel', () => {
-    cy.get('.history .entry[data-index="3"] .entry-actions .action:nth-child(3)').click({ force: true })
+    cy.get('.history .entry[data-index="3"] .entry-actions .action-time-travel').click({ force: true })
     cy.get('.history .entry[data-index="3"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
@@ -90,7 +90,7 @@ suite('vuex tab', () => {
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('2')
     })
-    cy.get('.history .entry[data-index="2"] .entry-actions .action:nth-child(3)').click({ force: true })
+    cy.get('.history .entry[data-index="2"] .entry-actions .action-time-travel').click({ force: true })
     cy.get('.history .entry[data-index="2"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
@@ -112,8 +112,7 @@ suite('vuex tab', () => {
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('1')
     })
-
-    cy.get('.history .entry[data-index="1"] .entry-actions .action:nth-child(3)').click({ force: true })
+    cy.get('.history .entry[data-index="1"] .entry-actions .action-time-travel').click({ force: true })
     cy.get('.history .entry[data-index="1"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
@@ -124,7 +123,7 @@ suite('vuex tab', () => {
 
   it('should revert', () => {
     cy.get('.history .entry[data-index="4"] .mutation-type').click({ force: true })
-    cy.get('.history .entry[data-index="4"]').find('.action:nth-child(2)').click({ force: true })
+    cy.get('.history .entry[data-index="4"]').find('.action-revert').click({ force: true })
     cy.get('.history .entry[data-active="true"]').should('have.length', 4)
     cy.get('.history .entry[data-index="3"]')
       .should('have.class', 'inspected')
@@ -139,7 +138,7 @@ suite('vuex tab', () => {
 
   it('should commit', () => {
     cy.get('.history .entry[data-index="3"] .mutation-type').click({ force: true })
-    cy.get('.history .entry[data-index="3"] .action:nth-child(1)').click({ force: true })
+    cy.get('.history .entry[data-index="3"] .action-commit').click({ force: true })
     cy.get('.history .entry[data-active="true"]').should('have.length', 1)
     cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
@@ -186,7 +185,7 @@ suite('vuex tab', () => {
     cy.get('.export').click()
     cy.get('.export .message')
       .contains('(Copied to clipboard!)')
-      .should('not.be.visible', { timeout: 3000 })
+      .should('not.be.visible', { timeout: 5000 })
   })
 
   it('should import vuex state', () => {
