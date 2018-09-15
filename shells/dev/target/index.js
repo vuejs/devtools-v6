@@ -40,7 +40,7 @@ new Vue({
       h(Events, { key: 'foo' }),
       h(NativeTypes, { key: new Date() }),
       h(Router, { key: [] }),
-      h(TransitionExample)
+      h(TransitionExample),
       h(VuexObject)
     ])
   }
