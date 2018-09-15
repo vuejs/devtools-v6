@@ -1,5 +1,6 @@
 import { parse } from 'src/util'
 import * as actions from './actions'
+import { snapshotsCache } from './cache'
 
 const REGEX_RE = /^\/(.*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
@@ -68,8 +69,9 @@ const mutations = {
     state.inspectedState = value
   },
 
-  'RECEIVE_STATE' (state, value) {
-    state.lastReceivedState = value
+  'RECEIVE_STATE' (state, { index, snapshot }) {
+    state.lastReceivedState = snapshot
+    snapshotsCache.set(index, snapshot)
   },
 
   'UPDATE_BASE_STATE' (state, value) {

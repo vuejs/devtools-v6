@@ -104,7 +104,7 @@
             <a
               v-tooltip="'Commit This Mutation'"
               class="action action-commit"
-              @click.stop="commit(entry)"
+              @click="commit(entry)"
             >
               <VueIcon
                 class="medium"
@@ -115,7 +115,7 @@
             <a
               v-tooltip="'Revert This Mutation'"
               class="action action-revert"
-              @click.stop="revert(entry)"
+              @click="revert(entry);$event.stopImmediatePropagation()"
             >
               <VueIcon
                 class="small"
@@ -127,7 +127,7 @@
               v-if="!isActive(index, entry)"
               v-tooltip="'Time Travel to This State'"
               class="action action-time-travel"
-              @click.stop="timeTravelTo(entry)"
+              @click="timeTravelTo(entry)"
             >
               <VueIcon
                 class="medium"
