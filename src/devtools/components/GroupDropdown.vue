@@ -76,7 +76,20 @@ export default {
     },
 
     selectDefault () {
-      this.$emit('select', this.options[0].name)
+      // Select next
+      let i = this.options.findIndex(
+        o => o.name === this.value
+      )
+      if (i === -1) {
+        i = 0
+      } else {
+        i++
+        if (i === this.options.length) {
+          i = 0
+        }
+      }
+
+      this.$emit('select', this.options[i].name)
       this.$el.blur()
     }
   }
