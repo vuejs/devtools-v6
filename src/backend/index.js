@@ -73,6 +73,7 @@ function connect (Vue) {
   bridge.on('select-instance', id => {
     currentInspectedId = id
     const instance = findInstanceOrVnode(id)
+    if (!instance) return
     if (!/:functional:/.test(id)) bindToConsole(instance)
     flush()
     bridge.send('instance-selected')
@@ -90,7 +91,10 @@ function connect (Vue) {
 
   bridge.on('refresh', scan)
 
-  bridge.on('enter-instance', id => highlight(findInstanceOrVnode(id)))
+  bridge.on('enter-instance', id => {
+    const instance = findInstanceOrVnode(id)
+    if (instance) highlight(instance)
+  })
 
   bridge.on('leave-instance', unHighlight)
 
@@ -167,8 +171,8 @@ function connect (Vue) {
 export function findInstanceOrVnode (id) {
   if (/:functional:/.test(id)) {
     const [refId] = id.split(':functional:')
-
-    return functionalVnodeMap.get(refId)[id]
+    const map = functionalVnodeMap.get(refId)
+    return map && map[id]
   }
   return instanceMap.get(id)
 }
