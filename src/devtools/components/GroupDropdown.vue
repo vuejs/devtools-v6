@@ -117,7 +117,7 @@ export default {
   position absolute
   background white
   left 0
-  top 48px
+  top 100%
   width 100%
   box-shadow 0 3px 6px rgba(0,0,0,0.15)
   border-bottom-left-radius 3px
