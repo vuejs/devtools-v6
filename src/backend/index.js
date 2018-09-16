@@ -7,7 +7,7 @@ import { initEventsBackend } from './events'
 import { initRouterBackend } from './router'
 import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
-import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
+import { stringify, classify, camelize, set, parse, getComponentName, getCustomRefDetails } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
 import { isBrowser, target } from 'src/devtools/env'
@@ -690,21 +690,8 @@ function processRefs (instance) {
   if (Object.keys(instance.$refs).length === 0) {
     return []
   }
-  let refs = Object.keys(instance.$refs).map(key => ({
-    type: '$refs',
-    key: key,
-    value: {
-      _custom: {
-        display: '&lt;' + instance.$refs[key].tagName.toLowerCase() +
-          " <span class='attr-title'>ref</span>=" + key +
-          (instance.$refs[key].id ? " <span class='attr-title'>id</span>='" + instance.$refs[key].id + "'" : '') +
-          (instance.$refs[key].className ? " <span class='attr-title'>class</span>='" + instance.$refs[key].className + "'" : '') + '&gt;',
-        uid: instance.__VUE_DEVTOOLS_UID__,
-        type: 'reference'
-      }
-    },
-    editable: false
-  }))
+  console.log(instance.$refs)
+  let refs = Object.keys(instance.$refs).map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
   return refs.length > 0 ? refs : []
 }
 
