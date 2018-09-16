@@ -104,7 +104,7 @@
             <a
               v-tooltip="'Commit This Mutation'"
               class="action action-commit"
-              @click="commit(entry)"
+              @click="commit(entry);$event.stopImmediatePropagation()"
             >
               <VueIcon
                 class="medium"
