@@ -1,3 +1,4 @@
 import { installHook } from 'src/backend/hook'
+import { target } from 'src/devtools/env'
 
-installHook(window)
+installHook(target)

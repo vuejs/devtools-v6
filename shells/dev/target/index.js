@@ -9,6 +9,7 @@ import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
 import MyClass from './MyClass.js'
 import router from './router'
+import TransitionExample from './TransitionExample.vue'
 import Router from './router/Router.vue'
 
 window.VUE_DEVTOOLS_CONFIG = {
@@ -40,6 +41,7 @@ new Vue({
       h(Events, { key: 'foo' }),
       h(NativeTypes, { key: new Date() }),
       h(Router, { key: [] }),
+      h(TransitionExample),
       h(VuexObject),
       h(Init)
     ])

@@ -67,16 +67,16 @@
         fragment
       </span>
       <span
-        v-if="instance.inactive"
-        class="info inactive"
-      >
-        inactive
-      </span>
-      <span
         v-if="instance.functional"
         class="info functional"
       >
         functional
+      </span>
+      <span
+        v-if="instance.inactive"
+        class="info inactive"
+      >
+        inactive
       </span>
 
       <span class="spacer" />

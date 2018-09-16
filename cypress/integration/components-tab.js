@@ -1,8 +1,10 @@
 import { suite } from '../utils/suite'
 
-const baseInstanceCount = 10
+const baseInstanceCount = 11
 
 suite('components tab', () => {
+  beforeEach(() => cy.reload())
+
   it('should detect instances inside shadow DOM', () => {
     cy.get('.tree > .instance:last-child').contains('Shadow')
   })
@@ -18,6 +20,26 @@ suite('components tab', () => {
 
   it('should expand root by default', () => {
     cy.get('.instance').should('have.length', baseInstanceCount)
+  })
+
+  it('should detect functional components', () => {
+    cy.get('.tree > .instance .instance:nth-child(2)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance:last-child').contains('Functional')
+      })
+    })
+  })
+
+  it('should detect components in transition', () => {
+    cy.get('.tree > .instance .instance:nth-child(7)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance').eq(1).within(() => {
+          cy.get('.arrow').click().then(() => {
+            cy.get('.instance').contains('TestComponent')
+          })
+        })
+      })
+    })
   })
 
   it('should select child instance', () => {
@@ -50,6 +72,8 @@ suite('components tab', () => {
   })
 
   it('should add/remove component from app side', () => {
+    cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
+    cy.get('.instance').should('have.length', baseInstanceCount + 10)
     cy.get('#target').iframe().then(({ get }) => {
       get('.add').click({ force: true })
     })
@@ -64,7 +88,7 @@ suite('components tab', () => {
     cy.get('.left .search input').clear().type('counter')
     cy.get('.instance').should('have.length', 1)
     cy.get('.left .search input').clear().type('target')
-    cy.get('.instance').should('have.length', 15)
+    cy.get('.instance').should('have.length', 12)
     cy.get('.left .search input').clear()
   })
 
@@ -82,6 +106,7 @@ suite('components tab', () => {
   })
 
   it('should display render key', () => {
+    cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
     cy.get('.instance .self .attr-title').contains('key')
     cy.get('.instance .self .attr-value').contains('1')
   })

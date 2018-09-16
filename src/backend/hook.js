@@ -6,13 +6,13 @@
  * we are evaling this function by inserting a script tag. That's why we have
  * to inline the whole event emitter implementation here.
  *
- * @param {Window} window
+ * @param {Window|global} target
  */
 
-export function installHook (window) {
+export function installHook (target) {
   let listeners = {}
 
-  if (window.hasOwnProperty('__VUE_DEVTOOLS_GLOBAL_HOOK__')) return
+  if (target.hasOwnProperty('__VUE_DEVTOOLS_GLOBAL_HOOK__')) return
 
   const hook = {
     Vue: null,
@@ -91,7 +91,7 @@ export function installHook (window) {
     hook.Vue = Vue
 
     Vue.prototype.$inspect = function () {
-      const fn = window.__VUE_DEVTOOLS_INSPECT__
+      const fn = target.__VUE_DEVTOOLS_INSPECT__
       fn && fn(this)
     }
   })
@@ -101,7 +101,7 @@ export function installHook (window) {
     hook.initialStore = clone(store)
   })
 
-  Object.defineProperty(window, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
+  Object.defineProperty(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
     get () {
       return hook
     }
