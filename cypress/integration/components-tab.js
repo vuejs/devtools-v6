@@ -122,4 +122,13 @@ suite('components tab', () => {
     })
     cy.get('.left .search input').clear()
   })
+
+  it('should display $refs', () => {
+    cy.get('.instance .item-name').contains('RefTester').click()
+    cy.get('.right .data-wrapper').then(el => {
+      expect(el.text()).to.contain('list:Array[4]')
+      expect(el.text()).to.contain('<li>')
+      expect(el.text()).to.contain('tester:<p id="testing"')
+    })
+  })
 })
