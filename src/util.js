@@ -274,9 +274,16 @@ export function getCustomRefDetails (instance, key, ref) {
   if (Array.isArray(ref)) {
     value = ref.map((r) => getCustomRefDetails(instance, key, r)).map(data => data.value)
   } else {
+    let name
+    if (ref._isVue) {
+      name = getComponentName(ref.$options)
+    } else {
+      name = ref.tagName.toLowerCase()
+    }
+
     value = {
       _custom: {
-        display: `&lt;${ref.tagName.toLowerCase()}` +
+        display: `&lt;${name}` +
           (ref.id ? ` <span class="attr-title">id</span>="${ref.id}"` : '') +
           (ref.className ? ` <span class="attr-title">class</span>="${ref.className}"` : '') + '&gt;',
         uid: instance.__VUE_DEVTOOLS_UID__,
