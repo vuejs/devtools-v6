@@ -374,6 +374,8 @@ export default {
   padding-bottom 0 !important
 
 .container
+  height: calc(100% - 60px)
+  position relative
   overflow hidden
   flex 1
 
