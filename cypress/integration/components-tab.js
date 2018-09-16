@@ -10,9 +10,7 @@ suite('components tab', () => {
   })
 
   it('should select instance', () => {
-    cy.get('.instance .self').eq(0).click().then(el => {
-      expect(el).to.have.class('selected')
-    })
+    cy.get('.instance .self').eq(0).click().should('have.class', 'selected')
     cy.get('.tree').should('be.visible')
     cy.get('.action-header .title').contains('Root')
     cy.get('.data-field').contains('$route')

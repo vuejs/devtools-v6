@@ -9,9 +9,19 @@ suite('vuex edit', () => {
     cy.get('.state .data-field').eq(0)
       .find('.actions .vue-ui-button').eq(1)
       .click({ force: true })
+    
+    cy.get('.vuex-state-inspector').within(() => {
+      cy.get('.key').contains('count').parent().contains('-1')
+    })
+      
+    cy.get('.state .data-field').eq(0)
+      .find('.actions .vue-ui-button').eq(1)
       .click({ force: true })
 
-    cy.wait(200)
+    cy.get('.vuex-state-inspector').within(() => {
+      cy.get('.key').contains('count').parent().contains('-2')
+    })
+
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('-2')
     })
@@ -22,9 +32,19 @@ suite('vuex edit', () => {
     cy.get('.state .data-field').eq(0).click()
       .find('.actions .vue-ui-button').eq(2)
       .click({ force: true })
+
+    cy.get('.vuex-state-inspector').within(() => {
+      cy.get('.key').contains('count').parent().contains('-1')
+    })
+
+    cy.get('.state .data-field').eq(0).click()
+      .find('.actions .vue-ui-button').eq(2)
       .click({ force: true })
 
-    cy.wait(200)
+    cy.get('.vuex-state-inspector').within(() => {
+      cy.get('.key').contains('count').parent().contains('0')
+    })
+
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('0')
     })
