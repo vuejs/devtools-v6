@@ -29,6 +29,10 @@ let isLegacy = false
 let rootUID = 0
 let functionalIds = new Map()
 
+// Dedupe instances
+// Some instances may be both on a component and on a child abstract/functional component
+const captureIds = new Map()
+
 export function initBackend (_bridge) {
   bridge = _bridge
 
@@ -262,6 +266,7 @@ function walk (node, fn) {
 function flush () {
   let start
   functionalIds.clear()
+  captureIds.clear()
   if (process.env.NODE_ENV !== 'production') {
     captureCount = 0
     start = isBrowser ? window.performance.now() : 0
@@ -380,15 +385,15 @@ function capture (instance, index, list) {
       functional: true,
       name: getInstanceName(instance),
       renderKey: getRenderKey(instance.key),
-      children: instance.children ? instance.children.map(
+      children: (instance.children ? instance.children.map(
         child => child.fnContext
           ? captureChild(child)
           : child.componentInstance
             ? capture(child.componentInstance)
             : undefined
-      ).filter(Boolean)
+      )
         // router-view has both fnContext and componentInstance on vnode.
-        : instance.componentInstance ? [capture(instance.componentInstance)] : [],
+        : instance.componentInstance ? [capture(instance.componentInstance)] : []).filter(Boolean),
       inactive: false,
       isFragment: false // TODO: Check what is it for.
     }
@@ -397,6 +402,14 @@ function capture (instance, index, list) {
   // may be 2 roots with same _uid which causes unexpected
   // behaviour
   instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
+
+  // Dedupe
+  if (captureIds.has(instance.__VUE_DEVTOOLS_UID__)) {
+    return
+  } else {
+    captureIds.set(instance.__VUE_DEVTOOLS_UID__, undefined)
+  }
+
   mark(instance)
   const name = getInstanceName(instance)
 
@@ -410,17 +423,13 @@ function capture (instance, index, list) {
     children: instance.$children
       .filter(child => !child._isBeingDestroyed)
       .map(capture)
+      .filter(Boolean)
   }
 
   if (instance._vnode.children) {
-    // For dedupe
-    const childrenUids = {}
-    ret.children.forEach(child => {
-      childrenUids[child.uid] = true
-    })
     ret.children = ret.children.concat(
       flatten(instance._vnode.children.map(captureChild))
-        .filter(child => !childrenUids[child.uid])
+        .filter(Boolean)
     )
   }
 
