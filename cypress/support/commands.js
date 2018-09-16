@@ -25,7 +25,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('vueCheckInit', () => {
-  cy.get('.message').should('be.visible').then(el => {
+  cy.get('.message').should('be.visible', { timeout: 10000 }).then(el => {
     expect(el.text()).to.include('Ready. Detected Vue')
   })
   cy.get('.instance').eq(0).contains('Root')
