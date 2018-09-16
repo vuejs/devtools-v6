@@ -6,6 +6,8 @@ const internalRE = /^(?:pre-)?hook:/
 export function initEventsBackend (Vue, bridge) {
   let recording = true
 
+  bridge.send('events:reset')
+
   bridge.on('events:toggle-recording', enabled => {
     recording = enabled
   })

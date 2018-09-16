@@ -3,7 +3,13 @@
     <div
       v-for="dataType in dataTypes"
       :key="dataType"
-      :class="['data-el', toDisplayType(dataType, true)]"
+      :class="[
+        'data-el',
+        toDisplayType(dataType, true),
+        {
+          'high-density': highDensity
+        }
+      ]"
     >
       <div
         v-tooltip="$t('StateInspector.dataType.tooltip')"
@@ -28,6 +34,8 @@
             :depth="0"
             :path="field.key"
             :editable="field.editable"
+            :force-collapse="forceCollapse"
+            :is-state-field="isStateField(field)"
           />
         </template>
         <template v-else>
@@ -51,10 +59,11 @@ import DataField from './DataField.vue'
 
 const keyOrder = {
   props: 1,
-  undefined: 2,
-  computed: 3,
-  state: 1,
-  getters: 2
+  undefined: 3,
+  computed: 4,
+  state: 2,
+  getters: 3,
+  mutation: 1
 }
 
 export default {
@@ -71,7 +80,8 @@ export default {
 
   data () {
     return {
-      expandedState: {}
+      expandedState: {},
+      forceCollapse: null
     }
   },
 
@@ -83,6 +93,21 @@ export default {
           (keyOrder[b] || (b.charCodeAt(0) + 999))
         )
       })
+    },
+
+    totalCount () {
+      return Object.keys(this.state).reduce((total, state) => total + state.length, 0)
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.totalCount > 12) || pref === 'high'
+    }
+  },
+
+  watch: {
+    state () {
+      this.forceCollapse = null
     }
   },
 
@@ -113,16 +138,19 @@ export default {
 
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
+        this.forceCollapse = value ? 'expand' : 'collapse'
         Vue.set(this.expandedState, key, value)
       })
+    },
+
+    isStateField (field) {
+      return field && field.type === 'state'
     }
   }
 }
 </script>
 
 <style lang="stylus">
-@import "../variables"
-
 .data-el
   font-size 15px
 
@@ -139,6 +167,9 @@ export default {
   .data-fields
     margin 5px
     padding 2px 9px 2px 21px
+    @media (max-height: $tall)
+      margin 0
+      padding 0 9px 0 21px
 
   .data-type
     color $blueishGrey
@@ -148,6 +179,7 @@ export default {
     display flex
     align-items baseline
     padding-left 9px
+    user-select none
 
     .vue-ui-dark-mode &
       color lighten(#486887, 30%)
@@ -161,5 +193,7 @@ export default {
 
   .data-fields
     padding-top 0
+    @media (max-height: $tall)
+      margin-bottom 4px
 
 </style>

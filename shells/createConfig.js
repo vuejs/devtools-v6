@@ -19,7 +19,8 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
       alias: {
         src: path.resolve(__dirname, '../src'),
         views: path.resolve(__dirname, '../src/devtools/views'),
-        components: path.resolve(__dirname, '../src/devtools/components')
+        components: path.resolve(__dirname, '../src/devtools/components'),
+        filters: path.resolve(__dirname, '../src/devtools/filters')
       }
     },
     module: {
@@ -44,7 +45,8 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
           test: /\.css$/,
           use: [
             'vue-style-loader',
-            'css-loader'
+            'css-loader',
+            'postcss-loader'
           ]
         },
         {
@@ -52,7 +54,16 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
           use: [
             'vue-style-loader',
             'css-loader',
-            'stylus-loader'
+            'postcss-loader',
+            'stylus-loader',
+            {
+              loader: 'style-resources-loader',
+              options: {
+                patterns: [
+                  path.resolve(__dirname, '../src/devtools/style/imports.styl')
+                ]
+              }
+            }
           ]
         },
         {

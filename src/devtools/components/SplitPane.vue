@@ -105,8 +105,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../variables"
-
 .split-pane
   display flex
   height 100%
@@ -125,6 +123,7 @@ export default {
 .left,
 .right
   position relative
+  height 100%
 
 .horizontal
   .bottom
@@ -156,5 +155,4 @@ export default {
     bottom -5px
     height 10px
     cursor ns-resize
-
 </style>

@@ -181,6 +181,8 @@
         :editable="isEditable"
         :removable="isSubfieldsEditable"
         :renamable="editable && valueType === 'plain-object'"
+        :force-collapse="forceCollapse"
+        :is-state-field="isStateField"
       />
       <span
         v-if="formattedSubFields.length > limit"
@@ -197,8 +199,10 @@
         :depth="depth + 1"
         :path="`${path}.${newField.key}`"
         :renamable="valueType === 'plain-object'"
+        :force-collapse="forceCollapse"
         editable
         removable
+        :is-state-field="isStateField"
         @cancel-edit="addingValue = false"
         @submit-edit="addingValue = false"
       />
@@ -255,6 +259,14 @@ export default {
     path: {
       type: String,
       required: true
+    },
+    forceCollapse: {
+      type: String,
+      default: null
+    },
+    isStateField: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -431,6 +443,19 @@ export default {
     }
   },
 
+  watch: {
+    forceCollapse: {
+      handler (value) {
+        if (value === 'expand' && this.depth < 4) {
+          this.expanded = true
+        } else if (value === 'collapse') {
+          this.expanded = false
+        }
+      },
+      immediate: true
+    }
+  },
+
   methods: {
     copyToClipboard () {
       copyToClipboard(this.field.value)
@@ -485,8 +510,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../variables"
-
 .data-field
   user-select text
   font-size 12px
@@ -499,6 +522,9 @@ export default {
   position relative
   white-space nowrap
   padding-left 14px
+  .high-density &
+    height 14px
+    line-height 14px
   span, div
     display inline-block
     vertical-align middle
@@ -567,7 +593,7 @@ export default {
 .key
   color #881391
   .vue-ui-dark-mode &
-    color: #e36eec
+    color: $lightPink
   &.abstract
     color $blueishGrey
     .vue-ui-dark-mode &
@@ -593,7 +619,7 @@ export default {
       color $green
       &::before,
       &::after
-        color $darkerGrey
+        color $darkGrey
       &::before
         content '<'
       &::after
@@ -617,7 +643,7 @@ export default {
         opacity 0.5
       >>> .attr-title
         color #800080
-.vue-ui-dark-mode &
+  .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
       color #e33e3a

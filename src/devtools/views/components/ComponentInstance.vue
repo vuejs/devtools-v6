@@ -1,15 +1,19 @@
 <template>
   <div
     :class="{
-      inactive: instance.inactive,
-      selected: selected
+      inactive: instance.inactive && !instance.parent.inactive,
+      selected
     }"
     class="instance"
   >
     <div
       ref="self"
-      :class="{ selected: selected }"
-      :style="{ paddingLeft: depth * 15 + 'px' }"
+      :class="{
+        selected
+      }"
+      :style="{
+        paddingLeft: depth * 15 + 'px'
+      }"
       class="self selectable-item"
       @click.stop="select"
       @dblclick.stop="toggle"
@@ -63,6 +67,12 @@
         fragment
       </span>
       <span
+        v-if="instance.functional"
+        class="info functional"
+      >
+        functional
+      </span>
+      <span
         v-if="instance.inactive"
         class="info inactive"
       >
@@ -91,6 +101,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { classify, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
@@ -108,16 +119,18 @@ export default {
   },
 
   computed: {
-    scrollToExpanded () {
-      return this.$store.state.components.scrollToExpanded
-    },
+    ...mapState('components', [
+      'expansionMap',
+      'inspectedInstance',
+      'scrollToExpanded'
+    ]),
 
     expanded () {
-      return !!this.$store.state.components.expansionMap[this.instance.id]
+      return !!this.expansionMap[this.instance.id]
     },
 
     selected () {
-      return this.instance.id === this.$store.state.components.inspectedInstance.id
+      return this.instance.id === this.inspectedInstance.id
     },
 
     sortedChildren () {
@@ -202,10 +215,12 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
-
 .instance
-  font-family Menlo, Consolas, monospace
+  font-family dejavu sans mono, monospace
+  .platform-mac &
+    font-family Menlo, monospace
+  .platform-windows &
+    font-family Consolas, Lucida Console, Courier New, monospace
   &.inactive
     opacity .5
 
@@ -222,9 +237,14 @@ export default {
   display flex
   align-items center
   padding-right 6px
+  transition font-size .15s, height .15s
 
   &:hidden
     display none
+
+  .high-density &
+    font-size 12px
+    height 15px
 
 .children
   position relative
@@ -243,6 +263,9 @@ export default {
   border-radius 3px
   position relative
   top -1px
+  .high-density &
+    padding 1px 4px 0
+    top 0
   &.console
     color #fff
     background-color transparent
@@ -253,6 +276,12 @@ export default {
     background-color #b3cbf7
   &.inactive
     background-color #aaa
+  &.functional
+    background-color rgba($md-black, .06)
+    color: rgba($md-black, .5)
+    .vue-ui-dark-mode &
+      background-color rgba($md-white, .06)
+      color rgba($md-white, .5)
   &:not(.console)
     margin-left 6px
 
@@ -273,7 +302,7 @@ export default {
     transform rotate(90deg)
 
 .angle-bracket
-  color $darkerGrey
+  color $darkGrey
 
 .item-name
   color $component-color
@@ -282,6 +311,8 @@ export default {
 .attr
   opacity .5
   font-size 12px
+  .high-density &
+    font-size 10px
 
 .attr-title
   color purple
@@ -301,9 +332,18 @@ export default {
   .self.selected & >>> svg
     fill $white
 
+.self:not(.selected)
+  .info
+    &.console
+      color lighten(black, 80%)
+      .vue-ui-dark-mode &
+        color darken(white, 70%)
+
 .self.selected
   .attr
     opacity 1
   .attr-title
     color lighten($purple, 70%)
+  .info.functional
+    color $md-white
 </style>

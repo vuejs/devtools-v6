@@ -12,7 +12,12 @@
 
     <p>
       <button @click="sendComponent()">Vuex mutation</button>
-      <button @click="createLargeArray()">Create large array</button>
+      <button
+        style="background: red; color: white;"
+        @click="createLargeArray()"
+      >
+        Create large array
+      </button>
     </p>
 
     <h3>Set</h3>
@@ -60,7 +65,7 @@ const proxy1 = new Proxy(sum, handler)
 export default {
   components: {
     TestComponent: {
-      props: { bar: { default: 'hey' }},
+      props: { bar: { default: 'hey' } },
       data: () => ({ foo: '42' }),
       computed: {
         parentComp () { return this.$parent }

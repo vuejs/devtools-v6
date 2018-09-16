@@ -37,23 +37,27 @@
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <div
+    <recycle-list
       slot="scroll"
+      :items="filteredEvents"
+      :item-height="highDensity ? 22 : 34"
       class="history"
+      :class="{
+        'high-density': highDensity
+      }"
     >
       <div
         v-if="filteredEvents.length === 0"
+        slot="after-container"
         class="no-events"
       >
         No events found<span v-if="!enabled"><br>(Recording is paused)</span>
       </div>
-      <template v-else>
+      <template slot-scope="{ item: event, index, active }">
         <div
-          v-for="(event, index) in filteredEvents"
-          ref="entries"
-          :key="index"
-          :class="{ active: inspectedIndex === filteredEvents.indexOf(event) }"
           class="entry list-item"
+          :class="{ active: inspectedIndex === index }"
+          :data-active="active"
           @click="inspect(filteredEvents.indexOf(event))"
         >
           <span class="event-name">{{ event.eventName }}</span>
@@ -67,7 +71,7 @@
           <span class="time">{{ event.timestamp | formatTime }}</span>
         </div>
       </template>
-    </div>
+    </recycle-list>
   </scroll-pane>
 </template>
 
@@ -89,12 +93,6 @@ export default {
   components: {
     ScrollPane,
     ActionHeader
-  },
-
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
   },
 
   mixins: [
@@ -123,7 +121,7 @@ export default {
         }
       }
     }),
-    EntryList
+    EntryList()
   ],
 
   computed: {
@@ -143,8 +141,13 @@ export default {
       },
       set (filter) {
         this.$store.commit('events/UPDATE_FILTER', filter)
-        this.$store.commit('events/INSPECT', -1)
+        this.$store.dispatch('events/inspect', filter ? -1 : this.events.length - 1)
       }
+    },
+
+    highDensity () {
+      const pref = this.$shared.displayDensity
+      return (pref === 'auto' && this.filteredEvents.length > 8) || pref === 'high'
     }
   },
 
@@ -166,7 +169,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../../variables"
+.recycle-list
+  height 100%
 
 .no-events
   color #ccc
@@ -180,7 +184,8 @@ export default {
   cursor pointer
   padding 10px 20px
   font-size 12px
-  box-shadow 0 1px 5px rgba(0,0,0,.12)
+  box-shadow inset 0 1px 0px rgba(0, 0, 0, .08)
+  transition padding .15s
   .event-name
     font-weight 600
   .event-source
@@ -197,6 +202,8 @@ export default {
       color: #fff
     .event-source
       color #ddd
+  .high-density &
+    padding 4px 20px
 
 .time
   font-size 11px

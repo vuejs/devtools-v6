@@ -1,20 +1,25 @@
 // This is the backend that is injected into the page that a Vue app lives in
 // when the Vue Devtools panel is activated.
 
-import { highlight, unHighlight, getInstanceRect } from './highlighter'
+import { highlight, unHighlight, getInstanceOrVnodeRect } from './highlighter'
 import { initVuexBackend } from './vuex'
 import { initEventsBackend } from './events'
+import { initRouterBackend } from './router'
+import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
+import { isBrowser, target } from 'src/devtools/env'
 
 // hook should have been injected before this executes.
-const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
+const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const instanceMap = target.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const functionalVnodeMap = target.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
+
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -22,12 +27,18 @@ let filter = ''
 let captureCount = 0
 let isLegacy = false
 let rootUID = 0
+let functionalIds = new Map()
+
+// Dedupe instances
+// Some instances may be both on a component and on a child abstract/functional component
+const captureIds = new Map()
 
 export function initBackend (_bridge) {
   bridge = _bridge
+
   if (hook.Vue) {
     isLegacy = hook.Vue.version && hook.Vue.version.split('.')[0] === '1'
-    connect()
+    connect(hook.Vue)
   } else {
     hook.once('init', connect)
   }
@@ -35,10 +46,10 @@ export function initBackend (_bridge) {
   initRightClick()
 }
 
-function connect () {
+function connect (Vue) {
   initSharedData({
     bridge,
-    Vue: hook.Vue
+    Vue
   })
 
   hook.currentTab = 'components'
@@ -61,14 +72,15 @@ function connect () {
 
   bridge.on('select-instance', id => {
     currentInspectedId = id
-    const instance = instanceMap.get(id)
-    bindToConsole(instance)
+    const instance = findInstanceOrVnode(id)
+    if (!instance) return
+    if (!/:functional:/.test(id)) bindToConsole(instance)
     flush()
     bridge.send('instance-selected')
   })
 
   bridge.on('scroll-to-instance', id => {
-    const instance = instanceMap.get(id)
+    const instance = findInstanceOrVnode(id)
     instance && scrollIntoView(instance)
   })
 
@@ -79,7 +91,10 @@ function connect () {
 
   bridge.on('refresh', scan)
 
-  bridge.on('enter-instance', id => highlight(instanceMap.get(id)))
+  bridge.on('enter-instance', id => {
+    const instance = findInstanceOrVnode(id)
+    if (instance) highlight(instance)
+  })
 
   bridge.on('leave-instance', unHighlight)
 
@@ -88,10 +103,10 @@ function connect () {
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
-    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
+    const instance = target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
 
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
+    target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+    target.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
 
     if (instance) {
       const id = instance.__VUE_DEVTOOLS_UID__
@@ -117,14 +132,18 @@ function connect () {
     })
   }
 
-  // events
-  initEventsBackend(hook.Vue, bridge)
+  hook.once('router:init', () => {
+    initRouterBackend(hook.Vue, bridge, rootInstances)
+  })
 
-  window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
+  // events
+  initEventsBackend(Vue, bridge)
+
+  target.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   // User project devtools config
-  if (window.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
-    const config = window.VUE_DEVTOOLS_CONFIG
+  if (target.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+    const config = target.VUE_DEVTOOLS_CONFIG
 
     // Open in editor
     if (config.hasOwnProperty('openInEditorHost')) {
@@ -133,14 +152,29 @@ function connect () {
   }
 
   bridge.log('backend ready.')
-  bridge.send('ready', hook.Vue.version)
+  bridge.send('ready', Vue.version)
   console.log(
-    `%c vue-devtools %c Detected Vue v${hook.Vue.version} %c`,
+    `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
     'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
     'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
     'background:transparent'
   )
-  scan()
+
+  setTimeout(() => {
+    scan()
+
+    // perf
+    initPerfBackend(Vue, bridge, instanceMap)
+  }, 0)
+}
+
+export function findInstanceOrVnode (id) {
+  if (/:functional:/.test(id)) {
+    const [refId] = id.split(':functional:')
+    const map = functionalVnodeMap.get(refId)
+    return map && map[id]
+  }
+  return instanceMap.get(id)
 }
 
 /**
@@ -151,15 +185,8 @@ function scan () {
   rootInstances.length = 0
   let inFragment = false
   let currentFragment = null
-  walk(document, function (node) {
-    if (inFragment) {
-      if (node === currentFragment._fragmentEnd) {
-        inFragment = false
-        currentFragment = null
-      }
-      return true
-    }
-    let instance = node.__vue__
+
+  function processInstance (instance) {
     if (instance) {
       if (rootInstances.indexOf(instance.$root) === -1) {
         instance = instance.$root
@@ -185,7 +212,27 @@ function scan () {
 
       return true
     }
-  })
+  }
+
+  if (isBrowser) {
+    walk(document, function (node) {
+      if (inFragment) {
+        if (node === currentFragment._fragmentEnd) {
+          inFragment = false
+          currentFragment = null
+        }
+        return true
+      }
+      let instance = node.__vue__
+
+      return processInstance(instance)
+    })
+  } else {
+    if (Array.isArray(target.__VUE_ROOT_INSTANCES__)) {
+      target.__VUE_ROOT_INSTANCES__.map(processInstance)
+    }
+  }
+  hook.emit('router:init')
   flush()
 }
 
@@ -222,16 +269,18 @@ function walk (node, fn) {
 
 function flush () {
   let start
+  functionalIds.clear()
+  captureIds.clear()
   if (process.env.NODE_ENV !== 'production') {
     captureCount = 0
-    start = window.performance.now()
+    start = isBrowser ? window.performance.now() : 0
   }
   const payload = stringify({
     inspectedInstance: getInstanceDetails(currentInspectedId),
     instances: findQualifiedChildrenFromList(rootInstances)
   })
   if (process.env.NODE_ENV !== 'production') {
-    console.log(`[flush] serialized ${captureCount} instances, took ${window.performance.now() - start}ms.`)
+    console.log(`[flush] serialized ${captureCount} instances${isBrowser ? `, took ${window.performance.now() - start}ms.` : ''}.`)
   }
   bridge.send('flush', payload)
 }
@@ -259,26 +308,52 @@ function findQualifiedChildrenFromList (instances) {
  * If the instance itself is qualified, just return itself.
  * This is ok because [].concat works in both cases.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Vue|Array}
  */
 
 function findQualifiedChildren (instance) {
   return isQualified(instance)
     ? capture(instance)
-    : findQualifiedChildrenFromList(instance.$children)
+    : findQualifiedChildrenFromList(instance.$children).concat(
+      instance._vnode && instance._vnode.children
+        // Find functional components in recursively in non-functional vnodes.
+        ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
+          // Filter qualified children.
+          .filter(instance => isQualified(instance))
+        : []
+    )
 }
 
 /**
  * Check if an instance is qualified.
  *
- * @param {Vue} instance
+ * @param {Vue|Vnode} instance
  * @return {Boolean}
  */
 
 function isQualified (instance) {
-  const name = classify(getInstanceName(instance)).toLowerCase()
+  const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
+}
+
+function flatten (items) {
+  return items.reduce((acc, item) => {
+    if (item instanceof Array) acc.push(...flatten(item))
+    else if (item) acc.push(item)
+
+    return acc
+  }, [])
+}
+
+function captureChild (child) {
+  if (child.fnContext && !child.componentInstance) {
+    return capture(child)
+  } else if (child.componentInstance) {
+    if (!child.componentInstance._isBeingDestroyed) return capture(child.componentInstance)
+  } else if (child.children) {
+    return flatten(child.children.map(captureChild))
+  }
 }
 
 /**
@@ -288,28 +363,83 @@ function isQualified (instance) {
  * @return {Object}
  */
 
-function capture (instance, _, list) {
+function capture (instance, index, list) {
   if (process.env.NODE_ENV !== 'production') {
     captureCount++
+  }
+
+  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
+    instance = instance._vnode.componentInstance
+  }
+
+  // Functional component.
+  if (instance.fnContext && !instance.componentInstance) {
+    const contextUid = instance.fnContext.__VUE_DEVTOOLS_UID__
+    let id = functionalIds.get(contextUid)
+    if (id == null) {
+      id = 0
+    } else {
+      id++
+    }
+    functionalIds.set(contextUid, id)
+    const functionalId = contextUid + ':functional:' + id
+    markFunctional(functionalId, instance)
+    return {
+      id: functionalId,
+      functional: true,
+      name: getInstanceName(instance),
+      renderKey: getRenderKey(instance.key),
+      children: (instance.children ? instance.children.map(
+        child => child.fnContext
+          ? captureChild(child)
+          : child.componentInstance
+            ? capture(child.componentInstance)
+            : undefined
+      )
+        // router-view has both fnContext and componentInstance on vnode.
+        : instance.componentInstance ? [capture(instance.componentInstance)] : []).filter(Boolean),
+      inactive: false,
+      isFragment: false // TODO: Check what is it for.
+    }
   }
   // instance._uid is not reliable in devtools as there
   // may be 2 roots with same _uid which causes unexpected
   // behaviour
   instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
+
+  // Dedupe
+  if (captureIds.has(instance.__VUE_DEVTOOLS_UID__)) {
+    return
+  } else {
+    captureIds.set(instance.__VUE_DEVTOOLS_UID__, undefined)
+  }
+
   mark(instance)
+  const name = getInstanceName(instance)
+
   const ret = {
+    uid: instance._uid,
     id: instance.__VUE_DEVTOOLS_UID__,
-    name: getInstanceName(instance),
+    name,
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
     children: instance.$children
       .filter(child => !child._isBeingDestroyed)
       .map(capture)
+      .filter(Boolean)
   }
+
+  if (instance._vnode.children) {
+    ret.children = ret.children.concat(
+      flatten(instance._vnode.children.map(captureChild))
+        .filter(Boolean)
+    )
+  }
+
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {
-    const rect = getInstanceRect(instance)
+    const rect = getInstanceOrVnodeRect(instance)
     ret.top = rect ? rect.top : Infinity
   } else {
     ret.top = Infinity
@@ -350,6 +480,18 @@ function mark (instance) {
   }
 }
 
+function markFunctional (id, vnode) {
+  const refId = vnode.fnContext.__VUE_DEVTOOLS_UID__
+  if (!functionalVnodeMap.has(refId)) {
+    functionalVnodeMap.set(refId, {})
+    vnode.fnContext.$on('hook:beforeDestroy', function () {
+      functionalVnodeMap.delete(refId)
+    })
+  }
+
+  functionalVnodeMap.get(refId)[id] = vnode
+}
+
 /**
  * Get the detailed information of an inspected instance.
  *
@@ -359,7 +501,19 @@ function mark (instance) {
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
   if (!instance) {
-    return {}
+    const vnode = findInstanceOrVnode(id)
+
+    if (!vnode) return {}
+
+    const data = {
+      id,
+      name: getComponentName(vnode.fnOptions),
+      file: vnode.fnOptions.__file || null,
+      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.renderContext.props) }),
+      functional: true
+    }
+
+    return data
   } else {
     const data = {
       id: id,
@@ -425,7 +579,7 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options)
+  const name = getComponentName(instance.$options || instance.fnOptions || {})
   if (name) return name
   return instance.$root === instance
     ? 'Root'
@@ -728,8 +882,9 @@ function processObservables (instance) {
  */
 
 function scrollIntoView (instance) {
-  const rect = getInstanceRect(instance)
+  const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
+    // TODO: Handle this for non-browser environments.
     window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
 }
@@ -742,6 +897,9 @@ function scrollIntoView (instance) {
  */
 
 function bindToConsole (instance) {
+  if (!instance) return
+  if (!isBrowser) return
+
   const id = instance.__VUE_DEVTOOLS_UID__
   const index = consoleBoundInstances.indexOf(id)
   if (index > -1) {
@@ -749,6 +907,7 @@ function bindToConsole (instance) {
   } else {
     consoleBoundInstances.pop()
   }
+
   consoleBoundInstances.unshift(id)
   for (var i = 0; i < 5; i++) {
     window['$vm' + i] = instanceMap.get(consoleBoundInstances[i])
@@ -784,7 +943,7 @@ function getRenderKey (value) {
  * @param {any} message HTML content
  */
 export function toast (message, type = 'normal') {
-  const fn = window.__VUE_DEVTOOLS_TOAST__
+  const fn = target.__VUE_DEVTOOLS_TOAST__
   fn && fn(message, type)
 }
 
@@ -816,6 +975,7 @@ function setStateValue ({ id, path, value, newKey, remove }) {
 }
 
 function initRightClick () {
+  if (!isBrowser) return
   // Start recording context menu when Vue is detected
   // event if Vue devtools are not loaded yet
   document.addEventListener('contextmenu', event => {

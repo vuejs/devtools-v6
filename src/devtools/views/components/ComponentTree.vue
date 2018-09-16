@@ -21,19 +21,13 @@
         <VueIcon :icon="selecting ? 'gps_fixed' : 'gps_not_fixed'" />
         <span>Select</span>
       </a>
-      <a
-        v-tooltip="'Format component names'"
-        :class="{ active: $shared.classifyComponents }"
-        class="button classify-names"
-        @click="$shared.classifyComponents = !$shared.classifyComponents"
-      >
-        <VueIcon icon="text_fields" />
-        <span>Format</span>
-      </a>
     </action-header>
     <div
       slot="scroll"
       class="tree"
+      :class="{
+        'high-density': finalHighDensity
+      }"
     >
       <component-instance
         v-for="instance in instances"
@@ -47,6 +41,7 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex'
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import ComponentInstance from './ComponentInstance.vue'
@@ -130,8 +125,36 @@ export default {
 
   data () {
     return {
-      selecting: false
+      selecting: false,
+      highDensity: false
     }
+  },
+
+  computed: {
+    ...mapState('components', [
+      'expansionMap'
+    ]),
+
+    ...mapGetters('components', [
+      'totalCount'
+    ]),
+
+    finalHighDensity () {
+      if (this.$shared.displayDensity === 'auto') {
+        return this.highDensity
+      }
+      return this.$shared.displayDensity === 'high'
+    }
+  },
+
+  watch: {
+    expansionMap: {
+      handler: 'updateAutoDensity',
+      deep: true,
+      immediate: true
+    },
+    totalCount: 'updateAutoDensity',
+    '$responsive.height': 'updateAutoDensity'
   },
 
   mounted () {
@@ -158,6 +181,18 @@ export default {
         } else {
           bridge.send('stop-component-selector')
         }
+      }
+    },
+
+    updateAutoDensity () {
+      if (this.$shared.displayDensity === 'auto') {
+        this.$nextTick(() => {
+          const totalHeight = this.$isChrome ? this.$responsive.height : this.$root.$el.offsetHeight
+          const count = this.$el.querySelectorAll('.instance').length
+          const treeHeight = 22 * count
+          const scrollHeight = totalHeight - (totalHeight <= 350 ? 76 : 111)
+          this.highDensity = treeHeight >= scrollHeight
+        })
       }
     }
   }
@@ -200,8 +235,6 @@ function findByIndex (all, index) {
 </script>
 
 <style lang="stylus">
-@import "../../variables"
-
 .tree
   padding 5px
 

@@ -1,8 +1,10 @@
 import { suite } from '../utils/suite'
 
-const baseInstanceCount = 9
+const baseInstanceCount = 12
 
 suite('components tab', () => {
+  beforeEach(() => cy.reload())
+
   it('should detect instances inside shadow DOM', () => {
     cy.get('.tree > .instance:last-child').contains('Shadow')
   })
@@ -18,6 +20,26 @@ suite('components tab', () => {
 
   it('should expand root by default', () => {
     cy.get('.instance').should('have.length', baseInstanceCount)
+  })
+
+  it('should detect functional components', () => {
+    cy.get('.tree > .instance .instance:nth-child(2)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance:last-child').contains('Functional')
+      })
+    })
+  })
+
+  it('should detect components in transition', () => {
+    cy.get('.tree > .instance .instance:nth-child(7)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance').eq(1).within(() => {
+          cy.get('.arrow').click().then(() => {
+            cy.get('.instance').contains('TestComponent')
+          })
+        })
+      })
+    })
   })
 
   it('should select child instance', () => {
@@ -42,36 +64,31 @@ suite('components tab', () => {
     cy.get('.data-el.data .data-field:nth-child(5)').contains('NaN')
     cy.get('.data-el.data .data-field:nth-child(2)').contains('Infinity')
     cy.get('.data-el.data .data-field:nth-child(6)').contains('-Infinity')
-
-    // Classify names
-    cy.get('.instance .instance:nth-child(3)').contains('OtherWithMine')
-    cy.get('.button.classify-names').click()
-    cy.get('.instance .instance:nth-child(3)').contains('other-with-mine')
-    cy.get('.button.classify-names').click()
-    cy.get('.instance .instance:nth-child(3)').contains('OtherWithMine')
   })
 
   it('should expand child instance', () => {
     cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
-    cy.get('.instance').should('have.length', baseInstanceCount + 2)
+    cy.get('.instance').should('have.length', baseInstanceCount + 10)
   })
 
   it('should add/remove component from app side', () => {
+    cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
+    cy.get('.instance').should('have.length', baseInstanceCount + 10)
     cy.get('#target').iframe().then(({ get }) => {
       get('.add').click({ force: true })
     })
-    cy.get('.instance').should('have.length', baseInstanceCount + 5)
+    cy.get('.instance').should('have.length', baseInstanceCount + 13)
     cy.get('#target').iframe().then(({ get }) => {
       get('.remove').click({ force: true })
     })
-    cy.get('.instance').should('have.length', baseInstanceCount + 4)
+    cy.get('.instance').should('have.length', baseInstanceCount + 12)
   })
 
   it('should filter components', () => {
     cy.get('.left .search input').clear().type('counter')
     cy.get('.instance').should('have.length', 1)
     cy.get('.left .search input').clear().type('target')
-    cy.get('.instance').should('have.length', 5)
+    cy.get('.instance').should('have.length', 12)
     cy.get('.left .search input').clear()
   })
 
@@ -89,6 +106,7 @@ suite('components tab', () => {
   })
 
   it('should display render key', () => {
+    cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
     cy.get('.instance .self .attr-title').contains('key')
     cy.get('.instance .self .attr-value').contains('1')
   })

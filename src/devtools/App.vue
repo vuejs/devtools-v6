@@ -76,8 +76,68 @@
             value="events"
             icon-left="grain"
             class="events-tab flat big-tag"
+            @focus.native="isRouterGroupOpen = false"
           >
             Events
+          </VueGroupButton>
+          <GroupDropdown
+            v-tooltip="$t('App.routing.tooltip')"
+            :is-open="isRouterGroupOpen"
+            :options="routingTabs"
+            :value="routeModel"
+            @update="isRouterGroupOpen = $event"
+            @select="routeModel = $event"
+          >
+            <template slot="header">
+              <VueIcon
+                icon="directions"
+                style="margin-right: 6px"
+              />
+              <span class="hide-below-wide">
+                Routing
+              </span>
+              <VueIcon
+                icon="keyboard_arrow_down"
+                style="margin-left: 6px"
+              />
+            </template>
+            <template
+              slot="option"
+              slot-scope="{ option }"
+            >
+              <VueGroupButton
+                :value="option.name"
+                :icon-left="option.icon"
+                style="width: 100%;"
+                class="router-tab flat big-tag"
+                @selected="isRouterGroupOpen = false"
+              >
+                {{ option.label }}
+              </VueGroupButton>
+            </template>
+          </GroupDropdown>
+          <VueGroupButton
+            v-tooltip="$t('App.perf.tooltip')"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="perf"
+            icon-left="assessment"
+            class="perf-tab flat"
+          >
+            Performance
+          </VueGroupButton>
+          <VueGroupButton
+            v-tooltip="$t('App.settings.tooltip')"
+            :class="{
+              'icon-button': !$responsive.wide
+            }"
+            value="settings"
+            icon-left="settings_applications"
+            class="settings-tab flat"
+            @focus.native="isRouterGroupOpen = false"
+          >
+            Settings
           </VueGroupButton>
         </VueGroup>
 
@@ -101,11 +161,9 @@
 </template>
 
 <script>
-import ComponentsTab from './views/components/ComponentsTab.vue'
-import EventsTab from './views/events/EventsTab.vue'
-import VuexTab from './views/vuex/VuexTab.vue'
 import { SPECIAL_TOKENS } from '../util'
 import Keyboard from './mixins/keyboard'
+import GroupDropdown from 'components/GroupDropdown.vue'
 
 import { mapState } from 'vuex'
 
@@ -113,9 +171,7 @@ export default {
   name: 'App',
 
   components: {
-    components: ComponentsTab,
-    vuex: VuexTab,
-    events: EventsTab
+    GroupDropdown
   },
 
   mixins: [
@@ -138,6 +194,18 @@ export default {
             } else if (code === 'Digit3') {
               this.$router.push({ name: 'events' })
               return false
+            } else if (code === 'Digit4') {
+              if (this.$route.name !== 'router') {
+                this.$router.push({ name: 'router' })
+              } else {
+                this.$router.push({ name: 'routes' })
+              }
+            } else if (code === 'Digit5') {
+              this.$router.push({ name: 'perf' })
+              return false
+            } else if (code === 'Digit6') {
+              this.$router.push({ name: 'settings' })
+              return false
             } else if (key === 'p' || code === 'KeyP') {
               // Prevent chrome devtools from opening the print modal
               return false
@@ -146,6 +214,16 @@ export default {
       }
     })
   ],
+
+  data () {
+    return {
+      isRouterGroupOpen: false,
+      routingTabs: [
+        { name: 'router', label: 'History', icon: 'directions' },
+        { name: 'routes', label: 'Routes', icon: 'book' }
+      ]
+    }
+  },
 
   computed: {
     ...mapState({
@@ -159,7 +237,7 @@ export default {
     },
 
     routeModel: {
-      get () { return this.$route.name },
+      get () { return this.$route.matched[0].name },
       set (value) {
         this.$router.push({ name: value })
       }
@@ -206,12 +284,10 @@ export default {
 }
 </script>
 
-<style lang="stylus" src="./global.styl">
+<style lang="stylus" src="./style/global.styl">
 </style>
 
 <style lang="stylus" scoped>
-@import "./variables"
-
 .app
   width 100%
   height 100%
@@ -235,7 +311,6 @@ export default {
 .header
   display flex
   align-items center
-  border-bottom 1px solid $border-color
   box-shadow 0 0 8px rgba(0, 0, 0, 0.15)
   font-size 14px
   position relative
@@ -299,6 +374,12 @@ export default {
   padding-bottom 0 !important
 
 .container
+  height: calc(100% - 60px)
+  position relative
   overflow hidden
   flex 1
+
+.hide-below-wide
+  @media (max-width: $wide)
+    display: none
 </style>

@@ -5,13 +5,24 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    inited: 0,
     count: 0,
     date: new Date(),
     set: new Set(),
     map: new Map(),
-    sym: Symbol('test')
+    sym: Symbol('test'),
+    object: {
+      name: 'I am Object',
+      number: 0,
+      children: [
+        {
+          number: 0
+        }
+      ]
+    }
   },
   mutations: {
+    TEST_INIT: state => state.inited++,
     INCREMENT: state => state.count++,
     DECREMENT: state => state.count--,
     UPDATE_DATE: state => {

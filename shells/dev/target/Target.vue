@@ -5,7 +5,7 @@
     <input @keyup.enter="regex = new RegExp($event.target.value)"/>
     <span>(Press enter to set)</span>
     <br/>
-    <button class="add" @mouseup="add">Add</button>
+    <button class="add" @mouseup="add">Add 3</button>
     <button class="remove" @mousedown="rm">Remove</button>
     <input v-model="localMsg">
     <other v-for="item in items" :key="item" :id="item"></other>
@@ -18,14 +18,35 @@
       >Inspect component</button>
       <span v-if="over" class="over">Mouse over</span>
     </div>
+    <div>
+      <Functional
+        v-for="n in 5"
+        :key="n"
+        :name="`Row ${n}`"
+      />
+      <Functional
+        name="Embed component"
+      >
+        <Other />
+      </Functional>
+      <Functional
+        name="Embed functional component"
+      >
+        <Functional name="Child" />
+      </Functional>
+    </div>
   </div>
 </template>
 
 <script>
 import Other from './Other.vue'
 import MyClass from './MyClass.js'
+import Functional from './Functional.vue'
 export default {
-  components: { Other },
+  components: {
+    Other,
+    Functional
+  },
   props: {
     msg: String,
     obj: null,
