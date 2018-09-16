@@ -2,6 +2,7 @@ import Vue from 'vue'
 import store from './store'
 import Target from './Target.vue'
 import Other from './Other.vue'
+import Init from './Init.vue'
 import Counter from './Counter.vue'
 import VuexObject from './VuexObject.vue'
 import NativeTypes from './NativeTypes.vue'
@@ -41,7 +42,8 @@ new Vue({
       h(NativeTypes, { key: new Date() }),
       h(Router, { key: [] }),
       h(TransitionExample),
-      h(VuexObject)
+      h(VuexObject),
+      h(Init)
     ])
   }
 }).$mount('#app')
