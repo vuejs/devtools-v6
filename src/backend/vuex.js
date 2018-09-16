@@ -14,15 +14,16 @@ export function initVuexBackend (hook, bridge) {
     computed: originalVm.$options.computed
   })
 
-  const getSnapshot = () => stringify({
-    state: store.state,
-    getters: store.getters || {}
+  const getSnapshot = (_store = store) => stringify({
+    state: _store.state,
+    getters: _store.getters || {}
   })
 
   let baseSnapshot, snapshots, mutations, lastState
 
   function reset () {
-    baseSnapshot = getSnapshot()
+    baseSnapshot = getSnapshot(hook.initialStore)
+    hook.initialStore = undefined
     mutations = []
     resetSnapshotCache()
   }
@@ -72,7 +73,6 @@ export function initVuexBackend (hook, bridge) {
       snapshot
     })
     if (apply) {
-      console.log('vuex:travel-to-state', state)
       hook.emit('vuex:travel-to-state', state)
     }
   })

@@ -2,12 +2,14 @@ import Vue from 'vue'
 import store from './store'
 import Target from './Target.vue'
 import Other from './Other.vue'
+import Init from './Init.vue'
 import Counter from './Counter.vue'
 import VuexObject from './VuexObject.vue'
 import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
 import MyClass from './MyClass.js'
 import router from './router'
+import TransitionExample from './TransitionExample.vue'
 import Router from './router/Router.vue'
 
 window.VUE_DEVTOOLS_CONFIG = {
@@ -39,7 +41,9 @@ new Vue({
       h(Events, { key: 'foo' }),
       h(NativeTypes, { key: new Date() }),
       h(Router, { key: [] }),
-      h(VuexObject)
+      h(TransitionExample),
+      h(VuexObject),
+      h(Init)
     ])
   }
 }).$mount('#app')

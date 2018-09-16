@@ -10,14 +10,16 @@ import { findRelatedComponent } from './utils'
 import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
+import { isBrowser, target } from 'src/devtools/env'
 
 // hook should have been injected before this executes.
-const hook = window.__VUE_DEVTOOLS_GLOBAL_HOOK__
+const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 const rootInstances = []
 const propModes = ['default', 'sync', 'once']
 
-export const instanceMap = window.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
-export const functionalVnodeMap = window.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
+export const instanceMap = target.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
+export const functionalVnodeMap = target.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
+
 const consoleBoundInstances = Array(5)
 let currentInspectedId
 let bridge
@@ -26,6 +28,10 @@ let captureCount = 0
 let isLegacy = false
 let rootUID = 0
 let functionalIds = new Map()
+
+// Dedupe instances
+// Some instances may be both on a component and on a child abstract/functional component
+const captureIds = new Map()
 
 export function initBackend (_bridge) {
   bridge = _bridge
@@ -67,6 +73,7 @@ function connect (Vue) {
   bridge.on('select-instance', id => {
     currentInspectedId = id
     const instance = findInstanceOrVnode(id)
+    if (!instance) return
     if (!/:functional:/.test(id)) bindToConsole(instance)
     flush()
     bridge.send('instance-selected')
@@ -84,7 +91,10 @@ function connect (Vue) {
 
   bridge.on('refresh', scan)
 
-  bridge.on('enter-instance', id => highlight(findInstanceOrVnode(id)))
+  bridge.on('enter-instance', id => {
+    const instance = findInstanceOrVnode(id)
+    if (instance) highlight(instance)
+  })
 
   bridge.on('leave-instance', unHighlight)
 
@@ -93,10 +103,10 @@ function connect (Vue) {
 
   // Get the instance id that is targeted by context menu
   bridge.on('get-context-menu-target', () => {
-    const instance = window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
+    const instance = target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
 
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
-    window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
+    target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+    target.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
 
     if (instance) {
       const id = instance.__VUE_DEVTOOLS_UID__
@@ -129,11 +139,11 @@ function connect (Vue) {
   // events
   initEventsBackend(Vue, bridge)
 
-  window.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
+  target.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
   // User project devtools config
-  if (window.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
-    const config = window.VUE_DEVTOOLS_CONFIG
+  if (target.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+    const config = target.VUE_DEVTOOLS_CONFIG
 
     // Open in editor
     if (config.hasOwnProperty('openInEditorHost')) {
@@ -161,8 +171,8 @@ function connect (Vue) {
 export function findInstanceOrVnode (id) {
   if (/:functional:/.test(id)) {
     const [refId] = id.split(':functional:')
-
-    return functionalVnodeMap.get(refId)[id]
+    const map = functionalVnodeMap.get(refId)
+    return map && map[id]
   }
   return instanceMap.get(id)
 }
@@ -176,15 +186,7 @@ function scan () {
   let inFragment = false
   let currentFragment = null
 
-  walk(document, function (node) {
-    if (inFragment) {
-      if (node === currentFragment._fragmentEnd) {
-        inFragment = false
-        currentFragment = null
-      }
-      return true
-    }
-    let instance = node.__vue__
+  function processInstance (instance) {
     if (instance) {
       if (rootInstances.indexOf(instance.$root) === -1) {
         instance = instance.$root
@@ -210,7 +212,26 @@ function scan () {
 
       return true
     }
-  })
+  }
+
+  if (isBrowser) {
+    walk(document, function (node) {
+      if (inFragment) {
+        if (node === currentFragment._fragmentEnd) {
+          inFragment = false
+          currentFragment = null
+        }
+        return true
+      }
+      let instance = node.__vue__
+
+      return processInstance(instance)
+    })
+  } else {
+    if (Array.isArray(target.__VUE_ROOT_INSTANCES__)) {
+      target.__VUE_ROOT_INSTANCES__.map(processInstance)
+    }
+  }
   hook.emit('router:init')
   flush()
 }
@@ -249,16 +270,17 @@ function walk (node, fn) {
 function flush () {
   let start
   functionalIds.clear()
+  captureIds.clear()
   if (process.env.NODE_ENV !== 'production') {
     captureCount = 0
-    start = window.performance.now()
+    start = isBrowser ? window.performance.now() : 0
   }
   const payload = stringify({
     inspectedInstance: getInstanceDetails(currentInspectedId),
     instances: findQualifiedChildrenFromList(rootInstances)
   })
   if (process.env.NODE_ENV !== 'production') {
-    console.log(`[flush] serialized ${captureCount} instances, took ${window.performance.now() - start}ms.`)
+    console.log(`[flush] serialized ${captureCount} instances${isBrowser ? `, took ${window.performance.now() - start}ms.` : ''}.`)
   }
   bridge.send('flush', payload)
 }
@@ -367,13 +389,16 @@ function capture (instance, index, list) {
       functional: true,
       name: getInstanceName(instance),
       renderKey: getRenderKey(instance.key),
-      children: instance.children ? instance.children.map(
+      children: (instance.children ? instance.children.map(
         child => child.fnContext
-          ? capture(child)
+          ? captureChild(child)
           : child.componentInstance
             ? capture(child.componentInstance)
-            : undefined).filter(Boolean) : [],
-      inactive: false, // TODO: Check what is it for.
+            : undefined
+      )
+        // router-view has both fnContext and componentInstance on vnode.
+        : instance.componentInstance ? [capture(instance.componentInstance)] : []).filter(Boolean),
+      inactive: false,
       isFragment: false // TODO: Check what is it for.
     }
   }
@@ -381,29 +406,34 @@ function capture (instance, index, list) {
   // may be 2 roots with same _uid which causes unexpected
   // behaviour
   instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
+
+  // Dedupe
+  if (captureIds.has(instance.__VUE_DEVTOOLS_UID__)) {
+    return
+  } else {
+    captureIds.set(instance.__VUE_DEVTOOLS_UID__, undefined)
+  }
+
   mark(instance)
+  const name = getInstanceName(instance)
 
   const ret = {
     uid: instance._uid,
     id: instance.__VUE_DEVTOOLS_UID__,
-    name: getInstanceName(instance),
+    name,
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
     children: instance.$children
       .filter(child => !child._isBeingDestroyed)
       .map(capture)
+      .filter(Boolean)
   }
 
   if (instance._vnode.children) {
-    // For dedupe
-    const childrenUids = {}
-    ret.children.forEach(child => {
-      childrenUids[child.uid] = true
-    })
     ret.children = ret.children.concat(
       flatten(instance._vnode.children.map(captureChild))
-        .filter(child => !childrenUids[child.uid])
+        .filter(Boolean)
     )
   }
 
@@ -479,7 +509,7 @@ function getInstanceDetails (id) {
       id,
       name: getComponentName(vnode.fnOptions),
       file: vnode.fnOptions.__file || null,
-      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.props) }),
+      state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.renderContext.props) }),
       functional: true
     }
 
@@ -824,6 +854,7 @@ function processObservables (instance) {
 function scrollIntoView (instance) {
   const rect = getInstanceOrVnodeRect(instance)
   if (rect) {
+    // TODO: Handle this for non-browser environments.
     window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
 }
@@ -837,6 +868,8 @@ function scrollIntoView (instance) {
 
 function bindToConsole (instance) {
   if (!instance) return
+  if (!isBrowser) return
+
   const id = instance.__VUE_DEVTOOLS_UID__
   const index = consoleBoundInstances.indexOf(id)
   if (index > -1) {
@@ -844,6 +877,7 @@ function bindToConsole (instance) {
   } else {
     consoleBoundInstances.pop()
   }
+
   consoleBoundInstances.unshift(id)
   for (var i = 0; i < 5; i++) {
     window['$vm' + i] = instanceMap.get(consoleBoundInstances[i])
@@ -879,7 +913,7 @@ function getRenderKey (value) {
  * @param {any} message HTML content
  */
 export function toast (message, type = 'normal') {
-  const fn = window.__VUE_DEVTOOLS_TOAST__
+  const fn = target.__VUE_DEVTOOLS_TOAST__
   fn && fn(message, type)
 }
 
@@ -911,6 +945,7 @@ function setStateValue ({ id, path, value, newKey, remove }) {
 }
 
 function initRightClick () {
+  if (!isBrowser) return
   // Start recording context menu when Vue is detected
   // event if Vue devtools are not loaded yet
   document.addEventListener('contextmenu', event => {
