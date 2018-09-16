@@ -52,7 +52,10 @@
         v-else
         class="data"
       >
-        <state-inspector :state="filteredState" />
+        <state-inspector
+          :state="filteredState"
+          class="component-state-inspector"
+        />
       </section>
     </template>
   </scroll-pane>
