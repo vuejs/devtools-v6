@@ -7,7 +7,7 @@ import { initEventsBackend } from './events'
 import { initRouterBackend } from './router'
 import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
-import { stringify, classify, camelize, set, parse, getComponentName } from '../util'
+import { stringify, classify, camelize, set, parse, getComponentName, getCustomRefDetails } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
 import { isBrowser, target } from 'src/devtools/env'
@@ -533,6 +533,7 @@ function getInstanceDetails (id) {
 function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
+    processRefs(instance),
     processComputed(instance),
     processInjected(instance),
     processRouteContext(instance),
@@ -676,6 +677,22 @@ function processState (instance) {
       value: instance._data[key],
       editable: true
     }))
+}
+
+/**
+ * Process refs
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+
+function processRefs (instance) {
+  if (Object.keys(instance.$refs).length === 0) {
+    return []
+  }
+  console.log(instance.$refs)
+  let refs = Object.keys(instance.$refs).map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
+  return refs.length > 0 ? refs : []
 }
 
 /**

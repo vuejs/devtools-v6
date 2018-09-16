@@ -4,6 +4,7 @@ import Target from './Target.vue'
 import Other from './Other.vue'
 import Init from './Init.vue'
 import Counter from './Counter.vue'
+import RefTester from './RefTester.vue'
 import VuexObject from './VuexObject.vue'
 import NativeTypes from './NativeTypes.vue'
 import Events from './Events.vue'
@@ -43,7 +44,8 @@ new Vue({
       h(Router, { key: [] }),
       h(TransitionExample),
       h(VuexObject),
-      h(Init)
+      h(Init),
+      h(RefTester)
     ])
   }
 }).$mount('#app')

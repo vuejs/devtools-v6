@@ -269,6 +269,29 @@ export function getCustomFunctionDetails (func) {
   }
 }
 
+export function getCustomRefDetails (instance, key, ref) {
+  let value
+  if (Array.isArray(ref)) {
+    value = ref.map((r) => getCustomRefDetails(instance, key, r)).map(data => data.value)
+  } else {
+    value = {
+      _custom: {
+        display: `&lt;${ref.tagName.toLowerCase()}` +
+          (ref.id ? ` <span class="attr-title">id</span>="${ref.id}"` : '') +
+          (ref.className ? ` <span class="attr-title">class</span>="${ref.className}"` : '') + '&gt;',
+        uid: instance.__VUE_DEVTOOLS_UID__,
+        type: 'reference'
+      }
+    }
+  }
+  return {
+    type: '$refs',
+    key: key,
+    value,
+    editable: false
+  }
+}
+
 export function parse (data, revive) {
   return revive
     ? CircularJSON.parse(data, reviver)

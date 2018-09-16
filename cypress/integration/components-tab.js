@@ -1,6 +1,6 @@
 import { suite } from '../utils/suite'
 
-const baseInstanceCount = 11
+const baseInstanceCount = 12
 
 suite('components tab', () => {
   beforeEach(() => cy.reload())
@@ -121,5 +121,14 @@ suite('components tab', () => {
       expect(el.text()).to.contain('noop:ƒ noop(a, b, c)')
     })
     cy.get('.left .search input').clear()
+  })
+
+  it('should display $refs', () => {
+    cy.get('.instance .item-name').contains('RefTester').click()
+    cy.get('.right .data-wrapper').then(el => {
+      expect(el.text()).to.contain('list:Array[4]')
+      expect(el.text()).to.contain('<li>')
+      expect(el.text()).to.contain('tester:<p id="testing"')
+    })
   })
 })
