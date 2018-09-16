@@ -8,7 +8,6 @@ import { parse } from '../util'
 import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
 import storage from './storage'
-import { snapshotsCache } from './views/vuex/cache'
 import VuexResolve from './views/vuex/resolve'
 
 for (const key in filters) {
@@ -144,8 +143,7 @@ function initApp (shell) {
     })
 
     bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
-      snapshotsCache.set(index, snapshot)
-      store.commit('vuex/RECEIVE_STATE', snapshot)
+      store.commit('vuex/RECEIVE_STATE', { index, snapshot })
 
       if (index === -1) {
         store.commit('vuex/UPDATE_BASE_STATE', snapshot)

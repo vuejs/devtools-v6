@@ -76,7 +76,20 @@ export default {
     },
 
     selectDefault () {
-      this.$emit('select', this.options[0].name)
+      // Select next
+      let i = this.options.findIndex(
+        o => o.name === this.value
+      )
+      if (i === -1) {
+        i = 0
+      } else {
+        i++
+        if (i === this.options.length) {
+          i = 0
+        }
+      }
+
+      this.$emit('select', this.options[i].name)
       this.$el.blur()
     }
   }
@@ -95,7 +108,7 @@ export default {
     display flex
     align-items center
     padding 0 14px
-    height 48px
+    height 100%
     cursor pointer
   & /deep/ svg
     fill #2c3e50
@@ -104,7 +117,7 @@ export default {
   position absolute
   background white
   left 0
-  top 48px
+  top 100%
   width 100%
   box-shadow 0 3px 6px rgba(0,0,0,0.15)
   border-bottom-left-radius 3px

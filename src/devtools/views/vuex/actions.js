@@ -77,6 +77,7 @@ export function updateFilter ({ commit }, filter) {
 }
 
 export function editState ({ state }, { path, args }) {
+  if (state.inspectedIndex !== -1) snapshotsCache.del(state.inspectedIndex)
   bridge.send('vuex:edit-state', {
     index: state.inspectedIndex,
     path,

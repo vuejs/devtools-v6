@@ -1,8 +1,14 @@
+export const isBrowser = typeof navigator !== 'undefined'
+export const target = isBrowser
+  ? window
+  : typeof global !== 'undefined'
+    ? global
+    : {}
 export const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
-export const isFirefox = navigator.userAgent.indexOf('Firefox') > -1
-export const isWindows = navigator.platform.indexOf('Win') === 0
-export const isMac = navigator.platform === 'MacIntel'
-export const isLinux = navigator.platform.indexOf('Linux') === 0
+export const isFirefox = isBrowser && navigator.userAgent.indexOf('Firefox') > -1
+export const isWindows = isBrowser && navigator.platform.indexOf('Win') === 0
+export const isMac = isBrowser && navigator.platform === 'MacIntel'
+export const isLinux = isBrowser && navigator.platform.indexOf('Linux') === 0
 export const keys = {
   ctrl: isMac ? '&#8984;' : 'Ctrl',
   shift: 'Shift',
