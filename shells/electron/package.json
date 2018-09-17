@@ -14,7 +14,7 @@
     "start": "node bin.js",
     "dev": "webpack --watch --hide-modules",
     "build": "webpack",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "author": "",
   "license": "MIT",
@@ -26,6 +26,7 @@
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
-    "webpack": "^3.10.0"
+    "webpack": "^4.19.0",
+    "webpack-cli": "^3.1.0"
   }
 }
