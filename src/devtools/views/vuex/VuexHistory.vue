@@ -80,7 +80,7 @@
             </a>
           </span>
           <span class="time">
-            {{ lastCommit | formatTime }}
+            {{ lastCommit | formatTime($shared.timeFormat) }}
           </span>
           <span
             v-if="activeIndex === -1"
@@ -137,10 +137,10 @@
             </a>
           </span>
           <span
-            v-tooltip="entry.timestamp"
-            class="time"
+          v-tooltip="entry.timestamp"
+          class="time"
           >
-            {{ entry.timestamp | formatTime }}
+            {{ entry.timestamp | formatTime($shared.timeFormat) }}
           </span>
           <span
             v-if="isActive(index, entry)"

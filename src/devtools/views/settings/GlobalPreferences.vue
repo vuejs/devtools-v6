@@ -58,5 +58,21 @@
         />
       </VueGroup>
     </VueFormField>
+    <VueFormField title="Date/Time Format">
+      <VueGroup
+        :value="$shared.timeFormat"
+        class="extend"
+        @input="$shared.timeFormat = $event"
+      >
+        <VueGroupButton
+          value="default"
+          label="Default"
+        />
+        <VueGroupButton
+          value="ms"
+          label="Include ms"
+        />
+      </VueGroup>
+    </VueFormField>
   </div>
 </template>
