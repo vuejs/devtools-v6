@@ -4,6 +4,7 @@ const internalSharedData = {
   classifyComponents: true,
   theme: 'auto',
   displayDensity: 'low',
+  timeFormat: 'default',
   recordVuex: true,
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
