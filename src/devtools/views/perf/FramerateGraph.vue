@@ -69,7 +69,6 @@
 import { mapState, mapGetters } from 'vuex'
 import * as d3 from 'd3'
 import { FPS_MARKERS_PRECISION } from './module'
-import { formatTime } from 'filters'
 
 import SplitPane from 'components/SplitPane.vue'
 import FramerateMarkerInspector from './FramerateMarkerInspector.vue'
@@ -167,8 +166,8 @@ export default {
     getBarTootip (metric) {
       return `
       <div>${metric.value} frames per second</div>
-      <div style="color:#999;">${formatTime(metric.time)}</div>
-      `
+      <div style="color:#999;">${this.$options.filters.formatTime(metric.time, this.$shared.timeFormat)}</div>
+`
     },
 
     getMarkerStyle (marker) {
