@@ -16,7 +16,8 @@ const persisted = [
   'classifyComponents',
   'theme',
   'displayDensity',
-  'recordVuex'
+  'recordVuex',
+  'timeFormat'
 ]
 
 // ---- INTERNALS ---- //
