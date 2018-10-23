@@ -31,7 +31,7 @@ Then add:
 Or if you want to debug your device remotely:
 ```html
 <script>
-  window.__VUE_DEVTOOLS_HOST__ = '<your-local-ip>' // default: localhost
+  window.__VUE_DEVTOOLS_HOST__ = 'http://<your-local-ip>' // default: http://localhost
   window.__VUE_DEVTOOLS_PORT__ = '<devtools-port>' // default: 8098
 </script>
 <script src="http://<your-local-ip>:8098"></script>
