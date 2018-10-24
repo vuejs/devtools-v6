@@ -7,7 +7,7 @@ import { initEventsBackend } from './events'
 import { initRouterBackend } from './router'
 import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
-import { stringify, classify, camelize, set, parse, getComponentName, getCustomRefDetails } from '../util'
+import { stringify, classify, camelize, set, has, parse, getComponentName, getCustomRefDetails } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
 import { isBrowser, target } from 'src/devtools/env'
@@ -629,7 +629,8 @@ function processProps (instance) {
           required: !!prop.required
         } : {
           type: 'invalid'
-        }
+        },
+        editable: SharedData.editableProps
       })
     }
     return propsData
@@ -959,7 +960,10 @@ function setStateValue ({ id, path, value, newKey, remove }) {
         $set: hook.Vue.set,
         $delete: hook.Vue.delete
       } : instance
-      set(instance._data, path, parsedValue, (obj, field, value) => {
+      const data = has(instance._props, path, newKey)
+        ? instance._props
+        : instance._data
+      set(data, path, parsedValue, (obj, field, value) => {
         (remove || newKey) && api.$delete(obj, field)
         !remove && api.$set(obj, newKey || field, value)
       })

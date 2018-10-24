@@ -58,5 +58,22 @@
         />
       </VueGroup>
     </VueFormField>
+
+    <VueFormField title="Editable Props">
+      <VueGroup
+        :value="$shared.editableProps"
+        class="extend"
+        @input="$shared.editableProps = $event"
+      >
+        <VueGroupButton
+          :value="true"
+          label="On"
+        />
+        <VueGroupButton
+          :value="false"
+          label="Off"
+        />
+      </VueGroup>
+    </VueFormField>
   </div>
 </template>
