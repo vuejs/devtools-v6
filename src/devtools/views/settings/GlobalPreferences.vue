@@ -59,21 +59,21 @@
       </VueGroup>
     </VueFormField>
 
-    <VueFormField title="Detected Console Log">
-      <VueSwitch
-        :value="!$shared.logDetected"
-        @input="$shared.logDetected = !$event"
-      >
-        Disable
-      </VueSwitch>
-    </VueFormField>
-
     <VueFormField title="Editable props">
       <VueSwitch
         :value="$shared.editableProps"
         @input="$shared.editableProps = $event"
       >
         Enable <span class="dim">(may print warnings)</span>
+      </VueSwitch>
+    </VueFormField>
+
+    <VueFormField title="Detected console log">
+      <VueSwitch
+        :value="!$shared.logDetected"
+        @input="$shared.logDetected = !$event"
+      >
+        Disable
       </VueSwitch>
     </VueFormField>
   </div>

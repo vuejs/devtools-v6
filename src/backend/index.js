@@ -154,7 +154,7 @@ function connect (Vue) {
 
   bridge.log('backend ready.')
   bridge.send('ready', Vue.version)
-  if (storage.get('shared-data:logDetected')) {
+  if (storage.get('shared-data:logDetected') !== false) {
     console.log(
       `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
       'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
