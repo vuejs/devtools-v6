@@ -687,12 +687,9 @@ function processState (instance) {
  */
 
 function processRefs (instance) {
-  if (Object.keys(instance.$refs).length === 0) {
-    return []
-  }
-  console.log(instance.$refs)
-  let refs = Object.keys(instance.$refs).map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
-  return refs.length > 0 ? refs : []
+  return Object.keys(instance.$refs)
+    .filter(key => instance.$refs[key])
+    .map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
 }
 
 /**
