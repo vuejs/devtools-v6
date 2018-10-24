@@ -11,7 +11,8 @@ const internalSharedData = {
   cacheVuexSnapshotsLimit: 10,
   snapshotLoading: null,
   recordPerf: false,
-  editableProps: false
+  editableProps: false,
+  logDetected: true
 }
 
 const persisted = [
@@ -19,7 +20,8 @@ const persisted = [
   'theme',
   'displayDensity',
   'recordVuex',
-  'editableProps'
+  'editableProps',
+  'logDetected'
 ]
 
 // ---- INTERNALS ---- //

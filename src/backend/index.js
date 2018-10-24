@@ -11,6 +11,7 @@ import { stringify, classify, camelize, set, has, parse, getComponentName, getCu
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
 import { isBrowser, target } from 'src/devtools/env'
+import storage from 'src/devtools/storage'
 
 // hook should have been injected before this executes.
 const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -153,12 +154,14 @@ function connect (Vue) {
 
   bridge.log('backend ready.')
   bridge.send('ready', Vue.version)
-  console.log(
-    `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:transparent'
-  )
+  if (storage.get('shared-data:logDetected')) {
+    console.log(
+      `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
+      'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+      'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+      'background:transparent'
+    )
+  }
 
   setTimeout(() => {
     scan()
