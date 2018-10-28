@@ -408,7 +408,7 @@ function internalSearchObject (obj, searchTerm, seen, depth) {
   for (let i = 0; i < keys.length; i++) {
     key = keys[i]
     value = obj[key]
-    match = interalSearchCheck(searchTerm, key, value, seen, depth + 1)
+    match = internalSearchCheck(searchTerm, key, value, seen, depth + 1)
     if (match) {
       break
     }
@@ -432,7 +432,7 @@ function internalSearchArray (array, searchTerm, seen, depth) {
   let value
   for (let i = 0; i < array.length; i++) {
     value = array[i]
-    match = interalSearchCheck(searchTerm, null, value, seen, depth + 1)
+    match = internalSearchCheck(searchTerm, null, value, seen, depth + 1)
     if (match) {
       break
     }
@@ -449,7 +449,7 @@ function internalSearchArray (array, searchTerm, seen, depth) {
  * @param {number} depth Deep search depth level, which is capped to prevent performance issues
  * @returns {boolean} Search match
  */
-function interalSearchCheck (searchTerm, key, value, seen, depth) {
+function internalSearchCheck (searchTerm, key, value, seen, depth) {
   let match = false
   let result
   if (key === '_custom') {
