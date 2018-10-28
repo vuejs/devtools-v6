@@ -6,7 +6,7 @@ Nuxt supports this feature out-of-the-box. Make sure to be in debug mode.
 
 ## Webpack
 
-In your Vue project, install the [launch-editor-middleware](https://github.com/yyx990803/launch-editor#middleware) package and modifiy your webpack configuration:
+In your Vue project, install the [launch-editor-middleware](https://github.com/yyx990803/launch-editor#middleware) package and modify your webpack configuration:
 
 1. Import the package:
 
