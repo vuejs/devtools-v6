@@ -200,6 +200,7 @@ export default {
               } else {
                 this.$router.push({ name: 'routes' })
               }
+              return false
             } else if (code === 'Digit5') {
               this.$router.push({ name: 'perf' })
               return false
