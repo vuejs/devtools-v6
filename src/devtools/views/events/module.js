@@ -57,7 +57,7 @@ const matchingEvent = ({ searchText, searchComponent, regEx }) => e => {
       return searchTerm.toLowerCase().indexOf(searchText) > -1
     }
   }
-  
+
   return searchTerm.toLowerCase().indexOf(searchText) > -1
 }
 
