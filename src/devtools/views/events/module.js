@@ -43,23 +43,22 @@ const mutations = {
   }
 }
 
-const matchingEvent = ({ searchText, searchComponent, regExParts }) => e => {
+const matchingEvent = ({ searchText, searchComponent, regEx }) => e => {
   const classifyComponents = SharedData.classifyComponents
   let searchTerm = (searchComponent
     ? (classifyComponents
       ? classify(e.instanceName) : e.instanceName)
     : e.eventName)
 
-  if (regExParts) {
+  if (regEx) {
     try {
-      let regEx = new RegExp(regExParts[1], regExParts[2])
       return regEx.test(searchTerm)
     } catch (e) {
       return searchTerm.toLowerCase().indexOf(searchText) > -1
     }
-  } else {
-    return searchTerm.toLowerCase().indexOf(searchText) > -1
   }
+  
+  return searchTerm.toLowerCase().indexOf(searchText) > -1
 }
 
 const getters = {
@@ -73,8 +72,12 @@ const getters = {
       searchText = searchText.replace(/<|>/g, '')
     }
     const regExParts = state.filter.match(REGEX_RE)
+    let regEx
+    if (regExParts) {
+      regEx = new RegExp(regExParts[1], regExParts[2])
+    }
     return state.events
-      .filter(matchingEvent({ searchText, searchComponent, regExParts }))
+      .filter(matchingEvent({ searchText, searchComponent, regEx }))
   }
 }
 
