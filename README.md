@@ -1,30 +1,28 @@
 # vue-devtools
 
+<p align="center"><img width="720px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot-shadow.png" alt="screenshot"></p>
+
+## Installation
+
+- [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) / ([beta channel](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg))
+
+- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) / ([beta channel](https://github.com/vuejs/vue-devtools/releases))
+
+- [Get standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
+
 ### Important Usage Notes
 
 1. If the page uses a production/minified build of Vue.js, devtools inspection is disabled by default so the Vue pane won't show up.
 
 2. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
-<p align="center"><img width="720px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot-shadow.png" alt="screenshot"></p>
-
-Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
-
-<p align="center"><img width="600px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/demo.gif" alt="demo"></p>
-
-### Installation
-
-- [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) ([beta](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg))
-
-- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) ([beta](https://github.com/vuejs/vue-devtools/releases))
-
-- [Get standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
-
-#### Open component in editor
+### Open component in editor
 
 To enable this feature, follow [this guide](./docs/open-in-editor.md).
 
 ### Manual Installation
+
+This is only necessary when you want to build the extension yourself from source to get not-yet-released features.
 
 **Make sure you are using Node 6+ and NPM 3+**
 
@@ -35,7 +33,7 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 5. Check "developer mode"
 6. Click "load unpacked extension", and choose `shells/chrome`.
 
-### Hacking
+### Development
 
 1. Clone this repo
 2. `npm install`

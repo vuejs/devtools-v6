@@ -1,5 +1,9 @@
 # Open component in editor
 
+## Vue CLI 3
+
+Vue CLI 3 supports this feature out-of-the-box when running `vue-cli-service serve`.
+
 ## Nuxt.js
 
 Nuxt supports this feature out-of-the-box. Make sure to be in debug mode.
