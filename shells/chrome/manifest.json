@@ -1,8 +1,8 @@
 {
-  "name": "Vue.js devtools",
-  "version": "5.0.0.3",
-  "version_name": "5.0.0 beta 3",
-  "description": "Chrome and Firefox DevTools extension for debugging Vue.js applications.",
+  "name": "BUGFIX Vue.js devtools",
+  "version": "5.0.0.4",
+  "version_name": "5.0.0 beta 3 fix",
+  "description": "BUGFIX Version, not by original author. Chrome and Firefox DevTools extension for debugging Vue.js applications.",
   "manifest_version": 2,
   "icons": {
     "16": "icons/16-beta.png",
