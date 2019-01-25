@@ -27,7 +27,7 @@
       <Functional
         name="Embed component"
       >
-        <Other />
+        <Other :key="0" />
       </Functional>
       <Functional
         name="Embed functional component"
