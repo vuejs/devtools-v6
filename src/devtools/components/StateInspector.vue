@@ -65,7 +65,8 @@ const keyOrder = {
   getters: 3,
   mutation: 1,
   'vuex bindings': 5,
-  $refs: 6
+  $refs: 6,
+  $attrs: 7
 }
 
 export default {

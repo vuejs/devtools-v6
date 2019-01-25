@@ -18,6 +18,7 @@ const computedPropMixin = {
 
 export default {
   name: 'other-with-mine',
+  inheritAttrs: false,
   mixins: [computedPropMixin],
   provide: {
     foo: 'bar',

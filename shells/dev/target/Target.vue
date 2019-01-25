@@ -8,7 +8,7 @@
     <button class="add" @mouseup="add">Add 3</button>
     <button class="remove" @mousedown="rm">Remove</button>
     <input v-model="localMsg">
-    <other v-for="item in items" :key="item" :id="item"></other>
+    <other v-for="item in items" :key="item" :id="item" attr="some-attr"></other>
     <div>
       <button
         class="inspect"

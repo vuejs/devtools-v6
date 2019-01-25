@@ -539,7 +539,8 @@ function getInstanceState (instance) {
     processRouteContext(instance),
     processVuexGetters(instance),
     processFirebaseBindings(instance),
-    processObservables(instance)
+    processObservables(instance),
+    processAttrs(instance)
   )
 }
 
@@ -635,6 +636,16 @@ function processProps (instance) {
   } else {
     return []
   }
+}
+
+function processAttrs (instance) {
+  return Object.entries(instance.$attrs).map(([key, value]) => {
+    return {
+      type: '$attrs',
+      key,
+      value
+    }
+  })
 }
 
 /**
