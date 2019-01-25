@@ -146,7 +146,7 @@ export default {
     },
 
     componentHasKey () {
-      return !!this.instance.renderKey && this.instance.renderKey !== UNDEFINED
+      return (this.instance.renderKey === 0 || !!this.instance.renderKey) && this.instance.renderKey !== UNDEFINED
     }
   },
 

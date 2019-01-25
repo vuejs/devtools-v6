@@ -28,6 +28,14 @@ suite('components tab', () => {
     })
   })
 
+  it('should display 0 key', () => {
+    cy.get('.tree > .instance .instance:nth-child(2)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance:nth-child(3) .attr').contains('key=0')
+      })
+    })
+  })
+
   it('should detect components in transition', () => {
     cy.get('.tree > .instance .instance:nth-child(7)').within(() => {
       cy.get('.arrow').click().then(() => {
