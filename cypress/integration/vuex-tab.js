@@ -23,7 +23,7 @@ suite('vuex tab', () => {
 
   it('should filter state & getters', () => {
     cy.get('.right .search input').clear().type('cou')
-    cy.get('.data-field').should('have.length', 1)
+    cy.get('.data-field').should('have.length', 2)
     cy.get('.right .search input').clear().type('no value')
     cy.get('.data-field').should('have.length', 0)
     cy.get('.right .search input').clear()
@@ -58,6 +58,11 @@ suite('vuex tab', () => {
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('type:"INCREMENT"')
       expect(el.text()).to.include('count:2')
+    })
+    cy.get('.data-field .key').contains('lastCountPayload').click()
+    cy.get('.vuex-state-inspector').then(el => {
+      expect(el.text()).to.include('a:1')
+      expect(el.text()).to.include('b:Object')
     })
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('1')
