@@ -137,4 +137,13 @@ suite('components tab', () => {
       expect(el.text()).to.contain('tester:<p id="testing"')
     })
   })
+
+  it('should display $attrs', () => {
+    cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
+    cy.get('.instance .instance .instance:nth-child(1) .item-name').click()
+    cy.get('.right .data-wrapper').then(el => {
+      expect(el.text()).to.contain('$attrs')
+      expect(el.text()).to.contain('attr:"some-attr"')
+    })
+  })
 })
