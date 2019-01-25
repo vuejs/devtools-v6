@@ -100,7 +100,7 @@ import StateInspector from 'components/StateInspector.vue'
 import { searchDeepInObject, sortByKey, stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
 import groupBy from 'lodash.groupby'
-import { mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -109,22 +109,32 @@ export default {
     StateInspector
   },
 
+  provide () {
+    return {
+      InspectorInjection: this.injection
+    }
+  },
+
   data () {
     return {
       showStateCopiedMessage: false,
       showBadJSONMessage: false,
       showImportStatePopup: false,
-      filter: ''
+      filter: '',
+      injection: {
+        editable: false
+      }
     }
   },
 
   computed: {
-    ...mapGetters('vuex', [
-      'inspectedState',
+    ...mapState('vuex', [
+      'activeIndex',
       'inspectedIndex'
     ]),
 
     ...mapGetters('vuex', [
+      'inspectedState',
       'filteredHistory'
     ]),
 
@@ -162,6 +172,10 @@ export default {
 
     isOnlyMutationPayload () {
       return Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation
+    },
+
+    isActive () {
+      return this.activeIndex === this.inspectedIndex
     }
   },
 
@@ -172,6 +186,13 @@ export default {
           this.$el.querySelector('textarea').focus()
         })
       }
+    },
+
+    isActive: {
+      handler (value) {
+        this.injection.editable = value
+      },
+      immediate: true
     }
   },
 
