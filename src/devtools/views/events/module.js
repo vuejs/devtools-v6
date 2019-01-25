@@ -4,6 +4,7 @@ import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
+const REGEX_RE = /^\/(.*?)\/(\w*)/
 
 const state = {
   enabled: enabled == null ? true : enabled,
@@ -42,20 +43,41 @@ const mutations = {
   }
 }
 
+const matchingEvent = ({ searchText, searchComponent, regEx }) => e => {
+  const classifyComponents = SharedData.classifyComponents
+  let searchTerm = (searchComponent
+    ? (classifyComponents
+      ? classify(e.instanceName) : e.instanceName)
+    : e.eventName)
+
+  if (regEx) {
+    try {
+      return regEx.test(searchTerm)
+    } catch (e) {
+      return searchTerm.toLowerCase().indexOf(searchText) > -1
+    }
+  }
+
+  return searchTerm.toLowerCase().indexOf(searchText) > -1
+}
+
 const getters = {
   activeEvent: (state, getters) => {
     return getters.filteredEvents[state.inspectedIndex]
   },
   filteredEvents: (state, getters, rootState) => {
-    const classifyComponents = SharedData.classifyComponents
     let searchText = state.filter.toLowerCase()
     const searchComponent = /<|>/g.test(searchText)
     if (searchComponent) {
       searchText = searchText.replace(/<|>/g, '')
     }
-    return state.events.filter(
-      e => (searchComponent ? (classifyComponents ? classify(e.instanceName) : e.instanceName) : e.eventName).toLowerCase().indexOf(searchText) > -1
-    )
+    const regExParts = state.filter.match(REGEX_RE)
+    let regEx
+    if (regExParts) {
+      regEx = new RegExp(regExParts[1], regExParts[2])
+    }
+    return state.events
+      .filter(matchingEvent({ searchText, searchComponent, regEx }))
   }
 }
 
