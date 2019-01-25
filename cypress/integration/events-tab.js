@@ -28,6 +28,8 @@ suite('events tab', () => {
     cy.get('.history .entry[data-active="true"]').should('have.length', 3)
     cy.get('.left .search input').clear().type('<eventchild1>')
     cy.get('.history .entry[data-active="true"]').should('have.length', 1)
+    cy.get('.left .search input').clear().type('/^event$/')
+    cy.get('.history .entry[data-active="true"]').should('have.length', 1)
     cy.get('.left .search input').clear()
     cy.get('.button.reset').click()
     cy.get('.history .entry[data-active="true"]').should('have.length', 0)
