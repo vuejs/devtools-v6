@@ -61,8 +61,8 @@ suite('vuex tab', () => {
     })
     cy.get('.data-field .key').contains('lastCountPayload').click()
     cy.get('.vuex-state-inspector').then(el => {
-      expect(el.text()).to.include('a: 1')
-      expect(el.text()).to.include('b: Object')
+      expect(el.text()).to.include('a:1')
+      expect(el.text()).to.include('b:Object')
     })
     cy.get('#target').iframe().then(({ get }) => {
       get('#counter p').contains('1')
