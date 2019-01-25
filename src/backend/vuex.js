@@ -178,7 +178,9 @@ export function initVuexBackend (hook, bridge) {
     if (value) {
       parsedValue = parse(value, true)
     }
+    store._committing = true
     set(store.state, path, parsedValue)
+    store._committing = false
     bridge.send('vuex:inspected-state', {
       index,
       snapshot: getSnapshot()
