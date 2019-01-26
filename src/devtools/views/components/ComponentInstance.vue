@@ -45,6 +45,14 @@
           <span class="attr-title"> key</span>=<span class="attr-value">{{ instance.renderKey }}</span>
         </span>
 
+        <span v-if="componentHasNameProp" class="attr">
+          <span class="attr-title"> name</span>=<span class="attr-value">{{ instance.nameProp }}</span>
+        </span>
+
+        <span v-if="componentHasTagProp" class="attr">
+          <span class="attr-title"> tag</span>=<span class="attr-value">{{ instance.tagProp }}</span>
+        </span>
+
         <span class="angle-bracket">&gt;</span>
       </span>
       <span
@@ -147,6 +155,14 @@ export default {
 
     componentHasKey () {
       return (this.instance.renderKey === 0 || !!this.instance.renderKey) && this.instance.renderKey !== UNDEFINED
+    },
+
+    componentHasNameProp(){
+      return (this.instance.nameProp === 0 || !!this.instance.nameProp) && this.instance.nameProp !== UNDEFINED
+    },
+
+    componentHasTagProp(){
+      return (this.instance.tagProp === 0 || !!this.instance.tagProp) && this.instance.tagProp !== UNDEFINED
     }
   },
 

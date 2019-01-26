@@ -388,6 +388,8 @@ function capture (instance, index, list) {
       id: functionalId,
       functional: true,
       name: getInstanceName(instance),
+      nameProp: instance.name,
+      tagProp: instance.tag,
       renderKey: getRenderKey(instance.key),
       children: (instance.children ? instance.children.map(
         child => child.fnContext
@@ -421,6 +423,8 @@ function capture (instance, index, list) {
     uid: instance._uid,
     id: instance.__VUE_DEVTOOLS_UID__,
     name,
+    nameProp: instance.name,
+    tagProp: instance.tag,
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
