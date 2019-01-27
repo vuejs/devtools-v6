@@ -48,6 +48,17 @@ suite('components tab', () => {
     })
   })
 
+  it('should detect transition-group name and tag', () => {
+    cy.get('.tree > .instance .instance:nth-child(7)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance > .self .content .attr .attr-title').contains('name')
+        cy.get('.instance > .self .content .attr .attr-value').contains('list')
+        cy.get('.instance > .self .content .attr .attr-title').contains('tag')
+        cy.get('.instance > .self .content .attr .attr-value').contains('p')
+      })
+    })
+  })
+
   it('should select child instance', () => {
     cy.get('.instance .instance:nth-child(1) .self').eq(0).click()
     cy.get('.action-header .title').contains('Counter')
