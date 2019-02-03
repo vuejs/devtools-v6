@@ -167,7 +167,7 @@ $arrow-color = $vue-ui-color-dark
   color $green
   font-size 12px
   padding 0px 8px 6px
-  margin 0 2px
+  margin 2px
   border-radius 2px
   display inline-block
   vertical-align baseline
@@ -176,12 +176,14 @@ $arrow-color = $vue-ui-color-dark
   &,
   .tooltip .tooltip-inner &
     .vue-ui-icon
+      position relative
       top 4px
       margin-right 4px
+      transform scale(.8)
       svg
         fill #444
         .vue-ui-dark-mode &
-          fill #666
+          fill #ccc
 
 .vue-ui-dark-mode .tooltip .vue-ui-icon svg
   fill #666
