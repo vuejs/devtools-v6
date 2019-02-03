@@ -1,6 +1,7 @@
 import { parse } from 'src/util'
 import * as actions from './actions'
 import { snapshotsCache } from './cache'
+import SharedData from 'src/shared-data'
 
 const REGEX_RE = /^\/(.*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
@@ -106,6 +107,8 @@ function reset (state) {
   state.history = []
   state.inspectedIndex = state.activeIndex = -1
   state.inspectedState = null
+  state.activeIndex = -1
+  SharedData.snapshotLoading = false
 }
 
 function escapeStringForRegExp (str) {
