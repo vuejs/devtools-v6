@@ -260,13 +260,11 @@ export default {
     ]),
 
     isActive (index, entry) {
-      if (this.filter) return this.activeIndex === this.filteredHistory.indexOf(entry)
-      return this.activeIndex === index - 1
+      return this.activeIndex === index - (this.filter ? 0 : 1)
     },
 
     isInspected (index, entry) {
-      if (this.filter) return this.inspectedIndex === this.filteredHistory.indexOf(entry)
-      return this.inspectedIndex === index - 1
+      return this.inspectedIndex === index - (this.filter ? 0 : 1)
     },
 
     toggleRecording () {
