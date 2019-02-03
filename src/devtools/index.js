@@ -147,7 +147,7 @@ function initApp (shell) {
 
       if (index === -1) {
         store.commit('vuex/UPDATE_BASE_STATE', snapshot)
-      } else if (store.state.vuex.inspectedIndex === index) {
+      } else if (store.getters['vuex/absoluteInspectedIndex'] === index) {
         store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
       }
 

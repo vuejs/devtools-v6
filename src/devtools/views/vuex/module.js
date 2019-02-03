@@ -138,6 +138,14 @@ const getters = {
 
   filteredHistory ({ history, filterRegex }) {
     return history.filter(entry => filterRegex.test(entry.mutation.type))
+  },
+
+  absoluteInspectedIndex ({ history, inspectedIndex }, { filteredHistory }) {
+    const entry = filteredHistory[inspectedIndex]
+    if (entry) {
+      return history.indexOf(entry)
+    }
+    return -1
   }
 }
 
