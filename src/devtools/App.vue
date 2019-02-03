@@ -25,7 +25,7 @@
             :key="message"
             class="message"
           >
-            <span>{{ message }}</span>
+            <span class="text">{{ message }}</span>
 
             <span class="badges">
               <span
