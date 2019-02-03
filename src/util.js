@@ -59,6 +59,8 @@ export const SPECIAL_TOKENS = {
   'NaN': NAN
 }
 
+export const MAX_STRING_SIZE = 10000
+
 export function specialTokenToString (value) {
   if (value === null) {
     return 'null'
@@ -149,6 +151,8 @@ function replacer (key) {
     }
   } else if (Number.isNaN(val)) {
     return NAN
+  } else if (typeof val === 'string' && val.length > MAX_STRING_SIZE) {
+    return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
   }
   return sanitize(val)
 }

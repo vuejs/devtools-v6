@@ -62,6 +62,11 @@ const handler = {
 
 const proxy1 = new Proxy(sum, handler)
 
+let veryLongText = ''
+for (let i = 0; i < 1000000; i++) {
+  veryLongText += `line${i}\n`
+}
+
 export default {
   components: {
     TestComponent: {
@@ -102,7 +107,8 @@ export default {
       sym: Symbol('test'),
       multiLineParameterFunction: function(a,
                                   b,
-                                  c) {}
+                                  c) {},
+      veryLongText
     }
   },
   computed: {
