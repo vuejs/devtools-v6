@@ -51,9 +51,11 @@
   white-space nowrap
   opacity .8
   overflow hidden
+  color $green
 
   .vue-ui-icon >>> svg
     transition fill .25s
+    fill @color
 
   &:first-of-type
     margin-left auto
@@ -62,9 +64,12 @@
   &:not(.disabled).active
     opacity 1
     color $active-color
-
     .vue-ui-icon >>> svg
       fill @color
+    .vue-ui-dark-mode &
+      color lighten($green, 15%)
+      .vue-ui-icon >>> svg
+        fill @color
 
   &.disabled
     opacity 0.45
