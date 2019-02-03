@@ -71,15 +71,16 @@ $arrow-color = $vue-ui-color-dark
     border-bottom 4px solid transparent
     border-right 6px solid $arrow-color
 
-.vue-ui-dark-mode .arrow
-  &.up
-    border-bottom-color $white
-  &.down
-    border-top-color $white
-  &.right
-    border-left-color $white
-  &.left
-    border-right-color $white
+  .vue-ui-dark-mode &
+    $arrow-color = rgba($vue-ui-color-light-neutral, .4)
+    &.up
+      border-bottom-color $arrow-color
+    &.down
+      border-top-color $arrow-color
+    &.right
+      border-left-color $arrow-color
+    &.left
+      border-right-color $arrow-color
 
 .notice
   display flex
