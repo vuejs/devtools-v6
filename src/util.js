@@ -519,6 +519,15 @@ export function get (object, path) {
   return object
 }
 
+export function has (object, path, parent = false) {
+  const sections = path.split('.')
+  const size = !parent ? 1 : 2
+  while (sections.length > size) {
+    object = object[sections.shift()]
+  }
+  return object != null && object.hasOwnProperty(sections[0])
+}
+
 export function scrollIntoView (scrollParent, el, center = true) {
   const parentTop = scrollParent.scrollTop
   const parentHeight = scrollParent.offsetHeight

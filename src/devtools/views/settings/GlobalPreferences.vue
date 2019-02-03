@@ -1,6 +1,6 @@
 <template>
   <div class="global-preferences preferences">
-    <VueFormField title="Normalize Component Names">
+    <VueFormField title="Normalize component names">
       <VueGroup
         :value="$shared.classifyComponents"
         class="extend"
@@ -58,5 +58,19 @@
         />
       </VueGroup>
     </VueFormField>
+
+    <VueFormField title="Editable props">
+      <VueSwitch
+        :value="$shared.editableProps"
+        @input="$shared.editableProps = $event"
+      >
+        Enable <span class="dim">(may print warnings)</span>
+      </VueSwitch>
+    </VueFormField>
   </div>
 </template>
+
+<style lang="stylus" scoped>
+.dim
+  color $darkerGrey
+</style>
