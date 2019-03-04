@@ -108,6 +108,24 @@ Make sure to set port to `null` or `false`, because ngrok host already proxies t
 
 For that you can also use ngrok, as it automatically proxies https requests to http. Take a look at question number 2 for instructions.
 
+***Using `puma-dev` for `HTTPS`***
+
+If you're using `puma-dev` you can use its [proxy support](https://github.com/puma/puma-dev#proxy-support) to proxy `vue-devtools` on port 443 using a local test domain. With `puma-dev` correctly installed:
+
+```
+echo 8098 > ~/.puma-dev/vuedevelopertools
+```
+
+Then in your app:
+
+```
+<script>
+  window.__VUE_DEVTOOLS_HOST__ = 'vuedevelopertools.test'
+  window.__VUE_DEVTOOLS_PORT__ = '443'
+</script>
+<script src="https://vuedevelopertools.test"></script>
+```
+
 ### :beers: Development
 
 1. Install all dependencies
