@@ -18,33 +18,37 @@ export function installToast (target) {
     if (!toastEl) {
       toastEl = document.createElement('div')
       toastEl.addEventListener('click', removeToast)
-      toastEl.innerHTML = `
-      <div id="vue-devtools-toast" style="
-        position: fixed;
-        bottom: 6px;
-        left: 0;
-        right: 0;
-        height: 0;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        z-index: 999999999999999999999;
-        font-family: Menlo, Consolas, monospace;
-        font-size: 14px;
-      ">
-        <div class="vue-wrapper" style="
-          padding: 6px 12px;
-          background: ${color};
-          color: white;
-          border-radius: 3px;
-          flex: auto 0 1;
-          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-          cursor: pointer;
-        ">
-          <div class="vue-content"></div>
-        </div>
-      </div>
-      `
+
+      const vueDevtoolsToast = document.createElement('div')
+      vueDevtoolsToast.id = 'vue-devtools-toast'
+      vueDevtoolsToast.style.position = 'fixed'
+      vueDevtoolsToast.style.bottom = '6px'
+      vueDevtoolsToast.style.left = '0'
+      vueDevtoolsToast.style.right = '0'
+      vueDevtoolsToast.style.height = '0'
+      vueDevtoolsToast.style.display = 'flex'
+      vueDevtoolsToast.style.alignItems = 'flex-end'
+      vueDevtoolsToast.style.justifyContent = 'center'
+      vueDevtoolsToast.style.zIndex = '999999999999999999999'
+      vueDevtoolsToast.style.fontFamily = 'Menlo, Consolas, monospace'
+      vueDevtoolsToast.style.fontSize = '14px'
+
+      const vueWrapper = document.createElement('div')
+      vueWrapper.className = 'vue-wrapper'
+      vueWrapper.style.padding = '6px 12px'
+      vueWrapper.style.background = color
+      vueWrapper.style.color = 'white'
+      vueWrapper.style.borderRadius = '3px'
+      vueWrapper.style.flex = 'auto 0 1'
+      vueWrapper.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.2)'
+      vueWrapper.style.cursor = 'pointer'
+
+      const vueContent = document.createElement('div')
+      vueContent.className = 'vue-content'
+
+      vueWrapper.appendChild(vueContent)
+      vueDevtoolsToast.appendChild(vueWrapper)
+      toastEl.appendChild(vueDevtoolsToast)
       document.body.appendChild(toastEl)
     } else {
       toastEl.querySelector('.vue-wrapper').style.background = color

@@ -44,10 +44,19 @@ export function highlight (instance) {
 
   init()
   if (rect) {
-    let content = ''
+    const content = []
     let name = instance.fnContext ? getComponentName(instance.fnOptions) : getInstanceName(instance)
     if (SharedData.classifyComponents) name = classify(name)
-    if (name) content = `<span style="opacity: .6;">&lt;</span>${name}<span style="opacity: .6;">&gt;</span>`
+    if (name) {
+      const pre = document.createElement('span')
+      pre.style.opacity = '0.6'
+      pre.innerText = '<'
+      const text = document.createTextNode(name)
+      const post = document.createElement('span')
+      post.style.opacity = '0.6'
+      post.innerText = '>'
+      content.push(pre, text, post)
+    }
     showOverlay(rect, content)
   }
 }
@@ -148,7 +157,7 @@ function getTextRect (node) {
  * @param {Rect}
  */
 
-function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = '') {
+function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = []) {
   if (!isBrowser) return
 
   overlay.style.width = ~~width + 'px'
@@ -156,7 +165,7 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = ''
   overlay.style.top = ~~top + 'px'
   overlay.style.left = ~~left + 'px'
 
-  overlayContent.innerHTML = content
+  content.forEach(child => overlayContent.appendChild(child))
 
   document.body.appendChild(overlay)
 }
