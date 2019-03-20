@@ -67,6 +67,15 @@
         Enable <span class="dim">(may print warnings)</span>
       </VueSwitch>
     </VueFormField>
+
+    <VueFormField title="Detected Vue message">
+      <VueSwitch
+        :value="$shared.logDetected"
+        @input="$shared.logDetected = $event"
+      >
+        Display in browser console
+      </VueSwitch>
+    </VueFormField>
   </div>
 </template>
 
