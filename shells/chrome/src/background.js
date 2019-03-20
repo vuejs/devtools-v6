@@ -103,15 +103,15 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 })
 
 function updateContextMenuItem () {
-  if (ports[activeTabId]) {
-    chrome.contextMenus.create({
-      id: 'vue-inspect-instance',
-      title: 'Inspect Vue component',
-      contexts: ['all']
-    })
-  } else {
-    chrome.contextMenus.remove('vue-inspect-instance')
-  }
+  chrome.contextMenus.removeAll(() => {
+    if (ports[activeTabId]) {
+      chrome.contextMenus.create({
+        id: 'vue-inspect-instance',
+        title: 'Inspect Vue component',
+        contexts: ['all']
+      })
+    }
+  })
 }
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
