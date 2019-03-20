@@ -165,6 +165,7 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, content = []
   overlay.style.top = ~~top + 'px'
   overlay.style.left = ~~left + 'px'
 
+  overlayContent.innerHTML = ''
   content.forEach(child => overlayContent.appendChild(child))
 
   document.body.appendChild(overlay)
