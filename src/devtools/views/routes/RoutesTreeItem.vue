@@ -4,7 +4,7 @@
     :class="{ selected: selected }"
   >
     <div
-      class="self"
+      class="self selectable-item"
       :class="{ selected: selected }"
       :style="{ paddingLeft: depth * 15 + 'px' }"
       @click.stop="inspect(routeId)"
@@ -130,9 +130,6 @@ export default {
   display flex
   align-items center
   &.selected
-    background-color $active-color
-    .arrow
-      border-left-color #fff
     .instance-name
       color #fff
 
