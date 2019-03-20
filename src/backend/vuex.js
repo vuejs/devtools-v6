@@ -3,7 +3,7 @@ import SharedData from 'src/shared-data'
 import { set } from '../util'
 import Vue from 'vue'
 
-export function initVuexBackend (hook, bridge) {
+export function initVuexBackend (hook, bridge, isLegacy) {
   const store = hook.store
 
   let originalVm = store._vm
@@ -147,7 +147,16 @@ export function initVuexBackend (hook, bridge) {
       for (let i = snapshot.index + 1; i <= index; i++) {
         const mutation = mutations[i]
         if (mutation.handlers) {
-          mutation.handlers.forEach(handler => handler(mutation.payload))
+          if (Array.isArray(mutation.handlers)) {
+            mutation.handlers.forEach(handler => handler(mutation.payload))
+          } else {
+            if (isLegacy) {
+              // Vuex 1
+              mutation.handlers(store.state, mutation.payload)
+            } else {
+              mutation.handlers(mutation.payload)
+            }
+          }
         }
 
         if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {

@@ -125,10 +125,10 @@ function connect (Vue) {
 
   // vuex
   if (hook.store) {
-    initVuexBackend(hook, bridge)
+    initVuexBackend(hook, bridge, isLegacy)
   } else {
     hook.once('vuex:init', store => {
-      initVuexBackend(hook, bridge)
+      initVuexBackend(hook, bridge, isLegacy)
     })
   }
 
