@@ -68,12 +68,12 @@
       </VueSwitch>
     </VueFormField>
 
-    <VueFormField title="Detected console log">
+    <VueFormField title="Detected Vue message">
       <VueSwitch
-        :value="!$shared.logDetected"
-        @input="$shared.logDetected = !$event"
+        :value="$shared.logDetected"
+        @input="$shared.logDetected = $event"
       >
-        Disable
+        Display in browser console
       </VueSwitch>
     </VueFormField>
   </div>
