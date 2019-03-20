@@ -370,7 +370,7 @@ function capture (instance, index, list) {
     captureCount++
   }
 
-  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
+  if (instance.$options && instance.$options.abstract && instance._vnode && instance._vnode.componentInstance) {
     instance = instance._vnode.componentInstance
   }
 
@@ -432,7 +432,7 @@ function capture (instance, index, list) {
       .filter(Boolean)
   }
 
-  if (instance._vnode.children) {
+  if (instance._vnode && instance._vnode.children) {
     ret.children = ret.children.concat(
       flatten(instance._vnode.children.map(captureChild))
         .filter(Boolean)
@@ -642,7 +642,7 @@ function processProps (instance) {
 }
 
 function processAttrs (instance) {
-  return Object.entries(instance.$attrs).map(([key, value]) => {
+  return Object.entries(instance.$attrs || {}).map(([key, value]) => {
     return {
       type: '$attrs',
       key,
