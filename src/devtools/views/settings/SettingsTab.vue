@@ -22,9 +22,14 @@ export default {
   >>> .preferences
     display flex
     flex-wrap wrap
-    padding 1rem 1.5rem
+    padding 12px 4px
 
     > *
       flex-basis 300px
-      margin 10px 18px
+      margin 16px 24px
+
+    .vue-ui-form-field
+      > .wrapper > .content
+       min-height 32px
+       justify-content center
 </style>
