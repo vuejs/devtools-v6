@@ -10,7 +10,6 @@ let uid = 0
 
 const state = {
   hasVuex: false,
-  initial: null,
   base: null, // type Snapshot = { state: {}, getters: {} }
   inspectedIndex: -1,
   activeIndex: -1,
@@ -25,8 +24,7 @@ const state = {
 }
 
 const mutations = {
-  'INIT' (state, snapshot) {
-    state.initial = state.base = snapshot
+  'INIT' (state) {
     state.hasVuex = true
     reset(state)
   },

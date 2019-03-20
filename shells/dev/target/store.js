@@ -57,7 +57,11 @@ export default new Vuex.Store({
         }
       },
       getters: {
-        twoFoos: state => state.foo.repeat(2)
+        twoFoos: state => state.foo.repeat(2),
+        dummy: () => {
+          console.log('dummy getter was computed')
+          return 'dummy'
+        }
       },
       mutations: {
         ADD_BAR: (state) => {

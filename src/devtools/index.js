@@ -133,8 +133,8 @@ function initApp (shell) {
       store.commit('components/TOGGLE_INSTANCE', parse(payload))
     })
 
-    bridge.on('vuex:init', snapshot => {
-      store.commit('vuex/INIT', snapshot)
+    bridge.on('vuex:init', () => {
+      store.commit('vuex/INIT')
     })
 
     bridge.on('vuex:mutation', payload => {

@@ -98,7 +98,10 @@ export function installHook (target) {
 
   hook.once('vuex:init', store => {
     hook.store = store
-    hook.initialStore = clone(store)
+    hook.initialStore = {
+      state: clone(store.state),
+      getters: store.getters
+    }
   })
 
   Object.defineProperty(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
