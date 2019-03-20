@@ -7,7 +7,6 @@ import './plugins'
 import { parse } from '../util'
 import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
-import storage from './storage'
 import VuexResolve from './views/vuex/resolve'
 
 for (const key in filters) {
@@ -100,7 +99,7 @@ function initApp (shell) {
     initSharedData({
       bridge,
       Vue,
-      storage
+      persist: true
     })
 
     bridge.once('ready', version => {

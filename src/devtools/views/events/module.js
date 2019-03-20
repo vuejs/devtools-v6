@@ -1,4 +1,4 @@
-import storage from '../../storage'
+import storage from 'src/storage'
 import { classify } from 'src/util'
 import SharedData from 'src/shared-data'
 

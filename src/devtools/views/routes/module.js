@@ -1,4 +1,4 @@
-import storage from '../../storage'
+import storage from 'src/storage'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
