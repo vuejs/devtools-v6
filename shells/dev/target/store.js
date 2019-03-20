@@ -47,5 +47,23 @@ export default new Vuex.Store({
   getters: {
     isPositive: state => state.count >= 0,
     hours: state => state.date.getHours()
+  },
+  modules: {
+    nested: {
+      namespaced: true,
+      state () {
+        return {
+          foo: 'bar'
+        }
+      },
+      getters: {
+        twoFoos: state => state.foo.repeat(2)
+      },
+      mutations: {
+        ADD_BAR: (state) => {
+          state.foo += 'bar'
+        }
+      }
+    }
   }
 })
