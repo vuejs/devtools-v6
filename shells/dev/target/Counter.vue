@@ -16,6 +16,7 @@
       <p>foo: {{ foo }}</p>
       <p>twoFoos: {{ twoFoos }}</p>
       <button @click="addBar">Add bar</button>
+      <button @click="removeBar">Remove bar</button>
     </div>
   </div>
 </template>
@@ -69,7 +70,8 @@ export default {
     },
 
     ...mapMutations('nested', {
-      addBar: 'ADD_BAR'
+      addBar: 'ADD_BAR',
+      removeBar: 'REMOVE_BAR'
     })
   }
 }

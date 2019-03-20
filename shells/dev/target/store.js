@@ -62,6 +62,9 @@ export default new Vuex.Store({
       mutations: {
         ADD_BAR: (state) => {
           state.foo += 'bar'
+        },
+        REMOVE_BAR: (state) => {
+          state.foo = state.foo.substr('bar'.length)
         }
       }
     }
