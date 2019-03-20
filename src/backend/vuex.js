@@ -146,7 +146,10 @@ export function initVuexBackend (hook, bridge) {
       // Replay mutations
       for (let i = snapshot.index + 1; i <= index; i++) {
         const mutation = mutations[i]
-        mutation.handlers.forEach(handler => handler(mutation.payload))
+        if (mutation.handlers) {
+          mutation.handlers.forEach(handler => handler(mutation.payload))
+        }
+
         if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
           takeSnapshot(i, state)
         }
