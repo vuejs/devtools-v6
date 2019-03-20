@@ -233,6 +233,11 @@ export function installHook (target) {
       for (var i in parent) {
         var attrs = Object.getOwnPropertyDescriptor(parent, i)
         if (attrs) {
+          if (attrs.hasOwnProperty('get') && attrs.get.name === 'computedGetter') {
+            Object.defineProperty(child, i, attrs)
+            continue
+          }
+
           child[i] = _clone(parent[i], depth - 1)
         }
       }
