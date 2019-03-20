@@ -73,7 +73,7 @@
       >
         <div class="label">
           <VueIcon
-            class="big"
+            class="medium"
             icon="cached"
           />
           <span>Recording state...</span>
@@ -260,13 +260,12 @@ function copyToClipboard (state) {
   flex-direction column
   box-center()
   min-height 140px
-  font-size 24px
+  font-size 16px
   margin 0 42px
 
   .label
     display flex
     align-items center
-    font-weight lighter
     color $blueishGrey
     margin-bottom 12px
 
@@ -274,8 +273,6 @@ function copyToClipboard (state) {
       margin-right 12px
       >>> svg
         fill @color
-  .vue-ui-loading-bar
-    width 100%
 
 .message
   margin-left 5px
