@@ -3,7 +3,7 @@ import * as actions from './actions'
 import { snapshotsCache } from './cache'
 import SharedData from 'src/shared-data'
 
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
 
 let uid = 0

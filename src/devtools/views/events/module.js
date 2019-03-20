@@ -4,7 +4,7 @@ import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 
 let uid = 0
 
