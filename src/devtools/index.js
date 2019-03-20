@@ -155,7 +155,7 @@ function initApp (shell) {
       }
 
       requestAnimationFrame(() => {
-        SharedData.snapshotLoading = null
+        SharedData.snapshotLoading = false
       })
     })
 

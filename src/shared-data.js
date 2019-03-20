@@ -9,7 +9,7 @@ const internalSharedData = {
   recordVuex: true,
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
-  snapshotLoading: null,
+  snapshotLoading: false,
   recordPerf: false,
   editableProps: false,
   logDetected: true

@@ -59,10 +59,7 @@ export function inspect ({ commit, getters }, entryOrIndex) {
   if (cached) {
     commit('UPDATE_INSPECTED_STATE', cached)
   } else {
-    SharedData.snapshotLoading = {
-      current: 0,
-      total: 1
-    }
+    SharedData.snapshotLoading = true
     commit('UPDATE_INSPECTED_STATE', null)
     bridge.send('vuex:inspect-state', mutationIndex)
   }
@@ -91,10 +88,7 @@ function travelTo (state, commit, index, apply = true) {
     const { inspectedIndex } = state
 
     commit('UPDATE_INSPECTED_STATE', null)
-    SharedData.snapshotLoading = {
-      current: 0,
-      total: 1
-    }
+    SharedData.snapshotLoading = true
     bridge.send('vuex:travel-to-state', { index, apply })
 
     if (index !== inspectedIndex) {

@@ -136,12 +136,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       const { state } = parse(snapshot.state, true)
       store.replaceState(state)
 
-      const total = index - snapshot.index
-      SharedData.snapshotLoading = {
-        current: 0,
-        total
-      }
-      let time = Date.now()
+      SharedData.snapshotLoading = true
 
       // Replay mutations
       for (let i = snapshot.index + 1; i <= index; i++) {
@@ -161,15 +156,6 @@ export function initVuexBackend (hook, bridge, isLegacy) {
 
         if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
           takeSnapshot(i, state)
-        }
-
-        const now = Date.now()
-        if (now - time <= 100) {
-          time = now
-          SharedData.snapshotLoading = {
-            current: i - snapshot.index,
-            total
-          }
         }
       }
 

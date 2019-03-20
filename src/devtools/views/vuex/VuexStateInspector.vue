@@ -65,9 +65,7 @@
           Loading state...
         </div>
 
-        <VueLoadingBar
-          :value="$shared.snapshotLoading.current / $shared.snapshotLoading.total"
-        />
+        <VueLoadingIndicator />
       </div>
       <div
         v-else-if="isOnlyMutationPayload"
