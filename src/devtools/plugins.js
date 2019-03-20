@@ -47,7 +47,7 @@ Vue.use(Responsive, {
 Vue.use(GlobalRefs, {
   refs: {
     leftScroll: () => document.querySelector('.left .scroll'),
-    leftRecycleList: () => document.querySelector('.left .recycle-list'),
+    leftRecycleList: () => document.querySelector('.left .vue-recycle-scroller'),
     rightScroll: () => document.querySelector('.right .scroll')
   }
 })

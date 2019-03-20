@@ -6,6 +6,8 @@ import SharedData from 'src/shared-data'
 const REGEX_RE = /^\/(.*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
 
+let uid = 0
+
 const state = {
   hasVuex: false,
   initial: null,
@@ -30,6 +32,7 @@ const mutations = {
   },
 
   'RECEIVE_MUTATION' (state, entry) {
+    entry.id = uid++
     state.history.push(entry)
     if (!state.filter) {
       state.inspectedIndex = state.activeIndex = state.history.length - 1

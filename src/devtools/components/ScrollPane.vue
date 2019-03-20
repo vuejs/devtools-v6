@@ -21,7 +21,7 @@
   flex 1
   overflow auto
   &,
-  >>> .recycle-list
+  >>> .vue-recycle-scroller
     .vue-ui-dark-mode &::-webkit-scrollbar
       background: $dark-background-color
       border-left: 1px solid $dark-border-color
