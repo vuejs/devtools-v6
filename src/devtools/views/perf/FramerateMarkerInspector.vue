@@ -31,8 +31,12 @@
             }"
             @click="selectedEntry = entry"
           >
-            <div class="label">{{ entry.label }}</div>
-            <div class="time">{{ entry.timestamp | formatTime }}</div>
+            <div class="label">
+              {{ entry.label }}
+            </div>
+            <div class="time">
+              {{ entry.timestamp | formatTime }}
+            </div>
           </div>
         </div>
       </div>

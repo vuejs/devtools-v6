@@ -61,7 +61,9 @@
         v-if="$shared.snapshotLoading"
         class="state-info loading-vuex-state"
       >
-        <div class="label">Loading state...</div>
+        <div class="label">
+          Loading state...
+        </div>
 
         <VueLoadingBar
           :value="$shared.snapshotLoading.current / $shared.snapshotLoading.total"

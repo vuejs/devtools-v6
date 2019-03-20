@@ -122,6 +122,7 @@ export default {
         }
         return end - this.currentBenchmark.start
       }
+      return 0
     }
   },
 

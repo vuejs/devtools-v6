@@ -430,6 +430,7 @@ export default {
           return 'Invalid key'
         }
       }
+      return ''
     },
 
     valueClass () {
