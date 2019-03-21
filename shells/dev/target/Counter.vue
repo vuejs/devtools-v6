@@ -28,6 +28,8 @@
       <button :disabled="!$store.state.dynamic" @click="toggleDynamic()">Toggle dynamic state</button>
       <button :disabled="!$store.state.dynamic" @click="removeDynamicModule()">Remove dynamic module</button>
     </div>
+
+    <pre>{{ $store.state.instant }}</pre>
   </div>
 </template>
 
@@ -41,6 +43,17 @@ export default {
     this.$firebaseRefs = {
       hello: 'world'
     }
+
+    this.$store.registerModule('instant', {
+      namespaced: true,
+      state: () => ({
+        hey: 'hi'
+      }),
+      getters: {
+        ho: state => state.hey + ' ho'
+      }
+    })
+    console.log('registered instant')
   },
   computed: {
     test () { return 1 },
@@ -55,7 +68,7 @@ export default {
 
     ...mapGetters('nested', [
       'twoFoos'
-    ])
+    ]),
   },
   watch: {
     count (value) {

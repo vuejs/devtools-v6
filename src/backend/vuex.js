@@ -38,18 +38,10 @@ export function initVuexBackend (hook, bridge, isLegacy) {
 
   reset()
 
-  const origRegisterModule = store.registerModule.bind(store)
-  store.registerModule = (path, module, options) => {
+  const earlyModules = hook.flushStoreModules()
+
+  function addModule (path, module, options) {
     if (typeof path === 'string') path = [path]
-    if (SharedData.recordVuex) {
-      addMutation(`Register module: ${path.join('/')}`, {
-        path,
-        module,
-        options
-      }, {
-        registerModule: true
-      })
-    }
 
     const key = path.join('/')
     registeredModules[key] = allTimeModules[key] = {
@@ -58,12 +50,29 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       options
     }
 
+    if (SharedData.recordVuex) {
+      addMutation(`Register module: ${key}`, {
+        path,
+        module,
+        options
+      }, {
+        registerModule: true
+      })
+    }
+  }
+
+  const origRegisterModule = store.registerModule.bind(store)
+  store.registerModule = (path, module, options) => {
+    addModule(path, module, options)
     origRegisterModule(path, module, options)
   }
 
   const origUnregisterModule = store.unregisterModule.bind(store)
   store.unregisterModule = (path) => {
     if (typeof path === 'string') path = [path]
+
+    delete registeredModules[path.join('/')]
+
     if (SharedData.recordVuex) {
       addMutation(`Unregister module: ${path.join('/')}`, {
         path
@@ -72,12 +81,14 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       })
     }
 
-    delete registeredModules[path.join('/')]
-
     origUnregisterModule(path)
   }
 
   bridge.send('vuex:init')
+
+  earlyModules.forEach(({ path, module, options }) => {
+    addModule(path, module, options)
+  })
 
   // deal with multiple backend injections
   hook.off('vuex:mutation')
