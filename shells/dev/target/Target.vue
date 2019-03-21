@@ -1,6 +1,6 @@
 <template>
   <div id="target">
-    <h1>{{localMsg}}</h1>
+    <h1>{{localMsg}} {{ msg }}</h1>
     <span>Regex: {{regex.toString()}}</span>
     <input @keyup.enter="regex = new RegExp($event.target.value)"/>
     <span>(Press enter to set)</span>
