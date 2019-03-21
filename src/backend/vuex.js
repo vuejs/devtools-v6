@@ -16,13 +16,24 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     })
   }
 
-  updateSnapshotsVm()
-
   const getStateSnapshot = (_store = store) => stringify(_store.state)
 
   let baseStateSnapshot, stateSnapshots, mutations, lastState
   let registeredModules = {}
   let allTimeModules = {}
+
+  const earlyModules = hook.flushStoreModules()
+
+  // Init additional state
+  earlyModules.forEach(({ path, module, options }) => {
+    if (!options || options.preserveState !== true) {
+      const state = typeof module.state === 'function' ? module.state() : module.state
+      const parentState = path.length === 1 ? hook.initialStore.state : get(hook.initialStore.state, path.slice(0, -1))
+      set(parentState, path[path.length - 1], state)
+    }
+  })
+
+  updateSnapshotsVm()
 
   function reset () {
     baseStateSnapshot = getStateSnapshot(hook.initialStore)
@@ -37,8 +48,6 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   }
 
   reset()
-
-  const earlyModules = hook.flushStoreModules()
 
   function addModule (path, module, options) {
     if (typeof path === 'string') path = [path]
