@@ -76,7 +76,7 @@ suite('vuex edit', () => {
 
   it('should edit state nested field', () => {
     // using the decrease button
-    cy.get('.data-field > .children > .data-field').eq(3)
+    cy.get('.data-field > .children > .data-field').eq(4)
       .find('.actions .vue-ui-button').eq(1)
       .click({ force: true })
       .click({ force: true })
@@ -87,7 +87,7 @@ suite('vuex edit', () => {
     })
 
     // using the increase button
-    cy.get('.data-field > .children > .data-field').eq(3)
+    cy.get('.data-field > .children > .data-field').eq(4)
       .find('.actions .vue-ui-button').eq(2)
       .click({ force: true })
       .click({ force: true })
@@ -98,7 +98,7 @@ suite('vuex edit', () => {
     })
 
     // using the input
-    cy.get('.data-field > .children > .data-field').eq(3)
+    cy.get('.data-field > .children > .data-field').eq(4)
       .find('.actions .vue-ui-button').eq(0).click({ force: true })
     cy.get('.edit-input').eq(1).type('12')
     cy.get('.edit-overlay > .actions > :nth-child(2) > .content > .vue-ui-icon').click()
