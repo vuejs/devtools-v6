@@ -524,6 +524,10 @@ export function get (object, path) {
 }
 
 export function has (object, path, parent = false) {
+  if (typeof object === 'undefined') {
+    return false
+  }
+
   const sections = path.split('.')
   const size = !parent ? 1 : 2
   while (sections.length > size) {
