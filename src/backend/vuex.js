@@ -169,8 +169,15 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   })
 
   bridge.on('vuex:import-state', state => {
-    hook.emit('vuex:travel-to-state', parse(state, true))
+    const parsed = parse(state, true)
+    hook.initialStore.state = parsed
+    reset()
+    hook.emit('vuex:travel-to-state', parsed)
     bridge.send('vuex:init')
+    bridge.send('vuex:inspected-state', {
+      index: -1,
+      snapshot: getSnapshot(baseStateSnapshot)
+    })
   })
 
   bridge.on('vuex:inspect-state', index => {
