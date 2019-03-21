@@ -155,11 +155,11 @@ export default {
     },
 
     setDisplay () {
-      return Array.from(this.set)
+      if (this.set) return Array.from(this.set)
     },
 
     mapDisplay () {
-      return [...this.map]
+      if (this.map) return [...this.map]
     },
 
     forceRefresh () {
