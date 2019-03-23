@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env PORT=8100 npm run dev:shell",
     "dev:shell": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
-    "dev:chrome": "cd shells/chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
+    "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
+    "dev:chrome:prod": "cd shells/chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
     "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src && eslint shells/electron/src",
     "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "run:firefox": "web-ext run -s shells/chrome -a dist -i src",
