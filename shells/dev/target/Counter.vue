@@ -1,12 +1,24 @@
 <template>
   <div id="counter">
     <p>{{ count }}</p>
-    <button class="increment" @click="increment()">+1</button>
-    <button class="decrement" @click="decrement()">-1</button>
+    <button
+      class="increment"
+      @click="increment()"
+    >
+      +1
+    </button>
+    <button
+      class="decrement"
+      @click="decrement()"
+    >
+      -1
+    </button>
 
     <br>
 
-    <button @click="doLotMutations()">Do a lot of mutations</button>
+    <button @click="doLotMutations()">
+      Do a lot of mutations
+    </button>
 
     <p>Your counter is {{ $store.getters.isPositive ? 'positive' : 'negative' }}</p>
 
@@ -15,8 +27,12 @@
     <div>
       <p>foo: {{ foo }}</p>
       <p>twoFoos: {{ twoFoos }}</p>
-      <button @click="addBar()">Add bar</button>
-      <button @click="removeBar()">Remove bar</button>
+      <button @click="addBar()">
+        Add bar
+      </button>
+      <button @click="removeBar()">
+        Remove bar
+      </button>
     </div>
 
     <div>
@@ -24,20 +40,42 @@
         <pre>{{ $store.state.dynamic }}</pre>
         <pre>{{ $store.getters }}</pre>
       </template>
-      <button :disabled="$store.state.dynamic" @click="addDynamicModule()">Add dynamic module</button>
-      <button :disabled="!$store.state.dynamic" @click="toggleDynamic()">Toggle dynamic state</button>
-      <button :disabled="!$store.state.dynamic" @click="removeDynamicModule()">Remove dynamic module</button>
+      <button
+        :disabled="$store.state.dynamic"
+        @click="addDynamicModule()"
+      >
+        Add dynamic module
+      </button>
+      <button
+        :disabled="!$store.state.dynamic"
+        @click="toggleDynamic()"
+      >
+        Toggle dynamic state
+      </button>
+      <button
+        :disabled="!$store.state.dynamic"
+        @click="removeDynamicModule()"
+      >
+        Remove dynamic module
+      </button>
     </div>
 
     <pre>{{ $store.state.instant }}</pre>
+
+    <NoProp />
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import DynamicModule from './dynamic-module'
+import NoProp from './NoProp.vue'
 
 export default {
+  components: {
+    NoProp
+  },
+
   created () {
     // simulate firebase binding
     this.$firebaseRefs = {
@@ -68,7 +106,7 @@ export default {
 
     ...mapGetters('nested', [
       'twoFoos'
-    ]),
+    ])
   },
   watch: {
     count (value) {
@@ -77,7 +115,7 @@ export default {
   },
   methods: {
     increment () {
-      this.$store.commit('INCREMENT', { a: 1, b: { c: 3 }})
+      this.$store.commit('INCREMENT', { a: 1, b: { c: 3 } })
     },
 
     decrement () {
