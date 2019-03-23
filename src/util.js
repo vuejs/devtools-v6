@@ -131,9 +131,9 @@ function replacer (key) {
   } else if (type === 'symbol') {
     return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
-    if (val instanceof Map) {
+    if (val instanceof Map || val.toString() === '[object Map]') {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
-    } else if (val instanceof Set) {
+    } else if (val instanceof Set || val.toString() === '[object Set]') {
       return encodeCache.cache(val, () => getCustomSetDetails(val))
     } else if (val instanceof RegExp) {
       // special handling of native type
