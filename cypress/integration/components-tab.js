@@ -92,7 +92,7 @@ suite('components tab', () => {
 
   it('should filter components', () => {
     cy.get('.left .search input').clear().type('counter')
-    cy.get('.instance').should('have.length', 1)
+    cy.get('.instance').should('have.length', 2)
     cy.get('.left .search input').clear().type('target')
     cy.get('.instance').should('have.length', 12)
     cy.get('.left .search input').clear()
