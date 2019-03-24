@@ -184,15 +184,14 @@
         :force-collapse="forceCollapse"
         :is-state-field="isStateField"
       />
-      <span
+      <VueButton
         v-if="subFieldCount > limit"
         v-tooltip="'Show more'"
         :style="{ marginLeft: depthMargin + 'px' }"
-        class="more"
+        icon-left="more_horiz"
+        class="icon-button flat more"
         @click="showMoreSubfields()"
-      >
-        ...
-      </span>
+      />
       <data-field
         v-if="isSubfieldsEditable && addingValue"
         ref="newField"
@@ -687,14 +686,6 @@ export default {
   &:not(:last-child)
     margin-bottom 4px
 
-.more
-  cursor pointer
-  display inline-block
-  border-radius 4px
-  padding 0 4px 4px
-  &:hover
-    background-color #eee
-
 .edit-input
   font-family Menlo, Consolas, monospace
   border solid 1px $green
@@ -716,4 +707,11 @@ export default {
   .vue-ui-button
     display block
     width 100%
+
+.more
+  width 20px
+  height @width
+  >>> .vue-ui-icon
+    width 16px
+    height @width
 </style>
