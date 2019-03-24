@@ -24,6 +24,10 @@
       </button>
     </p>
 
+    <p>
+      Large array size: {{ largeArray.length }}
+    </p>
+
     <h3>Set</h3>
     <pre>{{ setDisplay() }}</pre>
 
