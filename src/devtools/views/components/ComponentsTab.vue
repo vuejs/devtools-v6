@@ -8,6 +8,7 @@
       <component-inspector
         slot="right"
         :target="inspectedInstance"
+        :loading="loading"
       />
     </split-pane>
   </div>
@@ -37,10 +38,11 @@ export default {
 
   extends: superDef,
 
-  computed: mapState('components', {
-    instances: state => state.instances,
-    inspectedInstance: state => state.inspectedInstance
-  }),
+  computed: mapState('components', [
+    'instances',
+    'inspectedInstance',
+    'loading'
+  ]),
 
   methods: {
     filter (e) {

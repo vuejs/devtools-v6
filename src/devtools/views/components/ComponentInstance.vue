@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { classify, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
@@ -122,6 +122,7 @@ export default {
     ...mapState('components', [
       'expansionMap',
       'inspectedInstance',
+      'inspectedInstanceId',
       'scrollToExpanded'
     ]),
 
@@ -130,7 +131,7 @@ export default {
     },
 
     selected () {
-      return this.instance.id === this.inspectedInstance.id
+      return this.instance.id === this.inspectedInstanceId
     },
 
     sortedChildren () {
@@ -169,6 +170,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations('components', {
+      inspectInstance: 'INSPECT_INSTANCE'
+    }),
+
     toggle (event) {
       this.toggleWithValue(!this.expanded, event.altKey)
     },
@@ -190,6 +195,7 @@ export default {
     },
 
     select () {
+      this.inspectInstance(this.instance)
       bridge.send('select-instance', this.instance.id)
     },
 

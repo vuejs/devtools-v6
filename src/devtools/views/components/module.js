@@ -3,6 +3,8 @@ import Vue from 'vue'
 const state = {
   selected: null,
   inspectedInstance: {},
+  inspectedInstanceId: null,
+  loading: false,
   instances: [],
   instancesMap: {},
   expansionMap: {},
@@ -45,9 +47,16 @@ const mutations = {
         console.log(`devtools render took ${window.performance.now() - start}ms.`)
       })
     }
+
+    state.loading = false
+  },
+  INSPECT_INSTANCE (state, instance) {
+    state.inspectedInstanceId = instance.id
+    state.loading = true
   },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = Object.freeze(instance)
+    state.inspectedInstanceId = instance.id
     state.scrollToExpanded = null
   },
   TOGGLE_INSTANCE (state, { id, expanded, scrollTo = null } = {}) {

@@ -16,6 +16,10 @@
           placeholder="Filter inspected data"
         >
       </div>
+      <VueLoadingIndicator
+        v-if="loading"
+        class="primary"
+      />
       <a
         v-if="$isChrome"
         v-tooltip="'Inspect DOM'"
@@ -79,6 +83,10 @@ export default {
     target: {
       type: Object,
       required: true
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
 
