@@ -81,7 +81,10 @@ function connect (Vue) {
 
   bridge.on('scroll-to-instance', id => {
     const instance = findInstanceOrVnode(id)
-    instance && scrollIntoView(instance)
+    if (instance) {
+      scrollIntoView(instance)
+      highlight(instance)
+    }
   })
 
   bridge.on('filter-instances', _filter => {
