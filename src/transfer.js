@@ -16,7 +16,7 @@ function encode (data, replacer, list, seen) {
     for (i = 0, l = keys.length; i < l; i++) {
       key = keys[i]
       value = data[key]
-      if (replacer) value = replacer(key, value)
+      if (replacer) value = replacer.call(data, key, value)
       stored[key] = encode(value, replacer, list, seen)
     }
   } else if (proto === '[object Array]') {
@@ -25,7 +25,7 @@ function encode (data, replacer, list, seen) {
     list.push(stored)
     for (i = 0, l = data.length; i < l; i++) {
       value = data[i]
-      if (replacer) value = replacer(i, value)
+      if (replacer) value = replacer.call(data, i, value)
       stored[i] = encode(value, replacer, list, seen)
     }
   } else {
