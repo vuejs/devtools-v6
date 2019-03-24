@@ -120,7 +120,15 @@ export function stringify (data) {
 function replacer (key) {
   const val = this[key]
   const type = typeof val
-  if (type === 'undefined') {
+  if (Array.isArray(val)) {
+    return val
+  } else if (typeof val === 'string') {
+    if (val.length > MAX_STRING_SIZE) {
+      return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
+    } else {
+      return val
+    }
+  } else if (type === 'undefined') {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
@@ -131,14 +139,15 @@ function replacer (key) {
   } else if (type === 'symbol') {
     return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
-    if (val instanceof Map || val.toString() === '[object Map]') {
+    const proto = Object.prototype.toString.call(val)
+    if (proto === '[object Map]') {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
-    } else if (val instanceof Set || val.toString() === '[object Set]') {
+    } else if (proto === '[object Set]') {
       return encodeCache.cache(val, () => getCustomSetDetails(val))
-    } else if (val instanceof RegExp) {
+    } else if (proto === '[object RegExp]') {
       // special handling of native type
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
-    } else if (val instanceof Date) {
+    } else if (proto === '[object Date]') {
       return `[native Date ${Date.prototype.toString.call(val)}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
@@ -151,8 +160,6 @@ function replacer (key) {
     }
   } else if (Number.isNaN(val)) {
     return NAN
-  } else if (typeof val === 'string' && val.length > MAX_STRING_SIZE) {
-    return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
   }
   return sanitize(val)
 }
