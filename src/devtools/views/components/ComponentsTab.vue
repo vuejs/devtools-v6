@@ -2,10 +2,12 @@
   <div>
     <split-pane>
       <component-tree
+        v-if="defer(2)"
         slot="left"
         :instances="instances"
       />
       <component-inspector
+        v-if="defer(3)"
         slot="right"
         :target="inspectedInstance"
         :loading="loading"
@@ -15,11 +17,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import Defer from 'mixins/defer'
+
 import SplitPane from 'components/SplitPane.vue'
 import ComponentTree from './ComponentTree.vue'
 import ComponentInspector from './ComponentInspector.vue'
-
-import { mapState } from 'vuex'
 
 const superDef = {
   data () {
@@ -37,6 +40,10 @@ export default {
   },
 
   extends: superDef,
+
+  mixins: [
+    Defer()
+  ],
 
   computed: mapState('components', [
     'instances',

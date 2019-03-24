@@ -4,12 +4,23 @@
       <slot name="header" />
     </div>
     <div
+      v-if="defer(2)"
       class="scroll"
     >
       <slot name="scroll" />
     </div>
   </div>
 </template>
+
+<script>
+import Defer from 'mixins/defer'
+
+export default {
+  mixins: [
+    Defer()
+  ]
+}
+</script>
 
 <style lang="stylus" scoped>
 .scroll-pane
