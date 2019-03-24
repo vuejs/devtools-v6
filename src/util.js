@@ -60,6 +60,7 @@ export const SPECIAL_TOKENS = {
 }
 
 export const MAX_STRING_SIZE = 10000
+export const MAX_ARRAY_SIZE = 5000
 
 export function specialTokenToString (value) {
   if (value === null) {
@@ -120,6 +121,14 @@ export function stringify (data) {
 function replacer (key, val) {
   const type = typeof val
   if (Array.isArray(val)) {
+    const l = val.length
+    if (l > MAX_ARRAY_SIZE) {
+      return {
+        _isArray: true,
+        length: l,
+        items: val.slice(0, MAX_ARRAY_SIZE)
+      }
+    }
     return val
   } else if (typeof val === 'string') {
     if (val.length > MAX_STRING_SIZE) {
