@@ -1,3 +1,5 @@
+const MAX_SERIALIZED_SIZE = 512 * 1024 // 1MB
+
 function encode (data, replacer, list, seen) {
   var stored, key, value, i, l
   var seenIndex = seen.get(data)
@@ -57,16 +59,29 @@ function decode (list, reviver) {
 }
 
 export function stringify (data, replacer, space) {
+  let result
   try {
-    return arguments.length === 1
+    result = arguments.length === 1
       ? JSON.stringify(data)
       : JSON.stringify(data, replacer, space)
   } catch (e) {
-    return stringifyStrict(data, replacer, space)
+    result = stringifyStrict(data, replacer, space)
   }
+  if (result.length > MAX_SERIALIZED_SIZE) {
+    const chunkCount = Math.ceil(result.length / MAX_SERIALIZED_SIZE)
+    const chunks = []
+    for (let i = 0; i < chunkCount; i++) {
+      chunks.push(result.slice(i * MAX_SERIALIZED_SIZE, (i + 1) * MAX_SERIALIZED_SIZE))
+    }
+    return chunks
+  }
+  return result
 }
 
 export function parse (data, reviver) {
+  if (Array.isArray(data)) {
+    data = data.join('')
+  }
   var hasCircular = /^\s/.test(data)
   if (!hasCircular) {
     return arguments.length === 1
