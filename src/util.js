@@ -117,8 +117,7 @@ export function stringify (data) {
   return CircularJSON.stringify(data, replacer)
 }
 
-function replacer (key) {
-  const val = this[key]
+function replacer (key, val) {
   const type = typeof val
   if (Array.isArray(val)) {
     return val

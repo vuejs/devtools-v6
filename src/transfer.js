@@ -1,22 +1,22 @@
 const MAX_SERIALIZED_SIZE = 512 * 1024 // 1MB
 
 function encode (data, replacer, list, seen) {
-  var stored, key, value, i, l
-  var seenIndex = seen.get(data)
+  let stored, key, value, i, l
+  const seenIndex = seen.get(data)
   if (seenIndex != null) {
     return seenIndex
   }
-  var index = list.length
-  var proto = Object.prototype.toString.call(data)
+  const index = list.length
+  const proto = Object.prototype.toString.call(data)
   if (proto === '[object Object]') {
     stored = {}
     seen.set(data, index)
     list.push(stored)
-    var keys = Object.keys(data)
+    const keys = Object.keys(data)
     for (i = 0, l = keys.length; i < l; i++) {
       key = keys[i]
       value = data[key]
-      if (replacer) value = replacer.call(data, key, value)
+      if (replacer) value = replacer(key, value)
       stored[key] = encode(value, replacer, list, seen)
     }
   } else if (proto === '[object Array]') {
@@ -25,7 +25,7 @@ function encode (data, replacer, list, seen) {
     list.push(stored)
     for (i = 0, l = data.length; i < l; i++) {
       value = data[i]
-      if (replacer) value = replacer.call(data, i, value)
+      if (replacer) value = replacer(i, value)
       stored[i] = encode(value, replacer, list, seen)
     }
   } else {
@@ -35,13 +35,13 @@ function encode (data, replacer, list, seen) {
 }
 
 function decode (list, reviver) {
-  var i = list.length
-  var j, k, data, key, value, proto
+  let i = list.length
+  let j, k, data, key, value, proto
   while (i--) {
     data = list[i]
     proto = Object.prototype.toString.call(data)
     if (proto === '[object Object]') {
-      var keys = Object.keys(data)
+      const keys = Object.keys(data)
       for (j = 0, k = keys.length; j < k; j++) {
         key = keys[j]
         value = list[data[key]]
