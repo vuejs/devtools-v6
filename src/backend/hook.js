@@ -169,7 +169,7 @@ export function installHook (target) {
     var allParents = []
     var allChildren = []
 
-    var useBuffer = typeof Buffer !== 'undefined'
+    var useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
 
     if (typeof circular === 'undefined') { circular = true }
 
