@@ -87,7 +87,7 @@ import Keyboard, {
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
-import { classify, focusInput } from 'src/util'
+import { focusInput, getComponentDisplayName } from 'src/util'
 
 export default {
   components: {
@@ -162,7 +162,7 @@ export default {
     ]),
 
     displayComponentName (name) {
-      return this.$shared.classifyComponents ? classify(name) : name
+      return getComponentDisplayName(name, this.$shared.componentNameStyle)
     }
   }
 }

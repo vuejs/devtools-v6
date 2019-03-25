@@ -1,4 +1,4 @@
-import { inDoc, classify, getComponentName } from '../util'
+import { inDoc, getComponentName, getComponentDisplayName } from '../util'
 import { getInstanceName } from './index'
 import SharedData from 'src/shared-data'
 import { isBrowser, target } from '../devtools/env'
@@ -46,7 +46,7 @@ export function highlight (instance) {
   if (rect) {
     const content = []
     let name = instance.fnContext ? getComponentName(instance.fnOptions) : getInstanceName(instance)
-    if (SharedData.classifyComponents) name = classify(name)
+    name = getComponentDisplayName(name, SharedData.componentNameStyle)
     if (name) {
       const pre = document.createElement('span')
       pre.style.opacity = '0.6'

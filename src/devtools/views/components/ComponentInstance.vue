@@ -102,7 +102,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { classify, scrollIntoView, UNDEFINED } from '../../../util'
+import { getComponentDisplayName, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
   name: 'ComponentInstance',
@@ -143,7 +143,7 @@ export default {
     },
 
     displayName () {
-      return this.$shared.classifyComponents ? classify(this.instance.name) : this.instance.name
+      return getComponentDisplayName(this.instance.name, this.$shared.componentNameStyle)
     },
 
     componentHasKey () {
