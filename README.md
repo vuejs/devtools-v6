@@ -1,6 +1,6 @@
 # vue-devtools
 
-<p align="center"><img width="720px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/master/media/screenshot-shadow.png" alt="screenshot"></p>
+<p align="center"><img width="720px" src="https://raw.githubusercontent.com/vuejs/vue-devtools/dev/media/screenshot-shadow.png" alt="screenshot"></p>
 
 ## Installation
 
