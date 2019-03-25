@@ -197,6 +197,17 @@ export default {
     }
   },
 
+  mounted () {
+    bridge.on('vuex:mutation', this.onMutation)
+    if (this.isOnlyMutationPayload && this.$shared.vuexAutoload) {
+      this.loadState()
+    }
+  },
+
+  destroyed () {
+    bridge.off('vuex:mutation', this.onMutation)
+  },
+
   methods: {
     ...mapActions('vuex', [
       'inspect'
@@ -241,7 +252,13 @@ export default {
     loadState () {
       const history = this.filteredHistory
       this.inspect(history[history.length - 1])
-    }
+    },
+
+    onMutation: debounce(function () {
+      if (this.$shared.vuexAutoload) {
+        this.loadState()
+      }
+    }, 800)
   }
 }
 

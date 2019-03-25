@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "dependencies": {
-    "@vue/ui": "^0.5.6",
+    "@vue/ui": "^0.7.2",
     "circular-json-es6": "^2.0.2",
     "d3": "^5.9.2",
     "lodash.debounce": "^4.0.8",

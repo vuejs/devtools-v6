@@ -51,15 +51,14 @@
     source-map "~0.6.1"
     vue-template-es2015-compiler "^1.9.0"
 
-"@vue/ui@^0.5.6":
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.5.6.tgz#7c39b04a3b08ae3f217d2323987ae13347a90b29"
-  integrity sha512-NmxJsFk8umipCbKLusz6L27DQIicpt8jLOjN1aLjyBIeX3t4H5RFshxH7IUtjDPtgOYGwwq7gy86bmFkDDBsIQ==
+"@vue/ui@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.7.2.tgz#c4501719267dd35e048a5be68aeea17f67ba47cd"
+  integrity sha512-LDhPgumKVeVSFpfLlrKOpbWPJB8pAacsBGEYLifOSNpEQhSZDTA7cMAfZ35GkXnrfUh3tovne0X+KyBewz3pOg==
   dependencies:
-    focus-visible "^4.1.4"
-    material-design-icons "^3.0.1"
+    focus-visible "^4.1.5"
     v-tooltip "^2.0.0-rc.33"
-    vue-resize "^0.4.4"
+    vue-resize "^0.4.5"
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
@@ -2445,7 +2444,7 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-focus-visible@^4.1.4:
+focus-visible@^4.1.5:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/focus-visible/-/focus-visible-4.1.5.tgz#50b44e2e84c24b831ceca3cce84d57c2b311c855"
   integrity sha512-yo/njtk/BB4Z2euzaZe3CZrg4u5s5uEi7ZwbHBJS2quHx51N0mmcx9nTIiImUGlgy+vf26d0CcQluahBBBL/Fw==
@@ -3680,11 +3679,6 @@ map-visit@^1.0.0:
   integrity sha1-7Nyo8TFE5mDxtb1B8S80edmN+48=
   dependencies:
     object-visit "^1.0.0"
-
-material-design-icons@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/material-design-icons/-/material-design-icons-3.0.1.tgz#9a71c48747218ebca51e51a66da682038cdcb7bf"
-  integrity sha1-mnHEh0chjrylHlGmbaaCA4zct78=
 
 md5.js@^1.3.4:
   version "1.3.5"
@@ -6107,7 +6101,7 @@ vue-observe-visibility@^0.4.3:
   resolved "https://registry.yarnpkg.com/vue-observe-visibility/-/vue-observe-visibility-0.4.3.tgz#b2694a83c94b274f566e03a497df51540e2daedc"
   integrity sha512-YyyO3a5OUkgpmC0NEf+xWJR0jVdFWzVbKRDzUumOVMhfr3+jxXEycYNHCM3rEO5lcj3ZNJpDomZEYEx0Wqqh9A==
 
-vue-resize@^0.4.3, vue-resize@^0.4.4, vue-resize@^0.4.5:
+vue-resize@^0.4.3, vue-resize@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-0.4.5.tgz#4777a23042e3c05620d9cbda01c0b3cc5e32dcea"
   integrity sha512-bhP7MlgJQ8TIkZJXAfDf78uJO+mEI3CaLABLjv0WNzr4CcGRGPIAItyWYnP6LsPA4Oq0WE+suidNs6dgpO4RHg==

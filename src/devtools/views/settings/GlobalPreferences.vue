@@ -2,9 +2,8 @@
   <div class="global-preferences preferences">
     <VueFormField title="Normalize component names">
       <VueGroup
-        :value="$shared.classifyComponents"
+        v-model="$shared.classifyComponents"
         class="extend"
-        @input="$shared.classifyComponents = $event"
       >
         <VueGroupButton
           :value="false"
@@ -19,9 +18,8 @@
 
     <VueFormField title="Theme">
       <VueGroup
-        :value="$shared.theme"
+        v-model="$shared.theme"
         class="extend"
-        @input="$shared.theme = $event"
       >
         <VueGroupButton
           value="auto"
@@ -40,9 +38,8 @@
 
     <VueFormField title="Display density">
       <VueGroup
-        :value="$shared.displayDensity"
+        v-model="$shared.displayDensity"
         class="extend"
-        @input="$shared.displayDensity = $event"
       >
         <VueGroupButton
           value="auto"
@@ -59,27 +56,40 @@
       </VueGroup>
     </VueFormField>
 
-    <VueFormField title="Editable props">
-      <VueSwitch
-        :value="$shared.editableProps"
-        @input="$shared.editableProps = $event"
-      >
-        Enable <span class="dim">(may print warnings)</span>
+    <VueFormField
+      title="Editable props"
+    >
+      <VueSwitch v-model="$shared.editableProps">
+        Enable
       </VueSwitch>
+      <template #subtitle>
+        <VueIcon
+          icon="warning"
+          class="medium"
+        />
+        This may print warnings in the console
+      </template>
     </VueFormField>
 
     <VueFormField title="Detected Vue message">
-      <VueSwitch
-        :value="$shared.logDetected"
-        @input="$shared.logDetected = $event"
-      >
+      <VueSwitch v-model="$shared.logDetected">
         Display in browser console
       </VueSwitch>
     </VueFormField>
+
+    <VueFormField
+      title="Autoload Vuex state"
+    >
+      <VueSwitch v-model="$shared.vuexAutoload">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        <VueIcon
+          icon="warning"
+          class="medium"
+        />
+        May impact performance or cause crashes
+      </template>
+    </VueFormField>
   </div>
 </template>
-
-<style lang="stylus" scoped>
-.dim
-  color $darkerGrey
-</style>

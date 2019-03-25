@@ -12,7 +12,8 @@ const internalSharedData = {
   snapshotLoading: false,
   recordPerf: false,
   editableProps: false,
-  logDetected: true
+  logDetected: true,
+  vuexAutoload: false
 }
 
 const persisted = [
@@ -21,7 +22,8 @@ const persisted = [
   'displayDensity',
   'recordVuex',
   'editableProps',
-  'logDetected'
+  'logDetected',
+  'vuexAutoload'
 ]
 
 // ---- INTERNALS ---- //
