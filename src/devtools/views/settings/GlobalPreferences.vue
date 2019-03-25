@@ -67,7 +67,7 @@
           icon="warning"
           class="medium"
         />
-        This may print warnings in the console
+        May print warnings in the console
       </template>
     </VueFormField>
 
