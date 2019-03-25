@@ -16,6 +16,8 @@ const getters = {
   totalCount: state => Object.keys(state.instancesMap).length
 }
 
+let inspectTime = null
+
 const mutations = {
   FLUSH (state, payload) {
     let start
@@ -45,6 +47,10 @@ const mutations = {
     if (process.env.NODE_ENV !== 'production') {
       Vue.nextTick(() => {
         console.log(`devtools render took ${window.performance.now() - start}ms.`)
+        if (inspectTime != null) {
+          console.log(`inspect component took ${window.performance.now() - inspectTime}ms.`)
+          inspectTime = null
+        }
       })
     }
 
@@ -53,6 +59,10 @@ const mutations = {
   INSPECT_INSTANCE (state, instance) {
     state.inspectedInstanceId = instance.id
     state.loading = true
+
+    if (process.env.NODE_ENV !== 'production') {
+      inspectTime = window.performance.now()
+    }
   },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = Object.freeze(instance)
