@@ -102,6 +102,10 @@ function initApp (shell) {
       persist: true
     })
 
+    if (SharedData.logDetected) {
+      bridge.send('log-detected-vue')
+    }
+
     bridge.once('ready', version => {
       store.commit(
         'SHOW_MESSAGE',
