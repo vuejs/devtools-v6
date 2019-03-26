@@ -70,27 +70,33 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     }
   }
 
-  const origRegisterModule = store.registerModule.bind(store)
-  store.registerModule = (path, module, options) => {
-    addModule(path, module, options)
-    origRegisterModule(path, module, options)
-  }
+  let origRegisterModule, origUnregisterModule
 
-  const origUnregisterModule = store.unregisterModule.bind(store)
-  store.unregisterModule = (path) => {
-    if (typeof path === 'string') path = [path]
-
-    delete registeredModules[path.join('/')]
-
-    if (SharedData.recordVuex) {
-      addMutation(`Unregister module: ${path.join('/')}`, {
-        path
-      }, {
-        unregisterModule: true
-      })
+  if (store.registerModule) {
+    origRegisterModule = store.registerModule.bind(store)
+    store.registerModule = (path, module, options) => {
+      addModule(path, module, options)
+      origRegisterModule(path, module, options)
     }
 
-    origUnregisterModule(path)
+    origUnregisterModule = store.unregisterModule.bind(store)
+    store.unregisterModule = (path) => {
+      if (typeof path === 'string') path = [path]
+
+      delete registeredModules[path.join('/')]
+
+      if (SharedData.recordVuex) {
+        addMutation(`Unregister module: ${path.join('/')}`, {
+          path
+        }, {
+          unregisterModule: true
+        })
+      }
+
+      origUnregisterModule(path)
+    }
+  } else {
+    origRegisterModule = origUnregisterModule = () => {}
   }
 
   bridge.send('vuex:init')

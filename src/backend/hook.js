@@ -103,25 +103,29 @@ export function installHook (target) {
       getters: store.getters
     }
     // Dynamic modules
-    hook.storeModules = []
-    const origRegister = store.registerModule.bind(store)
-    store.registerModule = (path, module, options) => {
-      if (typeof path === 'string') path = [path]
-      hook.storeModules.push({ path, module, options })
-      origRegister(path, module, options)
-    }
-    const origUnregister = store.unregisterModule.bind(store)
-    store.unregisterModule = (path) => {
-      if (typeof path === 'string') path = [path]
-      const key = path.join('/')
-      const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
-      if (index !== -1) hook.storeModules.splice(0, 1)
-      origUnregister(path)
-    }
-    hook.flushStoreModules = () => {
-      store.registerModule = origRegister
-      store.unregisterModule = origUnregister
-      return hook.storeModules
+    if (store.registerModule) {
+      hook.storeModules = []
+      const origRegister = store.registerModule.bind(store)
+      store.registerModule = (path, module, options) => {
+        if (typeof path === 'string') path = [path]
+        hook.storeModules.push({ path, module, options })
+        origRegister(path, module, options)
+      }
+      const origUnregister = store.unregisterModule.bind(store)
+      store.unregisterModule = (path) => {
+        if (typeof path === 'string') path = [path]
+        const key = path.join('/')
+        const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
+        if (index !== -1) hook.storeModules.splice(0, 1)
+        origUnregister(path)
+      }
+      hook.flushStoreModules = () => {
+        store.registerModule = origRegister
+        store.unregisterModule = origUnregister
+        return hook.storeModules
+      }
+    } else {
+      hook.flushStoreModules = () => []
     }
   })
 
