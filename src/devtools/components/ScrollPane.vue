@@ -1,10 +1,13 @@
 <template>
   <div class="scroll-pane">
     <div class="header">
-      <slot name="header"></slot>
+      <slot name="header" />
     </div>
-    <div ref="scrollContainer" class="scroll">
-      <slot name="scroll"></slot>
+    <div
+      ref="scrollContainer"
+      class="scroll"
+    >
+      <slot name="scroll" />
     </div>
   </div>
 </template>
@@ -12,20 +15,26 @@
 <script>
 export default {
   props: {
-    scrollEvent: String
+    scrollEvent: {
+      type: String,
+      default: undefined
+    }
   },
+
   mounted () {
     if (this.scrollEvent) {
-      bridge.on(this.scrollEvent, this.scroll)
+      bridge.on(this.scrollEvent, this.scrollToBottom)
     }
   },
+
   destroyed () {
     if (this.scrollEvent) {
-      bridge.removeListener(this.scrollEvent, this.scroll)
+      bridge.removeListener(this.scrollEvent, this.scrollToBottom)
     }
   },
+
   methods: {
-    scroll () {
+    scrollToBottom () {
       this.$nextTick(() => {
         const container = this.$refs.scrollContainer
         if (container.children.length) {
@@ -48,10 +57,10 @@ export default {
 .scroll
   flex 1
   overflow auto
-  .app.dark &::-webkit-scrollbar
+  .vue-ui-dark-mode &::-webkit-scrollbar
     background: $dark-background-color
     border-left: 1px solid $dark-border-color
-  .app.dark &::-webkit-scrollbar-thumb
+  .vue-ui-dark-mode &::-webkit-scrollbar-thumb
     background: lighten($dark-background-color, 7%);
     border: 1px solid lighten($dark-border-color, 7%)
 

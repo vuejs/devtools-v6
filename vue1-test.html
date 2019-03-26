@@ -1,0 +1,78 @@
+<html>
+<body>
+  <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
+  <script src="https://unpkg.com/vuex@1.0.1/dist/vuex.js"></script>
+
+  <div id="app"></div>
+
+  <script>
+    const store = new Vuex.Store({
+      state: {
+        counter: 0
+      },
+      mutations: {
+        INCREMENT: state => state.counter++,
+        DECREMENT: state => state.counter--,
+        SET_COUNTER: (state, value) => state.counter = value
+      }
+    })
+
+    Vue.component('data-test', {
+      template: `<div>
+        {{ bool }} {{ text }} {{ number }}
+      </div>`,
+      data () {
+        return {
+          bool: false,
+          text: 'hello world',
+          number: 0
+        }
+      }
+    })
+
+    Vue.component('vuex-test', {
+      template: `<div>
+        <div>{{ counter }} {{ isMoreThanTwo }}</div>
+        <div>
+          <button @click="$store.dispatch('INCREMENT')">+1</button>
+          <button @click="$store.dispatch('DECREMENT')">-1</button>
+          <button @click="$store.dispatch('SET_COUNTER', 0)">Reset</button>
+        </div>
+      </div>`,
+      computed: {
+        counter () {
+          return this.$store.state.counter
+        }
+      },
+      vuex: {
+        getters: {
+          isMoreThanTwo: state => state.counter > 2
+        }
+      }
+    })
+
+    Vue.component('event-test', {
+      template: `<div>
+        <button @click="$emit('foo', 'bar')">Emit event</button>
+        <button @click="$dispatch('foo', 'meow')">Dispatch event</button>
+        <button @click="$broadcast('foo', 'waf')">Broadcast event</button>
+      </div>`
+    })
+
+    new Vue({
+      el: '#app',
+      store,
+      template: `<div id="app">
+        <data-test></data-test>
+        <vuex-test></vuex-test>
+        <event-test @foo="onFoo"></event-test>
+      </div>`,
+      methods: {
+        onFoo (value) {
+          console.log(value)
+        }
+      }
+    })
+  </script>
+</body>
+</html>

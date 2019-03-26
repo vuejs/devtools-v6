@@ -4,8 +4,10 @@ const state = {
   selected: null,
   inspectedInstance: {},
   instances: [],
+  instancesMap: {},
   expansionMap: {},
-  events: []
+  events: [],
+  scrollToExpanded: null
 }
 
 const mutations = {
@@ -14,8 +16,26 @@ const mutations = {
     if (process.env.NODE_ENV !== 'production') {
       start = window.performance.now()
     }
+
+    // Instance ID map
+    // + add 'parent' properties
+    const map = {}
+    function walk (instance) {
+      map[instance.id] = instance
+      if (instance.children) {
+        instance.children.forEach(child => {
+          child.parent = instance
+          walk(child)
+        })
+      }
+    }
+    payload.instances.forEach(walk)
+
+    // Mutations
     state.instances = Object.freeze(payload.instances)
     state.inspectedInstance = Object.freeze(payload.inspectedInstance)
+    state.instancesMap = Object.freeze(map)
+
     if (process.env.NODE_ENV !== 'production') {
       Vue.nextTick(() => {
         console.log(`devtools render took ${window.performance.now() - start}ms.`)
@@ -24,15 +44,23 @@ const mutations = {
   },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = Object.freeze(instance)
+    state.scrollToExpanded = null
   },
-  TOGGLE_INSTANCE ({ expansionMap }, { id, expanded }) {
-    Vue.set(expansionMap, id, expanded)
+  TOGGLE_INSTANCE (state, { id, expanded, scrollTo = null } = {}) {
+    Vue.set(state.expansionMap, id, expanded)
+    state.scrollToExpanded = scrollTo
   }
 }
 
 const actions = {
-  toggleInstance ({ commit, dispatch }, { instance, expanded, recursive }) {
-    commit('TOGGLE_INSTANCE', { id: instance.id, expanded })
+  toggleInstance ({ commit, dispatch, state }, { instance, expanded, recursive, parent = false } = {}) {
+    const id = instance.id
+
+    commit('TOGGLE_INSTANCE', {
+      id,
+      expanded,
+      scrollTo: parent ? id : null
+    })
 
     if (recursive) {
       instance.children.forEach((child) => {
@@ -42,6 +70,19 @@ const actions = {
           recursive
         })
       })
+    }
+
+    // Expand the parents
+    if (parent) {
+      let i = instance
+      while (i.parent) {
+        i = i.parent
+        commit('TOGGLE_INSTANCE', {
+          id: i.id,
+          expanded: true,
+          scrollTo: id
+        })
+      }
     }
   }
 }

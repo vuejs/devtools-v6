@@ -1,12 +1,25 @@
 import Vue from 'vue'
 import App from './App.vue'
+import router from './router'
 import store from './store'
+import './plugins'
 import { parse } from '../util'
+import { isChrome, initEnv } from './env'
+import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
+import storage from './storage'
+
+// UI
+
+let panelShown = !isChrome
+let pendingAction = null
+
+const isDark = isChrome ? chrome.devtools.panels.themeName === 'dark' : false
+const isBeta = process.env.RELEASE_CHANNEL === 'beta'
 
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.
 // We do want the errors to be thrown in the dev shell though.
-if (typeof chrome !== 'undefined' && chrome.devtools) {
+if (isChrome) {
   Vue.config.errorHandler = (e, vm) => {
     bridge.send('ERROR', {
       message: e.message,
@@ -14,6 +27,16 @@ if (typeof chrome !== 'undefined' && chrome.devtools) {
       component: vm.$options.name || vm.$options._componentTag || 'anonymous'
     })
   }
+
+  chrome.runtime.onMessage.addListener(request => {
+    if (request === 'vue-panel-shown') {
+      onPanelShown()
+    } else if (request === 'vue-panel-hidden') {
+      onPanelHidden()
+    } else if (request === 'vue-get-context-menu-target') {
+      getContextMenuInstance()
+    }
+  })
 }
 
 Vue.options.renderError = (h, e) => {
@@ -60,6 +83,23 @@ function initApp (shell) {
   shell.connect(bridge => {
     window.bridge = bridge
 
+    if (Vue.prototype.hasOwnProperty('$shared')) {
+      destroySharedData()
+    } else {
+      Object.defineProperty(Vue.prototype, '$shared', {
+        get: () => SharedData
+      })
+    }
+
+    initSharedData({
+      bridge,
+      Vue,
+      storage,
+      persist: [
+        'classifyComponents'
+      ]
+    })
+
     bridge.once('ready', version => {
       store.commit(
         'SHOW_MESSAGE',
@@ -67,6 +107,10 @@ function initApp (shell) {
       )
       bridge.send('vuex:toggle-recording', store.state.vuex.enabled)
       bridge.send('events:toggle-recording', store.state.events.enabled)
+
+      if (isChrome) {
+        chrome.runtime.sendMessage('vue-panel-load')
+      }
     })
 
     bridge.once('proxy-fail', () => {
@@ -84,6 +128,10 @@ function initApp (shell) {
       store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
+    bridge.on('toggle-instance', payload => {
+      store.commit('components/TOGGLE_INSTANCE', parse(payload))
+    })
+
     bridge.on('vuex:init', snapshot => {
       store.commit('vuex/INIT', snapshot)
     })
@@ -94,16 +142,78 @@ function initApp (shell) {
 
     bridge.on('event:triggered', payload => {
       store.commit('events/RECEIVE_EVENT', parse(payload))
-      if (store.state.tab !== 'events') {
+      if (router.currentRoute.name !== 'events') {
         store.commit('events/INCREASE_NEW_EVENT_COUNT')
       }
     })
 
+    bridge.on('inspect-instance', id => {
+      ensurePaneShown(() => {
+        inspectInstance(id)
+      })
+    })
+
+    initEnv(Vue)
+
     app = new Vue({
+      extends: App,
+      router,
       store,
-      render (h) {
-        return h(App)
+
+      data: {
+        isDark,
+        isBeta
+      },
+
+      watch: {
+        isDark: {
+          handler (value) {
+            if (value) {
+              document.body.classList.add('vue-ui-dark-mode')
+            } else {
+              document.body.classList.remove('vue-ui-dark-mode')
+            }
+          },
+          immediate: true
+        }
       }
     }).$mount('#app')
   })
+}
+
+function getContextMenuInstance () {
+  bridge.send('get-context-menu-target')
+}
+
+function inspectInstance (id) {
+  bridge.send('select-instance', id)
+  router.push({ name: 'components' })
+  const instance = store.state.components.instancesMap[id]
+  instance && store.dispatch('components/toggleInstance', {
+    instance,
+    expanded: true,
+    parent: true
+  })
+}
+
+// Pane visibility management
+
+function ensurePaneShown (cb) {
+  if (panelShown) {
+    cb()
+  } else {
+    pendingAction = cb
+  }
+}
+
+function onPanelShown () {
+  panelShown = true
+  if (pendingAction) {
+    pendingAction()
+    pendingAction = null
+  }
+}
+
+function onPanelHidden () {
+  panelShown = false
 }
