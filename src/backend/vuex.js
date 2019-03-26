@@ -52,11 +52,23 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   function addModule (path, module, options) {
     if (typeof path === 'string') path = [path]
 
+    let state
+    if (options && options.preserveState) {
+      state = get(store.state, path)
+    }
+    if (!state) {
+      state = typeof module.state === 'function' ? module.state() : module.state
+    }
+
     const key = path.join('/')
     registeredModules[key] = allTimeModules[key] = {
       path,
       module,
-      options
+      options: {
+        ...options,
+        preserveState: false
+      },
+      state: stringify(state)
     }
 
     if (SharedData.recordVuex) {
@@ -250,9 +262,13 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       for (let i = stateSnapshot.index + 1; i <= index; i++) {
         const mutation = mutations[i]
         if (mutation.registerModule) {
-          const { path, module, options } = mutation.payload
-          tempAddedModules.push(path.join('/'))
-          origRegisterModule(path, module, options)
+          const key = mutation.payload.path.join('/')
+          const registeredModule = registeredModules[key]
+          tempAddedModules.push(key)
+          origRegisterModule(registeredModule.path, {
+            ...registeredModule.module,
+            state: parse(registeredModule.state, true)
+          }, registeredModule.options)
           updateSnapshotsVm(store.state)
         } else if (mutation.unregisterModule && get(store.state, mutation.payload.path) != null) {
           const path = mutation.payload.path
@@ -296,8 +312,11 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       origUnregisterModule(m.split('/'))
     })
     tempRemovedModules.sort((a, b) => a.length - b.length).forEach(m => {
-      const { path, module, options } = registeredModules[m]
-      origRegisterModule(path, module, options)
+      const { path, module, options, state } = registeredModules[m]
+      origRegisterModule(path, {
+        ...module,
+        state: parse(state, true)
+      }, options)
     })
     store._vm = originalVm
 
@@ -356,8 +375,11 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         if (!Object.keys(registeredModules).sort((a, b) => a.length - b.length).includes(m)) {
           const data = allTimeModules[m]
           if (data) {
-            const { path, module, options } = data
-            origRegisterModule(path, module, options)
+            const { path, module, options, state } = data
+            origRegisterModule(path, {
+              ...module,
+              state: parse(state, true)
+            }, options)
             registeredModules[path.join('/')] = data
           }
         }
