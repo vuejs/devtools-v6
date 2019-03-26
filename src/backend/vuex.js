@@ -236,7 +236,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       } else {
         tempRemovedModules = Object.keys(registeredModules)
       }
-      tempRemovedModules.forEach(m => {
+      tempRemovedModules.sort((a, b) => b.length - a.length).forEach(m => {
         origUnregisterModule(m.split('/'))
       })
 
@@ -254,7 +254,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
           tempAddedModules.push(path.join('/'))
           origRegisterModule(path, module, options)
           updateSnapshotsVm(store.state)
-        } else if (mutation.unregisterModule && get(store.state, mutation.payload.path.join('.')) != null) {
+        } else if (mutation.unregisterModule && get(store.state, mutation.payload.path) != null) {
           const path = mutation.payload.path
           const index = tempAddedModules.indexOf(path.join('/'))
           if (index !== -1) tempAddedModules.splice(index, 1)
@@ -292,10 +292,10 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     })
 
     // Restore user state
-    tempAddedModules.forEach(m => {
+    tempAddedModules.sort((a, b) => b.length - a.length).forEach(m => {
       origUnregisterModule(m.split('/'))
     })
-    tempRemovedModules.forEach(m => {
+    tempRemovedModules.sort((a, b) => a.length - b.length).forEach(m => {
       const { path, module, options } = registeredModules[m]
       origRegisterModule(path, module, options)
     })
@@ -353,7 +353,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   function ensureRegisteredModules (mutation) {
     if (mutation) {
       mutation.registeredModules.forEach(m => {
-        if (!Object.keys(registeredModules).includes(m)) {
+        if (!Object.keys(registeredModules).sort((a, b) => a.length - b.length).includes(m)) {
           const data = allTimeModules[m]
           if (data) {
             const { path, module, options } = data
@@ -362,7 +362,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
           }
         }
       })
-      Object.keys(registeredModules).forEach(m => {
+      Object.keys(registeredModules).sort((a, b) => b.length - a.length).forEach(m => {
         if (!mutation.registeredModules.includes(m)) {
           origUnregisterModule(m.split('/'))
           delete registeredModules[m]

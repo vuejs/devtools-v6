@@ -58,6 +58,24 @@
       >
         Remove dynamic module
       </button>
+      <button
+        :disabled="!$store.state.dynamic || $store.state.dynamic.nested"
+        @click="addDynamicNestedModule()"
+      >
+        Add dynamic nested module
+      </button>
+      <button
+        :disabled="!$store.state.dynamic || !$store.state.dynamic.nested"
+        @click="toggleDynamicNested()"
+      >
+        Toggle dynamic nested state
+      </button>
+      <button
+        :disabled="!$store.state.dynamic || !$store.state.dynamic.nested"
+        @click="removeDynamicNestedModule()"
+      >
+        Remove dynamic nested module
+      </button>
     </div>
 
     <pre>{{ $store.state.instant }}</pre>
@@ -68,7 +86,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from 'vuex'
-import DynamicModule from './dynamic-module'
+import { dynamic, nested } from './dynamic-module'
 import NoProp from './NoProp.vue'
 
 export default {
@@ -137,7 +155,7 @@ export default {
     }),
 
     addDynamicModule () {
-      this.$store.registerModule('dynamic', DynamicModule)
+      this.$store.registerModule('dynamic', dynamic)
     },
 
     removeDynamicModule () {
@@ -145,6 +163,18 @@ export default {
     },
 
     toggleDynamic () {
+      this.$store.commit('dynamic/TOGGLE')
+    },
+
+    addDynamicNestedModule () {
+      this.$store.registerModule(['dynamic', 'nested'], nested)
+    },
+
+    removeDynamicNestedModule () {
+      this.$store.unregisterModule(['dynamic', 'nested'])
+    },
+
+    toggleDynamicNested () {
       this.$store.commit('dynamic/TOGGLE')
     }
   }

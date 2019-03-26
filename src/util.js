@@ -516,7 +516,7 @@ export function sortByKey (state) {
 }
 
 export function set (object, path, value, cb = null) {
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   while (sections.length > 1) {
     object = object[sections.shift()]
   }
@@ -529,7 +529,7 @@ export function set (object, path, value, cb = null) {
 }
 
 export function get (object, path) {
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   for (let i = 0; i < sections.length; i++) {
     object = object[sections[i]]
     if (!object) {
@@ -544,7 +544,7 @@ export function has (object, path, parent = false) {
     return false
   }
 
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   const size = !parent ? 1 : 2
   while (sections.length > size) {
     object = object[sections.shift()]
