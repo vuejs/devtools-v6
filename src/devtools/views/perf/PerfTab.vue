@@ -9,16 +9,20 @@
           v-if="!$shared.recordPerf"
           v-tooltip="'Start benchmark'"
           icon-left="lens"
-          class="icon-button flat"
+          class="flat"
           @click="start()"
-        />
+        >
+          Start
+        </VueButton>
         <VueButton
           v-else
           v-tooltip="'Stop benchmark'"
           icon-left="lens"
-          class="icon-button flat stop-button"
+          class="flat stop-button"
           @click="stop()"
-        />
+        >
+          Stop
+        </VueButton>
 
         <VueSelect
           v-model="currentBenchmarkModel"
