@@ -41,7 +41,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     resetSnapshotCache()
   }
 
-  function resetSnapshotCache (force = true) {
+  function resetSnapshotCache () {
     stateSnapshots = [
       { index: -1, state: baseStateSnapshot }
     ]
@@ -225,6 +225,10 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     // Snapshot was already replayed
     if (stateSnapshot.index === index) {
       resultState = stateSnapshot.state
+
+      const state = parse(stateSnapshot.state, true)
+      updateSnapshotsVm(state)
+      store.replaceState(state)
     } else {
       const startMutation = mutations[stateSnapshot.index]
       if (startMutation) {
