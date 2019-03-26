@@ -236,7 +236,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       } else {
         tempRemovedModules = Object.keys(registeredModules)
       }
-      tempRemovedModules.sort((a, b) => b.length - a.length).forEach(m => {
+      tempRemovedModules.filter(m => get(store.state, m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
         origUnregisterModule(m.split('/'))
       })
 
