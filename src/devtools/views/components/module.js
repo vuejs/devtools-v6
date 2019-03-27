@@ -3,6 +3,8 @@ import Vue from 'vue'
 const state = {
   selected: null,
   inspectedInstance: {},
+  inspectedInstanceId: null,
+  loading: false,
   instances: [],
   instancesMap: {},
   expansionMap: {},
@@ -13,6 +15,8 @@ const state = {
 const getters = {
   totalCount: state => Object.keys(state.instancesMap).length
 }
+
+let inspectTime = null
 
 const mutations = {
   FLUSH (state, payload) {
@@ -43,11 +47,26 @@ const mutations = {
     if (process.env.NODE_ENV !== 'production') {
       Vue.nextTick(() => {
         console.log(`devtools render took ${window.performance.now() - start}ms.`)
+        if (inspectTime != null) {
+          console.log(`inspect component took ${window.performance.now() - inspectTime}ms.`)
+          inspectTime = null
+        }
       })
+    }
+
+    state.loading = false
+  },
+  INSPECT_INSTANCE (state, instance) {
+    state.inspectedInstanceId = instance.id
+    state.loading = true
+
+    if (process.env.NODE_ENV !== 'production') {
+      inspectTime = window.performance.now()
     }
   },
   RECEIVE_INSTANCE_DETAILS (state, instance) {
     state.inspectedInstance = Object.freeze(instance)
+    state.inspectedInstanceId = instance.id
     state.scrollToExpanded = null
   },
   TOGGLE_INSTANCE (state, { id, expanded, scrollTo = null } = {}) {

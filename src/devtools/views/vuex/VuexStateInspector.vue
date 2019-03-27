@@ -61,11 +61,11 @@
         v-if="$shared.snapshotLoading"
         class="state-info loading-vuex-state"
       >
-        <div class="label">Loading state...</div>
+        <div class="label">
+          Loading state...
+        </div>
 
-        <VueLoadingBar
-          :value="$shared.snapshotLoading.current / $shared.snapshotLoading.total"
-        />
+        <VueLoadingIndicator />
       </div>
       <div
         v-else-if="isOnlyMutationPayload"
@@ -73,7 +73,7 @@
       >
         <div class="label">
           <VueIcon
-            class="big"
+            class="medium"
             icon="cached"
           />
           <span>Recording state...</span>
@@ -171,7 +171,8 @@ export default {
     },
 
     isOnlyMutationPayload () {
-      return Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation
+      return (Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation) ||
+        Object.keys(this.inspectedState).length < 1
     },
 
     isActive () {
@@ -194,6 +195,17 @@ export default {
       },
       immediate: true
     }
+  },
+
+  mounted () {
+    bridge.on('vuex:mutation', this.onMutation)
+    if (this.isOnlyMutationPayload && this.$shared.vuexAutoload) {
+      this.loadState()
+    }
+  },
+
+  destroyed () {
+    bridge.off('vuex:mutation', this.onMutation)
   },
 
   methods: {
@@ -240,7 +252,13 @@ export default {
     loadState () {
       const history = this.filteredHistory
       this.inspect(history[history.length - 1])
-    }
+    },
+
+    onMutation: debounce(function () {
+      if (this.$shared.vuexAutoload) {
+        this.loadState()
+      }
+    }, 800)
   }
 }
 
@@ -260,13 +278,12 @@ function copyToClipboard (state) {
   flex-direction column
   box-center()
   min-height 140px
-  font-size 24px
+  font-size 16px
   margin 0 42px
 
   .label
     display flex
     align-items center
-    font-weight lighter
     color $blueishGrey
     margin-bottom 12px
 
@@ -274,8 +291,6 @@ function copyToClipboard (state) {
       margin-right 12px
       >>> svg
         fill @color
-  .vue-ui-loading-bar
-    width 100%
 
 .message
   margin-left 5px

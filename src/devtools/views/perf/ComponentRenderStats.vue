@@ -13,11 +13,11 @@
         </div>
       </ActionHeader>
 
-      <recycle-list
+      <RecycleScroller
         v-if="filteredItems"
         slot="scroll"
         :items="filteredItems"
-        :item-height="highDensity ? 22 : 34"
+        :item-size="highDensity ? 22 : 34"
         class="components"
         :class="{
           'high-density': highDensity
@@ -49,7 +49,7 @@
             </div>
           </div>
         </template>
-      </recycle-list>
+      </RecycleScroller>
     </ScrollPane>
 
     <ComponentRenderDetails

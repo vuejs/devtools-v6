@@ -14,7 +14,10 @@ export default class Bridge extends EventEmitter {
         this._emit(messages)
       }
     })
-    this._queue = []
+    this._batchingQueue = []
+    this._sendingQueue = []
+    this._receivingQueue = []
+    this._sending = false
     this._time = null
   }
 
@@ -26,11 +29,21 @@ export default class Bridge extends EventEmitter {
    */
 
   send (event, payload) {
-    if (this._time === null) {
-      this.wall.send([{ event, payload }])
+    if (Array.isArray(payload)) {
+      const lastIndex = payload.length - 1
+      payload.forEach((chunk, index) => {
+        this._send({
+          event,
+          _chunk: chunk,
+          last: index === lastIndex
+        })
+      })
+      this._flush()
+    } else if (this._time === null) {
+      this._send([{ event, payload }])
       this._time = Date.now()
     } else {
-      this._queue.push({
+      this._batchingQueue.push({
         event,
         payload
       })
@@ -55,17 +68,43 @@ export default class Bridge extends EventEmitter {
   }
 
   _flush () {
-    if (this._queue.length) this.wall.send(this._queue)
+    if (this._batchingQueue.length) this._send(this._batchingQueue)
     clearTimeout(this._timer)
-    this._queue = []
+    this._batchingQueue = []
     this._time = null
   }
 
   _emit (message) {
     if (typeof message === 'string') {
       this.emit(message)
+    } else if (message._chunk) {
+      this._receivingQueue.push(message._chunk)
+      if (message.last) {
+        this.emit(message.event, this._receivingQueue)
+        this._receivingQueue = []
+      }
     } else {
       this.emit(message.event, message.payload)
     }
+  }
+
+  _send (messages) {
+    this._sendingQueue.push(messages)
+    this._nextSend()
+  }
+
+  _nextSend () {
+    if (!this._sendingQueue.length || this._sending) return
+    this._sending = true
+    const messages = this._sendingQueue.shift()
+    try {
+      this.wall.send(messages)
+    } catch (err) {
+      if (err.message === 'Message length exceeded maximum allowed length.') {
+        this._sendingQueue.splice(0, 0, messages.map(message => [message]))
+      }
+    }
+    this._sending = false
+    requestAnimationFrame(() => this._nextSend())
   }
 }

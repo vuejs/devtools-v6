@@ -81,7 +81,10 @@ function connect (Vue) {
 
   bridge.on('scroll-to-instance', id => {
     const instance = findInstanceOrVnode(id)
-    instance && scrollIntoView(instance)
+    if (instance) {
+      scrollIntoView(instance)
+      highlight(instance)
+    }
   })
 
   bridge.on('filter-instances', _filter => {
@@ -125,10 +128,10 @@ function connect (Vue) {
 
   // vuex
   if (hook.store) {
-    initVuexBackend(hook, bridge)
+    initVuexBackend(hook, bridge, isLegacy)
   } else {
     hook.once('vuex:init', store => {
-      initVuexBackend(hook, bridge)
+      initVuexBackend(hook, bridge, isLegacy)
     })
   }
 
@@ -153,12 +156,14 @@ function connect (Vue) {
 
   bridge.log('backend ready.')
   bridge.send('ready', Vue.version)
-  console.log(
-    `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:transparent'
-  )
+  bridge.on('log-detected-vue', () => {
+    console.log(
+      `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
+      'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+      'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+      'background:transparent'
+    )
+  })
 
   setTimeout(() => {
     scan()
@@ -368,7 +373,7 @@ function capture (instance, index, list) {
     captureCount++
   }
 
-  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
+  if (instance.$options && instance.$options.abstract && instance._vnode && instance._vnode.componentInstance) {
     instance = instance._vnode.componentInstance
   }
 
@@ -430,7 +435,7 @@ function capture (instance, index, list) {
       .filter(Boolean)
   }
 
-  if (instance._vnode.children) {
+  if (instance._vnode && instance._vnode.children) {
     ret.children = ret.children.concat(
       flatten(instance._vnode.children.map(captureChild))
         .filter(Boolean)
@@ -640,7 +645,7 @@ function processProps (instance) {
 }
 
 function processAttrs (instance) {
-  return Object.entries(instance.$attrs).map(([key, value]) => {
+  return Object.entries(instance.$attrs || {}).map(([key, value]) => {
     return {
       type: '$attrs',
       key,

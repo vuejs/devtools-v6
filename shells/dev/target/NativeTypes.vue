@@ -3,7 +3,9 @@
     <p>Date: {{ date.toString() }} - Hours: {{ hours }} - Prototype: {{ date | prototypeString }}</p>
 
     <p>
-      <button @click="updateDate">Update Date</button>
+      <button @click="updateDate">
+        Update Date
+      </button>
     </p>
 
     <hr>
@@ -11,13 +13,19 @@
     <TestComponent ref="component" />
 
     <p>
-      <button @click="sendComponent()">Vuex mutation</button>
+      <button @click="sendComponent()">
+        Vuex mutation
+      </button>
       <button
         style="background: red; color: white;"
         @click="createLargeArray()"
       >
         Create large array
       </button>
+    </p>
+
+    <p>
+      Large array size: {{ largeArray.length }}
     </p>
 
     <h3>Set</h3>
@@ -27,9 +35,15 @@
     <pre>{{ mapDisplay() }}</pre>
 
     <p>
-      <button @click="testVuexSet()">Vuex Set</button>
-      <button @click="testVuexMap()">Vuex Map</button>
-      <button @click="forceRefresh()">Refresh</button>
+      <button @click="testVuexSet()">
+        Vuex Set
+      </button>
+      <button @click="testVuexMap()">
+        Vuex Map
+      </button>
+      <button @click="forceRefresh()">
+        Refresh
+      </button>
     </p>
   </div>
 </template>
@@ -105,9 +119,9 @@ export default {
       'html <b>key</b>': (h, t, m, l) => {},
       proxy1,
       sym: Symbol('test'),
-      multiLineParameterFunction: function(a,
-                                  b,
-                                  c) {},
+      multiLineParameterFunction: function (a,
+        b,
+        c) {},
       veryLongText
     }
   },
@@ -155,11 +169,11 @@ export default {
     },
 
     setDisplay () {
-      return Array.from(this.set)
+      if (this.set) return Array.from(this.set)
     },
 
     mapDisplay () {
-      return [...this.map]
+      if (this.map) return [...this.map]
     },
 
     forceRefresh () {

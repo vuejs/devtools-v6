@@ -60,6 +60,7 @@ export const SPECIAL_TOKENS = {
 }
 
 export const MAX_STRING_SIZE = 10000
+export const MAX_ARRAY_SIZE = 5000
 
 export function specialTokenToString (value) {
   if (value === null) {
@@ -120,7 +121,23 @@ export function stringify (data) {
 function replacer (key) {
   const val = this[key]
   const type = typeof val
-  if (type === 'undefined') {
+  if (Array.isArray(val)) {
+    const l = val.length
+    if (l > MAX_ARRAY_SIZE) {
+      return {
+        _isArray: true,
+        length: l,
+        items: val.slice(0, MAX_ARRAY_SIZE)
+      }
+    }
+    return val
+  } else if (typeof val === 'string') {
+    if (val.length > MAX_STRING_SIZE) {
+      return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
+    } else {
+      return val
+    }
+  } else if (type === 'undefined') {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
@@ -131,14 +148,15 @@ function replacer (key) {
   } else if (type === 'symbol') {
     return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
-    if (val instanceof Map) {
+    const proto = Object.prototype.toString.call(val)
+    if (proto === '[object Map]') {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
-    } else if (val instanceof Set) {
+    } else if (proto === '[object Set]') {
       return encodeCache.cache(val, () => getCustomSetDetails(val))
-    } else if (val instanceof RegExp) {
+    } else if (proto === '[object RegExp]') {
       // special handling of native type
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
-    } else if (val instanceof Date) {
+    } else if (proto === '[object Date]') {
       return `[native Date ${Date.prototype.toString.call(val)}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
@@ -151,8 +169,6 @@ function replacer (key) {
     }
   } else if (Number.isNaN(val)) {
     return NAN
-  } else if (typeof val === 'string' && val.length > MAX_STRING_SIZE) {
-    return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
   }
   return sanitize(val)
 }
@@ -500,7 +516,7 @@ export function sortByKey (state) {
 }
 
 export function set (object, path, value, cb = null) {
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   while (sections.length > 1) {
     object = object[sections.shift()]
   }
@@ -513,7 +529,7 @@ export function set (object, path, value, cb = null) {
 }
 
 export function get (object, path) {
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   for (let i = 0; i < sections.length; i++) {
     object = object[sections[i]]
     if (!object) {
@@ -524,7 +540,11 @@ export function get (object, path) {
 }
 
 export function has (object, path, parent = false) {
-  const sections = path.split('.')
+  if (typeof object === 'undefined') {
+    return false
+  }
+
+  const sections = Array.isArray(path) ? path : path.split('.')
   const size = !parent ? 1 : 2
   while (sections.length > size) {
     object = object[sections.shift()]

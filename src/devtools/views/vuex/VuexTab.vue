@@ -1,7 +1,10 @@
 <template>
   <div>
     <split-pane v-if="hasVuex">
-      <vuex-history slot="left" />
+      <vuex-history
+        v-if="defer(3)"
+        slot="left"
+      />
       <vuex-state-inspector slot="right" />
     </split-pane>
     <div
@@ -16,10 +19,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import Defer from 'mixins/defer'
+
 import SplitPane from 'components/SplitPane.vue'
 import VuexHistory from './VuexHistory.vue'
 import VuexStateInspector from './VuexStateInspector.vue'
-import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -27,6 +32,10 @@ export default {
     VuexHistory,
     VuexStateInspector
   },
+
+  mixins: [
+    Defer()
+  ],
 
   computed: mapState('vuex', {
     hasVuex: state => state.hasVuex

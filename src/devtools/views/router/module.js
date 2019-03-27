@@ -1,7 +1,9 @@
-import storage from '../../storage'
+import storage from 'src/storage'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
+
+let uid = 0
 
 const state = {
   enabled: enabled == null ? true : enabled,
@@ -14,6 +16,7 @@ const state = {
 
 const mutations = {
   'INIT' (state, payload) {
+    payload.current.id = uid++
     state.instances = []
     state.routeChanges = [payload.current]
     state.inspectedIndex = -1
@@ -25,6 +28,7 @@ const mutations = {
     state.inspectedIndex = -1
   },
   'CHANGED' (state, payload) {
+    payload.id = uid++
     state.routeChanges.push(payload)
     if (!state.filter) {
       state.inspectedIndex = state.routeChanges.length - 1

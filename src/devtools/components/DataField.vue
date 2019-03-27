@@ -172,7 +172,7 @@
       class="children"
     >
       <data-field
-        v-for="subField in limitedSubFields"
+        v-for="subField in formattedSubFields"
         :key="subField.key"
         :field="subField"
         :parent-field="field"
@@ -184,14 +184,14 @@
         :force-collapse="forceCollapse"
         :is-state-field="isStateField"
       />
-      <span
-        v-if="formattedSubFields.length > limit"
+      <VueButton
+        v-if="subFieldCount > limit"
+        v-tooltip="'Show more'"
         :style="{ marginLeft: depthMargin + 'px' }"
-        class="more"
-        @click="limit += 10"
-      >
-        ...
-      </span>
+        icon-left="more_horiz"
+        class="icon-button flat more"
+        @click="showMoreSubfields()"
+      />
       <data-field
         v-if="isSubfieldsEditable && addingValue"
         ref="newField"
@@ -273,7 +273,7 @@ export default {
   data () {
     return {
       contextMenuOpen: false,
-      limit: Array.isArray(this.field.value) ? 10 : Infinity,
+      limit: 20,
       expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
   },
@@ -309,7 +309,7 @@ export default {
         } else {
           return 'string'
         }
-      } else if (Array.isArray(value)) {
+      } else if (Array.isArray(value) || (value && value._isArray)) {
         return 'array'
       } else if (isPlainObject(value)) {
         return 'plain-object'
@@ -367,7 +367,7 @@ export default {
       }
     },
 
-    formattedSubFields () {
+    rawValue () {
       let value = this.field.value
 
       // CustomValue API
@@ -378,8 +378,17 @@ export default {
         value = value._custom.value
       }
 
+      if (value && value._isArray) {
+        value = value.items
+      }
+      return { value, inherit }
+    },
+
+    formattedSubFields () {
+      let { value, inherit } = this.rawValue
+
       if (Array.isArray(value)) {
-        value = value.map((item, i) => ({
+        return value.slice(0, this.limit).map((item, i) => ({
           key: i,
           value: item,
           ...inherit
@@ -394,11 +403,13 @@ export default {
           value = sortByKey(value)
         }
       }
-      return value
+
+      return value.slice(0, this.limit)
     },
 
-    limitedSubFields () {
-      return this.formattedSubFields.slice(0, this.limit)
+    subFieldCount () {
+      const { value } = this.rawValue
+      return subFieldCount(value)
     },
 
     valueTooltip () {
@@ -430,6 +441,7 @@ export default {
           return 'Invalid key'
         }
       }
+      return ''
     },
 
     valueClass () {
@@ -504,6 +516,10 @@ export default {
       this.$_contextMenuTimer = setTimeout(() => {
         this.contextMenuOpen = false
       }, 4000)
+    },
+
+    showMoreSubfields () {
+      this.limit += 20
     }
   }
 }
@@ -670,14 +686,6 @@ export default {
   &:not(:last-child)
     margin-bottom 4px
 
-.more
-  cursor pointer
-  display inline-block
-  border-radius 4px
-  padding 0 4px 4px
-  &:hover
-    background-color #eee
-
 .edit-input
   font-family Menlo, Consolas, monospace
   border solid 1px $green
@@ -699,4 +707,11 @@ export default {
   .vue-ui-button
     display block
     width 100%
+
+.more
+  width 20px
+  height @width
+  >>> .vue-ui-icon
+    width 16px
+    height @width
 </style>

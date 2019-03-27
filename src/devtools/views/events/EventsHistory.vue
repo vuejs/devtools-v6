@@ -37,10 +37,10 @@
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <recycle-list
+    <RecycleScroller
       slot="scroll"
       :items="filteredEvents"
-      :item-height="highDensity ? 22 : 34"
+      :item-size="highDensity ? 22 : 34"
       class="history"
       :class="{
         'high-density': highDensity
@@ -71,7 +71,7 @@
           <span class="time">{{ event.timestamp | formatTime }}</span>
         </div>
       </template>
-    </recycle-list>
+    </RecycleScroller>
   </scroll-pane>
 </template>
 
@@ -169,7 +169,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.recycle-list
+.vue-recycle-scroller
   height 100%
 
 .no-events

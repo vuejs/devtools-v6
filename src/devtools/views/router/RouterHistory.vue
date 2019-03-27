@@ -32,10 +32,10 @@
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <recycle-list
+    <RecycleScroller
       slot="scroll"
       :items="filteredRoutes"
-      :item-height="highDensity ? 22 : 34"
+      :item-size="highDensity ? 22 : 34"
       class="history"
       :class="{
         'high-density': highDensity
@@ -54,7 +54,7 @@
           class="entry list-item"
           :class="{ active: inspectedIndex === index }"
           :data-active="active"
-          @click="inspect(filteredRoutes.indexOf(route))"
+          @click="inspect(routeChanges.indexOf(route))"
         >
           <span class="route-name">{{ route.to.path }}</span>
           <span class="time">{{ route.timestamp | formatTime }}</span>
@@ -72,7 +72,7 @@
           </span>
         </div>
       </template>
-    </recycle-list>
+    </RecycleScroller>
   </scroll-pane>
 </template>
 
@@ -124,7 +124,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.recycle-list
+.vue-recycle-scroller
   height 100%
 
 .no-routes

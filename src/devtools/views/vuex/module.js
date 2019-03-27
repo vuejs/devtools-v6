@@ -3,12 +3,13 @@ import * as actions from './actions'
 import { snapshotsCache } from './cache'
 import SharedData from 'src/shared-data'
 
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
+
+let uid = 0
 
 const state = {
   hasVuex: false,
-  initial: null,
   base: null, // type Snapshot = { state: {}, getters: {} }
   inspectedIndex: -1,
   activeIndex: -1,
@@ -23,13 +24,13 @@ const state = {
 }
 
 const mutations = {
-  'INIT' (state, snapshot) {
-    state.initial = state.base = snapshot
+  'INIT' (state) {
     state.hasVuex = true
     reset(state)
   },
 
   'RECEIVE_MUTATION' (state, entry) {
+    entry.id = uid++
     state.history.push(entry)
     if (!state.filter) {
       state.inspectedIndex = state.activeIndex = state.history.length - 1

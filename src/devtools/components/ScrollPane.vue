@@ -4,12 +4,23 @@
       <slot name="header" />
     </div>
     <div
+      v-if="defer(2)"
       class="scroll"
     >
       <slot name="scroll" />
     </div>
   </div>
 </template>
+
+<script>
+import Defer from 'mixins/defer'
+
+export default {
+  mixins: [
+    Defer()
+  ]
+}
+</script>
 
 <style lang="stylus" scoped>
 .scroll-pane
@@ -21,7 +32,7 @@
   flex 1
   overflow auto
   &,
-  >>> .recycle-list
+  >>> .vue-recycle-scroller
     .vue-ui-dark-mode &::-webkit-scrollbar
       background: $dark-background-color
       border-left: 1px solid $dark-border-color

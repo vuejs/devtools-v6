@@ -98,7 +98,35 @@ export function installHook (target) {
 
   hook.once('vuex:init', store => {
     hook.store = store
-    hook.initialStore = clone(store)
+    hook.initialStore = {
+      state: clone(store.state),
+      getters: store.getters
+    }
+    // Dynamic modules
+    if (store.registerModule) {
+      hook.storeModules = []
+      const origRegister = store.registerModule.bind(store)
+      store.registerModule = (path, module, options) => {
+        if (typeof path === 'string') path = [path]
+        hook.storeModules.push({ path, module, options })
+        origRegister(path, module, options)
+      }
+      const origUnregister = store.unregisterModule.bind(store)
+      store.unregisterModule = (path) => {
+        if (typeof path === 'string') path = [path]
+        const key = path.join('/')
+        const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
+        if (index !== -1) hook.storeModules.splice(0, 1)
+        origUnregister(path)
+      }
+      hook.flushStoreModules = () => {
+        store.registerModule = origRegister
+        store.unregisterModule = origUnregister
+        return hook.storeModules
+      }
+    } else {
+      hook.flushStoreModules = () => []
+    }
   })
 
   Object.defineProperty(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
@@ -145,7 +173,7 @@ export function installHook (target) {
     var allParents = []
     var allChildren = []
 
-    var useBuffer = typeof Buffer !== 'undefined'
+    var useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
 
     if (typeof circular === 'undefined') { circular = true }
 
@@ -233,6 +261,11 @@ export function installHook (target) {
       for (var i in parent) {
         var attrs = Object.getOwnPropertyDescriptor(parent, i)
         if (attrs) {
+          if (attrs.hasOwnProperty('get') && attrs.get.name === 'computedGetter') {
+            Object.defineProperty(child, i, attrs)
+            continue
+          }
+
           child[i] = _clone(parent[i], depth - 1)
         }
       }

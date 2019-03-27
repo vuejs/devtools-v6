@@ -18,13 +18,13 @@ export default class ComponentSelector {
    */
   startSelecting () {
     if (!isBrowser) return
-    document.body.addEventListener('mouseover', this.elementMouseOver, true)
-    document.body.addEventListener('click', this.elementClicked, true)
-    document.body.addEventListener('mouseout', this.cancelEvent, true)
-    document.body.addEventListener('mouseenter', this.cancelEvent, true)
-    document.body.addEventListener('mouseleave', this.cancelEvent, true)
-    document.body.addEventListener('mousedown', this.cancelEvent, true)
-    document.body.addEventListener('mouseup', this.cancelEvent, true)
+    window.addEventListener('mouseover', this.elementMouseOver, true)
+    window.addEventListener('click', this.elementClicked, true)
+    window.addEventListener('mouseout', this.cancelEvent, true)
+    window.addEventListener('mouseenter', this.cancelEvent, true)
+    window.addEventListener('mouseleave', this.cancelEvent, true)
+    window.addEventListener('mousedown', this.cancelEvent, true)
+    window.addEventListener('mouseup', this.cancelEvent, true)
   }
 
   /**
@@ -32,13 +32,13 @@ export default class ComponentSelector {
    */
   stopSelecting () {
     if (!isBrowser) return
-    document.body.removeEventListener('mouseover', this.elementMouseOver, true)
-    document.body.removeEventListener('click', this.elementClicked, true)
-    document.body.removeEventListener('mouseout', this.cancelEvent, true)
-    document.body.removeEventListener('mouseenter', this.cancelEvent, true)
-    document.body.removeEventListener('mouseleave', this.cancelEvent, true)
-    document.body.removeEventListener('mousedown', this.cancelEvent, true)
-    document.body.removeEventListener('mouseup', this.cancelEvent, true)
+    window.removeEventListener('mouseover', this.elementMouseOver, true)
+    window.removeEventListener('click', this.elementClicked, true)
+    window.removeEventListener('mouseout', this.cancelEvent, true)
+    window.removeEventListener('mouseenter', this.cancelEvent, true)
+    window.removeEventListener('mouseleave', this.cancelEvent, true)
+    window.removeEventListener('mousedown', this.cancelEvent, true)
+    window.removeEventListener('mouseup', this.cancelEvent, true)
 
     unHighlight()
   }
@@ -70,6 +70,8 @@ export default class ComponentSelector {
 
     if (this.selectedInstance) {
       this.bridge.send('inspect-instance', this.selectedInstance.__VUE_DEVTOOLS_UID__)
+    } else {
+      this.bridge.send('stop-component-selector')
     }
 
     this.stopSelecting()

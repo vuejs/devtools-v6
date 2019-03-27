@@ -1,10 +1,12 @@
-import storage from '../../storage'
+import storage from 'src/storage'
 import { classify } from 'src/util'
 import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
+
+let uid = 0
 
 const state = {
   enabled: enabled == null ? true : enabled,
@@ -16,6 +18,7 @@ const state = {
 
 const mutations = {
   'RECEIVE_EVENT' (state, payload) {
+    payload.id = uid++
     state.events.push(payload)
     if (!state.filter) {
       state.inspectedIndex = state.events.length - 1

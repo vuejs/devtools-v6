@@ -47,10 +47,10 @@
         <span>{{ $shared.recordVuex ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <recycle-list
+    <RecycleScroller
       slot="scroll"
-      :items="filter ? filteredHistory : [{}].concat(filteredHistory)"
-      :item-height="highDensity ? 22 : 34"
+      :items="filter ? filteredHistory : [{ id: -1 }].concat(filteredHistory)"
+      :item-size="highDensity ? 22 : 34"
       class="history"
       :class="{
         'high-density': highDensity
@@ -152,7 +152,7 @@
           >inspected</span>
         </div>
       </template>
-    </recycle-list>
+    </RecycleScroller>
   </scroll-pane>
 </template>
 
@@ -277,7 +277,7 @@ export default {
 <style lang="stylus" scoped>
 $inspected_color = #af90d5
 
-.recycle-list
+.vue-recycle-scroller
   height 100%
 
 .entry

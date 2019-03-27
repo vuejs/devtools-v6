@@ -967,9 +967,10 @@ electron-download@^3.0.1:
     semver "^5.3.0"
     sumchecker "^1.2.0"
 
-electron@1.7.11:
-  version "1.7.11"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-1.7.11.tgz#993b6aa79e0e79a7cfcc369f4c813fbd9a0b08d9"
+electron@1.7.16:
+  version "1.7.16"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-1.7.16.tgz#40e6b5553e3a87ce7ea52eb05f7926bc40cab11c"
+  integrity sha512-k17+2K3hny6g1etWMkWvzEL06yapZGpqG66O3e5vxfzeHT3FgqrNa3xRF7znjaqvWQmmEdGFdSktQADjUZ0gog==
   dependencies:
     "@types/node" "^7.0.18"
     electron-download "^3.0.1"
