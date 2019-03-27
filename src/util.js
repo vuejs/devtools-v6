@@ -29,8 +29,6 @@ export const camelize = cached((str) => {
 
 const kebabizeRE = /([a-z0-9])([A-Z])/g
 export const kebabize = cached((str) => {
-  console.log('kebabize', str)
-
   return str && str
     .replace(kebabizeRE, (_, lowerCaseCharacter, upperCaseLetter) => {
       return `${lowerCaseCharacter}-${upperCaseLetter}`
