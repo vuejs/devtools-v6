@@ -266,12 +266,12 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         const mutation = mutations[i]
         if (mutation.registerModule) {
           const key = mutation.payload.path.join('/')
-          const registeredModule = registeredModules[key]
+          const moduleInfo = allTimeModules[key]
           tempAddedModules.push(key)
-          origRegisterModule(registeredModule.path, {
-            ...registeredModule.module,
-            state: parse(registeredModule.state, true)
-          }, registeredModule.options)
+          origRegisterModule(moduleInfo.path, {
+            ...moduleInfo.module,
+            state: parse(moduleInfo.state, true)
+          }, moduleInfo.options)
           updateSnapshotsVm(store.state)
         } else if (mutation.unregisterModule && get(store.state, mutation.payload.path) != null) {
           const path = mutation.payload.path
