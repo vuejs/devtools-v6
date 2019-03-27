@@ -59,6 +59,9 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     if (!state) {
       state = typeof module.state === 'function' ? module.state() : module.state
     }
+    if (!state) {
+      state = {}
+    }
 
     const key = path.join('/')
     registeredModules[key] = allTimeModules[key] = {
