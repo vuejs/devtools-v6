@@ -83,7 +83,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         options
       }, {
         registerModule: true
-      })
+      }, false)
     }
 
     return moduleInfo
@@ -110,7 +110,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
           path
         }, {
           unregisterModule: true
-        })
+        }, false)
       }
 
       origUnregisterModule(path)
@@ -137,14 +137,14 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     addMutation(type, payload)
   })
 
-  function addMutation (type, payload, options = {}) {
+  function addMutation (type, payload, options = {}, stringifyPayload = true) {
     const index = mutations.length
 
     const payloadData = stringify(payload)
 
     mutations.push({
       type,
-      payload: payloadData,
+      payload: stringifyPayload ? payloadData : payload,
       index,
       handlers: store._mutations[type],
       registeredModules: Object.keys(registeredModules),
