@@ -65,6 +65,12 @@
         Add dynamic nested module
       </button>
       <button
+        :disabled="$store.state.dynamic && $store.state.dynamic.nested"
+        @click="addDynamicNestedModule(true)"
+      >
+        Add dynamic nested module (force)
+      </button>
+      <button
         :disabled="!$store.state.dynamic || !$store.state.dynamic.nested"
         @click="toggleDynamicNested()"
       >
@@ -75,6 +81,9 @@
         @click="removeDynamicNestedModule()"
       >
         Remove dynamic nested module
+      </button>
+      <button @click="addWrongModule()">
+        Register wrong module
       </button>
     </div>
 
@@ -110,6 +119,10 @@ export default {
       }
     })
     console.log('registered instant')
+
+    this.addDynamicNestedModule(true)
+    this.removeDynamicNestedModule()
+    this.removeDynamicModule()
   },
   computed: {
     test () { return 1 },
@@ -166,7 +179,10 @@ export default {
       this.$store.commit('dynamic/TOGGLE')
     },
 
-    addDynamicNestedModule () {
+    addDynamicNestedModule (force = false) {
+      if (force) {
+        this.$store.registerModule(['dynamic'], {})
+      }
       this.$store.registerModule(['dynamic', 'nested'], nested)
     },
 
@@ -176,6 +192,12 @@ export default {
 
     toggleDynamicNested () {
       this.$store.commit('dynamic/TOGGLE')
+    },
+
+    addWrongModule () {
+      this.$store.registerModule(['wrong'], {
+        a: 1, b: 2, c: 3
+      })
     }
   }
 }
