@@ -102,6 +102,11 @@ export function installHook (target) {
       state: clone(store.state),
       getters: store.getters
     }
+    const origReplaceState = store.replaceState.bind(store)
+    store.replaceState = state => {
+      hook.initialStore.state = clone(state)
+      origReplaceState(state)
+    }
     // Dynamic modules
     if (store.registerModule) {
       hook.storeModules = []
@@ -124,10 +129,14 @@ export function installHook (target) {
       hook.flushStoreModules = () => {
         store.registerModule = origRegister
         store.unregisterModule = origUnregister
+        store.replaceState = origReplaceState
         return hook.storeModules
       }
     } else {
-      hook.flushStoreModules = () => []
+      hook.flushStoreModules = () => {
+        store.replaceState = origReplaceState
+        return []
+      }
     }
   })
 
