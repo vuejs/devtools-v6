@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
