@@ -3,6 +3,8 @@ import SharedData from 'src/shared-data'
 import { set, get } from '../util'
 import Vue from 'vue'
 
+const isProd = process.env.NODE_ENV === 'production'
+
 export function initVuexBackend (hook, bridge, isLegacy) {
   const store = hook.store
 
@@ -64,7 +66,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     }
 
     const key = path.join('/')
-    registeredModules[key] = allTimeModules[key] = {
+    const moduleInfo = registeredModules[key] = allTimeModules[key] = {
       path,
       module,
       options: {
@@ -83,6 +85,8 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         registerModule: true
       })
     }
+
+    return moduleInfo
   }
 
   let origRegisterModule, origUnregisterModule
@@ -92,6 +96,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     store.registerModule = (path, module, options) => {
       addModule(path, module, options)
       origRegisterModule(path, module, options)
+      if (!isProd) console.log('register module', path)
     }
 
     origUnregisterModule = store.unregisterModule.bind(store)
@@ -109,6 +114,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       }
 
       origUnregisterModule(path)
+      if (!isProd) console.log('unregister module', path)
     }
   } else {
     origRegisterModule = origUnregisterModule = () => {}
@@ -117,7 +123,8 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   bridge.send('vuex:init')
 
   earlyModules.forEach(({ path, module, options }) => {
-    addModule(path, module, options)
+    const moduleInfo = addModule(path, module, options)
+    moduleInfo.early = true
   })
 
   // deal with multiple backend injections
@@ -251,8 +258,10 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       } else {
         tempRemovedModules = Object.keys(registeredModules)
       }
+      tempRemovedModules = tempRemovedModules.filter(m => !registeredModules[m].early)
       tempRemovedModules.filter(m => get(store.state, m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
         origUnregisterModule(m.split('/'))
+        if (!isProd) console.log('before replay unregister', m)
       })
 
       const state = parse(stateSnapshot.state, true)
@@ -267,18 +276,22 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         if (mutation.registerModule) {
           const key = mutation.payload.path.join('/')
           const moduleInfo = allTimeModules[key]
-          tempAddedModules.push(key)
-          origRegisterModule(moduleInfo.path, {
-            ...moduleInfo.module,
-            state: parse(moduleInfo.state, true)
-          }, moduleInfo.options)
-          updateSnapshotsVm(store.state)
+          if (!moduleInfo.early) {
+            tempAddedModules.push(key)
+            origRegisterModule(moduleInfo.path, {
+              ...moduleInfo.module,
+              state: parse(moduleInfo.state, true)
+            }, moduleInfo.options)
+            updateSnapshotsVm(store.state)
+            if (!isProd) console.log('replay register module', moduleInfo)
+          }
         } else if (mutation.unregisterModule && get(store.state, mutation.payload.path) != null) {
           const path = mutation.payload.path
           const index = tempAddedModules.indexOf(path.join('/'))
           if (index !== -1) tempAddedModules.splice(index, 1)
           origUnregisterModule(path)
           updateSnapshotsVm(store.state)
+          if (!isProd) console.log('replay unregister module', path)
         } else if (mutation.handlers) {
           store._committing = true
           if (Array.isArray(mutation.handlers)) {
@@ -313,6 +326,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     // Restore user state
     tempAddedModules.sort((a, b) => b.length - a.length).forEach(m => {
       origUnregisterModule(m.split('/'))
+      if (!isProd) console.log('after replay unregister', m)
     })
     tempRemovedModules.sort((a, b) => a.length - b.length).forEach(m => {
       const { path, module, options, state } = registeredModules[m]
@@ -320,6 +334,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         ...module,
         state: parse(state, true)
       }, options)
+      if (!isProd) console.log('after replay register', m)
     })
     store._vm = originalVm
 
