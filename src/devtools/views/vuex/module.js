@@ -26,6 +26,7 @@ const state = {
 const mutations = {
   'INIT' (state) {
     state.hasVuex = true
+    snapshotsCache.reset()
     reset(state)
   },
 

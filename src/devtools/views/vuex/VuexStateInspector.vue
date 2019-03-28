@@ -202,10 +202,13 @@ export default {
     if (this.isOnlyMutationPayload && this.$shared.vuexAutoload) {
       this.loadState()
     }
+
+    bridge.on('vuex:init', this.onVuexInit)
   },
 
   destroyed () {
     bridge.off('vuex:mutation', this.onMutation)
+    bridge.off('vuex:init', this.onVuexInit)
   },
 
   methods: {
@@ -258,7 +261,13 @@ export default {
       if (this.$shared.vuexAutoload) {
         this.loadState()
       }
-    }, 800)
+    }, 800),
+
+    onVuexInit () {
+      if (this.$shared.vuexAutoload) {
+        this.loadState()
+      }
+    }
   }
 }
 
