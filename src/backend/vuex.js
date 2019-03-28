@@ -301,7 +301,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
             if (Array.isArray(mutation.handlers)) {
               mutation.handlers.forEach(handler => handler(payload))
             } else {
-              if (isLegacy) {
+              if (isLegacy || SharedData.vuex1) {
                 // Vuex 1
                 mutation.handlers(store.state, payload)
               } else {

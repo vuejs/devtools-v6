@@ -13,7 +13,8 @@ const internalSharedData = {
   recordPerf: false,
   editableProps: false,
   logDetected: true,
-  vuexAutoload: false
+  vuexAutoload: false,
+  vuex1: false
 }
 
 const persisted = [
@@ -23,7 +24,8 @@ const persisted = [
   'recordVuex',
   'editableProps',
   'logDetected',
-  'vuexAutoload'
+  'vuexAutoload',
+  'vuex1'
 ]
 
 // ---- INTERNALS ---- //

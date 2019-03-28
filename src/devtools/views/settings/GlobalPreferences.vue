@@ -91,5 +91,20 @@
         May impact performance or cause crashes
       </template>
     </VueFormField>
+
+    <VueFormField
+      title="Vuex Legacy"
+    >
+      <VueSwitch v-model="$shared.vuex1">
+        Enable compatibility mode
+      </VueSwitch>
+      <template #subtitle>
+        <VueIcon
+          icon="warning"
+          class="medium"
+        />
+        If you use Vuex 1.x, enable this option
+      </template>
+    </VueFormField>
   </div>
 </template>
