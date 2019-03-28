@@ -110,14 +110,16 @@ export function installHook (target) {
         if (typeof path === 'string') path = [path]
         hook.storeModules.push({ path, module, options })
         origRegister(path, module, options)
+        if (process.env.NODE_ENV !== 'production') console.log('early register module', path)
       }
       const origUnregister = store.unregisterModule.bind(store)
       store.unregisterModule = (path) => {
         if (typeof path === 'string') path = [path]
         const key = path.join('/')
         const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
-        if (index !== -1) hook.storeModules.splice(0, 1)
+        if (index !== -1) hook.storeModules.splice(index, 1)
         origUnregister(path)
+        if (process.env.NODE_ENV !== 'production') console.log('early unregister module', path)
       }
       hook.flushStoreModules = () => {
         store.registerModule = origRegister
