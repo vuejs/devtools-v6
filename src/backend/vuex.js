@@ -37,8 +37,8 @@ export function initVuexBackend (hook, bridge, isLegacy) {
 
   updateSnapshotsVm()
 
-  function reset () {
-    baseStateSnapshot = getStateSnapshot(hook.initialStore)
+  function reset (stateSnapshot = null) {
+    baseStateSnapshot = stateSnapshot || getStateSnapshot(hook.initialStore)
     mutations = []
     resetSnapshotCache()
   }
@@ -174,7 +174,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   })
 
   bridge.on('vuex:commit-all', () => {
-    reset()
+    reset(lastState)
   })
 
   bridge.on('vuex:revert-all', () => {
