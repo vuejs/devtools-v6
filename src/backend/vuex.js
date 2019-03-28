@@ -140,9 +140,11 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   function addMutation (type, payload, options = {}) {
     const index = mutations.length
 
+    const payloadData = stringify(payload)
+
     mutations.push({
       type,
-      payload,
+      payload: payloadData,
       index,
       handlers: store._mutations[type],
       registeredModules: Object.keys(registeredModules),
@@ -152,7 +154,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     bridge.send('vuex:mutation', {
       mutation: {
         type: type,
-        payload: stringify(payload),
+        payload: payloadData,
         index
       },
       timestamp: Date.now()
@@ -294,15 +296,20 @@ export function initVuexBackend (hook, bridge, isLegacy) {
           if (!isProd) console.log('replay unregister module', path)
         } else if (mutation.handlers) {
           store._committing = true
-          if (Array.isArray(mutation.handlers)) {
-            mutation.handlers.forEach(handler => handler(mutation.payload))
-          } else {
-            if (isLegacy) {
-              // Vuex 1
-              mutation.handlers(store.state, mutation.payload)
+          try {
+            const payload = parse(mutation.payload, true)
+            if (Array.isArray(mutation.handlers)) {
+              mutation.handlers.forEach(handler => handler(payload))
             } else {
-              mutation.handlers(mutation.payload)
+              if (isLegacy) {
+                // Vuex 1
+                mutation.handlers(store.state, payload)
+              } else {
+                mutation.handlers(payload)
+              }
             }
+          } catch (e) {
+            throw e
           }
           store._committing = false
         }
