@@ -74,9 +74,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         ...options,
         preserveState: false
       },
-      state: clone(state, {
-        includeNonEnumerable: true
-      })
+      state: clone(state)
     }
 
     if (SharedData.recordVuex) {
@@ -145,9 +143,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
 
     mutations.push({
       type,
-      payload: clone(payload, {
-        includeNonEnumerable: true
-      }),
+      payload: clone(payload),
       index,
       handlers: store._mutations[type],
       registeredModules: Object.keys(registeredModules),
