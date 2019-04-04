@@ -19,7 +19,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     })
   }
 
-  const getStateSnapshot = (_store = store) => stringify(_store.state)
+  const getStateSnapshot = (_store = store) => clone(_store.state)
 
   let baseStateSnapshot, stateSnapshots, mutations, lastState
   let registeredModules = {}
@@ -163,7 +163,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   // devtool -> application
   bridge.on('vuex:travel-to-state', ({ index, apply }) => {
     const snapshot = replayMutations(index)
-    const { state } = parse(snapshot, true)
+    const { state } = clone(snapshot)
     bridge.send('vuex:inspected-state', {
       index,
       snapshot
@@ -249,7 +249,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     if (stateSnapshot.index === index) {
       resultState = stateSnapshot.state
 
-      const state = parse(stateSnapshot.state, true)
+      const state = clone(stateSnapshot.state)
       updateSnapshotsVm(state)
       store.replaceState(state)
     } else {
@@ -265,7 +265,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         if (!isProd) console.log('before replay unregister', m)
       })
 
-      const state = parse(stateSnapshot.state, true)
+      const state = clone(stateSnapshot.state)
       updateSnapshotsVm(state)
       store.replaceState(state)
 
@@ -377,7 +377,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     if (stateSnapshot) {
       originalVm = store._vm
       store._vm = snapshotsVm
-      store.replaceState(parse(stateSnapshot, true))
+      store.replaceState(clone(stateSnapshot))
     }
 
     const result = stringify({
