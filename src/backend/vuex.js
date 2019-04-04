@@ -2,6 +2,7 @@ import { stringify, parse } from 'src/util'
 import SharedData from 'src/shared-data'
 import { set, get } from '../util'
 import Vue from 'vue'
+import clone from './clone'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -83,7 +84,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         options
       }, {
         registerModule: true
-      }, false)
+      })
     }
 
     return moduleInfo
@@ -110,7 +111,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
           path
         }, {
           unregisterModule: true
-        }, false)
+        })
       }
 
       origUnregisterModule(path)
@@ -137,14 +138,14 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     addMutation(type, payload)
   })
 
-  function addMutation (type, payload, options = {}, stringifyPayload = true) {
+  function addMutation (type, payload, options = {}) {
     const index = mutations.length
-
-    const payloadData = stringify(payload)
 
     mutations.push({
       type,
-      payload: stringifyPayload ? payloadData : payload,
+      payload: clone(payload, {
+        includeNonEnumerable: true
+      }),
       index,
       handlers: store._mutations[type],
       registeredModules: Object.keys(registeredModules),
@@ -154,7 +155,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     bridge.send('vuex:mutation', {
       mutation: {
         type: type,
-        payload: payloadData,
+        payload: stringify(payload),
         index
       },
       timestamp: Date.now()
@@ -297,7 +298,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         } else if (mutation.handlers) {
           store._committing = true
           try {
-            const payload = parse(mutation.payload, true)
+            const payload = mutation.payload
             if (Array.isArray(mutation.handlers)) {
               mutation.handlers.forEach(handler => handler(payload))
             } else {
