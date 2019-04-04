@@ -74,7 +74,9 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         ...options,
         preserveState: false
       },
-      state: stringify(state)
+      state: clone(state, {
+        includeNonEnumerable: true
+      })
     }
 
     if (SharedData.recordVuex) {
@@ -283,7 +285,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
             tempAddedModules.push(key)
             origRegisterModule(moduleInfo.path, {
               ...moduleInfo.module,
-              state: parse(moduleInfo.state, true)
+              state: moduleInfo.state
             }, moduleInfo.options)
             updateSnapshotsVm(store.state)
             if (!isProd) console.log('replay register module', moduleInfo)
@@ -340,7 +342,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       const { path, module, options, state } = registeredModules[m]
       origRegisterModule(path, {
         ...module,
-        state: parse(state, true)
+        state
       }, options)
       if (!isProd) console.log('after replay register', m)
     })
@@ -404,7 +406,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
             const { path, module, options, state } = data
             origRegisterModule(path, {
               ...module,
-              state: parse(state, true)
+              state
             }, options)
             registeredModules[path.join('/')] = data
           }
