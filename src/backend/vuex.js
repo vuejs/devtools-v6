@@ -172,7 +172,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   // devtool -> application
   bridge.on('vuex:travel-to-state', ({ index, apply }) => {
     const snapshot = replayMutations(index)
-    const { state } = clone(snapshot)
+    const state = clone(lastState)
     bridge.send('vuex:inspected-state', {
       index,
       snapshot
