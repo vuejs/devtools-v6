@@ -20,7 +20,7 @@ class VuexBackend {
     this.earlyModules = hook.flushStoreModules()
 
     /** Initial store state */
-    this.initialState = clone(this.store.state)
+    this.initialState = this.hook.initialState
 
     /** Internal store vm for mutation replaying */
     this.snapshotsVm = null
@@ -152,10 +152,7 @@ class VuexBackend {
     this.reset()
     this.hook.emit('vuex:travel-to-state', parsed)
     this.bridge.send('vuex:init')
-    this.bridge.send('vuex:inspected-state', {
-      index: -1,
-      snapshot: this.getStoreSnapshot(this.baseStateSnapshot)
-    })
+    this.onInspectState(-1)
   }
 
   /**
@@ -163,18 +160,11 @@ class VuexBackend {
    * Else replays the mutations up to the <index> mutation.
    */
   onInspectState (index) {
-    if (index === -1) {
-      this.bridge.send('vuex:inspected-state', {
-        index,
-        snapshot: this.getStoreSnapshot(this.baseStateSnapshot)
-      })
-    } else {
-      const snapshot = this.replayMutations(index)
-      this.bridge.send('vuex:inspected-state', {
-        index,
-        snapshot
-      })
-    }
+    const snapshot = this.replayMutations(index)
+    this.bridge.send('vuex:inspected-state', {
+      index,
+      snapshot
+    })
   }
 
   onEditState ({ index, value, path }) {
@@ -370,6 +360,16 @@ class VuexBackend {
     let tempRemovedModules = []
     let tempAddedModules = []
 
+    // If base state, we need to remove all dynamic registered modules
+    // to prevent errors because their state is missing
+    if (index === -1) {
+      tempRemovedModules = Object.keys(this.registeredModules)
+      tempRemovedModules.filter(m => this.hasModule(m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
+        this.origUnregisterModule(m.split('/'))
+        if (!isProd) console.log('before replay unregister', m)
+      })
+    }
+
     // Get most recent snapshot for target index
     // for faster replay
     let stateSnapshot
@@ -402,7 +402,6 @@ class VuexBackend {
       } else {
         tempRemovedModules = Object.keys(this.registeredModules)
       }
-      tempRemovedModules = tempRemovedModules.filter(m => !this.registeredModules[m].early)
       tempRemovedModules.filter(m => this.hasModule(m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
         this.origUnregisterModule(m.split('/'))
         if (!isProd) console.log('before replay unregister', m)
@@ -420,15 +419,13 @@ class VuexBackend {
         if (mutation.registerModule) {
           const key = mutation.payload.path.join('/')
           const moduleInfo = this.allTimeModules[key]
-          if (!moduleInfo.early) {
-            tempAddedModules.push(key)
-            this.origRegisterModule(moduleInfo.path, {
-              ...moduleInfo.module,
-              state: clone(moduleInfo.state)
-            }, moduleInfo.options)
-            this.resetSnapshotsVm(this.store.state)
-            if (!isProd) console.log('replay register module', moduleInfo)
-          }
+          tempAddedModules.push(key)
+          this.origRegisterModule(moduleInfo.path, {
+            ...moduleInfo.module,
+            state: clone(moduleInfo.state)
+          }, moduleInfo.options)
+          this.resetSnapshotsVm(this.store.state)
+          if (!isProd) console.log('replay register module', moduleInfo)
         } else if (mutation.unregisterModule && this.hasModule(mutation.payload.path)) {
           const path = mutation.payload.path
           const index = tempAddedModules.indexOf(path.join('/'))

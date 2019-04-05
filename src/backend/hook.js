@@ -98,6 +98,7 @@ export function installHook (target) {
 
   hook.once('vuex:init', store => {
     hook.store = store
+    hook.initialState = clone(store.state)
     // Dynamic modules
     let origRegister, origUnregister
     if (store.registerModule) {
