@@ -179,6 +179,7 @@ class VuexBackend {
       index,
       snapshot: this.getStoreSnapshot()
     })
+    this.cacheStateSnapshot(index, true)
   }
 
   /**
@@ -205,7 +206,11 @@ class VuexBackend {
 
   resetSnapshotCache () {
     this.stateSnapshotCache = [
-      { index: -1, state: this.baseStateSnapshot }
+      {
+        index: -1,
+        state: this.baseStateSnapshot,
+        permanent: true
+      }
     ]
   }
 
@@ -489,15 +494,23 @@ class VuexBackend {
     return result
   }
 
-  cacheStateSnapshot (index) {
+  cacheStateSnapshot (index, permanent = false) {
+    this.removeCachedStateSnapshot(index)
     this.stateSnapshotCache.push({
       index,
-      state: clone(this.store.state)
+      state: clone(this.store.state),
+      permanent
     })
     // Delete old cached snapshots
-    if (this.stateSnapshotCache.length > SharedData.cacheVuexSnapshotsLimit) {
-      this.stateSnapshotCache.splice(1, 1)
+    if (this.stateSnapshotCache.filter(s => !s.permanent).length > SharedData.cacheVuexSnapshotsLimit) {
+      const i = this.stateSnapshotCache.findIndex(s => !s.permanent)
+      if (i !== -1) this.stateSnapshotCache.splice(i, 1)
     }
+  }
+
+  removeCachedStateSnapshot (index) {
+    const i = this.stateSnapshotCache.findIndex(s => s.idex === index)
+    if (i !== -1) this.stateSnapshotCache.splice(i, 1)
   }
 
   /**
