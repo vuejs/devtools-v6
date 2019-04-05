@@ -6,48 +6,229 @@ import clone from './clone'
 
 const isProd = process.env.NODE_ENV === 'production'
 
-export function initVuexBackend (hook, bridge, isLegacy) {
-  const store = hook.store
+class VuexBackend {
+  constructor (hook, bridge, isLegacy) {
+    bridge.send('vuex:init')
 
-  const earlyModules = hook.flushStoreModules()
-  let initialState = clone(store.state)
+    this.hook = hook
+    this.bridge = bridge
+    this.isLegacy = isLegacy
+    this.store = hook.store
 
-  let snapshotsVm = null
-  const updateSnapshotsVm = (state) => {
-    snapshotsVm = new Vue({
-      data: {
-        $$state: state || {}
-      },
-      computed: store._vm.$options.computed
+    // Flush info from hook
+    // (for example, modules registered before backend was created)
+    this.earlyModules = hook.flushStoreModules()
+
+    /** Initial store state */
+    this.initialState = clone(this.store.state)
+
+    /** Internal store vm for mutation replaying */
+    this.snapshotsVm = null
+
+    /** Initial snapshot */
+    this.baseStateSnapshot = null
+    /** Snapshot cache */
+    this.stateSnapshotCache = null
+    /** Mutation history */
+    this.mutations = null
+    /** Last replayed state */
+    this.lastState = null
+    /** Currently registered dynamic modules */
+    this.registeredModules = {}
+    /** All dynamic modules ever registered, useful for mutation replaying */
+    this.allTimeModules = {}
+
+    // First-time snapshot VM creation
+    this.resetSnapshotsVm()
+    // Initial setup
+    this.reset()
+
+    // Override dynamic module handling in vuex
+    if (this.store.registerModule) {
+      this.origRegisterModule = this.store.registerModule.bind(this.store)
+      this.store.registerModule = (path, module, options) => {
+        this.addModule(path, module, options)
+        this.origRegisterModule(path, module, options)
+        if (!isProd) console.log('register module', path)
+      }
+
+      this.origUnregisterModule = this.store.unregisterModule.bind(this.store)
+      this.store.unregisterModule = (path) => {
+        this.removeModule(path)
+        this.origUnregisterModule(path)
+        if (!isProd) console.log('unregister module', path)
+      }
+    } else {
+      this.origRegisterModule = this.origUnregisterModule = () => {}
+    }
+
+    // Register modules that were added before backend was created
+    this.earlyModules.forEach(({ path, module, options }) => {
+      const moduleInfo = this.addModule(path, module, options)
+      moduleInfo.early = true
+    })
+
+    // deal with multiple backend injections
+    hook.off('vuex:mutation')
+
+    // application -> devtool
+    hook.on('vuex:mutation', this.onMutation.bind(this))
+
+    // devtool -> application
+    bridge.on('vuex:travel-to-state', this.onTravelToState.bind(this))
+    bridge.on('vuex:commit-all', this.onCommitAll.bind(this))
+    bridge.on('vuex:revert-all', this.onRevertAll.bind(this))
+    bridge.on('vuex:commit', this.onCommit.bind(this))
+    bridge.on('vuex:revert', this.onRevert.bind(this))
+    bridge.on('vuex:import-state', this.onImportState.bind(this))
+    bridge.on('vuex:inspect-state', this.onInspectState.bind(this))
+    bridge.on('vuex:edit-state', this.onEditState.bind(this))
+  }
+
+  /**
+   * Register a mutation record
+   */
+  onMutation ({ type, payload }) {
+    if (!SharedData.recordVuex) return
+
+    this.addMutation(type, payload)
+  }
+
+  /**
+   * Time-travel to the state of a specific mutation (by index)
+   */
+  onTravelToState ({ index, apply }) {
+    const snapshot = this.replayMutations(index)
+    const state = clone(this.lastState)
+    this.bridge.send('vuex:inspected-state', {
+      index,
+      snapshot
+    })
+    if (apply) {
+      this.ensureRegisteredModules(this.mutations[index])
+      this.hook.emit('vuex:travel-to-state', state)
+    }
+  }
+
+  onCommitAll () {
+    this.reset(this.lastState)
+  }
+
+  onRevertAll () {
+    this.reset()
+  }
+
+  /**
+   * Reset the base state to a specific mutation (by index)
+   *
+   * ⚠️ State should be time-traveled to before executing this
+   */
+  onCommit (index) {
+    this.baseStateSnapshot = this.lastState
+    this.resetSnapshotCache()
+    this.mutations = this.mutations.slice(index + 1)
+    this.mutations.forEach((mutation, index) => {
+      mutation.index = index
     })
   }
 
-  let baseStateSnapshot, stateSnapshots, mutations, lastState
-  let registeredModules = {}
-  let allTimeModules = {}
-
-  updateSnapshotsVm()
-
-  function reset (stateSnapshot = null) {
-    baseStateSnapshot = stateSnapshot || clone(initialState)
-    mutations = []
-    resetSnapshotCache()
+  /**
+   * Removes mutations after a specific mutation (by index)
+   *
+   * ⚠️ State should be time-traveled to before executing this
+   */
+  onRevert (index) {
+    this.resetSnapshotCache()
+    this.ensureRegisteredModules(this.mutations[index - 1])
+    this.mutations = this.mutations.slice(0, index)
   }
 
-  function resetSnapshotCache () {
-    stateSnapshots = [
-      { index: -1, state: baseStateSnapshot }
+  /**
+   * Parse and time-travel to a state
+   */
+  onImportState (state) {
+    const parsed = parse(state, true)
+    this.initialState = parsed
+    this.reset()
+    this.hook.emit('vuex:travel-to-state', parsed)
+    this.bridge.send('vuex:init')
+    this.bridge.send('vuex:inspected-state', {
+      index: -1,
+      snapshot: this.getStoreSnapshot(this.baseStateSnapshot)
+    })
+  }
+
+  /**
+   * If the index is -1, sends the base state.
+   * Else replays the mutations up to the <index> mutation.
+   */
+  onInspectState (index) {
+    console.log(index)
+    if (index === -1) {
+      this.bridge.send('vuex:inspected-state', {
+        index,
+        snapshot: this.getStoreSnapshot(this.baseStateSnapshot)
+      })
+    } else {
+      const snapshot = this.replayMutations(index)
+      this.bridge.send('vuex:inspected-state', {
+        index,
+        snapshot
+      })
+    }
+  }
+
+  onEditState ({ index, value, path }) {
+    let parsedValue
+    if (value) {
+      parsedValue = parse(value, true)
+    }
+    this.store._committing = true
+    set(this.store.state, path, parsedValue)
+    this.store._committing = false
+    this.bridge.send('vuex:inspected-state', {
+      index,
+      snapshot: this.getStoreSnapshot()
+    })
+  }
+
+  /**
+   * Should be called when store structure changes,
+   * for example when a dynamic module is registered
+   */
+  resetSnapshotsVm (state) {
+    this.snapshotsVm = new Vue({
+      data: {
+        $$state: state || {}
+      },
+      computed: this.store._vm.$options.computed
+    })
+  }
+
+  /**
+   * Reset vuex backend
+   */
+  reset (stateSnapshot = null) {
+    this.baseStateSnapshot = stateSnapshot || clone(this.initialState)
+    this.mutations = []
+    this.resetSnapshotCache()
+  }
+
+  resetSnapshotCache () {
+    this.stateSnapshotCache = [
+      { index: -1, state: this.baseStateSnapshot }
     ]
   }
 
-  reset()
-
-  function addModule (path, module, options) {
+  /**
+   * Handle adding a dynamic store module
+   */
+  addModule (path, module, options) {
     if (typeof path === 'string') path = [path]
 
     let state
     if (options && options.preserveState) {
-      state = get(store.state, path)
+      state = get(this.store.state, path)
     }
     if (!state) {
       state = typeof module.state === 'function' ? module.state() : module.state
@@ -60,6 +241,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       ...module
     }
 
+    // Ensure all children state are cloned
     const replaceNestedStates = (nestedModule) => {
       if (nestedModule.modules) {
         Object.keys(nestedModule.modules).forEach(key => {
@@ -76,7 +258,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     replaceNestedStates(fakeModule)
 
     const key = path.join('/')
-    const moduleInfo = registeredModules[key] = allTimeModules[key] = {
+    const moduleInfo = this.registeredModules[key] = this.allTimeModules[key] = {
       path,
       module: fakeModule,
       options: {
@@ -87,7 +269,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     }
 
     if (SharedData.recordVuex) {
-      addMutation(`Register module: ${key}`, {
+      this.addMutation(`Register module: ${key}`, {
         path,
         module,
         options
@@ -99,67 +281,75 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     return moduleInfo
   }
 
-  let origRegisterModule, origUnregisterModule
+  /**
+   * Handle removing a dynamic store module
+   */
+  removeModule (path) {
+    if (typeof path === 'string') path = [path]
 
-  if (store.registerModule) {
-    origRegisterModule = store.registerModule.bind(store)
-    store.registerModule = (path, module, options) => {
-      addModule(path, module, options)
-      origRegisterModule(path, module, options)
-      if (!isProd) console.log('register module', path)
+    delete this.registeredModules[path.join('/')]
+
+    if (SharedData.recordVuex) {
+      this.addMutation(`Unregister module: ${path.join('/')}`, {
+        path
+      }, {
+        unregisterModule: true
+      })
     }
-
-    origUnregisterModule = store.unregisterModule.bind(store)
-    store.unregisterModule = (path) => {
-      if (typeof path === 'string') path = [path]
-
-      delete registeredModules[path.join('/')]
-
-      if (SharedData.recordVuex) {
-        addMutation(`Unregister module: ${path.join('/')}`, {
-          path
-        }, {
-          unregisterModule: true
-        })
-      }
-
-      origUnregisterModule(path)
-      if (!isProd) console.log('unregister module', path)
-    }
-  } else {
-    origRegisterModule = origUnregisterModule = () => {}
   }
 
-  bridge.send('vuex:init')
+  /**
+   * Make sure all (and only) the dynamic modules present at the moment of a mutation
+   * are correctly registered in the store
+   */
+  ensureRegisteredModules (mutation) {
+    if (mutation) {
+      mutation.registeredModules.forEach(m => {
+        if (!Object.keys(this.registeredModules).sort((a, b) => a.length - b.length).includes(m)) {
+          const data = this.allTimeModules[m]
+          if (data) {
+            const { path, module, options, state } = data
+            this.origRegisterModule(path, {
+              ...module,
+              state: clone(state)
+            }, options)
+            this.registeredModules[path.join('/')] = data
+          }
+        }
+      })
+      Object.keys(this.registeredModules).sort((a, b) => b.length - a.length).forEach(m => {
+        if (!mutation.registeredModules.includes(m)) {
+          this.origUnregisterModule(m.split('/'))
+          delete this.registeredModules[m]
+        }
+      })
+      this.resetSnapshotsVm(this.store.state)
+    }
+  }
 
-  earlyModules.forEach(({ path, module, options }) => {
-    const moduleInfo = addModule(path, module, options)
-    moduleInfo.early = true
-  })
+  /**
+   * Check if the store as a specific dynamic module
+   */
+  hasModule (path) {
+    return !!this.store._modules.get(path)
+  }
 
-  // deal with multiple backend injections
-  hook.off('vuex:mutation')
+  /**
+   * Handle a new mutation commited to the store
+   */
+  addMutation (type, payload, options = {}) {
+    const index = this.mutations.length
 
-  // application -> devtool
-  hook.on('vuex:mutation', ({ type, payload }) => {
-    if (!SharedData.recordVuex) return
-
-    addMutation(type, payload)
-  })
-
-  function addMutation (type, payload, options = {}) {
-    const index = mutations.length
-
-    mutations.push({
+    this.mutations.push({
       type,
       payload: clone(payload),
       index,
-      handlers: store._mutations[type],
-      registeredModules: Object.keys(registeredModules),
+      handlers: this.store._mutations[type],
+      registeredModules: Object.keys(this.registeredModules),
       ...options
     })
 
-    bridge.send('vuex:mutation', {
+    this.bridge.send('vuex:mutation', {
       mutation: {
         type: type,
         payload: stringify(payload),
@@ -169,74 +359,14 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     })
   }
 
-  // devtool -> application
-  bridge.on('vuex:travel-to-state', ({ index, apply }) => {
-    const snapshot = replayMutations(index)
-    const state = clone(lastState)
-    bridge.send('vuex:inspected-state', {
-      index,
-      snapshot
-    })
-    if (apply) {
-      ensureRegisteredModules(mutations[index])
-      hook.emit('vuex:travel-to-state', state)
-    }
-  })
-
-  bridge.on('vuex:commit-all', () => {
-    reset(lastState)
-  })
-
-  bridge.on('vuex:revert-all', () => {
-    reset()
-  })
-
-  bridge.on('vuex:commit', index => {
-    baseStateSnapshot = lastState
-    resetSnapshotCache()
-    mutations = mutations.slice(index + 1)
-    mutations.forEach((mutation, index) => {
-      mutation.index = index
-    })
-  })
-
-  bridge.on('vuex:revert', index => {
-    resetSnapshotCache()
-    ensureRegisteredModules(mutations[index - 1])
-    mutations = mutations.slice(0, index)
-  })
-
-  bridge.on('vuex:import-state', state => {
-    const parsed = parse(state, true)
-    initialState = parsed
-    reset()
-    hook.emit('vuex:travel-to-state', parsed)
-    bridge.send('vuex:init')
-    bridge.send('vuex:inspected-state', {
-      index: -1,
-      snapshot: getSnapshot(baseStateSnapshot)
-    })
-  })
-
-  bridge.on('vuex:inspect-state', index => {
-    if (index === -1) {
-      bridge.send('vuex:inspected-state', {
-        index,
-        snapshot: getSnapshot(baseStateSnapshot)
-      })
-    } else {
-      const snapshot = replayMutations(index)
-      bridge.send('vuex:inspected-state', {
-        index,
-        snapshot
-      })
-    }
-  })
-
-  function replayMutations (index) {
-    const originalVm = store._vm
-    const originalState = clone(store.state)
-    store._vm = snapshotsVm
+  /**
+   * Replays mutations from the base state up to a specific index
+   * to re-create what the vuex state should be at this point
+   */
+  replayMutations (index) {
+    const originalVm = this.store._vm
+    const originalState = clone(this.store.state)
+    this.store._vm = this.snapshotsVm
 
     let tempRemovedModules = []
     let tempAddedModules = []
@@ -244,8 +374,8 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     // Get most recent snapshot for target index
     // for faster replay
     let stateSnapshot
-    for (let i = 0; i < stateSnapshots.length; i++) {
-      const s = stateSnapshots[i]
+    for (let i = 0; i < this.stateSnapshotCache.length; i++) {
+      const s = this.stateSnapshotCache[i]
       if (s.index > index) {
         break
       } else {
@@ -260,63 +390,63 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       resultState = stateSnapshot.state
 
       const state = clone(stateSnapshot.state)
-      updateSnapshotsVm(state)
-      store.replaceState(state)
+      this.resetSnapshotsVm(state)
+      this.store.replaceState(state)
     } else {
       // Update state when using fake vm to properly temporarily remove modules
-      updateSnapshotsVm(originalState)
-      store.replaceState(originalState)
+      this.resetSnapshotsVm(originalState)
+      this.store.replaceState(originalState)
       // Temporarily remove modules if they where not present during first mutation being replayed
-      const startMutation = mutations[stateSnapshot.index]
+      const startMutation = this.mutations[stateSnapshot.index]
       if (startMutation) {
-        tempRemovedModules = Object.keys(registeredModules).filter(m => !startMutation.registeredModules.includes(m))
+        tempRemovedModules = Object.keys(this.registeredModules).filter(m => !startMutation.registeredModules.includes(m))
       } else {
-        tempRemovedModules = Object.keys(registeredModules)
+        tempRemovedModules = Object.keys(this.registeredModules)
       }
-      tempRemovedModules = tempRemovedModules.filter(m => !registeredModules[m].early)
-      tempRemovedModules.filter(m => hasModule(m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
-        origUnregisterModule(m.split('/'))
+      tempRemovedModules = tempRemovedModules.filter(m => !this.registeredModules[m].early)
+      tempRemovedModules.filter(m => this.hasModule(m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
+        this.origUnregisterModule(m.split('/'))
         if (!isProd) console.log('before replay unregister', m)
       })
 
       const state = clone(stateSnapshot.state)
-      updateSnapshotsVm(state)
-      store.replaceState(state)
+      this.resetSnapshotsVm(state)
+      this.store.replaceState(state)
 
       SharedData.snapshotLoading = true
 
       // Replay mutations
       for (let i = stateSnapshot.index + 1; i <= index; i++) {
-        const mutation = mutations[i]
+        const mutation = this.mutations[i]
         if (mutation.registerModule) {
           const key = mutation.payload.path.join('/')
-          const moduleInfo = allTimeModules[key]
+          const moduleInfo = this.allTimeModules[key]
           if (!moduleInfo.early) {
             tempAddedModules.push(key)
-            origRegisterModule(moduleInfo.path, {
+            this.origRegisterModule(moduleInfo.path, {
               ...moduleInfo.module,
               state: clone(moduleInfo.state)
             }, moduleInfo.options)
-            updateSnapshotsVm(store.state)
+            this.resetSnapshotsVm(this.store.state)
             if (!isProd) console.log('replay register module', moduleInfo)
           }
-        } else if (mutation.unregisterModule && hasModule(mutation.payload.path) != null) {
+        } else if (mutation.unregisterModule && this.hasModule(mutation.payload.path)) {
           const path = mutation.payload.path
           const index = tempAddedModules.indexOf(path.join('/'))
           if (index !== -1) tempAddedModules.splice(index, 1)
-          origUnregisterModule(path)
-          updateSnapshotsVm(store.state)
+          this.origUnregisterModule(path)
+          this.resetSnapshotsVm(this.store.state)
           if (!isProd) console.log('replay unregister module', path)
         } else if (mutation.handlers) {
-          store._committing = true
+          this.store._committing = true
           try {
             const payload = mutation.payload
             if (Array.isArray(mutation.handlers)) {
               mutation.handlers.forEach(handler => handler(payload))
             } else {
-              if (isLegacy || SharedData.vuex1) {
+              if (this.isLegacy || SharedData.vuex1) {
                 // Vuex 1
-                mutation.handlers(store.state, payload)
+                mutation.handlers(this.store.state, payload)
               } else {
                 mutation.handlers(payload)
               }
@@ -324,117 +454,83 @@ export function initVuexBackend (hook, bridge, isLegacy) {
           } catch (e) {
             throw e
           }
-          store._committing = false
+          this.store._committing = false
         }
 
+        // Optimization: periodically cache snapshots
         if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
-          takeStateSnapshot(i)
+          this.cacheStateSnapshot(i)
         }
       }
 
       // Send final state after replay
-      resultState = clone(store.state)
+      resultState = clone(this.store.state)
     }
 
-    lastState = resultState
+    this.lastState = resultState
 
     const result = stringify({
-      state: store.state,
-      getters: store.getters || {}
+      state: this.store.state,
+      getters: this.store.getters || {}
     })
 
     // Restore user state
     tempAddedModules.sort((a, b) => b.length - a.length).forEach(m => {
-      origUnregisterModule(m.split('/'))
+      this.origUnregisterModule(m.split('/'))
       if (!isProd) console.log('after replay unregister', m)
     })
     tempRemovedModules.sort((a, b) => a.length - b.length).forEach(m => {
-      const { path, module, options, state } = registeredModules[m]
-      origRegisterModule(path, {
+      const { path, module, options, state } = this.registeredModules[m]
+      this.origRegisterModule(path, {
         ...module,
         state: clone(state)
       }, options)
       if (!isProd) console.log('after replay register', m)
     })
-    store._vm = originalVm
+    this.store._vm = originalVm
 
     return result
   }
 
-  bridge.on('vuex:edit-state', ({ index, value, path }) => {
-    let parsedValue
-    if (value) {
-      parsedValue = parse(value, true)
-    }
-    store._committing = true
-    set(store.state, path, parsedValue)
-    store._committing = false
-    bridge.send('vuex:inspected-state', {
+  cacheStateSnapshot (index) {
+    this.stateSnapshotCache.push({
       index,
-      snapshot: getSnapshot()
-    })
-  })
-
-  function takeStateSnapshot (index) {
-    stateSnapshots.push({
-      index,
-      state: clone(store.state)
+      state: clone(this.store.state)
     })
     // Delete old cached snapshots
-    if (stateSnapshots.length > SharedData.cacheVuexSnapshotsLimit) {
-      stateSnapshots.splice(1, 1)
+    if (this.stateSnapshotCache.length > SharedData.cacheVuexSnapshotsLimit) {
+      this.stateSnapshotCache.splice(1, 1)
     }
   }
 
-  function getSnapshot (stateSnapshot = null) {
+  /**
+   * Get the serialized state and getters from the store
+   */
+  getStoreSnapshot (stateSnapshot = null) {
     let originalVm
     if (stateSnapshot) {
-      originalVm = store._vm
-      store._vm = snapshotsVm
-      store.replaceState(clone(stateSnapshot))
+      originalVm = this.store._vm
+      this.store._vm = this.snapshotsVm
+      this.store.replaceState(clone(stateSnapshot))
     }
 
     const result = stringify({
-      state: store.state,
-      getters: store.getters || {}
+      state: this.store.state,
+      getters: this.store.getters || {}
     })
 
     if (stateSnapshot) {
       // Restore user state
-      store._vm = originalVm
+      this.store._vm = originalVm
     }
 
     return result
   }
+}
 
-  function ensureRegisteredModules (mutation) {
-    if (mutation) {
-      mutation.registeredModules.forEach(m => {
-        if (!Object.keys(registeredModules).sort((a, b) => a.length - b.length).includes(m)) {
-          const data = allTimeModules[m]
-          if (data) {
-            const { path, module, options, state } = data
-            origRegisterModule(path, {
-              ...module,
-              state: clone(state)
-            }, options)
-            registeredModules[path.join('/')] = data
-          }
-        }
-      })
-      Object.keys(registeredModules).sort((a, b) => b.length - a.length).forEach(m => {
-        if (!mutation.registeredModules.includes(m)) {
-          origUnregisterModule(m.split('/'))
-          delete registeredModules[m]
-        }
-      })
-      updateSnapshotsVm(store.state)
-    }
-  }
-
-  function hasModule (path) {
-    return !!store._modules.get(path)
-  }
+export function initVuexBackend (hook, bridge, isLegacy) {
+  // eslint-disable-next-line no-new
+  new VuexBackend(hook, bridge, isLegacy)
 }
 
 export function getCustomStoreDetails (store) {
