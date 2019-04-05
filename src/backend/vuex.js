@@ -9,6 +9,9 @@ const isProd = process.env.NODE_ENV === 'production'
 export function initVuexBackend (hook, bridge, isLegacy) {
   const store = hook.store
 
+  const earlyModules = hook.flushStoreModules()
+  let initialState = clone(store.state)
+
   let snapshotsVm = null
   const updateSnapshotsVm = (state) => {
     snapshotsVm = new Vue({
@@ -19,27 +22,14 @@ export function initVuexBackend (hook, bridge, isLegacy) {
     })
   }
 
-  const getStateSnapshot = (_store = store) => clone(_store.state)
-
   let baseStateSnapshot, stateSnapshots, mutations, lastState
   let registeredModules = {}
   let allTimeModules = {}
 
-  const earlyModules = hook.flushStoreModules()
-
-  // Init additional state
-  earlyModules.forEach(({ path, module, options }) => {
-    if (!options || options.preserveState !== true) {
-      const state = typeof module.state === 'function' ? module.state() : module.state
-      const parentState = path.length === 1 ? hook.initialStore.state : get(hook.initialStore.state, path.slice(0, -1))
-      set(parentState, path[path.length - 1], state)
-    }
-  })
-
   updateSnapshotsVm()
 
   function reset (stateSnapshot = null) {
-    baseStateSnapshot = stateSnapshot || getStateSnapshot(hook.initialStore)
+    baseStateSnapshot = stateSnapshot || clone(initialState)
     mutations = []
     resetSnapshotCache()
   }
@@ -199,7 +189,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
 
   bridge.on('vuex:import-state', state => {
     const parsed = parse(state, true)
-    hook.initialStore.state = parsed
+    initialState = parsed
     reset()
     hook.emit('vuex:travel-to-state', parsed)
     bridge.send('vuex:init')
@@ -281,7 +271,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
             tempAddedModules.push(key)
             origRegisterModule(moduleInfo.path, {
               ...moduleInfo.module,
-              state: moduleInfo.state
+              state: clone(moduleInfo.state)
             }, moduleInfo.options)
             updateSnapshotsVm(store.state)
             if (!isProd) console.log('replay register module', moduleInfo)
@@ -319,7 +309,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       }
 
       // Send final state after replay
-      resultState = getStateSnapshot()
+      resultState = clone(store.state)
     }
 
     lastState = resultState
@@ -338,7 +328,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       const { path, module, options, state } = registeredModules[m]
       origRegisterModule(path, {
         ...module,
-        state
+        state: clone(state)
       }, options)
       if (!isProd) console.log('after replay register', m)
     })
@@ -364,7 +354,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   function takeStateSnapshot (index) {
     stateSnapshots.push({
       index,
-      state: getStateSnapshot()
+      state: clone(store.state)
     })
     // Delete old cached snapshots
     if (stateSnapshots.length > SharedData.cacheVuexSnapshotsLimit) {
@@ -402,7 +392,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
             const { path, module, options, state } = data
             origRegisterModule(path, {
               ...module,
-              state
+              state: clone(state)
             }, options)
             registeredModules[path.join('/')] = data
           }

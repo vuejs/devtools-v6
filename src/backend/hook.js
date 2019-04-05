@@ -98,26 +98,18 @@ export function installHook (target) {
 
   hook.once('vuex:init', store => {
     hook.store = store
-    hook.initialStore = {
-      state: clone(store.state),
-      getters: store.getters
-    }
-    const origReplaceState = store.replaceState.bind(store)
-    store.replaceState = state => {
-      hook.initialStore.state = clone(state)
-      origReplaceState(state)
-    }
     // Dynamic modules
+    let origRegister, origUnregister
     if (store.registerModule) {
       hook.storeModules = []
-      const origRegister = store.registerModule.bind(store)
+      origRegister = store.registerModule.bind(store)
       store.registerModule = (path, module, options) => {
         if (typeof path === 'string') path = [path]
         hook.storeModules.push({ path, module, options })
         origRegister(path, module, options)
-        if (process.env.NODE_ENV !== 'production') console.log('early register module', path)
+        if (process.env.NODE_ENV !== 'production') console.log('early register module', path, module, options)
       }
-      const origUnregister = store.unregisterModule.bind(store)
+      origUnregister = store.unregisterModule.bind(store)
       store.unregisterModule = (path) => {
         if (typeof path === 'string') path = [path]
         const key = path.join('/')
@@ -126,17 +118,13 @@ export function installHook (target) {
         origUnregister(path)
         if (process.env.NODE_ENV !== 'production') console.log('early unregister module', path)
       }
-      hook.flushStoreModules = () => {
+    }
+    hook.flushStoreModules = () => {
+      if (store.registerModule) {
         store.registerModule = origRegister
         store.unregisterModule = origUnregister
-        store.replaceState = origReplaceState
-        return hook.storeModules
       }
-    } else {
-      hook.flushStoreModules = () => {
-        store.replaceState = origReplaceState
-        return []
-      }
+      return hook.storeModules
     }
   })
 
