@@ -155,6 +155,10 @@ const getters = {
       return history.indexOf(entry)
     }
     return -1
+  },
+
+  inspectedEntry ({ inspectedIndex }, { filteredHistory }) {
+    return filteredHistory[inspectedIndex]
   }
 }
 

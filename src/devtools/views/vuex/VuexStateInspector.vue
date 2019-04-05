@@ -135,22 +135,39 @@ export default {
 
     ...mapGetters('vuex', [
       'inspectedState',
-      'filteredHistory'
+      'filteredHistory',
+      'inspectedEntry'
     ]),
 
     filteredState () {
+      const getProcessedState = (state, type) => {
+        if (!Array.isArray(state)) {
+          return Object.keys(state).map(key => ({
+            key,
+            editable: type === 'state',
+            value: state[key]
+          }))
+        } else {
+          return state
+        }
+      }
+
       const inspectedState = [].concat(
         ...Object.keys(this.inspectedState).map(
           type => {
+            const state = this.inspectedState[type]
             let processedState
-            if (!Array.isArray(this.inspectedState[type])) {
-              processedState = Object.keys(this.inspectedState[type]).map(key => ({
-                key,
-                editable: type === 'state',
-                value: this.inspectedState[type][key]
-              }))
-            } else {
-              processedState = this.inspectedState[type]
+
+            if (type === 'mutation' && this.inspectedEntry) {
+              const { options } = this.inspectedEntry
+              if (options.registerModule || options.unregisterModule) {
+                processedState = getProcessedState(state.payload, type)
+                type = options.registerModule ? 'register module' : 'unregister module'
+              }
+            }
+
+            if (!processedState) {
+              processedState = getProcessedState(state, type)
             }
 
             return processedState.map(

@@ -61,6 +61,8 @@ const keyOrder = {
   props: 1,
   undefined: 3,
   computed: 4,
+  'register module': 1,
+  'unregister module': 1,
   state: 2,
   getters: 3,
   mutation: 1,
