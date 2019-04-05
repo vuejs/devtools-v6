@@ -62,7 +62,7 @@
           :data-active="active"
           :data-index="index"
           :class="{ active: activeIndex === -1, inspected: inspectedIndex === -1 }"
-          class="entry list-item"
+          class="entry list-item special"
           @click="inspect(null)"
         >
           <span class="mutation-type">Base State</span>
@@ -95,7 +95,11 @@
           v-else
           :data-active="active"
           :data-index="index"
-          :class="{ inspected: isInspected(index, entry), active: isActive(index, entry) }"
+          :class="{
+            inspected: isInspected(index, entry),
+            active: isActive(index, entry),
+            special: isSpecial(entry)
+          }"
           class="entry list-item"
           @click="inspect(entry)"
         >
@@ -267,6 +271,10 @@ export default {
       return this.inspectedIndex === index - (this.filter ? 0 : 1)
     },
 
+    isSpecial (entry) {
+      return entry.options.registerModule || entry.options.unregisterModule
+    },
+
     toggleRecording () {
       this.$shared.recordVuex = !this.$shared.recordVuex
     }
@@ -305,6 +313,10 @@ $inspected_color = #af90d5
           fill  lighten($active-color, 95%)
     .label.inspected
       background-color darken($inspected_color, 10%)
+  &.special
+    .mutation-type
+      font-style italic
+      opacity .75
   @media (max-width: $wide)
     .label
       display none

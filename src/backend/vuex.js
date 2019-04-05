@@ -344,7 +344,8 @@ class VuexBackend {
         payload: stringify(payload),
         index
       },
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      options
     })
   }
 
