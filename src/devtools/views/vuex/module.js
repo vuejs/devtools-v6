@@ -73,16 +73,16 @@ const mutations = {
   },
 
   'UPDATE_INSPECTED_STATE' (state, value) {
-    state.inspectedState = value
+    state.inspectedState = parse(value)
   },
 
   'RECEIVE_STATE' (state, { index, snapshot }) {
-    state.lastReceivedState = snapshot
+    state.lastReceivedState = parse(snapshot)
     snapshotsCache.set(index, snapshot)
   },
 
   'UPDATE_BASE_STATE' (state, value) {
-    state.base = value
+    state.base = parse(value)
   },
 
   'TIME_TRAVEL' (state, index) {
@@ -135,11 +135,8 @@ const getters = {
 
     const data = entry ? inspectedState : base
     if (data) {
-      const snapshot = parse(data)
-      if (snapshot) {
-        res.state = snapshot.state
-        res.getters = snapshot.getters
-      }
+      res.state = data.state
+      res.getters = data.getters
     }
 
     return res
