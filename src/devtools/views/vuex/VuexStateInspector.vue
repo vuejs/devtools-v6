@@ -171,7 +171,7 @@ export default {
     },
 
     isOnlyMutationPayload () {
-      return (Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation) ||
+      return (Object.keys(this.inspectedState).length === 1 && !!this.inspectedState.mutation) ||
         Object.keys(this.inspectedState).length < 1
     },
 
