@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8.10-browsers
+      - image: vuejs/ci
 
     working_directory: ~/repo
 
