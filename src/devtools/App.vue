@@ -91,14 +91,14 @@
             <template slot="header">
               <VueIcon
                 icon="directions"
-                style="margin-right: 6px"
+                class="left-icon"
               />
               <span class="hide-below-wide">
                 Routing
               </span>
               <VueIcon
                 icon="keyboard_arrow_down"
-                style="margin-left: 6px"
+                class="right-icon"
               />
             </template>
             <template

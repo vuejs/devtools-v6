@@ -352,7 +352,7 @@ $inspected_color = #af90d5
   white-space nowrap
   span
     display none
-    @media (min-width: 1080px)
+    @media (min-width: 1400px)
       display inline
   .vue-ui-icon
     width 18px
