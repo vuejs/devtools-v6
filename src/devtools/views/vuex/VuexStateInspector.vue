@@ -54,39 +54,53 @@
     <div
       slot="scroll"
       class="vuex-state-inspector"
+      :class="{
+        pointer: isOnlyMutationPayload
+      }"
+      @click="isOnlyMutationPayload && loadState()"
     >
-      <state-inspector :state="filteredState" />
-
-      <div
-        v-if="$shared.snapshotLoading"
-        class="state-info loading-vuex-state"
-      >
-        <div class="label">
-          Loading state...
-        </div>
-
-        <VueLoadingIndicator />
+      <state-inspector
+        :state="filteredState"
+        :dim-after="isOnlyMutationPayload ? 1 : -1"
+      />
+    </div>
+    <div
+      v-if="$shared.snapshotLoading"
+      slot="footer"
+      class="state-info loading-vuex-state"
+    >
+      <div class="label">
+        Loading state...
       </div>
-      <div
-        v-else-if="isOnlyMutationPayload"
-        class="state-info recording-vuex-state"
-      >
-        <div class="label">
-          <VueIcon
-            class="medium"
-            icon="cached"
-          />
-          <span>Recording state...</span>
-        </div>
 
-        <div>
-          <VueButton
-            data-id="load-vuex-state"
-            @click="loadState()"
-          >
-            Load state
-          </VueButton>
-        </div>
+      <VueLoadingIndicator />
+    </div>
+    <div
+      v-else-if="isOnlyMutationPayload"
+      slot="footer"
+      class="state-info recording-vuex-state"
+    >
+      <div class="label">
+        <VueIcon
+          class="medium"
+          icon="cached"
+        />
+        <span>Recording state on-demand...</span>
+        <span
+          v-if="lastReceivedState"
+          class="note"
+        >displaying last received state</span>
+      </div>
+
+      <div>
+        <VueButton
+          data-id="load-vuex-state"
+          icon-left="arrow_forward"
+          class="accent flat"
+          @click="loadState()"
+        >
+          Load state
+        </VueButton>
       </div>
     </div>
   </scroll-pane>
@@ -130,7 +144,8 @@ export default {
   computed: {
     ...mapState('vuex', [
       'activeIndex',
-      'inspectedIndex'
+      'inspectedIndex',
+      'lastReceivedState'
     ]),
 
     ...mapGetters('vuex', [
@@ -140,11 +155,16 @@ export default {
     ]),
 
     filteredState () {
+      const inspectedState = this.isOnlyMutationPayload ? {
+        mutation: this.inspectedState.mutation,
+        ...this.lastReceivedState
+      } : this.inspectedState
+
       const getProcessedState = (state, type) => {
         if (!Array.isArray(state)) {
           return Object.keys(state).map(key => ({
             key,
-            editable: type === 'state',
+            editable: !this.isOnlyMutationPayload && type === 'state',
             value: state[key]
           }))
         } else {
@@ -152,10 +172,10 @@ export default {
         }
       }
 
-      const inspectedState = [].concat(
-        ...Object.keys(this.inspectedState).map(
+      const result = [].concat(
+        ...Object.keys(inspectedState).map(
           type => {
-            const state = this.inspectedState[type]
+            const state = inspectedState[type]
             let processedState
 
             if (type === 'mutation' && this.inspectedEntry) {
@@ -180,7 +200,7 @@ export default {
         )
       )
 
-      return groupBy(sortByKey(inspectedState.filter(
+      return groupBy(sortByKey(result.filter(
         el => searchDeepInObject({
           [el.key]: el.value
         }, this.filter)
@@ -278,7 +298,7 @@ export default {
       if (this.$shared.vuexAutoload) {
         this.loadState()
       }
-    }, 800),
+    }, 300),
 
     onVuexInit () {
       if (this.$shared.vuexAutoload) {
@@ -301,22 +321,31 @@ function copyToClipboard (state) {
 <style lang="stylus" scoped>
 .state-info
   display flex
-  flex-direction column
-  box-center()
-  min-height 140px
-  font-size 16px
-  margin 0 42px
+  align-items center
+  padding 2px 2px 2px 14px
+  min-height 36px
+  font-size 14px
 
   .label
+    flex 1
     display flex
     align-items center
     color $blueishGrey
-    margin-bottom 12px
 
     .vue-ui-icon
-      margin-right 12px
+      margin-right 8px
       >>> svg
         fill @color
+
+  .note
+    opacity .7
+    margin-left 4px
+
+.loading-vuex-state
+  padding-right 14px
+
+.pointer
+  cursor pointer
 
 .message
   margin-left 5px

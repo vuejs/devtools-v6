@@ -20,6 +20,14 @@
       Do a lot of mutations
     </button>
 
+    <button @click="startMutationStream()">
+      Start mutation stream
+    </button>
+
+    <button @click="stopMutationStream()">
+      Stop mutation stream
+    </button>
+
     <p>Your counter is {{ $store.getters.isPositive ? 'positive' : 'negative' }}</p>
 
     <h3>Vuex Module</h3>
@@ -174,6 +182,14 @@ export default {
       for (let i = 0; i < 10000; i++) {
         this.decrement()
       }
+    },
+
+    startMutationStream () {
+      this.$_mutationTimer = setInterval(this.increment, 1000)
+    },
+
+    stopMutationStream () {
+      clearInterval(this.$_mutationTimer)
     },
 
     ...mapMutations('nested', {
