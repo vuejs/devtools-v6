@@ -174,6 +174,8 @@ export function installHook (target) {
 
     var useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
 
+    var isBuffer = typeof window !== 'undefined' ? browserIsBuffer : Buffer.isBuffer
+
     if (typeof circular === 'undefined') { circular = true }
 
     if (typeof depth === 'undefined') { depth = Infinity }
@@ -210,7 +212,7 @@ export function installHook (target) {
         if (parent.lastIndex) child.lastIndex = parent.lastIndex
       } else if (clone.__isDate(parent)) {
         child = new Date(parent.getTime())
-      } else if (useBuffer && Buffer.isBuffer(parent)) {
+      } else if (useBuffer && isBuffer(parent)) {
         if (Buffer.from) {
           // Node.js >= 5.10.0
           child = Buffer.from(parent)
@@ -336,5 +338,9 @@ export function installHook (target) {
 
   function _instanceof (obj, type) {
     return type != null && obj instanceof type
+  }
+
+  function browserIsBuffer (b) {
+    return !!(b != null && '_isBuffer' in b && b._isBuffer)
   }
 }
