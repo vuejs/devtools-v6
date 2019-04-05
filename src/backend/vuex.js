@@ -163,7 +163,6 @@ class VuexBackend {
    * Else replays the mutations up to the <index> mutation.
    */
   onInspectState (index) {
-    console.log(index)
     if (index === -1) {
       this.bridge.send('vuex:inspected-state', {
         index,
