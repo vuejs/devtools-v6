@@ -24,13 +24,20 @@ try {
   NativePromise = function () {}
 }
 
-export default function clone (parent, { circular = true, depth = Infinity, prototype, includeNonEnumerable } = {}) {
+export default function clone (parent, {
+  circular = true,
+  depth = Infinity,
+  prototype,
+  includeNonEnumerable
+} = {}) {
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
   var allParents = []
   var allChildren = []
 
   var useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
+
+  const isBuffer = typeof window !== 'undefined' ? browserIsBuffer : Buffer.isBuffer
 
   // recurse this function so we don't reset allParents and allChildren
   function _clone (parent, depth) {
@@ -64,7 +71,7 @@ export default function clone (parent, { circular = true, depth = Infinity, prot
       if (parent.lastIndex) child.lastIndex = parent.lastIndex
     } else if (clone.__isDate(parent)) {
       child = new Date(parent.getTime())
-    } else if (useBuffer && Buffer.isBuffer(parent)) {
+    } else if (useBuffer && isBuffer(parent)) {
       if (Buffer.from) {
         // Node.js >= 5.10.0
         child = Buffer.from(parent)
@@ -190,4 +197,8 @@ clone.__getRegExpFlags = __getRegExpFlags
 
 function _instanceof (obj, type) {
   return type != null && obj instanceof type
+}
+
+function browserIsBuffer (b) {
+  return !!(b != null && '_isBuffer' in b && b._isBuffer)
 }
