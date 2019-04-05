@@ -56,10 +56,29 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       state = {}
     }
 
+    const fakeModule = {
+      ...module
+    }
+
+    const replaceNestedStates = (nestedModule) => {
+      if (nestedModule.modules) {
+        Object.keys(nestedModule.modules).forEach(key => {
+          const child = nestedModule.modules[key]
+          let state = {}
+          if (child.state) {
+            state = typeof child.state === 'function' ? child.state() : child.state
+          }
+          child.state = clone(state)
+          replaceNestedStates(child)
+        })
+      }
+    }
+    replaceNestedStates(fakeModule)
+
     const key = path.join('/')
     const moduleInfo = registeredModules[key] = allTimeModules[key] = {
       path,
-      module,
+      module: fakeModule,
       options: {
         ...options,
         preserveState: false
