@@ -31,11 +31,15 @@ const mutations = {
   },
 
   'RECEIVE_MUTATION' (state, entry) {
+    const inspectingLastMutation = state.inspectedIndex === state.history.length - 1
     entry.id = uid++
     state.history.push(entry)
     if (!state.filter) {
-      state.inspectedIndex = state.activeIndex = state.history.length - 1
-      state.inspectedState = null
+      state.activeIndex = state.history.length - 1
+      if (inspectingLastMutation) {
+        state.inspectedIndex = state.activeIndex
+        state.inspectedState = null
+      }
     }
   },
 
