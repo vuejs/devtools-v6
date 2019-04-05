@@ -124,7 +124,7 @@ export function installHook (target) {
         store.registerModule = origRegister
         store.unregisterModule = origUnregister
       }
-      return hook.storeModules
+      return hook.storeModules || []
     }
   })
 
