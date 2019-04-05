@@ -235,6 +235,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
 
   function replayMutations (index) {
     const originalVm = store._vm
+    const originalState = clone(store.state)
     store._vm = snapshotsVm
 
     let tempRemovedModules = []
@@ -262,6 +263,10 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       updateSnapshotsVm(state)
       store.replaceState(state)
     } else {
+      // Update state when using fake vm to properly temporarily remove modules
+      updateSnapshotsVm(originalState)
+      store.replaceState(originalState)
+      // Temporarily remove modules if they where not present during first mutation being replayed
       const startMutation = mutations[stateSnapshot.index]
       if (startMutation) {
         tempRemovedModules = Object.keys(registeredModules).filter(m => !startMutation.registeredModules.includes(m))
@@ -269,7 +274,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
         tempRemovedModules = Object.keys(registeredModules)
       }
       tempRemovedModules = tempRemovedModules.filter(m => !registeredModules[m].early)
-      tempRemovedModules.filter(m => get(store.state, m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
+      tempRemovedModules.filter(m => hasModule(m.split('/'))).sort((a, b) => b.length - a.length).forEach(m => {
         origUnregisterModule(m.split('/'))
         if (!isProd) console.log('before replay unregister', m)
       })
@@ -295,7 +300,7 @@ export function initVuexBackend (hook, bridge, isLegacy) {
             updateSnapshotsVm(store.state)
             if (!isProd) console.log('replay register module', moduleInfo)
           }
-        } else if (mutation.unregisterModule && get(store.state, mutation.payload.path) != null) {
+        } else if (mutation.unregisterModule && hasModule(mutation.payload.path) != null) {
           const path = mutation.payload.path
           const index = tempAddedModules.indexOf(path.join('/'))
           if (index !== -1) tempAddedModules.splice(index, 1)
@@ -425,6 +430,10 @@ export function initVuexBackend (hook, bridge, isLegacy) {
       })
       updateSnapshotsVm(store.state)
     }
+  }
+
+  function hasModule (path) {
+    return !!store._modules.get(path)
   }
 }
 
