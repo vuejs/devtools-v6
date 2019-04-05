@@ -460,13 +460,15 @@ class VuexBackend {
         }
 
         // Optimization: periodically cache snapshots
-        if (i !== index && i % SharedData.cacheVuexSnapshotsEvery === 0) {
+        if (i === index || (i % SharedData.cacheVuexSnapshotsEvery === 0)) {
           this.cacheStateSnapshot(i)
         }
       }
 
       // Send final state after replay
       resultState = clone(this.store.state)
+
+      if (!isProd) console.log(`replayed ${index - stateSnapshot.index} mutation(s)`)
     }
 
     this.lastState = resultState
@@ -501,10 +503,14 @@ class VuexBackend {
       state: clone(this.store.state),
       permanent
     })
+    if (!isProd) console.log('cached snapshot', index)
     // Delete old cached snapshots
     if (this.stateSnapshotCache.filter(s => !s.permanent).length > SharedData.cacheVuexSnapshotsLimit) {
       const i = this.stateSnapshotCache.findIndex(s => !s.permanent)
-      if (i !== -1) this.stateSnapshotCache.splice(i, 1)
+      if (i !== -1) {
+        if (!isProd) console.log('clean cached snapshot', this.stateSnapshotCache[i].index)
+        this.stateSnapshotCache.splice(i, 1)
+      }
     }
   }
 
