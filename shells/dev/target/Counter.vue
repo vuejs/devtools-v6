@@ -85,9 +85,23 @@
       <button @click="addWrongModule()">
         Register wrong module
       </button>
+      <button
+        :disabled="$store.state.deeplyNested"
+        @click="addDeeplyNestedModule()"
+      >
+        Add deeply nested module
+      </button>
+      <button
+        :disabled="!$store.state.deeplyNested"
+        @click="removeDeeplyNestedModule()"
+      >
+        Remove deeply nested module
+      </button>
     </div>
 
     <pre>{{ $store.state.instant }}</pre>
+
+    <pre>{{ $store.state.deeplyNested }}</pre>
 
     <NoProp />
   </div>
@@ -95,7 +109,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from 'vuex'
-import { dynamic, nested } from './dynamic-module'
+import { dynamic, nested, deeplyNested } from './dynamic-module'
 import NoProp from './NoProp.vue'
 
 export default {
@@ -191,13 +205,21 @@ export default {
     },
 
     toggleDynamicNested () {
-      this.$store.commit('dynamic/TOGGLE')
+      this.$store.commit('dynamic/nested/TOGGLE_NESTED')
     },
 
     addWrongModule () {
       this.$store.registerModule(['wrong'], {
         a: 1, b: 2, c: 3
       })
+    },
+
+    addDeeplyNestedModule () {
+      this.$store.registerModule('deeplyNested', deeplyNested)
+    },
+
+    removeDeeplyNestedModule () {
+      this.$store.unregisterModule('deeplyNested')
     }
   }
 }

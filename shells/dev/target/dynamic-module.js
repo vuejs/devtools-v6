@@ -35,3 +35,20 @@ export const nested = {
     }
   }
 }
+
+export const deeplyNested = {
+  namespaced: true,
+  modules: {
+    child: {
+      namespaced: true,
+      state () {
+        return {
+          childMessage: 'hello from child'
+        }
+      },
+      getters: {
+        upercaseChildMessage: state => state.childMessage.toUpperCase()
+      }
+    }
+  }
+}
