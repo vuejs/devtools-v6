@@ -155,7 +155,7 @@ export default {
     ]),
 
     filteredState () {
-      const inspectedState = this.isOnlyMutationPayload ? {
+      const inspectedState = this.isOnlyMutationPayload && this.inspectedState.mutation ? {
         mutation: this.inspectedState.mutation,
         ...this.lastReceivedState
       } : this.inspectedState
