@@ -99,6 +99,11 @@ export function installHook (target) {
   hook.once('vuex:init', store => {
     hook.store = store
     hook.initialState = clone(store.state)
+    const origReplaceState = store.replaceState.bind(store)
+    store.replaceState = state => {
+      hook.initialState = clone(state)
+      origReplaceState(state)
+    }
     // Dynamic modules
     let origRegister, origUnregister
     if (store.registerModule) {
@@ -121,6 +126,7 @@ export function installHook (target) {
       }
     }
     hook.flushStoreModules = () => {
+      store.replaceState = origReplaceState
       if (store.registerModule) {
         store.registerModule = origRegister
         store.unregisterModule = origUnregister
