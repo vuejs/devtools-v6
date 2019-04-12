@@ -128,10 +128,10 @@ function connect (Vue) {
 
   // vuex
   if (hook.store) {
-    initVuexBackend(hook, bridge, isLegacy)
+    initVuexBackend(hook, bridge, hook.store.commit === undefined)
   } else {
     hook.once('vuex:init', store => {
-      initVuexBackend(hook, bridge, isLegacy)
+      initVuexBackend(hook, bridge, store.commit === undefined)
     })
   }
 

@@ -442,13 +442,21 @@ class VuexBackend {
         } else if (mutation.handlers) {
           this.store._committing = true
           try {
-            const payload = mutation.payload
+            let payload = mutation.payload
+
+            if (this.isLegacy && !Array.isArray(payload)) {
+              payload = [payload]
+            }
+
             if (Array.isArray(mutation.handlers)) {
-              mutation.handlers.forEach(handler => handler(payload))
+              if (this.isLegacy) {
+                mutation.handlers.forEach(handler => handler(this.store.state, ...payload))
+              } else {
+                mutation.handlers.forEach(handler => handler(payload))
+              }
             } else {
-              if (this.isLegacy || SharedData.vuex1) {
-                // Vuex 1
-                mutation.handlers(this.store.state, payload)
+              if (this.isLegacy) {
+                mutation.handlers(this.store.state, ...payload)
               } else {
                 mutation.handlers(payload)
               }
