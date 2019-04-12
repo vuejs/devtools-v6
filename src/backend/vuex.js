@@ -443,7 +443,8 @@ class VuexBackend {
           this.store._committing = true
           try {
             let payload = mutation.payload
-            if (!Array.isArray(payload)) {
+
+            if (this.isLegacy && !Array.isArray(payload)) {
               payload = [payload]
             }
 
