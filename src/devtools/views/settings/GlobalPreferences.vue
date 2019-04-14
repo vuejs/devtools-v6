@@ -77,9 +77,11 @@
       </VueSwitch>
     </VueFormField>
 
-    <VueFormField
-      title="New Vuex backend"
-    >
+    <VueFormField>
+      <template #title>
+        New Vuex backend
+        <NewTag :version="1" />
+      </template>
       <VueSwitch v-model="$shared.vuexNewBackend">
         Enable
       </VueSwitch>
@@ -104,3 +106,13 @@
     </VueFormField>
   </div>
 </template>
+
+<script>
+import NewTag from './NewTag.vue'
+
+export default {
+  components: {
+    NewTag
+  }
+}
+</script>

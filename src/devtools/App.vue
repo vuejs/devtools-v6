@@ -130,8 +130,10 @@
           <VueGroupButton
             v-tooltip="$t('App.settings.tooltip')"
             :class="{
-              'icon-button': !$responsive.wide
+              'icon-button': !$responsive.wide,
+              info: hasNewSettings
             }"
+            :tag="hasNewSettings ? 'new' : null"
             value="settings"
             icon-left="settings_applications"
             class="settings-tab flat"
@@ -164,8 +166,8 @@
 import { SPECIAL_TOKENS } from '../util'
 import Keyboard from './mixins/keyboard'
 import GroupDropdown from 'components/GroupDropdown.vue'
-
 import { mapState } from 'vuex'
+import { SETTINGS_VERSION_ID, SETTINGS_VERSION } from './views/settings/SettingsTab.vue'
 
 export default {
   name: 'App',
@@ -222,7 +224,8 @@ export default {
       routingTabs: [
         { name: 'router', label: 'History', icon: 'directions' },
         { name: 'routes', label: 'Routes', icon: 'book' }
-      ]
+      ],
+      settingsVersion: parseInt(localStorage.getItem(SETTINGS_VERSION_ID))
     }
   },
 
@@ -241,7 +244,18 @@ export default {
       get () { return this.$route.matched[0].name },
       set (value) {
         this.$router.push({ name: value })
+
+        this.$nextTick(() => {
+          if (value === 'settings') {
+            this.settingsVersion = SETTINGS_VERSION
+            localStorage.setItem(SETTINGS_VERSION_ID, SETTINGS_VERSION)
+          }
+        })
       }
+    },
+
+    hasNewSettings () {
+      return this.settingsVersion !== SETTINGS_VERSION
     }
   },
 
