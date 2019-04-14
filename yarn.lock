@@ -51,13 +51,13 @@
     source-map "~0.6.1"
     vue-template-es2015-compiler "^1.9.0"
 
-"@vue/ui@^0.7.2":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.7.2.tgz#c4501719267dd35e048a5be68aeea17f67ba47cd"
-  integrity sha512-LDhPgumKVeVSFpfLlrKOpbWPJB8pAacsBGEYLifOSNpEQhSZDTA7cMAfZ35GkXnrfUh3tovne0X+KyBewz3pOg==
+"@vue/ui@^0.9.2":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.9.2.tgz#d0db33f5133f93cb71e44bcd1ed71caa405ded25"
+  integrity sha512-fb4ZO7elVD74nUG0Vtmz5ptmPZJ+shupv2kMxf3dkzmzqCO486InkPm9GjBveGy73zRImO5Pm4EHsWVTaSdcBA==
   dependencies:
     focus-visible "^4.1.5"
-    v-tooltip "^2.0.0-rc.33"
+    v-tooltip "^2.0.1"
     vue-resize "^0.4.5"
 
 "@webassemblyjs/ast@1.8.5":
@@ -3572,11 +3572,6 @@ lodash.groupby@^4.6.0:
   resolved "https://registry.yarnpkg.com/lodash.groupby/-/lodash.groupby-4.6.0.tgz#0b08a1dcf68397c397855c3239783832df7403d1"
   integrity sha1-Cwih3PaDl8OXhVwyOXg4Mt90A9E=
 
-lodash.merge@^4.6.0:
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.1.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
-  integrity sha512-AOYza4+Hf5z1/0Hztxpm2/xiPZgi/cjMqdnKTUWTBSKchJlxXXuUSxCCl8rJlf4g6yww/j6mA8nC8Hw/EZWxKQ==
-
 lodash.once@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
@@ -4483,10 +4478,10 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
-popper.js@^1.12.9:
-  version "1.14.7"
-  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.7.tgz#e31ec06cfac6a97a53280c3e55e4e0c860e7738e"
-  integrity sha512-4q1hNvoUre/8srWsH7hnoSJ5xVmIL4qgz+s4qf2TnJIMyZFUFMGH+9vE7mXynAlHSZ/NdTmmow86muD0myUkVQ==
+popper.js@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.15.0.tgz#5560b99bbad7647e9faa475c6b8056621f5a4ff2"
+  integrity sha512-w010cY1oCUmI+9KwwlWki+r5jxKfTFDVoadl7MSrIujHU5MJ5OR6HTDj6Xo8aoR/QsA56x8jKjA59qGH4ELtrA==
 
 portfinder@^1.0.9:
   version "1.0.20"
@@ -6025,14 +6020,14 @@ uuid@^3.0.1, uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
-v-tooltip@^2.0.0-rc.33:
-  version "2.0.0-rc.33"
-  resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-2.0.0-rc.33.tgz#78f7d8e9c34265622be65ba9dc78c67f1dc02b73"
-  integrity sha1-ePfY6cNCZWIr5lup3HjGfx3AK3M=
+v-tooltip@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-2.0.1.tgz#ba959552651dfa33210170ac9cfcce3525abe797"
+  integrity sha512-Ifby9zx34MtzZRSYlr+tFQjXxHd8NZG9YoEHdeSQb8qwFGRQZhc8JVnxKBKUDGFowLUEzfX4e3mVmqrLw7b5oQ==
   dependencies:
-    lodash.merge "^4.6.0"
-    popper.js "^1.12.9"
-    vue-resize "^0.4.3"
+    lodash "^4.17.11"
+    popper.js "^1.15.0"
+    vue-resize "^0.4.5"
 
 v8-compile-cache@^2.0.2:
   version "2.0.2"
@@ -6101,7 +6096,7 @@ vue-observe-visibility@^0.4.3:
   resolved "https://registry.yarnpkg.com/vue-observe-visibility/-/vue-observe-visibility-0.4.3.tgz#b2694a83c94b274f566e03a497df51540e2daedc"
   integrity sha512-YyyO3a5OUkgpmC0NEf+xWJR0jVdFWzVbKRDzUumOVMhfr3+jxXEycYNHCM3rEO5lcj3ZNJpDomZEYEx0Wqqh9A==
 
-vue-resize@^0.4.3, vue-resize@^0.4.5:
+vue-resize@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-0.4.5.tgz#4777a23042e3c05620d9cbda01c0b3cc5e32dcea"
   integrity sha512-bhP7MlgJQ8TIkZJXAfDf78uJO+mEI3CaLABLjv0WNzr4CcGRGPIAItyWYnP6LsPA4Oq0WE+suidNs6dgpO4RHg==
