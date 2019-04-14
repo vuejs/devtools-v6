@@ -78,6 +78,17 @@
     </VueFormField>
 
     <VueFormField
+      title="New Vuex backend"
+    >
+      <VueSwitch v-model="$shared.vuexNewBackend">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        Faster and less memory-intensive
+      </template>
+    </VueFormField>
+
+    <VueFormField
       title="Autoload Vuex state"
     >
       <VueSwitch v-model="$shared.vuexAutoload">

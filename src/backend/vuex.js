@@ -37,6 +37,8 @@ class VuexBackend {
     this.registeredModules = {}
     /** All dynamic modules ever registered, useful for mutation replaying */
     this.allTimeModules = {}
+    /** Legacy base state */
+    this.legacyBaseSnapshot = null
 
     // First-time snapshot VM creation
     this.resetSnapshotsVm()
@@ -124,7 +126,11 @@ class VuexBackend {
    * ⚠️ State should be time-traveled to before executing this
    */
   onCommit (index) {
-    this.baseStateSnapshot = this.lastState
+    if (SharedData.vuexNewBackend) {
+      this.baseStateSnapshot = this.lastState
+    } else {
+      this.legacyBaseSnapshot = this.mutations[index].snapshot
+    }
     this.resetSnapshotCache()
     this.mutations = this.mutations.slice(index + 1)
     this.mutations.forEach((mutation, index) => {
@@ -149,8 +155,8 @@ class VuexBackend {
   onImportState (state) {
     const parsed = parse(state, true)
     this.initialState = parsed
-    this.reset()
     this.hook.emit('vuex:travel-to-state', parsed)
+    this.reset()
     this.bridge.send('vuex:init')
     this.onInspectState(-1)
   }
@@ -199,7 +205,11 @@ class VuexBackend {
    * Reset vuex backend
    */
   reset (stateSnapshot = null) {
-    this.baseStateSnapshot = stateSnapshot || clone(this.initialState)
+    if (SharedData.vuexNewBackend) {
+      this.baseStateSnapshot = stateSnapshot || clone(this.initialState)
+    } else {
+      this.legacyBaseSnapshot = this.stringifyStore()
+    }
     this.mutations = []
     this.resetSnapshotCache()
   }
@@ -235,21 +245,23 @@ class VuexBackend {
       ...module
     }
 
-    // Ensure all children state are cloned
-    const replaceNestedStates = (nestedModule) => {
-      if (nestedModule.modules) {
-        Object.keys(nestedModule.modules).forEach(key => {
-          const child = nestedModule.modules[key]
-          let state = {}
-          if (child.state) {
-            state = typeof child.state === 'function' ? child.state() : child.state
-          }
-          child.state = clone(state)
-          replaceNestedStates(child)
-        })
+    if (SharedData.vuexNewBackend) {
+      // Ensure all children state are cloned
+      const replaceNestedStates = (nestedModule) => {
+        if (nestedModule.modules) {
+          Object.keys(nestedModule.modules).forEach(key => {
+            const child = nestedModule.modules[key]
+            let state = {}
+            if (child.state) {
+              state = typeof child.state === 'function' ? child.state() : child.state
+            }
+            child.state = clone(state)
+            replaceNestedStates(child)
+          })
+        }
       }
+      replaceNestedStates(fakeModule)
     }
-    replaceNestedStates(fakeModule)
 
     const key = path.join('/')
     const moduleInfo = this.registeredModules[key] = this.allTimeModules[key] = {
@@ -259,7 +271,7 @@ class VuexBackend {
         ...options,
         preserveState: false
       },
-      state: clone(state)
+      state: SharedData.vuexNewBackend ? clone(state) : null
     }
 
     if (SharedData.recordVuex) {
@@ -328,15 +340,26 @@ class VuexBackend {
     return !!this.store._modules.get(path)
   }
 
+  stringifyStore () {
+    return stringify({
+      state: this.store.state,
+      getters: this.store.getters || {}
+    })
+  }
+
   /**
    * Handle a new mutation commited to the store
    */
   addMutation (type, payload, options = {}) {
     const index = this.mutations.length
 
+    if (!SharedData.vuexNewBackend) {
+      options.snapshot = this.stringifyStore()
+    }
+
     this.mutations.push({
       type,
-      payload: clone(payload),
+      payload: SharedData.vuexNewBackend ? clone(payload) : null,
       index,
       handlers: this.store._mutations[type],
       registeredModules: Object.keys(this.registeredModules),
@@ -359,6 +382,12 @@ class VuexBackend {
    * to re-create what the vuex state should be at this point
    */
   replayMutations (index) {
+    if (!SharedData.vuexNewBackend) {
+      const snapshot = index === -1 ? this.legacyBaseSnapshot : this.mutations[index].snapshot
+      this.lastState = parse(snapshot, true).state
+      return snapshot
+    }
+
     const originalVm = this.store._vm
     const originalState = clone(this.store.state)
     this.store._vm = this.snapshotsVm
@@ -481,10 +510,7 @@ class VuexBackend {
 
     this.lastState = resultState
 
-    const result = stringify({
-      state: this.store.state,
-      getters: this.store.getters || {}
-    })
+    const result = this.stringifyStore()
 
     // Restore user state
     tempAddedModules.sort((a, b) => b.length - a.length).forEach(m => {
