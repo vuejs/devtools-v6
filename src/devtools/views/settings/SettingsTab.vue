@@ -29,7 +29,7 @@ export default {
 
 <style lang="stylus" scoped>
 .settings
-  overflow auto
+  overflow auto !important
   >>> .preferences
     display flex
     flex-wrap wrap
