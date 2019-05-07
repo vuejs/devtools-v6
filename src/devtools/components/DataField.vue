@@ -659,7 +659,7 @@ export default {
     &.type-reference
         opacity 0.5
       >>> .attr-title
-        color #800080
+        color #e36eec
   .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
