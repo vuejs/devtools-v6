@@ -77,7 +77,7 @@
       </VueSwitch>
     </VueFormField>
 
-    <VueFormField>
+    <VueFormField title="New Vuex backend">
       <template #title>
         New Vuex backend
         <NewTag :version="1" />
