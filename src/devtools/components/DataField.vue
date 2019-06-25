@@ -660,6 +660,9 @@ export default {
         opacity 0.5
       >>> .attr-title
         color #800080
+        .vue-ui-dark-mode &
+          color #e36eec
+
   .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native
