@@ -1,20 +1,19 @@
-import storage from 'src/storage'
+import * as storage from 'src/storage'
 import { classify } from 'src/util'
 import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
-const enabled = storage.get(ENABLED_KEY)
 const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 
 let uid = 0
 
-const state = {
-  enabled: enabled == null ? true : enabled,
+const state = () => ({
+  enabled: storage.get(ENABLED_KEY, true),
   events: [],
   inspectedIndex: -1,
   newEventCount: 0,
   filter: ''
-}
+})
 
 const mutations = {
   'RECEIVE_EVENT' (state, payload) {

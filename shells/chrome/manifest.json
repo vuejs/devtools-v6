@@ -34,7 +34,8 @@
     "http://*/*",
     "https://*/*",
     "file:///*",
-    "contextMenus"
+    "contextMenus",
+    "storage"
   ],
   "content_scripts": [
     {
