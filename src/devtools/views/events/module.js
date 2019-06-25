@@ -1,5 +1,5 @@
 import * as storage from 'src/storage'
-import { classify } from 'src/util'
+import { getComponentDisplayName } from 'src/util'
 import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
@@ -46,10 +46,9 @@ const mutations = {
 }
 
 const matchingEvent = ({ searchText, searchComponent, regEx }) => e => {
-  const classifyComponents = SharedData.classifyComponents
+  const componentNameStyle = SharedData.componentNameStyle
   let searchTerm = (searchComponent
-    ? (classifyComponents
-      ? classify(e.instanceName) : e.instanceName)
+    ? getComponentDisplayName(e.instanceName, componentNameStyle)
     : e.eventName)
 
   if (regEx) {

@@ -3,7 +3,7 @@ import * as storage from './storage'
 // Initial state
 const internalSharedData = {
   openInEditorHost: '/',
-  classifyComponents: true,
+  componentNameStyle: 'class',
   theme: 'auto',
   displayDensity: 'low',
   recordVuex: true,
@@ -18,7 +18,7 @@ const internalSharedData = {
 }
 
 const persisted = [
-  'classifyComponents',
+  'componentNameStyle',
   'theme',
   'displayDensity',
   'recordVuex',

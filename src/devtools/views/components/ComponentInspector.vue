@@ -69,7 +69,7 @@
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import StateInspector from 'components/StateInspector.vue'
-import { searchDeepInObject, sortByKey, classify, openInEditor } from 'src/util'
+import { searchDeepInObject, sortByKey, openInEditor, getComponentDisplayName } from 'src/util'
 import groupBy from 'lodash.groupby'
 
 export default {
@@ -102,7 +102,7 @@ export default {
     },
 
     targetName () {
-      return this.$shared.classifyComponents ? classify(this.target.name) : this.target.name
+      return getComponentDisplayName(this.target.name, this.$shared.componentNameStyle)
     },
 
     filteredState () {

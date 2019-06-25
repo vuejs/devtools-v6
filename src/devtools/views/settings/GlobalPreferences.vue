@@ -2,16 +2,20 @@
   <div class="global-preferences preferences">
     <VueFormField title="Normalize component names">
       <VueGroup
-        v-model="$shared.classifyComponents"
+        v-model="$shared.componentNameStyle"
         class="extend"
       >
         <VueGroupButton
-          :value="false"
+          value="original"
           label="Original name"
         />
         <VueGroupButton
-          :value="true"
+          value="class"
           label="Pascal case"
+        />
+        <VueGroupButton
+          value="kebab"
+          label="Kebab case"
         />
       </VueGroup>
     </VueFormField>

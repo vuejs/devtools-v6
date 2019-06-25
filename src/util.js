@@ -27,8 +27,29 @@ export const camelize = cached((str) => {
   return str.replace(camelizeRE, toUpper)
 })
 
+const kebabizeRE = /([a-z0-9])([A-Z])/g
+export const kebabize = cached((str) => {
+  return str && str
+    .replace(kebabizeRE, (_, lowerCaseCharacter, upperCaseLetter) => {
+      return `${lowerCaseCharacter}-${upperCaseLetter}`
+    })
+    .toLowerCase()
+})
+
 function toUpper (_, c) {
   return c ? c.toUpperCase() : ''
+}
+
+export function getComponentDisplayName (originalName, style = 'class') {
+  switch (style) {
+    case 'class':
+      return classify(originalName)
+    case 'kebab':
+      return kebabize(originalName)
+    case 'original':
+    default:
+      return originalName
+  }
 }
 
 export function inDoc (node) {

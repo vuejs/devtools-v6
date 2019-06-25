@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { classify } from 'src/util'
+import { getComponentDisplayName } from 'src/util'
 
 import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
@@ -126,7 +126,7 @@ export default {
     },
 
     componentName () {
-      return (this.$shared.classifyComponents ? classify(this.entry.id) : this.entry.id) || 'Anonymous Component'
+      return getComponentDisplayName(this.entry.id, this.$shared.componentNameStyle) || 'Anonymous Component'
     },
 
     highDensity () {
