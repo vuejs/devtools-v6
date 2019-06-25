@@ -1,7 +1,7 @@
 // If we can, we use the browser extension API to store data
 // it's async though, so we synchronize changes from an intermediate
 // storageData object
-const useStorage = typeof chrome.storage !== 'undefined'
+const useStorage = typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined'
 
 let storageData = null
 
