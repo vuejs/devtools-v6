@@ -341,7 +341,7 @@ export default {
     },
 
     formattedValue () {
-      const value = this.field.value
+      let value = this.field.value
       let result
       if (this.fieldOptions.abstract) {
         return ''
@@ -358,13 +358,14 @@ export default {
       } else if (typeof value === 'string') {
         var typeMatch = value.match(rawTypeRE)
         if (typeMatch) {
-          return escape(typeMatch[1])
+          value = escape(typeMatch[1])
         } else {
-          return `<span>"</span>${escape(value)}<span>"</span>`
+          value = `<span>"</span>${escape(value)}<span>"</span>`
         }
-      } else {
-        return value
+        value = value.replace(/ /g, '&nbsp;')
+          .replace(/\n/g, '<span>\\n</span>')
       }
+      return value
     },
 
     rawValue () {
@@ -659,6 +660,9 @@ export default {
         opacity 0.5
       >>> .attr-title
         color #800080
+        .vue-ui-dark-mode &
+          color #e36eec
+
   .vue-ui-dark-mode &
     color #bdc6cf
     &.string, &.native

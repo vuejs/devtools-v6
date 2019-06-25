@@ -26,15 +26,20 @@ const state = {
 const mutations = {
   'INIT' (state) {
     state.hasVuex = true
+    snapshotsCache.reset()
     reset(state)
   },
 
   'RECEIVE_MUTATION' (state, entry) {
+    const inspectingLastMutation = state.inspectedIndex === state.history.length - 1
     entry.id = uid++
     state.history.push(entry)
     if (!state.filter) {
-      state.inspectedIndex = state.activeIndex = state.history.length - 1
-      state.inspectedState = null
+      state.activeIndex = state.history.length - 1
+      if (inspectingLastMutation) {
+        state.inspectedIndex = state.activeIndex
+        state.inspectedState = null
+      }
     }
   },
 
@@ -68,16 +73,16 @@ const mutations = {
   },
 
   'UPDATE_INSPECTED_STATE' (state, value) {
-    state.inspectedState = value
+    state.inspectedState = parse(value)
   },
 
   'RECEIVE_STATE' (state, { index, snapshot }) {
-    state.lastReceivedState = snapshot
+    state.lastReceivedState = parse(snapshot)
     snapshotsCache.set(index, snapshot)
   },
 
   'UPDATE_BASE_STATE' (state, value) {
-    state.base = value
+    state.base = parse(value)
   },
 
   'TIME_TRAVEL' (state, index) {
@@ -130,11 +135,8 @@ const getters = {
 
     const data = entry ? inspectedState : base
     if (data) {
-      const snapshot = parse(data)
-      if (snapshot) {
-        res.state = snapshot.state
-        res.getters = snapshot.getters
-      }
+      res.state = data.state
+      res.getters = data.getters
     }
 
     return res
@@ -150,6 +152,10 @@ const getters = {
       return history.indexOf(entry)
     }
     return -1
+  },
+
+  inspectedEntry ({ inspectedIndex }, { filteredHistory }) {
+    return filteredHistory[inspectedIndex]
   }
 }
 

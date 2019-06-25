@@ -12,6 +12,11 @@
 
     <TestComponent ref="component" />
 
+    <div
+      id="aDiv"
+      ref="someDiv"
+    />
+
     <p>
       <button @click="sendComponent()">
         Vuex mutation

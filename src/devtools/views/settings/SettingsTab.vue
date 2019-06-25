@@ -8,8 +8,18 @@
 import GlobalPreferences from './GlobalPreferences.vue'
 import { mapState } from 'vuex'
 
+export const SETTINGS_VERSION = 1
+export const SETTINGS_VERSION_ID = 'vue-devtools-settings-version'
+
 export default {
   components: { GlobalPreferences },
+
+  provide () {
+    return {
+      settingsVersion: SETTINGS_VERSION,
+      currentSettingsVersion: parseInt(localStorage.getItem(SETTINGS_VERSION_ID)) || 0
+    }
+  },
 
   computed: mapState('events', [
     'enabled'
@@ -19,7 +29,7 @@ export default {
 
 <style lang="stylus" scoped>
 .settings
-  overflow auto
+  overflow auto !important
   >>> .preferences
     display flex
     flex-wrap wrap

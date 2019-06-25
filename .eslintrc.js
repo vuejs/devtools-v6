@@ -11,7 +11,8 @@ module.exports = {
     'bridge': true,
     'chrome': true,
     'localStorage': true,
-    'HTMLDocument': true
+    'HTMLDocument': true,
+    'name': 'off'
   },
   'rules': {
     'vue/html-closing-bracket-newline': ['error', {

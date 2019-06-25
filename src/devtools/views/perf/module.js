@@ -5,10 +5,10 @@ export const FPS_MARKERS_PRECISION = 1000
 export default {
   namespaced: true,
 
-  state: {
+  state: () => ({
     currentBenchmark: null,
     benchmarks: []
-  },
+  }),
 
   getters: {
     metrics: state => (state.currentBenchmark && state.currentBenchmark.metrics) || {},

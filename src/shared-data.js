@@ -1,4 +1,4 @@
-import storage from './storage'
+import * as storage from './storage'
 
 // Initial state
 const internalSharedData = {
@@ -13,6 +13,7 @@ const internalSharedData = {
   recordPerf: false,
   editableProps: false,
   logDetected: true,
+  vuexNewBackend: false,
   vuexAutoload: false
 }
 
@@ -23,6 +24,7 @@ const persisted = [
   'recordVuex',
   'editableProps',
   'logDetected',
+  'vuexNewBackend',
   'vuexAutoload'
 ]
 

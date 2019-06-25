@@ -54,7 +54,7 @@
           class="entry list-item"
           :class="{ active: inspectedIndex === index }"
           :data-active="active"
-          @click="inspect(filteredRoutes.indexOf(route))"
+          @click="inspect(routeChanges.indexOf(route))"
         >
           <span class="route-name">{{ route.to.path }}</span>
           <span class="time">{{ route.timestamp | formatTime }}</span>

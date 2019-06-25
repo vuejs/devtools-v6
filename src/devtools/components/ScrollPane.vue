@@ -9,6 +9,12 @@
     >
       <slot name="scroll" />
     </div>
+    <div
+      v-if="$slots.footer"
+      class="footer"
+    >
+      <slot name="footer" />
+    </div>
   </div>
 </template>
 
@@ -48,4 +54,9 @@ export default {
     height 0
     &-thumb
       background $active-color
+
+.footer
+  border-top 1px solid $border-color
+  .vue-ui-dark-mode &
+    border-top-color $dark-border-color
 </style>

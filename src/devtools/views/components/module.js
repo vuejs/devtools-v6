@@ -42,6 +42,7 @@ const mutations = {
     // Mutations
     state.instances = Object.freeze(payload.instances)
     state.inspectedInstance = Object.freeze(payload.inspectedInstance)
+    state.inspectedInstanceId = state.inspectedInstance ? state.inspectedInstance.id : null
     state.instancesMap = Object.freeze(map)
 
     if (process.env.NODE_ENV !== 'production') {

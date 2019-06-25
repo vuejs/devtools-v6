@@ -49,12 +49,6 @@ export default {
     'instances',
     'inspectedInstance',
     'loading'
-  ]),
-
-  methods: {
-    filter (e) {
-      bridge.send('filter-instances', e.target.value)
-    }
-  }
+  ])
 }
 </script>

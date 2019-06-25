@@ -81,6 +81,19 @@
       </VueSwitch>
     </VueFormField>
 
+    <VueFormField>
+      <template #title>
+        New Vuex backend
+        <NewTag :version="1" />
+      </template>
+      <VueSwitch v-model="$shared.vuexNewBackend">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        Faster and less memory-intensive
+      </template>
+    </VueFormField>
+
     <VueFormField
       title="Autoload Vuex state"
     >
@@ -97,3 +110,13 @@
     </VueFormField>
   </div>
 </template>
+
+<script>
+import NewTag from './NewTag.vue'
+
+export default {
+  components: {
+    NewTag
+  }
+}
+</script>

@@ -20,6 +20,14 @@
       Do a lot of mutations
     </button>
 
+    <button @click="startMutationStream()">
+      Start mutation stream
+    </button>
+
+    <button @click="stopMutationStream()">
+      Stop mutation stream
+    </button>
+
     <p>Your counter is {{ $store.getters.isPositive ? 'positive' : 'negative' }}</p>
 
     <h3>Vuex Module</h3>
@@ -58,9 +66,50 @@
       >
         Remove dynamic module
       </button>
+      <button
+        :disabled="!$store.state.dynamic || $store.state.dynamic.nested"
+        @click="addDynamicNestedModule()"
+      >
+        Add dynamic nested module
+      </button>
+      <button
+        :disabled="$store.state.dynamic && $store.state.dynamic.nested"
+        @click="addDynamicNestedModule(true)"
+      >
+        Add dynamic nested module (force)
+      </button>
+      <button
+        :disabled="!$store.state.dynamic || !$store.state.dynamic.nested"
+        @click="toggleDynamicNested()"
+      >
+        Toggle dynamic nested state
+      </button>
+      <button
+        :disabled="!$store.state.dynamic || !$store.state.dynamic.nested"
+        @click="removeDynamicNestedModule()"
+      >
+        Remove dynamic nested module
+      </button>
+      <button @click="addWrongModule()">
+        Register wrong module
+      </button>
+      <button
+        :disabled="$store.state.deeplyNested"
+        @click="addDeeplyNestedModule()"
+      >
+        Add deeply nested module
+      </button>
+      <button
+        :disabled="!$store.state.deeplyNested"
+        @click="removeDeeplyNestedModule()"
+      >
+        Remove deeply nested module
+      </button>
     </div>
 
     <pre>{{ $store.state.instant }}</pre>
+
+    <pre>{{ $store.state.deeplyNested }}</pre>
 
     <NoProp />
   </div>
@@ -68,7 +117,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from 'vuex'
-import DynamicModule from './dynamic-module'
+import { dynamic, nested, deeplyNested } from './dynamic-module'
 import NoProp from './NoProp.vue'
 
 export default {
@@ -92,6 +141,10 @@ export default {
       }
     })
     console.log('registered instant')
+
+    this.addDynamicNestedModule(true)
+    this.removeDynamicNestedModule()
+    this.removeDynamicModule()
   },
   computed: {
     test () { return 1 },
@@ -131,13 +184,21 @@ export default {
       }
     },
 
+    startMutationStream () {
+      this.$_mutationTimer = setInterval(this.increment, 1000)
+    },
+
+    stopMutationStream () {
+      clearInterval(this.$_mutationTimer)
+    },
+
     ...mapMutations('nested', {
       addBar: 'ADD_BAR',
       removeBar: 'REMOVE_BAR'
     }),
 
     addDynamicModule () {
-      this.$store.registerModule('dynamic', DynamicModule)
+      this.$store.registerModule('dynamic', dynamic)
     },
 
     removeDynamicModule () {
@@ -146,6 +207,35 @@ export default {
 
     toggleDynamic () {
       this.$store.commit('dynamic/TOGGLE')
+    },
+
+    addDynamicNestedModule (force = false) {
+      if (force) {
+        this.$store.registerModule(['dynamic'], {})
+      }
+      this.$store.registerModule(['dynamic', 'nested'], nested)
+    },
+
+    removeDynamicNestedModule () {
+      this.$store.unregisterModule(['dynamic', 'nested'])
+    },
+
+    toggleDynamicNested () {
+      this.$store.commit('dynamic/nested/TOGGLE_NESTED')
+    },
+
+    addWrongModule () {
+      this.$store.registerModule(['wrong'], {
+        a: 1, b: 2, c: 3
+      })
+    },
+
+    addDeeplyNestedModule () {
+      this.$store.registerModule('deeplyNested', deeplyNested)
+    },
+
+    removeDeeplyNestedModule () {
+      this.$store.unregisterModule('deeplyNested')
     }
   }
 }
