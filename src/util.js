@@ -546,7 +546,7 @@ export function has (object, path, parent = false) {
 
   const sections = Array.isArray(path) ? path : path.split('.')
   const size = !parent ? 1 : 2
-  while (sections.length > size) {
+  while (object && sections.length > size) {
     object = object[sections.shift()]
   }
   return object != null && object.hasOwnProperty(sections[0])
