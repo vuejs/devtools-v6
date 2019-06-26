@@ -64,22 +64,6 @@
       </VueGroup>
     </VueFormField>
 
-    <VueFormField title="Time Format">
-      <VueGroup
-        v-model="$shared.timeFormat"
-        class="extend"
-      >
-        <VueGroupButton
-          value="default"
-          label="Default"
-        />
-        <VueGroupButton
-          value="ms"
-          label="Include ms"
-        />
-      </VueGroup>
-    </VueFormField>
-
     <VueFormField
       title="Editable props"
     >
@@ -93,6 +77,15 @@
         />
         May print warnings in the console
       </template>
+    </VueFormField>
+
+    <VueFormField title="Time Format">
+      <VueSwitch
+        :value="$shared.timeFormat === 'ms'"
+        @update="value => $shared.timeFormat = value ? 'ms' : 'default'"
+      >
+        Display milliseconds
+      </VueSwitch>
     </VueFormField>
 
     <VueFormField title="Detected Vue message">
