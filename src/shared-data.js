@@ -6,6 +6,7 @@ const internalSharedData = {
   componentNameStyle: 'class',
   theme: 'auto',
   displayDensity: 'low',
+  timeFormat: 'default',
   recordVuex: true,
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
@@ -25,7 +26,8 @@ const persisted = [
   'editableProps',
   'logDetected',
   'vuexNewBackend',
-  'vuexAutoload'
+  'vuexAutoload',
+  'timeFormat'
 ]
 
 // ---- INTERNALS ---- //

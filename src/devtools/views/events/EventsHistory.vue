@@ -68,7 +68,7 @@
             <span class="component-name">{{ displayComponentName(event.instanceName) }}</span>
             <span>&gt;</span>
           </span>
-          <span class="time">{{ event.timestamp | formatTime }}</span>
+          <span class="time">{{ event.timestamp | formatTime($shared.timeFormat) }}</span>
         </div>
       </template>
     </RecycleScroller>

@@ -35,7 +35,7 @@
               {{ entry.label }}
             </div>
             <div class="time">
-              {{ entry.timestamp | formatTime }}
+              {{ entry.timestamp | formatTime($shared.timeFormat) }}
             </div>
           </div>
         </div>

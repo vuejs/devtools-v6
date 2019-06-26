@@ -57,7 +57,7 @@
           @click="inspect(routeChanges.indexOf(route))"
         >
           <span class="route-name">{{ route.to.path }}</span>
-          <span class="time">{{ route.timestamp | formatTime }}</span>
+          <span class="time">{{ route.timestamp | formatTime($shared.timeFormat) }}</span>
           <span
             v-if="route.to.redirectedFrom"
             class="label redirect"

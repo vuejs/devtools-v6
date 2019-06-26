@@ -79,6 +79,15 @@
       </template>
     </VueFormField>
 
+    <VueFormField title="Time Format">
+      <VueSwitch
+        :value="$shared.timeFormat === 'ms'"
+        @update="value => $shared.timeFormat = value ? 'ms' : 'default'"
+      >
+        Display milliseconds
+      </VueSwitch>
+    </VueFormField>
+
     <VueFormField title="Detected Vue message">
       <VueSwitch v-model="$shared.logDetected">
         Display in browser console

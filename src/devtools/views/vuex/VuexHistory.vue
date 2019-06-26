@@ -80,7 +80,7 @@
             </a>
           </span>
           <span class="time">
-            {{ lastCommit | formatTime }}
+            {{ lastCommit | formatTime($shared.timeFormat) }}
           </span>
           <span
             v-if="activeIndex === -1"
@@ -144,7 +144,7 @@
             v-tooltip="entry.timestamp"
             class="time"
           >
-            {{ entry.timestamp | formatTime }}
+            {{ entry.timestamp | formatTime($shared.timeFormat) }}
           </span>
           <span
             v-if="isActive(index, entry)"
@@ -180,13 +180,6 @@ export default {
     ActionHeader,
     ScrollPane
   },
-
-  filters: {
-    formatTime (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
-    }
-  },
-
   mixins: [
     Keyboard({
       onKeyDown ({ key, modifiers }) {

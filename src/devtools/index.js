@@ -10,6 +10,7 @@ import SharedData, { init as initSharedData, destroy as destroySharedData } from
 import { init as initStorage } from 'src/storage'
 import VuexResolve from './views/vuex/resolve'
 
+// register filters
 for (const key in filters) {
   Vue.filter(key, filters[key])
 }
@@ -189,11 +190,6 @@ function initApp (shell) {
 
     bridge.on('routes:changed', payload => {
       store.commit('routes/CHANGED', parse(payload))
-    })
-
-    // register filters
-    Vue.filter('formatTime', function (timestamp) {
-      return (new Date(timestamp)).toString().match(/\d\d:\d\d:\d\d/)[0]
     })
 
     bridge.on('events:reset', () => {
