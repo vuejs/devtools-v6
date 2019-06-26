@@ -313,6 +313,8 @@ export default {
   position relative
   .vue-ui-dark-mode &
     background-color $dark-background-color
+  .vue-ui-high-contrast &
+    background black
   &.beta
     &::after
       display block

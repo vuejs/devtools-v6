@@ -1,19 +1,12 @@
 <template>
   <div class="data-field">
-    <v-popover
+    <VTooltip
       :style="{ marginLeft: depth * 14 + 'px' }"
       :disabled="!field.meta"
-      :delay="{
-        show: 300,
-        hide: 0
-      }"
-      :open-group="'id' + _uid"
       :class="{
         'force-toolbar': contextMenuOpen || editing,
       }"
       class="self"
-      popover-class="force-tooltip"
-      trigger="hover"
       placement="left"
       offset="24"
       @click.native="onClick"
@@ -152,21 +145,22 @@
         </span>
       </template>
 
-      <div
-        v-if="field.meta"
-        slot="popover"
-        class="meta"
-      >
+      <template #popper>
         <div
-          v-for="(val, key) in field.meta"
-          :key="key"
-          class="meta-field"
+          v-if="field.meta"
+          class="meta"
         >
-          <span class="key">{{ key }}</span>
-          <span class="value">{{ val }}</span>
+          <div
+            v-for="(val, key) in field.meta"
+            :key="key"
+            class="meta-field"
+          >
+            <span class="key">{{ key }}</span>
+            <span class="value">{{ val }}</span>
+          </div>
         </div>
-      </div>
-    </v-popover>
+      </template>
+    </VTooltip>
     <div
       v-if="expanded && isExpandableType"
       class="children"

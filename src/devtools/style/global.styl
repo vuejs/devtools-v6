@@ -159,12 +159,13 @@ $arrow-color = $vue-ui-color-dark
   padding 0px 8px 6px
   margin 2px
   border-radius 2px
-  display inline-block
+  display inline-flex
+  align-items baseline
   vertical-align baseline
   .vue-ui-dark-mode &
     background $dark-background-color
   &,
-  .tooltip .tooltip-inner &
+  .v-popper__popper.v-popper--theme-tooltip .v-popper__inner &
     .vue-ui-icon
       position relative
       top 4px
@@ -175,5 +176,14 @@ $arrow-color = $vue-ui-color-dark
         .vue-ui-dark-mode &
           fill #ccc
 
-.vue-ui-dark-mode .tooltip .vue-ui-icon svg
+.v-popper__popper.v-popper--theme-tooltip
+  pointer-events none
+  font-size 12px
+
+  .vue-ui-icon
+    width 16px
+    height @width
+    vertical-align middle
+
+.vue-ui-dark-mode .v-popper__popper.v-popper--theme-tooltip .vue-ui-icon svg
   fill #666

@@ -37,6 +37,10 @@
           value="dark"
           label="Dark"
         />
+        <VueGroupButton
+          value="high-contrast"
+          label="High contrast"
+        />
       </VueGroup>
     </VueFormField>
 

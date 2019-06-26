@@ -36,7 +36,7 @@ export default {
     padding 12px 4px
 
     > *
-      flex-basis 300px
+      flex-basis 380px
       margin 16px 24px
 
     .vue-ui-form-field

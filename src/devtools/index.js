@@ -235,10 +235,15 @@ function initApp (shell) {
       watch: {
         '$shared.theme': {
           handler (value) {
-            if (value === 'dark' || (value === 'auto' && chromeTheme === 'dark')) {
+            if (value === 'dark' || value === 'high-contrast' || (value === 'auto' && chromeTheme === 'dark')) {
               document.body.classList.add('vue-ui-dark-mode')
             } else {
               document.body.classList.remove('vue-ui-dark-mode')
+            }
+            if (value === 'high-contrast') {
+              document.body.classList.add('vue-ui-high-contrast')
+            } else {
+              document.body.classList.remove('vue-ui-high-contrast')
             }
           },
           immediate: true
