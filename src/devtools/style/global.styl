@@ -71,6 +71,17 @@ $arrow-color = $vue-ui-color-dark
     border-bottom 4px solid transparent
     border-right 6px solid $arrow-color
 
+  .vue-ui-dark-mode &
+    $arrow-color = rgba($vue-ui-color-light-neutral, .4)
+    &.up
+      border-bottom-color $arrow-color
+    &.down
+      border-top-color $arrow-color
+    &.right
+      border-left-color $arrow-color
+    &.left
+      border-right-color $arrow-color
+
 .notice
   display flex
   align-items center
@@ -141,33 +152,38 @@ $arrow-color = $vue-ui-color-dark
   .vue-ui-icon svg
     fill @color
 
-.grey
-  &,
-  .material-icons
-    color $darkGrey
-
-.red
-  &,
-  .material-icons
-    color $red
-
 .input-example
   background $white
   color $green
   font-size 12px
   padding 0px 8px 6px
-  margin 0 2px
+  margin 2px
   border-radius 2px
-  display inline-block
+  display inline-flex
+  align-items baseline
   vertical-align baseline
   .vue-ui-dark-mode &
     background $dark-background-color
   &,
-  .tooltip .tooltip-inner &
+  .v-popper__popper.v-popper--theme-tooltip .v-popper__inner &
     .vue-ui-icon
+      position relative
       top 4px
       margin-right 4px
+      transform scale(.8)
       svg
         fill #444
         .vue-ui-dark-mode &
-          fill #666
+          fill #ccc
+
+.v-popper__popper.v-popper--theme-tooltip
+  pointer-events none
+  font-size 12px
+
+  .vue-ui-icon
+    width 16px
+    height @width
+    vertical-align middle
+
+.vue-ui-dark-mode .v-popper__popper.v-popper--theme-tooltip .vue-ui-icon svg
+  fill #666

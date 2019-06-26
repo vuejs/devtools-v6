@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import { createStore } from './store'
 import * as filters from './filters'
 import './plugins'
 import { parse } from '../util'
 import { isChrome, initEnv } from './env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from 'src/shared-data'
-import storage from './storage'
+import { init as initStorage } from 'src/storage'
 import VuexResolve from './views/vuex/resolve'
 
 // register filters
@@ -69,13 +69,15 @@ let app = null
  */
 
 export function initDevTools (shell) {
-  initApp(shell)
-  shell.onReload(() => {
-    if (app) {
-      app.$destroy()
-    }
-    bridge.removeAllListeners()
+  initStorage().then(() => {
     initApp(shell)
+    shell.onReload(() => {
+      if (app) {
+        app.$destroy()
+      }
+      bridge.removeAllListeners()
+      initApp(shell)
+    })
   })
 }
 
@@ -101,8 +103,14 @@ function initApp (shell) {
     initSharedData({
       bridge,
       Vue,
-      storage
+      persist: true
     })
+
+    if (SharedData.logDetected) {
+      bridge.send('log-detected-vue')
+    }
+
+    const store = createStore()
 
     bridge.once('ready', version => {
       store.commit(
@@ -135,8 +143,8 @@ function initApp (shell) {
       store.commit('components/TOGGLE_INSTANCE', parse(payload))
     })
 
-    bridge.on('vuex:init', snapshot => {
-      store.commit('vuex/INIT', snapshot)
+    bridge.on('vuex:init', () => {
+      store.commit('vuex/INIT')
     })
 
     bridge.on('vuex:mutation', payload => {
@@ -148,7 +156,7 @@ function initApp (shell) {
 
       if (index === -1) {
         store.commit('vuex/UPDATE_BASE_STATE', snapshot)
-      } else if (store.state.vuex.inspectedIndex === index) {
+      } else if (store.getters['vuex/absoluteInspectedIndex'] === index) {
         store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
       }
 
@@ -157,7 +165,7 @@ function initApp (shell) {
       }
 
       requestAnimationFrame(() => {
-        SharedData.snapshotLoading = null
+        SharedData.snapshotLoading = false
       })
     })
 
@@ -190,7 +198,14 @@ function initApp (shell) {
 
     bridge.on('inspect-instance', id => {
       ensurePaneShown(() => {
-        inspectInstance(id)
+        bridge.send('select-instance', id)
+        router.push({ name: 'components' })
+        const instance = store.state.components.instancesMap[id]
+        instance && store.dispatch('components/toggleInstance', {
+          instance,
+          expanded: true,
+          parent: true
+        })
       })
     })
 
@@ -216,10 +231,15 @@ function initApp (shell) {
       watch: {
         '$shared.theme': {
           handler (value) {
-            if (value === 'dark' || (value === 'auto' && chromeTheme === 'dark')) {
+            if (value === 'dark' || value === 'high-contrast' || (value === 'auto' && chromeTheme === 'dark')) {
               document.body.classList.add('vue-ui-dark-mode')
             } else {
               document.body.classList.remove('vue-ui-dark-mode')
+            }
+            if (value === 'high-contrast') {
+              document.body.classList.add('vue-ui-high-contrast')
+            } else {
+              document.body.classList.remove('vue-ui-high-contrast')
             }
           },
           immediate: true
@@ -231,17 +251,6 @@ function initApp (shell) {
 
 function getContextMenuInstance () {
   bridge.send('get-context-menu-target')
-}
-
-function inspectInstance (id) {
-  bridge.send('select-instance', id)
-  router.push({ name: 'components' })
-  const instance = store.state.components.instancesMap[id]
-  instance && store.dispatch('components/toggleInstance', {
-    instance,
-    expanded: true,
-    parent: true
-  })
 }
 
 // Pane visibility management

@@ -54,39 +54,53 @@
     <div
       slot="scroll"
       class="vuex-state-inspector"
+      :class="{
+        pointer: isOnlyMutationPayload
+      }"
+      @click="isOnlyMutationPayload && loadState()"
     >
-      <state-inspector :state="filteredState" />
-
-      <div
-        v-if="$shared.snapshotLoading"
-        class="state-info loading-vuex-state"
-      >
-        <div class="label">Loading state...</div>
-
-        <VueLoadingBar
-          :value="$shared.snapshotLoading.current / $shared.snapshotLoading.total"
-        />
+      <state-inspector
+        :state="filteredState"
+        :dim-after="isOnlyMutationPayload ? 1 : -1"
+      />
+    </div>
+    <div
+      v-if="$shared.snapshotLoading"
+      slot="footer"
+      class="state-info loading-vuex-state"
+    >
+      <div class="label">
+        Loading state...
       </div>
-      <div
-        v-else-if="isOnlyMutationPayload"
-        class="state-info recording-vuex-state"
-      >
-        <div class="label">
-          <VueIcon
-            class="big"
-            icon="cached"
-          />
-          <span>Recording state...</span>
-        </div>
 
-        <div>
-          <VueButton
-            data-id="load-vuex-state"
-            @click="loadState()"
-          >
-            Load state
-          </VueButton>
-        </div>
+      <VueLoadingIndicator />
+    </div>
+    <div
+      v-else-if="isOnlyMutationPayload"
+      slot="footer"
+      class="state-info recording-vuex-state"
+    >
+      <div class="label">
+        <VueIcon
+          class="medium"
+          icon="cached"
+        />
+        <span>Recording state on-demand...</span>
+        <span
+          v-if="lastReceivedState"
+          class="note"
+        >displaying last received state</span>
+      </div>
+
+      <div>
+        <VueButton
+          data-id="load-vuex-state"
+          icon-left="arrow_forward"
+          class="accent flat"
+          @click="loadState()"
+        >
+          Load state
+        </VueButton>
       </div>
     </div>
   </scroll-pane>
@@ -100,7 +114,7 @@ import StateInspector from 'components/StateInspector.vue'
 import { searchDeepInObject, sortByKey, stringify, parse } from 'src/util'
 import debounce from 'lodash.debounce'
 import groupBy from 'lodash.groupby'
-import { mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -109,38 +123,71 @@ export default {
     StateInspector
   },
 
+  provide () {
+    return {
+      InspectorInjection: this.injection
+    }
+  },
+
   data () {
     return {
       showStateCopiedMessage: false,
       showBadJSONMessage: false,
       showImportStatePopup: false,
-      filter: ''
+      filter: '',
+      injection: {
+        editable: false
+      }
     }
   },
 
   computed: {
-    ...mapGetters('vuex', [
-      'inspectedState',
-      'inspectedIndex'
+    ...mapState('vuex', [
+      'activeIndex',
+      'inspectedIndex',
+      'lastReceivedState'
     ]),
 
     ...mapGetters('vuex', [
-      'filteredHistory'
+      'inspectedState',
+      'filteredHistory',
+      'inspectedEntry'
     ]),
 
     filteredState () {
-      const inspectedState = [].concat(
-        ...Object.keys(this.inspectedState).map(
+      const inspectedState = this.isOnlyMutationPayload && this.inspectedState.mutation ? {
+        mutation: this.inspectedState.mutation,
+        ...this.lastReceivedState
+      } : this.inspectedState
+
+      const getProcessedState = (state, type) => {
+        if (!Array.isArray(state)) {
+          return Object.keys(state).map(key => ({
+            key,
+            editable: !this.isOnlyMutationPayload && type === 'state',
+            value: state[key]
+          }))
+        } else {
+          return state
+        }
+      }
+
+      const result = [].concat(
+        ...Object.keys(inspectedState).map(
           type => {
+            const state = inspectedState[type]
             let processedState
-            if (!Array.isArray(this.inspectedState[type])) {
-              processedState = Object.keys(this.inspectedState[type]).map(key => ({
-                key,
-                editable: type === 'state',
-                value: this.inspectedState[type][key]
-              }))
-            } else {
-              processedState = this.inspectedState[type]
+
+            if (type === 'mutation' && this.inspectedEntry) {
+              const { options } = this.inspectedEntry
+              if (options.registerModule || options.unregisterModule) {
+                processedState = getProcessedState(state.payload, type)
+                type = options.registerModule ? 'register module' : 'unregister module'
+              }
+            }
+
+            if (!processedState) {
+              processedState = getProcessedState(state, type)
             }
 
             return processedState.map(
@@ -153,7 +200,7 @@ export default {
         )
       )
 
-      return groupBy(sortByKey(inspectedState.filter(
+      return groupBy(sortByKey(result.filter(
         el => searchDeepInObject({
           [el.key]: el.value
         }, this.filter)
@@ -161,7 +208,12 @@ export default {
     },
 
     isOnlyMutationPayload () {
-      return Object.keys(this.inspectedState).length === 1 && this.inspectedState.mutation
+      return (Object.keys(this.inspectedState).length === 1 && !!this.inspectedState.mutation) ||
+        Object.keys(this.inspectedState).length < 1
+    },
+
+    isActive () {
+      return this.activeIndex === this.inspectedIndex
     }
   },
 
@@ -172,7 +224,28 @@ export default {
           this.$el.querySelector('textarea').focus()
         })
       }
+    },
+
+    isActive: {
+      handler (value) {
+        this.injection.editable = value
+      },
+      immediate: true
     }
+  },
+
+  mounted () {
+    bridge.on('vuex:mutation', this.onMutation)
+    if (this.isOnlyMutationPayload && this.$shared.vuexAutoload) {
+      this.loadState()
+    }
+
+    bridge.on('vuex:init', this.onVuexInit)
+  },
+
+  destroyed () {
+    bridge.off('vuex:mutation', this.onMutation)
+    bridge.off('vuex:init', this.onVuexInit)
   },
 
   methods: {
@@ -219,6 +292,18 @@ export default {
     loadState () {
       const history = this.filteredHistory
       this.inspect(history[history.length - 1])
+    },
+
+    onMutation: debounce(function () {
+      if (this.$shared.vuexAutoload) {
+        this.loadState()
+      }
+    }, 300),
+
+    onVuexInit () {
+      if (this.$shared.vuexAutoload) {
+        this.loadState()
+      }
     }
   }
 }
@@ -236,25 +321,31 @@ function copyToClipboard (state) {
 <style lang="stylus" scoped>
 .state-info
   display flex
-  flex-direction column
-  box-center()
-  min-height 140px
-  font-size 24px
-  margin 0 42px
+  align-items center
+  padding 2px 2px 2px 14px
+  min-height 36px
+  font-size 14px
 
   .label
+    flex 1
     display flex
     align-items center
-    font-weight lighter
     color $blueishGrey
-    margin-bottom 12px
 
     .vue-ui-icon
-      margin-right 12px
+      margin-right 8px
       >>> svg
         fill @color
-  .vue-ui-loading-bar
-    width 100%
+
+  .note
+    opacity .7
+    margin-left 4px
+
+.loading-vuex-state
+  padding-right 14px
+
+.pointer
+  cursor pointer
 
 .message
   margin-left 5px

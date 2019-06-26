@@ -21,8 +21,10 @@ module.exports = (config, target = { chrome: 52, firefox: 48 }) => {
         src: path.resolve(__dirname, '../src'),
         views: path.resolve(__dirname, '../src/devtools/views'),
         components: path.resolve(__dirname, '../src/devtools/components'),
-        filters: path.resolve(__dirname, '../src/devtools/filters')
-      }
+        filters: path.resolve(__dirname, '../src/devtools/filters'),
+        mixins: path.resolve(__dirname, '../src/devtools/mixins')
+      },
+      symlinks: false
     },
     module: {
       rules: [

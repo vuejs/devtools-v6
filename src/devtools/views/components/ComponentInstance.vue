@@ -101,8 +101,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { classify, scrollIntoView, UNDEFINED } from '../../../util'
+import { mapState, mapMutations } from 'vuex'
+import { getComponentDisplayName, scrollIntoView, UNDEFINED } from '../../../util'
 
 export default {
   name: 'ComponentInstance',
@@ -122,6 +122,7 @@ export default {
     ...mapState('components', [
       'expansionMap',
       'inspectedInstance',
+      'inspectedInstanceId',
       'scrollToExpanded'
     ]),
 
@@ -130,7 +131,7 @@ export default {
     },
 
     selected () {
-      return this.instance.id === this.inspectedInstance.id
+      return this.instance.id === this.inspectedInstanceId
     },
 
     sortedChildren () {
@@ -142,11 +143,11 @@ export default {
     },
 
     displayName () {
-      return this.$shared.classifyComponents ? classify(this.instance.name) : this.instance.name
+      return getComponentDisplayName(this.instance.name, this.$shared.componentNameStyle)
     },
 
     componentHasKey () {
-      return !!this.instance.renderKey && this.instance.renderKey !== UNDEFINED
+      return (this.instance.renderKey === 0 || !!this.instance.renderKey) && this.instance.renderKey !== UNDEFINED
     }
   },
 
@@ -169,6 +170,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations('components', {
+      inspectInstance: 'INSPECT_INSTANCE'
+    }),
+
     toggle (event) {
       this.toggleWithValue(!this.expanded, event.altKey)
     },
@@ -190,6 +195,7 @@ export default {
     },
 
     select () {
+      this.inspectInstance(this.instance)
       bridge.send('select-instance', this.instance.id)
     },
 

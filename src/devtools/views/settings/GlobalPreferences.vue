@@ -1,27 +1,29 @@
 <template>
   <div class="global-preferences preferences">
-    <VueFormField title="Normalize Component Names">
+    <VueFormField title="Normalize component names">
       <VueGroup
-        :value="$shared.classifyComponents"
+        v-model="$shared.componentNameStyle"
         class="extend"
-        @input="$shared.classifyComponents = $event"
       >
         <VueGroupButton
-          :value="false"
+          value="original"
           label="Original name"
         />
         <VueGroupButton
-          :value="true"
+          value="class"
           label="Pascal case"
+        />
+        <VueGroupButton
+          value="kebab"
+          label="Kebab case"
         />
       </VueGroup>
     </VueFormField>
 
     <VueFormField title="Theme">
       <VueGroup
-        :value="$shared.theme"
+        v-model="$shared.theme"
         class="extend"
-        @input="$shared.theme = $event"
       >
         <VueGroupButton
           value="auto"
@@ -35,14 +37,17 @@
           value="dark"
           label="Dark"
         />
+        <VueGroupButton
+          value="high-contrast"
+          label="High contrast"
+        />
       </VueGroup>
     </VueFormField>
 
     <VueFormField title="Display density">
       <VueGroup
-        :value="$shared.displayDensity"
+        v-model="$shared.displayDensity"
         class="extend"
-        @input="$shared.displayDensity = $event"
       >
         <VueGroupButton
           value="auto"
@@ -61,9 +66,8 @@
 
     <VueFormField title="Time Format">
       <VueGroup
-        :value="$shared.timeFormat"
+        v-model="$shared.timeFormat"
         class="extend"
-        @input="$shared.timeFormat = $event"
       >
         <VueGroupButton
           value="default"
@@ -75,5 +79,64 @@
         />
       </VueGroup>
     </VueFormField>
+
+    <VueFormField
+      title="Editable props"
+    >
+      <VueSwitch v-model="$shared.editableProps">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        <VueIcon
+          icon="warning"
+          class="medium"
+        />
+        May print warnings in the console
+      </template>
+    </VueFormField>
+
+    <VueFormField title="Detected Vue message">
+      <VueSwitch v-model="$shared.logDetected">
+        Display in browser console
+      </VueSwitch>
+    </VueFormField>
+
+    <VueFormField>
+      <template #title>
+        New Vuex backend
+        <NewTag :version="1" />
+      </template>
+      <VueSwitch v-model="$shared.vuexNewBackend">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        Faster and less memory-intensive
+      </template>
+    </VueFormField>
+
+    <VueFormField
+      title="Autoload Vuex state"
+    >
+      <VueSwitch v-model="$shared.vuexAutoload">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        <VueIcon
+          icon="warning"
+          class="medium"
+        />
+        May impact performance or cause crashes
+      </template>
+    </VueFormField>
   </div>
 </template>
+
+<script>
+import NewTag from './NewTag.vue'
+
+export default {
+  components: {
+    NewTag
+  }
+}
+</script>

@@ -21,6 +21,12 @@ function numberQuickEditMod (event) {
 }
 
 export default {
+  inject: {
+    InspectorInjection: {
+      default: null
+    }
+  },
+
   props: {
     editable: {
       type: Boolean,
@@ -54,6 +60,7 @@ export default {
     },
 
     isEditable () {
+      if (this.InspectorInjection && !this.InspectorInjection.editable) return false
       return this.editable &&
         !this.fieldOptions.abstract &&
         !this.fieldOptions.readOnly &&

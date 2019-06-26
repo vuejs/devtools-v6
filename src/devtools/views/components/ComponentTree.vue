@@ -158,16 +158,21 @@ export default {
   },
 
   mounted () {
-    bridge.on('instance-selected', () => {
-      this.setSelecting(false)
-    })
+    bridge.on('instance-selected', this.stopSelector)
+    bridge.on('stop-component-selector', this.stopSelector)
   },
 
   beforeDestroy () {
     this.setSelecting(false)
+    bridge.off('instance-selected', this.stopSelector)
+    bridge.off('stop-selector', this.stopSelector)
   },
 
   methods: {
+    stopSelector () {
+      this.setSelecting(false)
+    },
+
     filterInstances (e) {
       bridge.send('filter-instances', classify(e.target.value))
     },

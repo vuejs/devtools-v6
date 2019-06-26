@@ -7,9 +7,10 @@ import { initEventsBackend } from './events'
 import { initRouterBackend } from './router'
 import { initPerfBackend } from './perf'
 import { findRelatedComponent } from './utils'
-import { stringify, classify, camelize, set, parse, getComponentName, getCustomRefDetails } from '../util'
+import { stringify, classify, camelize, set, has, parse, getComponentName, getCustomRefDetails } from '../util'
 import ComponentSelector from './component-selector'
 import SharedData, { init as initSharedData } from 'src/shared-data'
+import { init as initStorage } from 'src/storage'
 import { isBrowser, target } from 'src/devtools/env'
 
 // hook should have been injected before this executes.
@@ -47,125 +48,132 @@ export function initBackend (_bridge) {
 }
 
 function connect (Vue) {
-  initSharedData({
-    bridge,
-    Vue
-  })
+  initStorage().then(() => {
+    initSharedData({
+      bridge,
+      Vue
+    })
 
-  hook.currentTab = 'components'
-  bridge.on('switch-tab', tab => {
-    hook.currentTab = tab
-    if (tab === 'components') {
+    hook.currentTab = 'components'
+    bridge.on('switch-tab', tab => {
+      hook.currentTab = tab
+      if (tab === 'components') {
+        flush()
+      }
+    })
+
+    // the backend may get injected to the same page multiple times
+    // if the user closes and reopens the devtools.
+    // make sure there's only one flush listener.
+    hook.off('flush')
+    hook.on('flush', () => {
+      if (hook.currentTab === 'components') {
+        flush()
+      }
+    })
+
+    bridge.on('select-instance', id => {
+      currentInspectedId = id
+      const instance = findInstanceOrVnode(id)
+      if (!instance) return
+      if (!/:functional:/.test(id)) bindToConsole(instance)
       flush()
-    }
-  })
+      bridge.send('instance-selected')
+    })
 
-  // the backend may get injected to the same page multiple times
-  // if the user closes and reopens the devtools.
-  // make sure there's only one flush listener.
-  hook.off('flush')
-  hook.on('flush', () => {
-    if (hook.currentTab === 'components') {
+    bridge.on('scroll-to-instance', id => {
+      const instance = findInstanceOrVnode(id)
+      if (instance) {
+        scrollIntoView(instance)
+        highlight(instance)
+      }
+    })
+
+    bridge.on('filter-instances', _filter => {
+      filter = _filter.toLowerCase()
       flush()
+    })
+
+    bridge.on('refresh', scan)
+
+    bridge.on('enter-instance', id => {
+      const instance = findInstanceOrVnode(id)
+      if (instance) highlight(instance)
+    })
+
+    bridge.on('leave-instance', unHighlight)
+
+    // eslint-disable-next-line no-new
+    new ComponentSelector(bridge, instanceMap)
+
+    // Get the instance id that is targeted by context menu
+    bridge.on('get-context-menu-target', () => {
+      const instance = target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
+
+      target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
+      target.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
+
+      if (instance) {
+        const id = instance.__VUE_DEVTOOLS_UID__
+        if (id) {
+          return bridge.send('inspect-instance', id)
+        }
+      }
+
+      toast('No Vue component was found', 'warn')
+    })
+
+    bridge.on('set-instance-data', args => {
+      setStateValue(args)
+      flush()
+    })
+
+    // vuex
+    if (hook.store) {
+      initVuexBackend(hook, bridge, hook.store.commit === undefined)
+    } else {
+      hook.once('vuex:init', store => {
+        initVuexBackend(hook, bridge, store.commit === undefined)
+      })
     }
-  })
 
-  bridge.on('select-instance', id => {
-    currentInspectedId = id
-    const instance = findInstanceOrVnode(id)
-    if (!instance) return
-    if (!/:functional:/.test(id)) bindToConsole(instance)
-    flush()
-    bridge.send('instance-selected')
-  })
+    hook.once('router:init', () => {
+      initRouterBackend(hook.Vue, bridge, rootInstances)
+    })
 
-  bridge.on('scroll-to-instance', id => {
-    const instance = findInstanceOrVnode(id)
-    instance && scrollIntoView(instance)
-  })
+    // events
+    initEventsBackend(Vue, bridge)
 
-  bridge.on('filter-instances', _filter => {
-    filter = _filter.toLowerCase()
-    flush()
-  })
+    target.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
 
-  bridge.on('refresh', scan)
+    // User project devtools config
+    if (target.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
+      const config = target.VUE_DEVTOOLS_CONFIG
 
-  bridge.on('enter-instance', id => {
-    const instance = findInstanceOrVnode(id)
-    if (instance) highlight(instance)
-  })
-
-  bridge.on('leave-instance', unHighlight)
-
-  // eslint-disable-next-line no-new
-  new ComponentSelector(bridge, instanceMap)
-
-  // Get the instance id that is targeted by context menu
-  bridge.on('get-context-menu-target', () => {
-    const instance = target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__
-
-    target.__VUE_DEVTOOLS_CONTEXT_MENU_TARGET__ = null
-    target.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__ = false
-
-    if (instance) {
-      const id = instance.__VUE_DEVTOOLS_UID__
-      if (id) {
-        return bridge.send('inspect-instance', id)
+      // Open in editor
+      if (config.hasOwnProperty('openInEditorHost')) {
+        SharedData.openInEditorHost = config.openInEditorHost
       }
     }
 
-    toast('No Vue component was found', 'warn')
-  })
-
-  bridge.on('set-instance-data', args => {
-    setStateValue(args)
-    flush()
-  })
-
-  // vuex
-  if (hook.store) {
-    initVuexBackend(hook, bridge)
-  } else {
-    hook.once('vuex:init', store => {
-      initVuexBackend(hook, bridge)
+    bridge.log('backend ready.')
+    bridge.send('ready', Vue.version)
+    bridge.on('log-detected-vue', () => {
+      console.log(
+        `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
+        'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+        'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+        'background:transparent'
+      )
     })
-  }
 
-  hook.once('router:init', () => {
-    initRouterBackend(hook.Vue, bridge, rootInstances)
+    setTimeout(() => {
+      scan()
+
+      // perf
+      initPerfBackend(Vue, bridge, instanceMap)
+    }, 0)
   })
-
-  // events
-  initEventsBackend(Vue, bridge)
-
-  target.__VUE_DEVTOOLS_INSPECT__ = inspectInstance
-
-  // User project devtools config
-  if (target.hasOwnProperty('VUE_DEVTOOLS_CONFIG')) {
-    const config = target.VUE_DEVTOOLS_CONFIG
-
-    // Open in editor
-    if (config.hasOwnProperty('openInEditorHost')) {
-      SharedData.openInEditorHost = config.openInEditorHost
-    }
-  }
-
-  bridge.log('backend ready.')
-  bridge.send('ready', Vue.version)
-  console.log(
-    `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:transparent'
-  )
-
-  setTimeout(() => {
-    scan()
-
-    // perf
-    initPerfBackend(Vue, bridge, instanceMap)
-  }, 0)
 }
 
 export function findInstanceOrVnode (id) {
@@ -368,7 +376,7 @@ function capture (instance, index, list) {
     captureCount++
   }
 
-  if (instance.$options && instance.$options.abstract && instance._vnode.componentInstance) {
+  if (instance.$options && instance.$options.abstract && instance._vnode && instance._vnode.componentInstance) {
     instance = instance._vnode.componentInstance
   }
 
@@ -430,7 +438,7 @@ function capture (instance, index, list) {
       .filter(Boolean)
   }
 
-  if (instance._vnode.children) {
+  if (instance._vnode && instance._vnode.children) {
     ret.children = ret.children.concat(
       flatten(instance._vnode.children.map(captureChild))
         .filter(Boolean)
@@ -539,7 +547,8 @@ function getInstanceState (instance) {
     processRouteContext(instance),
     processVuexGetters(instance),
     processFirebaseBindings(instance),
-    processObservables(instance)
+    processObservables(instance),
+    processAttrs(instance)
   )
 }
 
@@ -628,13 +637,24 @@ function processProps (instance) {
           required: !!prop.required
         } : {
           type: 'invalid'
-        }
+        },
+        editable: SharedData.editableProps
       })
     }
     return propsData
   } else {
     return []
   }
+}
+
+function processAttrs (instance) {
+  return Object.entries(instance.$attrs || {}).map(([key, value]) => {
+    return {
+      type: '$attrs',
+      key,
+      value
+    }
+  })
 }
 
 /**
@@ -687,12 +707,9 @@ function processState (instance) {
  */
 
 function processRefs (instance) {
-  if (Object.keys(instance.$refs).length === 0) {
-    return []
-  }
-  console.log(instance.$refs)
-  let refs = Object.keys(instance.$refs).map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
-  return refs.length > 0 ? refs : []
+  return Object.keys(instance.$refs)
+    .filter(key => instance.$refs[key])
+    .map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
 }
 
 /**
@@ -951,7 +968,10 @@ function setStateValue ({ id, path, value, newKey, remove }) {
         $set: hook.Vue.set,
         $delete: hook.Vue.delete
       } : instance
-      set(instance._data, path, parsedValue, (obj, field, value) => {
+      const data = has(instance._props, path, newKey)
+        ? instance._props
+        : instance._data
+      set(data, path, parsedValue, (obj, field, value) => {
         (remove || newKey) && api.$delete(obj, field)
         !remove && api.$set(obj, newKey || field, value)
       })

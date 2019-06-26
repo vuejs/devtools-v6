@@ -4,9 +4,11 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  strict: true,
   state: {
     inited: 0,
     count: 0,
+    lastCountPayload: null,
     date: new Date(),
     set: new Set(),
     map: new Map(),
@@ -23,8 +25,14 @@ export default new Vuex.Store({
   },
   mutations: {
     TEST_INIT: state => state.inited++,
-    INCREMENT: state => state.count++,
-    DECREMENT: state => state.count--,
+    INCREMENT: (state, payload) => {
+      state.count++
+      state.lastCountPayload = payload
+    },
+    DECREMENT: (state, payload) => {
+      state.count--
+      state.lastCountPayload = payload
+    },
     UPDATE_DATE: state => {
       state.date = new Date()
     },
@@ -39,5 +47,30 @@ export default new Vuex.Store({
   getters: {
     isPositive: state => state.count >= 0,
     hours: state => state.date.getHours()
+  },
+  modules: {
+    nested: {
+      namespaced: true,
+      state () {
+        return {
+          foo: 'bar'
+        }
+      },
+      getters: {
+        twoFoos: state => state.foo.repeat(2),
+        dummy: () => {
+          console.log('dummy getter was computed')
+          return 'dummy'
+        }
+      },
+      mutations: {
+        ADD_BAR: (state) => {
+          state.foo += 'bar'
+        },
+        REMOVE_BAR: (state) => {
+          state.foo = state.foo.substr('bar'.length)
+        }
+      }
+    }
   }
 })

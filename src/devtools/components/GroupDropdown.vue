@@ -110,6 +110,13 @@ export default {
     padding 0 14px
     height 100%
     cursor pointer
+    @media (min-width: ($wide + 1px))
+      .left-icon
+        margin-right 6px
+      .right-icon
+        margin-left 6px
+    @media (max-width: $wide)
+      padding 0 6px 0 12px
   & /deep/ svg
     fill #2c3e50
 

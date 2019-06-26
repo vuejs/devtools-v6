@@ -28,6 +28,14 @@ suite('components tab', () => {
     })
   })
 
+  it('should display 0 key', () => {
+    cy.get('.tree > .instance .instance:nth-child(2)').within(() => {
+      cy.get('.arrow').click().then(() => {
+        cy.get('.instance:nth-child(3) .attr').contains('key=0')
+      })
+    })
+  })
+
   it('should detect components in transition', () => {
     cy.get('.tree > .instance .instance:nth-child(7)').within(() => {
       cy.get('.arrow').click().then(() => {
@@ -84,7 +92,7 @@ suite('components tab', () => {
 
   it('should filter components', () => {
     cy.get('.left .search input').clear().type('counter')
-    cy.get('.instance').should('have.length', 1)
+    cy.get('.instance').should('have.length', 2)
     cy.get('.left .search input').clear().type('target')
     cy.get('.instance').should('have.length', 12)
     cy.get('.left .search input').clear()
@@ -127,6 +135,15 @@ suite('components tab', () => {
       expect(el.text()).to.contain('list:Array[4]')
       expect(el.text()).to.contain('<li>')
       expect(el.text()).to.contain('tester:<p id="testing"')
+    })
+  })
+
+  it('should display $attrs', () => {
+    cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
+    cy.get('.instance .instance .instance:nth-child(1) .item-name').click()
+    cy.get('.right .data-wrapper').then(el => {
+      expect(el.text()).to.contain('$attrs')
+      expect(el.text()).to.contain('attr:"some-attr"')
     })
   })
 })

@@ -1,6 +1,6 @@
 <template>
   <div id="target">
-    <h1>{{localMsg}}</h1>
+    <h1>{{localMsg}} {{ msg }}</h1>
     <span>Regex: {{regex.toString()}}</span>
     <input @keyup.enter="regex = new RegExp($event.target.value)"/>
     <span>(Press enter to set)</span>
@@ -8,7 +8,7 @@
     <button class="add" @mouseup="add">Add 3</button>
     <button class="remove" @mousedown="rm">Remove</button>
     <input v-model="localMsg">
-    <other v-for="item in items" :key="item" :id="item"></other>
+    <other v-for="item in items" :key="item" :id="item" attr="some-attr"></other>
     <div>
       <button
         class="inspect"
@@ -27,7 +27,7 @@
       <Functional
         name="Embed component"
       >
-        <Other />
+        <Other :key="0" />
       </Functional>
       <Functional
         name="Embed functional component"

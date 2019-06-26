@@ -18,11 +18,11 @@
       }"
     >
       <routes-tree-item
-        v-for="(route, index) in filteredRoutes"
+        v-for="route in filteredRoutes"
         ref="instances"
         :key="route.path"
         :route="route"
-        :route-id="index"
+        :route-id="routeChanges.indexOf(route)"
         :depth="0"
       />
     </div>
@@ -34,7 +34,7 @@ import ScrollPane from 'components/ScrollPane.vue'
 import ActionHeader from 'components/ActionHeader.vue'
 import RoutesTreeItem from './RoutesTreeItem.vue'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   components: {
@@ -44,6 +44,10 @@ export default {
   },
 
   computed: {
+    ...mapState('routes', [
+      'routeChanges'
+    ]),
+
     ...mapGetters('routes', [
       'filteredRoutes'
     ]),

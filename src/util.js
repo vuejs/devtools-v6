@@ -27,8 +27,29 @@ export const camelize = cached((str) => {
   return str.replace(camelizeRE, toUpper)
 })
 
+const kebabizeRE = /([a-z0-9])([A-Z])/g
+export const kebabize = cached((str) => {
+  return str && str
+    .replace(kebabizeRE, (_, lowerCaseCharacter, upperCaseLetter) => {
+      return `${lowerCaseCharacter}-${upperCaseLetter}`
+    })
+    .toLowerCase()
+})
+
 function toUpper (_, c) {
   return c ? c.toUpperCase() : ''
+}
+
+export function getComponentDisplayName (originalName, style = 'class') {
+  switch (style) {
+    case 'class':
+      return classify(originalName)
+    case 'kebab':
+      return kebabize(originalName)
+    case 'original':
+    default:
+      return originalName
+  }
 }
 
 export function inDoc (node) {
@@ -58,6 +79,9 @@ export const SPECIAL_TOKENS = {
   'Infinity': INFINITY,
   'NaN': NAN
 }
+
+export const MAX_STRING_SIZE = 10000
+export const MAX_ARRAY_SIZE = 5000
 
 export function specialTokenToString (value) {
   if (value === null) {
@@ -118,7 +142,23 @@ export function stringify (data) {
 function replacer (key) {
   const val = this[key]
   const type = typeof val
-  if (type === 'undefined') {
+  if (Array.isArray(val)) {
+    const l = val.length
+    if (l > MAX_ARRAY_SIZE) {
+      return {
+        _isArray: true,
+        length: l,
+        items: val.slice(0, MAX_ARRAY_SIZE)
+      }
+    }
+    return val
+  } else if (typeof val === 'string') {
+    if (val.length > MAX_STRING_SIZE) {
+      return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
+    } else {
+      return val
+    }
+  } else if (type === 'undefined') {
     return UNDEFINED
   } else if (val === Infinity) {
     return INFINITY
@@ -129,14 +169,15 @@ function replacer (key) {
   } else if (type === 'symbol') {
     return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
   } else if (val !== null && type === 'object') {
-    if (val instanceof Map) {
+    const proto = Object.prototype.toString.call(val)
+    if (proto === '[object Map]') {
       return encodeCache.cache(val, () => getCustomMapDetails(val))
-    } else if (val instanceof Set) {
+    } else if (proto === '[object Set]') {
       return encodeCache.cache(val, () => getCustomSetDetails(val))
-    } else if (val instanceof RegExp) {
+    } else if (proto === '[object RegExp]') {
       // special handling of native type
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
-    } else if (val instanceof Date) {
+    } else if (proto === '[object Date]') {
       return `[native Date ${Date.prototype.toString.call(val)}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
@@ -408,7 +449,7 @@ function internalSearchObject (obj, searchTerm, seen, depth) {
   for (let i = 0; i < keys.length; i++) {
     key = keys[i]
     value = obj[key]
-    match = interalSearchCheck(searchTerm, key, value, seen, depth + 1)
+    match = internalSearchCheck(searchTerm, key, value, seen, depth + 1)
     if (match) {
       break
     }
@@ -432,7 +473,7 @@ function internalSearchArray (array, searchTerm, seen, depth) {
   let value
   for (let i = 0; i < array.length; i++) {
     value = array[i]
-    match = interalSearchCheck(searchTerm, null, value, seen, depth + 1)
+    match = internalSearchCheck(searchTerm, null, value, seen, depth + 1)
     if (match) {
       break
     }
@@ -449,7 +490,7 @@ function internalSearchArray (array, searchTerm, seen, depth) {
  * @param {number} depth Deep search depth level, which is capped to prevent performance issues
  * @returns {boolean} Search match
  */
-function interalSearchCheck (searchTerm, key, value, seen, depth) {
+function internalSearchCheck (searchTerm, key, value, seen, depth) {
   let match = false
   let result
   if (key === '_custom') {
@@ -496,7 +537,7 @@ export function sortByKey (state) {
 }
 
 export function set (object, path, value, cb = null) {
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   while (sections.length > 1) {
     object = object[sections.shift()]
   }
@@ -509,7 +550,7 @@ export function set (object, path, value, cb = null) {
 }
 
 export function get (object, path) {
-  const sections = path.split('.')
+  const sections = Array.isArray(path) ? path : path.split('.')
   for (let i = 0; i < sections.length; i++) {
     object = object[sections[i]]
     if (!object) {
@@ -517,6 +558,19 @@ export function get (object, path) {
     }
   }
   return object
+}
+
+export function has (object, path, parent = false) {
+  if (typeof object === 'undefined') {
+    return false
+  }
+
+  const sections = Array.isArray(path) ? path : path.split('.')
+  const size = !parent ? 1 : 2
+  while (object && sections.length > size) {
+    object = object[sections.shift()]
+  }
+  return object != null && object.hasOwnProperty(sections[0])
 }
 
 export function scrollIntoView (scrollParent, el, center = true) {

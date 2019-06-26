@@ -25,7 +25,7 @@
             :key="message"
             class="message"
           >
-            <span>{{ message }}</span>
+            <span class="text">{{ message }}</span>
 
             <span class="badges">
               <span
@@ -91,14 +91,14 @@
             <template slot="header">
               <VueIcon
                 icon="directions"
-                style="margin-right: 6px"
+                class="left-icon"
               />
               <span class="hide-below-wide">
                 Routing
               </span>
               <VueIcon
                 icon="keyboard_arrow_down"
-                style="margin-left: 6px"
+                class="right-icon"
               />
             </template>
             <template
@@ -130,8 +130,10 @@
           <VueGroupButton
             v-tooltip="$t('App.settings.tooltip')"
             :class="{
-              'icon-button': !$responsive.wide
+              'icon-button': !$responsive.wide,
+              info: hasNewSettings
             }"
+            :tag="hasNewSettings ? 'new' : null"
             value="settings"
             icon-left="settings_applications"
             class="settings-tab flat"
@@ -164,8 +166,8 @@
 import { SPECIAL_TOKENS } from '../util'
 import Keyboard from './mixins/keyboard'
 import GroupDropdown from 'components/GroupDropdown.vue'
-
 import { mapState } from 'vuex'
+import { SETTINGS_VERSION_ID, SETTINGS_VERSION } from './views/settings/SettingsTab.vue'
 
 export default {
   name: 'App',
@@ -200,6 +202,7 @@ export default {
               } else {
                 this.$router.push({ name: 'routes' })
               }
+              return false
             } else if (code === 'Digit5') {
               this.$router.push({ name: 'perf' })
               return false
@@ -221,7 +224,8 @@ export default {
       routingTabs: [
         { name: 'router', label: 'History', icon: 'directions' },
         { name: 'routes', label: 'Routes', icon: 'book' }
-      ]
+      ],
+      settingsVersion: parseInt(localStorage.getItem(SETTINGS_VERSION_ID))
     }
   },
 
@@ -240,7 +244,18 @@ export default {
       get () { return this.$route.matched[0].name },
       set (value) {
         this.$router.push({ name: value })
+
+        this.$nextTick(() => {
+          if (value === 'settings') {
+            this.settingsVersion = SETTINGS_VERSION
+            localStorage.setItem(SETTINGS_VERSION_ID, SETTINGS_VERSION)
+          }
+        })
       }
+    },
+
+    hasNewSettings () {
+      return this.settingsVersion !== SETTINGS_VERSION
     }
   },
 
@@ -298,6 +313,8 @@ export default {
   position relative
   .vue-ui-dark-mode &
     background-color $dark-background-color
+  .vue-ui-high-contrast &
+    background black
   &.beta
     &::after
       display block

@@ -1,13 +1,14 @@
 <template>
   <div class="data-wrapper">
     <div
-      v-for="dataType in dataTypes"
+      v-for="(dataType, index) in dataTypes"
       :key="dataType"
       :class="[
         'data-el',
         toDisplayType(dataType, true),
         {
-          'high-density': highDensity
+          'high-density': highDensity,
+          dim: dimAfter !== -1 && index >= dimAfter
         }
       ]"
     >
@@ -61,11 +62,14 @@ const keyOrder = {
   props: 1,
   undefined: 3,
   computed: 4,
+  'register module': 1,
+  'unregister module': 1,
   state: 2,
   getters: 3,
   mutation: 1,
   'vuex bindings': 5,
-  $refs: 6
+  $refs: 6,
+  $attrs: 7
 }
 
 export default {
@@ -77,6 +81,11 @@ export default {
     state: {
       type: Object,
       required: true
+    },
+
+    dimAfter: {
+      type: Number,
+      default: -1
     }
   },
 
@@ -155,6 +164,12 @@ export default {
 <style lang="stylus">
 .data-el
   font-size 15px
+
+  &.dim
+    opacity .7
+    pointer-events none
+    user-select none
+    filter grayscale(50%)
 
   &:not(:last-child)
     border-bottom rgba($grey, .4) solid 1px

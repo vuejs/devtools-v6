@@ -1,13 +1,15 @@
 import { parse } from 'src/util'
 import * as actions from './actions'
 import { snapshotsCache } from './cache'
+import SharedData from 'src/shared-data'
 
-const REGEX_RE = /^\/(.*?)\/(\w*)/
+const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 const ANY_RE = new RegExp('.*', 'i')
+
+let uid = 0
 
 const state = {
   hasVuex: false,
-  initial: null,
   base: null, // type Snapshot = { state: {}, getters: {} }
   inspectedIndex: -1,
   activeIndex: -1,
@@ -22,17 +24,22 @@ const state = {
 }
 
 const mutations = {
-  'INIT' (state, snapshot) {
-    state.initial = state.base = snapshot
+  'INIT' (state) {
     state.hasVuex = true
+    snapshotsCache.reset()
     reset(state)
   },
 
   'RECEIVE_MUTATION' (state, entry) {
+    const inspectingLastMutation = state.inspectedIndex === state.history.length - 1
+    entry.id = uid++
     state.history.push(entry)
     if (!state.filter) {
-      state.inspectedIndex = state.activeIndex = state.history.length - 1
-      state.inspectedState = null
+      state.activeIndex = state.history.length - 1
+      if (inspectingLastMutation) {
+        state.inspectedIndex = state.activeIndex
+        state.inspectedState = null
+      }
     }
   },
 
@@ -66,16 +73,16 @@ const mutations = {
   },
 
   'UPDATE_INSPECTED_STATE' (state, value) {
-    state.inspectedState = value
+    state.inspectedState = parse(value)
   },
 
   'RECEIVE_STATE' (state, { index, snapshot }) {
-    state.lastReceivedState = snapshot
+    state.lastReceivedState = parse(snapshot)
     snapshotsCache.set(index, snapshot)
   },
 
   'UPDATE_BASE_STATE' (state, value) {
-    state.base = value
+    state.base = parse(value)
   },
 
   'TIME_TRAVEL' (state, index) {
@@ -106,6 +113,8 @@ function reset (state) {
   state.history = []
   state.inspectedIndex = state.activeIndex = -1
   state.inspectedState = null
+  state.activeIndex = -1
+  SharedData.snapshotLoading = false
 }
 
 function escapeStringForRegExp (str) {
@@ -126,11 +135,8 @@ const getters = {
 
     const data = entry ? inspectedState : base
     if (data) {
-      const snapshot = parse(data)
-      if (snapshot) {
-        res.state = snapshot.state
-        res.getters = snapshot.getters
-      }
+      res.state = data.state
+      res.getters = data.getters
     }
 
     return res
@@ -138,6 +144,18 @@ const getters = {
 
   filteredHistory ({ history, filterRegex }) {
     return history.filter(entry => filterRegex.test(entry.mutation.type))
+  },
+
+  absoluteInspectedIndex ({ history, inspectedIndex }, { filteredHistory }) {
+    const entry = filteredHistory[inspectedIndex]
+    if (entry) {
+      return history.indexOf(entry)
+    }
+    return -1
+  },
+
+  inspectedEntry ({ inspectedIndex }, { filteredHistory }) {
+    return filteredHistory[inspectedIndex]
   }
 }
 

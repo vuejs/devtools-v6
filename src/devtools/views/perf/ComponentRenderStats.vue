@@ -13,11 +13,11 @@
         </div>
       </ActionHeader>
 
-      <recycle-list
+      <RecycleScroller
         v-if="filteredItems"
         slot="scroll"
         :items="filteredItems"
-        :item-height="highDensity ? 22 : 34"
+        :item-size="highDensity ? 22 : 34"
         class="components"
         :class="{
           'high-density': highDensity
@@ -49,7 +49,7 @@
             </div>
           </div>
         </template>
-      </recycle-list>
+      </RecycleScroller>
     </ScrollPane>
 
     <ComponentRenderDetails
@@ -62,7 +62,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { scaleLinear, extent } from 'd3'
-import { classify } from 'src/util'
+import { getComponentDisplayName } from 'src/util'
 
 import SplitPane from 'components/SplitPane.vue'
 import ScrollPane from 'components/ScrollPane.vue'
@@ -138,7 +138,7 @@ export default {
     },
 
     getComponentName (entry) {
-      return (this.$shared.classifyComponents ? classify(entry.id) : entry.id) || 'Anonymous Component'
+      return getComponentDisplayName(entry.id, this.$shared.componentNameStyle) || 'Anonymous Component'
     }
   }
 }

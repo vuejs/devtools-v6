@@ -1,20 +1,23 @@
-import storage from '../../storage'
-import { classify } from 'src/util'
+import * as storage from 'src/storage'
+import { getComponentDisplayName } from 'src/util'
 import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
-const enabled = storage.get(ENABLED_KEY)
+const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 
-const state = {
-  enabled: enabled == null ? true : enabled,
+let uid = 0
+
+const state = () => ({
+  enabled: storage.get(ENABLED_KEY, true),
   events: [],
   inspectedIndex: -1,
   newEventCount: 0,
   filter: ''
-}
+})
 
 const mutations = {
   'RECEIVE_EVENT' (state, payload) {
+    payload.id = uid++
     state.events.push(payload)
     if (!state.filter) {
       state.inspectedIndex = state.events.length - 1
@@ -42,20 +45,40 @@ const mutations = {
   }
 }
 
+const matchingEvent = ({ searchText, searchComponent, regEx }) => e => {
+  const componentNameStyle = SharedData.componentNameStyle
+  let searchTerm = (searchComponent
+    ? getComponentDisplayName(e.instanceName, componentNameStyle)
+    : e.eventName)
+
+  if (regEx) {
+    try {
+      return regEx.test(searchTerm)
+    } catch (e) {
+      return searchTerm.toLowerCase().indexOf(searchText) > -1
+    }
+  }
+
+  return searchTerm.toLowerCase().indexOf(searchText) > -1
+}
+
 const getters = {
   activeEvent: (state, getters) => {
     return getters.filteredEvents[state.inspectedIndex]
   },
   filteredEvents: (state, getters, rootState) => {
-    const classifyComponents = SharedData.classifyComponents
     let searchText = state.filter.toLowerCase()
     const searchComponent = /<|>/g.test(searchText)
     if (searchComponent) {
       searchText = searchText.replace(/<|>/g, '')
     }
-    return state.events.filter(
-      e => (searchComponent ? (classifyComponents ? classify(e.instanceName) : e.instanceName) : e.eventName).toLowerCase().indexOf(searchText) > -1
-    )
+    const regExParts = state.filter.match(REGEX_RE)
+    let regEx
+    if (regExParts) {
+      regEx = new RegExp(regExParts[1], regExParts[2])
+    }
+    return state.events
+      .filter(matchingEvent({ searchText, searchComponent, regEx }))
   }
 }
 

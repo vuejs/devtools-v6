@@ -1,22 +1,32 @@
+import * as storage from './storage'
+
 // Initial state
 const internalSharedData = {
   openInEditorHost: '/',
-  classifyComponents: true,
+  componentNameStyle: 'class',
   theme: 'auto',
   displayDensity: 'low',
   timeFormat: 'default',
   recordVuex: true,
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
-  snapshotLoading: null,
-  recordPerf: false
+  snapshotLoading: false,
+  recordPerf: false,
+  editableProps: false,
+  logDetected: true,
+  vuexNewBackend: false,
+  vuexAutoload: false
 }
 
 const persisted = [
-  'classifyComponents',
+  'componentNameStyle',
   'theme',
   'displayDensity',
   'recordVuex',
+  'editableProps',
+  'logDetected',
+  'vuexNewBackend',
+  'vuexAutoload',
   'timeFormat'
 ]
 
@@ -24,8 +34,6 @@ const persisted = [
 
 let Vue
 let bridge
-// Storage API
-let storage = null
 // List of fields to persist to storage (disabled if 'false')
 // This should be unique to each shared data client to prevent conflicts
 let persist = false
@@ -36,23 +44,19 @@ export function init (params) {
   // Mandatory params
   bridge = params.bridge
   Vue = params.Vue
-
-  if (params.hasOwnProperty('storage')) {
-    storage = params.storage
-    persist = persisted
-  }
+  persist = !!params.persist
 
   // Load persisted fields
-  if (persist) {
-    persist.forEach(key => {
-      const value = storage.get(`shared-data:${key}`)
-      if (value !== null) {
-        internalSharedData[key] = value
-        // Send to other shared data clients
+  persisted.forEach(key => {
+    const value = storage.get(`shared-data:${key}`)
+    if (value !== null) {
+      internalSharedData[key] = value
+      // Send to other shared data clients
+      if (persist) {
         sendValue(key, value)
       }
-    })
-  }
+    }
+  })
 
   // Wrapper Vue instance
   vm = new Vue({
@@ -72,7 +76,7 @@ export function destroy () {
 
 function setValue (key, value) {
   // Storage
-  if (persist && persist.includes(key)) {
+  if (persist && persisted.includes(key)) {
     storage.set(`shared-data:${key}`, value)
   }
   vm[key] = value

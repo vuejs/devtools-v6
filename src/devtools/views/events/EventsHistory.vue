@@ -37,10 +37,10 @@
         <span>{{ enabled ? 'Recording' : 'Paused' }}</span>
       </a>
     </action-header>
-    <recycle-list
+    <RecycleScroller
       slot="scroll"
       :items="filteredEvents"
-      :item-height="highDensity ? 22 : 34"
+      :item-size="highDensity ? 22 : 34"
       class="history"
       :class="{
         'high-density': highDensity
@@ -71,7 +71,7 @@
           <span class="time">{{ event.timestamp | formatTime($shared.timeFormat) }}</span>
         </div>
       </template>
-    </recycle-list>
+    </RecycleScroller>
   </scroll-pane>
 </template>
 
@@ -87,7 +87,7 @@ import Keyboard, {
 } from '../../mixins/keyboard'
 import EntryList from '../../mixins/entry-list'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
-import { classify, focusInput } from 'src/util'
+import { focusInput, getComponentDisplayName } from 'src/util'
 
 export default {
   components: {
@@ -162,14 +162,14 @@ export default {
     ]),
 
     displayComponentName (name) {
-      return this.$shared.classifyComponents ? classify(name) : name
+      return getComponentDisplayName(name, this.$shared.componentNameStyle)
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-.recycle-list
+.vue-recycle-scroller
   height 100%
 
 .no-events
