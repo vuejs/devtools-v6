@@ -187,6 +187,8 @@ function replacer (key) {
       return encodeCache.cache(val, () => getCustomInstanceDetails(val))
     } else if (typeof val.render === 'function') {
       return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))
+    } else if (val.__proto__ && val.__proto__.constructor && val.__proto__.constructor.name === 'VNode') {
+      return `[native VNode <${val.tag}>]`
     }
   } else if (Number.isNaN(val)) {
     return NAN
