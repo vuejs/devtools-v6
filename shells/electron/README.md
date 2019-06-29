@@ -101,6 +101,14 @@ Then update your host and port accordingly:
 ```
 devtools.connect('example.ngrok.io', null)
 ```
+or 
+```
+<script>
+  window.__VUE_DEVTOOLS_HOST__ = 'https://example.ngrok.io';
+  window.__VUE_DEVTOOLS_PORT__ = false
+</script>
+<script src="https://example.ngrok.io"></script>
+```
 
 Make sure to set port to `null` or `false`, because ngrok host already proxies to proper port that we defined in the first command.
 
