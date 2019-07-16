@@ -12,6 +12,12 @@ export function commitAll ({ commit, state }) {
   }
 }
 
+export function clearAll ({ commit, state }) {
+  if (state.history.length > 0) {
+    state.history = []
+  }
+}
+
 export function revertAll ({ commit, state }) {
   if (state.history.length > 0) {
     travelTo(state, commit, -1).then(() => {

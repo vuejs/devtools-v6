@@ -17,6 +17,15 @@
         v-tooltip="$t('VuexHistory.commitAll.tooltip')"
         :class="{ disabled: !history.length }"
         class="button commit-all"
+        @click="clearAll"
+      >
+        <VueIcon icon="delete" />
+        <span>Clear All</span>
+      </a>
+      <a
+        v-tooltip="$t('VuexHistory.commitAll.tooltip')"
+        :class="{ disabled: !history.length }"
+        class="button commit-all"
         @click="commitAll"
       >
         <VueIcon icon="get_app" />
@@ -249,6 +258,7 @@ export default {
     ...mapActions('vuex', [
       'commitAll',
       'revertAll',
+      'clearAll',
       'commit',
       'revert',
       'inspect',
