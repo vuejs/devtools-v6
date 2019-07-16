@@ -15,7 +15,8 @@ export const keys = {
   alt: isMac ? '&#8997;' : 'Alt',
   del: 'Del',
   enter: 'Enter',
-  esc: 'Esc'
+  esc: 'Esc',
+  space: 'Space'
 }
 
 export function initEnv (Vue) {

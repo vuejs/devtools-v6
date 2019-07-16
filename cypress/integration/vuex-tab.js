@@ -155,6 +155,17 @@ suite('vuex tab', () => {
     })
   })
 
+  it('should clear history', () => {
+    cy.get('.action-header').find('.clear-all').click({ force: true })
+    cy.get('.history .entry[data-active="true"]').should('have.length', 1)
+    cy.get('.history .entry[data-index="1"]')
+      .should('have.class', 'inspected')
+      .should('have.class', 'active')
+    cy.get('.vuex-state-inspector').then(el => {
+      expect(el.text()).to.include('count:0')
+    })
+  })
+
   it('should display getters', () => {
     cy.get('.vuex-state-inspector').within(() => {
       cy.get('.key').contains('count').parent().contains('2')

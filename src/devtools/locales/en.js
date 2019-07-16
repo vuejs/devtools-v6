@@ -87,6 +87,9 @@ export default {
     commitAll: {
       tooltip: '[[{{keys.ctrl}}]] + [[{{keys.enter}}]] Commit all'
     },
+    clearAll: {
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.space}}]] Clear all'
+    },
     revertAll: {
       tooltip: '[[{{keys.ctrl}}]] + [[{{keys.del}}]] Revert all'
     },

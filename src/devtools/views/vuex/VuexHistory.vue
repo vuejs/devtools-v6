@@ -14,9 +14,9 @@
         >
       </div>
       <a
-        v-tooltip="$t('VuexHistory.commitAll.tooltip')"
+        v-tooltip="$t('VuexHistory.clearAll.tooltip')"
         :class="{ disabled: !history.length }"
-        class="button commit-all"
+        class="button clear-all"
         @click="clearAll"
       >
         <VueIcon icon="delete" />
@@ -214,6 +214,8 @@ export default {
               return false
             } else if (key === 'r') {
               this.toggleRecording()
+            } else if (key === ' ') {
+              this.clearAll()
             }
         }
       }
