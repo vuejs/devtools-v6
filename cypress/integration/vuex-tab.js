@@ -158,7 +158,7 @@ suite('vuex tab', () => {
   it('should clear history', () => {
     cy.get('.action-header').find('.clear-all').click({ force: true })
     cy.get('.history .entry[data-active="true"]').should('have.length', 1)
-    cy.get('.history .entry[data-index="1"]')
+    cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
     cy.get('.vuex-state-inspector').then(el => {
