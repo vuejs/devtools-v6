@@ -221,7 +221,7 @@ import {
 
 import DataFieldEdit from '../mixins/data-field-edit'
 
-const rawTypeRE = /^\[object (\w+)]$/
+const rawTypeRE = /^\[object (\w+)\]$/
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
 
 function subFieldCount (value) {
