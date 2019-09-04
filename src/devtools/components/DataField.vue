@@ -140,6 +140,12 @@
               >
                 {{ $t('DataField.contextMenu.copyValue') }}
               </VueDropdownButton>
+              <VueDropdownButton
+                icon-left="flip_to_front"
+                @click="copyPathToClipboard"
+              >
+                {{ $t('DataField.contextMenu.copyRelativePath') }}
+              </VueDropdownButton>
             </div>
           </VueDropdown>
         </span>
@@ -464,6 +470,10 @@ export default {
   },
 
   methods: {
+    copyPathToClipboard () {
+      copyToClipboard(this.path)
+    },
+
     copyToClipboard () {
       copyToClipboard(this.field.value)
     },
