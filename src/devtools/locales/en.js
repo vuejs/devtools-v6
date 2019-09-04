@@ -37,7 +37,8 @@ export default {
       }
     },
     contextMenu: {
-      copyValue: 'Copy Value'
+      copyValue: 'Copy Value',
+      copyRelativePath: 'Copy relative path'
     },
     quickEdit: {
       number: {
