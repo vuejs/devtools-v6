@@ -42,12 +42,12 @@ This is only necessary when you want to build the extension yourself from source
 
 ### Quick Start in chrome
 
-```
+```js
 // Before you create app
 Vue.config.devtools = process.env.NODE_ENV === 'development'
 
 // After you create app
-window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app.constructor;
+window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app.constructor
 
 // then had to add in ./store.js as well.
 Vue.config.devtools = process.env.NODE_ENV === 'development'
