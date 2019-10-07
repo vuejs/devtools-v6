@@ -44,16 +44,16 @@ To the `<head>` section of your app.
 
 #### Using dependency package
 
-Once you installed the package as project dependency, run:
+To make app builds smaller, the backend of this package is now available as `@vue/devtools-client`. It is now recommended to simply install this package as a **dev** dependency, and run the command below.
 ```bash
 ./node_modules/.bin/vue-devtools
 ```
 
 You can also use the global `vue-devtools` to start the app, but you might want to check if the local version matches the global one in this scenario to avoid any incompatibilities.
 
-Then import it directly in your app:
+In your app, run `npm install --save @vue/devtools-client`, and import it into your app:
 ```js
-import devtools from '@vue/devtools'
+import devtools from '@vue/devtools-client'
 // import Vue from 'vue'
 ```
 > Make sure you import devtools before Vue, otherwise it might not work as expected.
@@ -68,6 +68,8 @@ if (process.env.NODE_ENV === 'development') {
 **host** - is an optional argument that tells your application where devtools middleware server is running, if you debug you app on your computer you don't have to set this (the default is `http://localhost`), but if you want to debug your app on mobile devices, you might want to pass your local IP (e.g. `http://192.168.1.12`).
 
 **port** - is an optional argument that tells your application on what port devtools middleware server is running. If you use proxy server, you might want to set it to `null` so the port won't be added to connection URL.
+
+> For backwards compatibility, `@vue/devtools` declares `@vue/devtools-client` as a dependency, and `require('@vue/devtools')` behaves just like `require('@vue/devtools-client')`. However, it is recommended _not_ to package `@vue/devtools`, as that will include `electron`, `cross-spawn`, and other dependencies even if they aren't used in your app.
 
 #### FAQ:
 
@@ -113,7 +115,7 @@ For that you can also use ngrok, as it automatically proxies https requests to h
 Make sure that the page under `http://your-ip:8098` is returning a javascript coode on your device/simulator. If it doesn't - make sure to check your anti-virus or router/firewall settings. If it works - please follow the instructions, and connect to devtools using your IP. For example:
 
 ```js
-import devtools from '@vue/devtools'
+import devtools from '@vue/devtools-client'
 import Vue from 'vue'
 // ...
 
