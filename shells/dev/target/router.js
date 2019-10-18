@@ -31,6 +31,11 @@ const routes = [
   { path: '/route-with-redirect', redirect: '/route-one' },
   { path: '/route-with-alias', component: RouteWithAlias, alias: '/this-is-the-alias' },
   { path: '/route-with-dynamic-component', component: DynamicComponent, props: true },
+  {
+    name: 'editShow-legacy',
+    path: '/route-with-redirect-function',
+    redirect: to => ({ name: to.name.replace('-legacy', '') })
+  },
   { path: '/route-with-props',
     component: RouteWithProps,
     props: {

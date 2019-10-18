@@ -42,7 +42,7 @@
         v-if="route.redirect"
         class="info redirect"
       >
-        redirect: <b>{{ route.redirect }}</b>
+        redirect: <b v-html="redirectDisplay" />
       </span>
       <span
         v-if="isActive"
@@ -99,6 +99,11 @@ export default {
     },
     isActive () {
       return this.activeRoute && this.activeRoute.path === this.route.path
+    },
+    redirectDisplay () {
+      return this.route.redirect._custom
+        ? this.route.redirect._custom.display
+        : this.route.redirect
     }
   },
   methods: {
