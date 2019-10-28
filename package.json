@@ -11,7 +11,7 @@
     "dev:shell": "cd packages/shell-dev && webpack-dev-server --inline --hot --no-info",
     "dev:chrome": "cd packages/shell-chrome && webpack --watch --hide-modules",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
-    "lint": "eslint --ext=js,vue src packages/shell-chrome/src packages/shell-dev/src packages/shell-electron/src",
+    "lint": "eslint --ext=js,vue packages/app-backend/src packages/app-frontend/src packages/shared-utils/src packages/shell-chrome/src packages/shell-dev/src packages/shell-electron/src",
     "build": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "run:firefox": "web-ext run -s packages/shell-chrome -a dist -i src",
     "zip": "npm run zip:chrome && npm run zip:firefox",
