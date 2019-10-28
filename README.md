@@ -8,7 +8,7 @@
 
 - [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) / ([beta channel](https://github.com/vuejs/vue-devtools/releases))
 
-- [Get standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
+- [Get standalone Electron app (works with any environment!)](./packages/shell-electron/README.md)
 
 ### Important Usage Notes
 
@@ -89,7 +89,7 @@ Vue.config.devtools = process.env.NODE_ENV === 'development'
 1. Fixing "Download the Vue Devtools for a better development experience" console message when working locally over `file://` protocol:
   1.1 - Google Chrome: Right click on vue-devtools icon and click "Manage Extensions" then search for vue-devtools on the extensions list. Check the "Allow access to file URLs" box.
 
-2. How to use the devtools in IE/Edge/Safari or any other browser? [Get the standalone Electron app (works with any environment!)](https://github.com/vuejs/vue-devtools/blob/master/shells/electron/README.md)
+2. How to use the devtools in IE/Edge/Safari or any other browser? [Get the standalone Electron app (works with any environment!)](./packages/shell-electron/README.md)
 
 
 ### License
