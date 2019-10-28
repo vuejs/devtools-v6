@@ -30,7 +30,7 @@ initDevTools({
         send (data) {
           if (!disconnected) {
             // if (process.env.NODE_ENV !== 'production') {
-            //   console.log('devtools -> backend', data)
+            //   console.log('[chrome] devtools -> backend', data)
             // }
             port.postMessage(data)
           }

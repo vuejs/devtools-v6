@@ -22,7 +22,7 @@ function handshake (e) {
       },
       send (data) {
         // if (process.env.NODE_ENV !== 'production') {
-        //   console.log('backend -> devtools', data)
+        //   console.log('[chrome] backend -> devtools', data)
         // }
         window.postMessage({
           source: 'vue-devtools-backend',
