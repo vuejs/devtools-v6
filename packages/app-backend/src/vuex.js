@@ -340,27 +340,9 @@ class VuexBackend {
   }
 
   stringifyStore () {
-    const getters = {}
-
-    const origGetters = this.store.getters || {}
-    const keys = Object.keys(origGetters)
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      Object.defineProperty(getters, key, {
-        enumerable: true,
-        get: () => {
-          try {
-            return origGetters[key]
-          } catch (e) {
-            return e
-          }
-        }
-      })
-    }
-
     return stringify({
       state: this.store.state,
-      getters
+      getters: getCatchedGetters(this.store)
     })
   }
 
@@ -597,6 +579,28 @@ export function initVuexBackend (hook, bridge, isLegacy) {
   new VuexBackend(hook, bridge, isLegacy)
 }
 
+function getCatchedGetters (store) {
+  const getters = {}
+
+  const origGetters = store.getters || {}
+  const keys = Object.keys(origGetters)
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i]
+    Object.defineProperty(getters, key, {
+      enumerable: true,
+      get: () => {
+        try {
+          return origGetters[key]
+        } catch (e) {
+          return e
+        }
+      }
+    })
+  }
+
+  return getters
+}
+
 export function getCustomStoreDetails (store) {
   return {
     _custom: {
@@ -604,7 +608,7 @@ export function getCustomStoreDetails (store) {
       display: 'Store',
       value: {
         state: store.state,
-        getters: store.getters
+        getters: getCatchedGetters(store)
       },
       fields: {
         abstract: true
