@@ -2,6 +2,7 @@
   <div
     id="app"
     class="app-connecting"
+    :class="`theme-${theme}`"
   >
     <div class="animation-outer">
       <div class="animation-inner">
@@ -15,6 +16,18 @@
   </div>
 </template>
 
+<script>
+import { isChrome } from '@utils/env'
+
+export default {
+  data () {
+    return {
+      theme: isChrome ? chrome.devtools.panels.themeName : 'light'
+    }
+  }
+}
+</script>
+
 <style lang="stylus" scoped>
 .app-connecting
   width 100%
@@ -22,6 +35,9 @@
   display flex
   align-items center
   justify-content center
+
+  &.theme-dark
+    background $vue-ui-color-almost-black
 
 .animation-inner
   padding 28px 24px 16px
