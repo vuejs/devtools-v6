@@ -51,6 +51,9 @@
     "semver": "^5.5.1",
     "start-server-and-test": "^1.7.1"
   },
+  "resolutions": {
+    "cypress": "=3.4.1"
+  },
   "engines": {
     "node": ">=8.10"
   }
