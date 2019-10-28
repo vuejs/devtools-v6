@@ -21,9 +21,9 @@ function handshake (e) {
         listeners.push(listener)
       },
       send (data) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('backend -> devtools', data)
-        }
+        // if (process.env.NODE_ENV !== 'production') {
+        //   console.log('backend -> devtools', data)
+        // }
         window.postMessage({
           source: 'vue-devtools-backend',
           payload: data
