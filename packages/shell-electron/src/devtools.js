@@ -8,12 +8,16 @@ const $ = document.querySelector.bind(document)
 const $intro = $('#intro')
 
 let reload = null
+let introTimer
 
 socket.on('vue-devtools-disconnect-devtools', () => {
-  $intro.classList.remove('hidden')
+  introTimer = setTimeout(() => {
+    $intro.classList.remove('hidden')
+  }, 2000)
 })
 
 socket.on('vue-devtools-init', () => {
+  clearTimeout(introTimer)
   $intro.classList.add('hidden')
 
   // Reset attached listeners
