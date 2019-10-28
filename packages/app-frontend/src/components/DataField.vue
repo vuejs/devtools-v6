@@ -625,6 +625,14 @@ export default {
     color $vividBlue
   &.raw-boolean
     width 36px
+  &.native.Error
+    background $red
+    color $white !important
+    padding 0 4px
+    border-radius $br
+    &::before
+      content 'Error: '
+      opacity .75
   &.custom
     &.type-component
       color $green

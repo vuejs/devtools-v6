@@ -176,6 +176,8 @@ function replacer (key) {
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
     } else if (proto === '[object Date]') {
       return `[native Date ${Date.prototype.toString.call(val)}]`
+    } else if (proto === '[object Error]') {
+      return `[native Error ${val.message}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
     } else if (val.constructor && val.constructor.name === 'VueRouter') {
