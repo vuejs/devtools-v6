@@ -6,9 +6,7 @@ export default function ({
   // @vue/component
   return {
     watch: {
-      inspectedIndex (value) {
-        this.scrollIntoInspected(value)
-      }
+      inspectedIndex: 'refreshScrollToInspected'
     },
 
     mounted () {
@@ -20,11 +18,11 @@ export default function ({
     },
 
     methods: {
-      refreshScrollToInspected () {
+      refreshScrollToInspected: debounce(function () {
         requestAnimationFrame(() => {
           if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex)
         })
-      },
+      }, 100),
 
       scrollIntoInspected: debounce(function (index) {
         index += indexOffset
