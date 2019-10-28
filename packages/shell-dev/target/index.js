@@ -25,7 +25,7 @@ for (var i = 0; i < 100; i++) {
 const circular = {}
 circular.self = circular
 
-new Vue({
+const app = new Vue({
   store,
   router,
   data: {
@@ -48,7 +48,11 @@ new Vue({
       h(RefTester)
     ])
   }
-}).$mount('#app')
+})
+
+window.addEventListener('load', () => {
+  app.$mount('#app')
+})
 
 // custom element instance
 const ce = document.querySelector('#shadow')
