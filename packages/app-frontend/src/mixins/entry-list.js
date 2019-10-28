@@ -22,7 +22,7 @@ export default function ({
         requestAnimationFrame(() => {
           if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex)
         })
-      }, 100, {
+      }, 200, {
         leading: true
       }),
 
@@ -30,6 +30,10 @@ export default function ({
         index += indexOffset
         this.$nextTick(() => {
           const scroller = this.$globalRefs.leftRecycleList || this.$globalRefs.leftScroll
+          if (!scroller) {
+            this.scrollIntoInspected(index)
+            return
+          }
           const parentHeight = scroller.offsetHeight
           const height = this.highDensity ? 22 : 34
           const top = index * height
@@ -40,7 +44,7 @@ export default function ({
             scroller.scrollTop = top + height - parentHeight
           }
         })
-      }, 30, {
+      }, 200, {
         leading: true
       })
     }
