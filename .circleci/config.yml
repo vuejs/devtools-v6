@@ -13,18 +13,18 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "yarn.lock" }}
+          - v3-dependencies-{{ checksum "yarn.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v2-dependencies-
+          - v3-dependencies-
 
-      - run: yarn install
+      - run: yarn install --pure-lockfile
 
       - save_cache:
           paths:
             - node_modules
             - ~/.cache/yarn
             - ~/.cache/Cypress
-          key: v2-dependencies-{{ checksum "yarn.lock" }}
+          key: v3-dependencies-{{ checksum "yarn.lock" }}
 
       # run tests!
       - run: yarn test
