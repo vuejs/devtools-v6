@@ -58,6 +58,7 @@ suite('vuex tab', () => {
     cy.get('.vuex-state-inspector').then(el => {
       expect(el.text()).to.include('type:"INCREMENT"')
       expect(el.text()).to.include('count:2')
+      expect(el.text()).to.include('Error from getter')
     })
     cy.get('.data-field .key').contains('lastCountPayload').click()
     cy.get('.vuex-state-inspector').then(el => {

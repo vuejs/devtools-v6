@@ -46,7 +46,10 @@ export default new Vuex.Store({
   },
   getters: {
     isPositive: state => state.count >= 0,
-    hours: state => state.date.getHours()
+    hours: state => state.date.getHours(),
+    errorGetter: () => {
+      throw new Error('Error from getter')
+    }
   },
   modules: {
     nested: {
