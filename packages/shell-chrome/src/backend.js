@@ -5,6 +5,14 @@ import Bridge from '@utils/bridge'
 
 window.addEventListener('message', handshake)
 
+function sendListening () {
+  window.postMessage({
+    source: 'vue-devtools-backend-injection',
+    payload: 'listening'
+  }, '*')
+}
+sendListening()
+
 function handshake (e) {
   if (e.data.source === 'vue-devtools-proxy' && e.data.payload === 'init') {
     window.removeEventListener('message', handshake)
@@ -39,5 +47,7 @@ function handshake (e) {
     })
 
     initBackend(bridge)
+  } else {
+    sendListening()
   }
 }

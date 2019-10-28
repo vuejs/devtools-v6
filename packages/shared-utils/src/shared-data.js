@@ -40,6 +40,9 @@ let persist = false
 // For reactivity, we wrap the data in a Vue instance
 let vm
 
+let initRetryInterval
+let initRetryCount = 0
+
 export function init (params) {
   return new Promise((resolve, reject) => {
     // Mandatory params
@@ -56,26 +59,39 @@ export function init (params) {
           internalSharedData[key] = value
         }
       })
-      bridge.once('shared-data:load', () => {
+      bridge.on('shared-data:load', () => {
         // Send all fields
         Object.keys(internalSharedData).forEach(key => {
           sendValue(key, internalSharedData[key])
         })
         bridge.send('shared-data:load-complete')
       })
-      bridge.once('shared-data:init-complete', () => {
+      bridge.on('shared-data:init-complete', () => {
         if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init complete')
+        clearInterval(initRetryInterval)
         resolve()
       })
 
-      bridge.send('shared-data:init-waiting')
+      bridge.send('shared-data:master-init-waiting')
       // In case backend init is executed after frontend
-      bridge.once('shared-data:init-waiting', () => {
-        bridge.send('shared-data:init-waiting')
+      bridge.on('shared-data:slave-init-waiting', () => {
+        bridge.send('shared-data:master-init-waiting')
       })
+
+      initRetryCount = 0
+      initRetryInterval = setInterval(() => {
+        if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init retrying...')
+        bridge.send('shared-data:master-init-waiting')
+        initRetryCount++
+        if (initRetryCount > 30) {
+          clearInterval(initRetryInterval)
+          console.error('[shared data] Master init failed')
+        }
+      }, 2000)
     } else {
       if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave init in progress...')
-      bridge.once('shared-data:init-waiting', () => {
+      bridge.on('shared-data:master-init-waiting', () => {
+        if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave loading data...')
         // Load all persisted shared data
         bridge.send('shared-data:load')
         bridge.once('shared-data:load-complete', () => {
@@ -84,7 +100,7 @@ export function init (params) {
           resolve()
         })
       })
-      bridge.send('shared-data:init-waiting')
+      bridge.send('shared-data:slave-init-waiting')
     }
 
     // Wrapper Vue instance
