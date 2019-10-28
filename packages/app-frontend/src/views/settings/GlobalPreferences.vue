@@ -97,7 +97,7 @@
     <VueFormField>
       <template #title>
         New Vuex backend
-        <NewTag :version="1" />
+        <NewTag :version="2" />
       </template>
       <VueSwitch v-model="$shared.vuexNewBackend">
         Enable
