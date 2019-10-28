@@ -327,6 +327,11 @@ export default {
       width 100%
       border-top 2px rgba($orange, .4) solid
 
+  &.disconnected
+    pointer-events none
+    filter grayscale(100%)
+    opacity .6
+
 .header
   display flex
   align-items center

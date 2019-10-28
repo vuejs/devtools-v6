@@ -73,6 +73,7 @@ export function initDevTools (shell) {
     initApp(shell)
     shell.onReload(() => {
       if (app) {
+        app.$el.classList.add('disconnected')
         app.$destroy()
       }
       bridge.removeAllListeners()
