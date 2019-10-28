@@ -81,7 +81,7 @@
             Events
           </VueGroupButton>
           <GroupDropdown
-            v-tooltip="$t('App.routing.tooltip')"
+            v-tooltip.left="$t('App.routing.tooltip')"
             :is-open="isRouterGroupOpen"
             :options="routingTabs"
             :value="routeModel"
@@ -106,6 +106,7 @@
               slot-scope="{ option }"
             >
               <VueGroupButton
+                v-tooltip.left="!$responsive.wide && option.label"
                 :value="option.name"
                 :icon-left="option.icon"
                 style="width: 100%;"
