@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import AppConnecting from './AppConnecting.vue'
 import App from './App.vue'
 import router from './router'
 import { createStore } from './store'
@@ -57,7 +58,9 @@ Vue.options.renderError = (h, e) => {
   }, e.stack)
 }
 
-let app = null
+let app = new Vue({
+  render: (h) => h(AppConnecting)
+}).$mount('#app')
 
 /**
  * Create the main devtools app. Expects to be called with a shell interface
@@ -218,6 +221,10 @@ function initApp (shell) {
       })
 
       initEnv(Vue)
+
+      if (app) {
+        app.$destroy()
+      }
 
       app = new Vue({
         extends: App,
