@@ -165,7 +165,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { SPECIAL_TOKENS } from '@utils/util'
 import Keyboard from '@front/mixins/keyboard'
 import GroupDropdown from '@front/components/GroupDropdown.vue'
@@ -238,6 +238,10 @@ export default {
       view: state => state.view
     }),
 
+    ...mapGetters('components', {
+      totalComponentCount: 'totalCount'
+    }),
+
     specialTokens () {
       return SPECIAL_TOKENS
     },
@@ -274,10 +278,12 @@ export default {
     this.mediaQuery = window.matchMedia('(min-width: 685px)')
     this.switchView(this.mediaQuery)
     this.mediaQuery.addListener(this.switchView)
+    this.autoRefreshTimer = setInterval(this.shouldAutoRefresh, 1000)
   },
 
   destroyed () {
     this.mediaQuery.removeListener(this.switchView)
+    clearInterval(this.autoRefreshTimer)
   },
 
   methods: {
@@ -289,6 +295,12 @@ export default {
       bridge.once('flush', () => {
         refreshIcon.style.animation = 'rotate 1s'
       })
+    },
+
+    shouldAutoRefresh () {
+      if (this.totalComponentCount === 0) {
+        this.refresh()
+      }
     },
 
     switchView (mediaQueryEvent) {
