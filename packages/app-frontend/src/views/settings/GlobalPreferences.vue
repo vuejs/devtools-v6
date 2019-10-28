@@ -121,6 +121,16 @@
         May impact performance or cause crashes
       </template>
     </VueFormField>
+
+    <VueFormField>
+      <template #title>
+        Group getters by module
+        <NewTag :version="2" />
+      </template>
+      <VueSwitch v-model="$shared.vuexGroupGettersByModule">
+        Enable
+      </VueSwitch>
+    </VueFormField>
   </div>
 </template>
 

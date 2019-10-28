@@ -8,7 +8,7 @@
 import GlobalPreferences from './GlobalPreferences.vue'
 import { mapState } from 'vuex'
 
-export const SETTINGS_VERSION = 2
+export const SETTINGS_VERSION = 3
 export const SETTINGS_VERSION_ID = 'vue-devtools-settings-version'
 
 export default {

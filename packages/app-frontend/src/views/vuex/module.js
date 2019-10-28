@@ -139,6 +139,27 @@ const getters = {
       res.getters = data.getters
     }
 
+    if (SharedData.vuexGroupGettersByModule && res.getters) {
+      const getterGroups = {}
+      const keys = Object.keys(res.getters)
+      keys.forEach(key => {
+        const parts = key.split('/')
+        let parent = getterGroups
+        for (let p = 0; p < parts.length - 1; p++) {
+          const part = parts[p]
+          parent = parent[part] = parent[part] || {
+            _custom: {
+              value: {},
+              abstract: true
+            }
+          }
+          parent = parent._custom.value
+        }
+        parent[parts.pop()] = res.getters[key]
+      })
+      res.getters = getterGroups
+    }
+
     return res
   },
 

@@ -15,7 +15,8 @@ const internalSharedData = {
   editableProps: false,
   logDetected: true,
   vuexNewBackend: false,
-  vuexAutoload: false
+  vuexAutoload: false,
+  vuexGroupGettersByModule: true
 }
 
 const persisted = [
@@ -27,6 +28,7 @@ const persisted = [
   'logDetected',
   'vuexNewBackend',
   'vuexAutoload',
+  'vuexGroupGettersByModule',
   'timeFormat'
 ]
 
