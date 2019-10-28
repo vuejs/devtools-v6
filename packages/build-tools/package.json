@@ -1,0 +1,22 @@
+{
+  "name": "@vue-devtools/build-tools",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "dependencies": {
+    "buble": "^0.19.0",
+    "buble-loader": "^0.5.1",
+    "css-loader": "^1.0.0",
+    "friendly-errors-webpack-plugin": "^1.7.0",
+    "postcss-loader": "^3.0.0",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1",
+    "style-resources-loader": "^1.2.1",
+    "url-loader": "^1.1.1",
+    "uglifyjs-webpack-plugin": "^1.2.7",
+    "vue-loader": "^15.7.1",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.41.2",
+    "webpack-merge": "^4.2.2"
+  }
+}

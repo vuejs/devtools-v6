@@ -2,7 +2,7 @@ const fs = require('fs')
 const inquirer = require('inquirer')
 const semver = require('semver')
 const pkg = require('./package.json')
-const manifest = require('./shells/chrome/manifest.json')
+const manifest = require('./packages/shell-chrome/manifest.json')
 
 const curVersion = pkg.version
 
@@ -10,7 +10,7 @@ const curVersion = pkg.version
   const { newVersion } = await inquirer.prompt([{
     type: 'input',
     name: 'newVersion',
-    message: `Please provide a version (current: ${curVersion}):`,
+    message: `Please provide a version (current: ${curVersion}):`
   }])
 
   if (!semver.valid(newVersion)) {
@@ -44,7 +44,7 @@ const curVersion = pkg.version
     }
 
     fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2))
-    fs.writeFileSync('./shells/chrome/manifest.json', JSON.stringify(manifest, null, 2))
+    fs.writeFileSync('./packages/shell-chrome/manifest.json', JSON.stringify(manifest, null, 2))
   } else {
     process.exit(1)
   }
