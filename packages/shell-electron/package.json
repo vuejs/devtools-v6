@@ -1,6 +1,6 @@
 {
   "name": "@vue/devtools",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "description": "StandAlone vue-devtools",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
