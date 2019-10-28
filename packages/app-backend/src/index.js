@@ -19,7 +19,6 @@ import {
   getCustomRefDetails
 } from '@utils/util'
 import SharedData, { init as initSharedData } from '@utils/shared-data'
-import { init as initStorage } from '@utils/storage'
 import { isBrowser, target } from '@utils/env'
 
 // hook should have been injected before this executes.
@@ -57,12 +56,10 @@ export function initBackend (_bridge) {
 }
 
 function connect (Vue) {
-  initStorage().then(() => {
-    initSharedData({
-      bridge,
-      Vue
-    })
-
+  initSharedData({
+    bridge,
+    Vue
+  }).then(() => {
     hook.currentTab = 'components'
     bridge.on('switch-tab', tab => {
       hook.currentTab = tab

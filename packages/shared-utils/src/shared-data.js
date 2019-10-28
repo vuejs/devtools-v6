@@ -41,31 +41,61 @@ let persist = false
 let vm
 
 export function init (params) {
-  // Mandatory params
-  bridge = params.bridge
-  Vue = params.Vue
-  persist = !!params.persist
+  return new Promise((resolve, reject) => {
+    // Mandatory params
+    bridge = params.bridge
+    Vue = params.Vue
+    persist = !!params.persist
 
-  // Load persisted fields
-  persisted.forEach(key => {
-    const value = storage.get(`shared-data:${key}`)
-    if (value !== null) {
-      internalSharedData[key] = value
-      // Send to other shared data clients
-      if (persist) {
-        sendValue(key, value)
-      }
+    if (persist) {
+      if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init in progress...')
+      // Load persisted fields
+      persisted.forEach(key => {
+        const value = storage.get(`shared-data:${key}`)
+        if (value !== null) {
+          internalSharedData[key] = value
+        }
+      })
+      bridge.once('shared-data:load', () => {
+        // Send all fields
+        Object.keys(internalSharedData).forEach(key => {
+          sendValue(key, internalSharedData[key])
+        })
+        bridge.send('shared-data:load-complete')
+      })
+      bridge.once('shared-data:init-complete', () => {
+        if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init complete')
+        resolve()
+      })
+
+      bridge.send('shared-data:init-waiting')
+      // In case backend init is executed after frontend
+      bridge.once('shared-data:init-waiting', () => {
+        bridge.send('shared-data:init-waiting')
+      })
+    } else {
+      if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave init in progress...')
+      bridge.once('shared-data:init-waiting', () => {
+        // Load all persisted shared data
+        bridge.send('shared-data:load')
+        bridge.once('shared-data:load-complete', () => {
+          if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave init complete')
+          bridge.send('shared-data:init-complete')
+          resolve()
+        })
+      })
+      bridge.send('shared-data:init-waiting')
     }
-  })
 
-  // Wrapper Vue instance
-  vm = new Vue({
-    data: internalSharedData
-  })
+    // Wrapper Vue instance
+    vm = new Vue({
+      data: internalSharedData
+    })
 
-  // Update value from other shared data clients
-  bridge.on('shared-data:set', ({ key, value }) => {
-    setValue(key, value)
+    // Update value from other shared data clients
+    bridge.on('shared-data:set', ({ key, value }) => {
+      setValue(key, value)
+    })
   })
 }
 
