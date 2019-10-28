@@ -22,7 +22,9 @@ export default function ({
         requestAnimationFrame(() => {
           if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex)
         })
-      }, 100),
+      }, 100, {
+        leading: true
+      }),
 
       scrollIntoInspected: debounce(function (index) {
         index += indexOffset
@@ -38,7 +40,9 @@ export default function ({
             scroller.scrollTop = top + height - parentHeight
           }
         })
-      }, 30)
+      }, 30, {
+        leading: true
+      })
     }
   }
 }
