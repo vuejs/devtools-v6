@@ -12,12 +12,20 @@ export default function ({
     },
 
     mounted () {
-      requestAnimationFrame(() => {
-        if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex)
-      })
+      this.refreshScrollToInspected()
+    },
+
+    activated () {
+      this.refreshScrollToInspected()
     },
 
     methods: {
+      refreshScrollToInspected () {
+        requestAnimationFrame(() => {
+          if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex)
+        })
+      },
+
       scrollIntoInspected: debounce(function (index) {
         index += indexOffset
         this.$nextTick(() => {
