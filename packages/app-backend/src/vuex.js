@@ -340,9 +340,27 @@ class VuexBackend {
   }
 
   stringifyStore () {
+    const getters = {}
+
+    const origGetters = this.store.getters || {}
+    const keys = Object.keys(origGetters)
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+      Object.defineProperty(getters, key, {
+        enumerable: true,
+        get: () => {
+          try {
+            return origGetters[key]
+          } catch (e) {
+            return e
+          }
+        }
+      })
+    }
+
     return stringify({
       state: this.store.state,
-      getters: this.store.getters || {}
+      getters
     })
   }
 
@@ -563,10 +581,7 @@ class VuexBackend {
       this.store.replaceState(clone(stateSnapshot))
     }
 
-    const result = stringify({
-      state: this.store.state,
-      getters: this.store.getters || {}
-    })
+    const result = this.stringifyStore()
 
     if (stateSnapshot) {
       // Restore user state
