@@ -151,7 +151,7 @@ function initApp (shell) {
       })
 
       bridge.on('vuex:mutation', payload => {
-        store.commit('vuex/RECEIVE_MUTATION', payload)
+        store.dispatch('vuex/receiveMutation', payload)
       })
 
       bridge.on('vuex:inspected-state', ({ index, snapshot }) => {
@@ -161,6 +161,8 @@ function initApp (shell) {
           store.commit('vuex/UPDATE_BASE_STATE', snapshot)
         } else if (store.getters['vuex/absoluteInspectedIndex'] === index) {
           store.commit('vuex/UPDATE_INSPECTED_STATE', snapshot)
+        } else {
+          console.log('vuex:inspected-state wrong index', index, 'expected:', store.getters['vuex/absoluteInspectedIndex'])
         }
 
         if (VuexResolve.travel) {

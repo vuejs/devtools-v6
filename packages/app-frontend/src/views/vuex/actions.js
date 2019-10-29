@@ -1,6 +1,21 @@
 import { snapshotsCache } from './cache'
 import Resolve from './resolve'
 import SharedData from '@utils/shared-data'
+import debounce from 'lodash/debounce'
+
+const mutationBuffer = []
+
+export function receiveMutation ({ commit }, entry) {
+  mutationBuffer.push(entry)
+  receiveMutations(commit)
+}
+
+export const receiveMutations = debounce(commit => {
+  commit('RECEIVE_MUTATIONS', mutationBuffer)
+  mutationBuffer.length = 0
+}, 300, {
+  maxWait: 1000
+})
 
 export function commitAll ({ commit, state }) {
   if (state.history.length > 0) {

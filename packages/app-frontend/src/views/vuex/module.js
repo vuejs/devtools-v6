@@ -31,10 +31,12 @@ const mutations = {
     reset(state)
   },
 
-  'RECEIVE_MUTATION' (state, entry) {
+  'RECEIVE_MUTATIONS' (state, entries) {
     const inspectingLastMutation = state.inspectedIndex === state.history.length - 1
-    entry.id = uid++
-    state.history.push(entry)
+    for (const entry of entries) {
+      entry.id = uid++
+    }
+    state.history.push(...entries)
     if (!state.filter) {
       state.activeIndex = state.history.length - 1
       if (inspectingLastMutation) {
@@ -131,7 +133,7 @@ const getters = {
     return filteredHistory[inspectedIndex]
   },
 
-  inspectedState ({ base, inspectedIndex, inspectedState, inspectedModule }, { inspectedEntry }) {
+  inspectedState ({ base, inspectedState, inspectedModule }, { inspectedEntry }) {
     const data = inspectedEntry ? inspectedState : base
     return processInspectedState({ entry: inspectedEntry, data, inspectedModule })
   },
