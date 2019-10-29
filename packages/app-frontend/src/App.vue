@@ -159,9 +159,7 @@
       </div>
     </div>
 
-    <keep-alive>
-      <router-view class="container" />
-    </keep-alive>
+    <router-view class="container" />
   </div>
 </template>
 
