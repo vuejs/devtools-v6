@@ -1,0 +1,23 @@
+body {
+  font-family: Roboto, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 10px 12px 12px 12px;
+  color: #2c3e50;
+}
+
+body,
+p {
+  margin: 0;
+}
+
+p {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.short-paragraph {
+  min-width: initial;
+  white-space: nowrap;
+}
