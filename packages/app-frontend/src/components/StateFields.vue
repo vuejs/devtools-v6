@@ -53,7 +53,7 @@ export default {
 
   data () {
     return {
-      limit: 20
+      limit: 30
     }
   },
 
