@@ -8,6 +8,14 @@
           placeholder="Filter inspected state"
         >
       </div>
+      <VueTypeAhead
+        :value="inspectedModule"
+        :suggestions="moduleSuggestions"
+        placeholder="(Root)"
+        show-all
+        restrict-choice
+        @update="value => setInspectedModule(value)"
+      />
       <a
         v-tooltip="'Export Vuex State'"
         class="button export"
@@ -114,7 +122,7 @@ import StateInspector from '@front/components/StateInspector.vue'
 import { searchDeepInObject, sortByKey, stringify, parse } from '@utils/util'
 import debounce from 'lodash/debounce'
 import groupBy from 'lodash/groupBy'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
   components: {
@@ -145,13 +153,15 @@ export default {
     ...mapState('vuex', [
       'activeIndex',
       'inspectedIndex',
-      'lastReceivedState'
+      'lastReceivedState',
+      'inspectedModule'
     ]),
 
     ...mapGetters('vuex', [
       'inspectedState',
       'filteredHistory',
-      'inspectedEntry'
+      'inspectedEntry',
+      'modules'
     ]),
 
     filteredState () {
@@ -214,6 +224,13 @@ export default {
 
     isActive () {
       return this.activeIndex === this.inspectedIndex
+    },
+
+    moduleSuggestions () {
+      return [
+        { value: null, label: '(Root)' },
+        ...this.modules.map(m => ({ value: m }))
+      ]
     }
   },
 
@@ -249,6 +266,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations('vuex', {
+      setInspectedModule: 'INSPECTED_MODULE'
+    }),
+
     ...mapActions('vuex', [
       'inspect'
     ]),

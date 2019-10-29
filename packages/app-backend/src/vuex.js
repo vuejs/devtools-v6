@@ -342,7 +342,10 @@ class VuexBackend {
   stringifyStore () {
     return stringify({
       state: this.store.state,
-      getters: getCatchedGetters(this.store)
+      getters: getCatchedGetters(this.store),
+      modules: Object.keys(this.store._modulesNamespaceMap)
+        .map(m => m.substr(0, m.length - 1))
+        .sort()
     })
   }
 

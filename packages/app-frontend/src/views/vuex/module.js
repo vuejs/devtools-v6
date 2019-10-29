@@ -1,4 +1,4 @@
-import { parse } from '@utils/util'
+import { parse, get } from '@utils/util'
 import * as actions from './actions'
 import { snapshotsCache } from './cache'
 import SharedData from '@utils/shared-data'
@@ -20,7 +20,8 @@ const state = {
   filterRegex: ANY_RE,
   filterRegexInvalid: false,
   inspectedState: null,
-  lastReceivedState: null
+  lastReceivedState: null,
+  inspectedModule: null
 }
 
 const mutations = {
@@ -106,6 +107,10 @@ const mutations = {
       state.filterRegexInvalid = false
       state.filterRegex = new RegExp(escapeStringForRegExp(filter), 'i')
     }
+  },
+
+  'INSPECTED_MODULE' (state, module) {
+    state.inspectedModule = module
   }
 }
 
@@ -122,7 +127,7 @@ function escapeStringForRegExp (str) {
 }
 
 const getters = {
-  inspectedState ({ base, inspectedIndex, inspectedState }, getters) {
+  inspectedState ({ base, inspectedIndex, inspectedState, inspectedModule }, getters) {
     const entry = getters.filteredHistory[inspectedIndex]
     const res = {}
 
@@ -137,6 +142,19 @@ const getters = {
     if (data) {
       res.state = data.state
       res.getters = data.getters
+
+      if (inspectedModule) {
+        res.state = get(res.state, inspectedModule.replace(/\//g, '.'))
+
+        if (res.getters) {
+          res.getters = Object.keys(res.getters)
+            .filter(key => key.startsWith(inspectedModule))
+            .reduce((obj, key) => {
+              obj[key.substr(inspectedModule.length + 1)] = res.getters[key]
+              return obj
+            }, {})
+        }
+      }
     }
 
     if (SharedData.vuexGroupGettersByModule && res.getters) {
@@ -177,6 +195,15 @@ const getters = {
 
   inspectedEntry ({ inspectedIndex }, { filteredHistory }) {
     return filteredHistory[inspectedIndex]
+  },
+
+  modules ({ base, inspectedIndex, inspectedState }, getters) {
+    const entry = getters.filteredHistory[inspectedIndex]
+    const data = entry ? inspectedState : base
+    if (data) {
+      return data.modules
+    }
+    return []
   }
 }
 
