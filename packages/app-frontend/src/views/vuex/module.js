@@ -127,58 +127,17 @@ function escapeStringForRegExp (str) {
 }
 
 const getters = {
-  inspectedState ({ base, inspectedIndex, inspectedState, inspectedModule }, getters) {
-    const entry = getters.filteredHistory[inspectedIndex]
-    const res = {}
+  inspectedEntry ({ inspectedIndex }, { filteredHistory }) {
+    return filteredHistory[inspectedIndex]
+  },
 
-    if (entry) {
-      res.mutation = {
-        type: entry.mutation.type,
-        payload: entry.mutation.payload ? parse(entry.mutation.payload) : undefined
-      }
-    }
+  inspectedState ({ base, inspectedIndex, inspectedState, inspectedModule }, { inspectedEntry }) {
+    const data = inspectedEntry ? inspectedState : base
+    return processInspectedState({ entry: inspectedEntry, data, inspectedModule })
+  },
 
-    const data = entry ? inspectedState : base
-    if (data) {
-      res.state = data.state
-      res.getters = data.getters
-
-      if (inspectedModule) {
-        res.state = get(res.state, inspectedModule.replace(/\//g, '.'))
-
-        if (res.getters) {
-          res.getters = Object.keys(res.getters)
-            .filter(key => key.startsWith(inspectedModule))
-            .reduce((obj, key) => {
-              obj[key.substr(inspectedModule.length + 1)] = res.getters[key]
-              return obj
-            }, {})
-        }
-      }
-    }
-
-    if (SharedData.vuexGroupGettersByModule && res.getters) {
-      const getterGroups = {}
-      const keys = Object.keys(res.getters)
-      keys.forEach(key => {
-        const parts = key.split('/')
-        let parent = getterGroups
-        for (let p = 0; p < parts.length - 1; p++) {
-          const part = parts[p]
-          parent = parent[part] = parent[part] || {
-            _custom: {
-              value: {},
-              abstract: true
-            }
-          }
-          parent = parent._custom.value
-        }
-        parent[parts.pop()] = res.getters[key]
-      })
-      res.getters = getterGroups
-    }
-
-    return res
+  inspectedLastState ({ lastReceivedState, inspectedModule }, { inspectedEntry }) {
+    return processInspectedState({ entry: inspectedEntry, data: lastReceivedState, inspectedModule })
   },
 
   filteredHistory ({ history, filterRegex }) {
@@ -193,10 +152,6 @@ const getters = {
     return -1
   },
 
-  inspectedEntry ({ inspectedIndex }, { filteredHistory }) {
-    return filteredHistory[inspectedIndex]
-  },
-
   modules ({ base, inspectedIndex, inspectedState }, getters) {
     const entry = getters.filteredHistory[inspectedIndex]
     const data = entry ? inspectedState : base
@@ -205,6 +160,58 @@ const getters = {
     }
     return []
   }
+}
+
+function processInspectedState ({ entry, data, inspectedModule }) {
+  const res = {}
+
+  if (entry) {
+    res.mutation = {
+      type: entry.mutation.type,
+      payload: entry.mutation.payload ? parse(entry.mutation.payload) : undefined
+    }
+  }
+
+  if (data) {
+    res.state = data.state
+    res.getters = data.getters
+
+    if (inspectedModule) {
+      res.state = get(res.state, inspectedModule.replace(/\//g, '.'))
+
+      if (res.getters) {
+        res.getters = Object.keys(res.getters)
+          .filter(key => key.startsWith(inspectedModule))
+          .reduce((obj, key) => {
+            obj[key.substr(inspectedModule.length + 1)] = res.getters[key]
+            return obj
+          }, {})
+      }
+    }
+  }
+
+  if (SharedData.vuexGroupGettersByModule && res.getters) {
+    const getterGroups = {}
+    const keys = Object.keys(res.getters)
+    keys.forEach(key => {
+      const parts = key.split('/')
+      let parent = getterGroups
+      for (let p = 0; p < parts.length - 1; p++) {
+        const part = parts[p]
+        parent = parent[part] = parent[part] || {
+          _custom: {
+            value: {},
+            abstract: true
+          }
+        }
+        parent = parent._custom.value
+      }
+      parent[parts.pop()] = res.getters[key]
+    })
+    res.getters = getterGroups
+  }
+
+  return res
 }
 
 export default {

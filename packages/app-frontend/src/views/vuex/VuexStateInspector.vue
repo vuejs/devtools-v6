@@ -160,16 +160,16 @@ export default {
 
     ...mapGetters('vuex', [
       'inspectedState',
+      'inspectedLastState',
       'filteredHistory',
       'inspectedEntry',
       'modules'
     ]),
 
     filteredState () {
-      const inspectedState = this.isOnlyMutationPayload && this.inspectedState.mutation ? {
-        mutation: this.inspectedState.mutation,
-        ...this.lastReceivedState
-      } : this.inspectedState
+      const inspectedState = this.isOnlyMutationPayload && this.inspectedState.mutation
+        ? this.inspectedLastState
+        : this.inspectedState
 
       const getProcessedState = (state, type) => {
         if (!Array.isArray(state)) {
