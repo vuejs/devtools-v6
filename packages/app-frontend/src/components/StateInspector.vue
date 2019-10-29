@@ -1,39 +1,42 @@
 <template>
   <div class="data-wrapper">
-    <div
-      v-for="(dataType, index) in dataTypes"
-      :key="dataType"
-      :class="[
-        'data-el',
-        toDisplayType(dataType, true),
-        {
-          'high-density': highDensity,
-          dim: dimAfter !== -1 && index >= dimAfter
-        }
-      ]"
-    >
+    <template v-for="(dataType, index) in dataTypes">
       <div
-        v-tooltip="$t('StateInspector.dataType.tooltip')"
-        class="data-type selectable-item"
-        @click="toggle(dataType, $event)"
+        v-if="defer(index + 1)"
+        :key="dataType"
+        :class="[
+          'data-el',
+          toDisplayType(dataType, true),
+          {
+            'high-density': highDensity,
+            dim: dimAfter !== -1 && index >= dimAfter
+          }
+        ]"
       >
-        <span
-          :class="{ rotated: isExpanded(dataType) }"
-          class="arrow right"
+        <div
+          v-tooltip="$t('StateInspector.dataType.tooltip')"
+          class="data-type selectable-item"
+          @click="toggle(dataType, $event)"
+        >
+          <span
+            :class="{ rotated: isExpanded(dataType) }"
+            class="arrow right"
+          />
+          <span class="key">{{ toDisplayType(dataType) }}</span>
+        </div>
+        <StateFields
+          v-show="isExpanded(dataType)"
+          :fields="state[dataType]"
+          :force-collapse="forceCollapse"
         />
-        <span class="key">{{ toDisplayType(dataType) }}</span>
       </div>
-      <StateFields
-        v-show="isExpanded(dataType)"
-        :fields="state[dataType]"
-        :force-collapse="forceCollapse"
-      />
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
+import Defer from '@front/mixins/defer'
 import StateFields from './StateFields.vue'
 
 const keyOrder = {
@@ -54,6 +57,10 @@ export default {
   components: {
     StateFields
   },
+
+  mixins: [
+    Defer()
+  ],
 
   props: {
     state: {

@@ -3,11 +3,11 @@
     <div class="header">
       <slot name="header" />
     </div>
-    <div
-      v-if="defer(2)"
-      class="scroll"
-    >
-      <slot name="scroll" />
+    <div class="scroll">
+      <slot
+        v-if="defer(2)"
+        name="scroll"
+      />
     </div>
     <div
       v-if="$slots.footer"

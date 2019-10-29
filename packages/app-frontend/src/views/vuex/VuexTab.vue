@@ -5,7 +5,10 @@
         v-if="defer(3)"
         slot="left"
       />
-      <vuex-state-inspector slot="right" />
+      <vuex-state-inspector
+        v-if="defer(5)"
+        slot="right"
+      />
     </split-pane>
     <div
       v-else
