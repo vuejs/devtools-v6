@@ -11,6 +11,7 @@
       <VueTypeAhead
         :value="inspectedModule"
         :suggestions="moduleSuggestions"
+        icon-right="filter_list"
         placeholder="(Root)"
         show-all
         restrict-choice
