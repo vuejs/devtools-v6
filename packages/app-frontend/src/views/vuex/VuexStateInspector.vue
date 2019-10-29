@@ -106,7 +106,7 @@
           data-id="load-vuex-state"
           icon-left="arrow_forward"
           class="accent flat"
-          @click="loadState()"
+          @click="loadStateNow()"
         >
           Load state
         </VueButton>
@@ -313,9 +313,13 @@ export default {
     }, 250),
 
     loadState: debounce(function () {
+      this.loadStateNow()
+    }, 300),
+
+    loadStateNow () {
       const history = this.filteredHistory
       this.inspect(history[history.length - 1])
-    }, 300),
+    },
 
     onMutation () {
       if (this.$shared.vuexAutoload) {
