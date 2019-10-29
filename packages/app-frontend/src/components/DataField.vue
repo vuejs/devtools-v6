@@ -265,10 +265,11 @@ export default {
   },
 
   data () {
+    const value = this.field.value && this.field.value._custom ? this.field.value._custom.value : this.field.value
     return {
       contextMenuOpen: false,
       limit: 20,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(value) < 6)
     }
   },
 
