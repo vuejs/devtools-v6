@@ -23,40 +23,18 @@
         />
         <span class="key">{{ toDisplayType(dataType) }}</span>
       </div>
-      <div
+      <StateFields
         v-show="isExpanded(dataType)"
-        class="data-fields"
-      >
-        <template v-if="Array.isArray(state[dataType])">
-          <data-field
-            v-for="field in state[dataType]"
-            :key="field.key"
-            :field="field"
-            :depth="0"
-            :path="field.key"
-            :editable="field.editable"
-            :force-collapse="forceCollapse"
-            :is-state-field="isStateField(field)"
-          />
-        </template>
-        <template v-else>
-          <data-field
-            v-for="(value, key) in state[dataType]"
-            :key="key"
-            :field="{ value, key }"
-            :depth="0"
-            :path="key"
-            :editable="false"
-          />
-        </template>
-      </div>
+        :fields="state[dataType]"
+        :force-collapse="forceCollapse"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import DataField from './DataField.vue'
+import StateFields from './StateFields.vue'
 
 const keyOrder = {
   props: 1,
@@ -74,7 +52,7 @@ const keyOrder = {
 
 export default {
   components: {
-    DataField
+    StateFields
   },
 
   props: {
@@ -152,10 +130,6 @@ export default {
         this.forceCollapse = value ? 'expand' : 'collapse'
         Vue.set(this.expandedState, key, value)
       })
-    },
-
-    isStateField (field) {
-      return field && field.type === 'state'
     }
   }
 }
