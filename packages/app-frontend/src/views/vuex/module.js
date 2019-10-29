@@ -74,16 +74,16 @@ const mutations = {
   },
 
   'UPDATE_INSPECTED_STATE' (state, value) {
-    state.inspectedState = parse(value)
+    state.inspectedState = parseStoreState(value)
   },
 
   'RECEIVE_STATE' (state, { index, snapshot }) {
-    state.lastReceivedState = parse(snapshot)
+    state.lastReceivedState = parseStoreState(snapshot)
     snapshotsCache.set(index, snapshot)
   },
 
   'UPDATE_BASE_STATE' (state, value) {
-    state.base = parse(value)
+    state.base = parseStoreState(value)
   },
 
   'TIME_TRAVEL' (state, index) {
@@ -159,6 +159,17 @@ const getters = {
       return data.modules
     }
     return []
+  }
+}
+
+function parseStoreState (state) {
+  const data = parse(state)
+  if (data) {
+    return {
+      state: data.state,
+      getters: Object.freeze(data.getters),
+      modules: Object.freeze(data.modules)
+    }
   }
 }
 
