@@ -155,7 +155,8 @@ export default {
       'activeIndex',
       'inspectedIndex',
       'lastReceivedState',
-      'inspectedModule'
+      'inspectedModule',
+      'history'
     ]),
 
     ...mapGetters('vuex', [
@@ -311,16 +312,19 @@ export default {
       }
     }, 250),
 
-    loadState () {
+    loadState: debounce(function () {
       const history = this.filteredHistory
       this.inspect(history[history.length - 1])
-    },
-
-    onMutation: debounce(function () {
-      if (this.$shared.vuexAutoload) {
-        this.loadState()
-      }
     }, 300),
+
+    onMutation () {
+      if (this.$shared.vuexAutoload) {
+        const unwatch = this.$watch(() => this.history.length, (value, oldValue) => {
+          unwatch()
+          this.loadState()
+        })
+      }
+    },
 
     onVuexInit () {
       if (this.$shared.vuexAutoload) {
