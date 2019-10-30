@@ -2,8 +2,7 @@ import { snapshotsCache } from './cache'
 import Resolve from './resolve'
 import SharedData from '@utils/shared-data'
 import debounce from 'lodash/debounce'
-
-const mutationBuffer = []
+import { mutationBuffer } from './module'
 
 export function receiveMutation ({ commit }, entry) {
   mutationBuffer.push(entry)

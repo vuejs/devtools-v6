@@ -8,6 +8,8 @@ const ANY_RE = new RegExp('.*', 'i')
 
 let uid = 0
 
+export const mutationBuffer = []
+
 const state = {
   hasVuex: false,
   base: null, // type Snapshot = { state: {}, getters: {} }

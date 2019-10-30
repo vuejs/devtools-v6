@@ -124,6 +124,7 @@ import { searchDeepInObject, sortByKey, stringify, parse } from '@utils/util'
 import debounce from 'lodash/debounce'
 import groupBy from 'lodash/groupBy'
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+import { mutationBuffer } from './module'
 
 export default {
   components: {
@@ -253,6 +254,10 @@ export default {
     }
   },
 
+  created () {
+    this.loadStateDebounce = 300
+  },
+
   mounted () {
     bridge.on('vuex:mutation', this.onMutation)
     if (this.isOnlyMutationPayload && this.$shared.vuexAutoload) {
@@ -312,9 +317,25 @@ export default {
       }
     }, 250),
 
-    loadState: debounce(function () {
-      this.loadStateNow()
-    }, 300),
+    loadState () {
+      // Debouncing
+      clearTimeout(this.loadStateTimer)
+      this.loadStateTimer = setTimeout(() => {
+        this.loadStateNow()
+      }, this.loadStateDebounce)
+
+      // Increase debounce delay
+      this.loadStateDebounce += 600
+      if (this.loadStateDebounce > 2000) {
+        this.loadStateDebounce = 2000
+      }
+
+      // Reset debounce delay after a period of inactivity
+      clearTimeout(this.loadStateDebounceResetTimer)
+      this.loadStateDebounceResetTimer = setTimeout(() => {
+        this.loadStateDebounce = 300
+      }, 3000)
+    },
 
     loadStateNow () {
       const history = this.filteredHistory
@@ -323,10 +344,18 @@ export default {
 
     onMutation () {
       if (this.$shared.vuexAutoload) {
-        const unwatch = this.$watch(() => this.history.length, (value, oldValue) => {
-          unwatch()
+        if (this.unwatchHistoryLength) this.unwatchHistoryLength()
+        if (mutationBuffer.length) {
+          // Wait for history to receive mutations batch
+          this.unwatchHistoryLength = this.$watch(() => this.history.length, (value, oldValue) => {
+            this.unwatchHistoryLength()
+            if (!mutationBuffer.length) {
+              this.loadState()
+            }
+          })
+        } else {
           this.loadState()
-        })
+        }
       }
     },
 
