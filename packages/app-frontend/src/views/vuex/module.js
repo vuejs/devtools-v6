@@ -212,7 +212,7 @@ function processInspectedState ({ entry, data, inspectedModule }) {
       const parts = key.split('/')
       let parent = getterGroups
       for (let p = 0; p < parts.length - 1; p++) {
-        const part = parts[p]
+        const part = `${parts[p]}: Module`
         parent = parent[part] = parent[part] || {
           _custom: {
             value: {},
