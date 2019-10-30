@@ -399,7 +399,7 @@ export default {
 
     displayedKey () {
       let key = this.field.key
-      if (key) {
+      if (typeof key === 'string') {
         key = key.replace('__vue__', '')
       }
       return key
