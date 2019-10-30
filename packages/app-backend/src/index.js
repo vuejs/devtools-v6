@@ -849,7 +849,7 @@ function processVuexGetters (instance) {
  */
 
 function processFirebaseBindings (instance) {
-  var refs = instance.$firebaseRefs
+  const refs = instance.$firebaseRefs
   if (refs) {
     return Object.keys(refs).map(key => {
       return {
@@ -871,7 +871,7 @@ function processFirebaseBindings (instance) {
  */
 
 function processObservables (instance) {
-  var obs = instance.$observables
+  const obs = instance.$observables
   if (obs) {
     return Object.keys(obs).map(key => {
       return {
@@ -919,7 +919,7 @@ function bindToConsole (instance) {
   }
 
   consoleBoundInstances.unshift(id)
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     window['$vm' + i] = instanceMap.get(consoleBoundInstances[i])
   }
   window.$vm = instance

@@ -82,20 +82,20 @@ export function parse (data, reviver) {
   if (Array.isArray(data)) {
     data = data.join('')
   }
-  var hasCircular = /^\s/.test(data)
+  const hasCircular = /^\s/.test(data)
   if (!hasCircular) {
     return arguments.length === 1
       ? JSON.parse(data)
       : JSON.parse(data, reviver)
   } else {
-    var list = JSON.parse(data)
+    const list = JSON.parse(data)
     decode(list, reviver)
     return list[0]
   }
 }
 
 export function stringifyStrict (data, replacer, space) {
-  var list = []
+  const list = []
   encode(data, replacer, list, new Map())
   return space
     ? ' ' + JSON.stringify(list, null, space)

@@ -32,10 +32,10 @@ export default function clone (parent, {
 } = {}) {
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
-  var allParents = []
-  var allChildren = []
+  let allParents = []
+  let allChildren = []
 
-  var useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
+  let useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
 
   const isBuffer = typeof window !== 'undefined' ? browserIsBuffer : Buffer.isBuffer
 
@@ -46,8 +46,8 @@ export default function clone (parent, {
 
     if (depth === 0) { return parent }
 
-    var child
-    var proto
+    let child
+    let proto
     if (typeof parent !== 'object') {
       return parent
     }
@@ -95,7 +95,7 @@ export default function clone (parent, {
     }
 
     if (circular) {
-      var index = allParents.indexOf(parent)
+      let index = allParents.indexOf(parent)
 
       if (index !== -1) {
         return allChildren[index]
@@ -106,20 +106,20 @@ export default function clone (parent, {
 
     if (_instanceof(parent, NativeMap)) {
       parent.forEach(function (value, key) {
-        var keyChild = _clone(key, depth - 1)
-        var valueChild = _clone(value, depth - 1)
+        let keyChild = _clone(key, depth - 1)
+        let valueChild = _clone(value, depth - 1)
         child.set(keyChild, valueChild)
       })
     }
     if (_instanceof(parent, NativeSet)) {
       parent.forEach(function (value) {
-        var entryChild = _clone(value, depth - 1)
+        let entryChild = _clone(value, depth - 1)
         child.add(entryChild)
       })
     }
 
-    for (var i in parent) {
-      var attrs = Object.getOwnPropertyDescriptor(parent, i)
+    for (let i in parent) {
+      let attrs = Object.getOwnPropertyDescriptor(parent, i)
       if (attrs) {
         if (attrs.hasOwnProperty('get') && attrs.get.name === 'computedGetter') {
           Object.defineProperty(child, i, attrs)
@@ -131,12 +131,12 @@ export default function clone (parent, {
     }
 
     if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(parent)
+      let symbols = Object.getOwnPropertySymbols(parent)
       for (let i = 0; i < symbols.length; i++) {
         // Don't need to worry about cloning a symbol because it is a primitive,
         // like a number or string.
-        var symbol = symbols[i]
-        var descriptor = Object.getOwnPropertyDescriptor(parent, symbol)
+        let symbol = symbols[i]
+        let descriptor = Object.getOwnPropertyDescriptor(parent, symbol)
         if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
           continue
         }
@@ -146,7 +146,7 @@ export default function clone (parent, {
     }
 
     if (includeNonEnumerable) {
-      var allPropertyNames = Object.getOwnPropertyNames(parent)
+      let allPropertyNames = Object.getOwnPropertyNames(parent)
       for (let i = 0; i < allPropertyNames.length; i++) {
         const propertyName = allPropertyNames[i]
         let descriptor = Object.getOwnPropertyDescriptor(parent, propertyName)
@@ -187,7 +187,7 @@ function __isRegExp (o) {
 clone.__isRegExp = __isRegExp
 
 function __getRegExpFlags (re) {
-  var flags = ''
+  let flags = ''
   if (re.global) flags += 'g'
   if (re.ignoreCase) flags += 'i'
   if (re.multiline) flags += 'm'

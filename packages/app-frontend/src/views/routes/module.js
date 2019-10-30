@@ -32,7 +32,7 @@ const getters = {
     if (typeof state.inspectedIndex === 'string') {
       const path = state.inspectedIndex.split('_')
       let obj = state.routeChanges[parseInt(path[0])]
-      for (var i = 1, len = path.length; i < len; ++i) {
+      for (let i = 1, len = path.length; i < len; ++i) {
         obj = obj.children[parseInt(path[i])]
       }
       return obj

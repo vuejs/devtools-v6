@@ -14,7 +14,7 @@ function cached (fn) {
   }
 }
 
-var classifyRE = /(?:^|[-_/])(\w)/g
+const classifyRE = /(?:^|[-_/])(\w)/g
 export const classify = cached((str) => {
   return str && str.replace(classifyRE, toUpper)
 })
@@ -51,8 +51,8 @@ export function getComponentDisplayName (originalName, style = 'class') {
 
 export function inDoc (node) {
   if (!node) return false
-  var doc = node.ownerDocument.documentElement
-  var parent = node.parentNode
+  const doc = node.ownerDocument.documentElement
+  const parent = node.parentNode
   return doc === node ||
     doc === parent ||
     !!(parent && parent.nodeType === 1 && (doc.contains(parent)))

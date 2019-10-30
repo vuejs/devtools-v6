@@ -20,7 +20,7 @@ function handshake (e) {
     let listeners = []
     const bridge = new Bridge({
       listen (fn) {
-        var listener = evt => {
+        const listener = evt => {
           if (evt.data.source === 'vue-devtools-proxy' && evt.data.payload) {
             fn(evt.data.payload)
           }

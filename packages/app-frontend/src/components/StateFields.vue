@@ -48,7 +48,10 @@ export default {
       required: true
     },
 
-    forceCollapse: String
+    forceCollapse: {
+      type: String,
+      default: null
+    }
   },
 
   data () {
