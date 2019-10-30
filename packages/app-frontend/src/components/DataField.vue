@@ -34,7 +34,7 @@
         v-else
         :class="{ abstract: fieldOptions.abstract }"
         class="key"
-      >{{ field.key }}</span><span
+      >{{ displayedKey }}</span><span
         v-if="!fieldOptions.abstract"
         class="colon"
       >:</span>
@@ -448,6 +448,14 @@ export default {
         value._custom.class && cssClass.push(value._custom.class)
       }
       return cssClass
+    },
+
+    displayedKey () {
+      let key = this.field.key
+      if (key) {
+        key = key.replace('__vue__', '')
+      }
+      return key
     }
   },
 
