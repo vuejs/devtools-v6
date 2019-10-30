@@ -292,7 +292,7 @@ $inspected_color = #af90d5
   font-size 12px
   box-shadow inset 0 1px 0px rgba(0, 0, 0, .08)
   min-height 34px
-  transition padding .15s, min-height .15s
+  transition padding-top .15s, padding-bottom .15s, min-height .15s
   &,
   .entry-info
     display flex
