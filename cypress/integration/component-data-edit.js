@@ -4,6 +4,7 @@ suite('component data edit', () => {
   it('should edit data using the decrease button', () => {
     // select Instance
     cy.get('.instance:nth-child(1) .instance:nth-child(2)').eq(0).click()
+    cy.get('.component-state-inspector .data-type').should('contain', 'data')
     cy.get('.data-field').eq(7).find('.actions .vue-ui-button').eq(1).click({ force: true })
     cy.get('.component-state-inspector').within(() => {
       cy.get('.key').contains('0').parent().get('.value').contains('0')
@@ -21,6 +22,7 @@ suite('component data edit', () => {
 
   it('should edit data using the increase button', () => {
     cy.get('.instance:nth-child(1) .instance:nth-child(2)').eq(0).click()
+    cy.get('.component-state-inspector .data-type').should('contain', 'data')
     cy.get('.data-field').eq(7).find('.actions .vue-ui-button').eq(2).click({ force: true })
     cy.get('.component-state-inspector').within(() => {
       cy.get('.key').contains('0').parent().get('.value').contains('0')

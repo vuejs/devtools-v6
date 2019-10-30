@@ -120,30 +120,27 @@ suite('components tab', () => {
   it('should display injected props', () => {
     cy.get('.left .search input').clear().type('Mine')
     cy.get('.instance').eq(1).click()
-    cy.get('.right .data-wrapper').then(el => {
-      expect(el.text()).to.contain('injected')
-      expect(el.text()).to.contain('answer:42')
-      expect(el.text()).to.contain('foo:"bar"')
-      expect(el.text()).to.contain('noop:ƒ noop(a, b, c)')
-    })
+    cy.get('.right .data-wrapper')
+      .should('contain', 'injected')
+      .should('contain', 'answer:42')
+      .should('contain', 'foo:"bar"')
+      .should('contain', 'noop:ƒ noop(a, b, c)')
     cy.get('.left .search input').clear()
   })
 
   it('should display $refs', () => {
     cy.get('.instance .item-name').contains('RefTester').click()
-    cy.get('.right .data-wrapper').then(el => {
-      expect(el.text()).to.contain('list:Array[4]')
-      expect(el.text()).to.contain('<li>')
-      expect(el.text()).to.contain('tester:<p id="testing"')
-    })
+    cy.get('.right .data-wrapper')
+      .should('contain', 'list:Array[4]')
+      .should('contain', '<li>')
+      .should('contain', 'tester:<p id="testing"')
   })
 
   it('should display $attrs', () => {
     cy.get('.instance .instance:nth-child(2) .arrow-wrapper').click()
     cy.get('.instance .instance .instance:nth-child(1) .item-name').click()
-    cy.get('.right .data-wrapper').then(el => {
-      expect(el.text()).to.contain('$attrs')
-      expect(el.text()).to.contain('attr:"some-attr"')
-    })
+    cy.get('.right .data-wrapper')
+      .should('contain', '$attrs')
+      .should('contain', 'attr:"some-attr"')
   })
 })
