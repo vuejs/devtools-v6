@@ -143,6 +143,8 @@ export function installHook (target) {
 
   // Clone deep utility for cloning initial state of the store
   // REFERENCE: https://github.com/pvorb/clone
+  // last updated: 2019-10-30
+  // ⚠️ DON'T FORGET TO UPDATE IT IN ./hook.js
 
   let NativeMap
   try {
@@ -167,13 +169,12 @@ export function installHook (target) {
     NativePromise = function () {}
   }
 
-  function clone (parent, circular, depth, prototype, includeNonEnumerable) {
-    if (typeof circular === 'object') {
-      depth = circular.depth
-      prototype = circular.prototype
-      includeNonEnumerable = circular.includeNonEnumerable
-      circular = circular.circular
-    }
+  function clone (parent, {
+    circular = true,
+    depth = Infinity,
+    prototype,
+    includeNonEnumerable
+  } = {}) {
     // maintain two arrays for circular references, where corresponding parents
     // and children have the same index
     let allParents = []
@@ -181,11 +182,7 @@ export function installHook (target) {
 
     let useBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function'
 
-    let isBuffer = typeof window !== 'undefined' ? browserIsBuffer : Buffer.isBuffer
-
-    if (typeof circular === 'undefined') { circular = true }
-
-    if (typeof depth === 'undefined') { depth = Infinity }
+    const isBuffer = typeof window !== 'undefined' ? browserIsBuffer : Buffer.isBuffer
 
     // recurse this function so we don't reset allParents and allChildren
     function _clone (parent, depth) {
@@ -199,6 +196,8 @@ export function installHook (target) {
       if (typeof parent !== 'object') {
         return parent
       }
+
+      let walkProperties = true
 
       if (_instanceof(parent, NativeMap)) {
         child = new NativeMap()
@@ -233,7 +232,10 @@ export function installHook (target) {
       } else if (_instanceof(parent, Error)) {
         child = Object.create(parent)
       } else {
-        if (typeof prototype === 'undefined') {
+        if (parent instanceof HTMLElement) {
+          child = parent.cloneNode(false)
+          walkProperties = false
+        } else if (typeof prototype === 'undefined') {
           proto = Object.getPrototypeOf(parent)
           child = Object.create(proto)
         } else {
@@ -266,43 +268,64 @@ export function installHook (target) {
         })
       }
 
-      for (let i in parent) {
-        let attrs = Object.getOwnPropertyDescriptor(parent, i)
-        if (attrs) {
-          if (attrs.hasOwnProperty('get') && attrs.get.name === 'computedGetter') {
-            Object.defineProperty(child, i, attrs)
-            continue
+      if (walkProperties) {
+        for (let i in parent) {
+          let attrs = Object.getOwnPropertyDescriptor(parent, i)
+          if (attrs) {
+            if (attrs.hasOwnProperty('get') && attrs.get.name === 'computedGetter') {
+              Object.defineProperty(child, i, attrs)
+              continue
+            }
+
+            child[i] = _clone(parent[i], depth - 1)
           }
 
-          child[i] = _clone(parent[i], depth - 1)
+          // Huge performance impact
+          // try {
+          //   const objProperty = Object.getOwnPropertyDescriptor(parent, i)
+          //   if (objProperty.set === 'undefined') {
+          //     // no setter defined. Skip cloning this property
+          //     continue
+          //   }
+          //   child[i] = _clone(parent[i], depth - 1)
+          // } catch (e) {
+          //   if (e instanceof TypeError) {
+          //     // when in strict mode, TypeError will be thrown if child[i] property only has a getter
+          //     // we can't do anything about this, other than inform the user that this property cannot be set.
+          //     continue
+          //   } else if (e instanceof ReferenceError) {
+          //     // this may happen in non strict mode
+          //     continue
+          //   }
+          // }
         }
-      }
 
-      if (Object.getOwnPropertySymbols) {
-        let symbols = Object.getOwnPropertySymbols(parent)
-        for (let i = 0; i < symbols.length; i++) {
-          // Don't need to worry about cloning a symbol because it is a primitive,
-          // like a number or string.
-          let symbol = symbols[i]
-          let descriptor = Object.getOwnPropertyDescriptor(parent, symbol)
-          if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
-            continue
+        if (Object.getOwnPropertySymbols) {
+          let symbols = Object.getOwnPropertySymbols(parent)
+          for (let i = 0; i < symbols.length; i++) {
+            // Don't need to worry about cloning a symbol because it is a primitive,
+            // like a number or string.
+            const symbol = symbols[i]
+            const descriptor = Object.getOwnPropertyDescriptor(parent, symbol)
+            if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
+              continue
+            }
+            child[symbol] = _clone(parent[symbol], depth - 1)
+            Object.defineProperty(child, symbol, descriptor)
           }
-          child[symbol] = _clone(parent[symbol], depth - 1)
-          Object.defineProperty(child, symbol, descriptor)
         }
-      }
 
-      if (includeNonEnumerable) {
-        let allPropertyNames = Object.getOwnPropertyNames(parent)
-        for (let i = 0; i < allPropertyNames.length; i++) {
-          const propertyName = allPropertyNames[i]
-          let descriptor = Object.getOwnPropertyDescriptor(parent, propertyName)
-          if (descriptor && descriptor.enumerable) {
-            continue
+        if (includeNonEnumerable) {
+          let allPropertyNames = Object.getOwnPropertyNames(parent)
+          for (let i = 0; i < allPropertyNames.length; i++) {
+            const propertyName = allPropertyNames[i]
+            const descriptor = Object.getOwnPropertyDescriptor(parent, propertyName)
+            if (descriptor && descriptor.enumerable) {
+              continue
+            }
+            child[propertyName] = _clone(parent[propertyName], depth - 1)
+            Object.defineProperty(child, propertyName, descriptor)
           }
-          child[propertyName] = _clone(parent[propertyName], depth - 1)
-          Object.defineProperty(child, propertyName, descriptor)
         }
       }
 
