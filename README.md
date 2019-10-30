@@ -27,42 +27,23 @@ This is only necessary when you want to build the extension yourself from source
 **Make sure you are using Node 6+ and NPM 3+**
 
 1. Clone this repo
-2. `npm install` (Or `yarn install` if you are using yarn as the package manager)
-3. `npm run build`
+2. `yarn install`
+3. `yarn run build`
 4. Open Chrome extension page
 5. Check "developer mode"
 6. Click "load unpacked extension", and choose `shells/chrome`.
+7. You can also use `yarn dev:chrome` to build & watch the unpacked extension.
 
 ### Development
 
 1. Clone this repo
-2. `npm install`
-3. `npm run dev`
+2. `yarn install`
+3. `yarn run dev`
 4. A plain shell with a test app will be available at `localhost:8100`.
-
-### Quick Start in chrome
-
-```js
-// Before you create app
-Vue.config.devtools = process.env.NODE_ENV === 'development'
-
-// After you create app
-window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app.constructor
-
-// then had to add in ./store.js as well.
-Vue.config.devtools = process.env.NODE_ENV === 'development'
-
-```
 
 ### Testing as Firefox addon
 
  1. Install `web-ext`
-
-	~~~~
-	$ npm install --global web-ext
-	~~~~
-
-	Or, for Yarn:
 
 	~~~~
 	$ yarn global add web-ext
@@ -77,12 +58,26 @@ Vue.config.devtools = process.env.NODE_ENV === 'development'
  2. Build and run in Firefox
 
 	~~~~
-	$ npm run build
-	$ npm run run:firefox
+	$ yarn run build
+	$ yarn run run:firefox
 	~~~~
 
 	When using Yarn, just replace `npm` with `yarn`.
 
+
+### Force enable the devtools
+
+```js
+// Before you create app
+Vue.config.devtools = process.env.NODE_ENV === 'development'
+
+// After you create app
+window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app.constructor
+
+// then had to add in ./store.js as well.
+Vue.config.devtools = process.env.NODE_ENV === 'development'
+
+```
 
 ### Common problems and how to fix
 
