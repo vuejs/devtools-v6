@@ -36,13 +36,13 @@
         v-if="route.alias"
         class="info alias"
       >
-        alias: <b>{{ route.alias }}</b>
+        alias: <b v-html="formattedValue(route.alias, false)" />
       </span>
       <span
         v-if="route.redirect"
         class="info redirect"
       >
-        redirect: <b>{{ route.redirect }}</b>
+        redirect: <b v-html="formattedValue(route.redirect, false)" />
       </span>
       <span
         v-if="isActive"
@@ -65,6 +65,7 @@
 
 <script>
 import { mapState, mapMutations, mapGetters } from 'vuex'
+import { formattedValue } from '@front/filters'
 
 export default {
   name: 'RoutesTreeItem',
@@ -105,9 +106,12 @@ export default {
     ...mapMutations('routes', {
       inspect: 'INSPECT'
     }),
+
     toggleExpand () {
       this.expanded = !this.expanded
-    }
+    },
+
+    formattedValue
   }
 }
 </script>

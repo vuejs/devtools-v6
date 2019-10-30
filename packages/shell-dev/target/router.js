@@ -27,8 +27,9 @@ const routes = [
     component: RouteWithBeforeEnter,
     beforeEnter: (to, from, next) => {
       next()
-    }},
+    } },
   { path: '/route-with-redirect', redirect: '/route-one' },
+  { path: '/route-with-redirect-function', redirect: () => '/route-one' },
   { path: '/route-with-alias', component: RouteWithAlias, alias: '/this-is-the-alias' },
   { path: '/route-with-dynamic-component', component: DynamicComponent, props: true },
   { path: '/route-with-props',
@@ -36,7 +37,7 @@ const routes = [
     props: {
       username: 'My Username',
       id: 99
-    }},
+    } },
   { path: '/route-with-props-default', component: RouteWithProps },
   { path: '/route-parent',
     component: ParentRoute,

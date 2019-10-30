@@ -207,22 +207,14 @@
 <script>
 import { mapState } from 'vuex'
 import {
-  UNDEFINED,
-  INFINITY,
-  NEGATIVE_INFINITY,
-  NAN,
   isPlainObject,
   sortByKey,
   openInEditor,
-  escape,
-  specialTokenToString,
   copyToClipboard
 } from '@utils/util'
+import { formattedValue, valueType } from '@front/filters'
 
 import DataFieldEdit from '@front/mixins/data-field-edit'
-
-const rawTypeRE = /^\[object (\w+)]$/
-const specialTypeRE = /^\[native (\w+) (.*)\]$/
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -284,33 +276,7 @@ export default {
 
     valueType () {
       const value = this.field.value
-      const type = typeof value
-      if (value == null || value === UNDEFINED) {
-        return 'null'
-      } else if (
-        type === 'boolean' ||
-        type === 'number' ||
-        value === INFINITY ||
-        value === NEGATIVE_INFINITY ||
-        value === NAN
-      ) {
-        return 'literal'
-      } else if (value && value._custom) {
-        return 'custom'
-      } else if (type === 'string') {
-        if (specialTypeRE.test(value)) {
-          const [, type] = specialTypeRE.exec(value)
-          return `native ${type}`
-        } else {
-          return 'string'
-        }
-      } else if (Array.isArray(value) || (value && value._isArray)) {
-        return 'array'
-      } else if (isPlainObject(value)) {
-        return 'plain-object'
-      } else {
-        return 'unknown'
-      }
+      return valueType(value)
     },
 
     rawValueType () {
@@ -337,30 +303,11 @@ export default {
 
     formattedValue () {
       let value = this.field.value
-      let result
       if (this.fieldOptions.abstract) {
         return ''
-      } else if ((result = specialTokenToString(value))) {
-        return result
-      } else if (this.valueType === 'custom') {
-        return value._custom.display
-      } else if (this.valueType === 'array') {
-        return 'Array[' + value.length + ']'
-      } else if (this.valueType === 'plain-object') {
-        return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
-      } else if (this.valueType.includes('native')) {
-        return escape(specialTypeRE.exec(value)[2])
-      } else if (typeof value === 'string') {
-        const typeMatch = value.match(rawTypeRE)
-        if (typeMatch) {
-          value = escape(typeMatch[1])
-        } else {
-          value = `<span>"</span>${escape(value)}<span>"</span>`
-        }
-        value = value.replace(/ /g, '&nbsp;')
-          .replace(/\n/g, '<span>\\n</span>')
+      } else {
+        return formattedValue(value)
       }
-      return value
     },
 
     rawValue () {
