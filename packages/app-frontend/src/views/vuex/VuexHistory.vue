@@ -65,22 +65,21 @@
           class="entry list-item special"
           @click="inspect(null)"
         >
-          <span class="mutation-type">Base State</span>
-          <span class="entry-actions">
-            <a
-              v-tooltip="'Time Travel to This State'"
-              class="action action-time-travel"
-              @click.stop="timeTravelTo(null)"
-            >
-              <VueIcon
-                class="medium"
-                icon="restore"
-              />
-              <span>Time Travel</span>
-            </a>
-          </span>
-          <span class="time">
-            {{ lastCommit | formatTime($shared.timeFormat) }}
+          <span class="entry-info">
+            <span class="mutation-type">Base State</span>
+            <span class="entry-actions">
+              <a
+                v-tooltip="'Time Travel to This State'"
+                class="action action-time-travel"
+                @click.stop="timeTravelTo(null)"
+              >
+                <VueIcon
+                  class="medium"
+                  icon="restore"
+                />
+                <span>Time Travel</span>
+              </a>
+            </span>
           </span>
           <span
             v-if="activeIndex === -1"
@@ -90,6 +89,9 @@
             v-if="inspectedIndex === -1"
             class="label inspected"
           >inspected</span>
+          <span class="time">
+            {{ lastCommit | formatTime($shared.timeFormat) }}
+          </span>
         </div>
         <div
           v-else
@@ -103,48 +105,44 @@
           class="entry list-item"
           @click="inspect(entry)"
         >
-          <span class="mutation-type">{{ entry.mutation.type }}</span>
-          <span class="entry-actions">
-            <a
-              v-tooltip="'Commit This Mutation'"
-              class="action action-commit"
-              @click="commit(entry);$event.stopImmediatePropagation()"
-            >
-              <VueIcon
-                class="medium"
-                icon="get_app"
-              />
-              <span>Commit</span>
-            </a>
-            <a
-              v-tooltip="'Revert This Mutation'"
-              class="action action-revert"
-              @click="revert(entry);$event.stopImmediatePropagation()"
-            >
-              <VueIcon
-                class="small"
-                icon="do_not_disturb"
-              />
-              <span>Revert</span>
-            </a>
-            <a
-              v-if="!isActive(index, entry)"
-              v-tooltip="'Time Travel to This State'"
-              class="action action-time-travel"
-              @click="timeTravelTo(entry)"
-            >
-              <VueIcon
-                class="medium"
-                icon="restore"
-              />
-              <span>Time Travel</span>
-            </a>
-          </span>
-          <span
-            v-tooltip="entry.timestamp"
-            class="time"
-          >
-            {{ entry.timestamp | formatTime($shared.timeFormat) }}
+          <span class="entry-info">
+            <span class="mutation-type">{{ entry.mutation.type }}</span>
+            <span class="entry-actions">
+              <a
+                v-tooltip="'Commit This Mutation'"
+                class="action action-commit"
+                @click="commit(entry);$event.stopImmediatePropagation()"
+              >
+                <VueIcon
+                  class="medium"
+                  icon="get_app"
+                />
+                <span>Commit</span>
+              </a>
+              <a
+                v-tooltip="'Revert This Mutation'"
+                class="action action-revert"
+                @click="revert(entry);$event.stopImmediatePropagation()"
+              >
+                <VueIcon
+                  class="small"
+                  icon="do_not_disturb"
+                />
+                <span>Revert</span>
+              </a>
+              <a
+                v-if="!isActive(index, entry)"
+                v-tooltip="'Time Travel to This State'"
+                class="action action-time-travel"
+                @click="timeTravelTo(entry)"
+              >
+                <VueIcon
+                  class="medium"
+                  icon="restore"
+                />
+                <span>Time Travel</span>
+              </a>
+            </span>
           </span>
           <span
             v-if="isActive(index, entry)"
@@ -154,6 +152,12 @@
             v-if="isInspected(index, entry)"
             class="label inspected"
           >inspected</span>
+          <span
+            v-tooltip="entry.timestamp"
+            class="time"
+          >
+            {{ entry.timestamp | formatTime($shared.timeFormat) }}
+          </span>
         </div>
       </template>
     </RecycleScroller>
@@ -289,10 +293,12 @@ $inspected_color = #af90d5
   box-shadow inset 0 1px 0px rgba(0, 0, 0, .08)
   min-height 34px
   transition padding .15s, min-height .15s
-  &::after
-    content: ''
-    display table
-    clear both
+  &,
+  .entry-info
+    display flex
+  .entry-info
+    flex 100% 1 1
+    overflow hidden
   &.active
     .time
       color lighten($active-color, 75%)
@@ -321,10 +327,15 @@ $inspected_color = #af90d5
     vertical-align middle
   .mutation-type
     line-height 20px
-    overflow-wrap break-word
-    max-width 100%
+    overflow hidden
+    white-space nowrap
+    text-overflow ellipsis
+    flex auto 0 1
+    margin-right 4px
   .entry-actions
     display none
+    flex none
+    padding-right 12px
   &:hover
     .entry-actions
       display inline-block
@@ -359,15 +370,15 @@ $inspected_color = #af90d5
 .time
   font-size 11px
   color #999
-  float right
   margin-top 3px
+  flex none
 
 .label
-  float right
   font-size 10px
   padding 4px 8px
   border-radius 6px
   margin-right 8px
+  flex none
   &.active
     background-color darken($active-color, 25%)
   &.inspected
