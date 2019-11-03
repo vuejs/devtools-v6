@@ -169,6 +169,7 @@ import { SPECIAL_TOKENS } from '@utils/util'
 import Keyboard from '@front/mixins/keyboard'
 import GroupDropdown from '@front/components/GroupDropdown.vue'
 import { SETTINGS_VERSION_ID, SETTINGS_VERSION } from '@front/views/settings/SettingsTab.vue'
+import * as storage from '@utils/storage'
 
 export default {
   name: 'App',
@@ -226,7 +227,7 @@ export default {
         { name: 'router', label: 'History', icon: 'directions' },
         { name: 'routes', label: 'Routes', icon: 'book' }
       ],
-      settingsVersion: parseInt(localStorage.getItem(SETTINGS_VERSION_ID))
+      settingsVersion: parseInt(storage.get(SETTINGS_VERSION_ID))
     }
   },
 
