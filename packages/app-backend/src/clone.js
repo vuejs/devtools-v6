@@ -376,7 +376,7 @@ function clone (object, options) {
     // if the object cannot / should not be cloned, don't
     if (
       // promise-like
-      typeof object.then === 'function' ||
+      (hasOwnProperty.call(object, 'then') && typeof object.then === 'function') ||
       // errors
       object instanceof Error ||
       // weakmaps
