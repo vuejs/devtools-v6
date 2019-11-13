@@ -46,7 +46,7 @@ To the `<head>` section of your app.
 
 Once you installed the package as project dependency, run:
 ```bash
-./node_modules/.bin/vue-devtools
+node ./node_modules/@vue/devtools/server.js
 ```
 
 You can also use the global `vue-devtools` to start the app, but you might want to check if the local version matches the global one in this scenario to avoid any incompatibilities.
