@@ -15,6 +15,7 @@ createPanelIfHasVue()
 
 function createPanelIfHasVue () {
   if (created || checkCount++ > 10) {
+    clearInterval(checkVueInterval)
     return
   }
   panelLoaded = false
