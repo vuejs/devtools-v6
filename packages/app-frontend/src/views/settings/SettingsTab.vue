@@ -7,6 +7,7 @@
 <script>
 import GlobalPreferences from './GlobalPreferences.vue'
 import { mapState } from 'vuex'
+import { get } from '@utils/storage'
 
 export const SETTINGS_VERSION = 3
 export const SETTINGS_VERSION_ID = 'vue-devtools-settings-version'
@@ -17,7 +18,7 @@ export default {
   provide () {
     return {
       settingsVersion: SETTINGS_VERSION,
-      currentSettingsVersion: parseInt(localStorage.getItem(SETTINGS_VERSION_ID)) || 0
+      currentSettingsVersion: parseInt(get(SETTINGS_VERSION_ID)) || 0
     }
   },
 
