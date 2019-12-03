@@ -4,9 +4,9 @@
 
 Vue CLI 3 supports this feature out-of-the-box when running `vue-cli-service serve`.
 
-## Nuxt.js
+## Nuxt.js & Quasar CLI
 
-Nuxt supports this feature out-of-the-box. Make sure to be in debug mode.
+Nuxt & Quasar CLI supports this feature out-of-the-box. Make sure to be in debug mode.
 
 ## Webpack
 
