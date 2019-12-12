@@ -17,8 +17,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       ['@babel/preset-env', {
         corejs: 3,
         targets: target,
-        useBuiltIns: 'usage',
-        debug: true
+        useBuiltIns: 'usage'
       }]
     ],
     plugins: [
