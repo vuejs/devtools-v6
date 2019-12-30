@@ -95,6 +95,14 @@ function connect (Vue) {
       }
     })
 
+    bridge.on('isolate-component', id => {
+      const instance = findInstanceOrVnode(id)
+      if (instance) {
+        isolateComponent(instance)
+        highlight(instance)
+      }
+    })
+
     bridge.on('filter-instances', _filter => {
       filter = _filter.toLowerCase()
       flush()
@@ -886,7 +894,7 @@ function processObservables (instance) {
 }
 
 /**
- * Sroll a node into view.
+ * Scroll a node into view.
  *
  * @param {Vue} instance
  */
@@ -897,6 +905,41 @@ function scrollIntoView (instance) {
     // TODO: Handle this for non-browser environments.
     window.scrollBy(0, rect.top + (rect.height - window.innerHeight) / 2)
   }
+}
+
+/**
+ * Isolate component
+ * 
+ * _Hide other siblings component the component and all of his parents_
+ *
+ * @param {Vue} instance
+ */
+
+function isolateComponent (instance) {
+  let domEl = instance.$el
+  const doIsolate = domEl.getAttribute('data-vue-isolated') !== "true"
+  if(doIsolate) {
+    domEl.setAttribute('data-vue-isolated', true)
+  } else {
+    domEl.removeAttribute('data-vue-isolated')
+  }
+  while (domEl !== null && domEl.parentNode !== null) {
+    hideOrShowSiblings(domEl, doIsolate ? 0 : undefined)
+    domEl = domEl.parentNode;
+  }
+}
+
+function hideOrShowSiblings (element, opacity) {
+  [...element.parentNode.children].forEach(el => {
+    if(el !== element) {
+      if(typeof opacity !== 'undefined') {
+        el.style.opacity = opacity
+      } else {
+        const { opacity, ...style } = el.style
+        el.style = style
+      }
+    }
+  })
 }
 
 /**

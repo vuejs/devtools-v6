@@ -82,6 +82,13 @@
       <span class="spacer" />
 
       <VueIcon
+        v-tooltip="'Isolate component'"
+        class="icon-button"
+        icon="filter_center_focus"
+        @click="isolateComponent"
+      />
+
+      <VueIcon
         v-tooltip="'Scroll into view'"
         class="icon-button"
         icon="visibility"
@@ -209,6 +216,10 @@ export default {
 
     scrollToInstance () {
       bridge.send('scroll-to-instance', this.instance.id)
+    },
+
+    isolateComponent () {
+      bridge.send('isolate-component', this.instance.id)
     },
 
     scrollIntoView (center = true) {
