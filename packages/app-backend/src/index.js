@@ -909,7 +909,7 @@ function scrollIntoView (instance) {
 
 /**
  * Isolate component
- * 
+ *
  * _Hide other siblings component the component and all of his parents_
  *
  * @param {Vue} instance
@@ -917,25 +917,28 @@ function scrollIntoView (instance) {
 
 function isolateComponent (instance) {
   let domEl = instance.$el
-  const doIsolate = domEl.getAttribute('data-vue-isolated') !== "true"
-  if(doIsolate) {
+  const doIsolate = domEl.getAttribute('data-vue-isolated') !== 'true'
+  if (doIsolate) {
     domEl.setAttribute('data-vue-isolated', true)
   } else {
     domEl.removeAttribute('data-vue-isolated')
   }
   while (domEl !== null && domEl.parentNode !== null) {
     hideOrShowSiblings(domEl, doIsolate ? 0 : undefined)
-    domEl = domEl.parentNode;
+    domEl = domEl.parentNode
   }
 }
 
 function hideOrShowSiblings (element, opacity) {
   [...element.parentNode.children].forEach(el => {
-    if(el !== element) {
-      if(typeof opacity !== 'undefined') {
+    if (el !== element) {
+      if (typeof opacity !== 'undefined') {
         el.style.opacity = opacity
       } else {
-        const { opacity, ...style } = el.style
+        const {
+          opacity,
+          ...style
+        } = el.style
         el.style = style
       }
     }
