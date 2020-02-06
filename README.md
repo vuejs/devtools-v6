@@ -27,18 +27,19 @@ This is only necessary when you want to build the extension yourself from source
 **Make sure you are using Node 6+ and NPM 3+**
 
 1. Clone this repo
-2. `yarn install`
-3. `yarn run build`
-4. Open Chrome extension page
-5. Check "developer mode"
-6. Click "load unpacked extension", and choose `shells/chrome`.
-7. You can also use `yarn dev:chrome` to build & watch the unpacked extension.
+2. `cd vue-devtools` the newly created folder
+2. run `yarn install`
+3. then run `yarn run build`
+4. Open the Chrome extension page (currently under Menu > More Tools > Extensions)
+5. Check "developer mode" on the top-right corner
+6. Click the "load unpacked" button on the left, and choose the folder: `vue-devtools/packages/shell-chrome/`
+7. Alternatilvely to step 3, you can also use `yarn dev:chrome` to build & watch the unpacked extension
 
 ### Development
 
 1. Clone this repo
-2. `yarn install`
-3. `yarn run dev`
+2. run `yarn install`
+3. then run `yarn run dev`
 4. A plain shell with a test app will be available at `localhost:8100`.
 
 ### Testing as Firefox addon
@@ -61,8 +62,6 @@ This is only necessary when you want to build the extension yourself from source
 	$ yarn run build
 	$ yarn run run:firefox
 	~~~~
-
-	When using Yarn, just replace `npm` with `yarn`.
 
 
 ### Force enable the devtools
