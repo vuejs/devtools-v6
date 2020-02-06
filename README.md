@@ -16,6 +16,8 @@
 
 2. To make it work for pages opened via `file://` protocol, you need to check "Allow access to file URLs" for this extension in Chrome's extension management panel.
 
+3. The **events tab** only show custom events emitted by a component. More information on custom events can be found [in the documentation](https://vuejs.org/v2/guide/components-custom-events.html).
+
 ### Open component in editor
 
 To enable this feature, follow [this guide](./docs/open-in-editor.md).
