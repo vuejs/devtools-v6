@@ -42,32 +42,29 @@ export function initEventsBackend (Vue, bridge) {
     }
   }
   
-   function wrapSetup () {
+  function wrapSetup () {
     const originalSetup = Vue.prototype.setup
-        if (originalSetup) {
-      const watch = Vue.prototype.$watch;
+    if (originalSetup) {
+      const watch = Vue.prototype.$watch
       Vue.prototype.setup = function (dataAndMethods) {
-        const wrappedContext = {};
-        let value;
+        const wrappedContext = {}
+        let value
         for (let prop in dataAndMethods) {
-          value = dataAndMethods[prop];
+          value = dataAndMethods[prop]
           // I thought about wrapping observables to emit changes on them
-          if(value && typeof value !== 'function' && value.hasOwnProperty('__ob__')) {
+          if (value && typeof value !== 'function' && value.hasOwnProperty('__ob__')) {
             watch(() => value, () => {
               if (recording) {
                 try {
                   logEvent(this, 'composition', (new Error()).stack.match(/at (\S+)/g).map(row => row.slice(3)))
-                }
-                catch(e) {
+                } catch (e) {
                   //
                 }
               }
             });
-            wrappedContext[prop] = value;
-          } else {
-            wrappedContext[prop] = value;   
           }
-          return wrappedContext;
+          wrappedContext[prop] = value
+          return wrappedContext
         }
       }
     }
