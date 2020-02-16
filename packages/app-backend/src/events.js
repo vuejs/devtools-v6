@@ -41,7 +41,7 @@ export function initEventsBackend (Vue, bridge) {
       }
     }
   }
-  
+
   function wrapSetup () {
     const originalSetup = Vue.prototype.setup
     if (originalSetup) {
@@ -61,7 +61,7 @@ export function initEventsBackend (Vue, bridge) {
                   //
                 }
               }
-            });
+            })
           }
           wrappedContext[prop] = value
           return wrappedContext
