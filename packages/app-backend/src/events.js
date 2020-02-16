@@ -44,7 +44,7 @@ export function initEventsBackend (Vue, bridge) {
   
    function wrapSetup () {
     const originalSetup = Vue.prototype.setup
-    if (originalSetup) {
+        if (originalSetup) {
       const watch = Vue.prototype.$watch;
       Vue.prototype.setup = function (dataAndMethods) {
         const wrappedContext = {};
@@ -68,6 +68,7 @@ export function initEventsBackend (Vue, bridge) {
             wrappedContext[prop] = value;   
           }
           return wrappedContext;
+        }
       }
     }
   }
@@ -75,4 +76,5 @@ export function initEventsBackend (Vue, bridge) {
   wrap('$emit')
   wrap('$broadcast')
   wrap('$dispatch')
+  wrapSetup()
 }
