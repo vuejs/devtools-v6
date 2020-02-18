@@ -46,7 +46,7 @@ export function initEventsBackend (Vue, bridge) {
     const originalSetup = Vue.prototype.setup
     if (originalSetup) {
       const watch = Vue.prototype.$watch
-      Vue.prototype.setup = function (dataAndMethods) {
+      Vue.prototype.setup = function (dataAndMethods, ctx) {
         const wrappedContext = {}
         let value
         for (let prop in dataAndMethods) {
@@ -64,7 +64,7 @@ export function initEventsBackend (Vue, bridge) {
             })
           }
           wrappedContext[prop] = value
-          return wrappedContext
+          return originalSetup(wrappedContext, ctx)
         }
       }
     }
