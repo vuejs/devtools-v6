@@ -771,7 +771,7 @@ function processState (instance) {
     type.vuex &&
     type.vuex.getters
 
-  const data = instance._data || instance.accessCache || {}
+  const data = instance._data || instance.renderContext || {}
 
   return Object.keys(data)
     .filter(key => (
