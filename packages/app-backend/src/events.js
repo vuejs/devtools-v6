@@ -42,7 +42,9 @@ export function initEventsBackend (Vue, bridge) {
     }
   }
 
-  wrap('$emit')
-  wrap('$broadcast')
-  wrap('$dispatch')
+  if (Vue) {
+    wrap('$emit')
+    wrap('$broadcast')
+    wrap('$dispatch')
+  }
 }

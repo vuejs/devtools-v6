@@ -34,13 +34,11 @@ const persisted = [
 
 // ---- INTERNALS ---- //
 
-let Vue
 let bridge
 // List of fields to persist to storage (disabled if 'false')
 // This should be unique to each shared data client to prevent conflicts
 let persist = false
-// For reactivity, we wrap the data in a Vue instance
-let vm
+let data
 
 let initRetryInterval
 let initRetryCount = 0
@@ -49,7 +47,6 @@ export function init (params) {
   return new Promise((resolve, reject) => {
     // Mandatory params
     bridge = params.bridge
-    Vue = params.Vue
     persist = !!params.persist
 
     if (persist) {
@@ -105,10 +102,9 @@ export function init (params) {
       bridge.send('shared-data:slave-init-waiting')
     }
 
-    // Wrapper Vue instance
-    vm = new Vue({
-      data: internalSharedData
-    })
+    data = {
+      ...internalSharedData,
+    }
 
     // Update value from other shared data clients
     bridge.on('shared-data:set', ({ key, value }) => {
@@ -119,15 +115,22 @@ export function init (params) {
 
 export function destroy () {
   bridge.removeAllListeners('shared-data:set')
-  vm.$destroy()
+  watchers = {}
 }
+
+let watchers = {}
 
 function setValue (key, value) {
   // Storage
   if (persist && persisted.includes(key)) {
     storage.set(`shared-data:${key}`, value)
   }
-  vm[key] = value
+  const oldValue = data[key]
+  data[key] = value
+  const handlers = watchers[key]
+  if (handlers) {
+    handlers.forEach(h => h(value, oldValue))
+  }
   // Validate Proxy set trap
   return true
 }
@@ -139,15 +142,16 @@ function sendValue (key, value) {
   })
 }
 
-export function watch (...args) {
-  vm.$watch(...args)
+export function watch (prop, handler) {
+  const list = watchers[prop] || (watchers[prop] = [])
+  list.push(handler)
 }
 
 const proxy = {}
 Object.keys(internalSharedData).forEach(key => {
   Object.defineProperty(proxy, key, {
     configurable: false,
-    get: () => vm && vm.$data[key],
+    get: () => data[key],
     set: (value) => {
       sendValue(key, value)
       setValue(key, value)

@@ -17,6 +17,8 @@ export function installHook (target) {
   const hook = {
     Vue: null,
 
+    apps: [],
+
     _buffer: [],
 
     _replayBuffer (event) {
@@ -94,6 +96,13 @@ export function installHook (target) {
       const fn = target.__VUE_DEVTOOLS_INSPECT__
       fn && fn(this)
     }
+  })
+
+  hook.on('app:init', (app, version) => {
+    hook.apps.push({
+      app,
+      version,
+    })
   })
 
   hook.once('vuex:init', store => {

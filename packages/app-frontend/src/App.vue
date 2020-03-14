@@ -278,7 +278,7 @@ export default {
     this.mediaQuery = window.matchMedia('(min-width: 685px)')
     this.switchView(this.mediaQuery)
     this.mediaQuery.addListener(this.switchView)
-    this.autoRefreshTimer = setInterval(this.shouldAutoRefresh, 1000)
+    // this.autoRefreshTimer = setInterval(this.shouldAutoRefresh, 1000)
   },
 
   destroyed () {

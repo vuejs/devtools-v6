@@ -29,12 +29,14 @@ let componentMetrics
 export function initPerfBackend (Vue, _bridge, instanceMap) {
   bridge = _bridge
 
-  // Global mixin
-  Vue.mixin({
-    beforeCreate () {
-      applyHooks(this)
-    }
-  })
+  if (Vue) {
+    // Global mixin
+    Vue.mixin({
+      beforeCreate () {
+        applyHooks(this)
+      }
+    })
+  }
 
   // Apply to existing components
   instanceMap.forEach(applyHooks)

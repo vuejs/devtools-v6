@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "cross-env PORT=8100 npm run dev:shell",
     "dev:shell": "cd packages/shell-dev && webpack-dev-server --inline --hot --no-info",
+    "dev:shell-vue3": "concurrently \"cd packages/shell-dev-vue3 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:chrome": "cd packages/shell-chrome && webpack --watch --hide-modules",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
     "lint": "eslint --ext=js,vue packages/app-backend/src packages/app-frontend/src packages/shared-utils/src packages/shell-chrome/src packages/shell-dev/src packages/shell-electron/src",
@@ -38,6 +39,7 @@
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
     "autoprefixer": "^9.1.5",
+    "concurrently": "^5.1.0",
     "cross-env": "^5.2.0",
     "cypress": "^3.1.0",
     "eslint": "^5.6.0",
@@ -50,7 +52,8 @@
     "eslint-plugin-vue": "^5.0.0-beta.3",
     "inquirer": "^6.2.0",
     "semver": "^5.5.1",
-    "start-server-and-test": "^1.7.1"
+    "start-server-and-test": "^1.7.1",
+    "vue-loader": "^15.9.0"
   },
   "resolutions": {
     "cypress": "=3.4.1"
