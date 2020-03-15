@@ -1,5 +1,5 @@
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export default {
   name: 'Child',
@@ -7,8 +7,23 @@ export default {
   setup () {
     const answer = ref(42)
 
+    const doubleAnswer = computed(() => answer.value * 2)
+
     return {
-      answer
+      answer,
+      doubleAnswer
+    }
+  },
+
+  data () {
+    return {
+      classicAnswer: 42
+    }
+  },
+
+  computed: {
+    classicDoubleAnswer () {
+      return this.classicAnswer * 2
     }
   }
 }
@@ -16,6 +31,6 @@ export default {
 
 <template>
   <div>
-    Child: {{ answer }}
+    Child: {{ answer }} x2: {{ doubleAnswer }}
   </div>
 </template>

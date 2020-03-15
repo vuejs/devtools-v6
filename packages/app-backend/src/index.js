@@ -380,7 +380,6 @@ function getInternalInstanceChildren (instance) {
   if (instance.$children) {
     return instance.$children
   }
-  console.log(instance.subTree.children)
   if (Array.isArray(instance.subTree.children)) {
     return instance.subTree.children.filter(vnode => !!vnode.component).map(vnode => vnode.component)
   }
@@ -769,13 +768,18 @@ function processState (instance) {
   const getters =
     type.vuex &&
     type.vuex.getters
+  const computedDefs = type.computed
 
-  const data = instance._data || instance.renderContext || {}
+  const data = instance._data || {
+    ...instance.data,
+    ...instance.renderContext
+  } || {}
 
   return Object.keys(data)
     .filter(key => (
       !(props && key in props) &&
-      !(getters && key in getters)
+      !(getters && key in getters) &&
+      !(computedDefs && key in computedDefs)
     ))
     .map(key => ({
       key,
@@ -825,7 +829,7 @@ function processComputed (instance) {
       computedProp = {
         type,
         key,
-        value: instance[key]
+        value: instance.renderContext ? instance.renderContext[key] : instance[key]
       }
     } catch (e) {
       computedProp = {
