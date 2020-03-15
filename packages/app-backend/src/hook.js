@@ -98,10 +98,11 @@ export function installHook (target) {
     }
   })
 
-  hook.on('app:init', (app, version) => {
+  hook.on('app:init', (app, version, types) => {
     hook.apps.push({
       app,
       version,
+      types
     })
   })
 

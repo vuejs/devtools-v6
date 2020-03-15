@@ -20,6 +20,7 @@ import {
 } from '@utils/util'
 import SharedData, { init as initSharedData } from '@utils/shared-data'
 import { isBrowser, target } from '@utils/env'
+import { isBeingDestroyed } from './components'
 
 // hook should have been injected before this executes.
 const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -266,6 +267,7 @@ function scan () {
       const id = appRecord.id = ++rootUID
       const instance = appRecord.app._container._vnode.component
       instance.__VUE_DEVTOOLS_ROOT_UID__ = id
+      instance.__VUE_DEVTOOLS_APP_RECORD__ = appRecord
       rootInstances.push(instance)
     }
   }
@@ -384,11 +386,6 @@ function getInternalInstanceChildren (instance) {
   }
   return []
 }
-
-function isBeingDestroyed (instance) {
-  return instance._isBeingDestroyed || instance.isUnmounted
-}
-
 /**
  * Check if an instance is qualified.
  *
