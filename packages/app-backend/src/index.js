@@ -62,7 +62,7 @@ export function initBackend (_bridge) {
 }
 
 function connect ({
-  Vue = null,
+  Vue = null
 } = {}) {
   initSharedData({
     bridge
@@ -211,6 +211,7 @@ function scan () {
     let inFragment = false
     let currentFragment = null
 
+    // eslint-disable-next-line no-inner-declarations
     function processInstance (instance) {
       if (instance) {
         if (rootInstances.indexOf(instance.$root) === -1) {
@@ -260,7 +261,8 @@ function scan () {
   }
 
   if (hook.apps.length) {
-    for (const appRecord of hook.apps) {
+    for (let i = 0, l = hook.apps.length; i < l; i++) {
+      const appRecord = hook.apps[i]
       const id = appRecord.id = ++rootUID
       const instance = appRecord.app._container._vnode.component
       instance.__VUE_DEVTOOLS_ROOT_UID__ = id
