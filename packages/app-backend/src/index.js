@@ -563,6 +563,9 @@ function markFunctional (id, vnode) {
 
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
+
+  console.log(instance)
+
   if (!instance) {
     const vnode = findInstanceOrVnode(id)
 
@@ -571,7 +574,7 @@ function getInstanceDetails (id) {
     const data = {
       id,
       name: getComponentName(vnode.fnOptions),
-      file: vnode.fnOptions.__file || null,
+      file: instance.type ? instance.type.__file : vnode.fnOptions.__file || null,
       state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.renderContext.props) }),
       functional: true
     }
@@ -581,6 +584,7 @@ function getInstanceDetails (id) {
     const data = {
       id: id,
       name: getInstanceName(instance),
+      file: instance.type ? instance.type.__file : undefined,
       state: getInstanceState(instance)
     }
 
@@ -759,8 +763,6 @@ function getPropType (type) {
 
 function processState (instance) {
   const type = instance.$options || instance.type
-
-  console.log(instance)
 
   const props = isLegacy
     ? instance._props
