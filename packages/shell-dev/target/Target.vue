@@ -68,14 +68,8 @@ export default {
     Functional
   },
   props: {
-    msg: {
-      type: String,
-      default: ''
-    },
-    obj: {
-      type: Object,
-      default: null
-    },
+    msg: String,
+    obj: null,
     ins: MyClass
   },
   data () {
