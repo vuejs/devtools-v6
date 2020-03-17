@@ -44,7 +44,12 @@ export default {
     noop: (a, b, c) => {},
     answer: 42
   },
-  props: ['id'],
+  props: {
+    id: {
+      type: Number,
+      default: 0
+    }
+  },
   data () {
     const a = { c: function () {} }
     a.a = a

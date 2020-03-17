@@ -68,11 +68,18 @@ export default {
     Functional
   },
   props: {
-    msg: String,
-    obj: null,
+    msg: {
+      type: String,
+      default: ''
+    },
+    obj: {
+      type: Object,
+      default: null
+    },
     ins: MyClass
   },
   data () {
+    console.log('this.obj', this.obj)
     return {
       localMsg: this.msg,
       items: [1, 2],
