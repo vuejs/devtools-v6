@@ -1,4 +1,5 @@
-import * as storage from './storage'
+import { setStorage } from './storage'
+import { Bridge } from './bridge'
 
 // Initial state
 const internalSharedData = {
@@ -45,7 +46,13 @@ let vm
 let initRetryInterval
 let initRetryCount = 0
 
-export function init (params) {
+export interface SharedDataParams {
+  bridge: Bridge
+  Vue: any
+  persist: boolean
+}
+
+export function init (params: SharedDataParams) {
   return new Promise((resolve, reject) => {
     // Mandatory params
     bridge = params.bridge
@@ -56,7 +63,7 @@ export function init (params) {
       if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init in progress...')
       // Load persisted fields
       persisted.forEach(key => {
-        const value = storage.get(`shared-data:${key}`)
+        const value = (`shared-data:${key}`)
         if (value !== null) {
           internalSharedData[key] = value
         }
@@ -122,17 +129,17 @@ export function destroy () {
   vm.$destroy()
 }
 
-function setValue (key, value) {
+function setValue (key: string, value: any) {
   // Storage
   if (persist && persisted.includes(key)) {
-    storage.set(`shared-data:${key}`, value)
+    setStorage(`shared-data:${key}`, value)
   }
   vm[key] = value
   // Validate Proxy set trap
   return true
 }
 
-function sendValue (key, value) {
+function sendValue (key: string, value: any) {
   bridge && bridge.send('shared-data:set', {
     key,
     value
@@ -143,7 +150,7 @@ export function watch (...args) {
   vm.$watch(...args)
 }
 
-const proxy = {}
+const proxy: Partial<typeof internalSharedData> = {}
 Object.keys(internalSharedData).forEach(key => {
   Object.defineProperty(proxy, key, {
     configurable: false,

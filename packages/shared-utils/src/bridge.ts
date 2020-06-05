@@ -2,7 +2,15 @@ import { EventEmitter } from 'events'
 
 const BATCH_DURATION = 100
 
-export default class Bridge extends EventEmitter {
+export class Bridge extends EventEmitter {
+  wall: any // @TODO
+  _batchingQueue: any[] // @TODO
+  _sendingQueue: any[][] // @TODO
+  _receivingQueue: any[] // @TODO
+  _sending: boolean
+  _time: number
+  _timer: NodeJS.Timeout
+
   constructor (wall) {
     super()
     this.setMaxListeners(Infinity)
@@ -21,14 +29,7 @@ export default class Bridge extends EventEmitter {
     this._time = null
   }
 
-  /**
-   * Send an event.
-   *
-   * @param {String} event
-   * @param {*} payload
-   */
-
-  send (event, payload) {
+  send (event: string, payload: any) {
     if (Array.isArray(payload)) {
       const lastIndex = payload.length - 1
       payload.forEach((chunk, index) => {
@@ -59,11 +60,9 @@ export default class Bridge extends EventEmitter {
 
   /**
    * Log a message to the devtools background page.
-   *
-   * @param {String} message
    */
 
-  log (message) {
+  log (message: string) {
     this.send('log', message)
   }
 
@@ -74,6 +73,7 @@ export default class Bridge extends EventEmitter {
     this._time = null
   }
 
+  // @TODO types
   _emit (message) {
     if (typeof message === 'string') {
       this.emit(message)
@@ -88,6 +88,7 @@ export default class Bridge extends EventEmitter {
     }
   }
 
+  // @TODO types
   _send (messages) {
     this._sendingQueue.push(messages)
     this._nextSend()

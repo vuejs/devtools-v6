@@ -302,7 +302,7 @@ export default {
     },
 
     formattedValue () {
-      let value = this.field.value
+      const value = this.field.value
       if (this.fieldOptions.abstract) {
         return ''
       } else {
@@ -434,7 +434,7 @@ export default {
       if (this.valueType === 'custom' && this.fieldOptions.file) {
         return openInEditor(this.fieldOptions.file)
       }
-      if (this.valueType === 'custom' && this.fieldOptions['type'] === '$refs') {
+      if (this.valueType === 'custom' && this.fieldOptions.type === '$refs') {
         if (this.$isChrome) {
           const evl = `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${this.fieldOptions.uid}").$refs["${this.fieldOptions.key}"])`
           console.log(evl)

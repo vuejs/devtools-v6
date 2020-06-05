@@ -2,8 +2,20 @@
   "name": "@vue-devtools/shared-utils",
   "version": "0.0.0",
   "private": true,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "sideEffects": false,
+  "scripts": {
+    "build": "rimraf lib && yarn ts",
+    "build:watch": "yarn ts -w",
+    "ts": "tsc -d -outDir lib"
+  },
   "dependencies": {
     "@vue-devtools/app-backend": "^0.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.9.1",
+    "@types/webpack-env": "^1.15.1",
+    "typescript": "^3.8.3"
   }
 }

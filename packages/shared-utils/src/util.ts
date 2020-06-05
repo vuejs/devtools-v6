@@ -1,10 +1,13 @@
 import path from 'path'
-import * as CircularJSON from './transfer'
+import { stringifyCircularAutoChunks, parseCircularAutoChunks } from './transfer'
+// @ts-ignore
 import { instanceMap, getCustomInstanceDetails } from '@back'
+// @ts-ignore
 import { getCustomStoreDetails } from '@back/vuex'
+// @ts-ignore
 import { getCustomRouterDetails } from '@back/router'
 import SharedData from './shared-data'
-import { isChrome } from './env'
+import { isChrome, target } from './env'
 
 function cached (fn) {
   const cache = Object.create(null)
@@ -68,13 +71,13 @@ export const NEGATIVE_INFINITY = '__vue_devtool_negative_infinity__'
 export const NAN = '__vue_devtool_nan__'
 
 export const SPECIAL_TOKENS = {
-  'true': true,
-  'false': false,
-  'undefined': UNDEFINED,
-  'null': null,
+  true: true,
+  false: false,
+  undefined: UNDEFINED,
+  null: null,
   '-Infinity': NEGATIVE_INFINITY,
-  'Infinity': INFINITY,
-  'NaN': NAN
+  Infinity: INFINITY,
+  NaN: NAN
 }
 
 export const MAX_STRING_SIZE = 10000
@@ -103,6 +106,8 @@ export function specialTokenToString (value) {
  * (.i.e `{ _custom: { ... } }`)
  */
 class EncodeCache {
+  map: Map<any, Function>
+
   constructor () {
     this.map = new Map()
   }
@@ -112,7 +117,7 @@ class EncodeCache {
    * @param {*} data Input data
    * @param {*} factory Function used to create the unique result
    */
-  cache (data, factory) {
+  cache (data: any, factory: Function) {
     const cached = this.map.get(data)
     if (cached) {
       return cached
@@ -133,10 +138,11 @@ const encodeCache = new EncodeCache()
 export function stringify (data) {
   // Create a fresh cache for each serialization
   encodeCache.clear()
-  return CircularJSON.stringify(data, replacer)
+  return stringifyCircularAutoChunks(data, replacer)
 }
 
 function replacer (key) {
+  // @ts-ignore
   const val = this[key]
   const type = typeof val
   if (Array.isArray(val)) {
@@ -343,8 +349,8 @@ export function getCustomRefDetails (instance, key, ref) {
 
 export function parse (data, revive) {
   return revive
-    ? CircularJSON.parse(data, reviver)
-    : CircularJSON.parse(data)
+    ? parseCircularAutoChunks(data, reviver)
+    : parseCircularAutoChunks(data)
 }
 
 const specialTypeRE = /^\[native (\w+) (.*)\]$/
@@ -613,7 +619,7 @@ export function openInEditor (file) {
     }
   })`
   if (isChrome) {
-    chrome.devtools.inspectedWindow.eval(src)
+    target.chrome.devtools.inspectedWindow.eval(src)
   } else {
     // eslint-disable-next-line no-eval
     eval(src)

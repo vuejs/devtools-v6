@@ -395,7 +395,7 @@ class VuexBackend {
     this.store._vm = this.snapshotsVm
 
     let tempRemovedModules = []
-    let tempAddedModules = []
+    const tempAddedModules = []
 
     // If base state, we need to remove all dynamic registered modules
     // to prevent errors because their state is missing

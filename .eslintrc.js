@@ -1,12 +1,16 @@
 module.exports = {
   'root': true,
   'env': {
-    'browser': true
+    'browser': true,
   },
   'extends': [
-    'standard',
-    'plugin:vue/recommended'
+    'plugin:vue/recommended',
+    '@vue/standard',
+    '@vue/typescript/recommended'
   ],
+  parserOptions: {
+    ecmaVersion: 2020,
+  },
   'globals': {
     'bridge': true,
     'chrome': true,
@@ -19,6 +23,17 @@ module.exports = {
       'singleline': 'never',
       'multiline': 'always'
     }],
-    'no-var': ['error']
+    'no-var': ['error'],
+    '@typescript-eslint/member-delimiter-style': ['error', {
+      multiline: {
+        delimiter: 'none',
+      },
+      singleline: {
+        delimiter: 'comma',
+      },
+    }],
+    '@typescript-eslint/ban-ts-ignore': 'warn',
+    '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/camelcase': 'warn'
   }
 }

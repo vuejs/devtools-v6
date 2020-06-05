@@ -20,11 +20,11 @@ export function installHook (target) {
     _buffer: [],
 
     _replayBuffer (event) {
-      let buffer = this._buffer
+      const buffer = this._buffer
       this._buffer = []
 
       for (let i = 0, l = buffer.length; i < l; i++) {
-        let allArgs = buffer[i]
+        const allArgs = buffer[i]
         allArgs[0] === event
           ? this.emit.apply(this, allArgs)
           : this._buffer.push(allArgs)

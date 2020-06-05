@@ -47,7 +47,7 @@ const mutations = {
 
 const matchingEvent = ({ searchText, searchComponent, regEx }) => e => {
   const componentNameStyle = SharedData.componentNameStyle
-  let searchTerm = (searchComponent
+  const searchTerm = (searchComponent
     ? getComponentDisplayName(e.instanceName, componentNameStyle)
     : e.eventName)
 

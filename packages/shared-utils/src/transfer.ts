@@ -58,14 +58,15 @@ function decode (list, reviver) {
   }
 }
 
-export function stringify (data, replacer, space) {
+export function stringifyCircularAutoChunks (data: any, replacer: Function = null, space: number = null) {
   let result
   try {
     result = arguments.length === 1
       ? JSON.stringify(data)
+      // @ts-ignore
       : JSON.stringify(data, replacer, space)
   } catch (e) {
-    result = stringifyStrict(data, replacer, space)
+    result = stringifyStrictCircularAutoChunks(data, replacer, space)
   }
   if (result.length > MAX_SERIALIZED_SIZE) {
     const chunkCount = Math.ceil(result.length / MAX_SERIALIZED_SIZE)
@@ -78,7 +79,7 @@ export function stringify (data, replacer, space) {
   return result
 }
 
-export function parse (data, reviver) {
+export function parseCircularAutoChunks (data: any, reviver: Function = null) {
   if (Array.isArray(data)) {
     data = data.join('')
   }
@@ -86,6 +87,7 @@ export function parse (data, reviver) {
   if (!hasCircular) {
     return arguments.length === 1
       ? JSON.parse(data)
+      // @ts-ignore
       : JSON.parse(data, reviver)
   } else {
     const list = JSON.parse(data)
@@ -94,7 +96,7 @@ export function parse (data, reviver) {
   }
 }
 
-export function stringifyStrict (data, replacer, space) {
+export function stringifyStrictCircularAutoChunks (data: any, replacer: Function = null, space: number = null) {
   const list = []
   encode(data, replacer, list, new Map())
   return space

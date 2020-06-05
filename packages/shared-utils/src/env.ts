@@ -1,10 +1,10 @@
 export const isBrowser = typeof navigator !== 'undefined'
-export const target = isBrowser
+export const target: any = isBrowser
   ? window
   : typeof global !== 'undefined'
     ? global
     : {}
-export const isChrome = typeof chrome !== 'undefined' && !!chrome.devtools
+export const isChrome = typeof target.chrome !== 'undefined' && !!target.chrome.devtools
 export const isFirefox = isBrowser && navigator.userAgent.indexOf('Firefox') > -1
 export const isWindows = isBrowser && navigator.platform.indexOf('Win') === 0
 export const isMac = isBrowser && navigator.platform === 'MacIntel'
@@ -22,12 +22,12 @@ export function initEnv (Vue) {
   if (Vue.prototype.hasOwnProperty('$isChrome')) return
 
   Object.defineProperties(Vue.prototype, {
-    '$isChrome': { get: () => isChrome },
-    '$isFirefox': { get: () => isFirefox },
-    '$isWindows': { get: () => isWindows },
-    '$isMac': { get: () => isMac },
-    '$isLinux': { get: () => isLinux },
-    '$keys': { get: () => keys }
+    $isChrome: { get: () => isChrome },
+    $isFirefox: { get: () => isFirefox },
+    $isWindows: { get: () => isWindows },
+    $isMac: { get: () => isMac },
+    $isLinux: { get: () => isLinux },
+    $keys: { get: () => keys }
   })
 
   if (isWindows) document.body.classList.add('platform-windows')

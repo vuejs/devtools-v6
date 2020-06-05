@@ -1,14 +1,16 @@
+import { target } from './env'
+
 // If we can, we use the browser extension API to store data
 // it's async though, so we synchronize changes from an intermediate
 // storageData object
-const useStorage = typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined'
+const useStorage = typeof target.chrome !== 'undefined' && typeof target.chrome.storage !== 'undefined'
 
 let storageData = null
 
-export function init () {
+export function initStorage () {
   return new Promise((resolve) => {
     if (useStorage) {
-      chrome.storage.local.get(null, result => {
+      target.chrome.storage.local.get(null, result => {
         storageData = result
         resolve()
       })
@@ -19,7 +21,7 @@ export function init () {
   })
 }
 
-export function get (key, defaultValue = null) {
+export function getStorage (key: string, defaultValue: any = null) {
   checkStorage()
   if (useStorage) {
     return getDefaultValue(storageData[key], defaultValue)
@@ -30,11 +32,11 @@ export function get (key, defaultValue = null) {
   }
 }
 
-export function set (key, val) {
+export function setStorage (key: string, val: any) {
   checkStorage()
   if (useStorage) {
     storageData[key] = val
-    chrome.storage.local.set({ [key]: val })
+    target.chrome.storage.local.set({ [key]: val })
   } else {
     try {
       localStorage.setItem(key, JSON.stringify(val))
@@ -42,11 +44,11 @@ export function set (key, val) {
   }
 }
 
-export function remove (key) {
+export function removeStorage (key: string) {
   checkStorage()
   if (useStorage) {
     delete storageData[key]
-    chrome.storage.local.remove([key])
+    target.chrome.storage.local.remove([key])
   } else {
     try {
       localStorage.removeItem(key)
@@ -54,11 +56,11 @@ export function remove (key) {
   }
 }
 
-export function clear () {
+export function clearStorage () {
   checkStorage()
   if (useStorage) {
     storageData = {}
-    chrome.storage.local.clear()
+    target.chrome.storage.local.clear()
   } else {
     try {
       localStorage.clear()
@@ -68,7 +70,7 @@ export function clear () {
 
 function checkStorage () {
   if (!storageData) {
-    throw new Error(`Storage wasn't initialized with 'init()'`)
+    throw new Error('Storage wasn\'t initialized with \'init()\'')
   }
 }
 

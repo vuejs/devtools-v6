@@ -56,7 +56,7 @@ chrome.runtime.onMessage.addListener(request => {
 
 function onContextMenu ({ id }) {
   if (id === 'vue-inspect-instance') {
-    const src = `window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__`
+    const src = 'window.__VUE_DEVTOOLS_CONTEXT_MENU_HAS_TARGET__'
 
     chrome.devtools.inspectedWindow.eval(src, function (res, err) {
       if (err) {

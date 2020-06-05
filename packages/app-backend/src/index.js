@@ -36,7 +36,7 @@ let filter = ''
 let captureCount = 0
 let isLegacy = false
 let rootUID = 0
-let functionalIds = new Map()
+const functionalIds = new Map()
 
 // Dedupe instances
 // Some instances may be both on a component and on a child abstract/functional component
@@ -237,7 +237,7 @@ function scan () {
         }
         return true
       }
-      let instance = node.__vue__
+      const instance = node.__vue__
 
       return processInstance(instance)
     })
@@ -435,7 +435,7 @@ function capture (instance, index, list) {
     uid: instance._uid,
     id: instance.__VUE_DEVTOOLS_UID__,
     name,
-    renderKey: getRenderKey(instance.$vnode ? instance.$vnode['key'] : null),
+    renderKey: getRenderKey(instance.$vnode ? instance.$vnode.key : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
     children: instance.$children

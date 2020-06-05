@@ -15,7 +15,7 @@ export default {
 
     fpsMarkers (state, getters, rootState) {
       const { currentBenchmark } = state
-      let markers = {}
+      const markers = {}
       if (!currentBenchmark) return markers
 
       const addEntries = (type, list, getInfo) => {
@@ -27,11 +27,11 @@ export default {
             continue
           }
           const time = Math.round(entry.timestamp / FPS_MARKERS_PRECISION) * FPS_MARKERS_PRECISION
-          let marker = markers[time] = markers[time] || {
+          const marker = markers[time] = markers[time] || {
             time,
             bubbles: {}
           }
-          let bubble = marker.bubbles[type] = marker.bubbles[type] || {
+          const bubble = marker.bubbles[type] = marker.bubbles[type] || {
             type,
             entries: []
           }
@@ -69,8 +69,8 @@ export default {
       addEntries('routes', routeChanges, entry => ({
         label: entry.to.fullPath,
         state: {
-          'from': entry.from,
-          'to': entry.to
+          from: entry.from,
+          to: entry.to
         }
       }))
 

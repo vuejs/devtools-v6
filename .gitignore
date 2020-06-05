@@ -9,3 +9,5 @@ TODOs.md
 .idea
 .web-extension-id
 yarn-error.log
+
+/packages/*/lib

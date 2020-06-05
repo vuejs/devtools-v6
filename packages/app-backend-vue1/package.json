@@ -1,0 +1,21 @@
+{
+  "name": "@vue-devtools/app-backend-vue1",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "rimraf lib && yarn ts",
+    "build:watch": "yarn ts -w",
+    "ts": "tsc -d -outDir lib"
+  },
+  "dependencies": {
+    "@vue-devtools/app-backend-api": "^0.0.0",
+    "@vue-devtools/shared-utils": "^0.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.9.1",
+    "@types/webpack-env": "^1.15.1",
+    "typescript": "^3.8.3"
+  }
+}
