@@ -143,7 +143,7 @@ async function flushComponents () {
     } else {
       // @TODO
       const payload = stringify({
-        inspectedInstance: await ctx.api.inspectComponent(rootInstance),
+        inspectedInstance: await ctx.api.inspectComponent(ctx.currentInspectedComponentId),
         instances: await ctx.api.walkComponentTree(rootInstance)
       })
       ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_FLUSH, payload)
