@@ -20,6 +20,7 @@ import {
 } from '@utils/util'
 import SharedData, { init as initSharedData } from '@utils/shared-data'
 import { isBrowser, target } from '@utils/env'
+import { isBeingDestroyed } from './components'
 
 // hook should have been injected before this executes.
 const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
@@ -52,13 +53,20 @@ export function initBackend (_bridge) {
     hook.once('init', connect)
   }
 
+  if (hook.apps.length) {
+    connect()
+  } else {
+    hook.once('app:init', () => connect())
+  }
+
   initRightClick()
 }
 
-function connect (Vue) {
+function connect ({
+  Vue = null
+} = {}) {
   initSharedData({
-    bridge,
-    Vue
+    bridge
   }).then(() => {
     hook.currentTab = 'components'
     bridge.on('switch-tab', tab => {
@@ -163,10 +171,12 @@ function connect (Vue) {
     }
 
     bridge.log('backend ready.')
-    bridge.send('ready', Vue.version)
+
+    const version = Vue ? Vue.version : hook.apps[0].version
+    bridge.send('ready', version)
     bridge.on('log-detected-vue', () => {
       console.log(
-        `%c vue-devtools %c Detected Vue v${Vue.version} %c`,
+        `%c vue-devtools %c Detected Vue v${version} %c`,
         'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
         'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
         'background:transparent'
@@ -197,55 +207,71 @@ export function findInstanceOrVnode (id) {
 
 function scan () {
   rootInstances.length = 0
-  let inFragment = false
-  let currentFragment = null
 
-  function processInstance (instance) {
-    if (instance) {
-      if (rootInstances.indexOf(instance.$root) === -1) {
-        instance = instance.$root
-      }
-      if (instance._isFragment) {
-        inFragment = true
-        currentFragment = instance
-      }
+  if (hook.Vue) {
+    let inFragment = false
+    let currentFragment = null
 
-      // respect Vue.config.devtools option
-      let baseVue = instance.constructor
-      while (baseVue.super) {
-        baseVue = baseVue.super
-      }
-      if (baseVue.config && baseVue.config.devtools) {
-        // give a unique id to root instance so we can
-        // 'namespace' its children
-        if (typeof instance.__VUE_DEVTOOLS_ROOT_UID__ === 'undefined') {
-          instance.__VUE_DEVTOOLS_ROOT_UID__ = ++rootUID
+    // eslint-disable-next-line no-inner-declarations
+    function processInstance (instance) {
+      if (instance) {
+        if (rootInstances.indexOf(instance.$root) === -1) {
+          instance = instance.$root
         }
-        rootInstances.push(instance)
-      }
-
-      return true
-    }
-  }
-
-  if (isBrowser) {
-    walk(document, function (node) {
-      if (inFragment) {
-        if (node === currentFragment._fragmentEnd) {
-          inFragment = false
-          currentFragment = null
+        if (instance._isFragment) {
+          inFragment = true
+          currentFragment = instance
         }
+
+        // respect Vue.config.devtools option
+        let baseVue = instance.constructor
+        while (baseVue.super) {
+          baseVue = baseVue.super
+        }
+        if (baseVue.config && baseVue.config.devtools) {
+          // give a unique id to root instance so we can
+          // 'namespace' its children
+          if (typeof instance.__VUE_DEVTOOLS_ROOT_UID__ === 'undefined') {
+            instance.__VUE_DEVTOOLS_ROOT_UID__ = ++rootUID
+          }
+          rootInstances.push(instance)
+        }
+
         return true
       }
-      const instance = node.__vue__
+    }
 
-      return processInstance(instance)
-    })
-  } else {
-    if (Array.isArray(target.__VUE_ROOT_INSTANCES__)) {
-      target.__VUE_ROOT_INSTANCES__.map(processInstance)
+    if (isBrowser) {
+      walk(document, function (node) {
+        if (inFragment) {
+          if (node === currentFragment._fragmentEnd) {
+            inFragment = false
+            currentFragment = null
+          }
+          return true
+        }
+        const instance = node.__vue__
+
+        return processInstance(instance)
+      })
+    } else {
+      if (Array.isArray(target.__VUE_ROOT_INSTANCES__)) {
+        target.__VUE_ROOT_INSTANCES__.map(processInstance)
+      }
     }
   }
+
+  if (hook.apps.length) {
+    for (let i = 0, l = hook.apps.length; i < l; i++) {
+      const appRecord = hook.apps[i]
+      const id = appRecord.id = ++rootUID
+      const instance = appRecord.app._container._vnode.component
+      instance.__VUE_DEVTOOLS_ROOT_UID__ = id
+      instance.__VUE_DEVTOOLS_APP_RECORD__ = appRecord
+      rootInstances.push(instance)
+    }
+  }
+
   hook.emit('router:init')
   flush()
 }
@@ -311,7 +337,7 @@ function flush () {
 
 function findQualifiedChildrenFromList (instances) {
   instances = instances
-    .filter(child => !child._isBeingDestroyed)
+    .filter(child => !isBeingDestroyed(child))
   return !filter
     ? instances.map(capture)
     : Array.prototype.concat.apply([], instances.map(findQualifiedChildren))
@@ -327,9 +353,10 @@ function findQualifiedChildrenFromList (instances) {
  */
 
 function findQualifiedChildren (instance) {
-  return isQualified(instance)
-    ? capture(instance)
-    : findQualifiedChildrenFromList(instance.$children).concat(
+  if (isQualified(instance)) {
+    return capture(instance)
+  } else if (instance.$children) {
+    return findQualifiedChildrenFromList(instance.$children).concat(
       instance._vnode && instance._vnode.children
         // Find functional components in recursively in non-functional vnodes.
         ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
@@ -337,8 +364,27 @@ function findQualifiedChildren (instance) {
           .filter(instance => isQualified(instance))
         : []
     )
+  } else if (instance.subTree) {
+    // TODO functional components
+    return findQualifiedChildrenFromList(getInternalInstanceChildren(instance))
+  } else {
+    return []
+  }
 }
 
+/**
+ * Get children from a component instance.
+ */
+
+function getInternalInstanceChildren (instance) {
+  if (instance.$children) {
+    return instance.$children
+  }
+  if (Array.isArray(instance.subTree.children)) {
+    return instance.subTree.children.filter(vnode => !!vnode.component).map(vnode => vnode.component)
+  }
+  return []
+}
 /**
  * Check if an instance is qualified.
  *
@@ -364,7 +410,7 @@ function captureChild (child) {
   if (child.fnContext && !child.componentInstance) {
     return capture(child)
   } else if (child.componentInstance) {
-    if (!child.componentInstance._isBeingDestroyed) return capture(child.componentInstance)
+    if (!isBeingDestroyed(child.componentInstance)) return capture(child.componentInstance)
   } else if (child.children) {
     return flatten(child.children.map(captureChild))
   }
@@ -438,8 +484,8 @@ function capture (instance, index, list) {
     renderKey: getRenderKey(instance.$vnode ? instance.$vnode.key : null),
     inactive: !!instance._inactive,
     isFragment: !!instance._isFragment,
-    children: instance.$children
-      .filter(child => !child._isBeingDestroyed)
+    children: getInternalInstanceChildren(instance)
+      .filter(child => !isBeingDestroyed(child))
       .map(capture)
       .filter(Boolean)
   }
@@ -488,9 +534,12 @@ function capture (instance, index, list) {
 function mark (instance) {
   if (!instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
     instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
-    instance.$on('hook:beforeDestroy', function () {
-      instanceMap.delete(instance.__VUE_DEVTOOLS_UID__)
-    })
+    // TODO on destroy in Vue 3
+    if (instance.$on) {
+      instance.$on('hook:beforeDestroy', function () {
+        instanceMap.delete(instance.__VUE_DEVTOOLS_UID__)
+      })
+    }
   }
 }
 
@@ -514,6 +563,9 @@ function markFunctional (id, vnode) {
 
 function getInstanceDetails (id) {
   const instance = instanceMap.get(id)
+
+  console.log(instance)
+
   if (!instance) {
     const vnode = findInstanceOrVnode(id)
 
@@ -522,7 +574,7 @@ function getInstanceDetails (id) {
     const data = {
       id,
       name: getComponentName(vnode.fnOptions),
-      file: vnode.fnOptions.__file || null,
+      file: instance.type ? instance.type.__file : vnode.fnOptions.__file || null,
       state: processProps({ $options: vnode.fnOptions, ...(vnode.devtoolsMeta && vnode.devtoolsMeta.renderContext.props) }),
       functional: true
     }
@@ -532,6 +584,7 @@ function getInstanceDetails (id) {
     const data = {
       id: id,
       name: getInstanceName(instance),
+      file: instance.type ? instance.type.__file : undefined,
       state: getInstanceState(instance)
     }
 
@@ -594,9 +647,9 @@ export function reduceStateList (list) {
  */
 
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options || instance.fnOptions || {})
+  const name = getComponentName(instance.$options || instance.fnOptions || instance.type || {})
   if (name) return name
-  return instance.$root === instance
+  return (instance.$root || instance.root) === instance
     ? 'Root'
     : 'Anonymous Component'
 }
@@ -628,7 +681,7 @@ function processProps (instance) {
         } : {}
       }
     })
-  } else if ((props = instance.$options.props)) {
+  } else if (instance.$options && (props = instance.$options.props)) {
     // 2.0
     const propsData = []
     for (let key in props) {
@@ -641,6 +694,28 @@ function processProps (instance) {
         meta: prop ? {
           type: prop.type ? getPropType(prop.type) : 'any',
           required: !!prop.required
+        } : {
+          type: 'invalid'
+        },
+        editable: SharedData.editableProps
+      })
+    }
+    return propsData
+  } else if (instance.props) {
+    // 3.0
+    const propsData = []
+    const propDefinitions = instance.type.props
+
+    for (let key in instance.props) {
+      const propDefinition = propDefinitions ? propDefinitions[key] : null
+      key = camelize(key)
+      propsData.push({
+        type: 'props',
+        key,
+        value: instance.props[key],
+        meta: propDefinition ? {
+          type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
+          required: !!propDefinition.required
         } : {
           type: 'invalid'
         },
@@ -687,20 +762,30 @@ function getPropType (type) {
  */
 
 function processState (instance) {
+  const type = instance.$options || instance.type
+
   const props = isLegacy
     ? instance._props
-    : instance.$options.props
+    : type.props
   const getters =
-    instance.$options.vuex &&
-    instance.$options.vuex.getters
-  return Object.keys(instance._data)
+    type.vuex &&
+    type.vuex.getters
+  const computedDefs = type.computed
+
+  const data = instance._data || {
+    ...instance.data,
+    ...instance.renderContext
+  } || {}
+
+  return Object.keys(data)
     .filter(key => (
       !(props && key in props) &&
-      !(getters && key in getters)
+      !(getters && key in getters) &&
+      !(computedDefs && key in computedDefs)
     ))
     .map(key => ({
       key,
-      value: instance._data[key],
+      value: data[key],
       editable: true
     }))
 }
@@ -713,9 +798,10 @@ function processState (instance) {
  */
 
 function processRefs (instance) {
-  return Object.keys(instance.$refs)
-    .filter(key => instance.$refs[key])
-    .map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
+  const refs = instance.$refs || instance.refs
+  return Object.keys(refs)
+    .filter(key => refs[key])
+    .map(key => getCustomRefDetails(instance, key, refs[key]))
 }
 
 /**
@@ -726,8 +812,9 @@ function processRefs (instance) {
  */
 
 function processComputed (instance) {
+  const type = instance.$options || instance.type
   const computed = []
-  const defs = instance.$options.computed || {}
+  const defs = type.computed || {}
   // use for...in here because if 'computed' is not defined
   // on component, computed properties will be placed in prototype
   // and Object.keys does not include
@@ -744,7 +831,7 @@ function processComputed (instance) {
       computedProp = {
         type,
         key,
-        value: instance[key]
+        value: instance.renderContext ? instance.renderContext[key] : instance[key]
       }
     } catch (e) {
       computedProp = {
@@ -768,7 +855,8 @@ function processComputed (instance) {
  */
 
 function processInjected (instance) {
-  const injected = instance.$options.inject
+  const type = instance.$options || instance.type
+  const injected = type.inject
 
   if (injected) {
     return Object.keys(injected).map(key => {
@@ -825,9 +913,10 @@ function processRouteContext (instance) {
  */
 
 function processVuexGetters (instance) {
+  const type = instance.$options || instance.type
   const getters =
-    instance.$options.vuex &&
-    instance.$options.vuex.getters
+    type.vuex &&
+    type.vuex.getters
   if (getters) {
     return Object.keys(getters).map(key => {
       return {
@@ -930,8 +1019,9 @@ function bindToConsole (instance) {
  * @param {Vue} instance
  */
 function getUniqueId (instance) {
-  const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
-  return `${rootVueId}:${instance._uid}`
+  const root = instance.$root || instance.root
+  const rootVueId = root.__VUE_DEVTOOLS_ROOT_UID__
+  return `${rootVueId}:${instance._uid || instance.uid}`
 }
 
 function getRenderKey (value) {

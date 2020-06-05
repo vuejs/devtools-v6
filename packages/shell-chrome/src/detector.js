@@ -10,7 +10,7 @@ window.addEventListener('message', e => {
 function detect (win) {
   setTimeout(() => {
     // Method 1: Check Nuxt.js
-    const nuxtDetected = Boolean(window.__NUXT__ || window.$nuxt)
+    const nuxtDetected = !!(window.__NUXT__ || window.$nuxt)
 
     if (nuxtDetected) {
       let Vue
@@ -28,7 +28,19 @@ function detect (win) {
       return
     }
 
-    // Method 2: Scan all elements inside document
+    // Method 2: Check  Vue 3
+    const vueDetected = !!(window.__VUE__)
+    if (vueDetected) {
+      win.postMessage({
+        // TODO disable devtools
+        devtoolsEnabled: true,
+        vueDetected: true
+      }, '*')
+
+      return
+    }
+
+    // Method 3: Scan all elements inside document
     const all = document.querySelectorAll('*')
     let el
     for (let i = 0; i < all.length; i++) {

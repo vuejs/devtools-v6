@@ -11,7 +11,7 @@ target.onload = () => {
   initDevTools({
     connect (cb) {
       // 3. called by devtools: inject backend
-      inject('./build/backend.js', () => {
+      inject('./target/backend.js', () => {
         // 4. send back bridge
         cb(new Bridge({
           listen (fn) {

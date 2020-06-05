@@ -2,9 +2,7 @@
   "name": "@vue-devtools/shell-dev",
   "version": "0.0.0",
   "dependencies": {
-    "@vue-devtools/app-backend": "^0.0.0",
-    "@vue-devtools/app-frontend": "^0.0.0",
-    "@vue-devtools/shared-utils": "^0.0.0"
+    "@vue-devtools/shell-host": "^0.0.0"
   },
   "devDependencies": {
     "@vue-devtools/build-tools": "^0.0.0",

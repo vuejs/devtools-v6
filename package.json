@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "cross-env PORT=8100 npm run dev:shell",
     "dev:shell": "cd packages/shell-dev && webpack-dev-server --inline --hot --no-info",
+    "dev:shell-vue3": "concurrently \"cd packages/shell-dev-vue3 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:chrome": "cd packages/shell-chrome && webpack --watch --hide-modules",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
     "lint": "eslint --ext .js,.ts,.vue .",
@@ -43,6 +44,7 @@
     "@vue/eslint-config-standard": "^5.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "autoprefixer": "^9.1.5",
+    "concurrently": "^5.1.0",
     "cross-env": "^5.2.0",
     "cypress": "^3.1.0",
     "eslint": "^6.0.0",
@@ -56,7 +58,8 @@
     "lerna": "^3.22.0",
     "rimraf": "^3.0.2",
     "semver": "^5.5.1",
-    "start-server-and-test": "^1.7.1"
+    "start-server-and-test": "^1.7.1",
+    "vue-loader": "^15.9.0"
   },
   "resolutions": {
     "cypress": "=3.4.1"

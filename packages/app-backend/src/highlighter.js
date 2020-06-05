@@ -2,6 +2,7 @@ import { inDoc, getComponentName, getComponentDisplayName } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { isBrowser, target } from '@utils/env'
 import { getInstanceName } from './index'
+import { isFragment } from './components'
 
 let overlay
 let overlayContent
@@ -79,7 +80,8 @@ export function unHighlight () {
  */
 
 export function getInstanceOrVnodeRect (instance) {
-  const el = instance.$el || instance.elm
+  const el = instance.subTree ? instance.subTree.el : instance.$el || instance.elm
+
   if (!isBrowser) {
     // TODO: Find position from instance or a vnode (for functional components).
 
@@ -88,11 +90,65 @@ export function getInstanceOrVnodeRect (instance) {
   if (!inDoc(el)) {
     return
   }
-  if (instance._isFragment) {
-    return getFragmentRect(instance)
+
+  if (isFragment(instance)) {
+    return getFragmentRect(instance.subTree)
+  } else if (instance._isFragment) {
+    return getLegacyFragmentRect(instance)
   } else if (el.nodeType === 1) {
     return el.getBoundingClientRect()
   }
+}
+
+function createRect () {
+  const rect = {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    get width () { return rect.right - rect.left },
+    get height () { return rect.bottom - rect.top }
+  }
+  return rect
+}
+
+function mergeRects (a, b) {
+  if (!a.top || b.top < a.top) {
+    a.top = b.top
+  }
+  if (!a.bottom || b.bottom > a.bottom) {
+    a.bottom = b.bottom
+  }
+  if (!a.left || b.left < a.left) {
+    a.left = b.left
+  }
+  if (!a.right || b.right > a.right) {
+    a.right = b.right
+  }
+}
+
+function getFragmentRect (vnode) {
+  const rect = createRect()
+
+  for (let i = 0, l = vnode.children.length; i < l; i++) {
+    const child = vnode.children[i]
+    let childRect
+    if (isFragment(child)) {
+      childRect = getFragmentRect(child)
+    } else if (child.el) {
+      const el = child.el
+      if (el.nodeType === 1 || el.getBoundingClientRect) {
+        childRect = el.getBoundingClientRect()
+      } else if (el.nodeType === 3 && el.data.trim()) {
+        childRect = getTextRect(el)
+      }
+    }
+    if (childRect) {
+      mergeRects(rect, childRect)
+    }
+  }
+
+  return rect
 }
 
 /**
@@ -103,36 +159,20 @@ export function getInstanceOrVnodeRect (instance) {
  * @return {Object}
  */
 
-function getFragmentRect ({ _fragmentStart, _fragmentEnd }) {
-  let top, bottom, left, right
+function getLegacyFragmentRect ({ _fragmentStart, _fragmentEnd }) {
+  const rect = createRect()
   util().mapNodeRange(_fragmentStart, _fragmentEnd, function (node) {
-    let rect
+    let childRect
     if (node.nodeType === 1 || node.getBoundingClientRect) {
-      rect = node.getBoundingClientRect()
+      childRect = node.getBoundingClientRect()
     } else if (node.nodeType === 3 && node.data.trim()) {
-      rect = getTextRect(node)
+      childRect = getTextRect(node)
     }
-    if (rect) {
-      if (!top || rect.top < top) {
-        top = rect.top
-      }
-      if (!bottom || rect.bottom > bottom) {
-        bottom = rect.bottom
-      }
-      if (!left || rect.left < left) {
-        left = rect.left
-      }
-      if (!right || rect.right > right) {
-        right = rect.right
-      }
+    if (childRect) {
+      mergeRects(rect, childRect)
     }
   })
-  return {
-    top,
-    left,
-    width: right - left,
-    height: bottom - top
-  }
+  return rect
 }
 
 let range
