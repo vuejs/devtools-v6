@@ -13,6 +13,7 @@ export interface AppRecord {
   name: string
   options: AppRecordOptions
   backend: DevtoolsBackend
+  lastInspectedComponentId: number
 }
 
 /**

@@ -71,8 +71,7 @@ function connect () {
     if (!record) {
       console.error(`App with id ${id} not found`)
     } else {
-      ctx.currentAppRecord = record
-      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, id)
+      await selectApp(record)
     }
   })
 
@@ -107,7 +106,8 @@ export async function registerApp (options: AppRecordOptions) {
         id,
         name,
         options,
-        backend
+        backend,
+        lastInspectedComponentId: null
       }
       await ctx.api.registerApplication(record)
       ctx.appRecords.push(record)
@@ -115,13 +115,19 @@ export async function registerApp (options: AppRecordOptions) {
 
       // Auto select first app
       if (ctx.currentAppRecord == null) {
-        ctx.currentAppRecord = record
-        ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, record.id)
+        await selectApp(record)
       }
 
       break
     }
   }
+}
+
+async function selectApp (record: AppRecord) {
+  ctx.currentAppRecord = record
+  ctx.currentInspectedComponentId = record.lastInspectedComponentId
+  ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, record.id)
+  await flushAll()
 }
 
 function mapAppRecord (record: AppRecord): SimpleAppRecord {
@@ -141,9 +147,8 @@ async function flushComponents () {
     if (!rootInstance) {
       console.warn('App is not mounted')
     } else {
-      // @TODO
       const payload = stringify({
-        inspectedInstance: await ctx.api.inspectComponent(ctx.currentInspectedComponentId),
+        inspectedInstance: ctx.currentInspectedComponentId ? await ctx.api.inspectComponent(ctx.currentInspectedComponentId) : null,
         instances: await ctx.api.walkComponentTree(rootInstance)
       })
       ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_FLUSH, payload)

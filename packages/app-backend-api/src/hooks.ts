@@ -1,5 +1,6 @@
-import { DevtoolsApi, App } from '.'
+import { App } from '.'
 import { BackendContext } from './backend-context'
+import { ComponentTreeNode, InspectedComponentData } from './component'
 
 export enum Hooks {
   GET_APP_RECORD_NAME = 'getAppRecordName',
@@ -23,12 +24,12 @@ export type HookPayloads = {
   }
   [Hooks.WALK_COMPONENT_TREE]: {
     componentInstance: any // @TODO
-    componentTreeData: any // @TODO
+    componentTreeData: ComponentTreeNode
     maxDepth: number
   }
   [Hooks.INSPECT_COMPONENT]: {
-    componentInstanceId: number | string
-    instanceData: any // @TODO
+    componentInstanceId: number
+    instanceData: InspectedComponentData
   }
 }
 

@@ -53,7 +53,7 @@ export class DevtoolsApi {
     return payload.componentTreeData
   }
 
-  async inspectComponent (instanceId: number | string) {
+  async inspectComponent (instanceId: number) {
     const payload = await this.callHook(Hooks.INSPECT_COMPONENT, {
       componentInstanceId: instanceId,
       instanceData: null
