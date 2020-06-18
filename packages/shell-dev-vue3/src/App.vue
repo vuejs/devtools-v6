@@ -5,8 +5,8 @@ export default {
   name: 'App',
 
   components: {
-    Child,
-  },
+    Child
+  }
 }
 </script>
 

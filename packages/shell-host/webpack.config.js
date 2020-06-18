@@ -4,7 +4,7 @@ const openInEditor = require('launch-editor-middleware')
 
 module.exports = createConfig({
   entry: {
-    devtools: './src/devtools.js',
+    devtools: './src/devtools.js'
   },
   output: {
     path: path.join(__dirname, '/build'),
