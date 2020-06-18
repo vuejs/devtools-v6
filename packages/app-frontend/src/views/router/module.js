@@ -1,11 +1,11 @@
-import * as storage from '@utils/storage'
+import { getStorage, setStorage } from '@utils/storage'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 
 let uid = 0
 
 const state = () => ({
-  enabled: storage.get(ENABLED_KEY, true),
+  enabled: getStorage(ENABLED_KEY, true),
   hasRouter: false,
   instances: [],
   routeChanges: [],
@@ -40,7 +40,7 @@ const mutations = {
     state.filter = filter
   },
   'TOGGLE' (state) {
-    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
+    setStorage(ENABLED_KEY, state.enabled = !state.enabled)
     bridge.send('router:toggle-recording', state.enabled)
   }
 }

@@ -1,4 +1,4 @@
-import * as storage from '@utils/storage'
+import { getStorage, setStorage } from '@utils/storage'
 import { getComponentDisplayName } from '@utils/util'
 import SharedData from '@utils/shared-data'
 
@@ -8,7 +8,7 @@ const REGEX_RE = /^\/((?:(?:.*?)(?:\\\/)?)*?)\/(\w*)/
 let uid = 0
 
 const state = () => ({
-  enabled: storage.get(ENABLED_KEY, true),
+  enabled: getStorage(ENABLED_KEY, true),
   events: [],
   inspectedIndex: -1,
   newEventCount: 0,
@@ -40,7 +40,7 @@ const mutations = {
     state.filter = filter
   },
   'TOGGLE' (state) {
-    storage.set(ENABLED_KEY, state.enabled = !state.enabled)
+    setStorage(ENABLED_KEY, state.enabled = !state.enabled)
     bridge.send('events:toggle-recording', state.enabled)
   }
 }

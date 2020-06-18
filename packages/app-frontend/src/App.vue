@@ -166,7 +166,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { SPECIAL_TOKENS } from '@utils/util'
-import { get, set } from '@utils/storage'
+import { getStorage, setStorage } from '@utils/storage'
 import Keyboard from '@front/mixins/keyboard'
 import GroupDropdown from '@front/components/GroupDropdown.vue'
 import { SETTINGS_VERSION_ID, SETTINGS_VERSION } from '@front/views/settings/SettingsTab.vue'
@@ -227,7 +227,7 @@ export default {
         { name: 'router', label: 'History', icon: 'directions' },
         { name: 'routes', label: 'Routes', icon: 'book' }
       ],
-      settingsVersion: parseInt(get(SETTINGS_VERSION_ID))
+      settingsVersion: parseInt(getStorage(SETTINGS_VERSION_ID))
     }
   },
 
@@ -254,7 +254,7 @@ export default {
         this.$nextTick(() => {
           if (value === 'settings') {
             this.settingsVersion = SETTINGS_VERSION
-            set(SETTINGS_VERSION_ID, SETTINGS_VERSION)
+            setStorage(SETTINGS_VERSION_ID, SETTINGS_VERSION)
           }
         })
       }

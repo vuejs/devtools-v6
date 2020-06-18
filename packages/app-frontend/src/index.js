@@ -9,7 +9,7 @@ import VuexResolve from './views/vuex/resolve'
 import { parse } from '@utils/util'
 import { isChrome, initEnv } from '@utils/env'
 import SharedData, { init as initSharedData, destroy as destroySharedData } from '@utils/shared-data'
-import { init as initStorage } from '@utils/storage'
+import { initStorage } from '@utils/storage'
 
 // register filters
 for (const key in filters) {

@@ -1,9 +1,9 @@
-import * as storage from '@utils/storage'
+import { getStorage } from '@utils/storage'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 
 const state = () => ({
-  enabled: storage.get(ENABLED_KEY, true),
+  enabled: getStorage(ENABLED_KEY, true),
   hasRouter: false,
   routeChanges: [],
   inspectedIndex: -1,

@@ -16,10 +16,10 @@ module.exports = createConfig({
     filename: '[name].js'
   },
   resolve: {
-    alias: {
-      vue: require.resolve('vue/dist/vue.esm.js'),
-    },
-    symlinks: false,
+    // alias: {
+    //   vue: require.resolve('vue/dist/vue.esm-bundler.js'),
+    // },
+    // symlinks: false,
   },
   module: {
     rules: [

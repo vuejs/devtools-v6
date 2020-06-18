@@ -32,5 +32,6 @@ export default {
 <template>
   <div>
     Child: {{ answer }} x2: {{ doubleAnswer }}
+    <button @click="answer *= 2">double it</button>
   </div>
 </template>
