@@ -36,7 +36,7 @@ export default new Vuex.Store({
     UPDATE_DATE: state => {
       state.date = new Date()
     },
-    TEST_COMPONENT: state => {},
+    TEST_COMPONENT: state => { /* noop */ },
     TEST_SET: state => {
       state.set.add(Math.random())
     },

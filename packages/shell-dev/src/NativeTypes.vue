@@ -54,6 +54,8 @@
 </template>
 
 <script>
+/* eslint-disable @typescript-eslint/no-empty-function */
+
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import CompDef from './Other.vue'
 
