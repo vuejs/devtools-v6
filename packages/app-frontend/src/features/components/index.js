@@ -78,7 +78,6 @@ export function useComponents () {
 
   return {
     rootInstances: computed(() => rootInstances.value),
-    // rootInstances: computed(() => []),
     selectedComponentId: computed(() => selectedComponentId.value),
     selectedComponentData: computed(() => selectedComponentData.value),
     selectedComponentState,
