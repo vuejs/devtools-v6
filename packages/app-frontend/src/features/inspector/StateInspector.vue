@@ -45,6 +45,7 @@ const keyOrder = {
   computed: 4,
   'register module': 1,
   'unregister module': 1,
+  setup: 2,
   state: 2,
   getters: 3,
   mutation: 1,

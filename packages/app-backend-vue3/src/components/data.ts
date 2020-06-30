@@ -8,6 +8,7 @@ import { InspectedComponentData } from '@vue-devtools/app-backend-api/lib/compon
  * Get the detailed information of an inspected instance.
  */
 export async function getInstanceDetails (instance: any, ctx: BackendContext): Promise<InspectedComponentData> {
+  console.log(instance)
   return {
     id: instance.id,
     name: getInstanceName(instance),
@@ -18,7 +19,8 @@ export async function getInstanceDetails (instance: any, ctx: BackendContext): P
 
 async function getInstanceState (instance) {
   return processProps(instance).concat(
-    processState(instance)
+    processState(instance),
+    processSetupState(instance)
   )
 }
 
@@ -95,6 +97,38 @@ function processState (instance) {
     .map(key => ({
       key,
       value: data[key],
-      editable: true
+      editable: false
     }))
+}
+
+function processSetupState (instance) {
+  const raw = instance.setupState.__v_raw
+  return Object.keys(instance.setupState)
+    .map(key => ({
+      key,
+      type: 'setup',
+      value: getSetupStateValue(instance.setupState[key], raw[key]),
+      editable: false
+    }))
+}
+
+function getSetupStateValue (state, raw) {
+  const isRef = !!raw.__v_isRef
+  const isComputed = isRef && !!raw.effect
+  const isReactive = !!raw.__v_reactive
+
+  const type = isComputed ? 'computed' : isRef ? 'ref' : isReactive ? 'reactive' : 'other'
+
+  let tooltip = type
+  if (raw.effect) {
+    tooltip += ` <span class="opacity-75 font-mono">${raw.effect.raw}</span>`
+  }
+
+  return {
+    _custom: {
+      display: isReactive ? 'Reactive' : state,
+      tooltip,
+      value: state
+    }
+  }
 }

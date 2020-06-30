@@ -1,5 +1,5 @@
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 
 export default {
   name: 'Child',
@@ -9,9 +9,14 @@ export default {
 
     const doubleAnswer = computed(() => answer.value * 2)
 
+    const reactiveObject = reactive({
+      foo: 'bar'
+    })
+
     return {
       answer,
-      doubleAnswer
+      doubleAnswer,
+      reactiveObject
     }
   },
 

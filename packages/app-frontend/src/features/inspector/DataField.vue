@@ -78,7 +78,10 @@
       <template v-else>
         <!-- eslint-disable vue/no-v-html -->
         <span
-          v-tooltip="valueTooltip"
+          v-tooltip="{
+            content: valueTooltip,
+            contentHtml: true
+          }"
           :class="valueClass"
           class="value"
           @dblclick="openEdit()"
