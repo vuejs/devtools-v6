@@ -7,11 +7,14 @@ import { useRoute, useRouter } from '@front/util/router'
 
 const rootInstances = ref([])
 let componentsMap = {}
+let componentsParent = {}
 const selectedComponentId = ref(null)
 const selectedComponentData = ref(null)
 const selectedComponentStateFilter = ref('')
 let selectedComponentPendingId = null
 let lastSelectedApp = null
+// @TODO auto expand to selected component after target page refresh
+let lastSelectedComponentPath = []
 const expandedMap = ref({})
 
 export function useComponents () {
@@ -34,6 +37,7 @@ export function useComponents () {
           componentId: id
         }
       })
+      lastSelectedComponentPath = getPath(id)
     } else {
       loadComponent(id)
     }
@@ -91,14 +95,12 @@ export function useComponent (instance) {
   const { selectComponent, requestComponentTree } = useComponents()
 
   const isExpanded = computed(() => !!expandedMap.value[instance.value.id])
+  const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
   function toggleExpand () {
     if (!instance.value.hasChildren) return
     Vue.set(expandedMap.value, instance.value.id, !isExpanded.value)
-
-    if (!instance.value.children || !instance.value.children.length) {
-      requestComponentTree(instance.value.id)
-    }
+    requestComponentTree(instance.value.id)
   }
 
   const isSelected = computed(() => selectedComponentId.value === instance.value.id)
@@ -109,6 +111,7 @@ export function useComponent (instance) {
 
   return {
     isExpanded,
+    isExpandedUndefined,
     toggleExpand,
     isSelected,
     select
@@ -118,6 +121,7 @@ export function useComponent (instance) {
 export function resetComponents () {
   rootInstances.value = []
   componentsMap = {}
+  componentsParent = {}
   expandedMap.value = {}
 }
 
@@ -134,6 +138,7 @@ export function setupComponentsBridgeEvents (bridge) {
       rootInstances.value.push(data)
       addToComponentsMap(data)
     }
+    console.log(componentsParent)
   })
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data }) => {
@@ -148,6 +153,18 @@ export function setupComponentsBridgeEvents (bridge) {
 function addToComponentsMap (instance) {
   componentsMap[instance.id] = instance
   if (instance.children) {
-    instance.children.forEach(c => addToComponentsMap(c))
+    instance.children.forEach(c => {
+      componentsParent[c.id] = instance.id
+      addToComponentsMap(c)
+    })
   }
+}
+
+function getPath (instanceId) {
+  const path = [instanceId]
+  const parentId = componentsParent[instanceId]
+  if (parentId) {
+    path.unshift(...getPath(parentId))
+  }
+  return path
 }

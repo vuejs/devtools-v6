@@ -1,8 +1,10 @@
 <script>
-import { computed, toRefs } from '@vue/composition-api'
+import { computed, toRefs, onMounted } from '@vue/composition-api'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { useComponent } from '.'
+
+const DEFAULT_EXPAND_DEPTH = 2
 
 export default {
   name: 'ComponentTreeNode',
@@ -36,8 +38,15 @@ export default {
       isSelected: selected,
       select,
       isExpanded: expanded,
+      isExpandedUndefined,
       toggleExpand: toggle
     } = useComponent(instance)
+
+    onMounted(() => {
+      if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {
+        toggle()
+      }
+    })
 
     return {
       sortedChildren,
