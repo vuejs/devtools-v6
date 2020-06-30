@@ -1,11 +1,11 @@
 import path from 'path'
 import { stringifyCircularAutoChunks, parseCircularAutoChunks } from './transfer'
-// @ts-ignore
-import { instanceMap, getCustomInstanceDetails } from '@back'
-// @ts-ignore
-import { getCustomStoreDetails } from '@back/vuex'
-// @ts-ignore
-import { getCustomRouterDetails } from '@back/router'
+import {
+  getInstanceMap,
+  getCustomInstanceDetails,
+  getCustomRouterDetails,
+  getCustomStoreDetails
+} from './backend'
 import SharedData from './shared-data'
 import { isChrome, target } from './env'
 
@@ -367,7 +367,7 @@ function reviver (key, val) {
     return NaN
   } else if (val && val._custom) {
     if (val._custom.type === 'component') {
-      return instanceMap.get(val._custom.id)
+      return getInstanceMap().get(val._custom.id)
     } else if (val._custom.type === 'map') {
       return reviveMap(val)
     } else if (val._custom.type === 'set') {
@@ -577,7 +577,7 @@ export function has (object, path, parent = false) {
   while (object && sections.length > size) {
     object = object[sections.shift()]
   }
-  return object != null && object.hasOwnProperty(sections[0])
+  return object != null && Object.prototype.hasOwnProperty.call(object, sections[0])
 }
 
 export function scrollIntoView (scrollParent, el, center = true) {

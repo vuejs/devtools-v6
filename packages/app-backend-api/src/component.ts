@@ -1,19 +1,20 @@
 export interface ComponentTreeNode {
   uid: number
-  id: number
+  id: string
   name: string
   renderKey: string
   inactive: boolean
   isFragment: boolean
+  hasChildren: boolean
   children: ComponentTreeNode[]
-  positionTop: number
+  positionTop?: number
   consoleId?: string
   isRouterView?: boolean
   macthedRouteSegment?: string
 }
 
 export interface InspectedComponentData {
-  id: number
+  id: string
   name: string
   file: string
   state: ComponentState[]

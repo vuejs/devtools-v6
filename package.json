@@ -14,7 +14,7 @@
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
     "lint": "eslint --ext .js,.ts,.vue .",
     "build": "lerna run build && cd packages/shell-chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "build:watch": "lerna run build && lerna run build:watch --stream --no-sort --concurrency 99",
+    "build:watch": "lerna run build --scope @vue-devtools/* && lerna run build:watch --stream --no-sort --concurrency 99",
     "run:firefox": "web-ext run -s packages/shell-chrome -a dist -i src",
     "zip": "npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "cd packages && zip -r -FS ../dist/chrome.zip shell-chrome -x *src/* -x *webpack.config.js",
@@ -56,9 +56,12 @@
     "eslint-plugin-vue": "^6.0.0",
     "inquirer": "^6.2.0",
     "lerna": "^3.22.0",
+    "postcss-nested": "^4.2.1",
     "rimraf": "^3.0.2",
     "semver": "^5.5.1",
     "start-server-and-test": "^1.7.1",
+    "tailwindcss": "^1.4.6",
+    "tailwindcss-dark-mode": "^1.1.4",
     "vue-loader": "^15.9.0"
   },
   "resolutions": {

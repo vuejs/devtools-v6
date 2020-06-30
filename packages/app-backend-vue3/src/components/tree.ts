@@ -1,0 +1,148 @@
+import { isBeingDestroyed, getUniqueComponentId, getInstanceName, getRenderKey, getInstanceOrVnodeRect, isFragment } from './util'
+import { getComponentFilter, isQualified } from './filter'
+import { BackendContext } from '@vue-devtools/app-backend-api'
+import { ComponentTreeNode } from '@vue-devtools/app-backend-api/lib/component'
+
+export class ComponentWalker {
+  ctx: BackendContext
+  maxDepth: number
+  // Dedupe instances
+  // Some instances may be both on a component and on a child abstract/functional component
+  captureIds: Map<string, undefined>
+
+  constructor (maxDepth: number, ctx: BackendContext) {
+    this.ctx = ctx
+    this.maxDepth = maxDepth
+  }
+
+  getComponentTree (instance: any) {
+    this.captureIds = new Map()
+    return this.findQualifiedChildren(instance, 0)
+  }
+
+  /**
+   * Find qualified children from a single instance.
+   * If the instance itself is qualified, just return itself.
+   * This is ok because [].concat works in both cases.
+   *
+   * @param {Vue|Vnode} instance
+   * @return {Vue|Array}
+   */
+  private findQualifiedChildren (instance: any, depth: number) {
+    if (isQualified(instance)) {
+      return this.capture(instance, null, depth)
+    } else if (instance.subTree) {
+      // TODO functional components
+      return this.findQualifiedChildrenFromList(this.getInternalInstanceChildren(instance.subTree), depth)
+    } else {
+      return []
+    }
+  }
+
+  /**
+   * Iterate through an array of instances and flatten it into
+   * an array of qualified instances. This is a depth-first
+   * traversal - e.g. if an instance is not matched, we will
+   * recursively go deeper until a qualified child is found.
+   *
+   * @param {Array} instances
+   * @return {Array}
+   */
+  private findQualifiedChildrenFromList (instances, depth: number) {
+    instances = instances
+      .filter(child => !isBeingDestroyed(child))
+    return !getComponentFilter()
+      ? instances.map((child, index, list) => this.capture(child, list, depth))
+      : Array.prototype.concat.apply([], instances.map(i => this.findQualifiedChildren(i, depth)))
+  }
+
+  /**
+   * Get children from a component instance.
+   */
+  private getInternalInstanceChildren (subTree) {
+    if (Array.isArray(subTree.children)) {
+      const list = []
+      subTree.children.forEach(childSubTree => {
+        if (childSubTree.component) {
+          list.push(childSubTree.component)
+        } else {
+          list.push(...this.getInternalInstanceChildren(childSubTree))
+        }
+      })
+      return list
+    }
+    return []
+  }
+
+  /**
+   * Capture the meta information of an instance. (recursive)
+   *
+   * @param {Vue} instance
+   * @return {Object}
+   */
+  private capture (instance: any, list: any[], depth: number): ComponentTreeNode {
+    // @TODO
+
+    // instance._uid is not reliable in devtools as there
+    // may be 2 roots with same _uid which causes unexpected
+    // behaviour
+    const id = instance.__VUE_DEVTOOLS_UID__ = getUniqueComponentId(instance, this.ctx)
+
+    // Dedupe
+    if (this.captureIds.has(id)) {
+      return
+    } else {
+      this.captureIds.set(id, undefined)
+    }
+
+    this.mark(instance)
+
+    const name = getInstanceName(instance)
+
+    // console.log('capture', name, instance, 'depth:', depth, '/', this.maxDepth)
+
+    const children = this.getInternalInstanceChildren(instance.subTree)
+      .filter(child => !isBeingDestroyed(child))
+
+    // console.log(children)
+
+    const ret: ComponentTreeNode = {
+      uid: instance.uid,
+      id,
+      name,
+      renderKey: getRenderKey(instance.vnode ? instance.vnode.key : null),
+      inactive: !!instance.isDeactivated,
+      hasChildren: !!children.length,
+      children: [],
+      isFragment: isFragment(instance)
+    }
+
+    // capture children
+    if (depth < this.maxDepth) {
+      ret.children = children
+        .map((child, index, list) => this.capture(child, list, depth + 1))
+        .filter(Boolean)
+    }
+
+    // record screen position to ensure correct ordering
+    if ((!list || list.length > 1) && !instance._inactive) {
+      const rect = getInstanceOrVnodeRect(instance)
+      ret.positionTop = rect ? rect.positionTop : Infinity
+    }
+
+    return ret
+  }
+
+  /**
+   * Mark an instance as captured and store it in the instance map.
+   *
+   * @param {Vue} instance
+   */
+  private mark (instance) {
+    const instanceMap = this.ctx.currentAppRecord.instanceMap
+    if (!instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
+      instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
+      // @TODO on destroy in Vue 3
+    }
+  }
+}

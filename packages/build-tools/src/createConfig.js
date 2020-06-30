@@ -19,7 +19,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       extensions: ['.js', '.vue'],
       alias: {
         '@front': '@vue-devtools/app-frontend/src',
-        '@back': '@vue-devtools/app-backend/src',
+        '@back': '@vue-devtools/app-backend-core/lib',
         '@utils': '@vue-devtools/shared-utils/lib'
       },
       symlinks: false
@@ -43,7 +43,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
           }
         },
         {
-          test: /\.css$/,
+          test: /\.(css|postcss|pcss)$/,
           use: [
             'vue-style-loader',
             'css-loader',
@@ -61,14 +61,14 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
               loader: 'style-resources-loader',
               options: {
                 patterns: [
-                  require.resolve('@vue-devtools/app-frontend/src/style/imports.styl')
+                  require.resolve('@vue-devtools/app-frontend/src/assets/style/imports.styl')
                 ]
               }
             }
           ]
         },
         {
-          test: /\.(png|woff2)$/,
+          test: /\.(png|woff2|svg)$/,
           loader: 'url-loader?limit=0'
         }
       ]

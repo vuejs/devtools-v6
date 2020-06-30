@@ -1,5 +1,5 @@
 import { initDevTools } from '@front'
-import Bridge from '@utils/bridge'
+import { Bridge } from '@utils/bridge'
 
 const target = document.getElementById('target')
 const targetWindow = target.contentWindow

@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '~@vue/ui/dist/vue-ui.css'
+
+@import 'imports'
+@import 'transitions'
+
+
+@font-face
+  font-family 'Roboto'
+  font-style normal
+  font-weight 400
+  src local('Roboto'), local('Roboto-Regular'), url(../Roboto-Regular.woff2) format('woff2')
+
+html, body
+  margin 0
+  padding 0
+  font-family Roboto
+  font-size 16px
+  color #444
+
+body
+  overflow hidden
+
+button:focus
+  outline none
+
+.selectable-item
+  background-color $background-color
+  &:hover
+    background-color $hover-color
+  &.selected,
+  &.active
+    background-color $active-color
+    color #fff
+    .arrow
+      border-left-color #fff
+    .item-name
+      color #fff
+
+  .vue-ui-dark-mode &
+    background-color $dark-background-color
+    &:hover
+      background-color $dark-hover-color
+      .arrow
+        border-left-color #666
+    &.selected,
+    &.active
+      color #fff
+      background-color $active-color
+
+$arrow-color = $vue-ui-color-dark
+
+.arrow
+  display inline-block
+  width 0
+  height 0
+  &.up
+    border-left 4px solid transparent
+    border-right 4px solid transparent
+    border-bottom 6px solid $arrow-color
+  &.down
+    border-left 4px solid transparent
+    border-right 4px solid transparent
+    border-top 6px solid $arrow-color
+  &.right
+    border-top 4px solid transparent
+    border-bottom 4px solid transparent
+    border-left 6px solid $arrow-color
+  &.left
+    border-top 4px solid transparent
+    border-bottom 4px solid transparent
+    border-right 6px solid $arrow-color
+
+  .vue-ui-dark-mode &
+    $arrow-color = rgba($vue-ui-color-light-neutral, .4)
+    &.up
+      border-bottom-color $arrow-color
+    &.down
+      border-top-color $arrow-color
+    &.right
+      border-left-color $arrow-color
+    &.left
+      border-right-color $arrow-color
+
+.vue-ui-icon svg
+  fill currentColor

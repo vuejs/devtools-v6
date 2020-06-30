@@ -1,7 +1,7 @@
 // this is injected to the app page when the panel is activated.
 
 import { initBackend } from '@back'
-import Bridge from '@utils/bridge'
+import { Bridge } from '@utils/bridge'
 
 window.addEventListener('message', handshake)
 

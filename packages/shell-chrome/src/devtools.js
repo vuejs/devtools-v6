@@ -1,7 +1,7 @@
 // this script is called when the VueDevtools panel is activated.
 
 import { initDevTools } from '@front'
-import Bridge from '@utils/bridge'
+import { Bridge } from '@utils/bridge'
 
 initDevTools({
 

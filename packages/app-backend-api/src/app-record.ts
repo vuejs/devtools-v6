@@ -13,7 +13,9 @@ export interface AppRecord {
   name: string
   options: AppRecordOptions
   backend: DevtoolsBackend
-  lastInspectedComponentId: number
+  lastInspectedComponentId: string
+  instanceMap: Map<string, any>
+  rootInstance: any
 }
 
 /**
@@ -22,4 +24,5 @@ export interface AppRecord {
 export interface SimpleAppRecord {
   id: number
   name: string
+  version: string
 }

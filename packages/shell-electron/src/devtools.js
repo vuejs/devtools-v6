@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 import { initDevTools } from '@front'
-import Bridge from '@utils/bridge'
+import { Bridge } from '@utils/bridge'
 
 const port = window.process.env.PORT || 8098
 const socket = io('http://localhost:' + port)

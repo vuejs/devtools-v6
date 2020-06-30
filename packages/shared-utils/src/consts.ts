@@ -20,20 +20,23 @@ export enum BridgeEvents {
   TO_FRONT_APP_LIST = 'f:app:list',
   TO_BACK_APP_SELECT = 'b:app:select',
   TO_FRONT_APP_SELECTED = 'f:app:selected',
-  TO_FRONT_COMPONENT_FLUSH = 'f:component:flush',
-  TO_BACK_COMPONENT_SELECT = 'b:component:select',
-  TO_FRONT_COMPONENT_SELECTED = 'f:component:selected',
+  TO_BACK_COMPONENT_TREE = 'b:component:tree',
+  TO_FRONT_COMPONENT_TREE = 'f:component:tree',
+  TO_BACK_COMPONENT_SELECTED_DATA = 'b:component:selected-data',
+  TO_FRONT_COMPONENT_SELECTED_DATA = 'f:component:selected-data',
+  TO_BACK_COMPONENT_EXPAND = 'b:component:expand',
+  TO_FRONT_COMPONENT_EXPAND = 'f:component:expand',
   TO_BACK_COMPONENT_SCROLL_TO = 'b:component:scroll-to',
   TO_BACK_COMPONENT_FILTER = 'b:component:filter',
   TO_BACK_COMPONENT_MOUSE_OVER = 'b:component:mouse-over',
   TO_BACK_COMPONENT_MOUSE_OUT = 'b:component:mouse-out',
   TO_BACK_COMPONENT_CONTEXT_MENU_TARGET = 'b:component:context-menu-target',
-  /** Request a component to be inspected */
-  TO_FRONT_COMPONENT_INSPECT = 'f:component:inspect',
   TO_BACK_COMPONENT_SET_DATA = 'b:component:set-data',
 }
 
 export enum HookEvents {
   INIT = 'init',
+  APP_INIT = 'app:init',
+  APP_ADD = 'app:add',
   FLUSH = 'flush',
 }

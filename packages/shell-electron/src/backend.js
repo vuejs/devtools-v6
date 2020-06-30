@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 import { initBackend } from '@back'
-import Bridge from '@utils/bridge'
+import { Bridge } from '@utils/bridge'
 import { installToast } from '@back/toast'
 import { target } from '@utils/env'
 

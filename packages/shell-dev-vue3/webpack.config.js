@@ -8,7 +8,7 @@ module.exports = createConfig({
   entry: {
     target: './src/main.js',
     hook: require.resolve('@vue-devtools/shell-host/src/hook.js'),
-    backend: require.resolve('@vue-devtools/shell-host/src/backend.js'),
+    backend: require.resolve('@vue-devtools/shell-host/src/backend.js')
   },
   output: {
     path: path.join(__dirname, '/build'),
@@ -17,17 +17,17 @@ module.exports = createConfig({
   },
   resolve: {
     alias: {
-      vue: require.resolve('vue/dist/vue.esm.js'),
+      vue: require.resolve('vue/dist/vue.esm-bundler.js')
     },
-    symlinks: false,
+    symlinks: false
   },
   module: {
     rules: [
       {
         test: /\.vue$/,
-        loader: require.resolve('vue-loader'),
-      },
-    ],
+        loader: require.resolve('vue-loader')
+      }
+    ]
   },
   devtool: '#cheap-module-source-map',
   devServer: {
@@ -43,10 +43,10 @@ module.exports = createConfig({
           if (req.url.startsWith('/target')) {
             return req.url
           }
-        },
-      },
-    },
-  },
+        }
+      }
+    }
+  }
 })
 
 module.exports.plugins[0] = new VueLoaderPlugin()

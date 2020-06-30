@@ -1,5 +1,4 @@
 import {
-  App,
   AppRecord,
   SimpleAppRecord,
   AppRecordOptions,
@@ -12,7 +11,8 @@ import {
   HookEvents,
   BridgeEvents,
   BuiltinTabs,
-  stringify
+  stringify,
+  initSharedData
 } from '@vue-devtools/shared-utils'
 
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
@@ -33,9 +33,14 @@ let ctx: BackendContext
 
 let recordId = 0
 
-export function initBackend (bridge: Bridge) {
+export async function initBackend (bridge: Bridge) {
   ctx = createBackendContext({
     bridge
+  })
+
+  await initSharedData({
+    bridge,
+    persist: false
   })
 
   if (hook.Vue) {
@@ -47,6 +52,20 @@ export function initBackend (bridge: Bridge) {
     })
   } else {
     hook.once(HookEvents.INIT, connect)
+  }
+
+  hook.on(HookEvents.APP_ADD, app => {
+    // Will init connect
+    hook.emit(HookEvents.INIT)
+
+    registerApp(app)
+  })
+
+  if (hook.apps.length) {
+    hook.emit(HookEvents.INIT)
+    hook.apps.forEach(app => {
+      registerApp(app)
+    })
   }
 }
 
@@ -75,6 +94,22 @@ function connect () {
     }
   })
 
+  // Components
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, (instanceId) => {
+    if (instanceId === '_root') {
+      instanceId = `${ctx.currentAppRecord.id}:root`
+    }
+    sendComponentTreeData(instanceId)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
+    if (instanceId === '_root') {
+      instanceId = `${ctx.currentAppRecord.id}:root`
+    }
+    sendSelectedComponentData(instanceId)
+  })
+
   // Flush
 
   // the backend may get injected to the same page multiple times
@@ -90,12 +125,13 @@ function connect () {
 
 export async function registerApp (options: AppRecordOptions) {
   let record: AppRecord
-  const baseFrameworkVersion = parseInt(options.version.substr(options.version.indexOf('.')))
+  const baseFrameworkVersion = parseInt(options.version.substr(0, options.version.indexOf('.')))
   for (let i = 0; i < availableBackends.length; i++) {
     const backend = availableBackends[i]
     if (backend.frameworkVersion === baseFrameworkVersion) {
       // Enabled backend
       if (!enabledBackends.has(backend)) {
+        console.log('Enabling backend for Vue', backend.frameworkVersion)
         await backend.setup(ctx.api)
       }
 
@@ -107,8 +143,11 @@ export async function registerApp (options: AppRecordOptions) {
         name,
         options,
         backend,
-        lastInspectedComponentId: null
+        lastInspectedComponentId: null,
+        instanceMap: new Map(),
+        rootInstance: await ctx.api.getAppRootInstance(options.app)
       }
+      record.instanceMap.set(`${record.id}:root`, record.rootInstance)
       await ctx.api.registerApplication(record)
       ctx.appRecords.push(record)
       ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, mapAppRecord(record))
@@ -126,32 +165,60 @@ export async function registerApp (options: AppRecordOptions) {
 async function selectApp (record: AppRecord) {
   ctx.currentAppRecord = record
   ctx.currentInspectedComponentId = record.lastInspectedComponentId
-  ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, record.id)
-  await flushAll()
+  ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, {
+    id: record.id,
+    lastInspectedComponentId: record.lastInspectedComponentId
+  })
 }
 
 function mapAppRecord (record: AppRecord): SimpleAppRecord {
   return {
     id: record.id,
-    name: record.name
+    name: record.name,
+    version: record.options.version
   }
 }
 
 async function flushAll () {
-  await flushComponents()
+  // @TODO notify frontend
 }
 
-async function flushComponents () {
+async function sendComponentTreeData (instanceId: string) {
   if (ctx.currentTab === BuiltinTabs.COMPONENTS) {
-    const rootInstance = await ctx.api.getAppRootInstance(ctx.currentAppRecord)
-    if (!rootInstance) {
-      console.warn('App is not mounted')
-    } else {
-      const payload = stringify({
-        inspectedInstance: ctx.currentInspectedComponentId ? await ctx.api.inspectComponent(ctx.currentInspectedComponentId) : null,
-        instances: await ctx.api.walkComponentTree(rootInstance)
+    const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
+    if (!instance) {
+      console.warn(`Instance uid=${instanceId} not found`)
+      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
+        instanceId,
+        treeData: null
       })
-      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_FLUSH, payload)
+    } else {
+      const payload = {
+        instanceId,
+        treeData: stringify(await ctx.api.walkComponentTree(instance, 2))
+      }
+      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
+    }
+  }
+}
+
+async function sendSelectedComponentData (instanceId: string) {
+  if (ctx.currentTab === BuiltinTabs.COMPONENTS) {
+    const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
+    if (!instance) {
+      console.warn(`Instance uid=${instanceId} not found`)
+      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
+        instanceId,
+        data: null
+      })
+    } else {
+      ctx.currentInspectedComponentId = instanceId
+      ctx.currentAppRecord.lastInspectedComponentId = instanceId
+      const payload = {
+        instanceId,
+        data: stringify(await ctx.api.inspectComponent(instance))
+      }
+      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
     }
   }
 }

@@ -7,7 +7,7 @@ export interface BackendContext {
   appRecords: AppRecord[]
   currentTab: string
   currentAppRecord: AppRecord
-  currentInspectedComponentId: number
+  currentInspectedComponentId: string
 }
 
 export interface CreateBackendContextOptions {

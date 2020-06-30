@@ -28,7 +28,7 @@ export type HookPayloads = {
     maxDepth: number
   }
   [Hooks.INSPECT_COMPONENT]: {
-    componentInstanceId: number
+    componentInstance: any // @TODO
     instanceData: InspectedComponentData
   }
 }

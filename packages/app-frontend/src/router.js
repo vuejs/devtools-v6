@@ -1,69 +1,49 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
-import ComponentsTab from './views/components/ComponentsTab.vue'
-import VuexTab from './views/vuex/VuexTab.vue'
-import EventsTab from './views/events/EventsTab.vue'
-import PerfTab from './views/perf/PerfTab.vue'
-import ComponentRenderStats from './views/perf/ComponentRenderStats.vue'
-import FramerateGraph from './views/perf/FramerateGraph.vue'
-import SettingsTab from './views/settings/SettingsTab.vue'
-import RouterTab from './views/router/RouterTab.vue'
-import RoutesTab from './views/routes/RoutesTab.vue'
+import ComponentsInspector from './features/components/ComponentsInspector.vue'
+import Timeline from './features/timeline/Timeline.vue'
+import GlobalSettings from './features/settings/GlobalSettings.vue'
 
 Vue.use(VueRouter)
+
+const RouterView = {
+  render: h => h('router-view')
+}
 
 const routes = [
   {
     path: '/',
-    redirect: { name: 'components' }
+    redirect: {
+      name: 'inspector-components'
+    }
   },
   {
-    path: '/components',
-    name: 'components',
-    component: ComponentsTab
-  },
-  {
-    path: '/vuex',
-    name: 'vuex',
-    component: VuexTab
-  },
-  {
-    path: '/events',
-    name: 'events',
-    component: EventsTab
-  },
-  {
-    path: '/router',
-    name: 'router',
-    component: RouterTab
-  },
-  {
-    path: '/routes',
-    name: 'routes',
-    component: RoutesTab
-  },
-  {
-    path: '/perf',
-    component: PerfTab,
-    name: 'perf',
+    path: '/app/:appId',
+    component: RouterView,
     children: [
       {
-        path: 'fps',
-        name: 'fps',
-        component: FramerateGraph
+        path: 'inspector',
+        name: 'inspector',
+        component: RouterView,
+        children: [
+          {
+            path: 'components/:componentId?',
+            name: 'inspector-components',
+            component: ComponentsInspector
+          }
+        ]
       },
       {
-        path: 'component-render',
-        name: 'component-render',
-        component: ComponentRenderStats
+        path: 'timeline',
+        name: 'timeline',
+        component: Timeline
+      },
+      {
+        path: 'settings',
+        name: 'global-settings',
+        component: GlobalSettings
       }
     ]
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: SettingsTab
   },
   {
     path: '*',
@@ -71,8 +51,9 @@ const routes = [
   }
 ]
 
-const router = new VueRouter({
-  routes
-})
-
-export default router
+export function createRouter () {
+  const router = new VueRouter({
+    routes
+  })
+  return router
+}

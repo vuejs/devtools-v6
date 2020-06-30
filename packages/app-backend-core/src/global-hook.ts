@@ -1,4 +1,4 @@
-import { AppRecord } from '@vue-devtools/app-backend-api'
+import { AppRecordOptions } from '@vue-devtools/app-backend-api'
 import { target } from '@vue-devtools/shared-utils'
 
 export interface DevtoolsHook {
@@ -6,7 +6,7 @@ export interface DevtoolsHook {
   on: (event: string, handler: Function) => void
   once: (event: string, handler: Function) => void
   off: (event?: string, handler?: Function) => void
-  appRecords: AppRecord[]
+  apps: AppRecordOptions[]
   Vue?: any
 }
 

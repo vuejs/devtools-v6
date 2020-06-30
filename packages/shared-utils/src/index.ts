@@ -1,3 +1,4 @@
+export * from './backend'
 export * from './bridge'
 export * from './consts'
 export * from './env'

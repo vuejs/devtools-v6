@@ -46,12 +46,11 @@ let initRetryCount = 0
 
 export interface SharedDataParams {
   bridge: Bridge
-  Vue: any
   persist: boolean
 }
 
-export function init (params: SharedDataParams) {
-  return new Promise((resolve, reject) => {
+export function initSharedData (params: SharedDataParams) {
+  return new Promise((resolve) => {
     // Mandatory params
     bridge = params.bridge
     persist = !!params.persist
@@ -120,7 +119,7 @@ export function init (params: SharedDataParams) {
   })
 }
 
-export function destroy () {
+export function destroySharedData () {
   bridge.removeAllListeners('shared-data:set')
   watchers = {}
 }
