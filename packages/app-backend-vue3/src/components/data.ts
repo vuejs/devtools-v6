@@ -20,7 +20,8 @@ export async function getInstanceDetails (instance: any, ctx: BackendContext): P
 async function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
-    processSetupState(instance)
+    processSetupState(instance),
+    processComputed(instance)
   )
 }
 
@@ -131,4 +132,46 @@ function getSetupStateValue (state, raw) {
       value: state
     }
   }
+}
+
+/**
+ * Process the computed properties of an instance.
+ *
+ * @param {Vue} instance
+ * @return {Array}
+ */
+function processComputed (instance) {
+  const type = instance.type
+  const computed = []
+  const defs = type.computed || {}
+  // use for...in here because if 'computed' is not defined
+  // on component, computed properties will be placed in prototype
+  // and Object.keys does not include
+  // properties from object's prototype
+  for (const key in defs) {
+    const def = defs[key]
+    const type = typeof def === 'function' && def.vuex
+      ? 'vuex bindings'
+      : 'computed'
+    // use try ... catch here because some computed properties may
+    // throw error during its evaluation
+    let computedProp = null
+    try {
+      computedProp = {
+        type,
+        key,
+        value: instance.proxy[key]
+      }
+    } catch (e) {
+      computedProp = {
+        type,
+        key,
+        value: '(error during evaluation)'
+      }
+    }
+
+    computed.push(computedProp)
+  }
+
+  return computed
 }
