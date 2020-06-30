@@ -81,8 +81,6 @@ export class ComponentWalker {
    * @return {Object}
    */
   private capture (instance: any, list: any[], depth: number): ComponentTreeNode {
-    // @TODO
-
     // instance._uid is not reliable in devtools as there
     // may be 2 roots with same _uid which causes unexpected
     // behaviour
@@ -99,12 +97,8 @@ export class ComponentWalker {
 
     const name = getInstanceName(instance)
 
-    // console.log('capture', name, instance, 'depth:', depth, '/', this.maxDepth)
-
     const children = this.getInternalInstanceChildren(instance.subTree)
       .filter(child => !isBeingDestroyed(child))
-
-    // console.log(children)
 
     const ret: ComponentTreeNode = {
       uid: instance.uid,
