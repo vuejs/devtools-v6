@@ -12,7 +12,7 @@
 export function installHook (target) {
   let listeners = {}
 
-  if (target.hasOwnProperty('__VUE_DEVTOOLS_GLOBAL_HOOK__')) return
+  if ('__VUE_DEVTOOLS_GLOBAL_HOOK__' in target) return
 
   const hook = {
     Vue: null,
@@ -28,7 +28,7 @@ export function installHook (target) {
       for (let i = 0, l = buffer.length; i < l; i++) {
         const allArgs = buffer[i]
         allArgs[0] === event
-          ? this.emit.apply(this, allArgs)
+          ? this.emit(...allArgs)
           : this._buffer.push(allArgs)
       }
     },
@@ -44,9 +44,9 @@ export function installHook (target) {
     },
 
     once (event, fn) {
-      function on () {
+      function on (...args) {
         this.off(event, on)
-        fn.apply(this, arguments)
+        fn.apply(this, args)
       }
       this.on(event, on)
     },
@@ -73,18 +73,16 @@ export function installHook (target) {
       }
     },
 
-    emit (event) {
+    emit (event, ...eventArgs) {
       const $event = '$' + event
       let cbs = listeners[$event]
       if (cbs) {
-        const eventArgs = [].slice.call(arguments, 1)
         cbs = cbs.slice()
         for (let i = 0, l = cbs.length; i < l; i++) {
           cbs[i].apply(this, eventArgs)
         }
       } else {
-        const allArgs = [].slice.call(arguments)
-        this._buffer.push(allArgs)
+        this._buffer.push(event, ...eventArgs)
       }
     }
   }

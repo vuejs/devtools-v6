@@ -8115,6 +8115,15 @@ postcss@^7.0.0, postcss@^7.0.14, postcss@^7.0.26:
     source-map "^0.6.1"
     supports-color "^6.1.0"
 
+postcss@^7.0.1, postcss@^7.0.27:
+  version "7.0.32"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-7.0.32.tgz#4310d6ee347053da3433db2be492883d62cec59d"
+  integrity sha512-03eXong5NLnNCD05xscnGKGDZ98CyzoqPSMjOe6SuoQY7Z2hIj0Ld1g/O/UQRuOle2aRtiIRDg9tDcTGAkLfKw==
+  dependencies:
+    chalk "^2.4.2"
+    source-map "^0.6.1"
+    supports-color "^6.1.0"
+
 prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
@@ -10596,14 +10605,14 @@ vue@^2.6.10, vue@^2.6.11:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
 
-vue@^3.0.0-alpha.4:
-  version "3.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/vue/-/vue-3.0.0-alpha.8.tgz#7157b9f614b5eb83261bbb3998d2b15b9158feab"
-  integrity sha512-yyW9pg9rOZYYCFr7ft76lZb30eAkTOiHuHU3KazqXz+G72uwFH0tbbgDO13Xfh/FhcnifxMhYnI8qyGNN8LNlA==
+vue@^3.0.0-beta.15:
+  version "3.0.0-beta.15"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-3.0.0-beta.15.tgz#99f107534755d3a237b51fc1279c43af2fefde6e"
+  integrity sha512-KTmvfNpkvD6mao8vloqjUMjrHEivS1HZvHmYeHPRHqU2HRvNcrZuwXYvETt3dGOTu0Oj7zAWQXP+uZ34CW75sw==
   dependencies:
-    "@vue/compiler-dom" "3.0.0-alpha.8"
-    "@vue/runtime-dom" "3.0.0-alpha.8"
-    "@vue/shared" "3.0.0-alpha.8"
+    "@vue/compiler-dom" "3.0.0-beta.15"
+    "@vue/runtime-dom" "3.0.0-beta.15"
+    "@vue/shared" "3.0.0-beta.15"
 
 vuex@^3.1.0:
   version "3.1.3"

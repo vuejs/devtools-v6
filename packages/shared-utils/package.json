@@ -8,7 +8,7 @@
   "scripts": {
     "build": "rimraf lib && yarn ts",
     "build:watch": "yarn ts -w",
-    "ts": "tsc -d -outDir lib"
+    "ts": "tsc -p tsconfig.json -d -outDir lib"
   },
   "dependencies": {
     "@vue-devtools/app-backend": "^0.0.0"

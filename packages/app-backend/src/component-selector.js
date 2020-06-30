@@ -4,13 +4,12 @@ import { isBrowser } from '@utils/env'
 
 export default class ComponentSelector {
   constructor (bridge, instanceMap) {
-    const self = this
-    self.bridge = bridge
-    self.instanceMap = instanceMap
-    self.bindMethods()
+    this.bridge = bridge
+    this.instanceMap = instanceMap
+    this.bindMethods()
 
-    bridge.on('start-component-selector', self.startSelecting)
-    bridge.on('stop-component-selector', self.stopSelecting)
+    bridge.on('start-component-selector', this.startSelecting)
+    bridge.on('stop-component-selector', this.stopSelecting)
   }
 
   /**

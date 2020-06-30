@@ -60,6 +60,7 @@ class VuexBackend {
         if (!isProd) console.log('unregister module', path)
       }
     } else {
+      /* eslint-disable @typescript-eslint/no-empty-function */
       this.origRegisterModule = this.origUnregisterModule = () => {}
     }
 
@@ -472,28 +473,24 @@ class VuexBackend {
           if (!isProd) console.log('replay unregister module', path)
         } else if (mutation.handlers) {
           this.store._committing = true
-          try {
-            let payload = mutation.payload
+          let payload = mutation.payload
 
-            if (this.isLegacy && !Array.isArray(payload)) {
-              payload = [payload]
-            }
+          if (this.isLegacy && !Array.isArray(payload)) {
+            payload = [payload]
+          }
 
-            if (Array.isArray(mutation.handlers)) {
-              if (this.isLegacy) {
-                mutation.handlers.forEach(handler => handler(this.store.state, ...payload))
-              } else {
-                mutation.handlers.forEach(handler => handler(payload))
-              }
+          if (Array.isArray(mutation.handlers)) {
+            if (this.isLegacy) {
+              mutation.handlers.forEach(handler => handler(this.store.state, ...payload))
             } else {
-              if (this.isLegacy) {
-                mutation.handlers(this.store.state, ...payload)
-              } else {
-                mutation.handlers(payload)
-              }
+              mutation.handlers.forEach(handler => handler(payload))
             }
-          } catch (e) {
-            throw e
+          } else {
+            if (this.isLegacy) {
+              mutation.handlers(this.store.state, ...payload)
+            } else {
+              mutation.handlers(payload)
+            }
           }
           this.store._committing = false
         }
