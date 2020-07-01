@@ -74,6 +74,7 @@ export function useComponents () {
 
   onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, ({ id, lastInspectedComponentId }) => {
     requestComponentTree()
+    selectedComponentData.value = null
     if (lastSelectedApp !== null) {
       selectComponent(lastInspectedComponentId)
     }
