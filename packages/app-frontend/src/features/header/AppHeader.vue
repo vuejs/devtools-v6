@@ -1,8 +1,11 @@
 <script>
+import { computed, ref, watch } from '@vue/composition-api'
 import { useRoute } from '@front/util/router'
-import { computed, ref } from '@vue/composition-api'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from './AppSelect.vue'
+import { useBridge } from '../bridge'
+import { useTabs } from './tabs'
 
 export default {
   components: {
@@ -56,6 +59,16 @@ export default {
     // @TODO custom inspector routes
 
     const currentInspectorRoute = computed(() => inspectorRoutes.value.find(r => route.value.matched.some(m => m.name === r.matchRoute)))
+
+    // Current tab
+    const { currentTab } = useTabs()
+    const { bridge } = useBridge()
+
+    watch(currentTab, value => {
+      bridge.send(BridgeEvents.TO_BACK_TAB_SWITCH, value)
+    }, {
+      immediate: true
+    })
 
     return {
       allMainRoutes,

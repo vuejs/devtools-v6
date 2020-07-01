@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import ComponentsInspector from './features/components/ComponentsInspector.vue'
 import Timeline from './features/timeline/Timeline.vue'
 import GlobalSettings from './features/settings/GlobalSettings.vue'
+import { BuiltinTabs } from '@vue-devtools/shared-utils'
 
 Vue.use(VueRouter)
 
@@ -29,19 +30,28 @@ const routes = [
           {
             path: 'components/:componentId?',
             name: 'inspector-components',
-            component: ComponentsInspector
+            component: ComponentsInspector,
+            meta: {
+              tab: BuiltinTabs.COMPONENTS
+            }
           }
         ]
       },
       {
         path: 'timeline',
         name: 'timeline',
-        component: Timeline
+        component: Timeline,
+        meta: {
+          tab: BuiltinTabs.TIMELINE
+        }
       },
       {
         path: 'settings',
         name: 'global-settings',
-        component: GlobalSettings
+        component: GlobalSettings,
+        meta: {
+          tab: BuiltinTabs.SETTINGS
+        }
       }
     ]
   },
