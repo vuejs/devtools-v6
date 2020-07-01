@@ -184,42 +184,40 @@ async function flushAll () {
 }
 
 async function sendComponentTreeData (instanceId: string) {
-  if (ctx.currentTab === BuiltinTabs.COMPONENTS) {
-    const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
-    if (!instance) {
-      console.warn(`Instance uid=${instanceId} not found`)
-      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
-        instanceId,
-        treeData: null
-      })
-    } else {
-      const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
-      const payload = {
-        instanceId,
-        treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth))
-      }
-      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
+  if (!instanceId) return
+  const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
+  if (!instance) {
+    console.warn(`Instance uid=${instanceId} not found`)
+    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
+      instanceId,
+      treeData: null
+    })
+  } else {
+    const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
+    const payload = {
+      instanceId,
+      treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth))
     }
+    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
   }
 }
 
 async function sendSelectedComponentData (instanceId: string) {
-  if (ctx.currentTab === BuiltinTabs.COMPONENTS) {
-    const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
-    if (!instance) {
-      console.warn(`Instance uid=${instanceId} not found`)
-      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
-        instanceId,
-        data: null
-      })
-    } else {
-      ctx.currentInspectedComponentId = instanceId
-      ctx.currentAppRecord.lastInspectedComponentId = instanceId
-      const payload = {
-        instanceId,
-        data: stringify(await ctx.api.inspectComponent(instance))
-      }
-      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
+  if (!instanceId) return
+  const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
+  if (!instance) {
+    console.warn(`Instance uid=${instanceId} not found`)
+    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
+      instanceId,
+      data: null
+    })
+  } else {
+    ctx.currentInspectedComponentId = instanceId
+    ctx.currentAppRecord.lastInspectedComponentId = instanceId
+    const payload = {
+      instanceId,
+      data: stringify(await ctx.api.inspectComponent(instance))
     }
+    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
   }
 }
