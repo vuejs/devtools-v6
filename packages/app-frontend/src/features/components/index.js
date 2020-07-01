@@ -1,7 +1,7 @@
 import { ref, computed, watch } from '@vue/composition-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
-import { BridgeEvents, parse, sortByKey, searchDeepInObject } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, sortByKey, searchDeepInObject, BuiltinTabs } from '@vue-devtools/shared-utils'
 import { useBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
 
@@ -13,6 +13,7 @@ const selectedComponentData = ref(null)
 const selectedComponentStateFilter = ref('')
 let selectedComponentPendingId = null
 let lastSelectedApp = null
+let lastSelectedComponentId = null
 // @TODO auto expand to selected component after target page refresh
 let lastSelectedComponentPath = []
 const expandedMap = ref({})
@@ -44,7 +45,8 @@ export function useComponents () {
   }
 
   function loadComponent (id) {
-    if (selectedComponentPendingId === id) return
+    if (!id || selectedComponentPendingId === id) return
+    lastSelectedComponentId = id
     selectedComponentPendingId = id
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
   }
@@ -81,6 +83,13 @@ export function useComponents () {
     lastSelectedApp = id
   })
 
+  // Re-select last selected component when switching back to inspector component tab
+  function selectLastComponent () {
+    if (lastSelectedComponentId) {
+      selectComponent(lastSelectedComponentId)
+    }
+  }
+
   return {
     rootInstances: computed(() => rootInstances.value),
     selectedComponentId: computed(() => selectedComponentId.value),
@@ -88,7 +97,8 @@ export function useComponents () {
     selectedComponentState,
     selectedComponentStateFilter,
     requestComponentTree,
-    selectComponent
+    selectComponent,
+    selectLastComponent
   }
 }
 

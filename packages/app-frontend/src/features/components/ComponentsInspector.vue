@@ -17,11 +17,13 @@ export default {
       rootInstances,
       requestComponentTree,
       selectedComponentData,
-      selectedComponentState
+      selectedComponentState,
+      selectLastComponent
     } = useComponents()
 
     onMounted(() => {
       requestComponentTree(null)
+      selectLastComponent()
     })
 
     return {
