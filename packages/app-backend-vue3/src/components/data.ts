@@ -108,29 +108,22 @@ function processSetupState (instance) {
     .map(key => ({
       key,
       type: 'setup',
-      value: getSetupStateValue(instance.setupState[key], raw[key]),
-      editable: false
+      value: instance.setupState[key],
+      editable: false,
+      ...getSetupStateExtra(raw[key])
     }))
 }
 
-function getSetupStateValue (state, raw) {
+function getSetupStateExtra (raw) {
   const isRef = !!raw.__v_isRef
   const isComputed = isRef && !!raw.effect
   const isReactive = !!raw.__v_reactive
 
-  const type = isComputed ? 'computed' : isRef ? 'ref' : isReactive ? 'reactive' : 'other'
-
-  let tooltip = type
-  if (raw.effect) {
-    tooltip += ` <span class="opacity-75 font-mono">${raw.effect.raw}</span>`
-  }
+  const objectType = isComputed ? 'Computed' : isRef ? 'Ref' : isReactive ? 'Reactive' : undefined
 
   return {
-    _custom: {
-      display: isReactive ? 'Reactive' : state,
-      tooltip,
-      value: state
-    }
+    objectType,
+    raw: raw.effect?.raw.toString()
   }
 }
 

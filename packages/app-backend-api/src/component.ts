@@ -26,6 +26,8 @@ export interface ComponentStateBase {
   key: string
   value: any
   editable: boolean
+  objectType?: 'ref' | 'reactive' | 'computed' | 'other'
+  raw?: string
 }
 
 export interface ComponentPropState extends ComponentStateBase {

@@ -301,10 +301,16 @@ export default {
 
     formattedValue () {
       const value = this.field.value
-      if (this.fieldOptions.abstract) {
+      if (this.field.objectType === 'Reactive') {
+        return 'Reactive'
+      } else if (this.fieldOptions.abstract) {
         return ''
       } else {
-        return formattedValue(value)
+        let result = formattedValue(value)
+        if (this.field.objectType) {
+          result += ` <span class="text-gray-500">(${this.field.objectType})</span>`
+        }
+        return result
       }
     },
 
@@ -355,7 +361,9 @@ export default {
 
     valueTooltip () {
       const type = this.valueType
-      if (type === 'custom') {
+      if (this.field.raw) {
+        return `<span class="font-mono">${this.field.raw}</span>`
+      } else if (type === 'custom') {
         return this.field.value._custom.tooltip
       } else if (type.indexOf('native ') === 0) {
         return type.substr('native '.length)
