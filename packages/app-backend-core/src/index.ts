@@ -193,9 +193,10 @@ async function sendComponentTreeData (instanceId: string) {
         treeData: null
       })
     } else {
+      const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
       const payload = {
         instanceId,
-        treeData: stringify(await ctx.api.walkComponentTree(instance, 2))
+        treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth))
       }
       ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
     }
