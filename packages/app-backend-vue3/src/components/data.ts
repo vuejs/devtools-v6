@@ -46,7 +46,10 @@ function processProps (instance) {
       value: instance.props[key],
       meta: propDefinition ? {
         type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
-        required: !!propDefinition.required
+        required: !!propDefinition.required,
+        ...propDefinition.default != null ? {
+          default: propDefinition.default.toString()
+        } : {}
       } : {
         type: 'invalid'
       },
