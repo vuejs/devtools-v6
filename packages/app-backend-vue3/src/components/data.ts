@@ -123,7 +123,7 @@ function getSetupStateExtra (raw) {
 
   return {
     objectType,
-    raw: raw.effect?.raw.toString()
+    ...raw.effect ? { raw: raw.effect.raw.toString() } : {}
   }
 }
 
