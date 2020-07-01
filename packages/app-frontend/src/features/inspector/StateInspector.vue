@@ -14,7 +14,10 @@
         ]"
       >
         <div
-          v-tooltip="$t('StateInspector.dataType.tooltip')"
+          v-tooltip="{
+            content: $t('StateInspector.dataType.tooltip'),
+            contentHtml: true
+          }"
           class="data-type selectable-item"
           @click="toggle(dataType, $event)"
         >
