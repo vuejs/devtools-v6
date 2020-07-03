@@ -1,10 +1,12 @@
 export enum BuiltinTabs {
   COMPONENTS = 'components',
-  TIMELINE = 'timeline', // @TODO
+  TIMELINE = 'timeline',
   SETTINGS = 'settings',
 }
 
 export enum BridgeEvents {
+  TO_BACK_SUBSCRIBE = 'b:subscribe',
+  TO_BACK_UNSUBSCRIBE = 'b:unsubscribe',
   /** Backend is ready */
   TO_FRONT_READY = 'f:ready',
   /** Displays the "detected Vue" console log */
@@ -34,9 +36,21 @@ export enum BridgeEvents {
   TO_BACK_COMPONENT_SET_DATA = 'b:component:set-data',
 }
 
+export enum BridgeSubscriptions {
+  SELECTED_COMPONENT_DATA = 'component:selected-data',
+  COMPONENT_TREE = 'component:tree',
+}
+
 export enum HookEvents {
   INIT = 'init',
   APP_INIT = 'app:init',
   APP_ADD = 'app:add',
+  APP_UNMOUNT = 'app:unmount',
+  COMPONENT_UPDATED = 'component:updated',
+  COMPONENT_ADDED = 'component:added',
+  COMPONENT_REMOVED = 'component:removed',
+  /**
+   * @deprecated
+   */
   FLUSH = 'flush',
 }
