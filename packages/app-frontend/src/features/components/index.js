@@ -1,7 +1,7 @@
 import { ref, computed, watch } from '@vue/composition-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
-import { BridgeEvents, parse, sortByKey, searchDeepInObject, BuiltinTabs } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, sortByKey, searchDeepInObject, BuiltinTabs, BridgeSubscriptions } from '@vue-devtools/shared-utils'
 import { useBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
 
@@ -19,7 +19,7 @@ let lastSelectedComponentPath = []
 const expandedMap = ref({})
 
 export function useComponents () {
-  const { bridge, onBridge } = useBridge()
+  const { bridge, onBridge, subscribe } = useBridge()
   const route = useRoute()
   const router = useRouter()
 
@@ -64,6 +64,24 @@ export function useComponents () {
     }, selectedComponentStateFilter.value)
   })), 'type') : ({}))
 
+  function subscribeToSelectedData () {
+    let unsub
+    watch(selectedComponentId, value => {
+      if (unsub) {
+        unsub()
+        unsub = null
+      }
+
+      if (value != null) {
+        unsub = subscribe(BridgeSubscriptions.SELECTED_COMPONENT_DATA, {
+          instanceId: value
+        })
+      }
+    }, {
+      immediate: true
+    })
+  }
+
   // We watch for the tree data so that we can auto load the current selected component
   watch(() => componentsMap, () => {
     if (selectedComponentId.value && selectedComponentPendingId !== selectedComponentId.value && !selectedComponentData.value) {
@@ -98,12 +116,14 @@ export function useComponents () {
     selectedComponentStateFilter,
     requestComponentTree,
     selectComponent,
-    selectLastComponent
+    selectLastComponent,
+    subscribeToSelectedData
   }
 }
 
 export function useComponent (instance) {
   const { selectComponent, requestComponentTree } = useComponents()
+  const { subscribe } = useBridge()
 
   const isExpanded = computed(() => !!expandedMap.value[instance.value.id])
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
@@ -120,12 +140,31 @@ export function useComponent (instance) {
     selectComponent(instance.value.id)
   }
 
+  function subscribeToComponentTree () {
+    let unsub
+    watch(() => instance.value.id, value => {
+      if (unsub) {
+        unsub()
+        unsub = null
+      }
+
+      if (value != null) {
+        unsub = subscribe(BridgeSubscriptions.COMPONENT_TREE, {
+          instanceId: value
+        })
+      }
+    }, {
+      immediate: true
+    })
+  }
+
   return {
     isExpanded,
     isExpandedUndefined,
     toggleExpand,
     isSelected,
-    select
+    select,
+    subscribeToComponentTree
   }
 }
 

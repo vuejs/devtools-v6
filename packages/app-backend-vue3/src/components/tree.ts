@@ -136,7 +136,6 @@ export class ComponentWalker {
     const instanceMap = this.ctx.currentAppRecord.instanceMap
     if (!instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
       instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
-      // @TODO on destroy in Vue 3
     }
   }
 }

@@ -39,8 +39,11 @@ export default {
       select,
       isExpanded: expanded,
       isExpandedUndefined,
-      toggleExpand: toggle
+      toggleExpand: toggle,
+      subscribeToComponentTree
     } = useComponent(instance)
+
+    subscribeToComponentTree()
 
     onMounted(() => {
       if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {

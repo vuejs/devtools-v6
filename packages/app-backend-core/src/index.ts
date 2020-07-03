@@ -12,7 +12,8 @@ import {
   BridgeEvents,
   BuiltinTabs,
   stringify,
-  initSharedData
+  initSharedData,
+  BridgeSubscriptions
 } from '@vue-devtools/shared-utils'
 
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
@@ -20,6 +21,8 @@ import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
 import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
 
 import { hook } from './global-hook'
+import { getAppRecord } from './util/app'
+import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 
 const availableBackends = [
   backendVue1,
@@ -72,6 +75,16 @@ export async function initBackend (bridge: Bridge) {
 function connect () {
   ctx.currentTab = BuiltinTabs.COMPONENTS
 
+  // Subscriptions
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_SUBSCRIBE, ({ type, payload }) => {
+    subscribe(type, payload)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_UNSUBSCRIBE, ({ type, payload }) => {
+    unsubscribe(type, payload)
+  })
+
   // Tabs
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async tab => {
@@ -108,6 +121,36 @@ function connect () {
       instanceId = `${ctx.currentAppRecord.id}:root`
     }
     sendSelectedComponentData(instanceId)
+  })
+
+  hook.on(HookEvents.COMPONENT_UPDATED, (app, uid) => {
+    const appRecord = getAppRecord(app, ctx)
+    const id = `${appRecord.id}:${uid}`
+    if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
+      sendSelectedComponentData(id)
+    }
+  })
+
+  hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid) => {
+    const appRecord = getAppRecord(app, ctx)
+    const parentId = `${appRecord.id}:${parentUid}`
+    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+      sendComponentTreeData(parentId)
+    }
+  })
+
+  hook.on(HookEvents.COMPONENT_REMOVED, (app, uid, parentUid) => {
+    const appRecord = getAppRecord(app, ctx)
+    const parentId = `${appRecord.id}:${parentUid}`
+    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+      sendComponentTreeData(parentId)
+    }
+
+    const id = `${appRecord.id}:${uid}`
+    if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
+      sendEmptyComponentData(id)
+    }
+    ctx.currentAppRecord.instanceMap.delete(id)
   })
 
   // Flush
@@ -207,10 +250,7 @@ async function sendSelectedComponentData (instanceId: string) {
   const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
   if (!instance) {
     console.warn(`Instance uid=${instanceId} not found`)
-    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
-      instanceId,
-      data: null
-    })
+    sendEmptyComponentData(instanceId)
   } else {
     ctx.currentInspectedComponentId = instanceId
     ctx.currentAppRecord.lastInspectedComponentId = instanceId
@@ -220,4 +260,11 @@ async function sendSelectedComponentData (instanceId: string) {
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
   }
+}
+
+function sendEmptyComponentData (instanceId: string) {
+  ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
+    instanceId,
+    data: null
+  })
 }

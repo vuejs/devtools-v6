@@ -18,8 +18,11 @@ export default {
       requestComponentTree,
       selectedComponentData,
       selectedComponentState,
-      selectLastComponent
+      selectLastComponent,
+      subscribeToSelectedData
     } = useComponents()
+
+    subscribeToSelectedData()
 
     onMounted(() => {
       requestComponentTree(null)
