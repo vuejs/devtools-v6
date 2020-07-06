@@ -51,7 +51,6 @@ export default {
   >
     <template #trigger>
       <VueButton
-        v-tooltip="'Select current app'"
         class="flat"
         icon-left="layers"
         :icon-right="orientation === 'landscape' ? 'arrow_drop_down' : null"
