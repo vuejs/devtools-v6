@@ -124,6 +124,15 @@ export default {
 
         <span class="angle-bracket text-gray-400 dark:text-gray-600">&gt;</span>
       </span>
+
+      <span class="flex items-center space-x-2 ml-2">
+        <span
+          v-if="instance.isFragment"
+          class="info fragment bg-blue-300"
+        >
+          fragment
+        </span>
+      </span>
     </div>
 
     <div v-if="expanded && instance.children">
@@ -136,3 +145,15 @@ export default {
     </div>
   </div>
 </template>
+
+<style lang="stylus" scoped>
+.info
+  color #fff
+  font-size 10px
+  padding 3px 5px 2px
+  display inline-block
+  line-height 10px
+  border-radius 3px
+  position relative
+  top -1px
+</style>
