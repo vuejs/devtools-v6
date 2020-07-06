@@ -22,6 +22,7 @@ export default {
 
   setup (props, { emit }) {
     const isOpen = ref(false)
+    const isShown = ref(false)
     let disabled = false
 
     let timer = null
@@ -34,9 +35,13 @@ export default {
 
     function queueClose () {
       clearTimeout(timer)
-      timer = setTimeout(() => {
+      if (!isShown.value) {
         isOpen.value = false
-      }, 500)
+      } else {
+        timer = setTimeout(() => {
+          isOpen.value = false
+        }, 500)
+      }
     }
 
     function select (item) {
@@ -52,6 +57,7 @@ export default {
 
     return {
       isOpen,
+      isShown,
       open,
       queueClose,
       select,
@@ -68,6 +74,9 @@ export default {
     offset="0"
     :open.sync="isOpen"
     :open-group="`header-select-${_uid}`"
+    :delay="{ show: 250, hide: 0 }"
+    @apply-show="isShown = true"
+    @apply-hide="isShown = false"
   >
     <template #trigger>
       <div
