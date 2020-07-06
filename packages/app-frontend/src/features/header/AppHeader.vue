@@ -2,6 +2,7 @@
 import { computed, ref, watch } from '@vue/composition-api'
 import { useRoute } from '@front/util/router'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
+import AppMainMenu from './AppMainMenu.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from './AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
@@ -10,6 +11,7 @@ import { useTabs } from './tabs'
 
 export default {
   components: {
+    AppMainMenu,
     AppHistoryNav,
     AppSelect,
     AppHeaderSelect
@@ -84,11 +86,7 @@ export default {
 
 <template>
   <div class="border-b border-gray-200 flex items-center space-x-2 px-2 h-10">
-    <img
-      src="~@front/assets/logo.png"
-      alt="Vue logo"
-      class="w-8 h-8"
-    >
+    <AppMainMenu />
 
     <AppHistoryNav />
 
@@ -114,7 +112,9 @@ export default {
 
     <div class="flex-1" />
 
-    <VueDropdown>
+    <VueDropdown
+      offset="0"
+    >
       <template #trigger>
         <VueButton
           icon-left="more_vert"

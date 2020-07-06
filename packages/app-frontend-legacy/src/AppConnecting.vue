@@ -7,7 +7,7 @@
     <div class="animation-outer">
       <div class="animation-inner">
         <img
-          src="~@front/assets/logo.png"
+          src="~@front/assets/vue-logo.svg"
           alt="Vue logo"
           class="logo"
         >

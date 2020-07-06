@@ -3,7 +3,7 @@
     <div class="animation-outer">
       <div class="animation-inner">
         <img
-          src="~@front/assets/logo.png"
+          src="~@front/assets/vue-logo.svg"
           alt="Vue logo"
           class="logo"
         >
@@ -51,7 +51,7 @@ export default {
   border-radius 50%
 
 .logo
-  max-width 64px
+  max-width 72px
 
 @keyframes animation {
   0% {
