@@ -26,9 +26,9 @@ export function isFragment (instance) {
  * @return {String}
  */
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.$options || instance.fnOptions || instance.type || {})
+  const name = getComponentName(instance.type || {})
   if (name) return name
-  return (instance.$root || instance.root) === instance
+  return instance.root === instance
     ? 'Root'
     : 'Anonymous Component'
 }
