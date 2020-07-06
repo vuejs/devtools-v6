@@ -8,14 +8,14 @@ export function isBeingDestroyed (instance) {
 
 export function getAppRecord (instance) {
   if (instance.root) {
-    return instance.root.__VUE_DEVTOOLS_APP_RECORD__
+    return instance.appContext.__app.__VUE_DEVTOOLS_APP_RECORD__
   }
 }
 
 export function isFragment (instance) {
   const appRecord = getAppRecord(instance)
   if (appRecord) {
-    return appRecord.types.Fragment === instance.subTree.type
+    return appRecord.options.types.Fragment === instance.subTree.type
   }
 }
 
@@ -136,14 +136,15 @@ function getTextRect (node) {
 
 function getFragmentRect (vnode) {
   const rect = createRect()
+  if (!vnode.children) return rect
 
   for (let i = 0, l = vnode.children.length; i < l; i++) {
-    const child = vnode.children[i]
+    const childVnode = vnode.children[i]
     let childRect
-    if (isFragment(child)) {
-      childRect = getFragmentRect(child)
-    } else if (child.el) {
-      const el = child.el
+    if (childVnode.component) {
+      childRect = getInstanceOrVnodeRect(childVnode.component)
+    } else if (childVnode.el) {
+      const el = childVnode.el
       if (el.nodeType === 1 || el.getBoundingClientRect) {
         childRect = el.getBoundingClientRect()
       } else if (el.nodeType === 3 && el.data.trim()) {

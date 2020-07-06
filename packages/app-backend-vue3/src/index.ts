@@ -1,6 +1,7 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { ComponentWalker } from './components/tree'
 import { getInstanceDetails } from './components/data'
+import { getComponentName, getInstanceOrVnodeRect } from './components/util'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 3,
@@ -29,6 +30,14 @@ export const backend: DevtoolsBackend = {
 
     api.on.inspectComponent(async (payload, ctx) => {
       payload.instanceData = await getInstanceDetails(payload.componentInstance, ctx)
+    })
+
+    api.on.getComponentName(async payload => {
+      payload.name = await getComponentName(payload.componentInstance.type)
+    })
+
+    api.on.getComponentBounds(async payload => {
+      payload.bounds = await getInstanceOrVnodeRect(payload.componentInstance)
     })
 
     // @TODO

@@ -23,6 +23,7 @@ import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
 import { hook } from './global-hook'
 import { getAppRecord } from './util/app'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
+import { hightlight, unHighlight } from './highlighter'
 
 const availableBackends = [
   backendVue1,
@@ -153,14 +154,14 @@ function connect () {
     ctx.currentAppRecord.instanceMap.delete(id)
   })
 
-  // Flush
+  // Highlighter
 
-  // the backend may get injected to the same page multiple times
-  // if the user closes and reopens the devtools.
-  // make sure there's only one flush listener.
-  hook.off(HookEvents.FLUSH)
-  hook.on(HookEvents.FLUSH, async () => {
-    await flushAll()
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {
+    hightlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
+    unHighlight()
   })
 
   // @TODO
@@ -190,6 +191,7 @@ export async function registerApp (options: AppRecordOptions) {
         instanceMap: new Map(),
         rootInstance: await ctx.api.getAppRootInstance(options.app)
       }
+      options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
       record.instanceMap.set(`${record.id}:root`, record.rootInstance)
       await ctx.api.registerApplication(record)
       ctx.appRecords.push(record)

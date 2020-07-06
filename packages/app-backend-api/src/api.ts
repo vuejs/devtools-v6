@@ -60,4 +60,20 @@ export class DevtoolsApi {
     })
     return payload.instanceData
   }
+
+  async getComponentBounds (instance: any) {
+    const payload = await this.callHook(Hooks.GET_COMPONENT_BOUNDS, {
+      componentInstance: instance,
+      bounds: null
+    })
+    return payload.bounds
+  }
+
+  async getComponentName (instance: any) {
+    const payload = await this.callHook(Hooks.GET_COMPONENT_NAME, {
+      componentInstance: instance,
+      name: null
+    })
+    return payload.name
+  }
 }

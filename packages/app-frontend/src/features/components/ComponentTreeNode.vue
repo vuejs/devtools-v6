@@ -3,6 +3,7 @@ import { computed, toRefs, onMounted } from '@vue/composition-api'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { useComponent } from '.'
+import { useComponentHighlight } from './highlight'
 
 const DEFAULT_EXPAND_DEPTH = 2
 
@@ -51,6 +52,10 @@ export default {
       }
     })
 
+    // Highlight
+
+    const { highlight, unhighlight } = useComponentHighlight(computed(() => props.instance.id))
+
     return {
       sortedChildren,
       displayName,
@@ -58,7 +63,9 @@ export default {
       selected,
       select,
       expanded,
-      toggle
+      toggle,
+      highlight,
+      unhighlight
     }
   }
 }
@@ -75,6 +82,8 @@ export default {
         paddingLeft: depth * 15 + 4 + 'px'
       }"
       @click="select()"
+      @mouseover="highlight()"
+      @mouseleave="unhighlight()"
     >
       <!-- arrow wrapper for better hit box -->
       <span
