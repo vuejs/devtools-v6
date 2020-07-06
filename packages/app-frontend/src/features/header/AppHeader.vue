@@ -4,13 +4,15 @@ import { useRoute } from '@front/util/router'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from './AppSelect.vue'
+import AppHeaderSelect from './AppHeaderSelect.vue'
 import { useBridge } from '../bridge'
 import { useTabs } from './tabs'
 
 export default {
   components: {
     AppHistoryNav,
-    AppSelect
+    AppSelect,
+    AppHeaderSelect
   },
 
   setup () {
@@ -94,58 +96,20 @@ export default {
 
     <img src="~@front/assets/breadcrumb-separator.svg">
 
-    <VueDropdown
-      placement="bottom-start"
-    >
-      <template #trigger>
-        <VueButton
-          class="flat"
-          :icon-left="currentMainRoute.icon"
-          icon-right="arrow_drop_down"
-        >
-          {{ currentMainRoute.label }}
-        </VueButton>
-      </template>
-
-      <VueDropdownButton
-        v-for="(route, index) of allMainRoutes"
-        :key="index"
-        :to="{
-          name: route.targetRoute
-        }"
-        :icon-left="route.icon"
-      >
-        {{ route.label }}
-      </VueDropdownButton>
-    </VueDropdown>
+    <AppHeaderSelect
+      :items="allMainRoutes"
+      :selected-item="currentMainRoute"
+      @select="route => $router.push({ name: route.targetRoute })"
+    />
 
     <template v-if="currentInspectorRoute">
       <img src="~@front/assets/breadcrumb-separator.svg">
 
-      <VueDropdown
-        placement="bottom-start"
-      >
-        <template #trigger>
-          <VueButton
-            class="flat"
-            :icon-left="currentInspectorRoute.icon"
-            icon-right="arrow_drop_down"
-          >
-            {{ currentInspectorRoute.label }}
-          </VueButton>
-        </template>
-
-        <VueDropdownButton
-          v-for="(route, index) of inspectorRoutes"
-          :key="index"
-          :to="{
-            name: route.targetRoute
-          }"
-          :icon-left="route.icon"
-        >
-          {{ route.label }}
-        </VueDropdownButton>
-      </VueDropdown>
+      <AppHeaderSelect
+        :items="inspectorRoutes"
+        :selected-item="currentInspectorRoute"
+        @select="route => $router.push({ name: route.targetRoute })"
+      />
     </template>
 
     <div class="flex-1" />

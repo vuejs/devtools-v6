@@ -1,9 +1,15 @@
 <script>
-import { watch } from '@vue/composition-api'
+import { watch, computed } from '@vue/composition-api'
 import { useRouter } from '@front/util/router'
 import { useApps } from '../apps'
+import AppHeaderSelect from './AppHeaderSelect.vue'
+import { useOrientation } from '../layout/orientation'
 
 export default {
+  components: {
+    AppHeaderSelect
+  },
+
   setup () {
     const router = useRouter()
 
@@ -24,44 +30,50 @@ export default {
       }
     })
 
+    const { orientation } = useOrientation()
+
     return {
       currentApp,
       apps,
-      selectApp
+      selectApp,
+      orientation
     }
   }
 }
 </script>
 
 <template>
-  <VueDropdown
-    placement="bottom-start"
+  <AppHeaderSelect
+    :items="apps"
+    :selected-item="currentApp"
+    option-icon="layers"
+    @select="app => selectApp(app.id)"
   >
     <template #trigger>
       <VueButton
         v-tooltip="'Select current app'"
         class="flat"
-        icon-left="web_asset"
-        icon-right="arrow_drop_down"
+        icon-left="layers"
+        :icon-right="orientation === 'landscape' ? 'arrow_drop_down' : null"
+        :class="{
+          'icon-button': orientation === 'portrait'
+        }"
       >
-        <span v-if="currentApp">
-          {{ currentApp.name }}
-        </span>
-        <span
-          v-else
-          class="opacity-50"
-        >
-          No app
-        </span>
+        <template v-if="orientation === 'landscape'">
+          <span v-if="currentApp">
+            {{ currentApp.name }}
+          </span>
+          <span
+            v-else
+            class="opacity-50"
+          >
+            No app
+          </span>
+        </template>
       </VueButton>
     </template>
 
-    <VueDropdownButton
-      v-for="app of apps"
-      :key="app.id"
-      icon-left="web_asset"
-      @click="selectApp(app.id)"
-    >
+    <template #default="{ item: app }">
       <div class="app-button flex">
         <span class="truncate flex-1">{{ app.name }}</span>
         <span class="opacity-50 flex-none flex items-center">
@@ -73,8 +85,8 @@ export default {
           {{ app.version }}
         </span>
       </div>
-    </VueDropdownButton>
-  </VueDropdown>
+    </template>
+  </AppHeaderSelect>
 </template>
 
 <style lang="postcss" scoped>
