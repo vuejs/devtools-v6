@@ -31,9 +31,9 @@ export function useComponents () {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_TREE, instanceId)
   }
 
-  function selectComponent (id) {
+  function selectComponent (id, replace = false) {
     if (selectedComponentId.value !== id) {
-      router.push({
+      router[replace ? 'replace' : 'push']({
         params: {
           componentId: id
         }
@@ -96,7 +96,7 @@ export function useComponents () {
     requestComponentTree()
     selectedComponentData.value = null
     if (lastSelectedApp !== null) {
-      selectComponent(lastInspectedComponentId)
+      selectComponent(lastInspectedComponentId, true)
     }
     lastSelectedApp = id
   })
@@ -104,7 +104,7 @@ export function useComponents () {
   // Re-select last selected component when switching back to inspector component tab
   function selectLastComponent () {
     if (lastSelectedComponentId) {
-      selectComponent(lastSelectedComponentId)
+      selectComponent(lastSelectedComponentId, true)
     }
   }
 
