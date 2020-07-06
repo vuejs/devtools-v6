@@ -73,7 +73,7 @@ export default {
     </template>
 
     <template #default="{ item: app }">
-      <div class="app-button flex">
+      <div class="app-button flex items-center">
         <span class="truncate flex-1">{{ app.name }}</span>
         <span class="opacity-50 flex-none flex items-center">
           <img
