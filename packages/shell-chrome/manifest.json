@@ -56,5 +56,6 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://cdn.headwayapp.co; object-src 'self'"
 }

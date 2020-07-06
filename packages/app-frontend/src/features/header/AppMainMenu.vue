@@ -1,5 +1,6 @@
 <script>
 import { onMounted } from '@vue/composition-api'
+
 export default {
   setup () {
     onMounted(() => {
@@ -17,7 +18,6 @@ export default {
   <div class="relative">
     <VueDropdown
       offset="0"
-      @show="onOpen()"
     >
       <template #trigger>
         <VueButton
@@ -66,17 +66,17 @@ export default {
 
 .changelog-button {
   @apply absolute;
-  bottom: -6px;
-  right: -6px;
+  bottom: 0px;
+  right: -2px;
 
   >>> .HW_badge_cont {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
   }
 
   >>> .HW_badge {
-    top: 4px;
-    left: 4px;
+    top: 0px;
+    left: 0px;
   }
 }
 </style>
