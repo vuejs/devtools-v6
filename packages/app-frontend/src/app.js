@@ -4,7 +4,7 @@ import SharedData, { initSharedData, destroySharedData } from '@utils/shared-dat
 import App from './features/App.vue'
 import { createRouter } from './router'
 import { setBridge } from './features/bridge'
-import { setAppConnected } from './features/connection'
+import { setAppConnected, setAppInitializing } from './features/connection'
 import { setupPlugins } from './plugins'
 import { setupAppsBridgeEvents } from './features/apps'
 import { setupComponentsBridgeEvents } from './features/components'
@@ -51,9 +51,6 @@ export function createApp () {
 /**
  * Connect then init the app. We need to reconnect on every reload, because a
  * new backend will be injected.
- *
- * @param {Vue} app
- * @param {Object} shell
  */
 export function connectApp (app, shell) {
   shell.connect(async bridge => {
@@ -86,5 +83,6 @@ export function connectApp (app, shell) {
     // @TODO bridge listeners
 
     setAppConnected(true)
+    setAppInitializing(false)
   })
 }

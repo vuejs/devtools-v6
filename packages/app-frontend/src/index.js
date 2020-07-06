@@ -3,6 +3,7 @@ import './assets/style/index.styl'
 import './composition'
 import { initStorage } from '@utils/storage'
 import { createApp, connectApp } from './app'
+import { setAppConnected } from './features/connection'
 
 const app = createApp()
 app.$mount('#app')
@@ -19,10 +20,7 @@ export async function initDevTools (shell) {
   await initStorage()
   connectApp(app, shell)
   shell.onReload(() => {
-    if (app) {
-      app.$el.classList.add('disconnected')
-      app.$destroy()
-    }
+    setAppConnected(false)
     bridge.removeAllListeners()
     connectApp(app, shell)
   })
