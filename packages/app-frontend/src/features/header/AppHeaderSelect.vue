@@ -20,13 +20,15 @@ export default {
     }
   },
 
-  setup () {
+  setup (props, { emit }) {
     const isOpen = ref(false)
+    let disabled = false
 
     let timer = null
 
     function open () {
       clearTimeout(timer)
+      if (disabled) return
       isOpen.value = true
     }
 
@@ -37,12 +39,22 @@ export default {
       }, 500)
     }
 
+    function select (item) {
+      disabled = true
+      emit('select', item)
+      // Disable menu for a short time after selecting an item
+      setTimeout(() => {
+        disabled = false
+      }, 500)
+    }
+
     const { orientation } = useOrientation()
 
     return {
       isOpen,
       open,
       queueClose,
+      select,
       orientation
     }
   }
@@ -92,7 +104,7 @@ export default {
           :class="{
             selected: selectedItem === item
           }"
-          @click="$emit('select', item)"
+          @click="select(item)"
         >
           <slot :item="item">
             {{ item.label }}
