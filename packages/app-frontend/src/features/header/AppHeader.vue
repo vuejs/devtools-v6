@@ -122,6 +122,8 @@ export default {
         />
       </template>
 
+      <portal-target name="more-menu" />
+
       <VueDropdownButton
         :to="{
           name: 'global-settings'

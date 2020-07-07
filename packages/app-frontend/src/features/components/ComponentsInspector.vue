@@ -73,5 +73,28 @@ export default {
         </template>
       </template>
     </SplitPane>
+
+    <portal to="more-menu">
+      <div class="space-y-1 px-4 py-2 text-sm">
+        <div>Component names:</div>
+
+        <VueGroup
+          v-model="$shared.componentNameStyle"
+        >
+          <VueGroupButton
+            value="original"
+            label="Original name"
+          />
+          <VueGroupButton
+            value="class"
+            label="Pascal case"
+          />
+          <VueGroupButton
+            value="kebab"
+            label="Kebab case"
+          />
+        </VueGroup>
+      </div>
+    </portal>
   </div>
 </template>
