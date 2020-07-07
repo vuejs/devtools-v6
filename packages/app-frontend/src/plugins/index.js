@@ -54,6 +54,4 @@ export function setupPlugins () {
       rightScroll: () => document.querySelector('.right .scroll')
     }
   })
-
-  Vue.use(Responsive)
 }
