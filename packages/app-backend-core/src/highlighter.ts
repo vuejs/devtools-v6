@@ -1,5 +1,6 @@
 import { isBrowser } from '@vue-devtools/shared-utils'
 import { BackendContext } from '@vue-devtools/app-backend-api'
+import { JobQueue } from './util/queue'
 
 let overlay: HTMLDivElement
 let overlayContent: HTMLDivElement
@@ -25,30 +26,38 @@ function createOverlay () {
   overlay.appendChild(overlayContent)
 }
 
-export async function hightlight (instance, ctx: BackendContext) {
-  if (!instance) return
+// Use a job queue to preserve highlight/unhighlight calls order
+// This prevents "sticky" highlights that are not removed because highlight is async
+const jobQueue = new JobQueue()
 
-  const bounds = await ctx.api.getComponentBounds(instance)
-  if (bounds) {
-    const name = await ctx.api.getComponentName(instance)
-    if (name) {
-      createOverlay()
-      const pre = document.createElement('span')
-      pre.style.opacity = '0.6'
-      pre.innerText = '<'
-      const text = document.createTextNode(name)
-      const post = document.createElement('span')
-      post.style.opacity = '0.6'
-      post.innerText = '>'
-      showOverlay(bounds, [pre, text, post])
+export async function hightlight (instance, ctx: BackendContext) {
+  await jobQueue.queue(async () => {
+    if (!instance) return
+
+    const bounds = await ctx.api.getComponentBounds(instance)
+    if (bounds) {
+      const name = await ctx.api.getComponentName(instance)
+      if (name) {
+        createOverlay()
+        const pre = document.createElement('span')
+        pre.style.opacity = '0.6'
+        pre.innerText = '<'
+        const text = document.createTextNode(name)
+        const post = document.createElement('span')
+        post.style.opacity = '0.6'
+        post.innerText = '>'
+        showOverlay(bounds, [pre, text, post])
+      }
     }
-  }
+  })
 }
 
-export function unHighlight () {
-  if (overlay && overlay.parentNode) {
-    overlay.parentNode.removeChild(overlay)
-  }
+export async function unHighlight () {
+  await jobQueue.queue(async () => {
+    if (overlay && overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay)
+    }
+  })
 }
 
 function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, children: Node[] = []) {
