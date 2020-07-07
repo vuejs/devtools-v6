@@ -56,19 +56,17 @@ export default {
     const selectedIndex = computed(() => props.items.indexOf(props.selectedItem))
 
     function selectNext () {
-      let index = selectedIndex.value + 1
-      if (index >= props.items.length) {
-        index = 0
+      const index = selectedIndex.value + 1
+      if (index < props.items.length) {
+        select(props.items[index])
       }
-      select(props.items[index])
     }
 
     function selectPrevious () {
-      let index = selectedIndex.value - 1
-      if (index < 0) {
-        index = props.items.length - 1
+      const index = selectedIndex.value - 1
+      if (index >= 0) {
+        select(props.items[index])
       }
-      select(props.items[index])
     }
 
     function onMouseWheel (e) {
@@ -133,6 +131,7 @@ export default {
         class="flex flex-col"
         @mouseover="open()"
         @mouseout="queueClose()"
+        @mousewheel="onMouseWheel"
       >
         <VueDropdownButton
           v-for="(item, index) of items"
