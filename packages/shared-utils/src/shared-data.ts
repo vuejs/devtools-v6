@@ -35,6 +35,8 @@ const persisted = [
   'showMenuScrollTip'
 ]
 
+const storageVersion = '6.0.0-alpha.1'
+
 // ---- INTERNALS ---- //
 
 let bridge
@@ -62,7 +64,7 @@ export function initSharedData (params: SharedDataParams) {
       if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init in progress...')
       // Load persisted fields
       persisted.forEach(key => {
-        const value = getStorage(`shared-data:${key}`)
+        const value = getStorage(`vue-devtools-${storageVersion}:shared-data:${key}`)
         if (value !== null) {
           internalSharedData[key] = value
         }
@@ -136,7 +138,7 @@ let watchers = {}
 function setValue (key: string, value: any) {
   // Storage
   if (persist && persisted.includes(key)) {
-    setStorage(`shared-data:${key}`, value)
+    setStorage(`vue-devtools-${storageVersion}:shared-data:${key}`, value)
   }
   const oldValue = data[key]
   data[key] = value
