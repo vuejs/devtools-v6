@@ -1,5 +1,5 @@
 <script>
-import { ref } from '@vue/composition-api'
+import { ref, computed } from '@vue/composition-api'
 import { useOrientation } from '../layout/orientation'
 
 export default {
@@ -53,6 +53,32 @@ export default {
       }, 500)
     }
 
+    const selectedIndex = computed(() => props.items.indexOf(props.selectedItem))
+
+    function selectNext () {
+      let index = selectedIndex.value + 1
+      if (index >= props.items.length) {
+        index = 0
+      }
+      select(props.items[index])
+    }
+
+    function selectPrevious () {
+      let index = selectedIndex.value - 1
+      if (index < 0) {
+        index = props.items.length - 1
+      }
+      select(props.items[index])
+    }
+
+    function onMouseWheel (e) {
+      if (e.deltaY > 0) {
+        selectNext()
+      } else {
+        selectPrevious()
+      }
+    }
+
     const { orientation } = useOrientation()
 
     return {
@@ -61,7 +87,8 @@ export default {
       open,
       queueClose,
       select,
-      orientation
+      orientation,
+      onMouseWheel
     }
   }
 }
@@ -82,6 +109,7 @@ export default {
       <div
         @mouseover="open()"
         @mouseout="queueClose()"
+        @mousewheel="onMouseWheel"
       >
         <slot name="trigger">
           <VueButton
@@ -119,6 +147,22 @@ export default {
             {{ item.label }}
           </slot>
         </VueDropdownButton>
+
+        <div
+          v-if="$shared.showMenuScrollTip"
+          class="text-xs flex items-center space-x-2 text-gray-500 pl-4 pr-1 py-1 border-t border-gray-200 dark:border-gray-800 group"
+        >
+          <span>Scroll to switch</span>
+          <VueIcon icon="mouse" />
+
+          <span class="flex-1" />
+
+          <VueButton
+            class="flex-none icon-button flat invisible group-hover:visible"
+            icon-left="close"
+            @click="$shared.showMenuScrollTip = false"
+          />
+        </div>
       </div>
     </div>
   </VueDropdown>
