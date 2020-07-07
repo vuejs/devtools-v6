@@ -17,7 +17,8 @@ const internalSharedData = {
   logDetected: true,
   vuexNewBackend: false,
   vuexAutoload: false,
-  vuexGroupGettersByModule: true
+  vuexGroupGettersByModule: true,
+  showMenuScrollTip: true
 }
 
 const persisted = [
@@ -30,7 +31,8 @@ const persisted = [
   'vuexNewBackend',
   'vuexAutoload',
   'vuexGroupGettersByModule',
-  'timeFormat'
+  'timeFormat',
+  'showMenuScrollTip'
 ]
 
 // ---- INTERNALS ---- //
@@ -47,6 +49,7 @@ let initRetryCount = 0
 export interface SharedDataParams {
   bridge: Bridge
   persist: boolean
+  Vue?: any
 }
 
 export function initSharedData (params: SharedDataParams) {
@@ -110,6 +113,10 @@ export function initSharedData (params: SharedDataParams) {
 
     data = {
       ...internalSharedData
+    }
+
+    if (params.Vue) {
+      data = params.Vue.observable(data)
     }
 
     // Update value from other shared data clients

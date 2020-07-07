@@ -70,7 +70,8 @@ export function connectApp (app, shell) {
 
     await initSharedData({
       bridge,
-      persist: true
+      persist: true,
+      Vue
     })
 
     if (SharedData.logDetected) {
