@@ -4,6 +4,7 @@ import groupBy from 'lodash/groupBy'
 import { BridgeEvents, parse, sortByKey, searchDeepInObject, BuiltinTabs, BridgeSubscriptions } from '@vue-devtools/shared-utils'
 import { useBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
+import { putError } from '../error'
 
 const rootInstances = ref([])
 let componentsMap = {}
@@ -177,6 +178,12 @@ export function resetComponents () {
 
 export function setupComponentsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData }) => {
+    if (!treeData) {
+      if (instanceId.endsWith('root')) {
+        putError('Component tree not supported')
+      }
+      return
+    }
     const data = parse(treeData)
     const instance = componentsMap[instanceId]
     if (instance) {

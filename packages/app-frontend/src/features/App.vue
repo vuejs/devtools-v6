@@ -2,6 +2,7 @@
 import AppHeader from './header/AppHeader.vue'
 import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
+import ErrorOverlay from './error/ErrorOverlay.vue'
 import { useAppConnection } from './connection'
 
 export default {
@@ -10,7 +11,8 @@ export default {
   components: {
     AppHeader,
     AppConnecting,
-    AppDisconnected
+    AppDisconnected,
+    ErrorOverlay
   },
 
   setup () {
@@ -46,5 +48,7 @@ export default {
 
       <router-view class="flex-1 overflow-auto" />
     </template>
+
+    <ErrorOverlay />
   </div>
 </template>
