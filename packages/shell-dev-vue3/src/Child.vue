@@ -10,7 +10,10 @@ export default {
     const doubleAnswer = computed(() => answer.value * 2)
 
     const reactiveObject = reactive({
-      foo: 'bar'
+      foo: 'bar',
+      hello: {
+        world: 1
+      }
     })
 
     return {
