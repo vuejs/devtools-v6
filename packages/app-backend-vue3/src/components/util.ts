@@ -26,14 +26,14 @@ export function isFragment (instance) {
  * @return {String}
  */
 export function getInstanceName (instance) {
-  const name = getComponentName(instance.type || {})
+  const name = getComponentTypeName(instance.type || {})
   if (name) return name
   return instance.root === instance
     ? 'Root'
     : 'Anonymous Component'
 }
 
-export function getComponentName (options) {
+function getComponentTypeName (options) {
   const name = options.name || options._componentTag
   if (name) {
     return name
