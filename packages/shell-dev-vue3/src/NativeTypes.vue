@@ -1,15 +1,5 @@
 <template>
-  <div id="date">
-    <p>Date: {{ date.toString() }} - Hours: {{ hours }} - Prototype: {{ date | prototypeString }}</p>
-
-    <p>
-      <button @click="updateDate">
-        Update Date
-      </button>
-    </p>
-
-    <hr>
-
+  <div id="native-types">
     <TestComponent ref="component" />
 
     <div
@@ -18,9 +8,6 @@
     />
 
     <p>
-      <button @click="sendComponent()">
-        Vuex mutation
-      </button>
       <button
         style="background: red; color: white;"
         @click="createLargeArray()"
@@ -38,25 +25,14 @@
 
     <h3>Map</h3>
     <pre>{{ mapDisplay() }}</pre>
-
-    <p>
-      <button @click="testVuexSet()">
-        Vuex Set
-      </button>
-      <button @click="testVuexMap()">
-        Vuex Map
-      </button>
-      <button @click="forceRefresh()">
-        Refresh
-      </button>
-    </p>
   </div>
 </template>
 
 <script>
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { h } from 'vue'
+
 import CompDef from './Other.vue'
 
 function setToString (func, string) {
@@ -96,7 +72,7 @@ export default {
       computed: {
         parentComp () { return this.$parent }
       },
-      render: h => h('div', '<TestComponent />')
+      render: () => h('div', '<TestComponent />')
     }
   },
 
@@ -132,41 +108,12 @@ export default {
       veryLongText
     }
   },
-  computed: {
-    ...mapState([
-      'date',
-      'set',
-      'map'
-    ]),
-
-    ...mapGetters([
-      'hours'
-    ]),
-
-    theRouter () {
-      return this.$router
-    },
-
-    theStore () {
-      return this.$store
-    }
-  },
 
   mounted () {
     this.testComponent = this.$refs.component
   },
 
   methods: {
-    ...mapMutations({
-      updateDate: 'UPDATE_DATE',
-      testVuexSet: 'TEST_SET',
-      testVuexMap: 'TEST_MAP'
-    }),
-
-    sendComponent () {
-      this.$store.commit('TEST_COMPONENT', this.testComponent)
-    },
-
     createLargeArray () {
       const list = []
       for (let i = 0; i < 10000000; i++) {
@@ -185,10 +132,8 @@ export default {
 
     forceRefresh () {
       this.$forceUpdate()
-    }
-  },
+    },
 
-  filters: {
     prototypeString: val => Object.prototype.toString.call(val)
   }
 }
