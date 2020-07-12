@@ -150,6 +150,10 @@ export function useComponent (instance) {
     })
   }
 
+  if (isExpanded.value) {
+    requestComponentTree(instance.value.id)
+  }
+
   return {
     isExpanded,
     isExpandedUndefined,
