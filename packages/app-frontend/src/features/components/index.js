@@ -59,12 +59,6 @@ export function useComponents () {
     immediate: true
   })
 
-  const selectedComponentState = computed(() => selectedComponentData.value ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
-    return searchDeepInObject({
-      [el.key]: el.value
-    }, selectedComponentStateFilter.value)
-  })), 'type') : ({}))
-
   function subscribeToSelectedData () {
     let unsub
     watch(selectedComponentId, value => {
@@ -112,9 +106,6 @@ export function useComponents () {
   return {
     rootInstances: computed(() => rootInstances.value),
     selectedComponentId: computed(() => selectedComponentId.value),
-    selectedComponentData: computed(() => selectedComponentData.value),
-    selectedComponentState,
-    selectedComponentStateFilter,
     requestComponentTree,
     selectComponent,
     selectLastComponent,
@@ -166,6 +157,21 @@ export function useComponent (instance) {
     isSelected,
     select,
     subscribeToComponentTree
+  }
+}
+
+export function useSelectedComponent () {
+  const data = computed(() => selectedComponentData.value)
+  const state = computed(() => selectedComponentData.value ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
+    return searchDeepInObject({
+      [el.key]: el.value
+    }, selectedComponentStateFilter.value)
+  })), 'type') : ({}))
+
+  return {
+    data,
+    state,
+    stateFilter: selectedComponentStateFilter
   }
 }
 

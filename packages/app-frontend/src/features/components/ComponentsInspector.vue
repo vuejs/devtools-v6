@@ -3,21 +3,19 @@ import { onMounted } from '@vue/composition-api'
 import { useComponents } from '.'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
-import StateInspector from '@front/features/inspector/StateInspector.vue'
+import SelectedComponentPane from './SelectedComponentPane.vue'
 
 export default {
   components: {
     SplitPane,
     ComponentTreeNode,
-    StateInspector
+    SelectedComponentPane
   },
 
   setup () {
     const {
       rootInstances,
       requestComponentTree,
-      selectedComponentData,
-      selectedComponentState,
       selectLastComponent,
       subscribeToSelectedData
     } = useComponents()
@@ -30,9 +28,7 @@ export default {
     })
 
     return {
-      rootInstances,
-      selectedComponentData,
-      selectedComponentState
+      rootInstances
     }
   }
 }
@@ -56,21 +52,7 @@ export default {
       </template>
 
       <template #right>
-        <template v-if="selectedComponentData">
-          <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center">
-            <div class="flex items-baseline">
-              <span class="text-gray-500">&lt;</span>
-              <span class="text-green-500">
-                {{ selectedComponentData.name }}
-              </span>
-              <span class="text-gray-500">&gt;</span>
-            </div>
-          </div>
-
-          <StateInspector
-            :state="selectedComponentState"
-          />
-        </template>
+        <SelectedComponentPane />
       </template>
     </SplitPane>
 
