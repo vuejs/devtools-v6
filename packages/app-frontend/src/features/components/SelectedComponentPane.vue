@@ -22,8 +22,11 @@ export default {
 </script>
 
 <template>
-  <div v-if="data">
-    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center">
+  <div
+    v-if="data"
+    class="h-full flex flex-col"
+  >
+    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
       <div class="flex items-baseline">
         <span class="text-gray-500">&lt;</span>
         <span class="text-green-500">
@@ -35,6 +38,7 @@ export default {
 
     <StateInspector
       :state="state"
+      class="flex-1 overflow-y-auto"
     />
   </div>
 </template>
