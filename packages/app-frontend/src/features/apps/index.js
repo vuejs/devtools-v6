@@ -26,6 +26,8 @@ export function useApps () {
 
   watch(currentAppId, value => {
     bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
+  }, {
+    immediate: true
   })
 
   return {
