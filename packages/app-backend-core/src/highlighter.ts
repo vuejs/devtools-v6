@@ -36,18 +36,16 @@ export async function hightlight (instance, ctx: BackendContext) {
 
     const bounds = await ctx.api.getComponentBounds(instance)
     if (bounds) {
-      const name = await ctx.api.getComponentName(instance)
-      if (name) {
-        createOverlay()
-        const pre = document.createElement('span')
-        pre.style.opacity = '0.6'
-        pre.innerText = '<'
-        const text = document.createTextNode(name)
-        const post = document.createElement('span')
-        post.style.opacity = '0.6'
-        post.innerText = '>'
-        showOverlay(bounds, [pre, text, post])
-      }
+      const name = (await ctx.api.getComponentName(instance)) || 'Anonymous'
+      createOverlay()
+      const pre = document.createElement('span')
+      pre.style.opacity = '0.6'
+      pre.innerText = '<'
+      const text = document.createTextNode(name)
+      const post = document.createElement('span')
+      post.style.opacity = '0.6'
+      post.innerText = '>'
+      showOverlay(bounds, [pre, text, post])
     }
   })
 }
