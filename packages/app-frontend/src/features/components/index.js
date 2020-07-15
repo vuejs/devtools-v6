@@ -1,7 +1,7 @@
 import { ref, computed, watch } from '@vue/composition-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
-import { BridgeEvents, parse, sortByKey, searchDeepInObject, BuiltinTabs, BridgeSubscriptions } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, sortByKey, searchDeepInObject, BridgeSubscriptions } from '@vue-devtools/shared-utils'
 import { useBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
 import { putError } from '../error'
@@ -9,6 +9,7 @@ import { putError } from '../error'
 const rootInstances = ref([])
 let componentsMap = {}
 let componentsParent = {}
+const treeFilter = ref('')
 const selectedComponentId = ref(null)
 const selectedComponentData = ref(null)
 const selectedComponentStateFilter = ref('')
@@ -18,18 +19,23 @@ let lastSelectedComponentId = null
 // @TODO auto expand to selected component after target page refresh
 let lastSelectedComponentPath = []
 const expandedMap = ref({})
+let resetComponentsQueued = false
 
-export function useComponents () {
-  const { bridge, onBridge, subscribe } = useBridge()
-  const route = useRoute()
+function useComponentRequests () {
+  const { bridge } = useBridge()
   const router = useRouter()
 
   function requestComponentTree (instanceId = null) {
     if (!instanceId) {
-      resetComponents()
       instanceId = '_root'
     }
-    bridge.send(BridgeEvents.TO_BACK_COMPONENT_TREE, instanceId)
+    if (instanceId === '_root') {
+      resetComponentsQueued = true
+    }
+    bridge.send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
+      instanceId,
+      filter: treeFilter.value
+    })
   }
 
   function selectComponent (id, replace = false) {
@@ -51,6 +57,26 @@ export function useComponents () {
     selectedComponentPendingId = id
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
   }
+
+  return {
+    requestComponentTree,
+    selectComponent,
+    loadComponent
+  }
+}
+
+export function useComponents () {
+  const { onBridge, subscribe } = useBridge()
+  const route = useRoute()
+  const {
+    requestComponentTree,
+    selectComponent,
+    loadComponent
+  } = useComponentRequests()
+
+  watch(treeFilter, () => {
+    requestComponentTree()
+  })
 
   watch(() => route.value.params.componentId, value => {
     selectedComponentId.value = value
@@ -105,6 +131,7 @@ export function useComponents () {
 
   return {
     rootInstances: computed(() => rootInstances.value),
+    treeFilter,
     selectedComponentId: computed(() => selectedComponentId.value),
     requestComponentTree,
     selectComponent,
@@ -114,7 +141,7 @@ export function useComponents () {
 }
 
 export function useComponent (instance) {
-  const { selectComponent, requestComponentTree } = useComponents()
+  const { selectComponent, requestComponentTree } = useComponentRequests()
   const { subscribe } = useBridge()
 
   const isExpanded = computed(() => !!expandedMap.value[instance.value.id])
@@ -123,7 +150,9 @@ export function useComponent (instance) {
   function toggleExpand (load = true) {
     if (!instance.value.hasChildren) return
     Vue.set(expandedMap.value, instance.value.id, !isExpanded.value)
-    if (load) requestComponentTree(instance.value.id)
+    if (load) {
+      requestComponentTree(instance.value.id)
+    }
   }
 
   const isSelected = computed(() => selectedComponentId.value === instance.value.id)
@@ -180,20 +209,28 @@ export function useSelectedComponent () {
 }
 
 export function resetComponents () {
+  resetComponentsQueued = false
   rootInstances.value = []
   componentsMap = {}
   componentsParent = {}
-  expandedMap.value = {}
 }
 
 export function setupComponentsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData }) => {
+    // Reset
+    if (resetComponentsQueued) {
+      resetComponents()
+    }
+
+    // Not supported
     if (!treeData) {
       if (instanceId.endsWith('root')) {
         putError('Component tree not supported')
       }
       return
     }
+
+    // Handle tree data
     const data = parse(treeData)
     const instance = componentsMap[instanceId]
     if (instance) {
@@ -201,15 +238,16 @@ export function setupComponentsBridgeEvents (bridge) {
         Vue.set(instance, key, data[key])
       }
       addToComponentsMap(instance)
+    } else if (Array.isArray(data)) {
+      rootInstances.value = data
+      data.forEach(i => addToComponentsMap(i))
     } else {
-      rootInstances.value.push(data)
+      rootInstances.value = [data]
       addToComponentsMap(data)
     }
-    console.log(componentsParent)
   })
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data }) => {
-    console.log(instanceId, data)
     if (instanceId === selectedComponentId.value) {
       selectedComponentData.value = parse(data)
       selectedComponentPendingId = null

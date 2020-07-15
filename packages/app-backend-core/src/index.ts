@@ -110,11 +110,11 @@ function connect () {
 
   // Components
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, (instanceId) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
     if (instanceId === '_root') {
       instanceId = `${ctx.currentAppRecord.id}:root`
     }
-    sendComponentTreeData(instanceId)
+    sendComponentTreeData(instanceId, filter)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
@@ -228,8 +228,9 @@ async function flushAll () {
   // @TODO notify frontend
 }
 
-async function sendComponentTreeData (instanceId: string) {
+async function sendComponentTreeData (instanceId: string, filter = '') {
   if (!instanceId) return
+  if (filter) filter = filter.toLowerCase()
   const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
   if (!instance) {
     console.warn(`Instance uid=${instanceId} not found`)
@@ -241,7 +242,7 @@ async function sendComponentTreeData (instanceId: string) {
     const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
     const payload = {
       instanceId,
-      treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth))
+      treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth, filter))
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
   }

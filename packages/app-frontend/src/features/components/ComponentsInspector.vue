@@ -16,6 +16,7 @@ export default {
     const {
       rootInstances,
       requestComponentTree,
+      treeFilter,
       selectLastComponent,
       subscribeToSelectedData
     } = useComponents()
@@ -28,7 +29,8 @@ export default {
     })
 
     return {
-      rootInstances
+      rootInstances,
+      treeFilter
     }
   }
 }
@@ -39,7 +41,12 @@ export default {
     <SplitPane>
       <template #left>
         <div class="flex flex-col h-full">
-          <!-- @TODO search -->
+          <VueInput
+            v-model="treeFilter"
+            icon-left="search"
+            placeholder="Filter components..."
+            class="search border-b border-gray-200 dark:border-gray-800"
+          />
 
           <div class="flex-1 p-2 overflow-auto">
             <ComponentTreeNode
@@ -80,3 +87,17 @@ export default {
     </portal>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.search {
+  >>> {
+    .input {
+      height: 39px !important;
+    }
+
+    .content {
+      border: none !important;
+    }
+  }
+}
+</style>

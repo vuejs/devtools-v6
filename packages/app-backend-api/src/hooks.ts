@@ -35,6 +35,7 @@ export type HookPayloads = {
     componentInstance: any // @TODO
     componentTreeData: ComponentTreeNode
     maxDepth: number
+    filter: string
   }
   [Hooks.INSPECT_COMPONENT]: {
     componentInstance: any // @TODO

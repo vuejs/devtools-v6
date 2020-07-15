@@ -1,23 +1,21 @@
 import { classify } from '@vue-devtools/shared-utils'
 import { getInstanceName } from './util'
 
-let filter = ''
+export class ComponentFilter {
+  filter: string
 
-export function getComponentFilter () {
-  return filter
-}
+  constructor (filter: string) {
+    this.filter = filter || ''
+  }
 
-export function setComponentFilter (f) {
-  filter = f
-}
-
-/**
- * Check if an instance is qualified.
- *
- * @param {Vue|Vnode} instance
- * @return {Boolean}
- */
-export function isQualified (instance) {
-  const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
-  return name.indexOf(filter) > -1
+  /**
+   * Check if an instance is qualified.
+   *
+   * @param {Vue|Vnode} instance
+   * @return {Boolean}
+   */
+  isQualified (instance) {
+    const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
+    return name.indexOf(this.filter) > -1
+  }
 }

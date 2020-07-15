@@ -1,18 +1,20 @@
 import { isBeingDestroyed, getUniqueComponentId, getInstanceName, getRenderKey, getInstanceOrVnodeRect, isFragment } from './util'
-import { getComponentFilter, isQualified } from './filter'
+import { ComponentFilter } from './filter'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { ComponentTreeNode } from '@vue-devtools/app-backend-api/lib/component'
 
 export class ComponentWalker {
   ctx: BackendContext
   maxDepth: number
+  componentFilter: ComponentFilter
   // Dedupe instances
   // Some instances may be both on a component and on a child abstract/functional component
   captureIds: Map<string, undefined>
 
-  constructor (maxDepth: number, ctx: BackendContext) {
+  constructor (maxDepth: number, filter: string, ctx: BackendContext) {
     this.ctx = ctx
     this.maxDepth = maxDepth
+    this.componentFilter = new ComponentFilter(filter)
   }
 
   getComponentTree (instance: any) {
@@ -29,7 +31,7 @@ export class ComponentWalker {
    * @return {Vue|Array}
    */
   private findQualifiedChildren (instance: any, depth: number) {
-    if (isQualified(instance)) {
+    if (this.componentFilter.isQualified(instance)) {
       return this.capture(instance, null, depth)
     } else if (instance.subTree) {
       // TODO functional components
@@ -51,7 +53,7 @@ export class ComponentWalker {
   private findQualifiedChildrenFromList (instances, depth: number) {
     instances = instances
       .filter(child => !isBeingDestroyed(child))
-    return !getComponentFilter()
+    return !this.componentFilter.filter
       ? instances.map((child, index, list) => this.capture(child, list, depth))
       : Array.prototype.concat.apply([], instances.map(i => this.findQualifiedChildren(i, depth)))
   }
