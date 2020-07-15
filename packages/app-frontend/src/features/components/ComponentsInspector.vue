@@ -44,7 +44,7 @@ export default {
           <VueInput
             v-model="treeFilter"
             icon-left="search"
-            placeholder="Filter components..."
+            placeholder="Find components..."
             class="search border-b border-gray-200 dark:border-gray-800"
           />
 
