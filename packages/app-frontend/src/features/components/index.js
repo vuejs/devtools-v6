@@ -45,23 +45,14 @@ function useComponentRequests () {
           componentId: id
         }
       })
-      lastSelectedComponentPath = getPath(id)
     } else {
       loadComponent(id)
     }
   }
 
-  function loadComponent (id) {
-    if (!id || selectedComponentPendingId === id) return
-    lastSelectedComponentId = id
-    selectedComponentPendingId = id
-    bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
-  }
-
   return {
     requestComponentTree,
-    selectComponent,
-    loadComponent
+    selectComponent
   }
 }
 
@@ -70,8 +61,7 @@ export function useComponents () {
   const route = useRoute()
   const {
     requestComponentTree,
-    selectComponent,
-    loadComponent
+    selectComponent
   } = useComponentRequests()
 
   watch(treeFilter, () => {
@@ -117,7 +107,7 @@ export function useComponents () {
     requestComponentTree()
     selectedComponentData.value = null
     if (lastSelectedApp !== null) {
-      selectComponent(lastInspectedComponentId, true)
+      selectLastComponent()
     }
     lastSelectedApp = id
   })
@@ -217,6 +207,8 @@ export function resetComponents () {
 
 export function setupComponentsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData }) => {
+    const isRoot = instanceId.endsWith('root')
+
     // Reset
     if (resetComponentsQueued) {
       resetComponents()
@@ -224,7 +216,7 @@ export function setupComponentsBridgeEvents (bridge) {
 
     // Not supported
     if (!treeData) {
-      if (instanceId.endsWith('root')) {
+      if (isRoot) {
         putError('Component tree not supported')
       }
       return
@@ -245,11 +237,18 @@ export function setupComponentsBridgeEvents (bridge) {
       rootInstances.value = [data]
       addToComponentsMap(data)
     }
+
+    // Try to load selected component again
+    if (isRoot && selectedComponentId.value && !selectedComponentData.value && !selectedComponentPendingId) {
+      loadComponent(selectedComponentId.value)
+    }
   })
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data }) => {
     if (instanceId === selectedComponentId.value) {
       selectedComponentData.value = parse(data)
+    }
+    if (instanceId === selectedComponentPendingId) {
       selectedComponentPendingId = null
     }
   })
@@ -263,6 +262,14 @@ function addToComponentsMap (instance) {
       addToComponentsMap(c)
     })
   }
+}
+
+function loadComponent (id) {
+  if (!id || selectedComponentPendingId === id) return
+  lastSelectedComponentId = id
+  selectedComponentPendingId = id
+  lastSelectedComponentPath = getPath(id)
+  bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
 }
 
 function getPath (instanceId) {
