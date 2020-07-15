@@ -1,7 +1,7 @@
 import { ref, computed, watch } from '@vue/composition-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
-import { BridgeEvents, parse, sortByKey, searchDeepInObject, BridgeSubscriptions } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, sortByKey, searchDeepInObject, BridgeSubscriptions, isChrome, openInEditor } from '@vue-devtools/shared-utils'
 import { useBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
 import { putError } from '../error'
@@ -191,10 +191,32 @@ export function useSelectedComponent () {
     }, selectedComponentStateFilter.value)
   })), 'type') : ({}))
 
+  const fileIsPath = computed(() => data.value.file && /[/\\]/.test(data.value.file))
+
+  function inspectDOM () {
+    if (!data.value) return
+    if (isChrome) {
+      // @TODO
+      chrome.devtools.inspectedWindow.eval(
+        `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${data.value.id}").$el)`
+      )
+    } else {
+      window.alert('DOM inspection is not supported in this shell.')
+    }
+  }
+
+  function openFile () {
+    if (!data.value) return
+    openInEditor(data.value.file)
+  }
+
   return {
     data,
     state,
-    stateFilter: selectedComponentStateFilter
+    stateFilter: selectedComponentStateFilter,
+    inspectDOM,
+    fileIsPath,
+    openFile
   }
 }
 

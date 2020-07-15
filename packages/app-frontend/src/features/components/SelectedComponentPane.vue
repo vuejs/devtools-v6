@@ -8,14 +8,8 @@ export default {
   },
 
   setup () {
-    const {
-      data,
-      state
-    } = useSelectedComponent()
-
     return {
-      data,
-      state
+      ...useSelectedComponent()
     }
   }
 }
@@ -34,6 +28,32 @@ export default {
         </span>
         <span class="text-gray-500">&gt;</span>
       </div>
+
+      <VueInput
+        v-model="stateFilter"
+        icon-left="search"
+        placeholder="Filter state..."
+        class="search flex-1 flat"
+      />
+
+      <!-- <VueButton
+        v-if="$isChrome"
+        v-tooltip="'Inspect DOM'"
+        icon-left="code"
+        class="flat icon-button"
+        @click="inspectDOM()"
+      /> -->
+
+      <VueButton
+        v-if="fileIsPath"
+        v-tooltip="{
+          content: $t('ComponentInspector.openInEditor.tooltip', { file: data.file }),
+          contentHtml: true
+        }"
+        icon-left="launch"
+        class="flat icon-button"
+        @click="openFile()"
+      />
     </div>
 
     <StateInspector
