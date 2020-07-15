@@ -48,7 +48,7 @@ export default {
 
     onMounted(() => {
       if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {
-        toggle()
+        toggle(false)
       }
     })
 

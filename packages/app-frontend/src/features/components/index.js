@@ -120,10 +120,10 @@ export function useComponent (instance) {
   const isExpanded = computed(() => !!expandedMap.value[instance.value.id])
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
-  function toggleExpand () {
+  function toggleExpand (load = true) {
     if (!instance.value.hasChildren) return
     Vue.set(expandedMap.value, instance.value.id, !isExpanded.value)
-    requestComponentTree(instance.value.id)
+    if (load) requestComponentTree(instance.value.id)
   }
 
   const isSelected = computed(() => selectedComponentId.value === instance.value.id)
