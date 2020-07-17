@@ -23,7 +23,7 @@
     "release": "npm run test && node release.js && npm run build && npm run zip && npm run pub",
     "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox && npm run pub",
     "pub": "cd packages/shell-electron && npm publish",
-    "test": "npm run lint && npm run test:e2e",
+    "test": "npm run lint",
     "test:e2e": "cross-env PORT=4040 start-server-and-test dev:shell http://localhost:4040 test:e2e:run",
     "test:e2e:run": "cypress run --config baseUrl=http://localhost:4040",
     "test:open": "cypress open --config baseUrl=http://localhost:8100"
