@@ -30,6 +30,10 @@ module.exports = {
     require('tailwindcss-dark-mode')()
   ],
   purge: {
+    content: [
+      '**/*.vue',
+      '**/*.js'
+    ],
     options: {
       whitelist: [
         'vue-ui-dark-mode'
