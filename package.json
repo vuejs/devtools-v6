@@ -13,7 +13,7 @@
     "dev:chrome": "cd packages/shell-chrome && webpack --watch --hide-modules",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
     "lint": "eslint --ext .js,.ts,.vue .",
-    "build": "lerna run build && cd packages/shell-chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "lerna run build",
     "build:watch": "lerna run build --scope @vue-devtools/* && lerna run build:watch --stream --no-sort --concurrency 99",
     "run:firefox": "web-ext run -s packages/shell-chrome -a dist -i src",
     "zip": "npm run zip:chrome && npm run zip:firefox",
