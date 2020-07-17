@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+const path = require('path')
+
 module.exports = {
   theme: {
     extend: {
@@ -33,8 +35,7 @@ module.exports = {
   ],
   purge: {
     content: [
-      '**/*.vue',
-      '**/*.js'
+      path.resolve(__dirname, './packages/app-frontend/src/**/*.vue')
     ],
     options: {
       whitelist: [
