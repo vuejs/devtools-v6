@@ -92,7 +92,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    const UglifyPlugin = require('uglifyjs-webpack-plugin')
+    const TerserPlugin = require('terser-webpack-plugin')
     baseConfig.plugins.push(
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': '"production"'
@@ -100,9 +100,9 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     )
     baseConfig.optimization = {
       minimizer: [
-        new UglifyPlugin({
+        new TerserPlugin({
           exclude: /backend/,
-          uglifyOptions: {
+          terserOptions: {
             compress: {
               // turn off flags with small gains to speed up minification
               arrows: false,
