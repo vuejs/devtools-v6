@@ -1,2 +1,2 @@
-export * from './context-menu'
+import './context-menu'
 export * from './pane-visibility'

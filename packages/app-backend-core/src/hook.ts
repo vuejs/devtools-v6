@@ -30,6 +30,7 @@ export function installHook (target) {
       for (let i = 0, l = buffer.length; i < l; i++) {
         const allArgs = buffer[i]
         allArgs[0] === event
+          // eslint-disable-next-line prefer-spread
           ? this.emit.apply(this, allArgs)
           : this._buffer.push(allArgs)
       }
