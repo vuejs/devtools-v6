@@ -21,28 +21,81 @@ export default {
   },
 
   setup (props, { emit }) {
+    /* Open/Close */
+
     const isOpen = ref(false)
     const isShown = ref(false)
+
+    /**
+     * Delayed open should only happen on mouseover.
+     * Will be overriden when clicking
+     */
+    const showDelayEnabled = ref(true)
+
     let disabled = false
+    let buttonCloseEnabled = false
 
-    let timer = null
+    // Timers
 
-    function open () {
-      clearTimeout(timer)
+    let closeTimer = null
+    let buttonCloseTimer = null
+
+    function open (delay = true) {
       if (disabled) return
-      isOpen.value = true
+      clearTimeout(closeTimer)
+      buttonCloseEnabled = false
+
+      // Delay popper opening depending on wether
+      // we mouseover (delay) or we click (no delay)
+      showDelayEnabled.value = delay
+
+      // Delay so we can override popper autoclose
+      // which is itself delayed (to handle v-close-popper)
+      requestAnimationFrame(() => {
+        isOpen.value = true
+
+        // Allow closing with button after a delay
+        // so people don't mistakenly close the menu
+        // after it auto-opens on mouse over
+        if (!delay) {
+          buttonCloseEnabled = true
+        } else if (!buttonCloseTimer) {
+          buttonCloseTimer = setTimeout(() => {
+            buttonCloseEnabled = true
+          }, 500)
+        }
+      })
     }
 
-    function queueClose () {
-      clearTimeout(timer)
-      if (!isShown.value) {
+    function queueClose (delay = true) {
+      clearTimeout(closeTimer)
+      clearTimeout(buttonCloseTimer)
+      buttonCloseTimer = null
+      buttonCloseEnabled = false
+
+      if (!isShown.value && delay) {
         isOpen.value = false
       } else {
-        timer = setTimeout(() => {
+        // Close after a delay
+        closeTimer = setTimeout(() => {
           isOpen.value = false
-        }, 500)
+        }, 300)
       }
     }
+
+    function toggle () {
+      if (isOpen.value && buttonCloseEnabled) {
+        queueClose(false)
+      } else {
+        // We open also when it's already open and
+        // when the button close is disabled
+        // so we cancel the popper autoclose
+        // (the popper doesn't contain the trigger button)
+        open(false)
+      }
+    }
+
+    /* Select */
 
     function select (item) {
       disabled = true
@@ -77,13 +130,17 @@ export default {
       }
     }
 
+    /* Layout */
+
     const { orientation } = useOrientation()
 
     return {
       isOpen,
       isShown,
+      showDelayEnabled,
       open,
       queueClose,
+      toggle,
       select,
       orientation,
       onMouseWheel
@@ -99,7 +156,7 @@ export default {
     offset="0"
     :open.sync="isOpen"
     :open-group="`header-select-${_uid}`"
-    :delay="{ show: 250, hide: 0 }"
+    :delay="showDelayEnabled ? { show: 250, hide: 0 } : 0"
     @apply-show="isShown = true"
     @apply-hide="isShown = false"
   >
@@ -108,6 +165,7 @@ export default {
         @mouseover="open()"
         @mouseout="queueClose()"
         @mousewheel="onMouseWheel"
+        @click.capture="toggle()"
       >
         <slot name="trigger">
           <VueButton
