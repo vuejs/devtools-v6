@@ -217,7 +217,8 @@ import {
   isPlainObject,
   sortByKey,
   openInEditor,
-  copyToClipboard
+  copyToClipboard,
+  storeAsGlobal
 } from '@utils/util'
 import { formattedValue, valueType } from '@front/util/format'
 
