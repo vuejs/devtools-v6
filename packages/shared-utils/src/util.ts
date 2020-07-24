@@ -652,18 +652,18 @@ export function copyToClipboard (state) {
 }
 
 let globalCount = 0
-export function storeAsGlobal(state) {
+export function storeAsGlobal (state) {
   const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
 
-  const name = 'vueTemp';
-  
-  let i= 0; // prevent infinite loop
+  const name = 'vueTemp'
+
+  let i = 0 // prevent infinite loop
+  let varName = name + globalCount
   do {
-    ++globalCount;
-  }while(!!target[name] || (++i) > 500 );
+    ++globalCount
+    varName = name + globalCount
+  } while (!!target[varName] || (++i) > 500)
 
-  const varName = name + globalCount;
-
-  target[varName] = state;  
+  target[varName] = state
   console.log(varName, state)
 }
