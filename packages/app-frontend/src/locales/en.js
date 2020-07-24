@@ -38,7 +38,7 @@ export default {
     },
     contextMenu: {
       copyValue: 'Copy Value',
-      storeGlobal: "Store as global"
+      storeGlobal: 'Store as global'
     },
     quickEdit: {
       number: {
