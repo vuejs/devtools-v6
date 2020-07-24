@@ -37,7 +37,8 @@ export default {
       }
     },
     contextMenu: {
-      copyValue: 'Copy Value'
+      copyValue: 'Copy Value',
+      storeGlobal: "Store as global"
     },
     quickEdit: {
       number: {

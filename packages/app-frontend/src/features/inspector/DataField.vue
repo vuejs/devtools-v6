@@ -143,6 +143,11 @@
               >
                 {{ $t('DataField.contextMenu.copyValue') }}
               </VueDropdownButton>
+              
+              <VueDropdownButton
+                icon-left="bug_report"
+                @click="storeAsGlobal"
+              >{{ $t('DataField.contextMenu.storeGlobal') }}</VueDropdownButton>
             </div>
           </VueDropdown>
         </span>
@@ -428,6 +433,10 @@ export default {
   methods: {
     copyToClipboard () {
       copyToClipboard(this.field.value)
+    },
+
+    storeAsGlobal() {
+      storeAsGlobal(this.field.value);
     },
 
     onClick (event) {
