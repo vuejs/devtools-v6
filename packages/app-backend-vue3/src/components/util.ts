@@ -8,7 +8,7 @@ export function isBeingDestroyed (instance) {
 
 export function getAppRecord (instance) {
   if (instance.root) {
-    return instance.appContext.__app.__VUE_DEVTOOLS_APP_RECORD__
+    return instance.appContext.app.__VUE_DEVTOOLS_APP_RECORD__
   }
 }
 
