@@ -24,7 +24,7 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 
 ### Manual Installation
 
-This is only necessary when you want to build the extension yourself from source to get not-yet-released features.
+This is only necessary when you want to build the extension with the source repo to get not-yet-released features.
 
 **Make sure you are using Node 6+ and NPM 3+**
 
@@ -32,7 +32,7 @@ This is only necessary when you want to build the extension yourself from source
 2. `cd vue-devtools` the newly created folder
 2. run `yarn install`
 3. then run `yarn run build`
-4. Open the Chrome extension page (currently under Menu > More Tools > Extensions)
+4. Open the Chrome extension page (currently under `Menu` > `More Tools` > `Extensions`)
 5. Check "developer mode" on the top-right corner
 6. Click the "load unpacked" button on the left, and choose the folder: `vue-devtools/packages/shell-chrome/`
 7. Alternatively to step 3, you can also use `yarn dev:chrome` to build & watch the unpacked extension
