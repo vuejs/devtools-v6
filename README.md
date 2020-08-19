@@ -35,7 +35,7 @@ This is only necessary when you want to build the extension yourself from source
 4. Open the Chrome extension page (currently under Menu > More Tools > Extensions)
 5. Check "developer mode" on the top-right corner
 6. Click the "load unpacked" button on the left, and choose the folder: `vue-devtools/packages/shell-chrome/`
-7. Alternatilvely to step 3, you can also use `yarn dev:chrome` to build & watch the unpacked extension
+7. Alternatively to step 3, you can also use `yarn dev:chrome` to build & watch the unpacked extension
 
 ### Development
 
