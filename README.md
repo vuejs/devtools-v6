@@ -24,7 +24,7 @@ To enable this feature, follow [this guide](./docs/open-in-editor.md).
 
 ### Manual Installation
 
-This is only necessary when you want to build the extension by yourself from source to get not-yet-released features.
+This is only necessary when you want to build the extension with the source repo to get not-yet-released features.
 
 **Make sure you are using Node 6+ and NPM 3+**
 
