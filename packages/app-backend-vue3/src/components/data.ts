@@ -106,7 +106,7 @@ function processState (instance) {
 }
 
 function processSetupState (instance) {
-  const raw = instance.setupState.__v_raw
+  const raw = instance.devtoolsRawSetupState || {}
   return Object.keys(instance.setupState)
     .map(key => ({
       key,
@@ -118,6 +118,8 @@ function processSetupState (instance) {
 }
 
 function getSetupStateExtra (raw) {
+  if (!raw) return {}
+
   const isRef = !!raw.__v_isRef
   const isComputed = isRef && !!raw.effect
   const isReactive = !!raw.__v_reactive
