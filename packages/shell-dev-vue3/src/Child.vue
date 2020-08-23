@@ -13,13 +13,19 @@ export default {
       foo: 'bar',
       hello: {
         world: 1
-      }
+      },
+      nil: undefined
     })
+
+    function myMethodFromSetup () {
+      console.log('foobar')
+    }
 
     return {
       answer,
       doubleAnswer,
-      reactiveObject
+      reactiveObject,
+      myMethodFromSetup
     }
   },
 

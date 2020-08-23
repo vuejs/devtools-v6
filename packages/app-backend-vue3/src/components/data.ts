@@ -124,10 +124,10 @@ function getSetupStateExtra (raw) {
   const isComputed = isRef && !!raw.effect
   const isReactive = !!raw.__v_reactive
 
-  const objectType = isComputed ? 'Computed' : isRef ? 'Ref' : isReactive ? 'Reactive' : undefined
+  const objectType = isComputed ? 'Computed' : isRef ? 'Ref' : isReactive ? 'Reactive' : null
 
   return {
-    objectType,
+    ...objectType ? { objectType } : {},
     ...raw.effect ? { raw: raw.effect.raw.toString() } : {}
   }
 }
