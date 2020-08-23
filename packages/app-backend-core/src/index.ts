@@ -24,6 +24,7 @@ import { hook } from './global-hook'
 import { getAppRecord } from './util/app'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { hightlight, unHighlight } from './highlighter'
+import { setupTimeline } from './timeline'
 
 const availableBackends = [
   backendVue1,
@@ -163,6 +164,10 @@ function connect () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
     unHighlight()
   })
+
+  // Timeline
+
+  setupTimeline(ctx)
 
   // @TODO
 }

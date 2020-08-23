@@ -34,6 +34,7 @@ export enum BridgeEvents {
   TO_BACK_COMPONENT_MOUSE_OUT = 'b:component:mouse-out',
   TO_BACK_COMPONENT_CONTEXT_MENU_TARGET = 'b:component:context-menu-target',
   TO_BACK_COMPONENT_SET_DATA = 'b:component:set-data',
+  TO_FRONT_TIMELINE_EVENT = 'f:timeline:event'
 }
 
 export enum BridgeSubscriptions {
@@ -49,6 +50,7 @@ export enum HookEvents {
   COMPONENT_UPDATED = 'component:updated',
   COMPONENT_ADDED = 'component:added',
   COMPONENT_REMOVED = 'component:removed',
+  COMPONENT_EMIT = 'component:emit',
   /**
    * @deprecated
    */

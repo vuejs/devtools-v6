@@ -3,10 +3,17 @@ import { ref, computed } from '@vue/composition-api'
 import { useOrientation } from './orientation'
 
 export default {
-  setup () {
+  props: {
+    defaultSplit: {
+      type: Number,
+      default: 50
+    }
+  },
+
+  setup (props) {
     const { orientation } = useOrientation()
 
-    const split = ref(50)
+    const split = ref(props.defaultSplit)
     const boundSplit = computed(() => {
       if (split.value < 20) {
         return 20

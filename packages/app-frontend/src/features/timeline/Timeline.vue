@@ -1,9 +1,59 @@
+<script>
+import SplitPane from '@front/features/layout/SplitPane.vue'
+import TimelineView from './TimelineView.vue'
+import TimelineScrollbar from './TimelineScrollbar.vue'
+import LayerItem from './LayerItem.vue'
+
+import { useTime, useLayers } from '.'
+
+export default {
+  components: {
+    SplitPane,
+    LayerItem,
+    TimelineView,
+    TimelineScrollbar
+  },
+
+  setup () {
+    return {
+      ...useTime(),
+      ...useLayers()
+    }
+  }
+}
+</script>
+
 <template>
-  <div class="flex flex-col items-center justify-center space-y-2 text-gray-800 dark:text-gray-200">
-    <VueIcon
-      icon="history"
-      class="w-10 h-10 text-gray-500"
-    />
-    <div>Timeline available soon</div>
+  <div>
+    <SplitPane
+      :default-split="25"
+    >
+      <template #left>
+        <div class="flex flex-col h-full overflow-auto">
+          <div class="h-4 border-b border-gray-200 dark:border-gray-800" />
+
+          <LayerItem
+            v-for="layer of layers"
+            :key="layer.id"
+            :layer="layer"
+          />
+        </div>
+      </template>
+
+      <template #right>
+        <div class="h-full flex flex-col">
+          <TimelineScrollbar
+            :min.sync="minTime"
+            :max.sync="maxTime"
+            :start.sync="startTime"
+            :end.sync="endTime"
+            class="flex-none"
+          />
+          <TimelineView
+            class="h-full"
+          />
+        </div>
+      </template>
+    </SplitPane>
   </div>
 </template>

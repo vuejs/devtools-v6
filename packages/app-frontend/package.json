@@ -10,6 +10,7 @@
     "d3": "^5.16.0",
     "lodash": "^4.17.15",
     "lru-cache": "^5.1.1",
+    "pixi.js": "^5.3.3",
     "portal-vue": "^2.1.7",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
