@@ -3,6 +3,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import TimelineView from './TimelineView.vue'
 import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
+import SelectedEventInspector from './SelectedEventInspector.vue'
 
 import { useTime, useLayers } from '.'
 
@@ -11,7 +12,8 @@ export default {
     SplitPane,
     LayerItem,
     TimelineView,
-    TimelineScrollbar
+    TimelineScrollbar,
+    SelectedEventInspector
   },
 
   setup () {
@@ -41,18 +43,29 @@ export default {
       </template>
 
       <template #right>
-        <div class="h-full flex flex-col">
-          <TimelineScrollbar
-            :min.sync="minTime"
-            :max.sync="maxTime"
-            :start.sync="startTime"
-            :end.sync="endTime"
-            class="flex-none"
-          />
-          <TimelineView
-            class="h-full"
-          />
-        </div>
+        <SplitPane
+          :default-split="80"
+          :max="85"
+        >
+          <template #left>
+            <div class="h-full flex flex-col">
+              <TimelineScrollbar
+                :min.sync="minTime"
+                :max.sync="maxTime"
+                :start.sync="startTime"
+                :end.sync="endTime"
+                class="flex-none"
+              />
+              <TimelineView
+                class="h-full"
+              />
+            </div>
+          </template>
+
+          <template #right>
+            <SelectedEventInspector />
+          </template>
+        </splitpane>
       </template>
     </SplitPane>
   </div>

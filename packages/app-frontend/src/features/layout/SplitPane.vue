@@ -7,6 +7,16 @@ export default {
     defaultSplit: {
       type: Number,
       default: 50
+    },
+
+    min: {
+      type: Number,
+      default: 20
+    },
+
+    max: {
+      type: Number,
+      default: 80
     }
   },
 
@@ -15,10 +25,10 @@ export default {
 
     const split = ref(props.defaultSplit)
     const boundSplit = computed(() => {
-      if (split.value < 20) {
-        return 20
-      } else if (split.value > 80) {
-        return 80
+      if (split.value < props.min) {
+        return props.min
+      } else if (split.value > props.max) {
+        return props.max
       } else {
         return split.value
       }

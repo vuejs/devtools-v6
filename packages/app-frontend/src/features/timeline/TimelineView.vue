@@ -1,9 +1,9 @@
 <script>
-import { Application, Container, Graphics } from 'pixi.js'
+import { Application, Container, Graphics, Rectangle } from 'pixi.js'
 import { ref, onMounted, onUnmounted, watch } from '@vue/composition-api'
 import { useBridge } from '../bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { useLayers, useTime } from '.'
+import { useLayers, useTime, useSelectedEvent } from '.'
 import Vue from 'vue'
 
 export default {
@@ -51,8 +51,8 @@ export default {
 
     // Events
 
-    const { startTime, endTime, minTime, maxTime } = useTime()
-
+    const { startTime, endTime, minTime } = useTime()
+    const { selectedEvent } = useSelectedEvent()
     const { onBridge } = useBridge()
 
     const events = []
@@ -62,20 +62,21 @@ export default {
     }
 
     function addEvent (event, layer, container) {
+      // Graphics
       const g = new Graphics()
       g.beginFill(layer.color)
       g.drawCircle(0, 0, 4)
       updateEventPosition(event, g)
       g.y = 16
       container.addChild(g)
-      events.push({
-        event,
-        g
-      })
-      return {
-        event,
-        g
-      }
+
+      // Refs
+      event.layer = layer
+      event.g = g
+
+      events.push(event)
+
+      return event
     }
 
     onMounted(() => {
@@ -104,14 +105,56 @@ export default {
     }
 
     function updateEvents () {
-      for (const { event, g } of events) {
-        updateEventPosition(event, g)
+      for (const event of events) {
+        updateEventPosition(event, event.g)
       }
     }
 
     watch(startTime, () => queueEventsUpdate())
     watch(endTime, () => queueEventsUpdate())
     watch(minTime, () => queueEventsUpdate())
+
+    // Event selection
+
+    onMounted(() => {
+      app.stage.interactive = true
+      app.stage.hitArea = new Rectangle(0, 0, 100000, 100000)
+      app.stage.addListener('click', event => {
+        // Unselect previous event
+        if (selectedEvent.value) {
+          const g = selectedEvent.value.g
+          g.clear()
+          g.beginFill(selectedEvent.value.layer.color)
+          g.drawCircle(0, 0, 4)
+        }
+
+        let choice
+        let distance = Number.POSITIVE_INFINITY
+        for (const e of events) {
+          if (!choice) {
+            choice = e
+            continue
+          }
+
+          const globalPosition = e.g.getGlobalPosition()
+          const d = Math.abs(globalPosition.x - event.data.global.x) + Math.abs(globalPosition.y - event.data.global.y)
+
+          if (d < distance) {
+            choice = e
+            distance = d
+          }
+        }
+        selectedEvent.value = choice
+
+        // Update graphics
+        if (choice) {
+          const g = choice.g
+          g.clear()
+          g.beginFill(choice.layer.color)
+          g.drawCircle(0, 0, 7)
+        }
+      })
+    })
 
     // Camera
 

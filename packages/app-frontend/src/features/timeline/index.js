@@ -1,5 +1,6 @@
-import { ref } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { ref, computed } from '@vue/composition-api'
+import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import { formatTime } from '@front/util/format'
 
 const startTime = ref(0)
 const endTime = ref(0)
@@ -7,6 +8,8 @@ const minTime = ref(0)
 const maxTime = ref(0)
 
 const layers = ref([])
+
+const selectedEvent = ref(null)
 
 export function resetTimeline () {
   const now = Date.now()
@@ -52,6 +55,14 @@ export function useLayers () {
   }
 }
 
+export function useSelectedEvent () {
+  return {
+    selectedEvent,
+    selectedEventData: computed(() => parse(selectedEvent.value.data)),
+    selectedEventTime: computed(() => formatTime(selectedEvent.value.time - minTime.value))
+  }
+}
+
 export function setupTimelineBridgeEvents (bridge) {
   resetTimeline()
 
@@ -63,7 +74,7 @@ export function setupTimelineBridgeEvents (bridge) {
     }
 
     // Update scrollbar
-    const scrollTime = event.time + 100
+    const scrollTime = Math.round(event.time + (maxTime.value - minTime.value) * 0.02)
     if (scrollTime > maxTime.value) {
       if (endTime.value === maxTime.value) {
         if (endTime.value - startTime.value > 10000) {
