@@ -112,6 +112,8 @@ export default {
 
     <div class="flex-1" />
 
+    <portal-target name="header-end" />
+
     <VueDropdown
       offset="0"
     >

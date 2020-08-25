@@ -5,7 +5,7 @@ import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
 import SelectedEventInspector from './SelectedEventInspector.vue'
 
-import { useTime, useLayers } from '.'
+import { useTime, useLayers, resetTimeline } from '.'
 
 export default {
   components: {
@@ -19,7 +19,8 @@ export default {
   setup () {
     return {
       ...useTime(),
-      ...useLayers()
+      ...useLayers(),
+      resetTimeline
     }
   }
 }
@@ -68,5 +69,14 @@ export default {
         </splitpane>
       </template>
     </SplitPane>
+
+    <portal to="header-end">
+      <VueButton
+        v-tooltip="'Clear all timelines'"
+        class="icon-button flat"
+        icon-left="delete"
+        @click="resetTimeline()"
+      />
+    </portal>
   </div>
 </template>

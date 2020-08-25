@@ -3,14 +3,35 @@ import { Application, Container, Graphics, Rectangle } from 'pixi.js'
 import { ref, onMounted, onUnmounted, watch } from '@vue/composition-api'
 import { useBridge } from '../bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { useLayers, useTime, useSelectedEvent } from '.'
+import { useLayers, useTime, useSelectedEvent, onTimelineReset } from '.'
 import Vue from 'vue'
+import { useApps } from '../apps'
 
 export default {
   setup () {
     const wrapper = ref(null)
 
-    // App
+    const { currentAppId } = useApps()
+
+    // Reset
+
+    const resetCbs = []
+
+    function onReset (cb) {
+      resetCbs.push(cb)
+    }
+
+    function reset () {
+      for (const cb of resetCbs) {
+        cb()
+      }
+    }
+
+    watch(currentAppId, () => reset())
+
+    onTimelineReset(reset)
+
+    // Pixi App
 
     /** @type {Application} */
     let app
@@ -19,7 +40,8 @@ export default {
       app = new Application({
         resizeTo: wrapper.value,
         backgroundColor: 0xffffff,
-        antialias: true
+        antialias: true,
+        autoDensity: true
       })
       wrapper.value.appendChild(app.view)
     })
@@ -31,10 +53,11 @@ export default {
     // Layers
 
     const { layers } = useLayers()
-    const layerContainers = []
-    const layersMap = {}
+    /** @type {Container[]} */
+    let layerContainers = []
+    let layersMap = {}
 
-    onMounted(() => {
+    function initLayers () {
       let y = 0
       for (const layer of layers.value) {
         const container = new Container()
@@ -47,6 +70,19 @@ export default {
           container
         }
       }
+    }
+
+    onMounted(() => {
+      initLayers()
+    })
+
+    onReset(() => {
+      for (const container of layerContainers) {
+        container.destroy()
+      }
+      layerContainers = []
+      layersMap = {}
+      initLayers()
     })
 
     // Events
@@ -55,7 +91,7 @@ export default {
     const { selectedEvent } = useSelectedEvent()
     const { onBridge } = useBridge()
 
-    const events = []
+    let events = []
 
     function updateEventPosition (event, g) {
       g.x = (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
@@ -79,16 +115,30 @@ export default {
       return event
     }
 
-    onMounted(() => {
+    function initEvents () {
       for (const k in layersMap) {
         const { layer, container } = layersMap[k]
         for (const event of layer.events) {
           addEvent(event, layer, container)
         }
       }
+    }
+
+    onMounted(() => {
+      initEvents()
     })
 
-    onBridge(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ layerId, event }) => {
+    onReset(() => {
+      for (const e of events) {
+        e.g.destroy()
+      }
+      events = []
+      initEvents()
+    })
+
+    onBridge(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ appId, layerId, event }) => {
+      if (appId !== 'all' && appId !== currentAppId.value) return
+
       const { layer, container } = layersMap[layerId]
       addEvent(event, layer, container)
     })

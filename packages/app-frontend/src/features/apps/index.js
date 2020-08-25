@@ -50,6 +50,10 @@ function removeApp (appId) {
   }
 }
 
+export function getApps () {
+  return apps.value
+}
+
 export function setupAppsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_APP_ADD, appRecord => {
     addApp(appRecord)

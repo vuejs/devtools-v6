@@ -3,6 +3,12 @@ import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
 import { hook } from './global-hook'
 import { getAppRecord } from './util/app'
 
+export interface TimelineEventPayload<TData = any, TMeta = any> {
+  appId: number | 'all'
+  layerId: string
+  event: Event<TData, TMeta>
+}
+
 export interface Event<TData = any, TMeta = any> {
   time: number
   data: TData
@@ -16,6 +22,7 @@ export function setupTimeline (ctx: BackendContext) {
 function setupBuiltinLayers (ctx: BackendContext) {
   window.addEventListener('click', event => {
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
+      appId: 'all',
       layerId: 'mouse',
       event: {
         time: Date.now(),
@@ -24,12 +31,13 @@ function setupBuiltinLayers (ctx: BackendContext) {
           x: event.clientX,
           y: event.clientY
         })
-      } as Event
-    })
+      }
+    } as TimelineEventPayload)
   })
 
   window.addEventListener('keyup', event => {
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
+      appId: 'all',
       layerId: 'keyboard',
       event: {
         time: Date.now(),
@@ -42,14 +50,15 @@ function setupBuiltinLayers (ctx: BackendContext) {
           altKey: event.altKey,
           metaKey: event.metaKey
         })
-      } as Event
-    })
+      }
+    } as TimelineEventPayload)
   })
 
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
     const appRecord = getAppRecord(app, ctx)
     const id = `${appRecord.id}:${instance.uid}`
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
+      appId: appRecord.id,
       layerId: 'component-event',
       event: {
         time: Date.now(),
@@ -66,7 +75,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
         meta: {
           componentId: id
         }
-      } as Event
-    })
+      }
+    } as TimelineEventPayload)
   })
 }
