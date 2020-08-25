@@ -59,7 +59,7 @@ export function useSelectedEvent () {
   return {
     selectedEvent,
     selectedEventData: computed(() => parse(selectedEvent.value.data)),
-    selectedEventTime: computed(() => formatTime(selectedEvent.value.time - minTime.value))
+    selectedEventTime: computed(() => formatTime(selectedEvent.value.time, 'ms'))
   }
 }
 
