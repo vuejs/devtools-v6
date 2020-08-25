@@ -181,15 +181,10 @@ export default {
         let choice
         let distance = Number.POSITIVE_INFINITY
         for (const e of events) {
-          if (!choice) {
-            choice = e
-            continue
-          }
-
           const globalPosition = e.g.getGlobalPosition()
           const d = Math.abs(globalPosition.x - event.data.global.x) + Math.abs(globalPosition.y - event.data.global.y)
 
-          if (d < distance) {
+          if (!choice || d < distance) {
             choice = e
             distance = d
           }
