@@ -74,7 +74,7 @@ export function setupTimelineBridgeEvents (bridge) {
     }
 
     // Update scrollbar
-    const scrollTime = Math.round(event.time + (maxTime.value - minTime.value) * 0.02)
+    const scrollTime = event.time + 100
     if (scrollTime > maxTime.value) {
       if (endTime.value === maxTime.value) {
         if (endTime.value - startTime.value > 10000) {
