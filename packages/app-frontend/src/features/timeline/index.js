@@ -108,7 +108,7 @@ export function setupTimelineBridgeEvents (bridge) {
       const scrollTime = event.time + 100
       if (scrollTime > maxTime.value) {
         if (endTime.value === maxTime.value) {
-          if (endTime.value - startTime.value > 10000) {
+          if (endTime.value - startTime.value > 10000 || startTime.value !== 0) {
             // Autoscroll
             const size = endTime.value - startTime.value
             startTime.value = scrollTime - size
