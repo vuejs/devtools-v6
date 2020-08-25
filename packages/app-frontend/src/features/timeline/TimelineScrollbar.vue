@@ -165,7 +165,7 @@ export default {
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
         left: `${(start - min) / (max - min) * 100}%`,
-        width: '4px'
+        width: '8px'
       }"
       @mousedown="onStartHandleMouseDown"
     />
@@ -175,7 +175,7 @@ export default {
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
         right: `${(max - end) / (max - min) * 100}%`,
-        width: '4px'
+        width: '8px'
       }"
       @mousedown="onEndHandleMouseDown"
     />

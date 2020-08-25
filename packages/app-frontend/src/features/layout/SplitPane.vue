@@ -17,6 +17,12 @@ export default {
     max: {
       type: Number,
       default: 80
+    },
+
+    draggerOffset: {
+      type: String,
+      default: 'center',
+      validator: value => ['before', 'center', 'after'].includes(value)
     }
   },
 
@@ -115,7 +121,8 @@ export default {
         class="dragger absolute z-100"
         :class="{
           'top-0 bottom-0 cursor-ew-resize': orientation === 'landscape',
-          'left-0 right-0 cursor-ns-resize': orientation === 'portrait'
+          'left-0 right-0 cursor-ns-resize': orientation === 'portrait',
+          [`dragger-offset-${draggerOffset}`]: true
         }"
         @mousedown.prevent="dragStart"
       />
@@ -136,13 +143,41 @@ export default {
 <style lang="postcss" scoped>
 .dragger {
   .landscape & {
-    right: -5px;
     width: 10px;
   }
 
   .portrait & {
-    bottom: -5px;
     height: 10px;
+  }
+
+  &.dragger-offset-before {
+    .landscape & {
+      right: 0;
+    }
+
+    .portrait & {
+      top: 0;
+    }
+  }
+
+  &.dragger-offset-center {
+    .landscape & {
+      right: -5px;
+    }
+
+    .portrait & {
+      top: -5px;
+    }
+  }
+
+  &.dragger-offset-after {
+    .landscape & {
+      right: -10px;
+    }
+
+    .portrait & {
+      top: -10px;
+    }
   }
 }
 </style>

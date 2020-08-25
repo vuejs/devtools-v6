@@ -30,6 +30,7 @@ export default {
   <div>
     <SplitPane
       :default-split="25"
+      dragger-offset="before"
     >
       <template #left>
         <div class="flex flex-col h-full overflow-auto">
@@ -47,6 +48,7 @@ export default {
         <SplitPane
           :default-split="80"
           :max="85"
+          dragger-offset="after"
         >
           <template #left>
             <div class="h-full flex flex-col">
