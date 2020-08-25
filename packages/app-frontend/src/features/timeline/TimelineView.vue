@@ -22,6 +22,7 @@ export default {
     }
 
     function reset () {
+      clearEventSelection()
       for (const cb of resetCbs) {
         cb()
       }
@@ -170,13 +171,7 @@ export default {
       app.stage.interactive = true
       app.stage.hitArea = new Rectangle(0, 0, 100000, 100000)
       app.stage.addListener('click', event => {
-        // Unselect previous event
-        if (selectedEvent.value) {
-          const g = selectedEvent.value.g
-          g.clear()
-          g.beginFill(selectedEvent.value.layer.color)
-          g.drawCircle(0, 0, 4)
-        }
+        clearEventSelection()
 
         let choice
         let distance = Number.POSITIVE_INFINITY
@@ -200,6 +195,16 @@ export default {
         }
       })
     })
+
+    function clearEventSelection () {
+      if (selectedEvent.value) {
+        const g = selectedEvent.value.g
+        g.clear()
+        g.beginFill(selectedEvent.value.layer.color)
+        g.drawCircle(0, 0, 4)
+      }
+      selectedEvent.value = null
+    }
 
     // Camera
 
