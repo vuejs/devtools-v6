@@ -49,5 +49,8 @@ export default {
     <button @click="answer *= 2">
       double it
     </button>
+    <button @click="answer--">
+      minus one
+    </button>
   </div>
 </template>

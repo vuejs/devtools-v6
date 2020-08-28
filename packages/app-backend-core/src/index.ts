@@ -4,7 +4,8 @@ import {
   AppRecordOptions,
   BackendContext,
   createBackendContext,
-  DevtoolsBackend
+  DevtoolsBackend,
+  App
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -126,29 +127,26 @@ function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_UPDATED, (app, uid) => {
-    const appRecord = getAppRecord(app, ctx)
-    const id = `${appRecord.id}:${uid}`
+    const id = getComponentId(app, uid)
     if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
       sendSelectedComponentData(id)
     }
   })
 
   hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid) => {
-    const appRecord = getAppRecord(app, ctx)
-    const parentId = `${appRecord.id}:${parentUid}`
+    const parentId = getComponentId(app, parentUid)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       sendComponentTreeData(parentId)
     }
   })
 
   hook.on(HookEvents.COMPONENT_REMOVED, (app, uid, parentUid) => {
-    const appRecord = getAppRecord(app, ctx)
-    const parentId = `${appRecord.id}:${parentUid}`
+    const parentId = getComponentId(app, parentUid)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       sendComponentTreeData(parentId)
     }
 
-    const id = `${appRecord.id}:${uid}`
+    const id = getComponentId(app, uid)
     if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
       sendEmptyComponentData(id)
     }
@@ -197,7 +195,9 @@ export async function registerApp (options: AppRecordOptions) {
         rootInstance: await ctx.api.getAppRootInstance(options.app)
       }
       options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
-      record.instanceMap.set(`${record.id}:root`, record.rootInstance)
+      const rootId = `${record.id}:root`
+      record.instanceMap.set(rootId, record.rootInstance)
+      record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
       await ctx.api.registerApplication(record)
       ctx.appRecords.push(record)
       ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, mapAppRecord(record))
@@ -275,4 +275,9 @@ function sendEmptyComponentData (instanceId: string) {
     instanceId,
     data: null
   })
+}
+
+function getComponentId (app: App, uid: number) {
+  const appRecord = getAppRecord(app, ctx)
+  return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
 }
