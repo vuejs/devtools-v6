@@ -51,6 +51,25 @@ button:focus
       color #fff
       background-color $active-color
 
+.vue-ui-icon svg
+  fill currentColor
+
+.preferences
+  display flex
+  flex-wrap wrap
+  padding 12px 4px
+
+  > *
+    flex-basis 380px
+    margin 16px 24px
+
+  .vue-ui-form-field
+    > .wrapper > .content
+      min-height 32px
+      justify-content center
+
+// Popover
+
 $arrow-color = $vue-ui-color-dark
 
 .arrow
@@ -85,19 +104,32 @@ $arrow-color = $vue-ui-color-dark
     &.left
       border-right-color $arrow-color
 
-.vue-ui-icon svg
-  fill currentColor
+// Tooltips
 
-.preferences
-  display flex
-  flex-wrap wrap
-  padding 12px 4px
+.keyboard
+  display inline-block
+  min-width 22px
+  text-align center
+  background rgba($grey, .3)
+  padding 2px 4px 0
+  border-radius 3px
+  margin-bottom 6px
+  box-shadow 0 3px 0 rgba($grey, .2)
+  .vue-ui-dark-mode &
+    background rgba($grey, .9)
+    box-shadow 0 3px 0 rgba($grey, .6)
 
-  > *
-    flex-basis 380px
-    margin 16px 24px
+.mono
+  font-family Menlo, Consolas, monospace
 
-  .vue-ui-form-field
-    > .wrapper > .content
-      min-height 32px
-      justify-content center
+.v-popper__popper.v-popper--theme-tooltip
+  pointer-events none
+  font-size 12px
+
+  .vue-ui-icon
+    width 16px
+    height @width
+    vertical-align middle
+
+.vue-ui-dark-mode .v-popper__popper.v-popper--theme-tooltip .vue-ui-icon svg
+  fill #666
