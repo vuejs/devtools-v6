@@ -78,25 +78,27 @@ export function onEventAdd (cb) {
 }
 
 function addEvent (appId, event, layer) {
-  // Update scrollbar
-  const scrollTime = event.time + 100
-  if (scrollTime > maxTime.value) {
-    if (endTime.value === maxTime.value) {
-      if (endTime.value - startTime.value > 10000 || startTime.value !== 0) {
-        // Autoscroll
-        const size = endTime.value - startTime.value
-        startTime.value = scrollTime - size
-      }
-      endTime.value = scrollTime
-    }
-    maxTime.value = scrollTime
-  }
-
   event.layer = layer
   event.appId = appId
   layer.events.push(event)
   event.stackedEvents = []
-  stackEvent(event)
+  const wasStacked = stackEvent(event)
+
+  if (!wasStacked) {
+    // Update scrollbar
+    const scrollTime = event.time + 100
+    if (scrollTime > maxTime.value) {
+      if (endTime.value === maxTime.value) {
+        if (endTime.value - startTime.value > 15000 || startTime.value !== minTime.value) {
+          // Autoscroll
+          const size = endTime.value - startTime.value
+          startTime.value = scrollTime - size
+        }
+        endTime.value = scrollTime
+      }
+      maxTime.value = scrollTime
+    }
+  }
 
   for (const cb of addEventCbs) {
     cb(event)
@@ -117,6 +119,7 @@ function stackEvent (event) {
     event.layer.displayedEvents.push(event)
     event.stackedEvents = [event]
   }
+  return wasStacked
 }
 
 function _stackEvent (event, roundedTime) {
