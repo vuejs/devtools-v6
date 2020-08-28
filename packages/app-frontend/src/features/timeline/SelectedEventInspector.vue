@@ -1,11 +1,16 @@
 <script>
 import StateInspector from '../inspector/StateInspector.vue'
 import { useSelectedEvent } from '.'
+import Defer from '@front/mixins/defer'
 
 export default {
   components: {
     StateInspector
   },
+
+  mixins: [
+    Defer()
+  ],
 
   setup () {
     return {
@@ -38,13 +43,15 @@ export default {
       </div>
     </div>
 
-    <StateInspector
-      v-for="(event, index) of selectedStackedEvents"
-      :key="index"
-      class="border-gray-200 dark:border-gray-800 border-t"
-      :state="{
-        [`Event - ${event.time}`]: event.data
-      }"
-    />
+    <template v-for="(event, index) of selectedStackedEvents">
+      <StateInspector
+        v-if="defer(index + 1)"
+        :key="index"
+        class="border-gray-200 dark:border-gray-800 border-t"
+        :state="{
+          [`Event - ${event.time}`]: event.data
+        }"
+      />
+    </template>
   </div>
 </template>
