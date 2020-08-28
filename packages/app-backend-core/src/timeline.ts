@@ -20,38 +20,50 @@ export function setupTimeline (ctx: BackendContext) {
 }
 
 function setupBuiltinLayers (ctx: BackendContext) {
-  window.addEventListener('click', event => {
-    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
-      appId: 'all',
-      layerId: 'mouse',
-      event: {
-        time: Date.now(),
-        data: stringify({
-          type: 'click',
-          x: event.clientX,
-          y: event.clientY
-        })
-      }
-    } as TimelineEventPayload)
+  ;['mousedown', 'mouseup', 'click', 'dblclick'].forEach(eventType => {
+    // @ts-ignore
+    window.addEventListener(eventType, (event: MouseEvent) => {
+      ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
+        appId: 'all',
+        layerId: 'mouse',
+        event: {
+          time: Date.now(),
+          data: stringify({
+            type: eventType,
+            x: event.clientX,
+            y: event.clientY
+          })
+        }
+      } as TimelineEventPayload)
+    }, {
+      capture: true,
+      passive: true
+    })
   })
 
-  window.addEventListener('keyup', event => {
-    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
-      appId: 'all',
-      layerId: 'keyboard',
-      event: {
-        time: Date.now(),
-        data: stringify({
-          type: 'keyup',
-          code: event.keyCode,
-          key: event.key,
-          ctrlKey: event.ctrlKey,
-          shiftKey: event.shiftKey,
-          altKey: event.altKey,
-          metaKey: event.metaKey
-        })
-      }
-    } as TimelineEventPayload)
+  ;['keyup', 'keydown', 'keypress'].forEach(eventType => {
+    // @ts-ignore
+    window.addEventListener(eventType, (event: KeyboardEvent) => {
+      ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
+        appId: 'all',
+        layerId: 'keyboard',
+        event: {
+          time: Date.now(),
+          data: stringify({
+            type: eventType,
+            code: event.keyCode,
+            key: event.key,
+            ctrlKey: event.ctrlKey,
+            shiftKey: event.shiftKey,
+            altKey: event.altKey,
+            metaKey: event.metaKey
+          })
+        }
+      } as TimelineEventPayload)
+    }, {
+      capture: true,
+      passive: true
+    })
   })
 
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
