@@ -1,9 +1,7 @@
 <script>
 import { Application, Container, Graphics, Rectangle } from 'pixi.js'
 import { ref, onMounted, onUnmounted, watch } from '@vue/composition-api'
-import { useBridge } from '../bridge'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { useLayers, useTime, useSelectedEvent, onTimelineReset } from '.'
+import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
 
@@ -90,7 +88,6 @@ export default {
 
     const { startTime, endTime, minTime } = useTime()
     const { selectedEvent } = useSelectedEvent()
-    const { onBridge } = useBridge()
 
     let events = []
 
@@ -98,18 +95,15 @@ export default {
       g.x = (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
     }
 
-    function addEvent (event, layer, container) {
+    function addEvent (event, container) {
       // Graphics
       const g = new Graphics()
-      g.beginFill(layer.color)
+      g.beginFill(event.layer.color)
       g.drawCircle(0, 0, 4)
       updateEventPosition(event, g)
       g.y = 16
-      container.addChild(g)
-
-      // Refs
-      event.layer = layer
       event.g = g
+      container.addChild(g)
 
       events.push(event)
 
@@ -120,7 +114,7 @@ export default {
       for (const k in layersMap) {
         const { layer, container } = layersMap[k]
         for (const event of layer.events) {
-          addEvent(event, layer, container)
+          addEvent(event, container)
         }
       }
     }
@@ -137,11 +131,11 @@ export default {
       initEvents()
     })
 
-    onBridge(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ appId, layerId, event }) => {
-      if (appId !== 'all' && appId !== currentAppId.value) return
+    onEventAdd(event => {
+      if (event.appId !== 'all' && event.appId !== currentAppId.value) return
 
-      const { layer, container } = layersMap[layerId]
-      addEvent(event, layer, container)
+      const { container } = layersMap[event.layer.id]
+      addEvent(event, container)
     })
 
     let eventsUpdateQueued = false

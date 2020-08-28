@@ -59,6 +59,41 @@ export function onTimelineReset (cb) {
   resetCbs.push(cb)
 }
 
+const addEventCbs = []
+
+export function onEventAdd (cb) {
+  onUnmounted(() => {
+    const index = addEventCbs.indexOf(cb)
+    if (index !== -1) addEventCbs.splice(cb)
+  })
+
+  addEventCbs.push(cb)
+}
+
+function addEvent (appId, event, layer) {
+  // Update scrollbar
+  const scrollTime = event.time + 100
+  if (scrollTime > maxTime.value) {
+    if (endTime.value === maxTime.value) {
+      if (endTime.value - startTime.value > 10000 || startTime.value !== 0) {
+        // Autoscroll
+        const size = endTime.value - startTime.value
+        startTime.value = scrollTime - size
+      }
+      endTime.value = scrollTime
+    }
+    maxTime.value = scrollTime
+  }
+
+  layer.events.push(event)
+  event.layer = layer
+  event.appId = appId
+
+  for (const cb of addEventCbs) {
+    cb(event)
+  }
+}
+
 export function useTime () {
   return {
     startTime,
@@ -104,21 +139,7 @@ export function setupTimelineBridgeEvents (bridge) {
         return
       }
 
-      // Update scrollbar
-      const scrollTime = event.time + 100
-      if (scrollTime > maxTime.value) {
-        if (endTime.value === maxTime.value) {
-          if (endTime.value - startTime.value > 10000 || startTime.value !== 0) {
-            // Autoscroll
-            const size = endTime.value - startTime.value
-            startTime.value = scrollTime - size
-          }
-          endTime.value = scrollTime
-        }
-        maxTime.value = scrollTime
-      }
-
-      layer.events.push(event)
+      addEvent(appId, event, layer)
     }
   })
 }
