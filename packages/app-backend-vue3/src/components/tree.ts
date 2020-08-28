@@ -72,6 +72,8 @@ export class ComponentWalker {
         }
       })
       return list
+    } else if (subTree.component) {
+      return [subTree.component]
     }
     return []
   }

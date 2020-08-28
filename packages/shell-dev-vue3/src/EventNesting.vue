@@ -12,14 +12,11 @@ export default {
 </script>
 
 <template>
-  <div
+  <EventNesting
     v-if="level < 10"
-  >
-    <EventNesting
-      :level="level + 1"
-      @notify="$emit('notify', level)"
-    />
-  </div>
+    :level="level + 1"
+    @notify="$emit('notify', level)"
+  />
   <div v-else>
     <button @click="$emit('notify', level)">
       Notify (level {{ level }})
