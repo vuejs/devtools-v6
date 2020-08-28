@@ -105,12 +105,23 @@ function addEvent (appId, event, layer) {
 
 function stackEvent (event) {
   const roundedTime = Math.round(event.time / 10)
-  const existingEvent = event.layer.eventTimeMap[roundedTime]
-  if (!existingEvent) {
+  // Try neighbors too
+  const times = [roundedTime, roundedTime - 10, roundedTime + 10]
+  let wasStacked = false
+  for (const k in times) {
+    wasStacked = !!_stackEvent(event, times[k])
+    if (wasStacked) break
+  }
+  if (!wasStacked) {
     event.layer.eventTimeMap[roundedTime] = event
     event.layer.displayedEvents.push(event)
     event.stackedEvents = [event]
-  } else {
+  }
+}
+
+function _stackEvent (event, roundedTime) {
+  const existingEvent = event.layer.eventTimeMap[roundedTime]
+  if (existingEvent) {
     existingEvent.stackedEvents.push(event)
     event.stackParent = existingEvent
   }
