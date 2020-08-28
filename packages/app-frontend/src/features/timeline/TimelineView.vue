@@ -132,6 +132,7 @@ export default {
     })
 
     onEventAdd(event => {
+      if (event.stackParent) return
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
 
       const { container } = layersMap[event.layer.id]

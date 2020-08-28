@@ -3,6 +3,7 @@ import Child from './Child.vue'
 import NestedMore from './NestedMore.vue'
 import NativeTypes from './NativeTypes.vue'
 import EventEmit from './EventEmit.vue'
+import EventNesting from './EventNesting.vue'
 
 export default {
   name: 'MyApp',
@@ -11,7 +12,8 @@ export default {
     Child,
     NestedMore,
     NativeTypes,
-    EventEmit
+    EventEmit,
+    EventNesting
   }
 }
 </script>
@@ -22,4 +24,5 @@ export default {
   <NestedMore />
   <NativeTypes />
   <EventEmit />
+  <EventNesting />
 </template>

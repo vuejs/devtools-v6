@@ -18,9 +18,9 @@ export default {
 <template>
   <div
     v-if="selectedEvent"
-    class="h-full flex flex-col"
+    class="h-full overflow-y-auto"
   >
-    <div class="p-2 border-gray-200 dark:border-gray-800 border-b flex items-center space-x-2">
+    <div class="p-2 flex items-center space-x-2">
       <div
         class="w-3 h-3 rounded-full mx-2 flex-none"
         :style="{
@@ -33,16 +33,18 @@ export default {
         </div>
 
         <div class="text-xs opacity-75">
-          {{ selectedEventTime }}
+          {{ selectedStackedEvents.length }} event{{ selectedStackedEvents.length > 1 ? 's' : '' }}
         </div>
       </div>
     </div>
 
     <StateInspector
+      v-for="(event, index) of selectedStackedEvents"
+      :key="index"
+      class="border-gray-200 dark:border-gray-800 border-t"
       :state="{
-        info: selectedEventData
+        [`Event - ${event.time}`]: event.data
       }"
-      class="flex-1 overflow-y-auto"
     />
   </div>
 </template>

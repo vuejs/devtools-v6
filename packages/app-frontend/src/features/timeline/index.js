@@ -18,19 +18,25 @@ function builtinLayersFactory () {
       id: 'mouse',
       label: 'Mouse',
       color: 0xA451AF,
-      events: []
+      events: [],
+      displayedEvents: [],
+      eventTimeMap: {}
     },
     {
       id: 'keyboard',
       label: 'Keyboard',
       color: 0x8151AF,
-      events: []
+      events: [],
+      displayedEvents: [],
+      eventTimeMap: {}
     },
     {
       id: 'component-event',
       label: 'Component events',
       color: 0x41B883,
-      events: []
+      events: [],
+      displayedEvents: [],
+      eventTimeMap: {}
     }
   ]
 }
@@ -85,13 +91,28 @@ function addEvent (appId, event, layer) {
     maxTime.value = scrollTime
   }
 
-  layer.events.push(event)
   event.layer = layer
   event.appId = appId
+  layer.events.push(event)
+  stackEvent(event)
 
   for (const cb of addEventCbs) {
     cb(event)
   }
+}
+
+function stackEvent (event) {
+  const roundedTime = Math.round(event.time / 10)
+  const existingEvent = event.layer.eventTimeMap[roundedTime]
+  if (!existingEvent) {
+    event.layer.eventTimeMap[roundedTime] = event
+    event.layer.displayedEvents.push(event)
+    event.stackedEvents = []
+  } else {
+    existingEvent.stackedEvents.push(event)
+    event.stackParent = existingEvent
+  }
+  return existingEvent
 }
 
 export function useTime () {
@@ -122,8 +143,13 @@ export function useLayers () {
 export function useSelectedEvent () {
   return {
     selectedEvent,
-    selectedEventData: computed(() => parse(selectedEvent.value.data)),
-    selectedEventTime: computed(() => formatTime(selectedEvent.value.time, 'ms'))
+    selectedStackedEvents: computed(() => [
+      selectedEvent.value,
+      ...selectedEvent.value.stackedEvents
+    ].map(e => ({
+      data: parse(e.data),
+      time: formatTime(e.time, 'ms')
+    })))
   }
 }
 
