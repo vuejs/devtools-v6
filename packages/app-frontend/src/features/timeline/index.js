@@ -2,6 +2,7 @@ import { ref, computed, onUnmounted } from '@vue/composition-api'
 import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { formatTime } from '@front/util/format'
 import { useApps, getApps } from '../apps'
+import cloneDeep from 'lodash/cloneDeep'
 
 const startTime = ref(0)
 const endTime = ref(0)
@@ -94,6 +95,7 @@ function addEvent (appId, event, layer) {
   event.layer = layer
   event.appId = appId
   layer.events.push(event)
+  event.stackedEvents = []
   stackEvent(event)
 
   for (const cb of addEventCbs) {
@@ -107,7 +109,7 @@ function stackEvent (event) {
   if (!existingEvent) {
     event.layer.eventTimeMap[roundedTime] = event
     event.layer.displayedEvents.push(event)
-    event.stackedEvents = []
+    event.stackedEvents = [event]
   } else {
     existingEvent.stackedEvents.push(event)
     event.stackParent = existingEvent
@@ -143,10 +145,7 @@ export function useLayers () {
 export function useSelectedEvent () {
   return {
     selectedEvent,
-    selectedStackedEvents: computed(() => [
-      selectedEvent.value,
-      ...selectedEvent.value.stackedEvents
-    ].map(e => ({
+    selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents.map(e => ({
       data: parse(e.data),
       time: formatTime(e.time, 'ms')
     })))
@@ -165,7 +164,7 @@ export function setupTimelineBridgeEvents (bridge) {
         return
       }
 
-      addEvent(appId, event, layer)
+      addEvent(appId, cloneDeep(event), layer)
     }
   })
 }
