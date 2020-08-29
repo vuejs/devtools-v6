@@ -49,6 +49,8 @@ export default {
       <router-view class="flex-1 overflow-auto" />
     </template>
 
+    <portal-target name="root" />
+
     <ErrorOverlay />
   </div>
 </template>

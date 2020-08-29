@@ -30,7 +30,7 @@ function createOverlay () {
 // This prevents "sticky" highlights that are not removed because highlight is async
 const jobQueue = new JobQueue()
 
-export async function hightlight (instance, ctx: BackendContext) {
+export async function highlight (instance, ctx: BackendContext) {
   await jobQueue.queue(async () => {
     if (!instance) return
 

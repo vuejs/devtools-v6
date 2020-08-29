@@ -7,9 +7,11 @@ export enum Hooks {
   GET_APP_ROOT_INSTANCE = 'getAppRootInstance',
   REGISTER_APPLICATION = 'registerApplication',
   WALK_COMPONENT_TREE = 'walkComponentTree',
+  WALK_COMPONENT_PARENTS = 'walkComponentParents',
   INSPECT_COMPONENT = 'inspectComponent',
   GET_COMPONENT_BOUNDS = 'getComponentBounds',
   GET_COMPONENT_NAME = 'getComponentName',
+  GET_ELEMENT_COMPONENT = 'getElementComponent'
 }
 
 export interface ComponentBounds {
@@ -37,6 +39,10 @@ export type HookPayloads = {
     maxDepth: number
     filter: string
   }
+  [Hooks.WALK_COMPONENT_PARENTS]: {
+    componentInstance: any // @TODO
+    parentInstances: any[] // @TODO
+  }
   [Hooks.INSPECT_COMPONENT]: {
     componentInstance: any // @TODO
     instanceData: InspectedComponentData
@@ -48,6 +54,10 @@ export type HookPayloads = {
   [Hooks.GET_COMPONENT_NAME]: {
     componentInstance: any // @TODO
     name: string
+  }
+  [Hooks.GET_ELEMENT_COMPONENT]: {
+    element: any
+    componentInstance: any // @TODO
   }
 }
 
@@ -87,6 +97,10 @@ export class DevtoolsHookable {
     this.hook(Hooks.WALK_COMPONENT_TREE, handler)
   }
 
+  walkComponentParents (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS]>) {
+    this.hook(Hooks.WALK_COMPONENT_PARENTS, handler)
+  }
+
   inspectComponent (handler: HookHandler<HookPayloads[Hooks.INSPECT_COMPONENT]>) {
     this.hook(Hooks.INSPECT_COMPONENT, handler)
   }
@@ -97,5 +111,9 @@ export class DevtoolsHookable {
 
   getComponentName (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_NAME]>) {
     this.hook(Hooks.GET_COMPONENT_NAME, handler)
+  }
+
+  getElementComponent (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT]>) {
+    this.hook(Hooks.GET_ELEMENT_COMPONENT, handler)
   }
 }

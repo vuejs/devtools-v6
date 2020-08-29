@@ -1,6 +1,7 @@
 <script>
 import { onMounted } from '@vue/composition-api'
 import { useComponents } from '.'
+import { useComponentPick } from './pick'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
@@ -28,9 +29,20 @@ export default {
       selectLastComponent()
     })
 
+    // Pick
+
+    const {
+      pickingComponent,
+      startPickingComponent,
+      stopPickingComponent
+    } = useComponentPick()
+
     return {
       rootInstances,
-      treeFilter
+      treeFilter,
+      pickingComponent,
+      startPickingComponent,
+      stopPickingComponent
     }
   }
 }
@@ -84,6 +96,44 @@ export default {
           />
         </VueGroup>
       </div>
+    </portal>
+
+    <portal to="header-end">
+      <VueButton
+        v-tooltip="{
+          content: $t('ComponentTree.select.tooltip'),
+          contentHtml: true
+        }"
+        class="icon-button flat"
+        icon-left="gps_fixed"
+        @click="startPickingComponent()"
+      />
+    </portal>
+
+    <portal to="root">
+      <transition name="vue-ui-fade">
+        <div
+          v-if="pickingComponent"
+          class="absolute inset-0 bg-white dark:bg-black bg-opacity-75 z-100 flex items-center justify-center"
+        >
+          <div class="flex flex-col items-center justify-center space-y-4 px-8 py-6 rounded-lg shadow-lg bg-white dark:bg-black">
+            <VueIcon
+              icon="gps_fixed"
+              class="w-8 h-8 text-green-500 animate-pulse"
+            />
+            <div>
+              Click on a component on the page to select it
+            </div>
+            <div>
+              <VueButton
+                @click="stopPickingComponent()"
+              >
+                Cancel
+              </VueButton>
+            </div>
+          </div>
+        </div>
+      </transition>
     </portal>
   </div>
 </template>

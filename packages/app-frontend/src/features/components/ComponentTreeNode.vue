@@ -1,5 +1,5 @@
 <script>
-import { computed, toRefs, onMounted } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref } from '@vue/composition-api'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { useComponent } from '.'
@@ -46,9 +46,16 @@ export default {
 
     subscribeToComponentTree()
 
+    const toggleEl = ref(null)
+
     onMounted(() => {
       if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {
         toggle(false)
+      }
+
+      // Auto scroll to node in tree view
+      if (selected.value && toggleEl.value) {
+        toggleEl.value.scrollIntoView()
       }
     })
 
@@ -57,6 +64,7 @@ export default {
     const { highlight, unhighlight } = useComponentHighlight(computed(() => props.instance.id))
 
     return {
+      toggleEl,
       sortedChildren,
       displayName,
       componentHasKey,
@@ -74,6 +82,7 @@ export default {
 <template>
   <div>
     <div
+      ref="toggleEl"
       class="font-mono cursor-pointer relative overflow-hidden z-10 rounded whitespace-no-wrap flex items-center pr-2 text-sm selectable-item"
       :class="{
         selected

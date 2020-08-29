@@ -2,6 +2,7 @@ import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backen
 import { ComponentWalker } from './components/tree'
 import { getInstanceDetails } from './components/data'
 import { getInstanceName, getInstanceOrVnodeRect } from './components/util'
+import { getComponentInstanceFromElement } from './components/el'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 3,
@@ -28,6 +29,11 @@ export const backend: DevtoolsBackend = {
       payload.componentTreeData = walker.getComponentTree(payload.componentInstance)
     })
 
+    api.on.walkComponentParents((payload, ctx) => {
+      const walker = new ComponentWalker(0, null, ctx)
+      payload.parentInstances = walker.getComponentParents(payload.componentInstance)
+    })
+
     api.on.inspectComponent(async (payload, ctx) => {
       payload.instanceData = await getInstanceDetails(payload.componentInstance, ctx)
     })
@@ -38,6 +44,10 @@ export const backend: DevtoolsBackend = {
 
     api.on.getComponentBounds(async payload => {
       payload.bounds = await getInstanceOrVnodeRect(payload.componentInstance)
+    })
+
+    api.on.getElementComponent(payload => {
+      payload.componentInstance = getComponentInstanceFromElement(payload.element)
     })
 
     // @TODO

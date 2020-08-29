@@ -60,8 +60,8 @@
     "rimraf": "^3.0.2",
     "semver": "^5.5.1",
     "start-server-and-test": "^1.7.1",
-    "tailwindcss": "^1.4.6",
-    "tailwindcss-dark-mode": "^1.1.4",
+    "tailwindcss": "^1.7.5",
+    "tailwindcss-dark-mode": "^1.1.6",
     "vue-loader": "^15.9.0"
   },
   "resolutions": {

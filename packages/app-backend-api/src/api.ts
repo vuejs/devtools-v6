@@ -54,6 +54,14 @@ export class DevtoolsApi {
     return payload.componentTreeData
   }
 
+  async walkComponentParents (instance: any) {
+    const payload = await this.callHook(Hooks.WALK_COMPONENT_PARENTS, {
+      componentInstance: instance,
+      parentInstances: []
+    })
+    return payload.parentInstances
+  }
+
   async inspectComponent (instance: any) {
     const payload = await this.callHook(Hooks.INSPECT_COMPONENT, {
       componentInstance: instance,
@@ -76,5 +84,13 @@ export class DevtoolsApi {
       name: null
     })
     return payload.name
+  }
+
+  async getElementComponent (element: any) {
+    const payload = await this.callHook(Hooks.GET_ELEMENT_COMPONENT, {
+      element,
+      componentInstance: null
+    })
+    return payload.componentInstance
   }
 }

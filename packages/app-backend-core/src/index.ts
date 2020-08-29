@@ -12,7 +12,6 @@ import {
   HookEvents,
   BridgeEvents,
   BuiltinTabs,
-  stringify,
   initSharedData,
   BridgeSubscriptions
 } from '@vue-devtools/shared-utils'
@@ -24,8 +23,10 @@ import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
 import { hook } from './global-hook'
 import { getAppRecord } from './util/app'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
-import { hightlight, unHighlight } from './highlighter'
+import { highlight, unHighlight } from './highlighter'
 import { setupTimeline } from './timeline'
+import ComponentPicker from './component-pick'
+import { sendComponentTreeData, sendSelectedComponentData, sendEmptyComponentData } from './component'
 
 const availableBackends = [
   backendVue1,
@@ -116,39 +117,41 @@ function connect () {
     if (instanceId === '_root') {
       instanceId = `${ctx.currentAppRecord.id}:root`
     }
-    sendComponentTreeData(instanceId, filter)
+    sendComponentTreeData(instanceId, filter, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
     if (instanceId === '_root') {
       instanceId = `${ctx.currentAppRecord.id}:root`
     }
-    sendSelectedComponentData(instanceId)
+    sendSelectedComponentData(instanceId, ctx)
   })
 
   hook.on(HookEvents.COMPONENT_UPDATED, (app, uid) => {
     const id = getComponentId(app, uid)
     if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-      sendSelectedComponentData(id)
+      sendSelectedComponentData(id, ctx)
     }
   })
 
   hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid) => {
     const parentId = getComponentId(app, parentUid)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-      sendComponentTreeData(parentId)
+      // @TODO take into account current filter
+      sendComponentTreeData(parentId, null, ctx)
     }
   })
 
   hook.on(HookEvents.COMPONENT_REMOVED, (app, uid, parentUid) => {
     const parentId = getComponentId(app, parentUid)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-      sendComponentTreeData(parentId)
+      // @TODO take into account current filter
+      sendComponentTreeData(parentId, null, ctx)
     }
 
     const id = getComponentId(app, uid)
     if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-      sendEmptyComponentData(id)
+      sendEmptyComponentData(id, ctx)
     }
     ctx.currentAppRecord.instanceMap.delete(id)
   })
@@ -156,11 +159,23 @@ function connect () {
   // Highlighter
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {
-    hightlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
     unHighlight()
+  })
+
+  // Component picker
+
+  const componentPicker = new ComponentPicker(ctx)
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_PICK, () => {
+    componentPicker.startSelecting()
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_PICK_CANCELED, () => {
+    componentPicker.stopSelecting()
   })
 
   // Timeline
@@ -231,50 +246,6 @@ function mapAppRecord (record: AppRecord): SimpleAppRecord {
 
 async function flushAll () {
   // @TODO notify frontend
-}
-
-async function sendComponentTreeData (instanceId: string, filter = '') {
-  if (!instanceId) return
-  if (filter) filter = filter.toLowerCase()
-  const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
-  if (!instance) {
-    console.warn(`Instance uid=${instanceId} not found`)
-    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
-      instanceId,
-      treeData: null
-    })
-  } else {
-    const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
-    const payload = {
-      instanceId,
-      treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth, filter))
-    }
-    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
-  }
-}
-
-async function sendSelectedComponentData (instanceId: string) {
-  if (!instanceId) return
-  const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
-  if (!instance) {
-    console.warn(`Instance uid=${instanceId} not found`)
-    sendEmptyComponentData(instanceId)
-  } else {
-    ctx.currentInspectedComponentId = instanceId
-    ctx.currentAppRecord.lastInspectedComponentId = instanceId
-    const payload = {
-      instanceId,
-      data: stringify(await ctx.api.inspectComponent(instance))
-    }
-    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
-  }
-}
-
-function sendEmptyComponentData (instanceId: string) {
-  ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
-    instanceId,
-    data: null
-  })
 }
 
 function getComponentId (app: App, uid: number) {

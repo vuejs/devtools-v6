@@ -22,6 +22,18 @@ export class ComponentWalker {
     return this.findQualifiedChildren(instance, 0)
   }
 
+  getComponentParents (instance: any) {
+    this.captureIds = new Map()
+    const parents = []
+    this.captureId(instance)
+    let parent = instance
+    while ((parent = parent.parent)) {
+      this.captureId(parent)
+      parents.push(parent)
+    }
+    return parents
+  }
+
   /**
    * Find qualified children from a single instance.
    * If the instance itself is qualified, just return itself.
@@ -78,17 +90,12 @@ export class ComponentWalker {
     return []
   }
 
-  /**
-   * Capture the meta information of an instance. (recursive)
-   *
-   * @param {Vue} instance
-   * @return {Object}
-   */
-  private capture (instance: any, list: any[], depth: number): ComponentTreeNode {
-    // instance._uid is not reliable in devtools as there
-    // may be 2 roots with same _uid which causes unexpected
+  private captureId (instance) {
+    // instance.uid is not reliable in devtools as there
+    // may be 2 roots with same uid which causes unexpected
     // behaviour
-    const id = instance.__VUE_DEVTOOLS_UID__ = getUniqueComponentId(instance, this.ctx)
+    const id = instance.__VUE_DEVTOOLS_UID__ != null ? instance.__VUE_DEVTOOLS_UID__ : getUniqueComponentId(instance, this.ctx)
+    instance.__VUE_DEVTOOLS_UID__ = id
 
     // Dedupe
     if (this.captureIds.has(id)) {
@@ -98,6 +105,18 @@ export class ComponentWalker {
     }
 
     this.mark(instance)
+
+    return id
+  }
+
+  /**
+   * Capture the meta information of an instance. (recursive)
+   *
+   * @param {Vue} instance
+   * @return {Object}
+   */
+  private capture (instance: any, list: any[], depth: number): ComponentTreeNode {
+    const id = this.captureId(instance)
 
     const name = getInstanceName(instance)
 

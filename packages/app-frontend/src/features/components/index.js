@@ -21,7 +21,7 @@ let lastSelectedComponentPath = []
 const expandedMap = ref({})
 let resetComponentsQueued = false
 
-function useComponentRequests () {
+export function useComponentRequests () {
   const { bridge } = useBridge()
   const router = useRouter()
 
@@ -139,7 +139,7 @@ export function useComponent (instance) {
 
   function toggleExpand (load = true) {
     if (!instance.value.hasChildren) return
-    Vue.set(expandedMap.value, instance.value.id, !isExpanded.value)
+    setComponentOpen(instance.value.id, !isExpanded.value)
     if (load) {
       requestComponentTree(instance.value.id)
     }
@@ -181,6 +181,10 @@ export function useComponent (instance) {
     select,
     subscribeToComponentTree
   }
+}
+
+export function setComponentOpen (id, isOpen) {
+  Vue.set(expandedMap.value, id, isOpen)
 }
 
 export function useSelectedComponent () {
