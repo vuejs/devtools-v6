@@ -1,5 +1,5 @@
 <script>
-import { computed, toRefs, onMounted, ref } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref, watchEffect } from '@vue/composition-api'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { useComponent } from '.'
@@ -52,16 +52,19 @@ export default {
       if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {
         toggle(false)
       }
-
-      // Auto scroll to node in tree view
-      if (selected.value && toggleEl.value) {
-        toggleEl.value.scrollIntoView()
-      }
     })
 
     // Highlight
 
     const { highlight, unhighlight } = useComponentHighlight(computed(() => props.instance.id))
+
+    // Auto scroll
+
+    watchEffect(() => {
+      if (selected.value && toggleEl.value) {
+        toggleEl.value.scrollIntoView()
+      }
+    })
 
     return {
       toggleEl,
