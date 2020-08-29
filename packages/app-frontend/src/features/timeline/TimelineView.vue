@@ -284,7 +284,7 @@ export default {
         const centerRatio = event.offsetX / viewWidth
         const center = size * centerRatio + startTime.value
 
-        let newSize = size + event.deltaY * 4
+        let newSize = size + event.deltaY / viewWidth * size * 2
         if (newSize < 100) {
           newSize = 100
         }
@@ -303,6 +303,7 @@ export default {
         let deltaX = event.deltaX
 
         if (deltaX === 0 && event.shiftKey && event.deltaY !== 0) {
+          // Horitonzal scroll with vertical mouse wheel and shift key
           deltaX = event.deltaY
         }
 
