@@ -1,5 +1,8 @@
 import { onMounted, onUnmounted } from '@vue/composition-api'
 
+/**
+ * @param {(event: KeyboardEvent) => void | Promise<void>} cb
+ */
 export function onKeyUp (cb) {
   function handler (event) {
     if (

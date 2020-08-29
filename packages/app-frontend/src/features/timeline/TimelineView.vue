@@ -4,6 +4,7 @@ import { ref, onMounted, onUnmounted, watch } from '@vue/composition-api'
 import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
+import { onKeyUp } from '@front/util/keyboard'
 
 export default {
   setup () {
@@ -98,11 +99,10 @@ export default {
     function addEvent (event, container) {
       // Graphics
       const g = new Graphics()
-      g.beginFill(event.layer.color)
-      g.drawCircle(0, 0, 4)
       updateEventPosition(event, g)
       g.y = 16
       event.g = g
+      drawUnselectedEvent(event)
       container.addChild(g)
 
       events.push(event)
@@ -166,8 +166,6 @@ export default {
       app.stage.interactive = true
       app.stage.hitArea = new Rectangle(0, 0, 100000, 100000)
       app.stage.addListener('click', event => {
-        clearEventSelection()
-
         let choice
         let distance = Number.POSITIVE_INFINITY
         for (const e of events) {
@@ -180,26 +178,63 @@ export default {
           }
         }
         selectedEvent.value = choice
-
-        // Update graphics
-        if (choice) {
-          const g = choice.g
-          g.clear()
-          g.beginFill(choice.layer.color)
-          g.drawCircle(0, 0, 7)
-        }
       })
     })
 
-    function clearEventSelection () {
-      if (selectedEvent.value) {
-        const g = selectedEvent.value.g
+    function drawSelectedEvent (event) {
+      if (event) {
+        const g = event.g
         g.clear()
-        g.beginFill(selectedEvent.value.layer.color)
+        g.beginFill(event.layer.color)
+        g.drawCircle(0, 0, 7)
+      }
+    }
+
+    function drawUnselectedEvent (event) {
+      if (event) {
+        const g = event.g
+        g.clear()
+        g.beginFill(event.layer.color)
         g.drawCircle(0, 0, 4)
       }
+    }
+
+    function clearEventSelection () {
       selectedEvent.value = null
     }
+
+    watch(selectedEvent, (event, oldEvent) => {
+      drawUnselectedEvent(oldEvent)
+      drawSelectedEvent(event)
+    })
+
+    // Event selection with keyboard
+
+    onKeyUp(event => {
+      if (event.key === 'ArrowLeft') {
+        let index
+        if (selectedEvent.value) {
+          index = events.indexOf(selectedEvent.value) - 1
+          if (index < 0) {
+            index = events.length - 1
+          }
+        } else {
+          index = events.length - 1
+        }
+        selectedEvent.value = events[index]
+      } else if (event.key === 'ArrowRight') {
+        let index
+        if (selectedEvent.value) {
+          index = events.indexOf(selectedEvent.value) + 1
+          if (index >= events.length) {
+            index = 0
+          }
+        } else {
+          index = 0
+        }
+        selectedEvent.value = events[index]
+      }
+    })
 
     // Camera
 
