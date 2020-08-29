@@ -5,6 +5,7 @@ import { useComponentPick } from './pick'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
+import { onKeyUp } from '@front/util/keyboard'
 
 export default {
   components: {
@@ -36,6 +37,15 @@ export default {
       startPickingComponent,
       stopPickingComponent
     } = useComponentPick()
+
+    onKeyUp(event => {
+      console.log(event.key)
+      if (event.key === 's' && !pickingComponent.value) {
+        startPickingComponent()
+      } else if (event.key === 'Escape' && pickingComponent.value) {
+        stopPickingComponent()
+      }
+    })
 
     return {
       rootInstances,
