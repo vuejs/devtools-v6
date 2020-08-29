@@ -300,9 +300,15 @@ export default {
         startTime.value = start
         endTime.value = end
       } else {
-        if (event.deltaX !== 0) {
+        let deltaX = event.deltaX
+
+        if (deltaX === 0 && event.shiftKey && event.deltaY !== 0) {
+          deltaX = event.deltaY
+        }
+
+        if (deltaX !== 0) {
           // Horizontal scroll
-          const delta = event.deltaX / viewWidth * size
+          const delta = deltaX / viewWidth * size
           let start = startTime.value += delta
           if (start < minTime.value) {
             start = minTime.value
