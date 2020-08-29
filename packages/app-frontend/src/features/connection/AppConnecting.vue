@@ -12,18 +12,6 @@
   </div>
 </template>
 
-<script>
-import { isChrome } from '@utils/env'
-
-export default {
-  data () {
-    return {
-      theme: isChrome ? chrome.devtools.panels.themeName : 'light'
-    }
-  }
-}
-</script>
-
 <style lang="stylus" scoped>
 .app-connecting
   width 100%
@@ -33,7 +21,7 @@ export default {
   justify-content center
   background white
 
-  &.theme-dark
+  .vue-ui-dark-mode &
     background $vue-ui-color-almost-black
 
 .animation-inner

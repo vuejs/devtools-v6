@@ -5,9 +5,6 @@ import { initStorage } from '@utils/storage'
 import { createApp, connectApp } from './app'
 import { setAppConnected } from './features/connection'
 
-const app = createApp()
-app.$mount('#app')
-
 /**
  * Create the main devtools app. Expects to be called with a shell interface
  * which implements a connect method.
@@ -18,6 +15,8 @@ app.$mount('#app')
  */
 export async function initDevTools (shell) {
   await initStorage()
+  const app = createApp()
+  app.$mount('#app')
   connectApp(app, shell)
   shell.onReload(() => {
     setAppConnected(false)

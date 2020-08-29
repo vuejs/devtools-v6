@@ -4,11 +4,14 @@ import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
 import ErrorOverlay from './error/ErrorOverlay.vue'
 import { useAppConnection } from './connection'
-import { isChrome } from '@vue-devtools/shared-utils'
+import { isChrome, setStorage, getStorage } from '@vue-devtools/shared-utils'
 import SharedData, { watchSharedData, onSharedDataInit } from '@utils/shared-data'
 import { darkMode } from '@front/util/theme'
+import { onMounted } from '@vue/composition-api'
 
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
+
+const STORAGE_PREVIOUS_SESSION_THEME = 'previous-session-theme'
 
 export default {
   name: 'App',
@@ -23,8 +26,7 @@ export default {
   setup () {
     const { isConnected, isInitializing } = useAppConnection()
 
-    function updateTheme () {
-      const theme = SharedData.theme
+    function updateTheme (theme) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
         document.body.classList.add('vue-ui-dark-mode')
         darkMode.value = true
@@ -37,14 +39,23 @@ export default {
       } else {
         document.body.classList.remove('vue-ui-high-contrast')
       }
+      setStorage(STORAGE_PREVIOUS_SESSION_THEME, theme)
     }
 
     onSharedDataInit(() => {
-      updateTheme()
+      updateTheme(SharedData.theme)
     })
 
-    watchSharedData('theme', () => {
-      updateTheme()
+    watchSharedData('theme', (value) => {
+      updateTheme(value)
+    })
+
+    onMounted(() => {
+      // Apply last session theme to prevent flashes of different theme
+      const previousTheme = getStorage(STORAGE_PREVIOUS_SESSION_THEME)
+      if (previousTheme) {
+        updateTheme(previousTheme)
+      }
     })
 
     return {
