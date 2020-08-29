@@ -115,7 +115,11 @@ export default {
       updateEventPosition(event, g)
       g.y = 16
       event.g = g
-      drawUnselectedEvent(event)
+      if (selectedEvent.value === event) {
+        drawSelectedEvent(event)
+      } else {
+        drawUnselectedEvent(event)
+      }
       container.addChild(g)
 
       events.push(event)
