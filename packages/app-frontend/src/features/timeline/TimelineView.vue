@@ -12,7 +12,7 @@ export default {
     const wrapper = ref(null)
 
     const { currentAppId } = useApps()
-
+    const { startTime, endTime, minTime, maxTime } = useTime()
     const { darkMode } = useDarkMode()
 
     // Reset
@@ -101,7 +101,6 @@ export default {
 
     // Events
 
-    const { startTime, endTime, minTime } = useTime()
     const { selectedEvent } = useSelectedEvent()
 
     let events = []
@@ -267,6 +266,37 @@ export default {
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
 
+    // Zoom
+
+    /**
+     * @param {MouseWheelEvent} event
+     */
+    function onMouseWheel (event) {
+      if (event.ctrlKey) {
+        event.preventDefault()
+
+        const size = endTime.value - startTime.value
+        const centerRatio = event.offsetX / wrapper.value.offsetWidth
+        const center = size * centerRatio + startTime.value
+
+        let newSize = size + event.deltaY * 4
+        if (newSize < 100) {
+          newSize = 100
+        }
+
+        let start = center - newSize * centerRatio
+        let end = center + newSize * (1 - centerRatio)
+        if (start < minTime.value) {
+          start = minTime.value
+        }
+        if (end > maxTime.value) {
+          end = maxTime.value
+        }
+        startTime.value = start
+        endTime.value = end
+      }
+    }
+
     // Resize
 
     function onResize () {
@@ -276,6 +306,7 @@ export default {
 
     return {
       wrapper,
+      onMouseWheel,
       onResize
     }
   }
@@ -286,6 +317,7 @@ export default {
   <div
     ref="wrapper"
     class="relative overflow-hidden"
+    @mousewheel="onMouseWheel"
   >
     <resize-observer @notify="onResize" />
   </div>
