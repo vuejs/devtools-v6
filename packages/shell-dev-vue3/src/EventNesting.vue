@@ -2,6 +2,8 @@
 export default {
   name: 'EventNesting',
 
+  inheritAttrs: false,
+
   props: {
     level: {
       type: Number,
