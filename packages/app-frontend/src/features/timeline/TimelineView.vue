@@ -270,17 +270,18 @@ export default {
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
 
-    // Zoom
-
     /**
      * @param {MouseWheelEvent} event
      */
     function onMouseWheel (event) {
-      if (event.ctrlKey) {
+      const size = endTime.value - startTime.value
+      const viewWidth = wrapper.value.offsetWidth
+
+      if (event.ctrlKey || event.metaKey) {
+        // Zoom
         event.preventDefault()
 
-        const size = endTime.value - startTime.value
-        const centerRatio = event.offsetX / wrapper.value.offsetWidth
+        const centerRatio = event.offsetX / viewWidth
         const center = size * centerRatio + startTime.value
 
         let newSize = size + event.deltaY * 4
@@ -298,6 +299,19 @@ export default {
         }
         startTime.value = start
         endTime.value = end
+      } else {
+        if (event.deltaX !== 0) {
+          // Horizontal scroll
+          const delta = event.deltaX / viewWidth * size
+          let start = startTime.value += delta
+          if (start < minTime.value) {
+            start = minTime.value
+          } else if (start + size >= maxTime.value) {
+            start = maxTime.value - size
+          }
+          startTime.value = start
+          endTime.value = start + size
+        }
       }
     }
 
