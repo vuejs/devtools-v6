@@ -229,6 +229,10 @@ export default {
 .selected {
   @apply bg-green-100 text-green-700 !important;
 
+  .vue-ui-dark-mode & {
+    @apply bg-gray-700 text-gray-100 !important;
+  }
+
   >>> svg {
     fill: currentColor !important;
   }

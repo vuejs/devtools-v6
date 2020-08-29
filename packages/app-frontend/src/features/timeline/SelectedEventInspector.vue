@@ -47,7 +47,7 @@ export default {
       <StateInspector
         v-if="defer(index + 1)"
         :key="index"
-        class="border-gray-200 dark:border-gray-800 border-t"
+        class="border-gray-200 dark:border-gray-900 border-t"
         :state="{
           [`Event - ${event.time}`]: event.data
         }"

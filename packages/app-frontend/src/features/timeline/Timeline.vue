@@ -34,7 +34,7 @@ export default {
     >
       <template #left>
         <div class="flex flex-col h-full overflow-auto">
-          <div class="h-4 border-b border-gray-200 dark:border-gray-800" />
+          <div class="h-4 border-b border-gray-200 dark:border-gray-900" />
 
           <LayerItem
             v-for="layer of layers"

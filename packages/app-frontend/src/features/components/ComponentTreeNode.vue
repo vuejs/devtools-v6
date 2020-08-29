@@ -140,7 +140,7 @@ export default {
       <span class="flex items-center space-x-2 ml-2">
         <span
           v-if="instance.isFragment"
-          class="info fragment bg-blue-300"
+          class="info fragment bg-blue-300 dark:bg-blue-800"
         >
           fragment
         </span>

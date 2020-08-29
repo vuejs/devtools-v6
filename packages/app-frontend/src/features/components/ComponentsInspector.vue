@@ -67,7 +67,7 @@ export default {
             v-model="treeFilter"
             icon-left="search"
             placeholder="Find components..."
-            class="search border-b border-gray-200 dark:border-gray-800"
+            class="search flat border-b border-gray-200 dark:border-gray-900"
           />
 
           <div class="flex-1 p-2 overflow-auto">
@@ -124,9 +124,9 @@ export default {
       <transition name="vue-ui-fade">
         <div
           v-if="pickingComponent"
-          class="absolute inset-0 bg-white dark:bg-black bg-opacity-75 z-100 flex items-center justify-center"
+          class="absolute inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75 z-100 flex items-center justify-center"
         >
-          <div class="flex flex-col items-center justify-center space-y-4 px-8 py-6 rounded-lg shadow-lg bg-white dark:bg-black">
+          <div class="flex flex-col items-center justify-center space-y-4 px-8 py-6 rounded-lg shadow-lg bg-white dark:bg-gray-900">
             <VueIcon
               icon="gps_fixed"
               class="w-8 h-8 text-green-500 animate-pulse"

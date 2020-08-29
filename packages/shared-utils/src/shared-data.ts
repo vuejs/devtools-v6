@@ -54,6 +54,8 @@ export interface SharedDataParams {
   Vue?: any
 }
 
+const initCbs = []
+
 export function initSharedData (params: SharedDataParams) {
   return new Promise((resolve) => {
     // Mandatory params
@@ -125,7 +127,17 @@ export function initSharedData (params: SharedDataParams) {
     bridge.on('shared-data:set', ({ key, value }) => {
       setValue(key, value)
     })
+
+    initCbs.forEach(cb => cb())
   })
+}
+
+export function onSharedDataInit (cb) {
+  initCbs.push(cb)
+  return () => {
+    const index = initCbs.indexOf(cb)
+    if (index !== -1) initCbs.splice(index, 1)
+  }
 }
 
 export function destroySharedData () {
@@ -157,9 +169,13 @@ function sendValue (key: string, value: any) {
   })
 }
 
-export function watch (prop, handler) {
+export function watchSharedData (prop, handler) {
   const list = watchers[prop] || (watchers[prop] = [])
   list.push(handler)
+  return () => {
+    const index = list.indexOf(handler)
+    if (index !== -1) list.splice(index, 1)
+  }
 }
 
 const proxy: Partial<typeof internalSharedData> = {}

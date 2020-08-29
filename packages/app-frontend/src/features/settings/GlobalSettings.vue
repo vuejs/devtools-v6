@@ -19,6 +19,30 @@
         />
       </VueGroup>
     </VueFormField>
+
+    <VueFormField title="Theme">
+      <VueGroup
+        v-model="$shared.theme"
+        class="extend"
+      >
+        <VueGroupButton
+          value="auto"
+          label="Auto"
+        />
+        <VueGroupButton
+          value="light"
+          label="Light"
+        />
+        <VueGroupButton
+          value="dark"
+          label="Dark"
+        />
+        <VueGroupButton
+          value="high-contrast"
+          label="High contrast"
+        />
+      </VueGroup>
+    </VueFormField>
   </div>
 </template>
 

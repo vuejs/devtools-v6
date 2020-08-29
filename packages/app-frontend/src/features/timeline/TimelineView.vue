@@ -1,16 +1,19 @@
 <script>
 import { Application, Container, Graphics, Rectangle } from 'pixi.js'
-import { ref, onMounted, onUnmounted, watch } from '@vue/composition-api'
+import { ref, onMounted, onUnmounted, watch, watchEffect } from '@vue/composition-api'
 import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
 import { onKeyUp } from '@front/util/keyboard'
+import { useDarkMode } from '@front/util/theme'
 
 export default {
   setup () {
     const wrapper = ref(null)
 
     const { currentAppId } = useApps()
+
+    const { darkMode } = useDarkMode()
 
     // Reset
 
@@ -38,15 +41,27 @@ export default {
     onMounted(() => {
       app = new Application({
         resizeTo: wrapper.value,
-        backgroundColor: 0xffffff,
         antialias: true,
         autoDensity: true
       })
+      updateBackground()
       wrapper.value.appendChild(app.view)
     })
 
     onUnmounted(() => {
       app.destroy()
+    })
+
+    function updateBackground () {
+      if (darkMode.value) {
+        app && (app.renderer.backgroundColor = 0x0A1015)
+      } else {
+        app && (app.renderer.backgroundColor = 0xffffff)
+      }
+    }
+
+    watchEffect(() => {
+      updateBackground()
     })
 
     // Layers

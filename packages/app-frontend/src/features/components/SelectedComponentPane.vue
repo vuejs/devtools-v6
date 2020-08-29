@@ -20,7 +20,7 @@ export default {
     v-if="data"
     class="h-full flex flex-col"
   >
-    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
+    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-900 flex items-center flex-none">
       <div class="flex items-baseline">
         <span class="text-gray-500">&lt;</span>
         <span class="text-green-500">

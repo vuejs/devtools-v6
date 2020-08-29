@@ -85,7 +85,7 @@ export default {
 </script>
 
 <template>
-  <div class="border-b border-gray-200 flex items-center space-x-2 px-2 h-10">
+  <div class="border-b border-gray-200 dark:border-gray-900 flex items-center space-x-2 px-2 h-10">
     <AppMainMenu />
 
     <AppHistoryNav />

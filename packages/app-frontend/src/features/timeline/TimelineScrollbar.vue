@@ -145,11 +145,11 @@ export default {
 <template>
   <div
     ref="el"
-    class="h-4 bg-gray-200 dark:bg-gray-800 relative border-b border-gray-200 dark:border-gray-800 select-none"
+    class="h-4 bg-gray-200 dark:bg-black relative border-b border-gray-200 dark:border-gray-900 select-none"
   >
     <!-- Main Bar -->
     <div
-      class="absolute h-full top-0 bg-white hover:bg-green-200 dark-hover:bg-green-800 cursor-move rounded"
+      class="absolute h-full top-0 bg-white dark:bg-gray-800 hover:bg-green-200 dark-hover:bg-green-800 cursor-move rounded"
       :class="{
         'bg-green-200 dark:bg-green-800': moving
       }"
