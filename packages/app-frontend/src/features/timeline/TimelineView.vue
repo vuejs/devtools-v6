@@ -21,7 +21,6 @@ export default {
     }
 
     function reset () {
-      clearEventSelection()
       for (const cb of resetCbs) {
         cb()
       }
@@ -126,6 +125,7 @@ export default {
     onReset(() => {
       for (const e of events) {
         e.g.destroy()
+        e.g = null
       }
       events = []
       initEvents()
@@ -182,7 +182,7 @@ export default {
     })
 
     function drawSelectedEvent (event) {
-      if (event) {
+      if (event && event.g) {
         const g = event.g
         g.clear()
         g.beginFill(event.layer.color)
@@ -191,16 +191,12 @@ export default {
     }
 
     function drawUnselectedEvent (event) {
-      if (event) {
+      if (event && event.g) {
         const g = event.g
         g.clear()
         g.beginFill(event.layer.color)
         g.drawCircle(0, 0, 4)
       }
-    }
-
-    function clearEventSelection () {
-      selectedEvent.value = null
     }
 
     watch(selectedEvent, (event, oldEvent) => {

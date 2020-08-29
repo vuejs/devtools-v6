@@ -4,6 +4,8 @@ import { formatTime } from '@front/util/format'
 import { useApps, getApps } from '../apps'
 import cloneDeep from 'lodash/cloneDeep'
 
+const STACK_DURATION = 10
+
 const startTime = ref(0)
 const endTime = ref(0)
 const minTime = ref(0)
@@ -45,6 +47,8 @@ function builtinLayersFactory () {
 const resetCbs = []
 
 export function resetTimeline () {
+  selectedEvent.value = null
+
   const now = Date.now()
   startTime.value = now - 1000
   endTime.value = now
@@ -106,9 +110,9 @@ function addEvent (appId, event, layer) {
 }
 
 function stackEvent (event) {
-  const roundedTime = Math.round(event.time / 10)
+  const roundedTime = Math.round(event.time / STACK_DURATION)
   // Try neighbors too
-  const times = [roundedTime, roundedTime - 10, roundedTime + 10]
+  const times = [roundedTime, roundedTime - STACK_DURATION, roundedTime + STACK_DURATION]
   let wasStacked = false
   for (const k in times) {
     wasStacked = !!_stackEvent(event, times[k])
