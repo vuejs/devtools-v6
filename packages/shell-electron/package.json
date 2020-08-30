@@ -4,7 +4,8 @@
   "description": "StandAlone vue-devtools",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/shell-electron"
   },
   "bin": {
     "vue-devtools": "./bin.js"
