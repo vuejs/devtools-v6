@@ -39,10 +39,16 @@ This is only necessary when you want to build the extension yourself from source
 
 ### Development
 
+#### Vue 2
+
 1. Clone this repo
 2. run `yarn install`
 3. then run `yarn run dev`
 4. A plain shell with a test app will be available at `localhost:8100`.
+
+#### Vue 3
+
+To enable this feature, follow [this guide](./docs/devtools-vue3.md).
 
 ### Testing as Firefox addon
 
