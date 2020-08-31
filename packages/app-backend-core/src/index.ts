@@ -23,8 +23,9 @@ import {
   getComponentId
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, mapAppRecord, getAppRecord } from './app'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
+import { registerApp, selectApp, mapAppRecord, getAppRecordId } from './app'
+import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState } from './inspector'
 
 let ctx: BackendContext
 
@@ -166,6 +167,10 @@ function connect () {
 
   setupTimeline(ctx)
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, () => {
+    sendTimelineLayers(ctx)
+  })
+
   hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, app: App) => {
     ctx.timelineLayers.push({
       ...options,
@@ -174,12 +179,8 @@ function connect () {
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, () => {
-    sendTimelineLayers(ctx)
-  })
-
   hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, app: App) => {
-    const appId = app && getAppRecord(app, ctx)?.id
+    const appId = app && getAppRecordId(app)
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
       appId: options.all || !app || appId == null ? 'all' : appId,
       layerId: options.layerId,
@@ -190,19 +191,84 @@ function connect () {
     } as TimelineEventPayload)
   })
 
+  // Custom inspectors
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_LIST, () => {
+    ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_LIST, {
+      inspectors: ctx.customInspectors.map(i => ({
+        id: i.id,
+        appId: getAppRecordId(i.app),
+        label: i.label,
+        icon: i.icon,
+        treeFilterPlaceholder: i.treeFilterPlaceholder,
+        stateFilterPlaceholder: i.stateFilterPlaceholder
+      }))
+    })
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_TREE, ({ inspectorId, appId, treeFilter }) => {
+    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+    if (inspector) {
+      inspector.treeFilter = treeFilter
+      sendInspectorTree(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, ({ inspectorId, appId, nodeId }) => {
+    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+    if (inspector) {
+      inspector.selectedNodeId = nodeId
+      sendInspectorState(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, app: App) => {
+    ctx.customInspectors.push({
+      ...options,
+      app,
+      treeFilter: '',
+      selectedNodeId: null
+    })
+    ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, (inspectorId: string, app: App) => {
+    const inspector = getInspector(inspectorId, app, ctx)
+    if (inspector) {
+      sendInspectorTree(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, (inspectorId: string, app: App) => {
+    const inspector = getInspector(inspectorId, app, ctx)
+    if (inspector) {
+      sendInspectorState(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
   // Plugins
 
   addQueuedPlugins(ctx)
-
-  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
-    addPlugin(pluginDescriptor, setupFn, ctx)
-  })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, () => {
     sendPluginList(ctx)
   })
 
+  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
+    addPlugin(pluginDescriptor, setupFn, ctx)
+  })
+
   // @TODO
+
+  console.log('%cconnect done', 'color: green')
 }
 
 async function flushAll () {

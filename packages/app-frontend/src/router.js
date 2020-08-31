@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ComponentsInspector from './features/components/ComponentsInspector.vue'
+import CustomInspector from './features/inspector/custom/CustomInspector.vue'
 import Timeline from './features/timeline/Timeline.vue'
 import GlobalSettings from './features/settings/GlobalSettings.vue'
 import { BuiltinTabs } from '@vue-devtools/shared-utils'
@@ -33,6 +34,14 @@ const routes = [
             component: ComponentsInspector,
             meta: {
               tab: BuiltinTabs.COMPONENTS
+            }
+          },
+          {
+            path: 'custom/:inspectorId',
+            name: 'custom-inspector',
+            component: CustomInspector,
+            meta: {
+              tab: route => `custom-inspector:${route.params.inspectorId}`
             }
           }
         ]

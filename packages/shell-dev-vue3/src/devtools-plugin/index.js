@@ -40,13 +40,75 @@ export default {
 
       setInterval(() => {
         time += 5
+        // Update component
         api.notifyComponentUpdate()
+        // Update custom inspector
+        api.sendInspectorTree('test-inspector')
+        api.sendInspectorState('test-inspector')
       }, 5000)
 
       api.addTimelineLayer({
         id: 'test-layer',
         label: 'Test layer',
         color: 0x92A2BF
+      })
+
+      api.addInspector({
+        id: 'test-inspector',
+        label: 'Test inspector',
+        icon: 'tab_unselected',
+        treeFilterPlaceholder: 'Search for test...'
+      })
+
+      api.on.getInspectorTree(payload => {
+        if (payload.app === app && payload.inspectorId === 'test-inspector') {
+          payload.rootNodes = [
+            {
+              id: 'root',
+              label: `Root (${time})`,
+              children: [
+                {
+                  id: 'child',
+                  label: `Child ${payload.filter}`
+                }
+              ]
+            }
+          ]
+        }
+      })
+
+      api.on.getInspectorState(payload => {
+        if (payload.app === app && payload.inspectorId === 'test-inspector') {
+          if (payload.nodeId === 'root') {
+            payload.state = {
+              'root info': [
+                {
+                  key: 'foo',
+                  value: 'bar'
+                },
+                {
+                  key: 'time',
+                  value: time
+                }
+              ]
+            }
+          } else {
+            payload.state = {
+              'child info': [
+                {
+                  key: 'answer',
+                  value: {
+                    _custom: {
+                      display: '42!!!',
+                      value: 42,
+                      tooltip: 'The answer'
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
       })
     })
 

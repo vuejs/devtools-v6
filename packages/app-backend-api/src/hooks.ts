@@ -75,4 +75,12 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
   getElementComponent (handler: Handler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT]>) {
     this.hook(Hooks.GET_ELEMENT_COMPONENT, handler)
   }
+
+  getInspectorTree (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_TREE]>) {
+    this.hook(Hooks.GET_INSPECTOR_TREE, handler)
+  }
+
+  getInspectorState (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_STATE]>) {
+    this.hook(Hooks.GET_INSPECTOR_STATE, handler)
+  }
 }

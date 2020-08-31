@@ -8,6 +8,7 @@ import AppSelect from './AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
 import { useBridge } from '../bridge'
 import { useTabs } from './tabs'
+import { useInspectors } from '../inspector/custom'
 
 export default {
   components: {
@@ -22,47 +23,65 @@ export default {
 
     // Main routes
 
-    const defaultMainRoutes = [
+    const defaultMainRoutes = computed(() => [
       {
         icon: 'explore',
         label: 'Inspector',
         matchRoute: 'inspector',
-        // @TODO remember last inspector route
-        targetRoute: 'inspector-components'
+        targetRoute: lastInspectorRoute.value ? lastInspectorRoute.value.targetRoute : { name: 'inspector-components' }
       },
       {
         icon: 'history',
         label: 'Timeline',
         matchRoute: 'timeline',
-        targetRoute: 'timeline'
+        targetRoute: { name: 'timeline' }
       },
       {
         icon: 'settings',
         label: 'Settings',
         matchRoute: 'global-settings',
-        targetRoute: 'global-settings'
+        targetRoute: { name: 'global-settings' }
       }
-    ]
+    ])
 
     // @TODO support custom routes
-    const allMainRoutes = computed(() => defaultMainRoutes)
+    const allMainRoutes = computed(() => defaultMainRoutes.value)
 
     const currentMainRoute = computed(() => allMainRoutes.value.find(r => route.value.matched.some(m => m.name === r.matchRoute)))
 
     // Inspector routes
 
-    const inspectorRoutes = ref([
+    const { inspectors: customInspectors } = useInspectors()
+
+    const inspectorRoutes = computed(() => [
       {
         icon: 'device_hub',
         label: 'Components',
         matchRoute: 'inspector',
-        targetRoute: 'inspector-components'
+        targetRoute: { name: 'inspector-components' }
       }
-    ])
+    ].concat(customInspectors.value.map(i => ({
+      icon: i.icon || 'tab',
+      label: i.label,
+      matchRoute: 'inspector',
+      targetRoute: { name: 'custom-inspector', params: { inspectorId: i.id } }
+    }))))
 
-    // @TODO custom inspector routes
+    const currentInspectorRoute = computed(() =>
+      inspectorRoutes.value.find(r =>
+        route.value.matched.some(m =>
+          m.name === r.targetRoute.name &&
+          (!r.targetRoute.params || !m.params || m.params.inspectorId === r.targetRoute.params.inspectorId)
+        )
+      )
+    )
 
-    const currentInspectorRoute = computed(() => inspectorRoutes.value.find(r => route.value.matched.some(m => m.name === r.matchRoute)))
+    const lastInspectorRoute = ref(null)
+    watch(currentInspectorRoute, value => {
+      if (value) {
+        lastInspectorRoute.value = value
+      }
+    })
 
     // Current tab
     const { currentTab } = useTabs()
@@ -97,7 +116,7 @@ export default {
     <AppHeaderSelect
       :items="allMainRoutes"
       :selected-item="currentMainRoute"
-      @select="route => $router.push({ name: route.targetRoute })"
+      @select="route => $router.push(route.targetRoute)"
     />
 
     <template v-if="currentInspectorRoute">
@@ -106,7 +125,7 @@ export default {
       <AppHeaderSelect
         :items="inspectorRoutes"
         :selected-item="currentInspectorRoute"
-        @select="route => $router.push({ name: route.targetRoute })"
+        @select="route => $router.push(route.targetRoute)"
       />
     </template>
 

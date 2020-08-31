@@ -6,7 +6,10 @@ import {
   DevtoolsPluginApi,
   ComponentInstance,
   TimelineLayerOptions,
-  TimelineEventOptions
+  TimelineEventOptions,
+  CustomInspectorOptions,
+  CustomInspectorNode,
+  CustomInspectorState
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
@@ -120,6 +123,26 @@ export class DevtoolsApi {
     })
     return payload.componentInstance
   }
+
+  async getInspectorTree (inspectorId: string, app: App, filter: string) {
+    const payload = await this.callHook(Hooks.GET_INSPECTOR_TREE, {
+      inspectorId,
+      app,
+      filter,
+      rootNodes: []
+    })
+    return payload.rootNodes
+  }
+
+  async getInspectorState (inspectorId: string, app: App, nodeId: string) {
+    const payload = await this.callHook(Hooks.GET_INSPECTOR_STATE, {
+      inspectorId,
+      app,
+      nodeId,
+      state: null
+    })
+    return payload.state
+  }
 }
 
 export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
@@ -149,10 +172,22 @@ export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
   }
 
   addTimelineLayer (options: TimelineLayerOptions) {
-    this.ctx.hook.emit(HookEvents.TIMELINE_LAYER_ADDED, options, this.plugin?.descriptor.app)
+    this.ctx.hook.emit(HookEvents.TIMELINE_LAYER_ADDED, options, this.plugin.descriptor.app)
   }
 
   addTimelineEvent (options: TimelineEventOptions) {
-    this.ctx.hook.emit(HookEvents.TIMELINE_EVENT_ADDED, options, this.plugin?.descriptor.app)
+    this.ctx.hook.emit(HookEvents.TIMELINE_EVENT_ADDED, options, this.plugin.descriptor.app)
+  }
+
+  addInspector (options: CustomInspectorOptions) {
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_ADD, options, this.plugin.descriptor.app)
+  }
+
+  sendInspectorTree (inspectorId: string) {
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, inspectorId, this.plugin.descriptor.app)
+  }
+
+  sendInspectorState (inspectorId: string) {
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, inspectorId, this.plugin.descriptor.app)
   }
 }

@@ -83,7 +83,7 @@ export class Bridge extends EventEmitter {
         this.emit(message.event, this._receivingQueue)
         this._receivingQueue = []
       }
-    } else {
+    } else if (message.event) {
       this.emit(message.event, message.payload)
     }
   }

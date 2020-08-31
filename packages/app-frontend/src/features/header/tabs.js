@@ -3,7 +3,13 @@ import { useRoute } from '@front/util/router'
 
 export function useTabs () {
   const route = useRoute()
-  const currentTab = computed(() => route.value.meta.tab || route.value.name)
+  const currentTab = computed(() => {
+    let fromMeta = route.value.meta.tab
+    if (typeof fromMeta === 'function') {
+      fromMeta = fromMeta(route.value)
+    }
+    return fromMeta || route.value.name
+  })
 
   return {
     currentTab

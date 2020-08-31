@@ -1,5 +1,5 @@
 import { Bridge } from '@vue-devtools/shared-utils'
-import { TimelineLayerOptions, App } from '@vue/devtools-api'
+import { TimelineLayerOptions, App, CustomInspectorOptions } from '@vue/devtools-api'
 import { AppRecord } from './app-record'
 import { DevtoolsApi } from './api'
 import { Plugin } from './plugin'
@@ -16,10 +16,17 @@ export interface BackendContext {
   plugins: Plugin[]
   currentPlugin: Plugin
   timelineLayers: TimelineLayer[]
+  customInspectors: CustomInspector[]
 }
 
 export interface TimelineLayer extends TimelineLayerOptions {
   app: App
+}
+
+export interface CustomInspector extends CustomInspectorOptions {
+  app: App
+  treeFilter: string
+  selectedNodeId: string
 }
 
 export interface CreateBackendContextOptions {
@@ -38,7 +45,8 @@ export function createBackendContext (options: CreateBackendContextOptions): Bac
     currentInspectedComponentId: null,
     plugins: [],
     currentPlugin: null,
-    timelineLayers: []
+    timelineLayers: [],
+    customInspectors: []
   }
   ctx.api = new DevtoolsApi(options.bridge, ctx)
   return ctx

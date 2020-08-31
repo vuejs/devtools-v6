@@ -1,6 +1,7 @@
 import { PluginDescriptor, SetupFunction } from '@vue/devtools-api'
 import { Plugin, BackendContext, DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, target } from '@vue-devtools/shared-utils'
+import { getAppRecordId } from './app'
 
 export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction, ctx: BackendContext) {
   const plugin: Plugin = {
@@ -43,6 +44,6 @@ export function serializePlugin (plugin: Plugin) {
   return {
     id: plugin.descriptor.id,
     label: plugin.descriptor.label,
-    appId: plugin.descriptor
+    appId: getAppRecordId(plugin.descriptor.app)
   }
 }

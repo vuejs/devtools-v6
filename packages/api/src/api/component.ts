@@ -23,13 +23,16 @@ export interface InspectedComponentData {
   functional?: boolean
 }
 
-export interface ComponentStateBase {
-  type: string
+export interface StateBase {
   key: string
   value: any
   editable: boolean
   objectType?: 'ref' | 'reactive' | 'computed' | 'other'
   raw?: string
+}
+
+export interface ComponentStateBase extends StateBase {
+  type: string
 }
 
 export interface ComponentPropState extends ComponentStateBase {

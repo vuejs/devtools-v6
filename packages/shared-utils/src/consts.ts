@@ -45,7 +45,14 @@ export enum BridgeEvents {
   TO_FRONT_TIMELINE_LAYER_ADD = 'f:timeline:layer-add',
   TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_LIST = 'f:devtools-plugin:list',
-  TO_FRONT_DEVTOOLS_PLUGIN_ADD = 'f:devtools-plugin:add'
+  TO_FRONT_DEVTOOLS_PLUGIN_ADD = 'f:devtools-plugin:add',
+  TO_BACK_CUSTOM_INSPECTOR_LIST = 'b:custom-inspector:list',
+  TO_FRONT_CUSTOM_INSPECTOR_LIST = 'f:custom-inspector:list',
+  TO_FRONT_CUSTOM_INSPECTOR_ADD = 'f:custom-inspector:add',
+  TO_BACK_CUSTOM_INSPECTOR_TREE = 'b:custom-inspector:tree',
+  TO_FRONT_CUSTOM_INSPECTOR_TREE = 'f:custom-inspector:tree',
+  TO_BACK_CUSTOM_INSPECTOR_STATE = 'b:custom-inspector:state',
+  TO_FRONT_CUSTOM_INSPECTOR_STATE = 'f:custom-inspector:state',
 }
 
 export enum BridgeSubscriptions {
@@ -65,6 +72,9 @@ export enum HookEvents {
   SETUP_DEVTOOLS_PLUGIN = 'devtools-plugin:setup',
   TIMELINE_LAYER_ADDED = 'timeline:layer-added',
   TIMELINE_EVENT_ADDED = 'timeline:event-added',
+  CUSTOM_INSPECTOR_ADD = 'custom-inspector:add',
+  CUSTOM_INSPECTOR_SEND_TREE = 'custom-inspector:send-tree',
+  CUSTOM_INSPECTOR_SEND_STATE = 'custom-inspector:send-state',
   /**
    * @deprecated
    */

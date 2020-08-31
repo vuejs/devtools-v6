@@ -9,6 +9,7 @@ import { setupPlugins } from './plugins'
 import { setupAppsBridgeEvents } from './features/apps'
 import { setupComponentsBridgeEvents } from './features/components'
 import { setupTimelineBridgeEvents } from './features/timeline'
+import { setupCustomInspectorBridgeEvents } from './features/inspector/custom'
 
 setupPlugins()
 
@@ -82,6 +83,7 @@ export function connectApp (app, shell) {
     setupAppsBridgeEvents(bridge)
     setupComponentsBridgeEvents(bridge)
     setupTimelineBridgeEvents(bridge)
+    setupCustomInspectorBridgeEvents(bridge)
 
     // @TODO bridge listeners
 

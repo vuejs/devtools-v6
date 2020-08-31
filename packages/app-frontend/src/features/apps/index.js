@@ -1,6 +1,6 @@
 import { ref, computed, watch } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { useBridge } from '../bridge'
+import { useBridge, getBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
 
 const apps = ref([])
@@ -54,6 +54,10 @@ export function getApps () {
   return apps.value
 }
 
+function fetchApps () {
+  getBridge().send(BridgeEvents.TO_BACK_APP_LIST, {})
+}
+
 export function setupAppsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_APP_ADD, ({ appRecord }) => {
     addApp(appRecord)
@@ -67,5 +71,5 @@ export function setupAppsBridgeEvents (bridge) {
     apps.value = list
   })
 
-  bridge.send(BridgeEvents.TO_BACK_APP_LIST)
+  fetchApps()
 }
