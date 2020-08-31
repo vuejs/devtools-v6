@@ -42,6 +42,13 @@ export interface CustomInspectorNode {
   id: string
   label: string
   children?: CustomInspectorNode[]
+  tags?: CustomInspectorNodeTag[]
+}
+
+export interface CustomInspectorNodeTag {
+  label: string
+  textColor: number
+  backgroundColor: number
 }
 
 export interface CustomInspectorState {

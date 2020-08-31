@@ -69,7 +69,19 @@ export default {
               children: [
                 {
                   id: 'child',
-                  label: `Child ${payload.filter}`
+                  label: `Child ${payload.filter}`,
+                  tags: [
+                    {
+                      label: 'active',
+                      textColor: 0x000000,
+                      backgroundColor: 0xFF984F
+                    },
+                    {
+                      label: 'test',
+                      textColor: 0xffffff,
+                      backgroundColor: 0x000000
+                    }
+                  ]
                 }
               ]
             }

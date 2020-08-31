@@ -85,6 +85,18 @@ export default {
       <span>
         {{ node.label }}
       </span>
+
+      <span
+        v-for="(tag, index) of node.tags"
+        :key="index"
+        :style="{
+          color: `#${tag.textColor.toString(16).padStart(6, '0')}`,
+          backgroundColor: `#${tag.backgroundColor.toString(16).padStart(6, '0')}`,
+        }"
+        class="tag px-1 rounded-sm ml-2"
+      >
+        {{ tag.label }}
+      </span>
     </div>
 
     <div v-if="expanded && node.children">
@@ -97,3 +109,9 @@ export default {
     </div>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.tag {
+  font-size: 0.65rem;
+}
+</style>
