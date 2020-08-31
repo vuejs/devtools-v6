@@ -8,6 +8,7 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
     setupFn,
     error: null
   }
+  ctx.currentPlugin = plugin
   try {
     const api = new DevtoolsPluginApiInstance(plugin, ctx)
     setupFn(api)
@@ -15,6 +16,7 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
     plugin.error = e
     console.error(e)
   }
+  ctx.currentPlugin = null
   ctx.plugins.push(plugin)
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, {
     plugin: serializePlugin(plugin)

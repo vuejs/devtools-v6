@@ -5,7 +5,7 @@ import { Plugin } from './plugin'
 type Handler<TPayload> = HookHandler<TPayload, BackendContext>
 
 export interface HookHandlerData<THandlerPayload> {
-  handler: Handler<THandlerPayload>,
+  handler: Handler<THandlerPayload>
   plugin: Plugin
 }
 
