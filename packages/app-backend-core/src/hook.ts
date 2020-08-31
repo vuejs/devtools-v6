@@ -85,7 +85,7 @@ export function installHook (target) {
           cbs[i].apply(this, args)
         }
       } else {
-        this._buffer.push(args)
+        this._buffer.push([event, ...args])
       }
     }
   }

@@ -4,7 +4,7 @@
   "private": true,
   "main": "src/index.js",
   "dependencies": {
-    "buble": "^0.19.0",
+    "buble": "^0.20.0",
     "buble-loader": "^0.5.1",
     "css-loader": "^1.0.0",
     "friendly-errors-webpack-plugin": "^1.7.0",

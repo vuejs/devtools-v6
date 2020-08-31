@@ -38,7 +38,10 @@ export enum BridgeEvents {
   TO_FRONT_COMPONENT_PICK = 'f:component:pick',
   TO_BACK_COMPONENT_PICK_CANCELED = 'b:component:pick-canceled',
   TO_FRONT_COMPONENT_PICK_CANCELED = 'f:component:pick-canceled',
-  TO_FRONT_TIMELINE_EVENT = 'f:timeline:event'
+  TO_FRONT_TIMELINE_EVENT = 'f:timeline:event',
+  TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',
+  TO_FRONT_DEVTOOLS_PLUGIN_LIST = 'f:devtools-plugin:list',
+  TO_FRONT_DEVTOOLS_PLUGIN_ADD = 'f:devtools-plugin:add'
 }
 
 export enum BridgeSubscriptions {
@@ -55,6 +58,7 @@ export enum HookEvents {
   COMPONENT_ADDED = 'component:added',
   COMPONENT_REMOVED = 'component:removed',
   COMPONENT_EMIT = 'component:emit',
+  SETUP_DEVTOOLS_PLUGIN = 'devtools-plugin:setup',
   /**
    * @deprecated
    */

@@ -5,6 +5,7 @@
     "dev": "webpack-dev-server --inline --hot --no-info"
   },
   "dependencies": {
+    "@vue/devtools-api": "^6.0.0-beta.1",
     "@vue-devtools/shell-host": "^0.0.0",
     "core-js": "^3.6.4",
     "vue": "^3.0.0-rc.9"

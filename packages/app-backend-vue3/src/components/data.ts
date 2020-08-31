@@ -2,7 +2,7 @@ import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName } from './util'
 import { camelize } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
-import { InspectedComponentData } from '@vue-devtools/app-backend-api/lib/component'
+import { InspectedComponentData } from '@vue/devtools-api'
 
 /**
  * Get the detailed information of an inspected instance.

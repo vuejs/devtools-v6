@@ -1,7 +1,7 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
 import { hook } from './global-hook'
-import { getAppRecord } from './util/app'
+import { getAppRecord } from './app'
 
 export interface TimelineEventPayload<TData = any, TMeta = any> {
   appId: number | 'all'

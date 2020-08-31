@@ -1,12 +1,4 @@
-import {
-  AppRecord,
-  SimpleAppRecord,
-  AppRecordOptions,
-  BackendContext,
-  createBackendContext,
-  DevtoolsBackend,
-  App
-} from '@vue-devtools/app-backend-api'
+import { createBackendContext, BackendContext } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
   HookEvents,
@@ -15,34 +7,27 @@ import {
   initSharedData,
   BridgeSubscriptions
 } from '@vue-devtools/shared-utils'
-
-import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
-import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
-import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
-
 import { hook } from './global-hook'
-import { getAppRecord } from './util/app'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
 import { setupTimeline } from './timeline'
 import ComponentPicker from './component-pick'
-import { sendComponentTreeData, sendSelectedComponentData, sendEmptyComponentData } from './component'
-
-const availableBackends = [
-  backendVue1,
-  backendVue2,
-  backendVue3
-]
-
-const enabledBackends: Set<DevtoolsBackend> = new Set()
+import {
+  sendComponentTreeData,
+  sendSelectedComponentData,
+  sendEmptyComponentData,
+  getComponentId
+} from './component'
+import { addQueuedPlugins, addPlugin, sendPluginList } from './plugin'
+import { PluginDescriptor, SetupFunction } from '@vue/devtools-api'
+import { registerApp, selectApp, mapAppRecord } from './app'
 
 let ctx: BackendContext
 
-let recordId = 0
-
 export async function initBackend (bridge: Bridge) {
   ctx = createBackendContext({
-    bridge
+    bridge,
+    hook
   })
 
   await initSharedData({
@@ -56,7 +41,7 @@ export async function initBackend (bridge: Bridge) {
       app: hook.Vue,
       types: {},
       version: hook.Vue.version
-    })
+    }, ctx)
   } else {
     hook.once(HookEvents.INIT, connect)
   }
@@ -65,13 +50,13 @@ export async function initBackend (bridge: Bridge) {
     // Will init connect
     hook.emit(HookEvents.INIT)
 
-    registerApp(app)
+    registerApp(app, ctx)
   })
 
   if (hook.apps.length) {
     hook.emit(HookEvents.INIT)
     hook.apps.forEach(app => {
-      registerApp(app)
+      registerApp(app, ctx)
     })
   }
 }
@@ -107,7 +92,7 @@ function connect () {
     if (!record) {
       console.error(`App with id ${id} not found`)
     } else {
-      await selectApp(record)
+      await selectApp(record, ctx)
     }
   })
 
@@ -128,14 +113,14 @@ function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_UPDATED, (app, uid) => {
-    const id = getComponentId(app, uid)
-    if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
+    const id = app ? getComponentId(app, uid, ctx) : ctx.currentInspectedComponentId
+    if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
       sendSelectedComponentData(id, ctx)
     }
   })
 
   hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid) => {
-    const parentId = getComponentId(app, parentUid)
+    const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       // @TODO take into account current filter
       sendComponentTreeData(parentId, null, ctx)
@@ -143,13 +128,13 @@ function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_REMOVED, (app, uid, parentUid) => {
-    const parentId = getComponentId(app, parentUid)
+    const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       // @TODO take into account current filter
       sendComponentTreeData(parentId, null, ctx)
     }
 
-    const id = getComponentId(app, uid)
+    const id = getComponentId(app, uid, ctx)
     if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
       sendEmptyComponentData(id, ctx)
     }
@@ -182,73 +167,21 @@ function connect () {
 
   setupTimeline(ctx)
 
-  // @TODO
-}
+  // Plugins
 
-export async function registerApp (options: AppRecordOptions) {
-  let record: AppRecord
-  const baseFrameworkVersion = parseInt(options.version.substr(0, options.version.indexOf('.')))
-  for (let i = 0; i < availableBackends.length; i++) {
-    const backend = availableBackends[i]
-    if (backend.frameworkVersion === baseFrameworkVersion) {
-      // Enabled backend
-      if (!enabledBackends.has(backend)) {
-        console.log('Enabling backend for Vue', backend.frameworkVersion)
-        await backend.setup(ctx.api)
-      }
+  addQueuedPlugins(ctx)
 
-      // Create app record
-      const id = recordId++
-      const name = await ctx.api.getAppRecordName(options.app, id)
-      record = {
-        id,
-        name,
-        options,
-        backend,
-        lastInspectedComponentId: null,
-        instanceMap: new Map(),
-        rootInstance: await ctx.api.getAppRootInstance(options.app)
-      }
-      options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
-      const rootId = `${record.id}:root`
-      record.instanceMap.set(rootId, record.rootInstance)
-      record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
-      await ctx.api.registerApplication(record)
-      ctx.appRecords.push(record)
-      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, mapAppRecord(record))
-
-      // Auto select first app
-      if (ctx.currentAppRecord == null) {
-        await selectApp(record)
-      }
-
-      break
-    }
-  }
-}
-
-async function selectApp (record: AppRecord) {
-  ctx.currentAppRecord = record
-  ctx.currentInspectedComponentId = record.lastInspectedComponentId
-  ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, {
-    id: record.id,
-    lastInspectedComponentId: record.lastInspectedComponentId
+  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
+    addPlugin(pluginDescriptor, setupFn, ctx)
   })
-}
 
-function mapAppRecord (record: AppRecord): SimpleAppRecord {
-  return {
-    id: record.id,
-    name: record.name,
-    version: record.options.version
-  }
+  ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, () => {
+    sendPluginList(ctx)
+  })
+
+  // @TODO
 }
 
 async function flushAll () {
   // @TODO notify frontend
-}
-
-function getComponentId (app: App, uid: number) {
-  const appRecord = getAppRecord(app, ctx)
-  return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
 }

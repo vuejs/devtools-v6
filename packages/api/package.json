@@ -1,0 +1,27 @@
+{
+  "name": "@vue/devtools-api",
+  "version": "6.0.0-beta.1",
+  "description": "Interact with the Vue devtools from the page",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/vuejs/vue-devtools.git",
+    "type": "git",
+    "directory": "packages/api"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf lib && yarn ts",
+    "build:watch": "yarn ts -w",
+    "ts": "tsc -d -outDir lib"
+  },
+  "devDependencies": {
+    "@types/node": "^13.9.1",
+    "@types/webpack-env": "^1.15.1",
+    "typescript": "^3.8.3"
+  }
+}

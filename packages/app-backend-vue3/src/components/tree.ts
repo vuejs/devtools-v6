@@ -1,7 +1,7 @@
 import { isBeingDestroyed, getUniqueComponentId, getInstanceName, getRenderKey, getInstanceOrVnodeRect, isFragment } from './util'
 import { ComponentFilter } from './filter'
 import { BackendContext } from '@vue-devtools/app-backend-api'
-import { ComponentTreeNode } from '@vue-devtools/app-backend-api/lib/component'
+import { ComponentTreeNode } from '@vue/devtools-api'
 
 export class ComponentWalker {
   ctx: BackendContext

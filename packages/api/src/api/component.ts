@@ -1,3 +1,5 @@
+export type ComponentInstance = any // @TODO
+
 export interface ComponentTreeNode {
   uid: number
   id: string

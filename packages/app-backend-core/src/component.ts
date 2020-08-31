@@ -1,5 +1,7 @@
 import { stringify, BridgeEvents } from '@vue-devtools/shared-utils'
 import { BackendContext } from '@vue-devtools/app-backend-api'
+import { getAppRecord } from './app'
+import { App } from '@vue/devtools-api'
 
 export async function sendComponentTreeData (instanceId: string, filter = '', ctx: BackendContext) {
   if (!instanceId) return
@@ -9,7 +11,8 @@ export async function sendComponentTreeData (instanceId: string, filter = '', ct
     console.warn(`Instance uid=${instanceId} not found`)
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
       instanceId,
-      treeData: null
+      treeData: null,
+      notFound: true
     })
   } else {
     const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
@@ -43,4 +46,10 @@ export function sendEmptyComponentData (instanceId: string, ctx: BackendContext)
     instanceId,
     data: null
   })
+}
+
+export function getComponentId (app: App, uid: number, ctx: BackendContext) {
+  const appRecord = getAppRecord(app, ctx)
+  if (!appRecord) return null
+  return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
 }

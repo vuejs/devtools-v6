@@ -232,7 +232,7 @@ export function resetComponents () {
 }
 
 export function setupComponentsBridgeEvents (bridge) {
-  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData }) => {
+  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData, notFound }) => {
     const isRoot = instanceId.endsWith('root')
 
     // Reset
@@ -242,7 +242,7 @@ export function setupComponentsBridgeEvents (bridge) {
 
     // Not supported
     if (!treeData) {
-      if (isRoot) {
+      if (isRoot && !notFound) {
         putError('Component tree not supported')
       }
       return

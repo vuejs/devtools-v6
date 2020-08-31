@@ -1,6 +1,5 @@
 import { DevtoolsBackend } from './backend'
-
-export type App = any // @TODO
+import { App, ComponentInstance } from '@vue/devtools-api'
 
 export interface AppRecordOptions {
   app: App
@@ -14,8 +13,8 @@ export interface AppRecord {
   options: AppRecordOptions
   backend: DevtoolsBackend
   lastInspectedComponentId: string
-  instanceMap: Map<string, any>
-  rootInstance: any
+  instanceMap: Map<string, ComponentInstance>
+  rootInstance: ComponentInstance
 }
 
 /**

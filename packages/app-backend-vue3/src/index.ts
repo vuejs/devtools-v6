@@ -3,6 +3,7 @@ import { ComponentWalker } from './components/tree'
 import { getInstanceDetails } from './components/data'
 import { getInstanceName, getInstanceOrVnodeRect } from './components/util'
 import { getComponentInstanceFromElement } from './components/el'
+import { HookEvents } from '@vue-devtools/shared-utils'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 3,
@@ -48,6 +49,17 @@ export const backend: DevtoolsBackend = {
 
     api.on.getElementComponent(payload => {
       payload.componentInstance = getComponentInstanceFromElement(payload.element)
+    })
+
+    api.on.transformCall(payload => {
+      if (payload.callName === HookEvents.COMPONENT_UPDATED) {
+        const component = payload.inArgs[0]
+        payload.outArgs = [
+          component.appContext.app,
+          component.uid,
+          component.parent ? component.parent.uid : undefined
+        ]
+      }
     })
 
     // @TODO

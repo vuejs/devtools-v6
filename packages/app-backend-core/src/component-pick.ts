@@ -1,10 +1,11 @@
 import { isBrowser, BridgeEvents } from '@vue-devtools/shared-utils'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { highlight, unHighlight } from './highlighter'
+import { ComponentInstance } from '@vue/devtools-api'
 
 export default class ComponentPicker {
   ctx: BackendContext
-  selectedInstance: any // @TODO
+  selectedInstance: ComponentInstance
 
   constructor (ctx: BackendContext) {
     this.ctx = ctx

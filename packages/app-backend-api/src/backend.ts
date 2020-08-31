@@ -9,5 +9,5 @@ export enum BuiltinBackendFeature {
 export interface DevtoolsBackend {
   frameworkVersion: 1 | 2 | 3
   availableFeatures: [BuiltinBackendFeature | string]
-  setup: (api: DevtoolsApi) => Promise<void> | void
+  setup: (api: DevtoolsApi) => void
 }
