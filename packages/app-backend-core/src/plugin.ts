@@ -13,6 +13,7 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
     setupFn(ctx.api)
   } catch (e) {
     plugin.error = e
+    console.error(e)
   }
   ctx.currentPlugin = null
   ctx.plugins.push(plugin)
