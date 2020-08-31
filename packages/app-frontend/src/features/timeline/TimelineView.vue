@@ -97,6 +97,7 @@ export default {
       layerContainers = []
       layersMap = {}
       initLayers()
+      resetEvents()
     }
 
     onReset(() => {
@@ -146,14 +147,14 @@ export default {
       initEvents()
     })
 
-    onReset(() => {
+    function resetEvents () {
       for (const e of events) {
         e.g.destroy()
         e.g = null
       }
       events = []
       initEvents()
-    })
+    }
 
     onEventAdd(event => {
       if (event.stackParent) return
