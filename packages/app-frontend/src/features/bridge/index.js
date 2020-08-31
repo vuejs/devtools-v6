@@ -46,3 +46,7 @@ export function useBridge () {
 export function setBridge (b) {
   bridge = b
 }
+
+export function getBridge () {
+  return bridge
+}

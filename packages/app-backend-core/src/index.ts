@@ -1,16 +1,20 @@
-import { createBackendContext, BackendContext } from '@vue-devtools/app-backend-api'
+import {
+  createBackendContext,
+  BackendContext
+} from '@vue-devtools/app-backend-api'
 import {
   Bridge,
   HookEvents,
   BridgeEvents,
   BuiltinTabs,
   initSharedData,
-  BridgeSubscriptions
+  BridgeSubscriptions,
+  stringify
 } from '@vue-devtools/shared-utils'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
-import { setupTimeline } from './timeline'
+import { setupTimeline, sendTimelineLayers, TimelineEventPayload } from './timeline'
 import ComponentPicker from './component-pick'
 import {
   sendComponentTreeData,
@@ -19,8 +23,8 @@ import {
   getComponentId
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList } from './plugin'
-import { PluginDescriptor, SetupFunction } from '@vue/devtools-api'
-import { registerApp, selectApp, mapAppRecord } from './app'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions } from '@vue/devtools-api'
+import { registerApp, selectApp, mapAppRecord, getAppRecord } from './app'
 
 let ctx: BackendContext
 
@@ -166,6 +170,30 @@ function connect () {
   // Timeline
 
   setupTimeline(ctx)
+
+  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, app: App) => {
+    ctx.timelineLayers.push({
+      ...options,
+      app
+    })
+    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, () => {
+    sendTimelineLayers(ctx)
+  })
+
+  hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, app: App) => {
+    const appId = app && getAppRecord(app, ctx)?.id
+    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
+      appId: options.all || !app || appId == null ? 'all' : appId,
+      layerId: options.layerId,
+      event: {
+        time: options.event.time,
+        data: stringify(options.event.data)
+      }
+    } as TimelineEventPayload)
+  })
 
   // Plugins
 

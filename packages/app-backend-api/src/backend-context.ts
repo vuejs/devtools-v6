@@ -1,4 +1,5 @@
 import { Bridge, target } from '@vue-devtools/shared-utils'
+import { TimelineLayerOptions, App } from '@vue/devtools-api'
 import { AppRecord } from './app-record'
 import { DevtoolsApi } from './api'
 import { Plugin } from './plugin'
@@ -13,7 +14,11 @@ export interface BackendContext {
   currentAppRecord: AppRecord
   currentInspectedComponentId: string
   plugins: Plugin[]
-  currentPlugin: Plugin
+  timelineLayers: TimelineLayer[]
+}
+
+export interface TimelineLayer extends TimelineLayerOptions {
+  app: App
 }
 
 export interface CreateBackendContextOptions {
@@ -22,7 +27,7 @@ export interface CreateBackendContextOptions {
 }
 
 export function createBackendContext (options: CreateBackendContextOptions): BackendContext {
-  const ctx = {
+  const ctx: BackendContext = {
     bridge: options.bridge,
     hook: options.hook,
     api: null,
@@ -31,8 +36,8 @@ export function createBackendContext (options: CreateBackendContextOptions): Bac
     currentAppRecord: null,
     currentInspectedComponentId: null,
     plugins: [],
-    currentPlugin: null
+    timelineLayers: []
   }
-  ctx.api = target.__VUE_DEVTOOLS_API__ = new DevtoolsApi(options.bridge, ctx)
+  ctx.api = new DevtoolsApi(options.bridge, ctx)
   return ctx
 }

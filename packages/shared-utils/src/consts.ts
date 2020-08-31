@@ -39,6 +39,9 @@ export enum BridgeEvents {
   TO_BACK_COMPONENT_PICK_CANCELED = 'b:component:pick-canceled',
   TO_FRONT_COMPONENT_PICK_CANCELED = 'f:component:pick-canceled',
   TO_FRONT_TIMELINE_EVENT = 'f:timeline:event',
+  TO_BACK_TIMELINE_LAYER_LIST = 'b:timeline:layer-list',
+  TO_FRONT_TIMELINE_LAYER_LIST = 'f:timeline:layer-list',
+  TO_FRONT_TIMELINE_LAYER_ADD = 'f:timeline:layer-add',
   TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_LIST = 'f:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_ADD = 'f:devtools-plugin:add'
@@ -59,6 +62,8 @@ export enum HookEvents {
   COMPONENT_REMOVED = 'component:removed',
   COMPONENT_EMIT = 'component:emit',
   SETUP_DEVTOOLS_PLUGIN = 'devtools-plugin:setup',
+  TIMELINE_LAYER_ADDED = 'timeline:layer-added',
+  TIMELINE_EVENT_ADDED = 'timeline:event-added',
   /**
    * @deprecated
    */

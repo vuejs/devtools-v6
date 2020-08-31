@@ -1,5 +1,5 @@
 import { PluginDescriptor, SetupFunction } from '@vue/devtools-api'
-import { Plugin, BackendContext } from '@vue-devtools/app-backend-api'
+import { Plugin, BackendContext, DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, target } from '@vue-devtools/shared-utils'
 
 export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction, ctx: BackendContext) {
@@ -8,14 +8,13 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
     setupFn,
     error: null
   }
-  ctx.currentPlugin = plugin
   try {
-    setupFn(ctx.api)
+    const api = new DevtoolsPluginApiInstance(plugin, ctx)
+    setupFn(api)
   } catch (e) {
     plugin.error = e
     console.error(e)
   }
-  ctx.currentPlugin = null
   ctx.plugins.push(plugin)
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, {
     plugin: serializePlugin(plugin)

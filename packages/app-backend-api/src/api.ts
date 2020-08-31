@@ -4,35 +4,35 @@ import {
   HookPayloads,
   App,
   DevtoolsPluginApi,
-  ComponentInstance
+  ComponentInstance,
+  TimelineLayerOptions,
+  TimelineEventOptions
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
+import { Plugin } from './plugin'
 
-export class DevtoolsApi implements DevtoolsPluginApi {
+let backendOn: DevtoolsHookable
+let pluginOn: DevtoolsHookable
+
+export class DevtoolsApi {
   bridge: Bridge
   ctx: BackendContext
-  protected backendOn: DevtoolsHookable
-  protected pluginOn: DevtoolsHookable
 
   constructor (bridge: Bridge, ctx: BackendContext) {
     this.bridge = bridge
     this.ctx = ctx
-    this.backendOn = new DevtoolsHookable(ctx)
-    this.pluginOn = new DevtoolsHookable(ctx)
+    if (!backendOn) { backendOn = new DevtoolsHookable(ctx) }
+    if (!pluginOn) { pluginOn = new DevtoolsHookable(ctx) }
   }
 
   get on () {
-    if (this.ctx.currentPlugin) {
-      return this.pluginOn
-    } else {
-      return this.backendOn
-    }
+    return backendOn
   }
 
   async callHook<T extends Hooks> (eventType: T, payload: HookPayloads[T], ctx: BackendContext = this.ctx) {
-    payload = await this.backendOn.callHandlers(eventType, payload, ctx)
-    payload = await this.pluginOn.callHandlers(eventType, payload, ctx)
+    payload = await backendOn.callHandlers(eventType, payload, ctx)
+    payload = await pluginOn.callHandlers(eventType, payload, ctx)
     return payload
   }
 
@@ -120,14 +120,39 @@ export class DevtoolsApi implements DevtoolsPluginApi {
     })
     return payload.componentInstance
   }
+}
+
+export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
+  bridge: Bridge
+  ctx: BackendContext
+  plugin: Plugin
+
+  constructor (plugin: Plugin, ctx: BackendContext) {
+    this.bridge = ctx.bridge
+    this.ctx = ctx
+    this.plugin = plugin
+    if (!pluginOn) { pluginOn = new DevtoolsHookable(ctx) }
+  }
+
+  get on () {
+    return pluginOn
+  }
 
   // Plugin API
 
   async notifyComponentUpdate (instance: ComponentInstance = null) {
     if (instance) {
-      this.ctx.hook.emit(HookEvents.COMPONENT_UPDATED, ...await this.transformCall(HookEvents.COMPONENT_UPDATED, instance))
+      this.ctx.hook.emit(HookEvents.COMPONENT_UPDATED, ...await this.ctx.api.transformCall(HookEvents.COMPONENT_UPDATED, instance))
     } else {
       this.ctx.hook.emit(HookEvents.COMPONENT_UPDATED)
     }
+  }
+
+  addTimelineLayer (options: TimelineLayerOptions) {
+    this.ctx.hook.emit(HookEvents.TIMELINE_LAYER_ADDED, options, this.plugin?.descriptor.app)
+  }
+
+  addTimelineEvent (options: TimelineEventOptions) {
+    this.ctx.hook.emit(HookEvents.TIMELINE_EVENT_ADDED, options, this.plugin?.descriptor.app)
   }
 }

@@ -90,14 +90,20 @@ export default {
       initLayers()
     })
 
-    onReset(() => {
+    function resetLayers () {
       for (const container of layerContainers) {
         container.destroy()
       }
       layerContainers = []
       layersMap = {}
       initLayers()
+    }
+
+    onReset(() => {
+      resetLayers()
     })
+
+    watch(layers, () => resetLayers())
 
     // Events
 

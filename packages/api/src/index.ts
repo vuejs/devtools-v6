@@ -23,5 +23,3 @@ export function setupDevtoolsPlugin (pluginDescriptor: PluginDescriptor, setupFn
     })
   }
 }
-
-export const api: DevtoolsPluginApi = target.__VUE_DEVTOOLS_API__

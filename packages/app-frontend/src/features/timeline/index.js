@@ -1,8 +1,10 @@
 import { ref, computed, onUnmounted } from '@vue/composition-api'
 import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import cloneDeep from 'lodash/cloneDeep'
+import Vue from 'vue'
 import { formatTime } from '@front/util/format'
 import { useApps, getApps } from '../apps'
-import cloneDeep from 'lodash/cloneDeep'
+import { getBridge } from '../bridge'
 
 const STACK_DURATION = 10
 
@@ -15,33 +17,33 @@ const layersPerApp = ref({})
 
 const selectedEvent = ref(null)
 
+function layerFactory (options) {
+  return {
+    ...options,
+    events: [],
+    displayedEvents: [],
+    eventTimeMap: {}
+  }
+}
+
 function builtinLayersFactory () {
   return [
     {
       id: 'mouse',
       label: 'Mouse',
-      color: 0xA451AF,
-      events: [],
-      displayedEvents: [],
-      eventTimeMap: {}
+      color: 0xA451AF
     },
     {
       id: 'keyboard',
       label: 'Keyboard',
-      color: 0x8151AF,
-      events: [],
-      displayedEvents: [],
-      eventTimeMap: {}
+      color: 0x8151AF
     },
     {
       id: 'component-event',
       label: 'Component events',
-      color: 0x41B883,
-      events: [],
-      displayedEvents: [],
-      eventTimeMap: {}
+      color: 0x41B883
     }
-  ]
+  ].map(options => layerFactory(options))
 }
 
 const resetCbs = []
@@ -55,6 +57,8 @@ export function resetTimeline () {
   minTime.value = now - 1000
   maxTime.value = now
   layersPerApp.value = {}
+
+  fetchLayers()
 
   for (const cb of resetCbs) {
     cb()
@@ -147,7 +151,10 @@ export function useTime () {
 function getLayers (appId) {
   let layers = layersPerApp.value[appId]
   if (!layers) {
-    layers = layersPerApp.value[appId] = builtinLayersFactory()
+    layers = builtinLayersFactory()
+    Vue.set(layersPerApp.value, appId, layers)
+    // Read the property again to make it reactive
+    layers = layersPerApp.value[appId]
   }
   return layers
 }
@@ -170,9 +177,11 @@ export function useSelectedEvent () {
   }
 }
 
-export function setupTimelineBridgeEvents (bridge) {
-  resetTimeline()
+function fetchLayers () {
+  getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, {})
+}
 
+export function setupTimelineBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ appId, layerId, event }) => {
     const appIds = appId === 'all' ? getApps().map(app => app.id) : [appId]
     for (const appId of appIds) {
@@ -185,4 +194,19 @@ export function setupTimelineBridgeEvents (bridge) {
       addEvent(appId, cloneDeep(event), layer)
     }
   })
+
+  bridge.on(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, () => {
+    fetchLayers()
+  })
+
+  bridge.on(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, ({ layers }) => {
+    for (const layer of layers) {
+      const existingLayers = getLayers(layer.appId)
+      if (!existingLayers.some(l => l.id === layer.id)) {
+        existingLayers.push(layerFactory(layer))
+      }
+    }
+  })
+
+  resetTimeline()
 }

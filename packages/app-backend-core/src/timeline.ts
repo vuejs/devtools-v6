@@ -1,18 +1,13 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
+import { TimelineEvent } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord } from './app'
 
 export interface TimelineEventPayload<TData = any, TMeta = any> {
   appId: number | 'all'
   layerId: string
-  event: Event<TData, TMeta>
-}
-
-export interface Event<TData = any, TMeta = any> {
-  time: number
-  data: TData
-  meta: TMeta
+  event: TimelineEvent<TData, TMeta>
 }
 
 export function setupTimeline (ctx: BackendContext) {
@@ -89,5 +84,16 @@ function setupBuiltinLayers (ctx: BackendContext) {
         }
       }
     } as TimelineEventPayload)
+  })
+}
+
+export function sendTimelineLayers (ctx: BackendContext) {
+  ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, {
+    layers: ctx.timelineLayers.map(layer => ({
+      id: layer.id,
+      label: layer.label,
+      color: layer.color,
+      appId: getAppRecord(layer.app, ctx)?.id
+    }))
   })
 }
