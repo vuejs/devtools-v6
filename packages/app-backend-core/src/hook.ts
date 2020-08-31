@@ -16,7 +16,6 @@ export function installHook (target) {
 
   const hook = {
     Vue: null,
-    apps: [],
     _buffer: [],
     store: null,
     initialState: null,
@@ -107,7 +106,6 @@ export function installHook (target) {
       version,
       types
     }
-    hook.apps.push(appRecord)
     hook.emit('app:add', appRecord)
   })
 

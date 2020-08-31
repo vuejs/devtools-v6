@@ -56,13 +56,6 @@ export async function initBackend (bridge: Bridge) {
 
     registerApp(app, ctx)
   })
-
-  if (hook.apps.length) {
-    hook.emit(HookEvents.INIT)
-    hook.apps.forEach(app => {
-      registerApp(app, ctx)
-    })
-  }
 }
 
 function connect () {
@@ -88,7 +81,9 @@ function connect () {
   // Apps
 
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_LIST, () => {
-    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, ctx.appRecords.map(mapAppRecord))
+    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {
+      apps: ctx.appRecords.map(mapAppRecord)
+    })
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {

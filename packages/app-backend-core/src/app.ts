@@ -52,7 +52,9 @@ export async function registerApp (options: AppRecordOptions, ctx: BackendContex
       record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
       await ctx.api.registerApplication(record)
       ctx.appRecords.push(record)
-      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, mapAppRecord(record))
+      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
+        appRecord: mapAppRecord(record)
+      })
 
       // Auto select first app
       if (ctx.currentAppRecord == null) {
@@ -82,11 +84,11 @@ export function mapAppRecord (record: AppRecord): SimpleAppRecord {
 }
 
 export function getAppRecordId (app): number {
-  if (app.__VUE_DEVTOOLS_RECORD_ID__) {
-    return app.__VUE_DEVTOOLS_RECORD_ID__
+  if (app.__VUE_DEVTOOLS_APP_RECORD_ID__ != null) {
+    return app.__VUE_DEVTOOLS_APP_RECORD_ID__
   }
   const id = recordId++
-  app.__VUE_DEVTOOLS_RECORD_ID__ = id
+  app.__VUE_DEVTOOLS_APP_RECORD_ID__ = id
   return id
 }
 

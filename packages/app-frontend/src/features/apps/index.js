@@ -55,15 +55,15 @@ export function getApps () {
 }
 
 export function setupAppsBridgeEvents (bridge) {
-  bridge.on(BridgeEvents.TO_FRONT_APP_ADD, appRecord => {
+  bridge.on(BridgeEvents.TO_FRONT_APP_ADD, ({ appRecord }) => {
     addApp(appRecord)
   })
 
-  bridge.on(BridgeEvents.TO_FRONT_APP_REMOVE, id => {
+  bridge.on(BridgeEvents.TO_FRONT_APP_REMOVE, ({ id }) => {
     removeApp(id)
   })
 
-  bridge.on(BridgeEvents.TO_FRONT_APP_LIST, list => {
+  bridge.on(BridgeEvents.TO_FRONT_APP_LIST, ({ apps: list }) => {
     apps.value = list
   })
 

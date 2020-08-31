@@ -20,6 +20,7 @@ export enum BridgeEvents {
   /** Get app list */
   TO_BACK_APP_LIST = 'b:app:list',
   TO_FRONT_APP_LIST = 'f:app:list',
+  TO_FRONT_APP_REMOVE = 'f:app:remove',
   TO_BACK_APP_SELECT = 'b:app:select',
   TO_FRONT_APP_SELECTED = 'f:app:selected',
   TO_BACK_COMPONENT_TREE = 'b:component:tree',
