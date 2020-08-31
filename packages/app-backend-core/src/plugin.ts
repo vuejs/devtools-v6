@@ -8,13 +8,13 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
     setupFn,
     error: null
   }
+  ctx.currentPlugin = plugin
   try {
-    ctx.currentPlugin = plugin
     setupFn(ctx.api)
-    ctx.currentPlugin = null
   } catch (e) {
     plugin.error = e
   }
+  ctx.currentPlugin = null
   ctx.plugins.push(plugin)
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, {
     plugin: serializePlugin(plugin)
