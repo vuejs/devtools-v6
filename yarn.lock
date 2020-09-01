@@ -1308,6 +1308,13 @@
   dependencies:
     "@pixi/settings" "5.3.3"
 
+"@pixi/unsafe-eval@^5.3.3":
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/@pixi/unsafe-eval/-/unsafe-eval-5.3.3.tgz#08212bdea300533f917b46a8868ec05f30de8c42"
+  integrity sha512-3+YznyDXW6yUhiV/kFRUqfnsekMejL1C9eFZkLP7EQRy6rthkRrvG4bsG63+v1wg10NgCJoRVbVk91Om2n7w/g==
+  dependencies:
+    "@pixi/core" "5.3.3"
+
 "@pixi/utils@5.3.3":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/@pixi/utils/-/utils-5.3.3.tgz#525321f3bb00e3e001e341020a3edee94cc0d00a"
@@ -3488,7 +3495,7 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-cypress@=3.4.1, cypress@^3.1.0:
+cypress@^3.1.0:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-3.4.1.tgz#ca2e4e9864679da686c6a6189603efd409664c30"
   integrity sha512-1HBS7t9XXzkt6QHbwfirWYty8vzxNMawGj1yI+Fu6C3/VZJ8UtUngMW6layqwYZzLTZV8tiDpdCNBypn78V4Dg==

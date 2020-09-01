@@ -1,11 +1,14 @@
 <script>
-import { Application, Container, Graphics, Rectangle } from 'pixi.js'
+import * as PIXI from 'pixi.js'
+import { install as installUnsafeEval } from '@pixi/unsafe-eval'
 import { ref, onMounted, onUnmounted, watch, watchEffect } from '@vue/composition-api'
 import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
 import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
+
+installUnsafeEval(PIXI)
 
 export default {
   setup () {
@@ -39,7 +42,7 @@ export default {
     let app
 
     onMounted(() => {
-      app = new Application({
+      app = new PIXI.Application({
         resizeTo: wrapper.value,
         antialias: true,
         autoDensity: true
@@ -74,7 +77,7 @@ export default {
     function initLayers () {
       let y = 0
       for (const layer of layers.value) {
-        const container = new Container()
+        const container = new PIXI.Container()
         container.y = y
         y += 32
         app.stage.addChild(container)
@@ -118,7 +121,7 @@ export default {
 
     function addEvent (event, container) {
       // Graphics
-      const g = new Graphics()
+      const g = new PIXI.Graphics()
       updateEventPosition(event, g)
       g.y = 16
       event.g = g
@@ -189,7 +192,7 @@ export default {
 
     onMounted(() => {
       app.stage.interactive = true
-      app.stage.hitArea = new Rectangle(0, 0, 100000, 100000)
+      app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       app.stage.addListener('click', event => {
         let choice
         let distance = Number.POSITIVE_INFINITY
