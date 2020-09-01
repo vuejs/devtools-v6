@@ -127,7 +127,7 @@ export default {
     // Outside of setupDevtoolsPlugin
 
     window.addEventListener('mouseup', event => {
-      devtoolsApi.addTimelineEvent({
+      devtoolsApi && devtoolsApi.addTimelineEvent({
         layerId: 'test-layer',
         event: {
           time: Date.now(),
