@@ -21,6 +21,7 @@ export function installHook (target) {
     initialState: null,
     storeModules: null,
     flushStoreModules: null,
+    apps: [],
 
     _replayBuffer (event) {
       const buffer = this._buffer
@@ -106,6 +107,7 @@ export function installHook (target) {
       version,
       types
     }
+    hook.apps.push(appRecord)
     hook.emit('app:add', appRecord)
   })
 
