@@ -1,6 +1,7 @@
 {
   "name": "@vue-devtools/shell-dev-vue3",
   "version": "0.0.0",
+  "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --hot --no-info"
   },
