@@ -88,6 +88,7 @@ function connect () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
+    if (id == null) return
     const record = ctx.appRecords.find(r => r.id === id)
     if (!record) {
       console.error(`App with id ${id} not found`)
