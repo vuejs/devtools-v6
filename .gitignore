@@ -11,3 +11,4 @@ TODOs.md
 yarn-error.log
 
 /packages/*/lib
+.amo.env.json
