@@ -50,6 +50,12 @@ const curVersion = pkg.version
       pkg.version = newVersion
       fs.writeFileSync('./packages/shell-electron/package.json', JSON.stringify(pkg, null, 2))
     }
+    {
+      // API package
+      const pkg = require('./packages/api/package.json')
+      pkg.version = newVersion
+      fs.writeFileSync('./packages/api/package.json', JSON.stringify(pkg, null, 2))
+    }
     fs.writeFileSync('./packages/shell-chrome/manifest.json', JSON.stringify(manifest, null, 2))
   } else {
     process.exit(1)
