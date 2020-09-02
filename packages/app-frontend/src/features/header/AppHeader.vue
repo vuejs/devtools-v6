@@ -57,24 +57,17 @@ export default {
       {
         icon: 'device_hub',
         label: 'Components',
-        matchRoute: 'inspector',
-        targetRoute: { name: 'inspector-components' }
+        targetRoute: { name: 'inspector-components' },
+        matchRoute: route => route.matched.some(m => m.name === 'inspector-components')
       }
     ].concat(customInspectors.value.map(i => ({
       icon: i.icon || 'tab',
       label: i.label,
-      matchRoute: 'inspector',
-      targetRoute: { name: 'custom-inspector', params: { inspectorId: i.id } }
+      targetRoute: { name: 'custom-inspector', params: { inspectorId: i.id } },
+      matchRoute: route => route.params.inspectorId === i.id
     }))))
 
-    const currentInspectorRoute = computed(() =>
-      inspectorRoutes.value.find(r =>
-        route.value.matched.some(m =>
-          m.name === r.targetRoute.name &&
-          (!r.targetRoute.params || !m.params || m.params.inspectorId === r.targetRoute.params.inspectorId)
-        )
-      )
-    )
+    const currentInspectorRoute = computed(() => inspectorRoutes.value.find(r => r.matchRoute(route.value)))
 
     const lastInspectorRoute = ref(null)
     watch(currentInspectorRoute, value => {
