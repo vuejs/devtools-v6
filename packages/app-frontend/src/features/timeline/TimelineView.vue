@@ -7,8 +7,6 @@ import Vue from 'vue'
 import { useApps } from '../apps'
 import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
-import errorIcon from '../../assets/icons/error.png'
-import warningIcon from '../../assets/icons/warning.png'
 
 installUnsafeEval(PIXI)
 
@@ -51,12 +49,6 @@ export default {
       })
       updateBackground()
       wrapper.value.appendChild(app.view)
-
-      PIXI.Loader.shared.add(errorIcon)
-        .add(warningIcon)
-        .load(() => {
-          updateBackground()
-        })
     })
 
     onUnmounted(() => {
@@ -226,14 +218,10 @@ export default {
         let color = event.layer.color
         for (const subEvent of event.stackedEvents) {
           if (subEvent.logType === 'error') {
-            event = subEvent
             color = 0xE53E3E
             break
           } else if (subEvent.logType === 'warning') {
-            event = subEvent
             color = 0xECC94B
-          } else {
-            event = event || subEvent
           }
         }
 
