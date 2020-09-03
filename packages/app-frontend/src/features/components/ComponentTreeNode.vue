@@ -144,6 +144,17 @@ export default {
         >
           fragment
         </span>
+        <span
+          v-for="(tag, index) of instance.tags"
+          :key="index"
+          :style="{
+            color: `#${tag.textColor.toString(16).padStart(6, '0')}`,
+            backgroundColor: `#${tag.backgroundColor.toString(16).padStart(6, '0')}`,
+          }"
+          class="info tag rounded-sm"
+        >
+          {{ tag.label }}
+        </span>
       </span>
     </div>
 
