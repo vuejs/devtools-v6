@@ -20,7 +20,7 @@
     "zip:firefox": "web-ext build -s packages/shell-chrome -a dist -i src --overwrite-dest",
     "sign:firefox": "node ./sign-firefox.js",
     "release": "npm run test && node release.js && npm run build && npm run zip && npm run pub",
-    "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox && npm run pub",
+    "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox",
     "pub": "npm run pub:electron && npm run pub:api",
     "pub:electron": "cd packages/shell-electron && npm publish --tag beta",
     "pub:api": "cd packages/api && npm publish",
