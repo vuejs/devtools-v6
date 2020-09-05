@@ -42,10 +42,10 @@ export interface CustomInspectorNode {
   id: string
   label: string
   children?: CustomInspectorNode[]
-  tags?: CustomInspectorNodeTag[]
+  tags?: InspectorNodeTag[]
 }
 
-export interface CustomInspectorNodeTag {
+export interface InspectorNodeTag {
   label: string
   textColor: number
   backgroundColor: number

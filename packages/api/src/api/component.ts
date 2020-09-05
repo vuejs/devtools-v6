@@ -1,4 +1,4 @@
-import { CustomInspectorNodeTag } from './api'
+import { InspectorNodeTag } from './api'
 
 export type ComponentInstance = any // @TODO
 
@@ -15,7 +15,7 @@ export interface ComponentTreeNode {
   consoleId?: string
   isRouterView?: boolean
   macthedRouteSegment?: string
-  tags: CustomInspectorNodeTag[]
+  tags: InspectorNodeTag[]
 }
 
 export interface InspectedComponentData {
