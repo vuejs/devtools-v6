@@ -12,6 +12,13 @@ export interface DevtoolsPluginApi {
   sendInspectorState (inspectorId: string)
 }
 
+export interface AppRecord {
+  id: number
+  name: string
+  instanceMap: Map<string, ComponentInstance>
+  rootInstance: ComponentInstance
+}
+
 export interface TimelineLayerOptions {
   id: string
   label: string
