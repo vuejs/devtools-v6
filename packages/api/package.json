@@ -2,9 +2,20 @@
   "name": "@vue/devtools-api",
   "version": "6.0.0-beta.2",
   "description": "Interact with the Vue devtools from the page",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "author": "",
+  "main": "./dist/vue-devtools.esm-bundler.js",
+  "browser": "./dist/vue-devtools.esm-browser.js",
+  "module": "./dist/vue-devtools.esm-bundler.js",
+  "jsdelivr": "./dist/vue-devtools.global.js",
+  "unpkg": "./dist/vue-devtools.global.js",
+  "types": "./dist/vue-devtools.d.ts",
+  "sideEffects": false,
+  "author": {
+    "name": "Guillaume Chau"
+  },
+  "files": [
+    "dist/vue-devtools.*.js",
+    "dist/vue-devtools.d.ts"
+  ],
   "license": "MIT",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
@@ -15,13 +26,21 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf lib && yarn ts",
+    "build": "rimraf dist && yarn rollup -c rollup.config.js",
+    "build:dts": "api-extractor run --local",
     "build:watch": "yarn ts -w",
     "ts": "tsc -d -outDir lib"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.9.15",
+    "@rollup/plugin-commonjs": "^15.0.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-replace": "^2.3.3",
     "@types/node": "^13.9.1",
     "@types/webpack-env": "^1.15.1",
+    "rollup": "^2.27.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.27.2",
     "typescript": "^3.8.3"
   }
 }
