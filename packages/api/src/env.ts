@@ -8,15 +8,15 @@ interface GlobalTarget {
   }>
 }
 
-export function getDevtoolsGlobalHook(): any {
+export function getDevtoolsGlobalHook (): any {
   return (getTarget() as any).__VUE_DEVTOOLS_GLOBAL_HOOK__
 }
 
-export function getTarget(): GlobalTarget {
+export function getTarget (): GlobalTarget {
   // @ts-ignore
   return typeof navigator !== 'undefined'
     ? window
     : typeof global !== 'undefined'
-    ? global
-    : {}
+      ? global
+      : {}
 }

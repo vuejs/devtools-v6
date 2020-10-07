@@ -12,7 +12,7 @@ export interface PluginDescriptor {
 
 export type SetupFunction = (api: DevtoolsPluginApi) => void
 
-export function setupDevtoolsPlugin(
+export function setupDevtoolsPlugin (
   pluginDescriptor: PluginDescriptor,
   setupFn: SetupFunction
 ) {
