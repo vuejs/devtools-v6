@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["node", "webpack-env"],
-    "sourceMap": true,
+    "sourceMap": false,
     "preserveWatchOutput": true,
     // Strict
     "noImplicitAny": false,

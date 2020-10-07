@@ -2,19 +2,17 @@
   "name": "@vue/devtools-api",
   "version": "6.0.0-beta.2",
   "description": "Interact with the Vue devtools from the page",
-  "main": "./dist/vue-devtools.esm-bundler.js",
-  "browser": "./dist/vue-devtools.esm-browser.js",
-  "module": "./dist/vue-devtools.esm-bundler.js",
-  "jsdelivr": "./dist/vue-devtools.global.js",
-  "unpkg": "./dist/vue-devtools.global.js",
-  "types": "./dist/vue-devtools.d.ts",
+  "main": "dist/cjs/index.js",
+  "browser": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "sideEffects": false,
   "author": {
     "name": "Guillaume Chau"
   },
   "files": [
-    "dist/vue-devtools.*.js",
-    "dist/vue-devtools.d.ts"
+    "dist/esm",
+    "dist/cjs"
   ],
   "license": "MIT",
   "repository": {
@@ -26,21 +24,15 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf dist && yarn rollup -c rollup.config.js",
-    "build:dts": "api-extractor run --local",
-    "build:watch": "yarn ts -w",
-    "ts": "tsc -d -outDir lib"
+    "build": "rimraf dist && yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc --module es2015 --outDir dist/es -d",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "build:watch": "yarn ts -w --sourceMap",
+    "ts": "yarn build:esm"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.9.15",
-    "@rollup/plugin-commonjs": "^15.0.0",
-    "@rollup/plugin-node-resolve": "^9.0.0",
-    "@rollup/plugin-replace": "^2.3.3",
     "@types/node": "^13.9.1",
     "@types/webpack-env": "^1.15.1",
-    "rollup": "^2.27.1",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.27.2",
     "typescript": "^3.8.3"
   }
 }
