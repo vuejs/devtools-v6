@@ -5,7 +5,7 @@
   "main": "dist/cjs/index.js",
   "browser": "dist/esm/index.js",
   "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/cjs/index.d.ts",
   "sideEffects": false,
   "author": {
     "name": "Guillaume Chau"
@@ -25,8 +25,8 @@
   },
   "scripts": {
     "build": "rimraf dist && yarn build:esm && yarn build:cjs",
-    "build:esm": "tsc --module es2015 --outDir dist/es -d",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "build:esm": "tsc --module es2015 --outDir dist/esm",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs -d",
     "build:watch": "yarn ts -w --sourceMap",
     "ts": "yarn build:esm"
   },
