@@ -2,17 +2,17 @@
   "name": "@vue/devtools-api",
   "version": "6.0.0-beta.2",
   "description": "Interact with the Vue devtools from the page",
-  "main": "dist/cjs/index.js",
-  "browser": "dist/esm/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/cjs/index.d.ts",
+  "main": "lib/cjs/index.js",
+  "browser": "lib/esm/index.js",
+  "module": "lib/esm/index.js",
+  "types": "lib/cjs/index.d.ts",
   "sideEffects": false,
   "author": {
     "name": "Guillaume Chau"
   },
   "files": [
-    "dist/esm",
-    "dist/cjs"
+    "lib/esm",
+    "lib/cjs"
   ],
   "license": "MIT",
   "repository": {
@@ -24,9 +24,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf dist && yarn build:esm && yarn build:cjs",
-    "build:esm": "tsc --module es2015 --outDir dist/esm",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs -d",
+    "build": "rimraf lib && yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc --module es2015 --outDir lib/esm",
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs -d",
     "build:watch": "yarn ts -w --sourceMap",
     "ts": "yarn build:esm"
   },
