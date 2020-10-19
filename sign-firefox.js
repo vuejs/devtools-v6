@@ -9,7 +9,7 @@ if (!fs.existsSync(credFile)) {
     apiKey: '',
     apiSecret: ''
   }, null, 2), { encoding: 'utf8' })
-  console.log('Please provide Mozilla API credentials in .amo.env.json\nhttps://addons.mozilla.org/fr/developers/addon/api/key/')
+  console.log('Please provide Mozilla API credentials in .amo.env.json\nhttps://addons.mozilla.org/developers/addon/api/key/')
   process.exit(1)
 }
 

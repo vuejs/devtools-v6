@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "removeComments": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "types": [
-      "node",
-      "webpack-env"
-    ],
-    "sourceMap": true,
+    "types": ["node", "webpack-env"],
+    "sourceMap": false,
     "preserveWatchOutput": true,
     // Strict
     "noImplicitAny": false,
@@ -19,11 +17,8 @@
     "alwaysStrict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
+    "lib": ["ESNext", "DOM"]
   },
-  "include": [
-    "src/**/*",
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
