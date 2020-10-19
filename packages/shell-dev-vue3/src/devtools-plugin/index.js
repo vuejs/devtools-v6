@@ -14,6 +14,16 @@ export default {
 
       let time = 0
 
+      api.on.walkComponentTree((payload, ctx) => {
+        if (payload.componentInstance.type.name === 'MyApp') {
+          payload.componentTreeData.tags.push({
+            label: 'root',
+            textColor: 0x000000,
+            backgroundColor: 0xFF984F
+          })
+        }
+      })
+
       api.on.inspectComponent((payload, ctx) => {
         if (payload.instanceData) {
           const stateType = 'extra properties (test)'
