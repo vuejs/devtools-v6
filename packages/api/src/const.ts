@@ -1,3 +1,1 @@
-export enum ApiHookEvents {
-  SETUP_DEVTOOLS_PLUGIN = 'devtools-plugin:setup',
-}
+export const HOOK_SETUP = 'devtools-plugin:setup'

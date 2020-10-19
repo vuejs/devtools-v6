@@ -2,7 +2,7 @@ import { ComponentTreeNode, InspectedComponentData, ComponentInstance } from './
 import { App } from './app'
 import { CustomInspectorNode, CustomInspectorState } from './api'
 
-export enum Hooks {
+export const enum Hooks {
   TRANSFORM_CALL = 'transformCall',
   GET_APP_RECORD_NAME = 'getAppRecordName',
   GET_APP_ROOT_INSTANCE = 'getAppRootInstance',
