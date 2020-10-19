@@ -131,7 +131,8 @@ export class ComponentWalker {
       inactive: !!instance.isDeactivated,
       hasChildren: !!children.length,
       children: [],
-      isFragment: isFragment(instance)
+      isFragment: isFragment(instance),
+      tags: []
     }
 
     // capture children

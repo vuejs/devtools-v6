@@ -12,6 +12,13 @@ export interface DevtoolsPluginApi {
   sendInspectorState (inspectorId: string)
 }
 
+export interface AppRecord {
+  id: number
+  name: string
+  instanceMap: Map<string, ComponentInstance>
+  rootInstance: ComponentInstance
+}
+
 export interface TimelineLayerOptions {
   id: string
   label: string
@@ -42,10 +49,10 @@ export interface CustomInspectorNode {
   id: string
   label: string
   children?: CustomInspectorNode[]
-  tags?: CustomInspectorNodeTag[]
+  tags?: InspectorNodeTag[]
 }
 
-export interface CustomInspectorNodeTag {
+export interface InspectorNodeTag {
   label: string
   textColor: number
   backgroundColor: number
