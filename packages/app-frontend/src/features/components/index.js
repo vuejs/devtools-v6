@@ -214,13 +214,24 @@ export function useSelectedComponent () {
     openInEditor(data.value.file)
   }
 
+  const { bridge } = useBridge()
+
+  function editState (dotPath, payload) {
+    bridge.send(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, {
+      instanceId: data.value.id,
+      dotPath,
+      ...payload
+    })
+  }
+
   return {
     data,
     state,
     stateFilter: selectedComponentStateFilter,
     inspectDOM,
     fileIsPath,
-    openFile
+    openFile,
+    editState
   }
 }
 

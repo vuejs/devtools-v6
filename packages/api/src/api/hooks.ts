@@ -13,6 +13,7 @@ export const enum Hooks {
   GET_COMPONENT_BOUNDS = 'getComponentBounds',
   GET_COMPONENT_NAME = 'getComponentName',
   GET_ELEMENT_COMPONENT = 'getElementComponent',
+  EDIT_COMPONENT_STATE = 'editComponentState',
   GET_INSPECTOR_TREE = 'getInspectorTree',
   GET_INSPECTOR_STATE = 'getInspectorState'
 }
@@ -67,6 +68,11 @@ export type HookPayloads = {
     element: HTMLElement | any
     componentInstance: ComponentInstance
   }
+  [Hooks.EDIT_COMPONENT_STATE]: {
+    componentInstance: ComponentInstance
+    path: string[]
+    state: EditComponentStatePayload
+  }
   [Hooks.GET_INSPECTOR_TREE]: {
     app: App
     inspectorId: string
@@ -79,6 +85,16 @@ export type HookPayloads = {
     nodeId: string
     state: CustomInspectorState
   }
+}
+
+export type EditComponentStatePayload = {
+  value: any
+  newKey?: string | null
+  remove?: undefined | false
+} | {
+  value?: undefined
+  newKey?: undefined
+  remove: true
 }
 
 export type HookHandler<TPayload, TContext> = (payload: TPayload, ctx: TContext) => void | Promise<void>
@@ -94,6 +110,7 @@ export interface Hookable<TContext> {
   getComponentBounds (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS], TContext>)
   getComponentName (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_NAME], TContext>)
   getElementComponent (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT], TContext>)
+  editComponentState (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>)
   getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
   getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)
 }

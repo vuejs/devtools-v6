@@ -59,6 +59,7 @@ export default {
     <StateInspector
       :state="state"
       class="flex-1 overflow-y-auto"
+      @edit-state="editState"
     />
   </div>
 </template>

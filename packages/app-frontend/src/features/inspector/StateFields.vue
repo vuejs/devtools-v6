@@ -3,7 +3,7 @@
     class="data-fields"
   >
     <template v-if="isFieldsArray">
-      <data-field
+      <DataField
         v-for="field in displayedFields"
         :key="field.key"
         :field="field"
@@ -12,16 +12,22 @@
         :editable="field.editable"
         :force-collapse="forceCollapse"
         :is-state-field="isStateField(field)"
+        v-on="{
+          'edit-state': $listeners['edit-state']
+        }"
       />
     </template>
     <template v-else>
-      <data-field
+      <DataField
         v-for="(value, key) in displayedFields"
         :key="key"
         :field="{ value, key }"
         :depth="0"
-        :path="key"
+        :path="key.toString()"
         :editable="false"
+        v-on="{
+          'edit-state': $listeners['edit-state']
+        }"
       />
     </template>
     <VueButton

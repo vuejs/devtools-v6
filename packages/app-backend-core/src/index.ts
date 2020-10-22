@@ -20,7 +20,8 @@ import {
   sendComponentTreeData,
   sendSelectedComponentData,
   sendEmptyComponentData,
-  getComponentId
+  getComponentId,
+  editComponentState
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
@@ -100,16 +101,10 @@ function connect () {
   // Components
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
-    if (instanceId === '_root') {
-      instanceId = `${ctx.currentAppRecord.id}:root`
-    }
     sendComponentTreeData(instanceId, filter, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
-    if (instanceId === '_root') {
-      instanceId = `${ctx.currentAppRecord.id}:root`
-    }
     sendSelectedComponentData(instanceId, ctx)
   })
 
@@ -140,6 +135,10 @@ function connect () {
       sendEmptyComponentData(id, ctx)
     }
     ctx.currentAppRecord.instanceMap.delete(id)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, value, newKey, remove }) => {
+    editComponentState(instanceId, dotPath, { value, newKey, remove }, ctx)
   })
 
   // Highlighter

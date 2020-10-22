@@ -347,7 +347,7 @@ export function getCustomRefDetails (instance, key, ref) {
   }
 }
 
-export function parse (data, revive) {
+export function parse (data: any, revive: boolean) {
   return revive
     ? parseCircularAutoChunks(data, reviver)
     : parseCircularAutoChunks(data)

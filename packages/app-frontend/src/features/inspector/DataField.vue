@@ -168,7 +168,7 @@
       v-if="expanded && isExpandableType"
       class="children"
     >
-      <data-field
+      <DataField
         v-for="subField in formattedSubFields"
         :key="subField.key"
         :field="subField"
@@ -180,6 +180,9 @@
         :renamable="editable && valueType === 'plain-object'"
         :force-collapse="forceCollapse"
         :is-state-field="isStateField"
+        v-on="{
+          'edit-state': $listeners['edit-state']
+        }"
       />
       <VueButton
         v-if="subFieldCount > limit"
@@ -189,7 +192,7 @@
         class="icon-button flat more"
         @click="showMoreSubfields()"
       />
-      <data-field
+      <DataField
         v-if="isSubfieldsEditable && addingValue"
         ref="newField"
         :field="newField"
@@ -202,6 +205,9 @@
         :is-state-field="isStateField"
         @cancel-edit="addingValue = false"
         @submit-edit="addingValue = false"
+        v-on="{
+          'edit-state': $listeners['edit-state']
+        }"
       />
     </div>
   </div>

@@ -34,7 +34,7 @@ export enum BridgeEvents {
   TO_BACK_COMPONENT_MOUSE_OVER = 'b:component:mouse-over',
   TO_BACK_COMPONENT_MOUSE_OUT = 'b:component:mouse-out',
   TO_BACK_COMPONENT_CONTEXT_MENU_TARGET = 'b:component:context-menu-target',
-  TO_BACK_COMPONENT_SET_DATA = 'b:component:set-data',
+  TO_BACK_COMPONENT_EDIT_STATE = 'b:component:edit-state',
   TO_BACK_COMPONENT_PICK = 'b:component:pick',
   TO_FRONT_COMPONENT_PICK = 'f:component:pick',
   TO_BACK_COMPONENT_PICK_CANCELED = 'b:component:pick-canceled',

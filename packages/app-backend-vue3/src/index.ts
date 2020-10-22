@@ -1,6 +1,6 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { ComponentWalker } from './components/tree'
-import { getInstanceDetails } from './components/data'
+import { editState, getInstanceDetails } from './components/data'
 import { getInstanceName, getInstanceOrVnodeRect } from './components/util'
 import { getComponentInstanceFromElement } from './components/el'
 import { HookEvents } from '@vue-devtools/shared-utils'
@@ -49,6 +49,10 @@ export const backend: DevtoolsBackend = {
 
     api.on.getElementComponent(payload => {
       payload.componentInstance = getComponentInstanceFromElement(payload.element)
+    })
+
+    api.on.editComponentState((payload, ctx) => {
+      editState(payload, ctx)
     })
 
     api.on.transformCall(payload => {

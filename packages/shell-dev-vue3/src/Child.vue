@@ -21,11 +21,21 @@ export default {
       console.log('foobar')
     }
 
+    const internalComputed = ref(0)
+
+    const writableComputed = computed({
+      get: () => internalComputed.value,
+      set: value => {
+        internalComputed.value = value
+      }
+    })
+
     return {
       answer,
       doubleAnswer,
       reactiveObject,
-      myMethodFromSetup
+      myMethodFromSetup,
+      writableComputed
     }
   },
 

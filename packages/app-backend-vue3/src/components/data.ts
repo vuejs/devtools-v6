@@ -1,8 +1,8 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
-import { getInstanceName } from './util'
-import { camelize } from '@vue-devtools/shared-utils'
+import { getInstanceName, getUniqueComponentId } from './util'
+import { camelize, get, set } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
-import { InspectedComponentData } from '@vue/devtools-api'
+import { HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 
 /**
  * Get the detailed information of an inspected instance.
@@ -10,7 +10,7 @@ import { InspectedComponentData } from '@vue/devtools-api'
 export async function getInstanceDetails (instance: any, ctx: BackendContext): Promise<InspectedComponentData> {
   console.log(instance)
   return {
-    id: instance.id,
+    id: getUniqueComponentId(instance, ctx),
     name: getInstanceName(instance),
     file: instance.type?.__file,
     state: await getInstanceState(instance)
@@ -101,7 +101,7 @@ function processState (instance) {
     .map(key => ({
       key,
       value: data[key],
-      editable: false
+      editable: true
     }))
 }
 
@@ -112,7 +112,6 @@ function processSetupState (instance) {
       key,
       type: 'setup',
       value: instance.setupState[key],
-      editable: false,
       ...getSetupStateExtra(raw[key])
     }))
 }
@@ -120,15 +119,39 @@ function processSetupState (instance) {
 function getSetupStateExtra (raw) {
   if (!raw) return {}
 
-  const isRef = !!raw.__v_isRef
-  const isComputed = isRef && !!raw.effect
-  const isReactive = !!raw.__v_reactive
+  const info = getSetupStateInfo(raw)
 
-  const objectType = isComputed ? 'Computed' : isRef ? 'Ref' : isReactive ? 'Reactive' : null
+  const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
 
   return {
     ...objectType ? { objectType } : {},
-    ...raw.effect ? { raw: raw.effect.raw.toString() } : {}
+    ...raw.effect ? { raw: raw.effect.raw.toString() } : {},
+    editable: (info.ref || info.computed || info.reactive) && !info.readonly
+  }
+}
+
+function isRef (raw: any): boolean {
+  return !!raw.__v_isRef
+}
+
+function isComputed (raw: any): boolean {
+  return isRef(raw) && !!raw.effect
+}
+
+function isReactive (raw: any): boolean {
+  return !!raw.__v_isReactive
+}
+
+function isReadOnly (raw: any): boolean {
+  return !!raw.__v_isReadonly
+}
+
+function getSetupStateInfo (raw: any) {
+  return {
+    ref: isRef(raw),
+    computed: isComputed(raw),
+    reactive: isReactive(raw),
+    readonly: isReadOnly(raw)
   }
 }
 
@@ -172,4 +195,43 @@ function processComputed (instance) {
   }
 
   return computed
+}
+
+export function editState ({ componentInstance, path, state }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
+  let target: any
+  const targetPath: string[] = path.slice()
+
+  // Data
+  if (path[0] in componentInstance.data) {
+    target = componentInstance.data
+  }
+
+  // Props
+  // @TODO
+
+  // Setup
+  if (path[0] in componentInstance.devtoolsRawSetupState) {
+    target = componentInstance.devtoolsRawSetupState
+
+    const currentValue = get(componentInstance.devtoolsRawSetupState, path)
+    if (currentValue != null) {
+      const info = getSetupStateInfo(currentValue)
+
+      if (info.readonly) return
+      if (info.ref) {
+        targetPath.splice(1, 0, 'value')
+      }
+    }
+  }
+
+  if (target && targetPath) {
+    set(target, targetPath, 'value' in state ? state.value : undefined, (obj, field, value) => {
+      if (state.remove || state.newKey) {
+        delete obj[field]
+      }
+      if (!state.remove) {
+        obj[state.newKey || field] = value
+      }
+    })
+  }
 }
