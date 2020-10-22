@@ -201,16 +201,14 @@ export function editState ({ componentInstance, path, state }: HookPayloads[Hook
   let target: any
   const targetPath: string[] = path.slice()
 
-  // Data
-  if (path[0] in componentInstance.data) {
+  if (Object.keys(componentInstance.data).includes(path[0])) {
+    // Data
     target = componentInstance.data
-  }
-
-  // Props
-  // @TODO
-
-  // Setup
-  if (path[0] in componentInstance.devtoolsRawSetupState) {
+  } else if (Object.keys(componentInstance.props).includes(path[0])) {
+    // Props
+    target = componentInstance.props
+  } else if (Object.keys(componentInstance.devtoolsRawSetupState).includes(path[0])) {
+    // Setup
     target = componentInstance.devtoolsRawSetupState
 
     const currentValue = get(componentInstance.devtoolsRawSetupState, path)
