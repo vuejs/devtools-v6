@@ -14,6 +14,7 @@ const minTime = ref(0)
 const maxTime = ref(0)
 
 const layersPerApp = ref({})
+const vScrollPerApp = ref({})
 
 const selectedEvent = ref(null)
 
@@ -57,6 +58,7 @@ export function resetTimeline () {
   minTime.value = now - 1000
   maxTime.value = now
   layersPerApp.value = {}
+  vScrollPerApp.value = {}
 
   fetchLayers()
 
@@ -163,7 +165,13 @@ export function useLayers () {
   const { currentAppId } = useApps()
 
   return {
-    layers: computed(() => getLayers(currentAppId.value))
+    layers: computed(() => getLayers(currentAppId.value)),
+    vScroll: computed({
+      get: () => vScrollPerApp.value[currentAppId.value] || 0,
+      set: value => {
+        Vue.set(vScrollPerApp.value, currentAppId.value, value)
+      }
+    })
   }
 }
 

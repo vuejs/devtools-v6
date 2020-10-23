@@ -63,6 +63,14 @@ export default {
         color: 0x92A2BF
       })
 
+      for (let i = 0; i < 10; i++) {
+        api.addTimelineLayer({
+          id: `test-layer-${i}`,
+          label: `Empty ${i}`,
+          color: 0x92A2BF
+        })
+      }
+
       api.addInspector({
         id: 'test-inspector',
         label: 'Test inspector',

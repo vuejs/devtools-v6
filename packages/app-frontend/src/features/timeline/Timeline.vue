@@ -6,6 +6,7 @@ import LayerItem from './LayerItem.vue'
 import SelectedEventInspector from './SelectedEventInspector.vue'
 
 import { useTime, useLayers, resetTimeline } from '.'
+import { onMounted, ref, watch } from '@vue/composition-api'
 
 export default {
   components: {
@@ -17,9 +18,37 @@ export default {
   },
 
   setup () {
+    const { layers, vScroll } = useLayers()
+    const layersEl = ref()
+
+    function applyScroll () {
+      if (layersEl.value && layersEl.value.scrollTop !== vScroll.value) {
+        layersEl.value.scrollTop = vScroll.value
+      }
+    }
+
+    watch(vScroll, () => {
+      applyScroll()
+    }, {
+      immediate: true
+    })
+
+    onMounted(() => {
+      applyScroll()
+    })
+
+    function onLayersScroll (event) {
+      if (event.currentTarget.scrollTop !== vScroll.value) {
+        vScroll.value = event.currentTarget.scrollTop
+      }
+    }
+
     return {
       ...useTime(),
-      ...useLayers(),
+      layers,
+      vScroll,
+      layersEl,
+      onLayersScroll,
       resetTimeline
     }
   }
@@ -33,14 +62,21 @@ export default {
       dragger-offset="before"
     >
       <template #left>
-        <div class="flex flex-col h-full overflow-auto">
-          <div class="h-4 border-b border-gray-200 dark:border-gray-900" />
+        <div class="flex flex-col h-full">
+          <div class="h-4 flex-none border-b border-gray-200 dark:border-gray-900" />
 
-          <LayerItem
-            v-for="layer of layers"
-            :key="layer.id"
-            :layer="layer"
-          />
+          <div
+            ref="layersEl"
+            class="flex flex-col flex-1 overflow-y-auto"
+            @scroll="onLayersScroll"
+          >
+            <LayerItem
+              v-for="layer of layers"
+              :key="layer.id"
+              :layer="layer"
+              class="flex-none"
+            />
+          </div>
         </div>
       </template>
 

@@ -69,7 +69,7 @@ export default {
 
     // Layers
 
-    const { layers } = useLayers()
+    const { layers, vScroll } = useLayers()
     /** @type {Container[]} */
     let layerContainers = []
     let layersMap = {}
@@ -331,6 +331,22 @@ export default {
         }
       }
     }
+
+    // Vertical scroll
+
+    function updateVScroll () {
+      if (app) {
+        app.stage.y = -vScroll.value
+      }
+    }
+
+    watch(vScroll, () => {
+      updateVScroll()
+    })
+
+    onMounted(() => {
+      updateVScroll()
+    })
 
     // Resize
 
