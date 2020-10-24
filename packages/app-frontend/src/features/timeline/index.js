@@ -1,5 +1,5 @@
 import { ref, computed, onUnmounted } from '@vue/composition-api'
-import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import { BridgeEvents, getStorage, parse, setStorage } from '@vue-devtools/shared-utils'
 import cloneDeep from 'lodash/cloneDeep'
 import Vue from 'vue'
 import { formatTime } from '@front/util/format'
@@ -14,6 +14,7 @@ const minTime = ref(0)
 const maxTime = ref(0)
 
 const layersPerApp = ref({})
+const hiddenLayersPerApp = ref({})
 const vScrollPerApp = ref({})
 
 const selectedEvent = ref(null)
@@ -61,6 +62,8 @@ export function resetTimeline () {
   vScrollPerApp.value = {}
 
   fetchLayers()
+
+  hiddenLayersPerApp.value = getStorage('hidden-layers', {})
 
   for (const cb of resetCbs) {
     cb()
@@ -161,17 +164,51 @@ function getLayers (appId) {
   return layers
 }
 
+function getHiddenLayers (appId) {
+  let layers = hiddenLayersPerApp.value[appId]
+  if (!layers) {
+    layers = []
+    Vue.set(hiddenLayersPerApp.value, appId, layers)
+    // Read the property again to make it reactive
+    layers = hiddenLayersPerApp.value[appId]
+  }
+  return layers
+}
+
 export function useLayers () {
   const { currentAppId } = useApps()
 
+  const allLayers = computed(() => getLayers(currentAppId.value))
+
+  function isLayerHidden (layer) {
+    const list = getHiddenLayers(currentAppId.value)
+    return list.includes(layer.id)
+  }
+
+  function setLayerHidden (layer, hidden) {
+    const list = getHiddenLayers(currentAppId.value)
+    const index = list.indexOf(layer.id)
+    if (hidden && index === -1) {
+      list.push(layer.id)
+    } else if (!hidden && index !== -1) {
+      list.splice(index, 1)
+    }
+    setStorage('hidden-layers', hiddenLayersPerApp.value)
+  }
+
+  const layers = computed(() => allLayers.value.filter(l => !isLayerHidden(l)))
+
   return {
-    layers: computed(() => getLayers(currentAppId.value)),
+    layers,
+    allLayers,
     vScroll: computed({
       get: () => vScrollPerApp.value[currentAppId.value] || 0,
       set: value => {
         Vue.set(vScrollPerApp.value, currentAppId.value, value)
       }
-    })
+    }),
+    isLayerHidden,
+    setLayerHidden
   }
 }
 

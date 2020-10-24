@@ -163,8 +163,10 @@ export default {
       if (event.stackParent) return
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
 
-      const { container } = layersMap[event.layer.id]
-      addEvent(event, container)
+      const layer = layersMap[event.layer.id]
+      if (layer) {
+        addEvent(event, layer.container)
+      }
     })
 
     let eventsUpdateQueued = false

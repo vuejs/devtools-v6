@@ -18,7 +18,13 @@ export default {
   },
 
   setup () {
-    const { layers, vScroll } = useLayers()
+    const {
+      layers,
+      vScroll,
+      allLayers,
+      isLayerHidden,
+      setLayerHidden
+    } = useLayers()
     const layersEl = ref()
 
     function applyScroll () {
@@ -49,6 +55,9 @@ export default {
       vScroll,
       layersEl,
       onLayersScroll,
+      allLayers,
+      isLayerHidden,
+      setLayerHidden,
       resetTimeline
     }
   }
@@ -109,6 +118,33 @@ export default {
     </SplitPane>
 
     <portal to="header-end">
+      <VueDropdown>
+        <template #trigger>
+          <VueButton
+            v-tooltip="'Select layers'"
+            class="icon-button flat"
+            icon-left="playlist_add"
+          />
+        </template>
+
+        <div
+          style="max-height: 250px;"
+          class="overflow-y-auto"
+        >
+          <div class="flex flex-col">
+            <VueSwitch
+              v-for="layer of allLayers"
+              :key="layer.id"
+              :value="!isLayerHidden(layer)"
+              class="extend-left px-2 py-1 hover:bg-green-100 dark-hover:bg-green-900"
+              @update="value => setLayerHidden(layer, !value)"
+            >
+              {{ layer.label }}
+            </VueSwitch>
+          </div>
+        </div>
+      </VueDropdown>
+
       <VueButton
         v-tooltip="'Clear all timelines'"
         class="icon-button flat"
