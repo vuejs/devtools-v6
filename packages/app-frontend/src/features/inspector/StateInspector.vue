@@ -31,9 +31,7 @@
           v-show="isExpanded(dataType)"
           :fields="state[dataType]"
           :force-collapse="forceCollapse"
-          v-on="{
-            'edit-state': $listeners['edit-state']
-          }"
+          @edit-state="(path, payload) => $emit('edit-state', path, payload)"
         />
       </div>
     </template>

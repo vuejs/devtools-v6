@@ -180,9 +180,7 @@
         :renamable="editable && valueType === 'plain-object'"
         :force-collapse="forceCollapse"
         :is-state-field="isStateField"
-        v-on="{
-          'edit-state': $listeners['edit-state']
-        }"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
       />
       <VueButton
         v-if="subFieldCount > limit"
@@ -205,9 +203,7 @@
         :is-state-field="isStateField"
         @cancel-edit="addingValue = false"
         @submit-edit="addingValue = false"
-        v-on="{
-          'edit-state': $listeners['edit-state']
-        }"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
       />
     </div>
   </div>

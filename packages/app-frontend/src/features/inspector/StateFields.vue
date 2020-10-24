@@ -12,9 +12,7 @@
         :editable="field.editable"
         :force-collapse="forceCollapse"
         :is-state-field="isStateField(field)"
-        v-on="{
-          'edit-state': $listeners['edit-state']
-        }"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
       />
     </template>
     <template v-else>
@@ -25,9 +23,7 @@
         :depth="0"
         :path="key.toString()"
         :editable="false"
-        v-on="{
-          'edit-state': $listeners['edit-state']
-        }"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
       />
     </template>
     <VueButton
