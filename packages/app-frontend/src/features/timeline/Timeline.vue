@@ -23,7 +23,8 @@ export default {
       vScroll,
       allLayers,
       isLayerHidden,
-      setLayerHidden
+      setLayerHidden,
+      hoverLayerId
     } = useLayers()
     const layersEl = ref()
 
@@ -55,6 +56,7 @@ export default {
       vScroll,
       layersEl,
       onLayersScroll,
+      hoverLayerId,
       allLayers,
       isLayerHidden,
       setLayerHidden,
@@ -83,7 +85,10 @@ export default {
               v-for="layer of layers"
               :key="layer.id"
               :layer="layer"
+              :hover="hoverLayerId === layer.id"
               class="flex-none"
+              @mouseover.native="hoverLayerId = layer.id"
+              @mouseout.native="hoverLayerId = null"
             />
           </div>
         </div>

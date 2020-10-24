@@ -47,6 +47,8 @@ export default {
         antialias: true,
         autoDensity: true
       })
+      app.stage.interactive = true
+      app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       updateBackground()
       wrapper.value.appendChild(app.view)
     })
@@ -69,7 +71,8 @@ export default {
 
     // Layers
 
-    const { layers, vScroll } = useLayers()
+    const { layers, vScroll, hoverLayerId } = useLayers()
+
     /** @type {Container[]} */
     let layerContainers = []
     let layersMap = {}
@@ -108,6 +111,47 @@ export default {
     })
 
     watch(layers, () => resetLayers())
+
+    // Layer hover
+
+    /** @type {import('pixi.js').Graphics} */
+    let layerHoverEffect
+
+    onMounted(() => {
+      layerHoverEffect = new PIXI.Graphics()
+      layerHoverEffect.alpha = 0.1
+      layerHoverEffect.visible = false
+      app.stage.addChild(layerHoverEffect)
+    })
+
+    function drawLayerHoverEffect () {
+      if (!layerHoverEffect) return
+
+      if (hoverLayerId.value) {
+        const { layer } = layersMap[hoverLayerId.value]
+        layerHoverEffect.clear()
+        layerHoverEffect.beginFill(layer.color)
+        layerHoverEffect.drawRect(0, 0, app.view.width, 32)
+        layerHoverEffect.y = layers.value.indexOf(layer) * 32
+        layerHoverEffect.visible = true
+      } else {
+        layerHoverEffect.visible = false
+      }
+    }
+
+    watch(hoverLayerId, () => {
+      drawLayerHoverEffect()
+    })
+
+    function onMouseMove (event) {
+      const { offsetY } = event
+      const layerIndex = Math.floor((offsetY + vScroll.value) / 32)
+      if (layerIndex < layers.value.length) {
+        hoverLayerId.value = layers.value[layerIndex].id
+      } else {
+        hoverLayerId.value = null
+      }
+    }
 
     // Events
 
@@ -193,8 +237,6 @@ export default {
     // Event selection
 
     onMounted(() => {
-      app.stage.interactive = true
-      app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       app.stage.addListener('click', event => {
         let choice
         let distance = Number.POSITIVE_INFINITY
@@ -355,11 +397,14 @@ export default {
     function onResize () {
       app.queueResize()
       queueEventsUpdate()
+      drawLayerHoverEffect()
     }
 
     return {
       wrapper,
       onMouseWheel,
+      onMouseMove,
+      hoverLayerId,
       onResize
     }
   }
@@ -371,6 +416,8 @@ export default {
     ref="wrapper"
     class="relative overflow-hidden"
     @mousewheel="onMouseWheel"
+    @mousemove="onMouseMove"
+    @mouseout="hoverLayerId = null"
   >
     <resize-observer @notify="onResize" />
   </div>

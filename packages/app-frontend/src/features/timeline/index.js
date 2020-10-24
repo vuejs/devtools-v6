@@ -18,6 +18,7 @@ const hiddenLayersPerApp = ref({})
 const vScrollPerApp = ref({})
 
 const selectedEvent = ref(null)
+const hoverLayerId = ref(null)
 
 function layerFactory (options) {
   return {
@@ -60,6 +61,7 @@ export function resetTimeline () {
   maxTime.value = now
   layersPerApp.value = {}
   vScrollPerApp.value = {}
+  hoverLayerId.value = null
 
   fetchLayers()
 
@@ -208,7 +210,8 @@ export function useLayers () {
       }
     }),
     isLayerHidden,
-    setLayerHidden
+    setLayerHidden,
+    hoverLayerId
   }
 }
 
