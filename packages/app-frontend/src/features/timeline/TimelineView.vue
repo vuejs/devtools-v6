@@ -132,6 +132,7 @@ export default {
         layerHoverEffect.clear()
         layerHoverEffect.beginFill(layer.color)
         layerHoverEffect.drawRect(0, 0, app.view.width, 32)
+        layerHoverEffect.x = -app.stage.x
         layerHoverEffect.y = layers.value.indexOf(layer) * 32
         layerHoverEffect.visible = true
       } else {
@@ -319,6 +320,7 @@ export default {
 
     function updateCamera () {
       app.stage.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
+      drawLayerHoverEffect()
     }
 
     watch(startTime, () => queueCameraUpdate())
