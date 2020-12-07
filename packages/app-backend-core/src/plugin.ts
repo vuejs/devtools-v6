@@ -22,6 +22,12 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, {
     plugin: serializePlugin(plugin)
   })
+
+  const targetList = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ || []
+  targetList.push({
+    pluginDescriptor,
+    setupFn
+  })
 }
 
 export async function addQueuedPlugins (ctx: BackendContext) {
@@ -31,6 +37,15 @@ export async function addQueuedPlugins (ctx: BackendContext) {
       addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
     }
     target.__VUE_DEVTOOLS_PLUGINS__ = null
+  }
+}
+
+export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
+  if (target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__)) {
+    for (const k in target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
+      const plugin = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__[k]
+      addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
+    }
   }
 }
 

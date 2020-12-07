@@ -23,7 +23,7 @@ import {
   getComponentId,
   editComponentState
 } from './component'
-import { addQueuedPlugins, addPlugin, sendPluginList } from './plugin'
+import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
 import { registerApp, selectApp, mapAppRecord, getAppRecordId } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState } from './inspector'
@@ -271,6 +271,7 @@ function connect () {
 
   // Plugins
 
+  addPreviouslyRegisteredPlugins(ctx)
   addQueuedPlugins(ctx)
 
   ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, () => {
