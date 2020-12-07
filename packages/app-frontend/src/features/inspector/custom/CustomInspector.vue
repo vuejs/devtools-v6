@@ -25,6 +25,8 @@ export default {
 
     watch(inspector, () => {
       refreshInspector()
+    }, {
+      immediate: true
     })
 
     return {
