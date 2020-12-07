@@ -282,9 +282,10 @@ export default {
         if (event.g) {
           /** @type {PIXI.Graphics} */
           const g = event.g
-          const size = Math.min(6, 2 + event.stackedEvents.length)
+          let size = Math.min(6, 2 + event.stackedEvents.length)
           g.clear()
           if (selected) {
+            size -= 0.5
             g.lineStyle(1, color)
             g.beginFill(0xffffff)
             g.zIndex = 999999999
