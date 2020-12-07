@@ -6,7 +6,7 @@ import { formatTime } from '@front/util/format'
 import { useApps, getApps } from '../apps'
 import { getBridge } from '../bridge'
 
-const STACK_DURATION = 10
+const STACK_DURATION = 50
 
 const startTime = ref(0)
 const endTime = ref(0)
@@ -122,13 +122,7 @@ function addEvent (appId, event, layer) {
 
 function stackEvent (event) {
   const roundedTime = Math.round(event.time / STACK_DURATION)
-  // Try neighbors too
-  const times = [roundedTime, roundedTime - STACK_DURATION, roundedTime + STACK_DURATION]
-  let wasStacked = false
-  for (const k in times) {
-    wasStacked = !!_stackEvent(event, times[k])
-    if (wasStacked) break
-  }
+  const wasStacked = !!_stackEvent(event, roundedTime)
   if (!wasStacked) {
     event.layer.eventTimeMap[roundedTime] = event
     event.layer.displayedEvents.push(event)
