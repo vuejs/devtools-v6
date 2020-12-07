@@ -1,9 +1,9 @@
 <script>
+import { watch } from '@vue/composition-api'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
 import { useCurrentInspector } from '.'
-import { watch } from '@vue/composition-api'
 
 export default {
   components: {

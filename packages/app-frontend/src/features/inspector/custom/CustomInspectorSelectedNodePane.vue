@@ -1,6 +1,7 @@
 <script>
-import StateInspector from '../StateInspector.vue'
+import { watch } from '@vue/composition-api'
 import { useCurrentInspector } from '.'
+import StateInspector from '../StateInspector.vue'
 
 export default {
   components: {
@@ -8,7 +9,16 @@ export default {
   },
 
   setup () {
-    const { currentInspector: inspector } = useCurrentInspector()
+    const {
+      currentInspector: inspector,
+      refreshState
+    } = useCurrentInspector()
+
+    watch(() => inspector.value && inspector.value.selectedNode, value => {
+      if (value && !inspector.state) {
+        refreshState()
+      }
+    })
 
     return {
       inspector

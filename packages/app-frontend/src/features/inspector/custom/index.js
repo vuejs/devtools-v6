@@ -38,19 +38,24 @@ export function useCurrentInspector () {
   }
 
   function refreshInspector () {
-    fetchTree(currentInspector.value)
-    fetchState(currentInspector.value)
+    refreshTree()
+    refreshState()
   }
 
   function refreshTree () {
     fetchTree(currentInspector.value)
   }
 
+  function refreshState () {
+    fetchState(currentInspector.value)
+  }
+
   return {
     currentInspector,
     selectNode,
     refreshInspector,
-    refreshTree
+    refreshTree,
+    refreshState
   }
 }
 
@@ -69,6 +74,7 @@ function fetchTree (inspector) {
 
 function fetchState (inspector) {
   if (!inspector || !inspector.selectedNode) return
+  console.log('fetchState')
   getBridge().send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, {
     inspectorId: inspector.id,
     appId: inspector.appId,
