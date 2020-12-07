@@ -29,8 +29,10 @@ import { registerApp, selectApp, mapAppRecord, getAppRecordId } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState } from './inspector'
 
 let ctx: BackendContext
+let connected = false
 
 export async function initBackend (bridge: Bridge) {
+  connected = false
   ctx = createBackendContext({
     bridge,
     hook
@@ -58,9 +60,22 @@ export async function initBackend (bridge: Bridge) {
 
     registerApp(app, ctx)
   })
+
+  // In case we close and open devtools again
+  if (hook.apps.length) {
+    hook.apps.forEach(app => {
+      registerApp(app, ctx)
+      connect()
+    })
+  }
 }
 
 function connect () {
+  if (connected) {
+    return
+  }
+  connected = true
+
   ctx.currentTab = BuiltinTabs.COMPONENTS
 
   // Subscriptions

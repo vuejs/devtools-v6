@@ -1,5 +1,3 @@
-import { resolve } from 'path'
-
 export type Job = () => Promise<void>
 
 export class JobQueue {

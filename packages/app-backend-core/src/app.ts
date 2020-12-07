@@ -6,6 +6,7 @@ import {
   DevtoolsBackend
 } from '@vue-devtools/app-backend-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { JobQueue } from './util/queue'
 
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
 import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
@@ -18,10 +19,20 @@ const availableBackends = [
 ]
 
 const enabledBackends: Set<DevtoolsBackend> = new Set()
+const jobs = new JobQueue()
 
 let recordId = 0
 
 export async function registerApp (options: AppRecordOptions, ctx: BackendContext) {
+  return jobs.queue(() => registerAppJob(options, ctx))
+}
+
+async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
+  // Dedupe
+  if (ctx.appRecords.find(a => a.options === options)) {
+    return
+  }
+
   let record: AppRecord
   const baseFrameworkVersion = parseInt(options.version.substr(0, options.version.indexOf('.')))
   for (let i = 0; i < availableBackends.length; i++) {
