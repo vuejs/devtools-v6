@@ -84,6 +84,8 @@ export default {
         container.y = y
         y += 32
         app.stage.addChild(container)
+        // allow z-index sorting
+        container.sortableChildren = true
         layerContainers.push(container)
         layersMap[layer.id] = {
           layer,
@@ -170,11 +172,13 @@ export default {
       updateEventPosition(event, g)
       g.y = 16
       event.g = g
-      if (selectedEvent.value === event) {
-        drawSelectedEvent(event)
-      } else {
-        drawUnselectedEvent(event)
-      }
+      setTimeout(() => {
+        if (selectedEvent.value === event) {
+          drawSelectedEvent(event)
+        } else {
+          drawUnselectedEvent(event)
+        }
+      }, 5)
       container.addChild(g)
 
       events.push(event)
@@ -254,23 +258,29 @@ export default {
       })
     })
 
-    function drawSelectedEvent (event) {
-      if (event && event.g) {
-        const g = event.g
-        g.clear()
-        g.beginFill(event.layer.color)
-        g.drawCircle(0, 0, 7)
+    function drawEvent (size, event) {
+      if (event) {
+        let color = event.layer.color
+        for (const subEvent of event.stackedEvents) {
+          if (subEvent.logType === 'error') {
+            color = 0xE53E3E
+            break
+          } else if (subEvent.logType === 'warning') {
+            color = 0xECC94B
+          }
+        }
+
+        if (event.g) {
+          event.g.zIndex = size
+          event.g.clear()
+          event.g.beginFill(color)
+          event.g.drawCircle(0, 0, size)
+        }
       }
     }
 
-    function drawUnselectedEvent (event) {
-      if (event && event.g) {
-        const g = event.g
-        g.clear()
-        g.beginFill(event.layer.color)
-        g.drawCircle(0, 0, 4)
-      }
-    }
+    const drawSelectedEvent = drawEvent.bind(null, 7)
+    const drawUnselectedEvent = drawEvent.bind(null, 4)
 
     watch(selectedEvent, (event, oldEvent) => {
       drawUnselectedEvent(oldEvent)

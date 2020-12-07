@@ -34,7 +34,8 @@ export interface TimelineEventOptions {
 export interface TimelineEvent<TData = any, TMeta = any> {
   time: number
   data: TData
-  meta: TMeta
+  logType?: 'default' | 'warning' | 'error'
+  meta?: TMeta
 }
 
 export interface CustomInspectorOptions {

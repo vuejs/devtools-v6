@@ -185,7 +185,7 @@ function connect () {
       appId: options.all || !app || appId == null ? 'all' : appId,
       layerId: options.layerId,
       event: {
-        time: options.event.time,
+        ...options.event,
         data: stringify(options.event.data)
       }
     } as TimelineEventPayload)
