@@ -38,8 +38,14 @@ export default {
 
     // Pixi App
 
-    /** @type {Application} */
+    /** @type {PIXI.Application} */
     let app
+
+    /** @type {PIXI.Container} */
+    let verticalScrollingContainer
+
+    /** @type {PIXI.Container} */
+    let horizontalScrollingContainer
 
     onMounted(() => {
       app = new PIXI.Application({
@@ -51,6 +57,12 @@ export default {
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       updateBackground()
       wrapper.value.appendChild(app.view)
+
+      verticalScrollingContainer = new PIXI.Container()
+      app.stage.addChild(verticalScrollingContainer)
+
+      horizontalScrollingContainer = new PIXI.Container()
+      verticalScrollingContainer.addChild(horizontalScrollingContainer)
     })
 
     onUnmounted(() => {
@@ -83,7 +95,7 @@ export default {
         const container = new PIXI.Container()
         container.y = y
         y += 32
-        app.stage.addChild(container)
+        horizontalScrollingContainer.addChild(container)
         // allow z-index sorting
         container.sortableChildren = true
         layerContainers.push(container)
@@ -123,7 +135,7 @@ export default {
       layerHoverEffect = new PIXI.Graphics()
       layerHoverEffect.alpha = 0.1
       layerHoverEffect.visible = false
-      app.stage.addChild(layerHoverEffect)
+      verticalScrollingContainer.addChild(layerHoverEffect)
     })
 
     function drawLayerHoverEffect () {
@@ -134,7 +146,6 @@ export default {
         layerHoverEffect.clear()
         layerHoverEffect.beginFill(layer.color)
         layerHoverEffect.drawRect(0, 0, app.view.width, 32)
-        layerHoverEffect.x = -app.stage.x
         layerHoverEffect.y = layers.value.indexOf(layer) * 32
         layerHoverEffect.visible = true
       } else {
@@ -329,7 +340,7 @@ export default {
     }
 
     function updateCamera () {
-      app.stage.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
+      horizontalScrollingContainer.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
       drawLayerHoverEffect()
     }
 
@@ -391,8 +402,8 @@ export default {
     // Vertical scroll
 
     function updateVScroll () {
-      if (app) {
-        app.stage.y = -vScroll.value
+      if (verticalScrollingContainer) {
+        verticalScrollingContainer.y = -vScroll.value
       }
     }
 
