@@ -183,13 +183,7 @@ export default {
       updateEventPosition(event, g)
       g.y = 16
       event.g = g
-      setTimeout(() => {
-        if (selectedEvent.value === event) {
-          drawSelectedEvent(event)
-        } else {
-          drawUnselectedEvent(event)
-        }
-      }, 5)
+      refreshEventGraphics(event)
       container.addChild(g)
 
       events.push(event)
@@ -220,8 +214,12 @@ export default {
     }
 
     onEventAdd(event => {
-      if (event.stackParent) return
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
+
+      if (event.stackParent) {
+        refreshEventGraphics(event.stackParent)
+        return
+      }
 
       const layer = layersMap[event.layer.id]
       if (layer) {
@@ -269,7 +267,7 @@ export default {
       })
     })
 
-    function drawEvent (size, event) {
+    function drawEvent (selected, event) {
       if (event) {
         let color = event.layer.color
         for (const subEvent of event.stackedEvents) {
@@ -282,16 +280,33 @@ export default {
         }
 
         if (event.g) {
-          event.g.zIndex = size
-          event.g.clear()
-          event.g.beginFill(color)
-          event.g.drawCircle(0, 0, size)
+          /** @type {PIXI.Graphics} */
+          const g = event.g
+          const size = Math.min(6, 2 + event.stackedEvents.length)
+          g.clear()
+          if (selected) {
+            g.lineStyle(1, color)
+            g.beginFill(0xffffff)
+            g.zIndex = 999999999
+          } else {
+            g.beginFill(color)
+            g.zIndex = size
+          }
+          g.drawCircle(0, 0, size)
         }
       }
     }
 
-    const drawSelectedEvent = drawEvent.bind(null, 7)
-    const drawUnselectedEvent = drawEvent.bind(null, 4)
+    const drawSelectedEvent = drawEvent.bind(null, true)
+    const drawUnselectedEvent = drawEvent.bind(null, false)
+
+    function refreshEventGraphics (event) {
+      if (selectedEvent.value === event) {
+        drawSelectedEvent(event)
+      } else {
+        drawUnselectedEvent(event)
+      }
+    }
 
     watch(selectedEvent, (event, oldEvent) => {
       drawUnselectedEvent(oldEvent)
