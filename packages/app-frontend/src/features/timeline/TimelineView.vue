@@ -282,7 +282,7 @@ export default {
         if (event.g) {
           /** @type {PIXI.Graphics} */
           const g = event.g
-          let size = Math.min(6, 2 + event.stackedEvents.length)
+          let size = event.stackedEvents.length > 1 ? 4 : 3
           g.clear()
           if (selected) {
             size -= 0.5
