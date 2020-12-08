@@ -105,12 +105,12 @@ function addEvent (appId, event, layer) {
     const scrollTime = event.time + 100
     if (scrollTime > maxTime.value) {
       if (endTime.value === maxTime.value) {
-        if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
-          // Autoscroll
-          startTime.value = scrollTime - AUTOSCROLL_DURATION
-        } else if (startTime.value !== minTime.value) {
+        if (startTime.value !== minTime.value) {
           // Autoscroll
           startTime.value = scrollTime - (endTime.value - startTime.value)
+        } else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
+          // Autoscroll
+          startTime.value = scrollTime - AUTOSCROLL_DURATION
         }
         endTime.value = scrollTime
       }
