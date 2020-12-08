@@ -8,6 +8,9 @@ import { useApps } from '../apps'
 import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
 
+const LAYER_SIZE = 16
+const GROUP_SIZE = 6
+
 installUnsafeEval(PIXI)
 
 export default {
@@ -94,7 +97,7 @@ export default {
       for (const layer of layers.value) {
         const container = new PIXI.Container()
         container.y = y
-        y += 32
+        y += (layer.height + 1) * LAYER_SIZE
         horizontalScrollingContainer.addChild(container)
         // allow z-index sorting
         container.sortableChildren = true
@@ -138,6 +141,10 @@ export default {
       verticalScrollingContainer.addChild(layerHoverEffect)
     })
 
+    function getLayerY (layer) {
+      return layers.value.slice(0, layers.value.indexOf(layer)).reduce((sum, layer) => sum + (layer.height + 1) * LAYER_SIZE, 0)
+    }
+
     function drawLayerHoverEffect () {
       if (!layerHoverEffect) return
 
@@ -145,8 +152,8 @@ export default {
         const { layer } = layersMap[hoverLayerId.value]
         layerHoverEffect.clear()
         layerHoverEffect.beginFill(layer.color)
-        layerHoverEffect.drawRect(0, 0, app.view.width, 32)
-        layerHoverEffect.y = layers.value.indexOf(layer) * 32
+        layerHoverEffect.drawRect(0, 0, app.view.width, (layer.height + 1) * LAYER_SIZE)
+        layerHoverEffect.y = getLayerY(layer)
         layerHoverEffect.visible = true
       } else {
         layerHoverEffect.visible = false
@@ -158,13 +165,19 @@ export default {
     })
 
     function onMouseMove (event) {
-      const { offsetY } = event
-      const layerIndex = Math.floor((offsetY + vScroll.value) / 32)
-      if (layerIndex < layers.value.length) {
-        hoverLayerId.value = layers.value[layerIndex].id
-      } else {
-        hoverLayerId.value = null
+      let { offsetY } = event
+      offsetY -= verticalScrollingContainer.y
+      if (offsetY >= 0) {
+        let y = 0
+        for (const layer of layers.value) {
+          y += (layer.height + 1) * LAYER_SIZE
+          if (offsetY <= y) {
+            hoverLayerId.value = layer.id
+            return
+          }
+        }
       }
+      hoverLayerId.value = null
     }
 
     // Events
@@ -173,18 +186,58 @@ export default {
 
     let events = []
 
-    function updateEventPosition (event, g) {
-      g.x = (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
+    function getEventPosition (event) {
+      return (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
     }
 
-    function addEvent (event, container) {
+    function updateEventPosition (event) {
+      event.container.x = getEventPosition(event)
+
+      let y = 0
+      if (event.group && event !== event.group.firstEvent) {
+        y = event.group.y
+      } else {
+        for (const group of event.layer.groups) {
+          if (group !== event.group && group.y === y && event.time >= group.firstEvent.time && event.time <= group.lastEvent.time) {
+            y++
+          }
+        }
+        if (event.group) {
+          event.group.y = y
+        }
+
+        if (y + 1 > event.layer.height) {
+          event.layer.height = y + 1
+        }
+      }
+      event.container.y = (y + 1) * LAYER_SIZE
+    }
+
+    function addEvent (event, layerContainer) {
+      // Container
+      const eventContainer = new PIXI.Container()
+      event.container = eventContainer
+      updateEventPosition(event)
+      layerContainer.addChild(eventContainer)
+
       // Graphics
       const g = new PIXI.Graphics()
-      updateEventPosition(event, g)
-      g.y = 16
       event.g = g
       refreshEventGraphics(event)
-      container.addChild(g)
+      eventContainer.addChild(g)
+
+      // Group graphics
+      if (event.group) {
+        if (event.group.firstEvent === event) {
+          const groupG = new PIXI.Graphics()
+          event.groupG = groupG
+          drawEventGroup(event)
+          eventContainer.addChild(groupG)
+        } else if (event.group.lastEvent === event) {
+          drawEventGroup(event.group.firstEvent)
+          queueEventsUpdate()
+        }
+      }
 
       events.push(event)
 
@@ -240,7 +293,11 @@ export default {
 
     function updateEvents () {
       for (const event of events) {
-        updateEventPosition(event, event.g)
+        updateEventPosition(event)
+
+        if (event.groupG) {
+          drawEventGroup(event)
+        }
       }
     }
 
@@ -341,6 +398,20 @@ export default {
         selectedEvent.value = events[index]
       }
     })
+
+    // Event Groups
+
+    function drawEventGroup (event) {
+      if (event.groupG) {
+        /** @type {PIXI.Graphics} */
+        const g = event.groupG
+        g.clear()
+        g.lineStyle(1, event.layer.color, 0.5)
+        g.beginFill(event.layer.color, 0.1)
+        const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
+        g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
+      }
+    }
 
     // Camera
 

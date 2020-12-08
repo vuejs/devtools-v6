@@ -36,6 +36,7 @@ export interface TimelineEvent<TData = any, TMeta = any> {
   data: TData
   logType?: 'default' | 'warning' | 'error'
   meta?: TMeta
+  groupId?: string | number
 }
 
 export interface CustomInspectorOptions {

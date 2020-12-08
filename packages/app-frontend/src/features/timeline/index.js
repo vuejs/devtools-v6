@@ -26,7 +26,10 @@ function layerFactory (options) {
     ...options,
     events: [],
     displayedEvents: [],
-    eventTimeMap: {}
+    eventTimeMap: {},
+    groupsMap: {},
+    groups: [],
+    height: 1
   }
 }
 
@@ -98,10 +101,29 @@ function addEvent (appId, event, layer) {
   event.appId = appId
   layer.events.push(event)
   event.stackedEvents = []
+
   const wasStacked = stackEvent(event)
 
+  // Groups
+  if (event.groupId) {
+    let group = layer.groupsMap[event.groupId]
+    if (!group) {
+      group = layer.groupsMap[event.groupId] = {
+        id: event.groupId,
+        events: [],
+        firstEvent: event,
+        lastEvent: event,
+        y: 0
+      }
+      layer.groups.push(group)
+    }
+    group.events.push(event)
+    group.lastEvent = event
+    event.group = group
+  }
+
+  // Update scrollbar
   if (!wasStacked) {
-    // Update scrollbar
     const scrollTime = event.time + 100
     if (scrollTime > maxTime.value) {
       if (endTime.value === maxTime.value) {

@@ -162,5 +162,19 @@ export default {
         }
       })
     })
+
+    window.addEventListener('keyup', event => {
+      devtoolsApi && devtoolsApi.addTimelineEvent({
+        layerId: 'test-layer',
+        event: {
+          time: Date.now(),
+          data: {
+            info: 'window.keyup',
+            key: event.key
+          },
+          groupId: event.key
+        }
+      })
+    })
   }
 }
