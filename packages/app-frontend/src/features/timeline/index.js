@@ -7,6 +7,7 @@ import { useApps, getApps } from '../apps'
 import { getBridge } from '../bridge'
 
 const STACK_DURATION = 50
+const AUTOSCROLL_DURATION = 10000
 
 const startTime = ref(0)
 const endTime = ref(0)
@@ -104,10 +105,12 @@ function addEvent (appId, event, layer) {
     const scrollTime = event.time + 100
     if (scrollTime > maxTime.value) {
       if (endTime.value === maxTime.value) {
-        if (endTime.value - startTime.value > 15000 || startTime.value !== minTime.value) {
+        if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
           // Autoscroll
-          const size = endTime.value - startTime.value
-          startTime.value = scrollTime - size
+          startTime.value = scrollTime - AUTOSCROLL_DURATION
+        } else if (startTime.value !== minTime.value) {
+          // Autoscroll
+          startTime.value = scrollTime - (endTime.value - startTime.value)
         }
         endTime.value = scrollTime
       }
