@@ -169,6 +169,7 @@ export default {
       offsetY -= verticalScrollingContainer.y
       if (offsetY >= 0) {
         let y = 0
+        // Find the hovering layer depending on each layer's height
         for (const layer of layers.value) {
           y += (layer.height + 1) * LAYER_SIZE
           if (offsetY <= y) {
@@ -195,6 +196,7 @@ export default {
 
       let y = 0
       if (event.group && event !== event.group.firstEvent) {
+        // If the event is inside a group, just use the group position
         y = event.group.y
       } else {
         // Check for 'collision' with other event groups
@@ -207,10 +209,13 @@ export default {
             i = 0
           }
         }
+
+        // If the event is the first in a group, update group position
         if (event.group) {
           event.group.y = y
         }
 
+        // Might update the layer's height as well
         if (y + 1 > event.layer.height) {
           event.layer.height = y + 1
         }
@@ -240,6 +245,7 @@ export default {
           eventContainer.addChild(groupG)
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
+          // We need to check for collisions again
           queueEventsUpdate()
         }
       }
@@ -275,6 +281,7 @@ export default {
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
 
       if (event.stackParent) {
+        // The event graphics might grow
         refreshEventGraphics(event.stackParent)
         return
       }
@@ -314,6 +321,7 @@ export default {
 
     onMounted(() => {
       app.stage.addListener('click', event => {
+        // We find the nearest event from the mouse click position
         let choice
         let distance = Number.POSITIVE_INFINITY
         for (const e of events) {
@@ -347,6 +355,7 @@ export default {
           let size = event.stackedEvents.length > 1 ? 4 : 3
           g.clear()
           if (selected) {
+            // Border-only style
             size -= 0.5
             g.lineStyle(1, color)
             g.beginFill(0xffffff)
@@ -414,6 +423,7 @@ export default {
         g.lineStyle(1, event.layer.color, 0.5)
         g.beginFill(event.layer.color, 0.1)
         const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
+        // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)
         g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
       }
     }
