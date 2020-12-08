@@ -197,9 +197,14 @@ export default {
       if (event.group && event !== event.group.firstEvent) {
         y = event.group.y
       } else {
-        for (const group of event.layer.groups) {
+        // Check for 'collision' with other event groups
+        const l = event.layer.groups.length
+        for (let i = 0; i < l; i++) {
+          const group = event.layer.groups[i]
           if (group !== event.group && group.y === y && event.time >= group.firstEvent.time && event.time <= group.lastEvent.time) {
             y++
+            // We need to check all the layers again since we moved the event
+            i = 0
           }
         }
         if (event.group) {
