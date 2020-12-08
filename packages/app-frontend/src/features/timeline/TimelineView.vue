@@ -359,10 +359,10 @@ export default {
             size -= 0.5
             g.lineStyle(1, color)
             g.beginFill(0xffffff)
-            g.zIndex = 999999999
+            event.container.zIndex = 999999999
           } else {
             g.beginFill(color)
-            g.zIndex = size
+            event.container.zIndex = size
           }
           g.drawCircle(0, 0, size)
         }
