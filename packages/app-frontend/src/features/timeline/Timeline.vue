@@ -69,6 +69,7 @@ export default {
 <template>
   <div>
     <SplitPane
+      save-id="timeline-left-main"
       :default-split="25"
       dragger-offset="before"
     >
@@ -96,6 +97,7 @@ export default {
 
       <template #right>
         <SplitPane
+          save-id="timeline-right"
           :default-split="70"
           :max="85"
           dragger-offset="after"
