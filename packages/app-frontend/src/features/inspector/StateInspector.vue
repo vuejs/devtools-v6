@@ -16,7 +16,8 @@
         <div
           v-tooltip="{
             content: $t('StateInspector.dataType.tooltip'),
-            contentHtml: true
+            contentHtml: true,
+            placement: orientation === 'landscape' ? 'left' : 'top'
           }"
           class="data-type selectable-item"
           @click="toggle(dataType, $event)"
@@ -49,6 +50,7 @@
 import Vue from 'vue'
 import Defer from '@front/mixins/defer'
 import StateFields from './StateFields.vue'
+import { useOrientation } from '../layout/orientation'
 
 const keyOrder = {
   props: 1,
@@ -83,6 +85,14 @@ export default {
     dimAfter: {
       type: Number,
       default: -1
+    }
+  },
+
+  setup () {
+    const { orientation } = useOrientation()
+
+    return {
+      orientation
     }
   },
 
