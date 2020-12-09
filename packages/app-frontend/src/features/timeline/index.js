@@ -149,7 +149,7 @@ function addEvent (appId, event, layer) {
 
 function stackEvent (event) {
   const roundedTime = Math.round(event.time / STACK_DURATION)
-  const wasStacked = !!_stackEvent(event, roundedTime)
+  const wasStacked = _stackEvent(event, roundedTime)
   if (!wasStacked) {
     event.layer.eventTimeMap[roundedTime] = event
     event.layer.displayedEvents.push(event)
@@ -163,8 +163,9 @@ function _stackEvent (event, roundedTime) {
   if (existingEvent && existingEvent.groupId === event.groupId) {
     existingEvent.stackedEvents.push(event)
     event.stackParent = existingEvent
+    return true
   }
-  return existingEvent
+  return false
 }
 
 export function useTime () {
