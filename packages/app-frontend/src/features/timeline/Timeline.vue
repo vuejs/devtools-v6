@@ -96,7 +96,7 @@ export default {
 
       <template #right>
         <SplitPane
-          :default-split="80"
+          :default-split="70"
           :max="85"
           dragger-offset="after"
         >
