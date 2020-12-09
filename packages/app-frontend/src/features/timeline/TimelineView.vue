@@ -7,6 +7,7 @@ import Vue from 'vue'
 import { useApps } from '../apps'
 import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
+import SharedData from '@utils/shared-data'
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
@@ -451,7 +452,7 @@ export default {
 
     function drawTimeCursor () {
       timeCursor.clear()
-      timeCursor.lineStyle(1, 0x888888, 0.15)
+      timeCursor.lineStyle(1, 0x888888, 0.2)
       timeCursor.moveTo(0.5, 0)
       timeCursor.lineTo(0.5, app.view.height)
     }
@@ -471,6 +472,47 @@ export default {
       cursorTime.value = null
     }
 
+    // Time grid
+
+    /** @type {PIXI.Graphics} */
+    let timeGrid
+
+    onMounted(() => {
+      timeGrid = new PIXI.Graphics()
+      timeGrid.visible = SharedData.timelineTimeGrid
+      drawTimeGrid()
+      app.stage.addChild(timeGrid)
+    })
+
+    function drawTimeGrid () {
+      if (!timeGrid.visible) return
+
+      const ratio = (endTime.value - startTime.value) / app.view.width
+      let timeInterval = 10
+      let width = timeInterval / ratio
+
+      while (width < 20) {
+        timeInterval *= 10
+        width *= 10
+      }
+
+      const offset = startTime.value % timeInterval / ratio
+
+      timeGrid.clear()
+      timeGrid.lineStyle(1, 0x888888, 0.075)
+      for (let x = -offset; x < app.view.width; x += width) {
+        timeGrid.moveTo(x + 0.5, 0)
+        timeGrid.lineTo(x + 0.5, app.view.height)
+      }
+    }
+
+    watch(() => SharedData.timelineTimeGrid, value => {
+      timeGrid.visible = value
+      if (value) {
+        drawTimeGrid()
+      }
+    })
+
     // Camera
 
     let cameraUpdateQueued = false
@@ -487,6 +529,7 @@ export default {
     function updateCamera () {
       horizontalScrollingContainer.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
       drawLayerHoverEffect()
+      drawTimeGrid()
     }
 
     watch(startTime, () => queueCameraUpdate())
@@ -567,6 +610,7 @@ export default {
       queueEventsUpdate()
       drawLayerHoverEffect()
       drawTimeCursor()
+      drawTimeGrid()
     }
 
     // Events

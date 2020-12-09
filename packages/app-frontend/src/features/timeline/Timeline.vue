@@ -182,5 +182,14 @@ export default {
         @click="resetTimeline()"
       />
     </portal>
+
+    <portal to="more-menu">
+      <VueSwitch
+        v-model="$shared.timelineTimeGrid"
+        class="w-full px-4 py-1 extend-left"
+      >
+        Time grid
+      </VueSwitch>
+    </portal>
   </div>
 </template>

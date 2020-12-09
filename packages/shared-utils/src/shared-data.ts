@@ -18,7 +18,8 @@ const internalSharedData = {
   vuexNewBackend: false,
   vuexAutoload: false,
   vuexGroupGettersByModule: true,
-  showMenuScrollTip: true
+  showMenuScrollTip: true,
+  timelineTimeGrid: true
 }
 
 const persisted = [
@@ -32,7 +33,8 @@ const persisted = [
   'vuexAutoload',
   'vuexGroupGettersByModule',
   'timeFormat',
-  'showMenuScrollTip'
+  'showMenuScrollTip',
+  'timelineTimeGrid'
 ]
 
 const storageVersion = '6.0.0-alpha.1'
