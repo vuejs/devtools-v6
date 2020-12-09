@@ -60,7 +60,9 @@ export default {
 
 <template>
   <div>
-    <SplitPane>
+    <SplitPane
+      save-id="components-inspector"
+    >
       <template #left>
         <div class="flex flex-col h-full">
           <VueInput
