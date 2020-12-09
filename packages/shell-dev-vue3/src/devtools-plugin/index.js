@@ -172,7 +172,8 @@ export default {
             info: 'window.keyup',
             key: event.key
           },
-          groupId: event.key
+          groupId: event.key,
+          title: 'Group test'
         }
       })
     })

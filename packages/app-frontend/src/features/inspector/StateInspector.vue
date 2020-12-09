@@ -25,7 +25,14 @@
             :class="{ rotated: isExpanded(dataType) }"
             class="arrow right"
           />
-          <span class="key">{{ toDisplayType(dataType) }}</span>
+          <span class="key flex-1">
+            <slot
+              name="key"
+              :dataType="dataType"
+            >
+              {{ toDisplayType(dataType) }}
+            </slot>
+          </span>
         </div>
         <StateFields
           v-show="isExpanded(dataType)"
@@ -180,7 +187,7 @@ export default {
     cursor pointer
     border-radius 3px
     display flex
-    align-items baseline
+    align-items center
     padding-left 9px
     user-select none
 

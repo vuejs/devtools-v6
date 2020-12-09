@@ -20,6 +20,16 @@ module.exports = {
         80: 80,
         90: 90,
         100: 100
+      },
+      fontFamily: {
+        mono: '\'Roboto Mono\', monospace'
+      },
+      fontSize: {
+        '2xs': '.65rem',
+        '3xs': '.6rem'
+      },
+      spacing: {
+        0.5: '0.125rem'
       }
     },
     darkSelector: '.vue-ui-dark-mode'
