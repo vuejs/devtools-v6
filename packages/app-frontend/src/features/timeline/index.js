@@ -235,13 +235,18 @@ export function useLayers () {
 }
 
 export function useSelectedEvent () {
-  return {
-    selectedEvent,
-    selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents.map(e => (Object.freeze({
-      ...e,
+  function mapEvent (e) {
+    return Object.freeze({
+      title: e.title,
       data: parse(e.data),
       time: formatTime(e.time, 'ms')
-    }))))
+    })
+  }
+
+  return {
+    selectedEvent,
+    selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents.map(mapEvent)),
+    selectedGroupEvents: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events.map(mapEvent) : [])
   }
 }
 

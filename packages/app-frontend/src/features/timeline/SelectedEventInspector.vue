@@ -2,12 +2,11 @@
 import StateInspector from '../inspector/StateInspector.vue'
 import { useSelectedEvent } from '.'
 import Defer from '@front/mixins/defer'
-import DataField from '../inspector/DataField.vue'
+import { computed, ref, watch } from '@vue/composition-api'
 
 export default {
   components: {
-    StateInspector,
-    DataField
+    StateInspector
   },
 
   mixins: [
@@ -15,8 +14,27 @@ export default {
   ],
 
   setup () {
+    const {
+      selectedEvent,
+      selectedStackedEvents,
+      selectedGroupEvents
+    } = useSelectedEvent()
+
+    const tabId = ref('nearby')
+
+    watch(selectedEvent, value => {
+      if (value && !value.group) {
+        tabId.value = 'nearby'
+      }
+    })
+
+    const displayedEvents = computed(() => tabId.value === 'nearby' ? selectedStackedEvents.value : selectedGroupEvents.value)
+
     return {
-      ...useSelectedEvent()
+      selectedEvent,
+      selectedStackedEvents,
+      tabId,
+      displayedEvents
     }
   }
 }
@@ -40,12 +58,29 @@ export default {
         </div>
 
         <div class="text-xs opacity-75">
-          {{ selectedStackedEvents.length }} event{{ selectedStackedEvents.length > 1 ? 's' : '' }}
+          {{ selectedStackedEvents.length }} selected event{{ selectedStackedEvents.length > 1 ? 's' : '' }}
         </div>
       </div>
     </div>
 
-    <template v-for="(event, index) of selectedStackedEvents">
+    <VueTabs
+      v-if="selectedEvent.group && selectedEvent.group.events.length"
+      :tab-id.sync="tabId"
+      group-class="accent extend"
+      tab-class="flat"
+    >
+      <VueTab
+        id="nearby"
+        :label="selectedStackedEvents.length > 1 ? 'Nearby' : 'Selected'"
+      />
+      <VueTab
+        v-if="selectedEvent.group"
+        id="group"
+        label="Group"
+      />
+    </VueTabs>
+
+    <template v-for="(event, index) of displayedEvents">
       <StateInspector
         v-if="defer(index + 1)"
         :key="index"
@@ -59,6 +94,14 @@ export default {
             <span class="flex-1">
               {{ event.title || 'Event' }}
             </span>
+
+            <span
+              v-if="tabId === 'group' && selectedStackedEvents.find(e => e.time === event.time)"
+              class="flex-none text-2xs p-1 rounded-full bg-green-100 dark:bg-green-900 text-green-500 border border-green-200 dark:border-green-800"
+            >
+              selected
+            </span>
+
             <span class="event-time flex-none flex items-center space-x-0.5 text-2xs font-mono p-1 rounded-full border border-gray-200 dark:border-gray-800">
               <VueIcon
                 icon="schedule"
