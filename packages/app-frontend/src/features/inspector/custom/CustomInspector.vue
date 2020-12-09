@@ -39,7 +39,9 @@ export default {
 
 <template>
   <div v-if="inspector">
-    <SplitPane>
+    <SplitPane
+      :save-id="`custom-inspector-${inspector.id}`"
+    >
       <template #left>
         <div class="flex flex-col h-full">
           <VueInput
