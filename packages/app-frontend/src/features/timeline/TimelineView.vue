@@ -203,7 +203,7 @@ export default {
         const l = event.layer.groups.length
         for (let i = 0; i < l; i++) {
           const group = event.layer.groups[i]
-          if (group !== event.group && group.y === y && event.time >= group.firstEvent.time && event.time <= group.lastEvent.time) {
+          if (group !== event.group && group.y === y && event.time >= group.firstEvent.time - 100 && event.time <= group.lastEvent.time + 100) {
             y++
             // We need to check all the layers again since we moved the event
             i = 0
