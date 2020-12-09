@@ -158,7 +158,7 @@ function stackEvent (event) {
 
 function _stackEvent (event, roundedTime) {
   const existingEvent = event.layer.eventTimeMap[roundedTime]
-  if (existingEvent) {
+  if (existingEvent && existingEvent.groupId === event.groupId) {
     existingEvent.stackedEvents.push(event)
     event.stackParent = existingEvent
   }
