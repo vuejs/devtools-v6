@@ -30,11 +30,23 @@ export default {
 
     const displayedEvents = computed(() => tabId.value === 'nearby' ? selectedStackedEvents.value : selectedGroupEvents.value)
 
+    // Expand/Collapse
+
+    const inspectors = ref(null)
+
+    function setExpandToAll (isExpanded) {
+      inspectors.value.forEach(inspector => {
+        inspector.setExpandToAll(isExpanded)
+      })
+    }
+
     return {
       selectedEvent,
       selectedStackedEvents,
       tabId,
-      displayedEvents
+      displayedEvents,
+      inspectors,
+      setExpandToAll
     }
   }
 }
@@ -84,10 +96,14 @@ export default {
       <StateInspector
         v-if="defer(index + 1)"
         :key="index"
+        ref="inspectors"
         class="border-gray-200 dark:border-gray-900 border-b"
         :state="{
           data: event.data
         }"
+        :data-event="event"
+        @expand-all="setExpandToAll(true)"
+        @collapse-all="setExpandToAll(false)"
       >
         <template #key>
           <div class="flex items-center space-x-2 leading-none -mr-2">

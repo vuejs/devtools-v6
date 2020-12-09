@@ -136,9 +136,13 @@ export default {
     toggle (dataType, event = null) {
       if (event) {
         if (event.ctrlKey || event.metaKey) {
-          return this.setExpandToAll(false)
+          this.setExpandToAll(false)
+          this.$emit('collapse-all')
+          return
         } else if (event.shiftKey) {
-          return this.setExpandToAll(true)
+          this.setExpandToAll(true)
+          this.$emit('expand-all')
+          return
         }
       }
       Vue.set(this.expandedState, dataType, !this.isExpanded(dataType))
