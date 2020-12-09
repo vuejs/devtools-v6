@@ -126,7 +126,7 @@ export default {
               <div class="absolute top-0 left-0 w-full pointer-events-none flex items-center justify-center">
                 <div
                   v-if="formattedCursorTime"
-                  class="text-gray-700 dark:text-gray-300 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 px-1 py-0.5 rounded text-2xs font-mono leading-none mt-1 flex items-center space-x-1"
+                  class="text-gray-700 dark:text-gray-300 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 px-1 py-0.5 rounded-full text-2xs font-mono leading-none mt-1 flex items-center space-x-1"
                 >
                   <VueIcon
                     icon="schedule"
