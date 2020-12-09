@@ -14,6 +14,8 @@ const endTime = ref(0)
 const minTime = ref(0)
 const maxTime = ref(0)
 
+const cursorTime = ref(null)
+
 const layersPerApp = ref({})
 const hiddenLayersPerApp = ref({})
 const vScrollPerApp = ref({})
@@ -247,6 +249,12 @@ export function useSelectedEvent () {
     selectedEvent,
     selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents.map(mapEvent)),
     selectedGroupEvents: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events.map(mapEvent) : [])
+  }
+}
+
+export function useCursor () {
+  return {
+    cursorTime
   }
 }
 

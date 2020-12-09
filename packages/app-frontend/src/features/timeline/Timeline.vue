@@ -5,8 +5,9 @@ import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
 import SelectedEventInspector from './SelectedEventInspector.vue'
 
-import { useTime, useLayers, resetTimeline } from '.'
-import { onMounted, ref, watch } from '@vue/composition-api'
+import { useTime, useLayers, resetTimeline, useCursor } from '.'
+import { computed, onMounted, ref, watch } from '@vue/composition-api'
+import { formatTime } from '@front/util/format'
 
 export default {
   components: {
@@ -50,6 +51,12 @@ export default {
       }
     }
 
+    // Time cursor
+
+    const { cursorTime } = useCursor()
+
+    const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value, 'ms') : null)
+
     return {
       ...useTime(),
       layers,
@@ -60,7 +67,8 @@ export default {
       allLayers,
       isLayerHidden,
       setLayerHidden,
-      resetTimeline
+      resetTimeline,
+      formattedCursorTime
     }
   }
 }
@@ -114,6 +122,21 @@ export default {
               <TimelineView
                 class="h-full"
               />
+
+              <div class="absolute top-0 left-0 w-full pointer-events-none flex items-center justify-center">
+                <div
+                  v-if="formattedCursorTime"
+                  class="text-gray-700 dark:text-gray-300 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 px-1 py-0.5 rounded text-2xs font-mono leading-none mt-1 flex items-center space-x-1"
+                >
+                  <VueIcon
+                    icon="schedule"
+                    class="w-3 h-3 opacity-50"
+                  />
+                  <span>
+                    {{ formattedCursorTime }}
+                  </span>
+                </div>
+              </div>
             </div>
           </template>
 

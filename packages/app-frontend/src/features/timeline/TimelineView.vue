@@ -2,7 +2,7 @@
 import * as PIXI from 'pixi.js'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
 import { ref, onMounted, onUnmounted, watch, watchEffect } from '@vue/composition-api'
-import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd } from '.'
+import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd, useCursor } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
 import { onKeyUp } from '@front/util/keyboard'
@@ -164,7 +164,10 @@ export default {
       drawLayerHoverEffect()
     })
 
-    function onMouseMove (event) {
+    /**
+     * @param {MouseEvent} event
+     */
+    function updateLayerHover (event) {
       let { offsetY } = event
       offsetY -= verticalScrollingContainer.y
       if (offsetY >= 0) {
@@ -178,6 +181,10 @@ export default {
           }
         }
       }
+      clearLayerHover()
+    }
+
+    function clearLayerHover () {
       hoverLayerId.value = null
     }
 
@@ -428,6 +435,42 @@ export default {
       }
     }
 
+    // Time cursor
+
+    const { cursorTime } = useCursor()
+
+    /** @type {PIXI.Graphics} */
+    let timeCursor
+
+    onMounted(() => {
+      timeCursor = new PIXI.Graphics()
+      timeCursor.visible = false
+      drawTimeCursor()
+      app.stage.addChild(timeCursor)
+    })
+
+    function drawTimeCursor () {
+      timeCursor.clear()
+      timeCursor.lineStyle(1, 0x888888, 0.15)
+      timeCursor.moveTo(0.5, 0)
+      timeCursor.lineTo(0.5, app.view.height)
+    }
+
+    /**
+     * @param {MouseEvent} event
+     */
+    function updateCursorPosition (event) {
+      const { offsetX } = event
+      timeCursor.x = offsetX
+      timeCursor.visible = true
+      cursorTime.value = offsetX / app.view.width * (endTime.value - startTime.value) + startTime.value
+    }
+
+    function clearCursor () {
+      timeCursor.visible = false
+      cursorTime.value = null
+    }
+
     // Camera
 
     let cameraUpdateQueued = false
@@ -523,13 +566,26 @@ export default {
       app.queueResize()
       queueEventsUpdate()
       drawLayerHoverEffect()
+      drawTimeCursor()
+    }
+
+    // Events
+
+    function onMouseMove (event) {
+      updateLayerHover(event)
+      updateCursorPosition(event)
+    }
+
+    function onMouseOut () {
+      clearLayerHover()
+      clearCursor()
     }
 
     return {
       wrapper,
       onMouseWheel,
       onMouseMove,
-      hoverLayerId,
+      onMouseOut,
       onResize
     }
   }
@@ -542,7 +598,7 @@ export default {
     class="relative overflow-hidden"
     @mousewheel="onMouseWheel"
     @mousemove="onMouseMove"
-    @mouseout="hoverLayerId = null"
+    @mouseout="onMouseOut"
   >
     <resize-observer @notify="onResize" />
   </div>
