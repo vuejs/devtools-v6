@@ -16,8 +16,11 @@ export default {
 </script>
 
 <template>
-  <div v-if="inspectedEventState">
-    <div class="header flex items-center border-b border-gray-200 dark:border-gray-900 px-2 text-bluegray-900 dark:text-bluegray-100">
+  <div
+    v-if="inspectedEventState"
+    class="flex flex-col h-full"
+  >
+    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-900 px-2 text-bluegray-900 dark:text-bluegray-100">
       <span
         class="flex-1 truncate font-medium text-purple-600 dark:text-purple-400"
       >
@@ -37,6 +40,7 @@ export default {
       :state="{
         'event info': inspectedEventState
       }"
+      class="flex-1 overflow-x-auto"
     />
   </div>
 </template>
