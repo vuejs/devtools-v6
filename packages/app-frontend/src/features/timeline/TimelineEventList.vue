@@ -51,7 +51,6 @@ export default {
       const index = displayedEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
         scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2 + 81
-        console.log(scroller.value.scrollTop)
       }
     }
 
