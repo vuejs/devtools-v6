@@ -163,7 +163,7 @@ export default {
       })
     })
 
-    window.addEventListener('keyup', event => {
+    window.addEventListener('keydown', event => {
       devtoolsApi && devtoolsApi.addTimelineEvent({
         layerId: 'test-layer',
         event: {

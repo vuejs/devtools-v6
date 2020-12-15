@@ -3,6 +3,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import TimelineView from './TimelineView.vue'
 import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
+import TimelineEventList from './TimelineEventList.vue'
 import SelectedEventInspector from './SelectedEventInspector.vue'
 
 import { useTime, useLayers, resetTimeline, useCursor } from '.'
@@ -15,6 +16,7 @@ export default {
     LayerItem,
     TimelineView,
     TimelineScrollbar,
+    TimelineEventList,
     SelectedEventInspector
   },
 
@@ -77,8 +79,9 @@ export default {
 <template>
   <div>
     <SplitPane
-      save-id="timeline-left-main"
+      save-id="timeline-main"
       :default-split="25"
+      :min="10"
       dragger-offset="before"
     >
       <template #left>
@@ -141,7 +144,16 @@ export default {
           </template>
 
           <template #right>
-            <SelectedEventInspector />
+            <SplitPane
+              save-id="timeline-inspector"
+            >
+              <template #left>
+                <TimelineEventList />
+              </template>
+              <template #right>
+                <SelectedEventInspector />
+              </template>
+            </SplitPane>
           </template>
         </splitpane>
       </template>

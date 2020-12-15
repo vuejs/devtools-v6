@@ -23,6 +23,8 @@ const vScrollPerApp = ref({})
 const selectedEvent = ref(null)
 const hoverLayerId = ref(null)
 
+const inspectedEvent = ref(null)
+
 function layerFactory (options) {
   return {
     ...options,
@@ -239,23 +241,38 @@ export function useLayers () {
 
 export function useSelectedEvent () {
   function mapEvent (e) {
-    return Object.freeze({
+    const obj = {
       title: e.title,
       data: parse(e.data),
-      time: formatTime(e.time, 'ms')
+      time: formatTime(e.time)
+    }
+    Object.defineProperty(obj, 'original', {
+      value: e,
+      configurable: false
     })
+    return obj
   }
 
   return {
     selectedEvent,
-    selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents.map(mapEvent)),
-    selectedGroupEvents: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events.map(mapEvent) : [])
+    selectedStackedEventDisplays: computed(() => selectedEvent.value.stackedEvents.map(mapEvent)),
+    selectedGroupEventDisplays: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events.map(mapEvent) : [])
   }
 }
 
 export function useCursor () {
   return {
     cursorTime
+  }
+}
+
+export function useInspectedEvent () {
+  return {
+    inspectedEvent,
+    inspectedEventState: computed(() => inspectedEvent.value ? {
+      time: formatTime(inspectedEvent.value.time, 'ms'),
+      ...parse(inspectedEvent.value.data)
+    } : null)
   }
 }
 
