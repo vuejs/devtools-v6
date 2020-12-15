@@ -39,13 +39,22 @@ export default {
       inspectedEvent.value = value
     })
 
+    function selectEvent (event) {
+      if (event.stackParent) {
+        selectedEvent.value = event.stackParent
+      } else {
+        selectedEvent.value = event
+      }
+    }
+
     return {
       selectedEvent,
       selectedStackedEvents,
       tabId,
       displayedEvents,
       inspectedEvent,
-      inspectEvent
+      inspectEvent,
+      selectEvent
     }
   }
 }
@@ -97,6 +106,7 @@ export default {
       :event="event"
       :selected="tabId === 'group' && selectedStackedEvents.some(e => e.time === event.time)"
       @inspect="inspectEvent(event)"
+      @select="selectEvent(event)"
     />
   </div>
 </template>
