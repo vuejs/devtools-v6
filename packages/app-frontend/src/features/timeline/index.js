@@ -240,24 +240,10 @@ export function useLayers () {
 }
 
 export function useSelectedEvent () {
-  function mapEvent (e) {
-    const obj = {
-      title: e.title,
-      subtitle: e.subtitle,
-      data: parse(e.data),
-      time: formatTime(e.time)
-    }
-    Object.defineProperty(obj, 'original', {
-      value: e,
-      configurable: false
-    })
-    return obj
-  }
-
   return {
     selectedEvent,
-    selectedStackedEventDisplays: computed(() => selectedEvent.value.stackedEvents.map(mapEvent)),
-    selectedGroupEventDisplays: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events.map(mapEvent) : [])
+    selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents),
+    selectedGroupEvents: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events : [])
   }
 }
 
