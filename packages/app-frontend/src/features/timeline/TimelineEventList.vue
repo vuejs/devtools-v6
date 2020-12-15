@@ -76,7 +76,9 @@ export default {
     }
 
     watch(selectedEvent, value => {
-      inspectedEvent.value = value
+      if (!inspectedEvent.value || !displayedEvents.value.includes(value)) {
+        inspectedEvent.value = value
+      }
     })
 
     function selectEvent (event) {
