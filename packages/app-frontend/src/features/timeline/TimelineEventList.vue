@@ -107,7 +107,7 @@ export default {
     ref="scroller"
     class="h-full overflow-y-auto scroll-smooth"
   >
-    <div class="p-2 flex items-center space-x-2 border-gray-200 dark:border-gray-900 border-b">
+    <div class="header px-2 flex items-center space-x-2 border-gray-200 dark:border-gray-900 border-b">
       <div
         class="w-3 h-3 rounded-full mx-2 flex-none"
         :style="{
@@ -118,16 +118,12 @@ export default {
         <div class="text-sm">
           {{ selectedEvent.layer.label }}
         </div>
-
-        <div class="text-xs opacity-75">
-          {{ selectedStackedEvents.length }} selected event{{ selectedStackedEvents.length > 1 ? 's' : '' }}
-        </div>
       </div>
     </div>
 
     <VueTabs
       :tab-id.sync="tabId"
-      class="sticky top-0 bg-white dark:bg-black z-10 shadow-xs"
+      class="sticky top-0 bg-white dark:bg-black z-10 border-gray-200 dark:border-gray-900 border-b"
       group-class="accent extend"
       tab-class="flat"
     >
@@ -156,3 +152,13 @@ export default {
     />
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.header {
+  height: 42px;
+}
+
+.vue-ui-tabs /deep/ .indicator {
+  padding-bottom: 0 !important;
+}
+</style>

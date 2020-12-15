@@ -75,7 +75,7 @@ export default {
 
     function updateBackground () {
       if (darkMode.value) {
-        app && (app.renderer.backgroundColor = 0x0A1015)
+        app && (app.renderer.backgroundColor = 0x0b1015)
       } else {
         app && (app.renderer.backgroundColor = 0xffffff)
       }
@@ -389,7 +389,7 @@ export default {
             // Border-only style
             size -= 0.5
             g.lineStyle(1, color)
-            g.beginFill(0xffffff)
+            g.beginFill(darkMode.value ? 0x0b1015 : 0xffffff)
             event.container.zIndex = 999999999
           } else {
             g.beginFill(color)

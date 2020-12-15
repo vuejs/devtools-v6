@@ -259,10 +259,8 @@ export function useCursor () {
 export function useInspectedEvent () {
   return {
     inspectedEvent,
-    inspectedEventState: computed(() => inspectedEvent.value ? {
-      time: formatTime(inspectedEvent.value.time, 'ms'),
-      ...parse(inspectedEvent.value.data)
-    } : null)
+    inspectedEventState: computed(() => inspectedEvent.value ? parse(inspectedEvent.value.data) : null),
+    time: computed(() => formatTime(inspectedEvent.value.time, 'ms'))
   }
 }
 
