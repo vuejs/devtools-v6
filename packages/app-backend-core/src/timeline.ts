@@ -1,5 +1,5 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
+import { BridgeEvents, HookEvents, keys, stringify } from '@vue-devtools/shared-utils'
 import { TimelineEvent } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord } from './app'
@@ -27,7 +27,8 @@ function setupBuiltinLayers (ctx: BackendContext) {
             type: eventType,
             x: event.clientX,
             y: event.clientY
-          })
+          }),
+          title: eventType
         }
       } as TimelineEventPayload)
     }, {
@@ -46,13 +47,13 @@ function setupBuiltinLayers (ctx: BackendContext) {
           time: Date.now(),
           data: stringify({
             type: eventType,
-            code: event.keyCode,
             key: event.key,
             ctrlKey: event.ctrlKey,
             shiftKey: event.shiftKey,
             altKey: event.altKey,
             metaKey: event.metaKey
-          })
+          }),
+          title: event.key
         }
       } as TimelineEventPayload)
     }, {
@@ -79,6 +80,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
           event,
           params
         }),
+        title: event,
         meta: {
           componentId: id
         }
