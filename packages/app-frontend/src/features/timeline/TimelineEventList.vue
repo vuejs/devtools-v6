@@ -20,16 +20,56 @@ export default {
     const tabId = ref('nearby')
 
     watch(selectedEvent, value => {
-      if (value && !value.group) {
+      if (value && !value.group && tabId.value === 'group') {
         tabId.value = 'nearby'
       }
     })
 
-    const displayedEvents = computed(() => tabId.value === 'nearby' ? selectedStackedEvents.value : selectedGroupEvents.value)
+    const displayedEvents = computed(() => {
+      switch (tabId.value) {
+        case 'group':
+          return selectedGroupEvents.value
+        case 'all':
+          return selectedEvent.value ? selectedEvent.value.layer.events : []
+        case 'nearby':
+        default:
+          return selectedStackedEvents.value
+      }
+    })
 
     const {
       inspectedEvent
     } = useInspectedEvent()
+
+    const scroller = ref()
+
+    watch(tabId, () => {
+      scrollToInspectedEvent()
+    })
+
+    function scrollToInspectedEvent () {
+      const index = displayedEvents.value.indexOf(inspectedEvent.value)
+      if (index !== -1) {
+        scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2 + 81
+        console.log(scroller.value.scrollTop)
+      }
+    }
+
+    watch(inspectedEvent, () => {
+      checkScrollToInspectedEvent()
+    })
+
+    function checkScrollToInspectedEvent () {
+      const index = displayedEvents.value.indexOf(inspectedEvent.value)
+      const minPosition = 39 * index + 81
+      const maxPosition = minPosition + 39
+
+      if (scroller.value.scrollTop > minPosition || scroller.value.scrollTop + scroller.value.clientHeight < maxPosition) {
+        scrollToInspectedEvent()
+      }
+    }
+
+    // List interactions
 
     function inspectEvent (event) {
       inspectedEvent.value = event
@@ -51,6 +91,7 @@ export default {
       selectedEvent,
       selectedStackedEvents,
       tabId,
+      scroller,
       displayedEvents,
       inspectedEvent,
       inspectEvent,
@@ -63,7 +104,8 @@ export default {
 <template>
   <div
     v-if="selectedEvent"
-    class="h-full overflow-y-auto"
+    ref="scroller"
+    class="h-full overflow-y-auto scroll-smooth"
   >
     <div class="p-2 flex items-center space-x-2 border-gray-200 dark:border-gray-900 border-b">
       <div
@@ -84,8 +126,8 @@ export default {
     </div>
 
     <VueTabs
-      v-if="selectedEvent.group && selectedEvent.group.events.length"
       :tab-id.sync="tabId"
+      class="sticky top-0 bg-white dark:bg-black z-10 shadow-xs"
       group-class="accent extend"
       tab-class="flat"
     >
@@ -98,13 +140,17 @@ export default {
         id="group"
         label="Group"
       />
+      <VueTab
+        id="all"
+        label="All"
+      />
     </VueTabs>
 
     <TimelineEventListItem
       v-for="(event, index) of displayedEvents"
       :key="index"
       :event="event"
-      :selected="tabId === 'group' && selectedStackedEvents.some(e => e.time === event.time)"
+      :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
       @inspect="inspectEvent(event)"
       @select="selectEvent(event)"
     />
