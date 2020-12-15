@@ -48,6 +48,8 @@ export default {
     })
 
     function scrollToInspectedEvent () {
+      if (!scroller.value) return
+
       const index = displayedEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
         scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2 + 81
@@ -59,6 +61,8 @@ export default {
     })
 
     function checkScrollToInspectedEvent () {
+      if (!scroller.value) return
+
       const index = displayedEvents.value.indexOf(inspectedEvent.value)
       const minPosition = 39 * index + 81
       const maxPosition = minPosition + 39
