@@ -96,7 +96,7 @@ export default {
       :key="index"
       :event="event"
       :selected="tabId === 'group' && selectedStackedEvents.some(e => e.time === event.time)"
-      @select="inspectEvent(event)"
+      @inspect="inspectEvent(event)"
     />
   </div>
 </template>

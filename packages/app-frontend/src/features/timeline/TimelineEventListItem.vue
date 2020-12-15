@@ -39,7 +39,7 @@ export default {
       'inspected bg-green-500 text-white': isInspected,
       'hover:bg-blue-100 dark-hover:bg-blue-900 text-gray-800 dark:text-gray-200': !isInspected
     }"
-    @click="$emit('select')"
+    @click="$emit('inspect')"
   >
     <div class="flex items-center space-x-2 leading-none">
       <span class="flex-1 font-mono">
