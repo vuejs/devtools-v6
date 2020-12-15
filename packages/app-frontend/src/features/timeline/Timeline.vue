@@ -27,7 +27,8 @@ export default {
       allLayers,
       isLayerHidden,
       setLayerHidden,
-      hoverLayerId
+      hoverLayerId,
+      selectedEventLayerId
     } = useLayers()
     const layersEl = ref()
 
@@ -66,6 +67,7 @@ export default {
       layersEl,
       onLayersScroll,
       hoverLayerId,
+      selectedEventLayerId,
       allLayers,
       isLayerHidden,
       setLayerHidden,
@@ -98,6 +100,7 @@ export default {
               :key="layer.id"
               :layer="layer"
               :hover="hoverLayerId === layer.id"
+              :selected="selectedEventLayerId === layer.id"
               class="flex-none"
               @mouseover.native="hoverLayerId = layer.id"
               @mouseout.native="hoverLayerId = null"

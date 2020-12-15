@@ -224,6 +224,8 @@ export function useLayers () {
 
   const layers = computed(() => allLayers.value.filter(l => !isLayerHidden(l)))
 
+  const selectedEventLayerId = computed(() => selectedEvent.value ? selectedEvent.value.layer.id : null)
+
   return {
     layers,
     allLayers,
@@ -235,7 +237,8 @@ export function useLayers () {
     }),
     isLayerHidden,
     setLayerHidden,
-    hoverLayerId
+    hoverLayerId,
+    selectedEventLayerId
   }
 }
 

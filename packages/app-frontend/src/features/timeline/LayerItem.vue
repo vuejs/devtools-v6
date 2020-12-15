@@ -9,6 +9,11 @@ export default {
     hover: {
       type: Boolean,
       default: false
+    },
+
+    selected: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -36,11 +41,11 @@ export default {
     </div>
 
     <div
-      v-if="hover"
+      v-if="hover || selected"
       class="absolute inset-0 pointer-events-none"
       :style="{
         backgroundColor: `#${layer.color.toString(16)}`,
-        opacity: 0.1
+        opacity: hover ? 0.1 : 0.05
       }"
     />
   </div>

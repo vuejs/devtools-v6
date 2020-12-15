@@ -1,7 +1,7 @@
 <script>
 import * as PIXI from 'pixi.js'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
-import { ref, onMounted, onUnmounted, watch, watchEffect } from '@vue/composition-api'
+import { ref, onMounted, onUnmounted, watch, watchEffect, computed } from '@vue/composition-api'
 import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd, useCursor } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
@@ -87,7 +87,12 @@ export default {
 
     // Layers
 
-    const { layers, vScroll, hoverLayerId } = useLayers()
+    const {
+      layers,
+      vScroll,
+      hoverLayerId,
+      selectedEventLayerId
+    } = useLayers()
 
     /** @type {Container[]} */
     let layerContainers = []
@@ -146,23 +151,41 @@ export default {
       return layers.value.slice(0, layers.value.indexOf(layer)).reduce((sum, layer) => sum + (layer.height + 1) * LAYER_SIZE, 0)
     }
 
-    function drawLayerHoverEffect () {
+    function drawLayerBackgroundEffects () {
       if (!layerHoverEffect) return
 
-      if (hoverLayerId.value) {
-        const { layer } = layersMap[hoverLayerId.value]
+      const layerIds = [
+        {
+          id: hoverLayerId.value,
+          alpha: 1
+        },
+        {
+          id: hoverLayerId.value !== selectedEventLayerId.value ? selectedEventLayerId.value : null,
+          alpha: 0.5
+        }
+      ].filter(({ id }) => id != null)
+
+      if (layerIds.length) {
         layerHoverEffect.clear()
-        layerHoverEffect.beginFill(layer.color)
-        layerHoverEffect.drawRect(0, 0, app.view.width, (layer.height + 1) * LAYER_SIZE)
-        layerHoverEffect.y = getLayerY(layer)
+        layerIds.forEach(({ id, alpha }) => drawLayerBackground(id, alpha))
         layerHoverEffect.visible = true
       } else {
         layerHoverEffect.visible = false
       }
     }
 
+    function drawLayerBackground (layerId, alpha = 1) {
+      const { layer } = layersMap[layerId]
+      layerHoverEffect.beginFill(layer.color, alpha)
+      layerHoverEffect.drawRect(0, getLayerY(layer), app.view.width, (layer.height + 1) * LAYER_SIZE)
+    }
+
     watch(hoverLayerId, () => {
-      drawLayerHoverEffect()
+      drawLayerBackgroundEffects()
+    })
+
+    watch(selectedEventLayerId, () => {
+      drawLayerBackgroundEffects()
     })
 
     /**
@@ -528,7 +551,7 @@ export default {
 
     function updateCamera () {
       horizontalScrollingContainer.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
-      drawLayerHoverEffect()
+      drawLayerBackgroundEffects()
       drawTimeGrid()
     }
 
@@ -608,7 +631,7 @@ export default {
     function onResize () {
       app.queueResize()
       queueEventsUpdate()
-      drawLayerHoverEffect()
+      drawLayerBackgroundEffects()
       drawTimeCursor()
       drawTimeGrid()
     }
