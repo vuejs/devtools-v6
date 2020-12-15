@@ -65,6 +65,8 @@ function setupBuiltinLayers (ctx: BackendContext) {
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
     const appRecord = getAppRecord(app, ctx)
     const id = `${appRecord.id}:${instance.uid}`
+    const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
+
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
       appId: appRecord.id,
       layerId: 'component-event',
@@ -74,13 +76,14 @@ function setupBuiltinLayers (ctx: BackendContext) {
           component: {
             _custom: {
               type: 'component-definition',
-              display: (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
+              display: componentDisplay
             }
           },
           event,
           params
         }),
         title: event,
+        subtitle: `by ${componentDisplay}`,
         meta: {
           componentId: id
         }

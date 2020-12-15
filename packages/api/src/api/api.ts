@@ -38,6 +38,7 @@ export interface TimelineEvent<TData = any, TMeta = any> {
   meta?: TMeta
   groupId?: string | number
   title?: string
+  subtitle?: string
 }
 
 export interface CustomInspectorOptions {

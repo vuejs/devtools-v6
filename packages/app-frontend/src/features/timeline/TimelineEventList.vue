@@ -102,6 +102,12 @@ export default {
         <div class="flex items-center space-x-2 leading-none">
           <span class="flex-1 font-mono">
             {{ eventDisplay.title || 'Event' }}
+
+            <span
+              v-if="eventDisplay.subtitle"
+              class="opacity-50"
+              v-html="eventDisplay.subtitle"
+            />
           </span>
 
           <span

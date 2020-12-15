@@ -243,6 +243,7 @@ export function useSelectedEvent () {
   function mapEvent (e) {
     const obj = {
       title: e.title,
+      subtitle: e.subtitle,
       data: parse(e.data),
       time: formatTime(e.time)
     }
