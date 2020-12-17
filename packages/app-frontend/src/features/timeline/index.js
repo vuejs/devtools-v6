@@ -63,6 +63,7 @@ const resetCbs = []
 
 export function resetTimeline () {
   selectedEvent.value = null
+  inspectedEvent.value = null
   layersPerApp.value = {}
   vScrollPerApp.value = {}
   hoverLayerId.value = null
