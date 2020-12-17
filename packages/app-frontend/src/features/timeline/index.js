@@ -27,38 +27,6 @@ const hoverLayerId = ref(null)
 
 const inspectedEvent = ref(null)
 
-function layerFactory (options) {
-  return {
-    ...options,
-    events: [],
-    displayedEvents: [],
-    eventTimeMap: {},
-    groupsMap: {},
-    groups: [],
-    height: 1
-  }
-}
-
-function builtinLayersFactory () {
-  return [
-    {
-      id: 'mouse',
-      label: 'Mouse',
-      color: 0xA451AF
-    },
-    {
-      id: 'keyboard',
-      label: 'Keyboard',
-      color: 0x8151AF
-    },
-    {
-      id: 'component-event',
-      label: 'Component events',
-      color: 0x41B883
-    }
-  ].map(options => layerFactory(options))
-}
-
 const resetCbs = []
 
 export function resetTimeline () {
@@ -190,6 +158,38 @@ export function useTime () {
     minTime,
     maxTime
   }
+}
+
+function layerFactory (options) {
+  return {
+    ...options,
+    events: [],
+    displayedEvents: [],
+    eventTimeMap: {},
+    groupsMap: {},
+    groups: [],
+    height: 1
+  }
+}
+
+function builtinLayersFactory () {
+  return [
+    {
+      id: 'mouse',
+      label: 'Mouse',
+      color: 0xA451AF
+    },
+    {
+      id: 'keyboard',
+      label: 'Keyboard',
+      color: 0x8151AF
+    },
+    {
+      id: 'component-event',
+      label: 'Component events',
+      color: 0x41B883
+    }
+  ].map(options => layerFactory(options))
 }
 
 function getLayers (appId) {
