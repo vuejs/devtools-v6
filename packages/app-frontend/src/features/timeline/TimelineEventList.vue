@@ -17,6 +17,14 @@ export default {
       selectedGroupEvents
     } = useSelectedEvent()
 
+    const {
+      inspectedEvent
+    } = useInspectedEvent()
+
+    const layer = computed(() => selectedEvent.value.layer)
+
+    // Tabs
+
     const tabId = ref('nearby')
 
     watch(selectedEvent, value => {
@@ -37,9 +45,24 @@ export default {
       }
     })
 
-    const {
-      inspectedEvent
-    } = useInspectedEvent()
+    // Filter
+
+    const filter = ref('')
+
+    const filteredEvents = computed(() => {
+      const rawFilter = filter.value.trim()
+      if (rawFilter) {
+        const reg = new RegExp(rawFilter, 'i')
+        return displayedEvents.value.filter(event =>
+          (event.title && reg.test(event.title)) ||
+          (event.subtitle && reg.test(event.subtitle))
+        )
+      } else {
+        return displayedEvents.value
+      }
+    })
+
+    // Scrolling
 
     const scroller = ref()
 
@@ -50,7 +73,7 @@ export default {
     function scrollToInspectedEvent () {
       if (!scroller.value) return
 
-      const index = displayedEvents.value.indexOf(inspectedEvent.value)
+      const index = filteredEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
         scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2
       }
@@ -63,7 +86,7 @@ export default {
     function checkScrollToInspectedEvent () {
       if (!scroller.value) return
 
-      const index = displayedEvents.value.indexOf(inspectedEvent.value)
+      const index = filteredEvents.value.indexOf(inspectedEvent.value)
       const minPosition = 39 * index
       const maxPosition = minPosition + 39
 
@@ -94,10 +117,12 @@ export default {
 
     return {
       selectedEvent,
+      layer,
       selectedStackedEvents,
       tabId,
       scroller,
-      displayedEvents,
+      filter,
+      filteredEvents,
       inspectedEvent,
       inspectEvent,
       selectEvent
@@ -111,7 +136,7 @@ export default {
     v-if="selectedEvent"
     class="h-full flex flex-col"
   >
-    <div class="flex-none border-gray-200 dark:border-gray-900 border-b">
+    <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-900 border-b">
       <VueTabs
         :tab-id.sync="tabId"
         group-class="accent extend"
@@ -131,6 +156,13 @@ export default {
           label="All"
         />
       </VueTabs>
+
+      <VueInput
+        v-model="filter"
+        icon-left="search"
+        :placeholder="`Filter ${layer.label}`"
+        class="search flat"
+      />
     </div>
 
     <div
@@ -138,7 +170,7 @@ export default {
       class="flex-1 overflow-y-auto scroll-smooth"
     >
       <TimelineEventListItem
-        v-for="(event, index) of displayedEvents"
+        v-for="(event, index) of filteredEvents"
         :key="index"
         :event="event"
         :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
@@ -148,9 +180,3 @@ export default {
     </div>
   </div>
 </template>
-
-<style lang="postcss" scoped>
-.vue-ui-tabs /deep/ .indicator {
-  padding-bottom: 0 !important;
-}
-</style>
