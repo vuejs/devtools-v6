@@ -4,6 +4,8 @@ import Defer from '@front/mixins/defer'
 import { computed, ref, watch } from '@vue/composition-api'
 import TimelineEventListItem from './TimelineEventListItem.vue'
 
+const itemHeight = 34
+
 export default {
   components: { TimelineEventListItem },
   mixins: [
@@ -77,7 +79,7 @@ export default {
 
       const index = filteredEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
-        scrollerEl.scrollTop = 39 * (index + 0.5) - (scrollerEl.clientHeight) / 2
+        scrollerEl.scrollTop = itemHeight * (index + 0.5) - (scrollerEl.clientHeight) / 2
       }
     }
 
@@ -91,8 +93,8 @@ export default {
       const scrollerEl = scroller.value.$el
 
       const index = filteredEvents.value.indexOf(inspectedEvent.value)
-      const minPosition = 39 * index
-      const maxPosition = minPosition + 39
+      const minPosition = itemHeight * index
+      const maxPosition = minPosition + itemHeight
 
       if (scrollerEl.scrollTop > minPosition || scrollerEl.scrollTop + scrollerEl.clientHeight < maxPosition) {
         scrollToInspectedEvent()
@@ -127,6 +129,7 @@ export default {
       scroller,
       filter,
       filteredEvents,
+      itemHeight,
       inspectedEvent,
       inspectEvent,
       selectEvent
@@ -172,8 +175,8 @@ export default {
     <RecycleScroller
       ref="scroller"
       :items="filteredEvents"
-      :item-size="34"
-      class="flex-1"
+      :item-size="itemHeight"
+      class="flex-1 scroll-smooth"
     >
       <template #default="{ item: event }">
         <TimelineEventListItem
