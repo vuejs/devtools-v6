@@ -6,7 +6,7 @@ import LayerItem from './LayerItem.vue'
 import TimelineEventList from './TimelineEventList.vue'
 import SelectedEventInspector from './SelectedEventInspector.vue'
 
-import { useTime, useLayers, resetTimeline, useCursor } from '.'
+import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent } from '.'
 import { computed, onMounted, ref, watch } from '@vue/composition-api'
 import { formatTime } from '@front/util/format'
 
@@ -54,6 +54,37 @@ export default {
       }
     }
 
+    // Time
+
+    const {
+      startTime,
+      endTime,
+      minTime,
+      maxTime
+    } = useTime()
+
+    const {
+      selectedEvent
+    } = useSelectedEvent()
+
+    // Scroll to selected event
+    watch(selectedEvent, event => {
+      if (!event) return
+
+      const size = endTime.value - startTime.value
+      if (event.time < startTime.value || event.time > endTime.value) {
+        startTime.value = event.time - size / 2
+        if (startTime.value < minTime.value) {
+          startTime.value = minTime.value
+        }
+        endTime.value = startTime.value + size
+        if (endTime.value > maxTime.value) {
+          endTime.value = maxTime.value
+          startTime.value = endTime.value - size
+        }
+      }
+    })
+
     // Time cursor
 
     const { cursorTime } = useCursor()
@@ -61,7 +92,10 @@ export default {
     const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value, 'ms') : null)
 
     return {
-      ...useTime(),
+      startTime,
+      endTime,
+      minTime,
+      maxTime,
       layers,
       vScroll,
       layersEl,
