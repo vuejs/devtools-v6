@@ -1,15 +1,31 @@
 <script>
 import StateInspector from '../inspector/StateInspector.vue'
 
-import { useInspectedEvent } from '.'
+import { computed } from '@vue/composition-api'
+import { useInspectedEvent, useSelectedEvent } from '.'
 
 export default {
   components: {
     StateInspector
   },
   setup () {
+    const {
+      inspectedEvent,
+      inspectedEventState,
+      time
+    } = useInspectedEvent()
+
+    const {
+      selectedStackedEvents
+    } = useSelectedEvent()
+
+    const isSelected = computed(() => selectedStackedEvents.value.includes(inspectedEvent.value))
+
     return {
-      ...useInspectedEvent()
+      inspectedEvent,
+      inspectedEventState,
+      time,
+      isSelected
     }
   }
 }
@@ -20,11 +36,27 @@ export default {
     v-if="inspectedEventState"
     class="flex flex-col h-full"
   >
-    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-900 px-2 text-bluegray-900 dark:text-bluegray-100">
-      <span
-        class="flex-1 truncate font-medium text-purple-600 dark:text-purple-400"
-      >
-        {{ inspectedEvent.title || 'Event' }}
+    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-900 p-2 pl-3 text-bluegray-900 dark:text-bluegray-100 space-x-2">
+      <div
+        class="flex-none w-2 h-2 rounded-full border"
+        :style="{
+          borderColor: `#${inspectedEvent.layer.color.toString(16)}`,
+          ... isSelected ? {} : {
+            backgroundColor: `#${inspectedEvent.layer.color.toString(16)}`
+          }
+        }"
+      />
+
+      <span class="flex-1 font-mono truncate text-xs">
+        <span class="font-medium">
+          {{ inspectedEvent.title || 'Event' }}
+        </span>
+
+        <span
+          v-if="inspectedEvent.subtitle"
+          class="opacity-75"
+          v-html="inspectedEvent.subtitle"
+        />
       </span>
 
       <span class="event-time flex-none flex items-center space-x-0.5 text-2xs font-mono px-2 py-1 rounded-full border border-gray-100 dark:border-gray-900 text-bluegray-700 dark:text-bluegray-300">
@@ -44,9 +76,3 @@ export default {
     />
   </div>
 </template>
-
-<style lang="postcss" scoped>
-.header {
-  height: 42px;
-}
-</style>

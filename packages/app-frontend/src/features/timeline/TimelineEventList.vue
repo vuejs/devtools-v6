@@ -52,7 +52,7 @@ export default {
 
       const index = displayedEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
-        scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2 + 81
+        scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2
       }
     }
 
@@ -64,7 +64,7 @@ export default {
       if (!scroller.value) return
 
       const index = displayedEvents.value.indexOf(inspectedEvent.value)
-      const minPosition = 39 * index + 81
+      const minPosition = 39 * index
       const maxPosition = minPosition + 39
 
       if (scroller.value.scrollTop > minPosition || scroller.value.scrollTop + scroller.value.clientHeight < maxPosition) {
@@ -109,60 +109,47 @@ export default {
 <template>
   <div
     v-if="selectedEvent"
-    ref="scroller"
-    class="h-full overflow-y-auto scroll-smooth"
+    class="h-full flex flex-col"
   >
-    <div class="header px-2 flex items-center space-x-2 border-gray-200 dark:border-gray-900 border-b">
-      <div
-        class="w-3 h-3 rounded-full mx-2 flex-none"
-        :style="{
-          backgroundColor: `#${selectedEvent.layer.color.toString(16)}`
-        }"
-      />
-      <div class="leading-tight flex-1 truncate">
-        <div class="text-sm">
-          {{ selectedEvent.layer.label }}
-        </div>
-      </div>
+    <div class="flex-none border-gray-200 dark:border-gray-900 border-b">
+      <VueTabs
+        :tab-id.sync="tabId"
+        group-class="accent extend"
+        tab-class="flat"
+      >
+        <VueTab
+          id="nearby"
+          :label="selectedStackedEvents.length > 1 ? 'Nearby' : 'Selected'"
+        />
+        <VueTab
+          v-if="selectedEvent.group"
+          id="group"
+          label="Group"
+        />
+        <VueTab
+          id="all"
+          label="All"
+        />
+      </VueTabs>
     </div>
 
-    <VueTabs
-      :tab-id.sync="tabId"
-      class="sticky top-0 bg-white dark:bg-black z-10 border-gray-200 dark:border-gray-900 border-b"
-      group-class="accent extend"
-      tab-class="flat"
+    <div
+      ref="scroller"
+      class="flex-1 overflow-y-auto scroll-smooth"
     >
-      <VueTab
-        id="nearby"
-        :label="selectedStackedEvents.length > 1 ? 'Nearby' : 'Selected'"
+      <TimelineEventListItem
+        v-for="(event, index) of displayedEvents"
+        :key="index"
+        :event="event"
+        :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
+        @inspect="inspectEvent(event)"
+        @select="selectEvent(event)"
       />
-      <VueTab
-        v-if="selectedEvent.group"
-        id="group"
-        label="Group"
-      />
-      <VueTab
-        id="all"
-        label="All"
-      />
-    </VueTabs>
-
-    <TimelineEventListItem
-      v-for="(event, index) of displayedEvents"
-      :key="index"
-      :event="event"
-      :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
-      @inspect="inspectEvent(event)"
-      @select="selectEvent(event)"
-    />
+    </div>
   </div>
 </template>
 
 <style lang="postcss" scoped>
-.header {
-  height: 42px;
-}
-
 .vue-ui-tabs /deep/ .indicator {
   padding-bottom: 0 !important;
 }

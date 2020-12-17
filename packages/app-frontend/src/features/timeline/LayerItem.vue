@@ -29,7 +29,7 @@ export default {
     >
       <div class="flex items-center space-x-4 px-4 py-1">
         <div
-          class="w-3 h-3 rounded-full"
+          class="flex-none w-3 h-3 rounded-full"
           :style="{
             backgroundColor: `#${layer.color.toString(16)}`
           }"
