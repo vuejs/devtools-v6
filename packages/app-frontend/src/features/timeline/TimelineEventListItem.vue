@@ -86,6 +86,6 @@ export default {
 
 <style lang="postcss" scoped>
 .event {
-  height: 39px;
+  height: 34px;
 }
 </style>
