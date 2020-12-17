@@ -14,6 +14,8 @@ const endTime = ref(0)
 const minTime = ref(0)
 const maxTime = ref(0)
 
+const timelineIsEmpty = ref(true)
+
 const cursorTime = ref(null)
 
 const layersPerApp = ref({})
@@ -61,23 +63,28 @@ const resetCbs = []
 
 export function resetTimeline () {
   selectedEvent.value = null
-
-  const now = Date.now()
-  startTime.value = now - 1000
-  endTime.value = now
-  minTime.value = now - 1000
-  maxTime.value = now
   layersPerApp.value = {}
   vScrollPerApp.value = {}
   hoverLayerId.value = null
+  timelineIsEmpty.value = true
 
+  resetTime()
+
+  // Layers
   fetchLayers()
-
   hiddenLayersPerApp.value = getStorage('hidden-layers', {})
 
   for (const cb of resetCbs) {
     cb()
   }
+}
+
+function resetTime () {
+  const now = Date.now()
+  startTime.value = now - 1000
+  endTime.value = now
+  minTime.value = now - 1000
+  maxTime.value = now
 }
 
 export function onTimelineReset (cb) {
@@ -101,6 +108,11 @@ export function onEventAdd (cb) {
 }
 
 function addEvent (appId, event, layer) {
+  if (timelineIsEmpty.value) {
+    timelineIsEmpty.value = false
+    resetTime()
+  }
+
   event.layer = layer
   event.appId = appId
   layer.events.push(event)
