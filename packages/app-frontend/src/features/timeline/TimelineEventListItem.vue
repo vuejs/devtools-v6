@@ -73,14 +73,6 @@ export default {
     <span class="event-time flex-none text-2xs font-mono opacity-50">
       {{ time }}
     </span>
-
-    <!-- <span class="event-time flex-none flex items-center space-x-0.5 text-2xs font-mono p-1 rounded-full border border-gray-200 dark:border-gray-800">
-      <VueIcon
-        icon="schedule"
-        class="w-3 h-3 opacity-50"
-      />
-      <span>{{ time }}</span>
-    </span> -->
   </div>
 </template>
 
