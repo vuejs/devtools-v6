@@ -9,6 +9,8 @@ import { getBridge } from '../bridge'
 const STACK_DURATION = 50
 const AUTOSCROLL_DURATION = 10000
 
+let nextEventId = 0
+
 const startTime = ref(0)
 const endTime = ref(0)
 const minTime = ref(0)
@@ -82,6 +84,7 @@ function addEvent (appId, event, layer) {
     resetTime()
   }
 
+  event.id = nextEventId++
   event.layer = layer
   event.appId = appId
   layer.events.push(event)

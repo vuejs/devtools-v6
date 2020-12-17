@@ -73,9 +73,11 @@ export default {
     function scrollToInspectedEvent () {
       if (!scroller.value) return
 
+      const scrollerEl = scroller.value.$el
+
       const index = filteredEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
-        scroller.value.scrollTop = 39 * (index + 0.5) - (scroller.value.clientHeight) / 2
+        scrollerEl.scrollTop = 39 * (index + 0.5) - (scrollerEl.clientHeight) / 2
       }
     }
 
@@ -86,11 +88,13 @@ export default {
     function checkScrollToInspectedEvent () {
       if (!scroller.value) return
 
+      const scrollerEl = scroller.value.$el
+
       const index = filteredEvents.value.indexOf(inspectedEvent.value)
       const minPosition = 39 * index
       const maxPosition = minPosition + 39
 
-      if (scroller.value.scrollTop > minPosition || scroller.value.scrollTop + scroller.value.clientHeight < maxPosition) {
+      if (scrollerEl.scrollTop > minPosition || scrollerEl.scrollTop + scrollerEl.clientHeight < maxPosition) {
         scrollToInspectedEvent()
       }
     }
@@ -165,18 +169,20 @@ export default {
       />
     </div>
 
-    <div
+    <RecycleScroller
       ref="scroller"
-      class="flex-1 overflow-y-auto scroll-smooth"
+      :items="filteredEvents"
+      :item-size="34"
+      class="flex-1"
     >
-      <TimelineEventListItem
-        v-for="(event, index) of filteredEvents"
-        :key="index"
-        :event="event"
-        :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
-        @inspect="inspectEvent(event)"
-        @select="selectEvent(event)"
-      />
-    </div>
+      <template #default="{ item: event }">
+        <TimelineEventListItem
+          :event="event"
+          :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
+          @inspect="inspectEvent(event)"
+          @select="selectEvent(event)"
+        />
+      </template>
+    </RecycleScroller>
   </div>
 </template>
