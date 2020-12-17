@@ -1,7 +1,7 @@
 <script>
 import { useInspectedEvent, useSelectedEvent } from '.'
 import Defer from '@front/mixins/defer'
-import { computed, ref, watch } from '@vue/composition-api'
+import { computed, onMounted, ref, watch } from '@vue/composition-api'
 import TimelineEventListItem from './TimelineEventListItem.vue'
 
 const itemHeight = 34
@@ -52,6 +52,11 @@ export default {
     const filter = ref('')
 
     const filteredEvents = computed(() => {
+      // Prevent crash on the filteredEvents.length watcher
+      if (!selectedEvent.value) {
+        return []
+      }
+
       const rawFilter = filter.value.trim()
       if (rawFilter) {
         const reg = new RegExp(rawFilter, 'i')
@@ -68,6 +73,19 @@ export default {
 
     const scroller = ref()
 
+    const isAtScrollBottom = ref(false)
+
+    function onScroll () {
+      const scrollerEl = scroller.value.$el
+      isAtScrollBottom.value = scrollerEl.scrollTop + scrollerEl.clientHeight >= scrollerEl.scrollHeight - 100
+    }
+
+    watch(scroller, value => {
+      if (value) {
+        onScroll()
+      }
+    })
+
     watch(tabId, () => {
       scrollToInspectedEvent()
     })
@@ -79,6 +97,8 @@ export default {
 
       const index = filteredEvents.value.indexOf(inspectedEvent.value)
       if (index !== -1) {
+        // We need to first disable auto bottom scroll
+        isAtScrollBottom.value = false
         scrollerEl.scrollTop = itemHeight * (index + 0.5) - (scrollerEl.clientHeight) / 2
       }
     }
@@ -100,6 +120,22 @@ export default {
         scrollToInspectedEvent()
       }
     }
+
+    // Auto bottom scroll
+
+    function scrollToBottom () {
+      if (!scroller.value) return
+
+      const scrollerEl = scroller.value.$el
+      scrollerEl.scrollTop = scrollerEl.scrollHeight
+    }
+
+    // Important: Watch this after the scroll to inspect event watchers
+    watch(() => filteredEvents.value.length, () => {
+      if (isAtScrollBottom.value) {
+        scrollToBottom()
+      }
+    })
 
     // List interactions
 
@@ -132,7 +168,8 @@ export default {
       itemHeight,
       inspectedEvent,
       inspectEvent,
-      selectEvent
+      selectEvent,
+      onScroll
     }
   }
 }
@@ -176,7 +213,8 @@ export default {
       ref="scroller"
       :items="filteredEvents"
       :item-size="itemHeight"
-      class="flex-1 scroll-smooth"
+      class="flex-1"
+      @scroll.native="onScroll()"
     >
       <template #default="{ item: event }">
         <TimelineEventListItem
