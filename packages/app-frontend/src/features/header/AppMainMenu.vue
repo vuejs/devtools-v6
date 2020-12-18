@@ -16,43 +16,17 @@ export default {
 
 <template>
   <div class="relative">
-    <VueDropdown
-      offset="0"
+    <VueButton
+      href="https://headwayapp.co/vue-js-devtools-changelog"
+      target="_blank"
+      class="flat logo-button"
     >
-      <template #trigger>
-        <VueButton
-          class="flat logo-button"
-        >
-          <img
-            src="~@front/assets/vue-logo.svg"
-            alt="Vue logo"
-            class="w-10 h-10"
-          >
-        </VueButton>
-      </template>
-
-      <VueDropdownButton
-        :to="{
-          name: 'global-settings'
-        }"
+      <img
+        src="~@front/assets/vue-logo.svg"
+        alt="Vue logo"
+        class="w-10 h-10"
       >
-        Settings
-      </VueDropdownButton>
-
-      <VueDropdownButton
-        href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
-        target="_blank"
-      >
-        Report a bug
-      </VueDropdownButton>
-
-      <VueDropdownButton
-        href="https://github.com/vuejs/vue-devtools/releases"
-        target="_blank"
-      >
-        Full changelog
-      </VueDropdownButton>
-    </VueDropdown>
+    </VueButton>
 
     <div class="changelog-button" />
   </div>

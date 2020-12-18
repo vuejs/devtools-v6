@@ -149,6 +149,22 @@ export default {
         >
           Global settings...
         </VueDropdownButton>
+
+        <div class="border-t border-gray-200 dark:border-gray-900 my-1" />
+
+        <VueDropdownButton
+          href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
+          target="_blank"
+        >
+          Report a bug
+        </VueDropdownButton>
+
+        <VueDropdownButton
+          href="https://github.com/vuejs/vue-devtools/releases"
+          target="_blank"
+        >
+          Full changelog
+        </VueDropdownButton>
       </VueDropdown>
     </div>
   </div>
