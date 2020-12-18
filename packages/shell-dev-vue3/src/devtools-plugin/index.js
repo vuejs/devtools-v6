@@ -45,8 +45,28 @@ export default {
               }
             }
           })
+
+          return api.getComponentBounds(payload.componentInstance).then(bounds => {
+            payload.instanceData.state.push({
+              type: stateType,
+              key: 'bounds',
+              value: {
+                left: bounds.left,
+                top: bounds.top,
+                width: bounds.width,
+                height: bounds.height
               }
             })
+          }).then(() => api.getComponentName(payload.componentInstance))
+            .then(name => {
+              payload.instanceData.state.push({
+                type: stateType,
+                key: 'component name',
+                value: name
+              })
+            })
+        }
+      })
 
       setInterval(() => {
         time += 5

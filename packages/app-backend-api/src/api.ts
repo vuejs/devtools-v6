@@ -198,4 +198,12 @@ export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
   sendInspectorState (inspectorId: string) {
     this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, inspectorId, this.plugin.descriptor.app)
   }
+
+  getComponentBounds (instance: ComponentInstance) {
+    return this.ctx.api.getComponentBounds(instance)
+  }
+
+  getComponentName (instance: ComponentInstance) {
+    return this.ctx.api.getComponentName(instance)
+  }
 }

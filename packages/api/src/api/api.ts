@@ -10,6 +10,8 @@ export interface DevtoolsPluginApi {
   addInspector (options: CustomInspectorOptions)
   sendInspectorTree (inspectorId: string)
   sendInspectorState (inspectorId: string)
+  getComponentBounds (instance: ComponentInstance): Promise<ComponentBounds>
+  getComponentName (instance: ComponentInstance): Promise<string>
 }
 
 export interface AppRecord {
