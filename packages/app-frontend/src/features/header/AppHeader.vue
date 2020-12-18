@@ -124,27 +124,32 @@ export default {
 
     <div class="flex-1" />
 
-    <portal-target name="header-end" />
+    <div class="flex items-center">
+      <portal-target
+        name="header-end"
+        class="flex items-center"
+      />
 
-    <VueDropdown
-      offset="0"
-    >
-      <template #trigger>
-        <VueButton
-          icon-left="more_vert"
-          class="icon-button flat"
-        />
-      </template>
-
-      <portal-target name="more-menu" />
-
-      <VueDropdownButton
-        :to="{
-          name: 'global-settings'
-        }"
+      <VueDropdown
+        offset="0"
       >
-        Global settings...
-      </VueDropdownButton>
-    </VueDropdown>
+        <template #trigger>
+          <VueButton
+            icon-left="more_vert"
+            class="icon-button flat"
+          />
+        </template>
+
+        <portal-target name="more-menu" />
+
+        <VueDropdownButton
+          :to="{
+            name: 'global-settings'
+          }"
+        >
+          Global settings...
+        </VueDropdownButton>
+      </VueDropdown>
+    </div>
   </div>
 </template>
