@@ -184,7 +184,7 @@ export default {
     }
 
     .portrait & {
-      top: 0;
+      bottom: 0;
     }
   }
 
@@ -194,7 +194,7 @@ export default {
     }
 
     .portrait & {
-      top: -5px;
+      bottom: -5px;
     }
   }
 
@@ -204,7 +204,7 @@ export default {
     }
 
     .portrait & {
-      top: -10px;
+      bottom: -10px;
     }
   }
 }
