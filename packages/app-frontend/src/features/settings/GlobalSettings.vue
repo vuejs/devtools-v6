@@ -1,25 +1,5 @@
 <template>
   <div class="global-preferences preferences">
-    <VueFormField title="Normalize component names">
-      <VueGroup
-        v-model="$shared.componentNameStyle"
-        class="extend"
-      >
-        <VueGroupButton
-          value="original"
-          label="Original name"
-        />
-        <VueGroupButton
-          value="class"
-          label="Pascal case"
-        />
-        <VueGroupButton
-          value="kebab"
-          label="Kebab case"
-        />
-      </VueGroup>
-    </VueFormField>
-
     <VueFormField title="Theme">
       <VueGroup
         v-model="$shared.theme"
