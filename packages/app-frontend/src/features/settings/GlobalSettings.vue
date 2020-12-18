@@ -3,7 +3,7 @@
     <VueFormField title="Theme">
       <VueGroup
         v-model="$shared.theme"
-        class="extend"
+        class="extend w-96"
       >
         <VueGroupButton
           value="auto"
@@ -36,6 +36,17 @@
           class="medium"
         />
         May print warnings in the console
+      </template>
+    </VueFormField>
+
+    <VueFormField
+      title="Menu Step Scrolling"
+    >
+      <VueSwitch v-model="$shared.menuStepScrolling">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        Useful for trackpads
       </template>
     </VueFormField>
   </div>

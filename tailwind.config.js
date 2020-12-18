@@ -60,7 +60,10 @@ module.exports = {
         '3xs': '.6rem'
       },
       spacing: {
-        0.5: '0.125rem'
+        0.5: '0.125rem',
+        72: '18rem',
+        80: '20rem',
+        96: '24rem'
       }
     },
     darkSelector: '.vue-ui-dark-mode'

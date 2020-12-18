@@ -1,6 +1,7 @@
 <script>
 import { ref, computed } from '@vue/composition-api'
 import { useOrientation } from '../layout/orientation'
+import SharedData from '@utils/shared-data'
 
 export default {
   props: {
@@ -122,11 +123,22 @@ export default {
       }
     }
 
+    let wheelEnabled = true
+
     function onMouseWheel (e) {
+      if (!wheelEnabled) return
+
       if (e.deltaY > 0) {
         selectNext()
       } else {
         selectPrevious()
+      }
+
+      if (SharedData.menuStepScrolling) {
+        wheelEnabled = false
+        setTimeout(() => {
+          wheelEnabled = true
+        }, 300)
       }
     }
 

@@ -1,5 +1,6 @@
 import { setStorage, getStorage } from './storage'
 import { Bridge } from './bridge'
+import { isMac } from './env'
 
 // Initial state
 const internalSharedData = {
@@ -20,7 +21,8 @@ const internalSharedData = {
   vuexGroupGettersByModule: true,
   showMenuScrollTip: true,
   timelineTimeGrid: true,
-  timelineScreenshots: true
+  timelineScreenshots: true,
+  menuStepScrolling: isMac
 }
 
 const persisted = [
@@ -36,7 +38,8 @@ const persisted = [
   'timeFormat',
   'showMenuScrollTip',
   'timelineTimeGrid',
-  'timelineScreenshots'
+  'timelineScreenshots',
+  'menuStepScrolling'
 ]
 
 const storageVersion = '6.0.0-alpha.1'
