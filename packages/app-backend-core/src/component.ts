@@ -29,6 +29,11 @@ export async function sendSelectedComponentData (instanceId: string, ctx: Backen
   if (!instance) {
     sendEmptyComponentData(instanceId, ctx)
   } else {
+    // Expose instance on window
+    if (typeof window !== 'undefined') {
+      (window as any).$vm = instance
+    }
+
     ctx.currentInspectedComponentId = instanceId
     ctx.currentAppRecord.lastInspectedComponentId = instanceId
     const payload = {
