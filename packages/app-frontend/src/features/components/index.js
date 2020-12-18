@@ -243,6 +243,9 @@ export function resetComponents () {
 }
 
 export function setupComponentsBridgeEvents (bridge) {
+  selectedComponentPendingId = null
+  expandedMap.value = {}
+
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData, notFound }) => {
     const isRoot = instanceId.endsWith('root')
 
@@ -287,6 +290,9 @@ export function setupComponentsBridgeEvents (bridge) {
     }
     if (instanceId === selectedComponentPendingId) {
       selectedComponentPendingId = null
+    }
+    if (data === null) {
+      selectedComponentId.value = null
     }
   })
 }
