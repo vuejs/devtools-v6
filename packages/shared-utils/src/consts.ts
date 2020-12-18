@@ -5,6 +5,7 @@ export enum BuiltinTabs {
 }
 
 export enum BridgeEvents {
+  // Misc
   TO_BACK_SUBSCRIBE = 'b:subscribe',
   TO_BACK_UNSUBSCRIBE = 'b:unsubscribe',
   /** Backend is ready */
@@ -15,6 +16,8 @@ export enum BridgeEvents {
   TO_BACK_REFRESH = 'b:refresh',
   /** Tab was switched */
   TO_BACK_TAB_SWITCH = 'b:tab:switch',
+
+  // Apps
   /** App was registered */
   TO_FRONT_APP_ADD = 'f:app:add',
   /** Get app list */
@@ -23,6 +26,8 @@ export enum BridgeEvents {
   TO_FRONT_APP_REMOVE = 'f:app:remove',
   TO_BACK_APP_SELECT = 'b:app:select',
   TO_FRONT_APP_SELECTED = 'f:app:selected',
+
+  // Components
   TO_BACK_COMPONENT_TREE = 'b:component:tree',
   TO_FRONT_COMPONENT_TREE = 'f:component:tree',
   TO_BACK_COMPONENT_SELECTED_DATA = 'b:component:selected-data',
@@ -39,13 +44,20 @@ export enum BridgeEvents {
   TO_FRONT_COMPONENT_PICK = 'f:component:pick',
   TO_BACK_COMPONENT_PICK_CANCELED = 'b:component:pick-canceled',
   TO_FRONT_COMPONENT_PICK_CANCELED = 'f:component:pick-canceled',
+
+  // Timeline
   TO_FRONT_TIMELINE_EVENT = 'f:timeline:event',
   TO_BACK_TIMELINE_LAYER_LIST = 'b:timeline:layer-list',
   TO_FRONT_TIMELINE_LAYER_LIST = 'f:timeline:layer-list',
   TO_FRONT_TIMELINE_LAYER_ADD = 'f:timeline:layer-add',
+  TO_BACK_TIMELINE_SHOW_SCREENSHOT = 'b:timeline:show-screenshot',
+
+  // Plugins
   TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_LIST = 'f:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_ADD = 'f:devtools-plugin:add',
+
+  // Custom inspectors
   TO_BACK_CUSTOM_INSPECTOR_LIST = 'b:custom-inspector:list',
   TO_FRONT_CUSTOM_INSPECTOR_LIST = 'f:custom-inspector:list',
   TO_FRONT_CUSTOM_INSPECTOR_ADD = 'f:custom-inspector:add',

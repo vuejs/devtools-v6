@@ -85,7 +85,8 @@ function setupBuiltinLayers (ctx: BackendContext) {
         title: event,
         subtitle: `by ${componentDisplay}`,
         meta: {
-          componentId: id
+          componentId: id,
+          bounds: await ctx.api.getComponentBounds(instance)
         }
       }
     } as TimelineEventPayload)

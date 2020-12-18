@@ -45,8 +45,8 @@ export default {
               }
             }
           })
-        }
-      })
+              }
+            })
 
       setInterval(() => {
         time += 5
@@ -173,7 +173,10 @@ export default {
             key: event.key
           },
           groupId: event.key,
-          title: 'Group test'
+          title: 'Group test',
+          meta: {
+            foo: 'bar'
+          }
         }
       })
     })

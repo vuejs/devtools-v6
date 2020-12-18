@@ -6,9 +6,12 @@ import LayerItem from './LayerItem.vue'
 import TimelineEventList from './TimelineEventList.vue'
 import SelectedEventInspector from './SelectedEventInspector.vue'
 
-import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent } from '.'
+import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent, useScreenshots } from '.'
 import { computed, onMounted, ref, watch } from '@vue/composition-api'
 import { formatTime } from '@front/util/format'
+import SharedData from '@utils/shared-data'
+import { onSharedDataChange } from '../../util/shared-data'
+import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
 export default {
   components: {
@@ -17,7 +20,8 @@ export default {
     TimelineView,
     TimelineScrollbar,
     TimelineEventList,
-    SelectedEventInspector
+    SelectedEventInspector,
+    AskScreenshotPermission
   },
 
   setup () {
@@ -91,6 +95,51 @@ export default {
 
     const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value, 'ms') : null)
 
+    // Screenshots
+
+    const askScreenshotPermission = ref(false)
+
+    onSharedDataChange('timelineScreenshots', (value) => {
+      if (value) {
+        chrome.permissions.contains({
+          permissions: ['activeTab'],
+          origins: [
+            'http://*/*',
+            'https://*/*',
+            'file:///*'
+          ]
+        }, granted => {
+          if (!granted) {
+            /* Ask modal disabled for now */
+            // askScreenshotPermission.value = true
+            // SharedData.timelineScreenshots = false
+          }
+        })
+      }
+    })
+
+    const {
+      screenshots,
+      showScreenshot
+    } = useScreenshots()
+
+    watch(cursorTime, value => {
+      if (!SharedData.timelineScreenshots) return
+
+      let choice = null
+      if (value != null) {
+        choice = screenshots.value[0]
+        for (const screenshot of screenshots.value) {
+          if (screenshot.time > value + 50) {
+            break
+          } else {
+            choice = screenshot
+          }
+        }
+      }
+      showScreenshot(choice)
+    })
+
     return {
       startTime,
       endTime,
@@ -106,7 +155,8 @@ export default {
       isLayerHidden,
       setLayerHidden,
       resetTimeline,
-      formattedCursorTime
+      formattedCursorTime,
+      askScreenshotPermission
     }
   }
 }
@@ -239,6 +289,25 @@ export default {
       >
         Time grid
       </VueSwitch>
+
+      <VueSwitch
+        v-model="$shared.timelineScreenshots"
+        class="w-full px-4 py-1 extend-left"
+      >
+        Screenshots
+      </VueSwitch>
     </portal>
+
+    <AskScreenshotPermission
+      v-if="askScreenshotPermission"
+      class="ask-permission"
+      @close="askScreenshotPermission = false"
+    />
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.ask-permission {
+  z-index: 11000;
+}
+</style>

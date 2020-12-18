@@ -27,6 +27,7 @@ import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlu
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
 import { registerApp, selectApp, mapAppRecord, getAppRecordId } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState } from './inspector'
+import { showScreenshot } from './timeline-screenshot'
 
 let ctx: BackendContext
 let connected = false
@@ -204,6 +205,10 @@ function connect () {
         data: stringify(options.event.data)
       }
     } as TimelineEventPayload)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, ({ screenshot }) => {
+    showScreenshot(screenshot, ctx)
   })
 
   // Custom inspectors

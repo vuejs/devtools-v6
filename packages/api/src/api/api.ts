@@ -1,4 +1,4 @@
-import { Hookable } from './hooks'
+import { ComponentBounds, Hookable } from './hooks'
 import { Context } from './context'
 import { ComponentInstance, ComponentState, StateBase } from './component'
 
@@ -19,10 +19,27 @@ export interface AppRecord {
   rootInstance: ComponentInstance
 }
 
-export interface TimelineLayerOptions {
+export interface TimelineLayerOptions<TData = any, TMeta = any> {
   id: string
   label: string
   color: number
+  screenshotOverlayRender?: (event: TimelineEvent<TData, TMeta> & ScreenshotOverlayEvent, ctx: ScreenshotOverlayRenderContext) => ScreenshotOverlayRenderResult | Promise<ScreenshotOverlayRenderResult>
+}
+
+export interface ScreenshotOverlayEvent {
+  layerId: string
+}
+
+export interface ScreenshotOverlayRenderContext {
+  screenshot: ScreenshotData
+  index: number
+}
+
+export type ScreenshotOverlayRenderResult = HTMLElement | string | false
+
+export interface ScreenshotData {
+  time: number
+  events: (TimelineEvent & ScreenshotOverlayEvent)[]
 }
 
 export interface TimelineEventOptions {

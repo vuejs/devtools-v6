@@ -1,10 +1,11 @@
 import { ref, computed, onUnmounted } from '@vue/composition-api'
 import { BridgeEvents, getStorage, parse, setStorage } from '@vue-devtools/shared-utils'
+import SharedData from '@utils/shared-data'
 import cloneDeep from 'lodash/cloneDeep'
 import Vue from 'vue'
 import { formatTime } from '@front/util/format'
 import { useApps, getApps } from '../apps'
-import { getBridge } from '../bridge'
+import { getBridge, useBridge } from '../bridge'
 
 const STACK_DURATION = 50
 const AUTOSCROLL_DURATION = 10000
@@ -31,6 +32,9 @@ const inspectedEvent = ref(null)
 
 const resetCbs = []
 
+const screenshots = ref([])
+let nextScreenshotId = 0
+
 export function resetTimeline () {
   selectedEvent.value = null
   inspectedEvent.value = null
@@ -38,6 +42,7 @@ export function resetTimeline () {
   vScrollPerApp.value = {}
   hoverLayerId.value = null
   timelineIsEmpty.value = true
+  screenshots.value = []
 
   resetTime()
 
@@ -126,6 +131,10 @@ function addEvent (appId, event, layer) {
       }
       maxTime.value = scrollTime
     }
+
+    takeScreenshot(event)
+  } else {
+    event.stackParent.screenshot.events.push(event)
   }
 
   for (const cb of addEventCbs) {
@@ -282,6 +291,67 @@ export function useInspectedEvent () {
 
 function fetchLayers () {
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, {})
+}
+
+function takeScreenshot (event) {
+  if (!SharedData.timelineScreenshots) return
+
+  const time = Math.round(event.time / 100) * 100
+
+  const lastScreenshot = screenshots.value[screenshots.value.length - 1]
+
+  if (!lastScreenshot || lastScreenshot.time !== time) {
+    const screenshot = {
+      id: nextScreenshotId++,
+      time,
+      image: null,
+      events: [
+        event
+      ]
+    }
+    event.screenshot = screenshot
+    screenshots.value.push(screenshot)
+
+    // Screenshot
+    if (typeof chrome !== 'undefined') {
+      chrome.tabs.captureVisibleTab({
+        format: 'png'
+      }, dataUrl => {
+        screenshot.image = dataUrl
+      })
+    }
+  } else {
+    event.screenshot = lastScreenshot
+    lastScreenshot.events.push(event)
+  }
+}
+
+export function useScreenshots () {
+  const { bridge } = useBridge()
+  const { currentAppId } = useApps()
+
+  function showScreenshot (screenshot = null) {
+    bridge.send(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, {
+      screenshot: screenshot ? {
+        ...screenshot,
+        events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => ({
+          time: event.time,
+          data: event.data,
+          logType: event.logType,
+          meta: event.meta,
+          groupId: event.groupId,
+          title: event.title,
+          subtitle: event.subtitle,
+          layerId: event.layer.id
+        }))
+      } : null
+    })
+  }
+
+  return {
+    screenshots,
+    showScreenshot
+  }
 }
 
 export function setupTimelineBridgeEvents (bridge) {
