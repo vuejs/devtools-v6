@@ -134,7 +134,9 @@ function addEvent (appId, event, layer) {
 
     takeScreenshot(event)
   } else {
-    event.stackParent.screenshot.events.push(event)
+    if (event.stackParent.screenshot) {
+      event.stackParent.screenshot.events.push(event)
+    }
   }
 
   for (const cb of addEventCbs) {
