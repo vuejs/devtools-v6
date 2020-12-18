@@ -106,3 +106,7 @@ export function getAppRecordId (app): number {
 export function getAppRecord (app: any, ctx: BackendContext) {
   return ctx.appRecords.find(ar => ar.options.app === app)
 }
+
+export function waitForAppsRegistration () {
+  return jobs.queue(async () => { /* NOOP */ })
+}

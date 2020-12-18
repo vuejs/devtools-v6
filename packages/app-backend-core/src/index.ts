@@ -25,7 +25,7 @@ import {
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, mapAppRecord, getAppRecordId } from './app'
+import { registerApp, selectApp, mapAppRecord, getAppRecordId, waitForAppsRegistration } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 
@@ -55,11 +55,11 @@ export async function initBackend (bridge: Bridge) {
     hook.once(HookEvents.INIT, connect)
   }
 
-  hook.on(HookEvents.APP_ADD, app => {
+  hook.on(HookEvents.APP_ADD, async app => {
+    await registerApp(app, ctx)
+
     // Will init connect
     hook.emit(HookEvents.INIT)
-
-    registerApp(app, ctx)
   })
 
   // In case we close and open devtools again
@@ -71,11 +71,15 @@ export async function initBackend (bridge: Bridge) {
   }
 }
 
-function connect () {
+async function connect () {
   if (connected) {
     return
   }
   connected = true
+
+  await waitForAppsRegistration()
+
+  console.log('%cconnect', 'color: blue;')
 
   ctx.currentTab = BuiltinTabs.COMPONENTS
 
