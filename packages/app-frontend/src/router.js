@@ -4,7 +4,7 @@ import ComponentsInspector from './features/components/ComponentsInspector.vue'
 import CustomInspector from './features/inspector/custom/CustomInspector.vue'
 import Timeline from './features/timeline/Timeline.vue'
 import GlobalSettings from './features/settings/GlobalSettings.vue'
-import { BuiltinTabs } from '@vue-devtools/shared-utils'
+import { BuiltinTabs, getStorage, setStorage } from '@vue-devtools/shared-utils'
 
 Vue.use(VueRouter)
 
@@ -70,9 +70,21 @@ const routes = [
   }
 ]
 
+const STORAGE_ROUTE = 'route'
+
 export function createRouter () {
   const router = new VueRouter({
     routes
   })
+
+  const previousRoute = getStorage(STORAGE_ROUTE)
+  if (previousRoute) {
+    router.push(previousRoute)
+  }
+
+  router.afterEach(to => {
+    setStorage(STORAGE_ROUTE, to.fullPath)
+  })
+
   return router
 }
