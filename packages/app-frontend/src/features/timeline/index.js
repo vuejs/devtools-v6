@@ -354,16 +354,7 @@ export function useScreenshots () {
     bridge.send(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, {
       screenshot: screenshot ? {
         ...screenshot,
-        events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => ({
-          time: event.time,
-          data: event.data,
-          logType: event.logType,
-          meta: event.meta,
-          groupId: event.groupId,
-          title: event.title,
-          subtitle: event.subtitle,
-          layerId: event.layer.id
-        }))
+        events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => event.id)
       } : null
     })
   }

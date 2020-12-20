@@ -31,10 +31,12 @@ export interface TimelineLayerOptions<TData = any, TMeta = any> {
 
 export interface ScreenshotOverlayEvent {
   layerId: string
+  renderMeta: any
 }
 
-export interface ScreenshotOverlayRenderContext {
+export interface ScreenshotOverlayRenderContext<TData = any, TMeta = any> {
   screenshot: ScreenshotData
+  events: (TimelineEvent<TData, TMeta> & ScreenshotOverlayEvent)[]
   index: number
 }
 
@@ -42,7 +44,6 @@ export type ScreenshotOverlayRenderResult = HTMLElement | string | false
 
 export interface ScreenshotData {
   time: number
-  events: (TimelineEvent & ScreenshotOverlayEvent)[]
 }
 
 export interface TimelineEventOptions {

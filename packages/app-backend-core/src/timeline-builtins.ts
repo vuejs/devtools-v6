@@ -5,12 +5,12 @@ export const builtinLayers: TimelineLayerOptions[] = [
     id: 'mouse',
     label: 'Mouse',
     color: 0xA451AF,
-    screenshotOverlayRender (event, { screenshot }) {
-      const samePositionEvent = screenshot.events.find(e => e !== event && e.data.x === event.data.x && e.data.y === event.data.y)
+    screenshotOverlayRender (event, { events }) {
+      const samePositionEvent = events.find(e => e !== event && e.renderMeta.textEl && e.data.x === event.data.x && e.data.y === event.data.y)
       if (samePositionEvent) {
         const text = document.createElement('div')
         text.innerText = event.data.type
-        samePositionEvent.meta.textEl.appendChild(text)
+        samePositionEvent.renderMeta.textEl.appendChild(text)
         return false
       }
 
@@ -36,8 +36,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
       text.style.borderRadius = '3px'
       div.appendChild(text)
 
-      event.meta = event.meta || {}
-      event.meta.textEl = text
+      event.renderMeta.textEl = text
 
       return div
     }
@@ -51,8 +50,8 @@ export const builtinLayers: TimelineLayerOptions[] = [
     id: 'component-event',
     label: 'Component events',
     color: 0x41B883,
-    screenshotOverlayRender: (event, { screenshot }) => {
-      if (screenshot.events.some(e => e !== event && e.layerId === event.layerId && e.meta.drawn && (e.meta.componentId === event.meta.componentId || (
+    screenshotOverlayRender: (event, { events }) => {
+      if (events.some(e => e !== event && e.layerId === event.layerId && e.renderMeta.drawn && (e.meta.componentId === event.meta.componentId || (
         e.meta.bounds.left === event.meta.bounds.left &&
         e.meta.bounds.top === event.meta.bounds.top &&
         e.meta.bounds.width === event.meta.bounds.width &&
@@ -87,7 +86,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
       text.innerText = event.data.event
       div.appendChild(text)
 
-      event.meta.drawn = true
+      event.renderMeta.drawn = true
 
       return div
     }

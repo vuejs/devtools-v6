@@ -1,6 +1,5 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
-import { ScreenshotOverlayRenderContext } from '@vue/devtools-api'
-import { parse } from '@vue-devtools/shared-utils'
+import { ID, ScreenshotOverlayRenderContext } from '@vue/devtools-api'
 import { JobQueue } from './util/queue'
 import { builtinLayers } from './timeline-builtins'
 
@@ -10,7 +9,14 @@ let container: HTMLDivElement
 
 const jobQueue = new JobQueue()
 
-export async function showScreenshot (screenshot, ctx: BackendContext) {
+interface Screenshot {
+  id: ID
+  time: number
+  image: string
+  events: ID[]
+}
+
+export async function showScreenshot (screenshot: Screenshot, ctx: BackendContext) {
   await jobQueue.queue(async () => {
     if (screenshot) {
       if (!container) {
@@ -21,24 +27,36 @@ export async function showScreenshot (screenshot, ctx: BackendContext) {
 
       clearContent()
 
+      const events = screenshot.events.map(id => ctx.currentAppRecord.timelineEventMap.get(id)).filter(Boolean).map(eventData => ({
+        layer: builtinLayers.concat(ctx.timelineLayers).find(layer => layer.id === eventData.layerId),
+        event: {
+          ...eventData.event,
+          layerId: eventData.layerId,
+          renderMeta: {}
+        }
+      }))
+
       const renderContext: ScreenshotOverlayRenderContext = {
         screenshot,
+        events: events.map(({ event }) => event),
         index: 0
       }
 
-      for (let i = 0; i < screenshot.events.length; i++) {
-        const event = screenshot.events[i]
-        const layer = builtinLayers.concat(ctx.timelineLayers).find(layer => layer.id === event.layerId)
+      for (let i = 0; i < events.length; i++) {
+        const { layer, event } = events[i]
         if (layer.screenshotOverlayRender) {
-          event.data = parse(event.data, false)
           renderContext.index = i
-          const result = await layer.screenshotOverlayRender(event, renderContext)
-          if (result !== false) {
-            if (typeof result === 'string') {
-              container.innerHTML += result
-            } else {
-              container.appendChild(result)
+          try {
+            const result = await layer.screenshotOverlayRender(event, renderContext)
+            if (result !== false) {
+              if (typeof result === 'string') {
+                container.innerHTML += result
+              } else {
+                container.appendChild(result)
+              }
             }
+          } catch (e) {
+            console.error(e)
           }
         }
       }
