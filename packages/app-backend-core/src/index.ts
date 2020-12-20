@@ -8,13 +8,12 @@ import {
   BridgeEvents,
   BuiltinTabs,
   initSharedData,
-  BridgeSubscriptions,
-  stringify
+  BridgeSubscriptions
 } from '@vue-devtools/shared-utils'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
-import { setupTimeline, sendTimelineLayers, TimelineEventPayload } from './timeline'
+import { setupTimeline, sendTimelineLayers, addTimelineEvent } from './timeline'
 import ComponentPicker from './component-pick'
 import {
   sendComponentTreeData,
@@ -210,15 +209,7 @@ async function connect () {
   })
 
   hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, app: App) => {
-    const appId = app && getAppRecordId(app)
-    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
-      appId: options.all || !app || appId == null ? 'all' : appId,
-      layerId: options.layerId,
-      event: {
-        ...options.event,
-        data: stringify(options.event.data)
-      }
-    } as TimelineEventPayload)
+    addTimelineEvent(options, app, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, ({ screenshot }) => {
