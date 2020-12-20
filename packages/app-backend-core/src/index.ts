@@ -142,12 +142,14 @@ async function connect () {
       sendComponentTreeData(parentId, null, ctx)
     }
 
-    const id = getComponentId(app, uid, ctx)
-    if (component.__VUE_DEVTOOLS_UID__ == null) {
-      component.__VUE_DEVTOOLS_UID__ = id
-    }
-    if (!ctx.currentAppRecord.instanceMap.has(id)) {
-      ctx.currentAppRecord.instanceMap.set(id, component)
+    if (component) {
+      const id = getComponentId(app, uid, ctx)
+      if (component.__VUE_DEVTOOLS_UID__ == null) {
+        component.__VUE_DEVTOOLS_UID__ = id
+      }
+      if (!ctx.currentAppRecord.instanceMap.has(id)) {
+        ctx.currentAppRecord.instanceMap.set(id, component)
+      }
     }
   })
 
