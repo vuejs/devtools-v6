@@ -4,11 +4,13 @@ import { onMounted } from '@vue/composition-api'
 export default {
   setup () {
     onMounted(() => {
-      // eslint-disable-next-line no-undef
-      Headway.init({
-        selector: '.changelog-button',
-        account: '7kY9Zy'
-      })
+      if (typeof Headway !== 'undefined') {
+        // eslint-disable-next-line no-undef
+        Headway.init({
+          selector: '.changelog-button',
+          account: '7kY9Zy'
+        })
+      }
     })
   }
 }
