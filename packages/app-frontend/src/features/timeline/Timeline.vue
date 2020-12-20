@@ -4,7 +4,7 @@ import TimelineView from './TimelineView.vue'
 import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
 import TimelineEventList from './TimelineEventList.vue'
-import SelectedEventInspector from './SelectedEventInspector.vue'
+import TimelineEventInspector from './TimelineEventInspector.vue'
 
 import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent, useScreenshots } from '.'
 import { computed, onMounted, ref, watch } from '@vue/composition-api'
@@ -20,7 +20,7 @@ export default {
     TimelineView,
     TimelineScrollbar,
     TimelineEventList,
-    SelectedEventInspector,
+    TimelineEventInspector,
     AskScreenshotPermission
   },
 
@@ -238,7 +238,7 @@ export default {
                 <TimelineEventList />
               </template>
               <template #right>
-                <SelectedEventInspector />
+                <TimelineEventInspector />
               </template>
             </SplitPane>
           </template>

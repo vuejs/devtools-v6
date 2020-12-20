@@ -1,5 +1,5 @@
 import { DevtoolsBackend } from './backend'
-import { App, ComponentInstance } from '@vue/devtools-api'
+import { App, ComponentInstance, TimelineEventOptions, ID, WithId } from '@vue/devtools-api'
 
 export interface AppRecordOptions {
   app: App
@@ -15,6 +15,7 @@ export interface AppRecord {
   lastInspectedComponentId: string
   instanceMap: Map<string, ComponentInstance>
   rootInstance: ComponentInstance
+  timelineEventMap: Map<ID, TimelineEventOptions & WithId>
 }
 
 /**

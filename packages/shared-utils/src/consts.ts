@@ -51,6 +51,9 @@ export enum BridgeEvents {
   TO_FRONT_TIMELINE_LAYER_LIST = 'f:timeline:layer-list',
   TO_FRONT_TIMELINE_LAYER_ADD = 'f:timeline:layer-add',
   TO_BACK_TIMELINE_SHOW_SCREENSHOT = 'b:timeline:show-screenshot',
+  TO_BACK_TIMELINE_CLEAR = 'b:timeline:clear',
+  TO_BACK_TIMELINE_EVENT_DATA = 'b:timeline:event-data',
+  TO_FRONT_TIMELINE_EVENT_DATA = 'f:timeline:event-data',
 
   // Plugins
   TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',

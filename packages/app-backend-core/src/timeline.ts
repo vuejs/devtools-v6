@@ -1,14 +1,8 @@
-import { BackendContext } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, HookEvents, keys, stringify } from '@vue-devtools/shared-utils'
-import { App, TimelineEvent, TimelineEventOptions } from '@vue/devtools-api'
+import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
+import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
+import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
-
-export interface TimelineEventPayload<TData = any, TMeta = any> {
-  appId: number | 'all'
-  layerId: string
-  event: TimelineEvent<TData, TMeta>
-}
 
 export function setupTimeline (ctx: BackendContext) {
   setupBuiltinLayers(ctx)
@@ -101,14 +95,60 @@ export function sendTimelineLayers (ctx: BackendContext) {
   })
 }
 
+let nextTimelineEventId = 0
+
 export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: BackendContext) {
   const appId = app && getAppRecordId(app)
+  const isAllApps = options.all || !app || appId == null
+
+  const id = nextTimelineEventId++
+
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
-    appId: options.all || !app || appId == null ? 'all' : appId,
+    appId: isAllApps ? 'all' : appId,
     layerId: options.layerId,
     event: {
-      ...options.event,
-      data: stringify(options.event.data)
+      id,
+      time: options.event.time,
+      logType: options.event.logType,
+      groupId: options.event.groupId,
+      title: options.event.title,
+      subtitle: options.event.subtitle
     }
-  } as TimelineEventPayload)
+  })
+
+  const eventData = {
+    id,
+    ...options
+  }
+
+  if (!isAllApps && app) {
+    const appRecord = getAppRecord(app, ctx)
+    registerTimelineEvent(eventData, appRecord, ctx)
+  } else {
+    ctx.appRecords.forEach(appRecord => registerTimelineEvent(eventData, appRecord, ctx))
+  }
+}
+
+function registerTimelineEvent (options: TimelineEventOptions & WithId, appRecord: AppRecord, ctx: BackendContext) {
+  appRecord.timelineEventMap.set(options.id, options)
+}
+
+export function clearTimeline (ctx: BackendContext) {
+  ctx.appRecords.forEach(appRecord => {
+    appRecord.timelineEventMap.clear()
+  })
+}
+
+export function sendTimelineEventData (id: ID, ctx: BackendContext) {
+  let data = null
+  const eventData = ctx.currentAppRecord.timelineEventMap.get(id)
+  if (eventData) {
+    data = stringify(eventData.event.data)
+  } else {
+    console.warn(`Event ${id} not found`)
+  }
+  ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT_DATA, {
+    eventId: id,
+    data
+  })
 }

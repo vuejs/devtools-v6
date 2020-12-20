@@ -13,7 +13,7 @@ import {
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
-import { setupTimeline, sendTimelineLayers, addTimelineEvent } from './timeline'
+import { setupTimeline, sendTimelineLayers, addTimelineEvent, clearTimeline, sendTimelineEventData } from './timeline'
 import ComponentPicker from './component-pick'
 import {
   sendComponentTreeData,
@@ -214,6 +214,14 @@ async function connect () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, ({ screenshot }) => {
     showScreenshot(screenshot, ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_CLEAR, () => {
+    clearTimeline(ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, ({ id }) => {
+    sendTimelineEventData(id, ctx)
   })
 
   // Custom inspectors

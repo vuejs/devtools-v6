@@ -12,7 +12,8 @@ export default {
     const {
       inspectedEvent,
       inspectedEventState,
-      time
+      time,
+      loading
     } = useInspectedEvent()
 
     const {
@@ -25,6 +26,7 @@ export default {
       inspectedEvent,
       inspectedEventState,
       time,
+      loading,
       isSelected
     }
   }
@@ -68,11 +70,27 @@ export default {
       </span>
     </div>
 
+    <VueLoadingBar
+      v-if="loading"
+      unknown
+      class="primary ghost"
+    />
+
     <StateInspector
       :state="{
         'event info': inspectedEventState
       }"
       class="flex-1 overflow-x-auto"
+      :class="{
+        'grayscale': loading
+      }"
     />
+  </div>
+
+  <div
+    v-else-if="loading"
+    class="relative h-full"
+  >
+    <VueLoadingIndicator class="primary overlay big" />
   </div>
 </template>

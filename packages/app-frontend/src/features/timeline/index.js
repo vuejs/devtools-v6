@@ -1,4 +1,4 @@
-import { ref, computed, onUnmounted } from '@vue/composition-api'
+import { ref, computed, onUnmounted, watch } from '@vue/composition-api'
 import { BridgeEvents, getStorage, parse, setStorage } from '@vue-devtools/shared-utils'
 import SharedData from '@utils/shared-data'
 import cloneDeep from 'lodash/cloneDeep'
@@ -9,8 +9,6 @@ import { getBridge, useBridge } from '../bridge'
 
 const STACK_DURATION = 50
 const AUTOSCROLL_DURATION = 10000
-
-let nextEventId = 0
 
 const startTime = ref(0)
 const endTime = ref(0)
@@ -29,6 +27,8 @@ const selectedEvent = ref(null)
 const hoverLayerId = ref(null)
 
 const inspectedEvent = ref(null)
+const inspectedEventData = ref(null)
+const inspectedEventPendingId = ref(null)
 
 const resetCbs = []
 
@@ -38,6 +38,8 @@ let nextScreenshotId = 0
 export function resetTimeline () {
   selectedEvent.value = null
   inspectedEvent.value = null
+  inspectedEventData.value = null
+  inspectedEventPendingId.value = null
   layersPerApp.value = {}
   vScrollPerApp.value = {}
   hoverLayerId.value = null
@@ -45,6 +47,8 @@ export function resetTimeline () {
   screenshots.value = []
 
   resetTime()
+
+  getBridge().send(BridgeEvents.TO_BACK_TIMELINE_CLEAR)
 
   // Layers
   fetchLayers()
@@ -89,7 +93,6 @@ function addEvent (appId, event, layer) {
     resetTime()
   }
 
-  event.id = nextEventId++
   event.layer = layer
   event.appId = appId
   layer.events.push(event)
@@ -284,15 +287,30 @@ export function useCursor () {
 }
 
 export function useInspectedEvent () {
+  watch(inspectedEvent, event => {
+    if (event) {
+      loadEvent(event.id)
+    }
+  }, {
+    immediate: true
+  })
+
   return {
     inspectedEvent,
-    inspectedEventState: computed(() => inspectedEvent.value ? parse(inspectedEvent.value.data) : null),
-    time: computed(() => formatTime(inspectedEvent.value.time, 'ms'))
+    inspectedEventState: computed(() => inspectedEventData.value),
+    time: computed(() => formatTime(inspectedEvent.value.time, 'ms')),
+    loading: computed(() => !!inspectedEventPendingId.value)
   }
 }
 
 function fetchLayers () {
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, {})
+}
+
+function loadEvent (id) {
+  if (!id || inspectedEventPendingId.value === id) return
+  inspectedEventPendingId.value = id
+  getBridge().send(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, { id })
 }
 
 function takeScreenshot (event) {
@@ -379,6 +397,21 @@ export function setupTimelineBridgeEvents (bridge) {
       const existingLayers = getLayers(layer.appId)
       if (!existingLayers.some(l => l.id === layer.id)) {
         existingLayers.push(layerFactory(layer))
+      }
+    }
+  })
+
+  bridge.on(BridgeEvents.TO_FRONT_TIMELINE_EVENT_DATA, ({ eventId, data }) => {
+    if (inspectedEvent.value) {
+      if (inspectedEvent.value.id === eventId) {
+        inspectedEventData.value = parse(data)
+
+        if (data === null) {
+          inspectedEvent.value = null
+        }
+      }
+      if (eventId === inspectedEventPendingId.value) {
+        inspectedEventPendingId.value = null
       }
     }
   })

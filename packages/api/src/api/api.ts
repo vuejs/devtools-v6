@@ -1,6 +1,7 @@
 import { ComponentBounds, Hookable } from './hooks'
 import { Context } from './context'
 import { ComponentInstance, ComponentState, StateBase } from './component'
+import { ID } from './util'
 
 export interface DevtoolsPluginApi {
   on: Hookable<Context>
@@ -55,7 +56,7 @@ export interface TimelineEvent<TData = any, TMeta = any> {
   data: TData
   logType?: 'default' | 'warning' | 'error'
   meta?: TMeta
-  groupId?: string | number
+  groupId?: ID
   title?: string
   subtitle?: string
 }
