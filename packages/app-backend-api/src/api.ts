@@ -8,7 +8,8 @@ import {
   TimelineLayerOptions,
   TimelineEventOptions,
   CustomInspectorOptions,
-  EditStatePayload
+  EditStatePayload,
+  WithId
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
@@ -138,6 +139,16 @@ export class DevtoolsApi {
       state
     })
     return payload.componentInstance
+  }
+
+  async inspectTimelineEvent (eventData: TimelineEventOptions & WithId) {
+    const payload = await this.callHook(Hooks.INSPECT_TIMELINE_EVENT, {
+      event: eventData.event,
+      layerId: eventData.layerId,
+      data: eventData.event.data,
+      all: eventData.all
+    })
+    return payload.data
   }
 
   async getInspectorTree (inspectorId: string, app: App, filter: string) {

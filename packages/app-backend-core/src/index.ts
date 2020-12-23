@@ -233,8 +233,8 @@ async function connect () {
     clearTimeline(ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, ({ id }) => {
-    sendTimelineEventData(id, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, async ({ id }) => {
+    await sendTimelineEventData(id, ctx)
   })
 
   // Custom inspectors

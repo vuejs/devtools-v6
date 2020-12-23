@@ -91,6 +91,18 @@ export default {
         })
       }
 
+      api.on.inspectTimelineEvent(payload => {
+        if (payload.layerId === 'test-layer') {
+          return new Promise(resolve => {
+            payload.data = {
+              ...payload.data,
+              hey: 'hello'
+            }
+            setTimeout(resolve, 1000)
+          })
+        }
+      })
+
       api.addInspector({
         id: 'test-inspector',
         label: 'Test inspector',

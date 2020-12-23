@@ -84,6 +84,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.EDIT_COMPONENT_STATE, handler)
   }
 
+  inspectTimelineEvent (handler: Handler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT]>) {
+    this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler)
+  }
+
   getInspectorTree (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_TREE]>) {
     this.hook(Hooks.GET_INSPECTOR_TREE, handler)
   }

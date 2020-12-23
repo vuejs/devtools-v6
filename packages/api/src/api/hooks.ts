@@ -1,6 +1,6 @@
 import { ComponentTreeNode, InspectedComponentData, ComponentInstance } from './component'
 import { App } from './app'
-import { CustomInspectorNode, CustomInspectorState } from './api'
+import { CustomInspectorNode, CustomInspectorState, TimelineEvent } from './api'
 
 export const enum Hooks {
   TRANSFORM_CALL = 'transformCall',
@@ -15,6 +15,7 @@ export const enum Hooks {
   GET_ELEMENT_COMPONENT = 'getElementComponent',
   GET_COMPONENT_ROOT_ELEMENTS = 'getComponentRootElements',
   EDIT_COMPONENT_STATE = 'editComponentState',
+  INSPECT_TIMELINE_EVENT = 'inspectTimelineEvent',
   GET_INSPECTOR_TREE = 'getInspectorTree',
   GET_INSPECTOR_STATE = 'getInspectorState',
   EDIT_INSPECTOR_STATE = 'editInspectorState'
@@ -79,6 +80,12 @@ export type HookPayloads = {
     path: string[]
     state: EditStatePayload
   }
+  [Hooks.INSPECT_TIMELINE_EVENT]: {
+    layerId: string
+    event: TimelineEvent
+    all?: boolean
+    data: any
+  }
   [Hooks.GET_INSPECTOR_TREE]: {
     app: App
     inspectorId: string
@@ -126,6 +133,7 @@ export interface Hookable<TContext> {
   getElementComponent (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT], TContext>)
   getComponentRootElements (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS], TContext>)
   editComponentState (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>)
+  inspectTimelineEvent (handler: HookHandler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT], TContext>)
   getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
   getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)
   editInspectorState (handler: HookHandler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE], TContext>)

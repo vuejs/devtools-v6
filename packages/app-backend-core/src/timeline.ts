@@ -139,11 +139,12 @@ export function clearTimeline (ctx: BackendContext) {
   })
 }
 
-export function sendTimelineEventData (id: ID, ctx: BackendContext) {
+export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
   let data = null
   const eventData = ctx.currentAppRecord.timelineEventMap.get(id)
   if (eventData) {
-    data = stringify(eventData.event.data)
+    data = await ctx.api.inspectTimelineEvent(eventData)
+    data = stringify(data)
   } else {
     console.warn(`Event ${id} not found`)
   }
