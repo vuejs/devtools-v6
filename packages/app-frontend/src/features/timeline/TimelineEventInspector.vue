@@ -54,6 +54,18 @@ export default {
           {{ inspectedEvent.title || 'Event' }}
         </span>
 
+        <VueIcon
+          v-if="inspectedEvent.logType === 'error'"
+          icon="error"
+          class="w-4 h-4 text-red-500"
+        />
+
+        <VueIcon
+          v-if="inspectedEvent.logType === 'warning'"
+          icon="warning"
+          class="w-4 h-4 text-yellow-500"
+        />
+
         <span
           v-if="inspectedEvent.subtitle"
           class="opacity-75"

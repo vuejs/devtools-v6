@@ -203,7 +203,8 @@ export default {
             info: 'window.mouseup',
             x: event.clientX,
             y: event.clientY
-          }
+          },
+          logType: event.clientX < 100 ? 'error' : event.clientY < 100 ? 'warning' : 'default'
         }
       })
     })

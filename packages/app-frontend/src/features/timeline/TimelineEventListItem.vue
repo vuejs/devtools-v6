@@ -49,7 +49,27 @@ export default {
           'text-purple-600 dark:text-purple-400': !isInspected,
         }"
       >
-        {{ event.title || 'Event' }}
+        <span>{{ event.title || 'Event' }}</span>
+
+        <VueIcon
+          v-if="event.logType === 'error'"
+          icon="error"
+          class="w-4 h-4 ml-1"
+          :class="{
+            'text-red-500': !isInspected,
+            'text-white': isInspected
+          }"
+        />
+
+        <VueIcon
+          v-if="event.logType === 'warning'"
+          icon="warning"
+          class="w-4 h-4 ml-1"
+          :class="{
+            'text-yellow-500': !isInspected,
+            'text-white': isInspected
+          }"
+        />
       </span>
 
       <span
