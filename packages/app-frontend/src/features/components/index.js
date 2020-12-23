@@ -2,7 +2,7 @@ import { ref, computed, watch } from '@vue/composition-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
 import { BridgeEvents, parse, sortByKey, searchDeepInObject, BridgeSubscriptions, isChrome, openInEditor } from '@vue-devtools/shared-utils'
-import { useBridge } from '../bridge'
+import { getBridge, useBridge } from '../bridge'
 import { useRoute, useRouter } from '@front/util/router'
 import { putError } from '../error'
 
@@ -200,10 +200,7 @@ export function useSelectedComponent () {
   function inspectDOM () {
     if (!data.value) return
     if (isChrome) {
-      // @TODO
-      chrome.devtools.inspectedWindow.eval(
-        `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get("${data.value.id}").$el)`
-      )
+      getBridge().send(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, { instanceId: data.value.id })
     } else {
       window.alert('DOM inspection is not supported in this shell.')
     }
@@ -295,6 +292,10 @@ export function setupComponentsBridgeEvents (bridge) {
     if (instanceId === selectedComponentPendingId) {
       selectedComponentPendingId = null
     }
+  })
+
+  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, () => {
+    chrome.devtools.inspectedWindow.eval('inspect(window.__VUE_DEVTOOLS_INSPECT_TARGET__)')
   })
 }
 

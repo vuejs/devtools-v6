@@ -123,6 +123,14 @@ export class DevtoolsApi {
     return payload.componentInstance
   }
 
+  async getComponentRootElements (instance: ComponentInstance) {
+    const payload = await this.callHook(Hooks.GET_COMPONENT_ROOT_ELEMENTS, {
+      componentInstance: instance,
+      rootElements: []
+    })
+    return payload.rootElements
+  }
+
   async editComponentState (instance: ComponentInstance, dotPath: string, state: EditComponentStatePayload) {
     const payload = await this.callHook(Hooks.EDIT_COMPONENT_STATE, {
       componentInstance: instance,

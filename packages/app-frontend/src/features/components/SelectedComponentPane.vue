@@ -36,13 +36,13 @@ export default {
         class="search flex-1 flat"
       />
 
-      <!-- <VueButton
+      <VueButton
         v-if="$isChrome"
         v-tooltip="'Inspect DOM'"
         icon-left="code"
         class="flat icon-button"
         @click="inspectDOM()"
-      /> -->
+      />
 
       <VueButton
         v-if="fileIsPath"

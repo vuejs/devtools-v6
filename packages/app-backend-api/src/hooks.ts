@@ -76,6 +76,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.GET_ELEMENT_COMPONENT, handler)
   }
 
+  getComponentRootElements (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS]>) {
+    this.hook(Hooks.GET_COMPONENT_ROOT_ELEMENTS, handler)
+  }
+
   editComponentState (handler: Handler<HookPayloads[Hooks.EDIT_COMPONENT_STATE]>) {
     this.hook(Hooks.EDIT_COMPONENT_STATE, handler)
   }

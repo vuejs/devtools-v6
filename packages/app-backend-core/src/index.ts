@@ -20,7 +20,8 @@ import {
   sendSelectedComponentData,
   sendEmptyComponentData,
   getComponentId,
-  editComponentState
+  editComponentState,
+  getComponentInstance
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
@@ -168,6 +169,18 @@ async function connect () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, value, newKey, remove }) => {
     editComponentState(instanceId, dotPath, { value, newKey, remove }, ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, async ({ instanceId }) => {
+    const instance = getComponentInstance(instanceId, ctx)
+    if (instance) {
+      const [el] = await ctx.api.getComponentRootElements(instance)
+      if (el) {
+        // @ts-ignore
+        window.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
+        ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, null)
+      }
+    }
   })
 
   // Highlighter
