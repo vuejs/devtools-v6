@@ -16,7 +16,8 @@ export const enum Hooks {
   GET_COMPONENT_ROOT_ELEMENTS = 'getComponentRootElements',
   EDIT_COMPONENT_STATE = 'editComponentState',
   GET_INSPECTOR_TREE = 'getInspectorTree',
-  GET_INSPECTOR_STATE = 'getInspectorState'
+  GET_INSPECTOR_STATE = 'getInspectorState',
+  EDIT_INSPECTOR_STATE = 'editInspectorState'
 }
 
 export interface ComponentBounds {
@@ -76,7 +77,7 @@ export type HookPayloads = {
   [Hooks.EDIT_COMPONENT_STATE]: {
     componentInstance: ComponentInstance
     path: string[]
-    state: EditComponentStatePayload
+    state: EditStatePayload
   }
   [Hooks.GET_INSPECTOR_TREE]: {
     app: App
@@ -90,9 +91,17 @@ export type HookPayloads = {
     nodeId: string
     state: CustomInspectorState
   }
+  [Hooks.EDIT_INSPECTOR_STATE]: {
+    app: App
+    inspectorId: string
+    nodeId: string
+    path: string[]
+    state: EditStatePayload
+    set: (object: any, path: string | (string[]), value: any, cb?: (object: any, field: string, value: any) => void) => void
+  }
 }
 
-export type EditComponentStatePayload = {
+export type EditStatePayload = {
   value: any
   newKey?: string | null
   remove?: undefined | false
@@ -119,4 +128,5 @@ export interface Hookable<TContext> {
   editComponentState (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>)
   getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
   getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)
+  editInspectorState (handler: HookHandler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE], TContext>)
 }

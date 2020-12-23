@@ -91,4 +91,8 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
   getInspectorState (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_STATE]>) {
     this.hook(Hooks.GET_INSPECTOR_STATE, handler)
   }
+
+  editInspectorState (handler: Handler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE]>) {
+    this.hook(Hooks.EDIT_INSPECTOR_STATE, handler)
+  }
 }

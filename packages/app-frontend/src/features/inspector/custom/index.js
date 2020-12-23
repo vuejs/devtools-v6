@@ -2,7 +2,7 @@ import { ref, computed } from '@vue/composition-api'
 import { useRoute } from '@front/util/router'
 import { useApps } from '@front/features/apps'
 import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
-import { getBridge } from '@front/features/bridge'
+import { getBridge, useBridge } from '@front/features/bridge'
 
 function inspectorFactory (options) {
   return {
@@ -29,6 +29,7 @@ export function useInspectors () {
 export function useCurrentInspector () {
   const route = useRoute()
   const { inspectors } = useInspectors()
+  const { bridge } = useBridge()
 
   const currentInspector = computed(() => inspectors.value.find(i => i.id === route.value.params.inspectorId))
 
@@ -50,12 +51,23 @@ export function useCurrentInspector () {
     fetchState(currentInspector.value)
   }
 
+  function editState (path, payload) {
+    bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, {
+      inspectorId: currentInspector.value.id,
+      appId: currentInspector.value.appId,
+      nodeId: currentInspector.value.selectedNode.id,
+      path,
+      payload
+    })
+  }
+
   return {
     currentInspector,
     selectNode,
     refreshInspector,
     refreshTree,
-    refreshState
+    refreshState,
+    editState
   }
 }
 

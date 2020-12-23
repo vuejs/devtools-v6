@@ -132,6 +132,10 @@ export default {
         }
       })
 
+      const myState = {
+        foo: 'bar'
+      }
+
       api.on.getInspectorState(payload => {
         if (payload.app === app && payload.inspectorId === 'test-inspector') {
           if (payload.nodeId === 'root') {
@@ -139,7 +143,8 @@ export default {
               'root info': [
                 {
                   key: 'foo',
-                  value: 'bar'
+                  value: myState.foo,
+                  editable: true
                 },
                 {
                   key: 'time',
@@ -162,6 +167,14 @@ export default {
                 }
               ]
             }
+          }
+        }
+      })
+
+      api.on.editInspectorState(payload => {
+        if (payload.app === app && payload.inspectorId === 'test-inspector') {
+          if (payload.nodeId === 'root') {
+            payload.set(myState, payload.path, payload.state.value)
           }
         }
       })

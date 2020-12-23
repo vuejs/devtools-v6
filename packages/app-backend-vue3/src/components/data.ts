@@ -225,7 +225,11 @@ export function editState ({ componentInstance, path, state }: HookPayloads[Hook
   if (target && targetPath) {
     set(target, targetPath, 'value' in state ? state.value : undefined, (obj, field, value) => {
       if (state.remove || state.newKey) {
-        delete obj[field]
+        if (Array.isArray(obj)) {
+          obj.splice(field, 1)
+        } else {
+          delete obj[field]
+        }
       }
       if (!state.remove) {
         obj[state.newKey || field] = value

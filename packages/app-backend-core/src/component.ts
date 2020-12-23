@@ -1,7 +1,7 @@
 import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
-import { App, EditComponentStatePayload } from '@vue/devtools-api'
+import { App, EditStatePayload } from '@vue/devtools-api'
 
 export async function sendComponentTreeData (instanceId: string, filter = '', ctx: BackendContext) {
   if (!instanceId) return
@@ -51,7 +51,7 @@ export function sendEmptyComponentData (instanceId: string, ctx: BackendContext)
   })
 }
 
-export async function editComponentState (instanceId: string, dotPath: string, state: EditComponentStatePayload, ctx: BackendContext) {
+export async function editComponentState (instanceId: string, dotPath: string, state: EditStatePayload, ctx: BackendContext) {
   if (!instanceId) return
   const instance = getComponentInstance(instanceId, ctx)
   if (instance) {

@@ -1,4 +1,4 @@
-import { Bridge, HookEvents } from '@vue-devtools/shared-utils'
+import { Bridge, HookEvents, set } from '@vue-devtools/shared-utils'
 import {
   Hooks,
   HookPayloads,
@@ -8,7 +8,7 @@ import {
   TimelineLayerOptions,
   TimelineEventOptions,
   CustomInspectorOptions,
-  EditComponentStatePayload
+  EditStatePayload
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
@@ -131,7 +131,7 @@ export class DevtoolsApi {
     return payload.rootElements
   }
 
-  async editComponentState (instance: ComponentInstance, dotPath: string, state: EditComponentStatePayload) {
+  async editComponentState (instance: ComponentInstance, dotPath: string, state: EditStatePayload) {
     const payload = await this.callHook(Hooks.EDIT_COMPONENT_STATE, {
       componentInstance: instance,
       path: dotPath.split('.'),
@@ -158,6 +158,29 @@ export class DevtoolsApi {
       state: null
     })
     return payload.state
+  }
+
+  async editInspectorState (inspectorId: string, app: App, nodeId: string, dotPath: string, state: EditStatePayload) {
+    const defaultSetCallback = (obj, field, value) => {
+      if (state.remove || state.newKey) {
+        if (Array.isArray(obj)) {
+          obj.splice(field, 1)
+        } else {
+          delete obj[field]
+        }
+      }
+      if (!state.remove) {
+        obj[state.newKey || field] = value
+      }
+    }
+    await this.callHook(Hooks.EDIT_INSPECTOR_STATE, {
+      inspectorId,
+      app,
+      nodeId,
+      path: dotPath.split('.'),
+      state,
+      set: (object, path, value, cb?) => set(object, path, value, cb || defaultSetCallback)
+    })
   }
 }
 

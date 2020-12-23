@@ -26,7 +26,7 @@ import {
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
 import { registerApp, selectApp, mapAppRecord, getAppRecordId, waitForAppsRegistration } from './app'
-import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState } from './inspector'
+import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 
 let ctx: BackendContext
@@ -295,6 +295,17 @@ async function connect () {
     const inspector = getInspector(inspectorId, app, ctx)
     if (inspector) {
       sendInspectorState(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, async ({ inspectorId, appId, nodeId, path, payload }) => {
+    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+    if (inspector) {
+      await editInspectorState(inspector, nodeId, path, payload, ctx)
+      inspector.selectedNodeId = nodeId
+      await sendInspectorState(inspector, ctx)
     } else {
       console.error(`Inspector ${inspectorId} not found`)
     }

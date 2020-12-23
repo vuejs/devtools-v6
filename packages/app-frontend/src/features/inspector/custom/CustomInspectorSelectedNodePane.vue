@@ -11,7 +11,8 @@ export default {
   setup () {
     const {
       currentInspector: inspector,
-      refreshState
+      refreshState,
+      editState
     } = useCurrentInspector()
 
     watch(() => inspector.value && inspector.value.selectedNode, value => {
@@ -21,7 +22,8 @@ export default {
     })
 
     return {
-      inspector
+      inspector,
+      editState
     }
   }
 }
@@ -49,6 +51,7 @@ export default {
       v-if="inspector.state"
       :state="inspector.state"
       class="flex-1 overflow-y-auto"
+      @edit-state="editState"
     />
   </div>
 </template>

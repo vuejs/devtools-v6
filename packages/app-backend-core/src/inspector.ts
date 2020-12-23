@@ -1,6 +1,6 @@
 import { App } from '@vue/devtools-api'
 import { BackendContext, CustomInspector } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, stringify } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, stringify } from '@vue-devtools/shared-utils'
 import { getAppRecordId } from './app'
 
 export function getInspector (inspectorId: string, app: App, ctx: BackendContext) {
@@ -26,5 +26,12 @@ export async function sendInspectorState (inspector: CustomInspector, ctx: Backe
     appId: getAppRecordId(inspector.app),
     inspectorId: inspector.id,
     state: stringify(state)
+  })
+}
+
+export async function editInspectorState (inspector: CustomInspector, nodeId: string, dotPath: string, state: any, ctx: BackendContext) {
+  await ctx.api.editInspectorState(inspector.id, inspector.app, nodeId, dotPath, {
+    ...state,
+    value: state.value != null ? parse(state.value, true) : state.value
   })
 }
