@@ -666,6 +666,8 @@ export default {
     border-color $orange
 .value-input
   width 180px
+  .vue-ui-dark-mode &
+    color red
 .key-input
   width 90px
   color #881391
