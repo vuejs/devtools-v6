@@ -20,7 +20,7 @@
       <span class="content">
         <!-- arrow wrapper for better hit box -->
         <span
-          v-if="instance.children.length"
+          v-if="instance.children && instance.children.length"
           class="arrow-wrapper"
           @click.stop="toggle"
         >
@@ -121,11 +121,11 @@ export default {
     },
 
     sortedChildren () {
-      return this.instance.children.slice().sort((a, b) => {
+      return this.instance.children && this.instance.children.slice().sort((a, b) => {
         return a.top === b.top
           ? a.id - b.id
           : a.top - b.top
-      })
+      }) || []
     },
 
     displayName () {
