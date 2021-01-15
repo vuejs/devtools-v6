@@ -515,6 +515,7 @@ class VuexBackend {
     const result = this.stringifyStore()
 
     // Restore user state
+    tempAddedModules = [...new Set(tempAddedModules)];
     tempAddedModules.sort((a, b) => b.length - a.length).forEach(m => {
       this.origUnregisterModule(m.split('/'))
       if (!isProd) console.log('after replay unregister', m)
