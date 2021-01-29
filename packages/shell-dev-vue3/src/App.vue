@@ -4,6 +4,7 @@ import NestedMore from './NestedMore.vue'
 import NativeTypes from './NativeTypes.vue'
 import EventEmit from './EventEmit.vue'
 import EventNesting from './EventNesting.vue'
+import AsyncComponent from './AsyncComponent.vue'
 
 export default {
   name: 'MyApp',
@@ -13,7 +14,8 @@ export default {
     NestedMore,
     NativeTypes,
     EventEmit,
-    EventNesting
+    EventNesting,
+    AsyncComponent
   }
 }
 </script>
@@ -25,6 +27,7 @@ export default {
   <NativeTypes />
   <EventEmit />
   <EventNesting />
+  <AsyncComponent />
 
   <nav>
     <router-link to="/p1">
