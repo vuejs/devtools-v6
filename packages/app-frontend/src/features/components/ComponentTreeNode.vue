@@ -137,7 +137,7 @@ export default {
         <span class="angle-bracket text-gray-400 dark:text-gray-600">&gt;</span>
       </span>
 
-      <span class="flex items-center space-x-2 ml-2">
+      <span class="flex items-center space-x-2 ml-2 h-full">
         <span
           v-if="instance.isFragment"
           class="info fragment bg-blue-300 dark:bg-blue-800"
@@ -177,6 +177,4 @@ export default {
   display inline-block
   line-height 10px
   border-radius 3px
-  position relative
-  top -1px
 </style>
