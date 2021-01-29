@@ -136,8 +136,10 @@ async function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid, component) => {
+    // console.log('hook: component added', app, uid, parentUid, component)
+
+    const id = getComponentId(app, uid, ctx)
     if (component) {
-      const id = getComponentId(app, uid, ctx)
       if (component.__VUE_DEVTOOLS_UID__ == null) {
         component.__VUE_DEVTOOLS_UID__ = id
       }
@@ -149,7 +151,13 @@ async function connect () {
     const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       // @TODO take into account current filter
-      sendComponentTreeData(parentId, null, ctx)
+      requestAnimationFrame(() => {
+        sendComponentTreeData(parentId, null, ctx)
+      })
+    }
+
+    if (ctx.currentInspectedComponentId === id) {
+      sendSelectedComponentData(id, ctx)
     }
   })
 

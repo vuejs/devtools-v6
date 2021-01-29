@@ -16,7 +16,7 @@ const BeAsync = defineAsyncComponent(() => new Promise((resolve) => {
       },
       template: '<div>{{ message }}</div>'
     })
-  }, 500)
+  }, 2000)
 }))
 
 export default {

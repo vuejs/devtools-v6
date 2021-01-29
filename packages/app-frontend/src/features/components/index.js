@@ -284,10 +284,6 @@ export function setupComponentsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data }) => {
     if (instanceId === selectedComponentId.value) {
       selectedComponentData.value = parse(data)
-
-      if (data === null) {
-        selectedComponentId.value = null
-      }
     }
     if (instanceId === selectedComponentPendingId) {
       selectedComponentPendingId = null

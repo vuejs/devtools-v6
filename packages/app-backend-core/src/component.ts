@@ -25,6 +25,7 @@ export async function sendComponentTreeData (instanceId: string, filter = '', ct
 
 export async function sendSelectedComponentData (instanceId: string, ctx: BackendContext) {
   if (!instanceId) return
+  markSelectedInstance(instanceId, ctx)
   const instance = getComponentInstance(instanceId, ctx)
   if (!instance) {
     sendEmptyComponentData(instanceId, ctx)
@@ -33,15 +34,17 @@ export async function sendSelectedComponentData (instanceId: string, ctx: Backen
     if (typeof window !== 'undefined') {
       (window as any).$vm = instance
     }
-
-    ctx.currentInspectedComponentId = instanceId
-    ctx.currentAppRecord.lastInspectedComponentId = instanceId
     const payload = {
       instanceId,
       data: stringify(await ctx.api.inspectComponent(instance))
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
   }
+}
+
+export function markSelectedInstance (instanceId: string, ctx: BackendContext) {
+  ctx.currentInspectedComponentId = instanceId
+  ctx.currentAppRecord.lastInspectedComponentId = instanceId
 }
 
 export function sendEmptyComponentData (instanceId: string, ctx: BackendContext) {

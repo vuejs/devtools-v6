@@ -5,6 +5,7 @@ import NativeTypes from './NativeTypes.vue'
 import EventEmit from './EventEmit.vue'
 import EventNesting from './EventNesting.vue'
 import AsyncComponent from './AsyncComponent.vue'
+import SuspenseExample from './SuspenseExample.vue'
 
 export default {
   name: 'MyApp',
@@ -15,7 +16,8 @@ export default {
     NativeTypes,
     EventEmit,
     EventNesting,
-    AsyncComponent
+    AsyncComponent,
+    SuspenseExample
   }
 }
 </script>
@@ -28,6 +30,7 @@ export default {
   <EventEmit />
   <EventNesting />
   <AsyncComponent />
+  <SuspenseExample />
 
   <nav>
     <router-link to="/p1">

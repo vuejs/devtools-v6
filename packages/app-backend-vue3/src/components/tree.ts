@@ -79,6 +79,9 @@ export class ComponentWalker {
     if (subTree.component) {
       list.push(subTree.component)
     }
+    if (subTree.suspense) {
+      list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch))
+    }
     if (Array.isArray(subTree.children)) {
       subTree.children.forEach(childSubTree => {
         if (childSubTree.component) {
