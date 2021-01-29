@@ -24,7 +24,8 @@ async function getInstanceState (instance) {
     processComputed(instance),
     processAttrs(instance),
     processProvide(instance),
-    processInject(instance)
+    processInject(instance),
+    processRefs(instance)
   )
 }
 
@@ -246,6 +247,15 @@ function processInject (instance) {
     key: originalKey && key !== originalKey ? `${originalKey} ➞ ${key}` : key,
     value: instance.ctx[key]
   }))
+}
+
+function processRefs (instance) {
+  return Object.keys(instance.refs)
+    .map(key => ({
+      type: 'refs',
+      key,
+      value: instance.refs[key]
+    }))
 }
 
 export function editState ({ componentInstance, path, state }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {

@@ -11,16 +11,29 @@ export default {
       type: Number,
       default: 4
     }
+  },
+
+  data () {
+    return {
+      childRefs: []
+    }
+  },
+
+  beforeUpdate () {
+    this.childRefs = []
   }
 }
 </script>
 
 <template>
   <div>
-    <h3>Nest children</h3>
+    <h3 ref="title">
+      Nest children
+    </h3>
     <Child
       v-for="i in count"
       :key="i"
+      :ref="target => target && childRefs.push(target)"
     />
     <div>
       <Child
