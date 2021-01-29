@@ -46,7 +46,7 @@
         <input
           ref="editInput"
           v-model="editedValue"
-          class="edit-input value-input"
+          class="edit-input value-input text-black"
           :class="{ error: !valueValid }"
           list="special-tokens"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
