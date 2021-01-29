@@ -68,7 +68,7 @@ function onContextMenu ({ id }) {
         }, 'Open Vue devtools to see component details')
       } else {
         pendingAction = null
-        toast('No Vue component was found', 'warn')
+        toast('component-not-found')
       }
     })
   }
@@ -113,7 +113,15 @@ function onPanelHidden () {
 
 // Toasts
 
-function toast (message, type = 'normal') {
+const toastMessages = {
+  'component-not-found': { message: 'No Vue component was found', type: 'warn' }
+}
+
+function toast (id) {
+  if (!Object.keys().includes(id)) return
+
+  const { message, type } = toastMessages[id]
+
   const src = `(function() {
     __VUE_DEVTOOLS_TOAST__(\`${message}\`, '${type}');
   })()`
