@@ -106,7 +106,10 @@
             <VueButton
               v-for="(info, index) of quickEdits"
               :key="index"
-              v-tooltip="info.title || 'Quick edit'"
+              v-tooltip="{
+                content: info.title || 'Quick edit',
+                contentHtml: true,
+              }"
               :class="info.class"
               :icon-left="info.icon"
               class="quick-edit icon-button flat"
