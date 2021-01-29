@@ -75,8 +75,11 @@ export class ComponentWalker {
    * Get children from a component instance.
    */
   private getInternalInstanceChildren (subTree) {
+    const list = []
+    if (subTree.component) {
+      list.push(subTree.component)
+    }
     if (Array.isArray(subTree.children)) {
-      const list = []
       subTree.children.forEach(childSubTree => {
         if (childSubTree.component) {
           list.push(childSubTree.component)
@@ -84,11 +87,8 @@ export class ComponentWalker {
           list.push(...this.getInternalInstanceChildren(childSubTree))
         }
       })
-      return list
-    } else if (subTree.component) {
-      return [subTree.component]
     }
-    return []
+    return list
   }
 
   private captureId (instance) {

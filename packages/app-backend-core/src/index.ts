@@ -136,12 +136,6 @@ async function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid, component) => {
-    const parentId = getComponentId(app, parentUid, ctx)
-    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-      // @TODO take into account current filter
-      sendComponentTreeData(parentId, null, ctx)
-    }
-
     if (component) {
       const id = getComponentId(app, uid, ctx)
       if (component.__VUE_DEVTOOLS_UID__ == null) {
@@ -150,6 +144,12 @@ async function connect () {
       if (!ctx.currentAppRecord.instanceMap.has(id)) {
         ctx.currentAppRecord.instanceMap.set(id, component)
       }
+    }
+
+    const parentId = getComponentId(app, parentUid, ctx)
+    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+      // @TODO take into account current filter
+      sendComponentTreeData(parentId, null, ctx)
     }
   })
 
