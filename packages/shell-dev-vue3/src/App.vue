@@ -6,6 +6,7 @@ import EventEmit from './EventEmit.vue'
 import EventNesting from './EventNesting.vue'
 import AsyncComponent from './AsyncComponent.vue'
 import SuspenseExample from './SuspenseExample.vue'
+import Provide from './Provide.vue'
 
 export default {
   name: 'MyApp',
@@ -17,7 +18,8 @@ export default {
     EventEmit,
     EventNesting,
     AsyncComponent,
-    SuspenseExample
+    SuspenseExample,
+    Provide
   }
 }
 </script>
@@ -31,6 +33,7 @@ export default {
   <EventNesting />
   <AsyncComponent />
   <SuspenseExample />
+  <Provide />
 
   <nav>
     <router-link to="/p1">

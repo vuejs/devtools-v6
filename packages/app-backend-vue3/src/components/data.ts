@@ -22,7 +22,9 @@ async function getInstanceState (instance) {
     processState(instance),
     processSetupState(instance),
     processComputed(instance),
-    processAttrs(instance)
+    processAttrs(instance),
+    processProvide(instance),
+    processInject(instance)
   )
 }
 
@@ -205,6 +207,45 @@ function processAttrs (instance) {
       key,
       value: instance.attrs[key]
     }))
+}
+
+function processProvide (instance) {
+  return Object.keys(instance.provides)
+    .map(key => ({
+      type: 'provided',
+      key,
+      value: instance.provides[key]
+    }))
+}
+
+function processInject (instance) {
+  if (!instance.type || !instance.type.inject) return []
+  let keys = []
+  if (Array.isArray(instance.type.inject)) {
+    keys = instance.type.inject.map(key => ({
+      key,
+      originalKey: key
+    }))
+  } else {
+    keys = Object.keys(instance.type.inject).map(key => {
+      const value = instance.type.inject[key]
+      let originalKey
+      if (typeof value === 'string') {
+        originalKey = value
+      } else {
+        originalKey = value.from
+      }
+      return {
+        key,
+        originalKey
+      }
+    })
+  }
+  return keys.map(({ key, originalKey }) => ({
+    type: 'injected',
+    key: originalKey && key !== originalKey ? `${originalKey} ➞ ${key}` : key,
+    value: instance.ctx[key]
+  }))
 }
 
 export function editState ({ componentInstance, path, state }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
