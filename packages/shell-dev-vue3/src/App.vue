@@ -25,4 +25,15 @@ export default {
   <NativeTypes />
   <EventEmit />
   <EventNesting />
+
+  <nav>
+    <router-link to="/p1">
+      page 1
+    </router-link>
+    |
+    <router-link to="/p2">
+      page 2
+    </router-link>
+  </nav>
+  <router-view />
 </template>
