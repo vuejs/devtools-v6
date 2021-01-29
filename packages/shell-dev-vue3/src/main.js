@@ -1,6 +1,7 @@
 import { createApp, h } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
+import App3 from './App3.vue'
 import TestPlugin from './devtools-plugin'
 
 const router = createRouter({
@@ -26,3 +27,5 @@ app.mount('#app')
 createApp({
   render: () => h('h1', {}, 'App 2')
 }).mount('#app2')
+
+createApp(App3).mount('#app3')
