@@ -50,12 +50,12 @@ export default {
             payload.instanceData.state.push({
               type: stateType,
               key: 'bounds',
-              value: {
+              value: bounds ? {
                 left: bounds.left,
                 top: bounds.top,
                 width: bounds.width,
                 height: bounds.height
-              }
+              } : null
             })
           }).then(() => api.getComponentName(payload.componentInstance))
             .then(name => {
