@@ -65,7 +65,7 @@ function onContextMenu ({ id }) {
       if (typeof res !== 'undefined' && res) {
         panelAction(() => {
           chrome.runtime.sendMessage('vue-get-context-menu-target')
-        }, 'Open Vue devtools to see component details')
+        }, 'open-devtools')
       } else {
         pendingAction = null
         toast('component-not-found')
@@ -114,6 +114,7 @@ function onPanelHidden () {
 // Toasts
 
 const toastMessages = {
+  'open-devtools': { message: 'Open Vue devtools to see component details', type: 'normal' },
   'component-not-found': { message: 'No Vue component was found', type: 'warn' }
 }
 
