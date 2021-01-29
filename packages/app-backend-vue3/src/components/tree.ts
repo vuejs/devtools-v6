@@ -152,6 +152,14 @@ export class ComponentWalker {
       ret.positionTop = rect ? rect.positionTop : Infinity
     }
 
+    if (instance.suspense) {
+      ret.tags.push({
+        label: 'suspense',
+        backgroundColor: 0xc5c4fc,
+        textColor: 0xffffff
+      })
+    }
+
     return ret
   }
 
