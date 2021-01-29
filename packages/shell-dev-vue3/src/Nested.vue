@@ -26,6 +26,7 @@ export default {
       <Child
         v-for="i in count"
         :key="i"
+        :my-attr="i"
       />
     </div>
   </div>

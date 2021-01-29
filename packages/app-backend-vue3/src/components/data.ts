@@ -21,7 +21,8 @@ async function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
     processSetupState(instance),
-    processComputed(instance)
+    processComputed(instance),
+    processAttrs(instance)
   )
 }
 
@@ -195,6 +196,15 @@ function processComputed (instance) {
   }
 
   return computed
+}
+
+function processAttrs (instance) {
+  return Object.keys(instance.attrs)
+    .map(key => ({
+      type: 'attrs',
+      key,
+      value: instance.attrs[key]
+    }))
 }
 
 export function editState ({ componentInstance, path, state }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
