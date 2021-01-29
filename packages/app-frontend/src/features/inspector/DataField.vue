@@ -61,13 +61,19 @@
           />
           <template v-else>
             <VueButton
-              v-tooltip="$t('DataField.edit.cancel.tooltip')"
+              v-tooltip="{
+                content: $t('DataField.edit.cancel.tooltip'),
+                contentHtml: true
+              }"
               class="icon-button flat"
               icon-left="cancel"
               @click="cancelEdit()"
             />
             <VueButton
-              v-tooltip="$t('DataField.edit.submit.tooltip')"
+              v-tooltip="{
+                content: $t('DataField.edit.submit.tooltip'),
+                contentHtml: true
+              }"
               class="icon-button flat"
               icon-left="save"
               @click="submitEdit()"
