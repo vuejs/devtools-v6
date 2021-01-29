@@ -4,7 +4,7 @@
       :style="{ marginLeft: depth * 14 + 'px' }"
       :disabled="!field.meta"
       :class="{
-        'force-toolbar': contextMenuOpen || editing,
+        'force-toolbar z-10': contextMenuOpen || editing,
       }"
       class="self"
       placement="left"
