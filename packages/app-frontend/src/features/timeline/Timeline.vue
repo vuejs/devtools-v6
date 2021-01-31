@@ -271,11 +271,19 @@ export default {
               @update="value => setLayerHidden(layer, !value)"
             >
               <div class="flex items-center space-x-2">
+                <div
+                  class="flex-none w-3 h-3 rounded-full"
+                  :style="{
+                    backgroundColor: `#${layer.color.toString(16)}`
+                  }"
+                />
+
                 <span>{{ layer.label }}</span>
 
                 <PluginSourceIcon
                   v-if="layer.pluginId"
                   :plugin-id="layer.pluginId"
+                  class="flex-none"
                 />
               </div>
             </VueSwitch>

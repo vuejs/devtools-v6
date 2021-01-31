@@ -129,6 +129,7 @@ export default {
             <PluginSourceIcon
               v-if="item.pluginId"
               :plugin-id="item.pluginId"
+              class="flex-none"
             />
           </div>
         </template>
