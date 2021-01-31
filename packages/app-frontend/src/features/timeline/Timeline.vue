@@ -277,7 +277,7 @@ export default {
       <VueButton
         v-tooltip="'Clear all timelines'"
         class="icon-button flat"
-        icon-left="delete"
+        icon-left="delete_sweep"
         @click="resetTimeline()"
       />
     </portal>
