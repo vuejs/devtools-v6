@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { computed, ref } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '../bridge'
-import { useApps } from '../apps'
+import { useCurrentApp } from '../apps'
 
 const pluginsPerApp = ref({})
 
@@ -22,12 +22,24 @@ function fetchPlugins () {
 }
 
 export function usePlugins () {
-  const { currentAppId } = useApps()
+  const { currentAppId } = useCurrentApp()
 
   const plugins = computed(() => getPlugins(currentAppId.value))
 
   return {
     plugins
+  }
+}
+
+export function useComponentStateTypePlugin () {
+  const { plugins } = usePlugins()
+
+  function getStateTypePlugin (type) {
+    return plugins.value.find(p => p.componentStateTypes && p.componentStateTypes.includes(type))
+  }
+
+  return {
+    getStateTypePlugin
   }
 }
 

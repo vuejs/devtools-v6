@@ -5,13 +5,25 @@ import { useRoute, useRouter } from '@front/util/router'
 
 const apps = ref([])
 
-export function useApps () {
-  const { bridge } = useBridge()
+export function useCurrentApp () {
   const route = useRoute()
-  const router = useRouter()
-
   const currentAppId = computed(() => parseInt(route.value.params.appId))
   const currentApp = computed(() => apps.value.find(a => currentAppId.value === a.id))
+
+  return {
+    currentAppId,
+    currentApp
+  }
+}
+
+export function useApps () {
+  const { bridge } = useBridge()
+  const router = useRouter()
+
+  const {
+    currentAppId,
+    currentApp
+  } = useCurrentApp()
 
   function selectApp (id) {
     if (currentAppId.value !== id) {

@@ -3,11 +3,18 @@ import { setupDevtoolsPlugin } from '@vue/devtools-api'
 /** @type {import('@vue/devtools-api').DevtoolsPluginApi} */
 let devtoolsApi
 
+const stateType = 'extra properties (test)'
+
 export default {
   install: (app) => {
     setupDevtoolsPlugin({
       id: 'test-plugin',
       label: 'Test devtools plugin',
+      packageName: '@vue/devtools-shell-dev-vue3',
+      homepage: 'https://github.com/vuejs/vue-devtools',
+      componentStateTypes: [
+        stateType
+      ],
       app
     }, (api) => {
       devtoolsApi = api
@@ -26,7 +33,6 @@ export default {
 
       api.on.inspectComponent((payload, ctx) => {
         if (payload.instanceData) {
-          const stateType = 'extra properties (test)'
           payload.instanceData.state.push({
             type: stateType,
             key: 'foo',

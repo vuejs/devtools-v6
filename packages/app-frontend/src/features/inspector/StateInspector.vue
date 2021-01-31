@@ -1,47 +1,18 @@
 <template>
   <div class="data-wrapper">
     <template v-for="(dataType, index) in dataTypes">
-      <div
+      <StateType
         v-if="defer(index + 1)"
         :key="dataType"
-        :class="[
-          'data-el',
-          toDisplayType(dataType, true),
-          {
-            'high-density': highDensity,
-            dim: dimAfter !== -1 && index >= dimAfter
-          }
-        ]"
-      >
-        <div
-          v-tooltip="{
-            content: $t('StateInspector.dataType.tooltip'),
-            html: true,
-            placement: orientation === 'landscape' ? 'left' : 'top'
-          }"
-          class="data-type selectable-item"
-          @click="toggle(dataType, $event)"
-        >
-          <span
-            :class="{ rotated: isExpanded(dataType) }"
-            class="arrow right"
-          />
-          <span class="key flex-1">
-            <slot
-              name="key"
-              :dataType="dataType"
-            >
-              {{ toDisplayType(dataType) }}
-            </slot>
-          </span>
-        </div>
-        <StateFields
-          v-show="isExpanded(dataType)"
-          :fields="state[dataType]"
-          :force-collapse="forceCollapse"
-          @edit-state="(path, payload) => $emit('edit-state', path, payload)"
-        />
-      </div>
+        :data-type="dataType"
+        :index="index"
+        :state="state"
+        :expanded-state="expandedState"
+        :force-collapse="forceCollapse"
+        :high-density="highDensity"
+        :dim-after="dimAfter"
+        @toggle="toggle"
+      />
     </template>
   </div>
 </template>
@@ -49,8 +20,7 @@
 <script>
 import Vue from 'vue'
 import Defer from '@front/mixins/defer'
-import StateFields from './StateFields.vue'
-import { useOrientation } from '../layout/orientation'
+import StateType from './StateType.vue'
 
 const keyOrder = {
   props: 1,
@@ -69,7 +39,7 @@ const keyOrder = {
 
 export default {
   components: {
-    StateFields
+    StateType
   },
 
   mixins: [
@@ -85,14 +55,6 @@ export default {
     dimAfter: {
       type: Number,
       default: -1
-    }
-  },
-
-  setup () {
-    const { orientation } = useOrientation()
-
-    return {
-      orientation
     }
   },
 
@@ -130,20 +92,7 @@ export default {
   },
 
   methods: {
-    toDisplayType (dataType, asClass) {
-      return dataType === 'undefined'
-        ? 'data'
-        : asClass
-          ? dataType.replace(/\s/g, '-')
-          : dataType
-    },
-
-    isExpanded (dataType) {
-      const value = this.expandedState[dataType]
-      return typeof value === 'undefined' || value
-    },
-
-    toggle (dataType, event = null) {
+    toggle (dataType, currentExpanded, event = null) {
       if (event) {
         if (event.ctrlKey || event.metaKey) {
           this.setExpandToAll(false)
@@ -155,7 +104,7 @@ export default {
           return
         }
       }
-      Vue.set(this.expandedState, dataType, !this.isExpanded(dataType))
+      Vue.set(this.expandedState, dataType, !currentExpanded)
     },
 
     setExpandToAll (value) {
@@ -167,57 +116,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus">
-.data-el
-  font-size 15px
-
-  &.dim
-    opacity .7
-    pointer-events none
-    user-select none
-    filter grayscale(50%)
-
-  &:not(:last-child)
-    border-bottom rgba($grey, .4) solid 1px
-
-    .vue-ui-dark-mode &
-      border-bottom-color rgba($grey, .07)
-
-  .vue-ui-dark-mode &
-    box-shadow none
-
-  .data-type,
-  .data-fields
-    margin 5px
-    padding 2px 9px 2px 21px
-    @media (max-height: $tall)
-      margin 0
-      padding 0 9px 0 21px
-
-  .data-type
-    color $blueishGrey
-    position relative
-    cursor pointer
-    border-radius 3px
-    display flex
-    align-items center
-    padding-left 9px
-    user-select none
-
-    .vue-ui-dark-mode &
-      color lighten(#486887, 30%)
-
-    .arrow
-      transition transform .1s ease
-      margin-right 8px
-      opacity .7
-      &.rotated
-        transform rotate(90deg)
-
-  .data-fields
-    padding-top 0
-    @media (max-height: $tall)
-      margin-bottom 4px
-
-</style>

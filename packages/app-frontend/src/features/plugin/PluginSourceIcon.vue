@@ -25,7 +25,9 @@ export default {
 </script>
 
 <template>
-  <VTooltip>
+  <VTooltip
+    class="leading-none"
+  >
     <VueIcon
       icon="extension"
       class="opacity-25 hover:opacity-100"
