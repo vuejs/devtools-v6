@@ -17,7 +17,7 @@ export default {
               default: () => ({ answer: 42 })
             }
           },
-          template: '<div>nested inject: {{ renamed }} missing: {{ missing }}'
+          template: '<div>nested inject: {{ renamed }} missing: {{ missing }}</div>'
         }
       },
       inject: ['injectedData'],
