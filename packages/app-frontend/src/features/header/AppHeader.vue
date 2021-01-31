@@ -131,7 +131,7 @@ export default {
       />
 
       <VueDropdown
-        offset="0"
+        :offset="[0, 0]"
       >
         <template #trigger>
           <VueButton

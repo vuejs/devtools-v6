@@ -1436,6 +1436,11 @@
     eventemitter3 "^3.1.0"
     url "^0.11.0"
 
+"@popperjs/core@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.6.0.tgz#f022195afdfc942e088ee2101285a1d31c7d727f"
+  integrity sha512-cPqjjzuFWNK3BSKLm0abspP0sp/IGOli4p5I5fKFAzdS8fvjdOwDCfZqAaIiXd9lPkOWi3SUUfZof3hEb7J/uw==
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -1745,7 +1750,7 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.2.tgz#419bd85a2ebdbd4f42963e98c5a1b103452176d9"
   integrity sha512-Zx869zlNoujFOclKIoYmkh8ES2RcS/+Jn546yOiPyZ+3+Ejivnr+fb8l+DdXUEFjo+iVDNR3KyLzg03aBFfZ4Q==
 
-"@vue/ui@^0.11.5", "@vue/ui@^0.11.6":
+"@vue/ui@^0.11.5":
   version "0.11.6"
   resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.11.6.tgz#4b249774812e0025812adeb74b7078a4be43dfaf"
   integrity sha512-wYM3j3+mY7VcfpRNRMVXMwPjYHmYy90TDbOi5RXA7Vj3E0fkX9Pd+Mb0KxMmcIbIfWNJVTBzCFX6uzI0nBWCyg==
@@ -1753,6 +1758,15 @@
     focus-visible "^4.1.5"
     v-tooltip "^3.0.0-alpha.11"
     vue-resize "^0.4.5"
+
+"@vue/ui@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.12.0.tgz#df5dd320b52461438da0347ba0c0eeb273662abc"
+  integrity sha512-iwAbDiUJe7Rcv+rkty78sIKyg2wHHEDKQHjGDTnGSW8HEaBcf/rR5bDhVC+M9jFHuC7fqoLCCSFZ9odKA0RK1w==
+  dependencies:
+    focus-visible "^5.2.0"
+    v-tooltip "^3.0.0-alpha.20"
+    vue-resize "^1.0.0"
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -5163,6 +5177,11 @@ focus-visible@^4.1.5:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/focus-visible/-/focus-visible-4.1.5.tgz#50b44e2e84c24b831ceca3cce84d57c2b311c855"
   integrity sha512-yo/njtk/BB4Z2euzaZe3CZrg4u5s5uEi7ZwbHBJS2quHx51N0mmcx9nTIiImUGlgy+vf26d0CcQluahBBBL/Fw==
+
+focus-visible@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/focus-visible/-/focus-visible-5.2.0.tgz#3a9e41fccf587bd25dcc2ef045508284f0a4d6b3"
+  integrity sha512-Rwix9pBtC1Nuy5wysTmKy+UjbDJpIfg8eHjw0rjZ1mX4GNLz1Bmd16uDpI3Gk1i70Fgcs8Csg2lPm8HULFg9DQ==
 
 follow-redirects@1.5.10:
   version "1.5.10"
@@ -10864,6 +10883,14 @@ v-tooltip@^3.0.0-alpha.11:
     popper.js "^1.16.0"
     vue-resize "^0.4.5"
 
+v-tooltip@^3.0.0-alpha.20:
+  version "3.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-3.0.0-alpha.20.tgz#47760de873a171b7c2a681dd356748cb5efd4481"
+  integrity sha512-piD9IzLIZHw1QPNZ3UdBIlgE3n5ivN7UpwUgpGnwaA6xvVHRVHLbiHZ5t8dYuHcMd40Tn/pZA7DJKcYI7nNcww==
+  dependencies:
+    "@popperjs/core" "^2.6.0"
+    vue-resize "^1.0.0"
+
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.1.1.tgz#54bc3cdd43317bca91e35dcaf305b1a7237de745"
@@ -10952,6 +10979,11 @@ vue-resize@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-0.4.5.tgz#4777a23042e3c05620d9cbda01c0b3cc5e32dcea"
   integrity sha512-bhP7MlgJQ8TIkZJXAfDf78uJO+mEI3CaLABLjv0WNzr4CcGRGPIAItyWYnP6LsPA4Oq0WE+suidNs6dgpO4RHg==
+
+vue-resize@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-1.0.0.tgz#380565b36e411190d85f8fbd3aa230a4cc22f1a5"
+  integrity sha512-SkIi19neeJClapYavfmHiewFZkkTfITVWskg/dIL8b1Eb+RlvnCb8fjGUwLjQJmsw2qsRiiAo4o7BAJVM4pcOA==
 
 vue-router@^3.0.2, vue-router@^3.3.4:
   version "3.3.4"

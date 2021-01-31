@@ -16,7 +16,7 @@
         <div
           v-tooltip="{
             content: $t('StateInspector.dataType.tooltip'),
-            contentHtml: true,
+            html: true,
             placement: orientation === 'landscape' ? 'left' : 'top'
           }"
           class="data-type selectable-item"

@@ -48,7 +48,7 @@ export default {
         v-if="fileIsPath"
         v-tooltip="{
           content: $t('ComponentInspector.openInEditor.tooltip', { file: data.file }),
-          contentHtml: true
+          html: true
         }"
         icon-left="launch"
         class="flat icon-button"

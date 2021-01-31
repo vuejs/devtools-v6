@@ -8,7 +8,7 @@
       }"
       class="self"
       placement="left"
-      offset="24"
+      :offset="[0, 24]"
       @click.native="onClick"
       @mouseenter.native="onContextMenuMouseEnter"
       @mouseleave.native="onContextMenuMouseLeave"
@@ -63,7 +63,7 @@
             <VueButton
               v-tooltip="{
                 content: $t('DataField.edit.cancel.tooltip'),
-                contentHtml: true
+                html: true
               }"
               class="icon-button flat"
               icon-left="cancel"
@@ -72,7 +72,7 @@
             <VueButton
               v-tooltip="{
                 content: $t('DataField.edit.submit.tooltip'),
-                contentHtml: true
+                html: true
               }"
               class="icon-button flat"
               icon-left="save"
@@ -86,7 +86,7 @@
         <span
           v-tooltip="{
             content: valueTooltip,
-            contentHtml: true
+            html: true
           }"
           :class="valueClass"
           class="value"
@@ -108,7 +108,7 @@
               :key="index"
               v-tooltip="{
                 content: info.title || 'Quick edit',
-                contentHtml: true,
+                html: true,
               }"
               :class="info.class"
               :icon-left="info.icon"

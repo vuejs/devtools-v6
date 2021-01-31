@@ -114,7 +114,7 @@ export default {
       <VueButton
         v-tooltip="{
           content: $t('ComponentTree.select.tooltip'),
-          contentHtml: true
+          html: true
         }"
         class="icon-button flat"
         icon-left="gps_fixed"

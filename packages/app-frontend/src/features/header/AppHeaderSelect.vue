@@ -1,5 +1,5 @@
 <script>
-import { ref, computed } from '@vue/composition-api'
+import { ref, computed, watch } from '@vue/composition-api'
 import { useOrientation } from '../layout/orientation'
 import SharedData from '@utils/shared-data'
 
@@ -24,8 +24,12 @@ export default {
   setup (props, { emit }) {
     /* Open/Close */
 
-    const isOpen = ref(false)
     const isShown = ref(false)
+    const isShowApplied = ref(false)
+
+    watch(isShown, value => {
+      console.log('isShown', value)
+    })
 
     /**
      * Delayed open should only happen on mouseover.
@@ -34,65 +38,58 @@ export default {
     const showDelayEnabled = ref(true)
 
     let disabled = false
-    let buttonCloseEnabled = false
+    let toggleCloseEnabled = true
+    let toggleCloseTimer = null
 
-    // Timers
+    let pendingOperation = null
+    let operationTimer = null
 
-    let closeTimer = null
-    let buttonCloseTimer = null
-
-    function open (delay = true) {
+    function queueOperation (type, delay) {
       if (disabled) return
-      clearTimeout(closeTimer)
-      buttonCloseEnabled = false
+      pendingOperation = type
+      clearTimeout(operationTimer)
+      operationTimer = setTimeout(() => applyOperation(), delay)
+    }
 
-      // Delay popper opening depending on wether
-      // we mouseover (delay) or we click (no delay)
-      showDelayEnabled.value = delay
+    function applyOperation () {
+      if (pendingOperation) {
+        pendingOperation()
+      }
+      pendingOperation = null
+      clearTimeout(operationTimer)
+    }
 
-      // Delay so we can override popper autoclose
-      // which is itself delayed (to handle v-close-popper)
-      requestAnimationFrame(() => {
-        isOpen.value = true
+    function queueOpen (delay = true) {
+      queueOperation(() => {
+        isShown.value = true
 
-        // Allow closing with button after a delay
-        // so people don't mistakenly close the menu
-        // after it auto-opens on mouse over
-        if (!delay) {
-          buttonCloseEnabled = true
-        } else if (!buttonCloseTimer) {
-          buttonCloseTimer = setTimeout(() => {
-            buttonCloseEnabled = true
-          }, 500)
-        }
-      })
+        toggleCloseEnabled = false
+        clearTimeout(toggleCloseTimer)
+        toggleCloseTimer = setTimeout(() => {
+          toggleCloseEnabled = true
+        }, 500)
+      }, delay ? 250 : 1)
     }
 
     function queueClose (delay = true) {
-      clearTimeout(closeTimer)
-      clearTimeout(buttonCloseTimer)
-      buttonCloseTimer = null
-      buttonCloseEnabled = false
-
-      if (!isShown.value && delay) {
-        isOpen.value = false
-      } else {
-        // Close after a delay
-        closeTimer = setTimeout(() => {
-          isOpen.value = false
-        }, 300)
-      }
+      toggleCloseEnabled = false
+      clearTimeout(toggleCloseTimer)
+      queueOperation(() => {
+        isShown.value = false
+      }, delay ? 300 : 1)
     }
 
     function toggle () {
-      if (isOpen.value && buttonCloseEnabled) {
-        queueClose(false)
+      if (isShown.value) {
+        if (toggleCloseEnabled) {
+          queueClose(false)
+        }
       } else {
         // We open also when it's already open and
         // when the button close is disabled
         // so we cancel the popper autoclose
         // (the popper doesn't contain the trigger button)
-        open(false)
+        queueOpen(false)
       }
     }
 
@@ -147,10 +144,10 @@ export default {
     const { orientation } = useOrientation()
 
     return {
-      isOpen,
       isShown,
+      isShowApplied,
       showDelayEnabled,
-      open,
+      queueOpen,
       queueClose,
       toggle,
       select,
@@ -164,18 +161,19 @@ export default {
 <template>
   <VueDropdown
     placement="bottom-start"
-    trigger="manual"
-    offset="0"
-    :open.sync="isOpen"
-    :open-group="`header-select-${_uid}`"
-    :delay="showDelayEnabled ? { show: 250, hide: 0 } : 0"
-    @apply-show="isShown = true"
-    @apply-hide="isShown = false"
+    :triggers="[]"
+    :offset="[0, 0]"
+    :shown.sync="isShown"
+    :show-group="`header-select-${_uid}`"
+    :delay="0"
+    :auto-hide="false"
+    @apply-show="isShowApplied = true"
+    @apply-hide="isShowApplied = false"
   >
     <template #trigger>
       <div
-        @mouseover="open()"
-        @mouseout="queueClose()"
+        @mouseenter="queueOpen()"
+        @mouseleave="queueClose()"
         @mousewheel="onMouseWheel"
         @click.capture="toggle()"
       >
@@ -199,8 +197,8 @@ export default {
     <div>
       <div
         class="flex flex-col"
-        @mouseover="open()"
-        @mouseout="queueClose()"
+        @mouseenter="queueOpen()"
+        @mouseleave="queueClose()"
         @mousewheel="onMouseWheel"
       >
         <VueDropdownButton
