@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import ComponentsInspector from './features/components/ComponentsInspector.vue'
 import CustomInspector from './features/inspector/custom/CustomInspector.vue'
 import Timeline from './features/timeline/Timeline.vue'
+import Plugins from './features/plugin/Plugins.vue'
+import PluginDetails from './features/plugin/PluginDetails.vue'
 import GlobalSettings from './features/settings/GlobalSettings.vue'
 import { BuiltinTabs, getStorage, setStorage } from '@vue-devtools/shared-utils'
 
@@ -53,6 +55,22 @@ const routes = [
         meta: {
           tab: BuiltinTabs.TIMELINE
         }
+      },
+      {
+        path: 'plugins',
+        name: 'plugins',
+        component: Plugins,
+        meta: {
+          tab: BuiltinTabs.PLUGINS
+        },
+        children: [
+          {
+            path: ':pluginId',
+            name: 'plugin-details',
+            component: PluginDetails,
+            props: true
+          }
+        ]
       },
       {
         path: 'settings',

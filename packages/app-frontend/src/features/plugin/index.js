@@ -43,14 +43,24 @@ export function useComponentStateTypePlugin () {
   }
 }
 
+function addPlugin (plugin) {
+  const list = getPlugins(plugin.appId)
+  const index = list.findIndex(p => p.id === plugin.id)
+  if (index !== -1) {
+    list.splice(index, 1, plugin)
+  } else {
+    list.push(plugin)
+  }
+}
+
 export function setupPluginsBridgeEvents (bridge) {
   bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, ({ plugin }) => {
-    getPlugins(plugin.appId).push(plugin)
+    addPlugin(plugin)
   })
 
   bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_LIST, ({ plugins }) => {
     for (const plugin of plugins) {
-      getPlugins(plugin.appId).push(plugin)
+      addPlugin(plugin)
     }
   })
 

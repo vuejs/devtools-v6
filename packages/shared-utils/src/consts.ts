@@ -1,6 +1,7 @@
 export enum BuiltinTabs {
   COMPONENTS = 'components',
   TIMELINE = 'timeline',
+  PLUGINS = 'plugins',
   SETTINGS = 'settings',
 }
 

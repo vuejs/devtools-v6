@@ -39,6 +39,12 @@ export default {
         targetRoute: { name: 'timeline' }
       },
       {
+        icon: 'extension',
+        label: 'Plugins',
+        matchRoute: 'plugins',
+        targetRoute: { name: 'plugins' }
+      },
+      {
         icon: 'settings',
         label: 'Settings',
         matchRoute: 'global-settings',

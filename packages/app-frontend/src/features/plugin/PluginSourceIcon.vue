@@ -1,6 +1,7 @@
 <script>
 import { usePlugins } from '.'
 import { computed } from '@vue/composition-api'
+import { useRouter } from '@front/util/router'
 
 export default {
   props: {
@@ -17,8 +18,19 @@ export default {
 
     const plugin = computed(() => plugins.value.find(p => p.id === props.pluginId))
 
+    const router = useRouter()
+    function go () {
+      router.push({
+        name: 'plugin-details',
+        params: {
+          pluginId: props.pluginId
+        }
+      })
+    }
+
     return {
-      plugin
+      plugin,
+      go
     }
   }
 }
@@ -30,7 +42,8 @@ export default {
   >
     <VueIcon
       icon="extension"
-      class="opacity-25 hover:opacity-100"
+      class="opacity-25 hover:opacity-100 cursor-pointer"
+      @click.stop="go()"
     />
 
     <template #popper>
