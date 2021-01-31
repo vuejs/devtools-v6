@@ -119,7 +119,7 @@ const toastMessages = {
 }
 
 function toast (id) {
-  if (!Object.keys().includes(id)) return
+  if (!Object.keys(toastMessages).includes(id)) return
 
   const { message, type } = toastMessages[id]
 
