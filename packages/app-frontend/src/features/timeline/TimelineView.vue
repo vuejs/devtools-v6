@@ -1,7 +1,7 @@
 <script>
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
-import { ref, onMounted, onUnmounted, watch, watchEffect, computed } from '@vue/composition-api'
+import { ref, onMounted, onUnmounted, watch, watchEffect } from '@vue/composition-api'
 import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd, useCursor } from '.'
 import Vue from 'vue'
 import { useApps } from '../apps'
