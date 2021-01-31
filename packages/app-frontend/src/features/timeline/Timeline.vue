@@ -12,6 +12,7 @@ import { formatTime } from '@front/util/format'
 import SharedData from '@utils/shared-data'
 import { onSharedDataChange } from '../../util/shared-data'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
+import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
 
 export default {
   components: {
@@ -21,7 +22,8 @@ export default {
     TimelineScrollbar,
     TimelineEventList,
     TimelineEventInspector,
-    AskScreenshotPermission
+    AskScreenshotPermission,
+    PluginSourceIcon
   },
 
   setup () {
@@ -268,7 +270,14 @@ export default {
               class="extend-left px-2 py-1 hover:bg-green-100 dark-hover:bg-green-900"
               @update="value => setLayerHidden(layer, !value)"
             >
-              {{ layer.label }}
+              <div class="flex items-center space-x-2">
+                <span>{{ layer.label }}</span>
+
+                <PluginSourceIcon
+                  v-if="layer.pluginId"
+                  :plugin-id="layer.pluginId"
+                />
+              </div>
             </VueSwitch>
           </div>
         </div>

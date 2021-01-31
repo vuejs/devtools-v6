@@ -1,6 +1,7 @@
 import {
   createBackendContext,
-  BackendContext
+  BackendContext,
+  Plugin
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -221,16 +222,17 @@ async function connect () {
     sendTimelineLayers(ctx)
   })
 
-  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, app: App) => {
+  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, plugin: Plugin) => {
     ctx.timelineLayers.push({
       ...options,
-      app
+      app: plugin.descriptor.app,
+      plugin
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
   })
 
-  hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, app: App) => {
-    addTimelineEvent(options, app, ctx)
+  hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, plugin: Plugin) => {
+    addTimelineEvent(options, plugin.descriptor.app, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, ({ screenshot }) => {
@@ -252,6 +254,7 @@ async function connect () {
       inspectors: ctx.customInspectors.map(i => ({
         id: i.id,
         appId: getAppRecordId(i.app),
+        pluginId: i.plugin.descriptor.id,
         label: i.label,
         icon: i.icon,
         treeFilterPlaceholder: i.treeFilterPlaceholder,
@@ -280,18 +283,19 @@ async function connect () {
     }
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, app: App) => {
+  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, plugin: Plugin) => {
     ctx.customInspectors.push({
       ...options,
-      app,
+      app: plugin.descriptor.app,
+      plugin,
       treeFilter: '',
       selectedNodeId: null
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, (inspectorId: string, app: App) => {
-    const inspector = getInspector(inspectorId, app, ctx)
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, (inspectorId: string, plugin: Plugin) => {
+    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       sendInspectorTree(inspector, ctx)
     } else {
@@ -299,8 +303,8 @@ async function connect () {
     }
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, (inspectorId: string, app: App) => {
-    const inspector = getInspector(inspectorId, app, ctx)
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, (inspectorId: string, plugin: Plugin) => {
+    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       sendInspectorState(inspector, ctx)
     } else {

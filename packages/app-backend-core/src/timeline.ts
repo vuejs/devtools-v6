@@ -90,7 +90,8 @@ export function sendTimelineLayers (ctx: BackendContext) {
       id: layer.id,
       label: layer.label,
       color: layer.color,
-      appId: getAppRecord(layer.app, ctx)?.id
+      appId: getAppRecord(layer.app, ctx)?.id,
+      pluginId: layer.plugin.descriptor.id
     }))
   })
 }

@@ -1,5 +1,11 @@
 <script>
+import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
+
 export default {
+  components: {
+    PluginSourceIcon
+  },
+
   props: {
     layer: {
       type: Object,
@@ -27,7 +33,7 @@ export default {
         height: `${(layer.height + 1) * 16}px`
       }"
     >
-      <div class="flex items-center space-x-4 px-4 py-1">
+      <div class="flex items-center space-x-2 px-2 py-1">
         <div
           class="flex-none w-3 h-3 rounded-full"
           :style="{
@@ -37,6 +43,11 @@ export default {
         <div class="flex-1 truncate text-sm">
           {{ layer.label }}
         </div>
+
+        <PluginSourceIcon
+          v-if="layer.pluginId"
+          :plugin-id="layer.pluginId"
+        />
       </div>
     </div>
 

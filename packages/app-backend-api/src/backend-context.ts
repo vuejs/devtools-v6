@@ -21,10 +21,12 @@ export interface BackendContext {
 
 export interface TimelineLayer extends TimelineLayerOptions {
   app: App
+  plugin: Plugin
 }
 
 export interface CustomInspector extends CustomInspectorOptions {
   app: App
+  plugin: Plugin
   treeFilter: string
   selectedNodeId: string
 }

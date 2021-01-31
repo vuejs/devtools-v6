@@ -247,4 +247,10 @@ export default {
     fill: currentColor !important;
   }
 }
+
+.vue-ui-dropdown-button /deep/ {
+  .default-slot {
+    flex: 1;
+  }
+}
 </style>

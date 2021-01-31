@@ -69,10 +69,10 @@ module.exports = {
     darkSelector: '.vue-ui-dark-mode'
   },
   variants: {
-    backgroundColor: ['hover', 'dark', 'dark-hover', 'dark-group-hover', 'dark-even', 'dark-odd'],
+    backgroundColor: ['hover', 'dark', 'dark-hover', 'group-hover', 'dark-group-hover', 'dark-even', 'dark-odd'],
     backgroundOpacity: ['dark'],
     borderColor: ['dark', 'dark-focus', 'dark-focus-within'],
-    textColor: ['dark', 'dark-hover', 'dark-active', 'dark-placeholder'],
+    textColor: ['hover', 'dark', 'dark-hover', 'group-hover', 'dark-group-hover', 'dark-active', 'dark-placeholder'],
     visibility: ['group-hover']
   },
   plugins: [

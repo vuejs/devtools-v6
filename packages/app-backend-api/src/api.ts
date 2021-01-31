@@ -222,23 +222,23 @@ export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
   }
 
   addTimelineLayer (options: TimelineLayerOptions) {
-    this.ctx.hook.emit(HookEvents.TIMELINE_LAYER_ADDED, options, this.plugin.descriptor.app)
+    this.ctx.hook.emit(HookEvents.TIMELINE_LAYER_ADDED, options, this.plugin)
   }
 
   addTimelineEvent (options: TimelineEventOptions) {
-    this.ctx.hook.emit(HookEvents.TIMELINE_EVENT_ADDED, options, this.plugin.descriptor.app)
+    this.ctx.hook.emit(HookEvents.TIMELINE_EVENT_ADDED, options, this.plugin)
   }
 
   addInspector (options: CustomInspectorOptions) {
-    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_ADD, options, this.plugin.descriptor.app)
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_ADD, options, this.plugin)
   }
 
   sendInspectorTree (inspectorId: string) {
-    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, inspectorId, this.plugin.descriptor.app)
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, inspectorId, this.plugin)
   }
 
   sendInspectorState (inspectorId: string) {
-    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, inspectorId, this.plugin.descriptor.app)
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, inspectorId, this.plugin)
   }
 
   getComponentBounds (instance: ComponentInstance) {

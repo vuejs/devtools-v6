@@ -9,13 +9,15 @@ import AppHeaderSelect from './AppHeaderSelect.vue'
 import { useBridge } from '../bridge'
 import { useTabs } from './tabs'
 import { useInspectors } from '../inspector/custom'
+import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
 
 export default {
   components: {
     AppMainMenu,
     AppHistoryNav,
     AppSelect,
-    AppHeaderSelect
+    AppHeaderSelect,
+    PluginSourceIcon
   },
 
   setup () {
@@ -63,6 +65,7 @@ export default {
     ].concat(customInspectors.value.map(i => ({
       icon: i.icon || 'tab',
       label: i.label,
+      pluginId: i.pluginId,
       targetRoute: { name: 'custom-inspector', params: { inspectorId: i.id } },
       matchRoute: route => route.params.inspectorId === i.id
     }))))
@@ -119,7 +122,17 @@ export default {
         :items="inspectorRoutes"
         :selected-item="currentInspectorRoute"
         @select="route => $router.push(route.targetRoute)"
-      />
+      >
+        <template #default="{ item }">
+          <div class="flex items-center space-x-2">
+            <span class="flex-1">{{ item.label }}</span>
+            <PluginSourceIcon
+              v-if="item.pluginId"
+              :plugin-id="item.pluginId"
+            />
+          </div>
+        </template>
+      </AppHeaderSelect>
     </template>
 
     <div class="flex-1" />
