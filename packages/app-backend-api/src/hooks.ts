@@ -29,8 +29,13 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     if (this.handlers[eventType]) {
       const handlers = this.handlers[eventType] as HookHandlerData<HookPayloads[T]>[]
       for (let i = 0; i < handlers.length; i++) {
-        const { handler } = handlers[i]
-        await handler(payload, ctx)
+        const { handler, plugin } = handlers[i]
+        try {
+          await handler(payload, ctx)
+        } catch (e) {
+          console.error(`An error occured in hook ${eventType}${plugin ? ` registered by plugin ${plugin.descriptor.id}` : ''}`)
+          console.error(e)
+        }
       }
     }
     return payload
