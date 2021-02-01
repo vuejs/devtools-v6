@@ -7,6 +7,7 @@ import EventNesting from './EventNesting.vue'
 import AsyncComponent from './AsyncComponent.vue'
 import SuspenseExample from './SuspenseExample.vue'
 import Provide from './Provide.vue'
+import Condition from './Condition.vue'
 
 export default {
   name: 'MyApp',
@@ -19,7 +20,8 @@ export default {
     EventNesting,
     AsyncComponent,
     SuspenseExample,
-    Provide
+    Provide,
+    Condition
   }
 }
 </script>
@@ -34,6 +36,7 @@ export default {
   <AsyncComponent />
   <SuspenseExample />
   <Provide />
+  <Condition />
 
   <nav>
     <router-link to="/p1">
