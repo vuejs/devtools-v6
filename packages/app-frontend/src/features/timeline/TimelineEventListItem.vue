@@ -42,7 +42,7 @@ export default {
     @click="$emit('inspect')"
     @dblclick="$emit('select')"
   >
-    <span class="flex-1 font-mono truncate">
+    <span class="flex-1 font-mono truncate space-x-1">
       <span
         class="font-medium"
         :class="{
