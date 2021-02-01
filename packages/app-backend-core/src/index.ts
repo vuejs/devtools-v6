@@ -166,7 +166,9 @@ async function connect () {
     const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       // @TODO take into account current filter
-      sendComponentTreeData(parentId, null, ctx)
+      requestAnimationFrame(() => {
+        sendComponentTreeData(parentId, null, ctx)
+      })
     }
 
     const id = getComponentId(app, uid, ctx)
