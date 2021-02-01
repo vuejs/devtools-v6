@@ -33,7 +33,7 @@ export default {
         targetRoute: lastInspectorRoute.value ? lastInspectorRoute.value.targetRoute : { name: 'inspector-components' }
       },
       {
-        icon: 'history',
+        icon: 'line_style',
         label: 'Timeline',
         matchRoute: 'timeline',
         targetRoute: { name: 'timeline' }
