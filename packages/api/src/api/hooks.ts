@@ -47,7 +47,7 @@ export type HookPayloads = {
   }
   [Hooks.WALK_COMPONENT_TREE]: {
     componentInstance: ComponentInstance
-    componentTreeData: ComponentTreeNode
+    componentTreeData: ComponentTreeNode[]
     maxDepth: number
     filter: string
   }

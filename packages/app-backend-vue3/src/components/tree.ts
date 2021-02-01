@@ -45,7 +45,7 @@ export class ComponentWalker {
    */
   private findQualifiedChildren (instance: any, depth: number) {
     if (this.componentFilter.isQualified(instance)) {
-      return this.capture(instance, null, depth)
+      return [this.capture(instance, null, depth)]
     } else if (instance.subTree) {
       // TODO functional components
       return this.findQualifiedChildrenFromList(this.getInternalInstanceChildren(instance.subTree), depth)
