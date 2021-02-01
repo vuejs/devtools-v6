@@ -8,6 +8,7 @@ import AsyncComponent from './AsyncComponent.vue'
 import SuspenseExample from './SuspenseExample.vue'
 import Provide from './Provide.vue'
 import Condition from './Condition.vue'
+import VModelExample from './VModelExample.vue'
 
 export default {
   name: 'MyApp',
@@ -21,7 +22,8 @@ export default {
     AsyncComponent,
     SuspenseExample,
     Provide,
-    Condition
+    Condition,
+    VModelExample
   }
 }
 </script>
@@ -37,6 +39,7 @@ export default {
   <SuspenseExample />
   <Provide />
   <Condition />
+  <VModelExample />
 
   <nav>
     <router-link to="/p1">
