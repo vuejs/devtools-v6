@@ -261,18 +261,19 @@ export function setupComponentsBridgeEvents (bridge) {
 
     // Handle tree data
     const data = parse(treeData)
+    console.log('component tree:', data, instanceId)
     const instance = componentsMap[instanceId]
     if (instance) {
-      for (const key in data) {
-        Vue.set(instance, key, data[key])
+      for (const item of data) {
+        const component = componentsMap[item.id]
+        for (const key in item) {
+          Vue.set(component, key, item[key])
+        }
+        addToComponentsMap(component)
       }
-      addToComponentsMap(instance)
     } else if (Array.isArray(data)) {
       rootInstances.value = data
       data.forEach(i => addToComponentsMap(i))
-    } else {
-      rootInstances.value = [data]
-      addToComponentsMap(data)
     }
 
     // Try to load selected component again
