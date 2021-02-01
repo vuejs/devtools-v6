@@ -22,12 +22,14 @@ export default {
       let time = 0
 
       api.on.walkComponentTree((payload, ctx) => {
-        if (payload.componentInstance.type.name === 'MyApp') {
-          payload.componentTreeData.tags.push({
-            label: 'root',
-            textColor: 0x000000,
-            backgroundColor: 0xFF984F
-          })
+        for (const node of payload.componentTreeData) {
+          if (node.name === 'MyApp') {
+            node.tags.push({
+              label: 'root',
+              textColor: 0x000000,
+              backgroundColor: 0xFF984F
+            })
+          }
         }
       })
 
