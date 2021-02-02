@@ -174,7 +174,7 @@ export default {
       <div
         @mouseenter="queueOpen()"
         @mouseleave="queueClose()"
-        @mousewheel="onMouseWheel"
+        @wheel="onMouseWheel"
         @click.capture="toggle()"
       >
         <slot name="trigger">
@@ -199,7 +199,7 @@ export default {
         class="flex flex-col"
         @mouseenter="queueOpen()"
         @mouseleave="queueClose()"
-        @mousewheel="onMouseWheel"
+        @wheel="onMouseWheel"
       >
         <VueDropdownButton
           v-for="(item, index) of items"

@@ -571,6 +571,7 @@ export default {
 
       if (event.ctrlKey || event.metaKey) {
         // Zoom
+        // Firefox doesn't block the event https://bugzilla.mozilla.org/show_bug.cgi?id=1632465
         event.preventDefault()
 
         const centerRatio = event.offsetX / viewWidth
@@ -668,7 +669,7 @@ export default {
   <div
     ref="wrapper"
     class="relative overflow-hidden"
-    @mousewheel="onMouseWheel"
+    @wheel="onMouseWheel"
     @mousemove="onMouseMove"
     @mouseout="onMouseOut"
   >
