@@ -12,6 +12,7 @@
         :high-density="highDensity"
         :dim-after="dimAfter"
         @toggle="toggle"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
       />
     </template>
   </div>
