@@ -512,7 +512,7 @@ export default {
     })
 
     function drawTimeGrid () {
-      if (!timeGrid.visible) return
+      if (!timeGrid.visible || !app.view.width) return
 
       const ratio = (endTime.value - startTime.value) / app.view.width
       let timeInterval = 10
