@@ -313,7 +313,7 @@ function loadEvent (id) {
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, { id })
 }
 
-function takeScreenshot (event) {
+async function takeScreenshot (event) {
   if (!SharedData.timelineScreenshots) return
 
   const time = Math.round(event.time / 100) * 100
@@ -333,7 +333,12 @@ function takeScreenshot (event) {
     screenshots.value.push(screenshot)
 
     // Screenshot
-    if (typeof chrome !== 'undefined') {
+    if (typeof browser !== 'undefined') {
+      browser.runtime.sendMessage({
+        action: 'vue-take-screenshot',
+        id: screenshot.id
+      })
+    } else if (typeof chrome !== 'undefined') {
       chrome.tabs.captureVisibleTab({
         format: 'png'
       }, dataUrl => {
@@ -344,6 +349,17 @@ function takeScreenshot (event) {
     event.screenshot = lastScreenshot
     lastScreenshot.events.push(event)
   }
+}
+
+if (typeof browser !== 'undefined') {
+  browser.runtime.onMessage.addListener(req => {
+    if (req.action === 'vue-screenshot-result') {
+      const screenshot = screenshots.value.find(s => s.id === req.id)
+      if (screenshot) {
+        screenshot.image = req.dataUrl
+      }
+    }
+  })
 }
 
 export function useScreenshots () {

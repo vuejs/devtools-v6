@@ -93,6 +93,18 @@ chrome.runtime.onMessage.addListener((req, sender) => {
       popup: req.devtoolsEnabled ? `popups/enabled${suffix}.html` : `popups/disabled${suffix}.html`
     })
   }
+
+  if (req.action === 'vue-take-screenshot' && sender.envType === 'devtools_child') {
+    browser.tabs.captureVisibleTab({
+      format: 'png'
+    }).then(dataUrl => {
+      browser.runtime.sendMessage({
+        action: 'vue-screenshot-result',
+        id: req.id,
+        dataUrl
+      })
+    })
+  }
 })
 
 // Right-click inspect context menu entry
