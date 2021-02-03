@@ -121,10 +121,6 @@ function initApp (shell) {
           'Ready. Detected Vue ' + version + '.'
         )
         bridge.send('events:toggle-recording', store.state.events.enabled)
-
-        if (isChrome) {
-          chrome.runtime.sendMessage('vue-panel-load')
-        }
       })
 
       bridge.once('proxy-fail', () => {
