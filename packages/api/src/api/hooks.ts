@@ -8,6 +8,7 @@ export const enum Hooks {
   GET_APP_ROOT_INSTANCE = 'getAppRootInstance',
   REGISTER_APPLICATION = 'registerApplication',
   WALK_COMPONENT_TREE = 'walkComponentTree',
+  VISIT_COMPONENT_TREE = 'visitComponentTree',
   WALK_COMPONENT_PARENTS = 'walkComponentParents',
   INSPECT_COMPONENT = 'inspectComponent',
   GET_COMPONENT_BOUNDS = 'getComponentBounds',
@@ -49,6 +50,11 @@ export type HookPayloads = {
     componentInstance: ComponentInstance
     componentTreeData: ComponentTreeNode[]
     maxDepth: number
+    filter: string
+  }
+  [Hooks.VISIT_COMPONENT_TREE]: {
+    componentInstance: ComponentInstance
+    treeNode: ComponentTreeNode
     filter: string
   }
   [Hooks.WALK_COMPONENT_PARENTS]: {
@@ -126,6 +132,7 @@ export interface Hookable<TContext> {
   getAppRootInstance (handler: HookHandler<HookPayloads[Hooks.GET_APP_ROOT_INSTANCE], TContext>)
   registerApplication (handler: HookHandler<HookPayloads[Hooks.REGISTER_APPLICATION], TContext>)
   walkComponentTree (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_TREE], TContext>)
+  visitComponentTree (handler: HookHandler<HookPayloads[Hooks.VISIT_COMPONENT_TREE], TContext>)
   walkComponentParents (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS], TContext>)
   inspectComponent (handler: HookHandler<HookPayloads[Hooks.INSPECT_COMPONENT], TContext>)
   getComponentBounds (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS], TContext>)

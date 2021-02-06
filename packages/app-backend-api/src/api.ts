@@ -9,7 +9,8 @@ import {
   TimelineEventOptions,
   CustomInspectorOptions,
   EditStatePayload,
-  WithId
+  WithId,
+  ComponentTreeNode
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
@@ -82,6 +83,15 @@ export class DevtoolsApi {
       filter
     })
     return payload.componentTreeData
+  }
+
+  async visitComponentTree (instance: ComponentInstance, treeNode: ComponentTreeNode, filter: string = null) {
+    const payload = await this.callHook(Hooks.VISIT_COMPONENT_TREE, {
+      componentInstance: instance,
+      treeNode,
+      filter
+    })
+    return payload.treeNode
   }
 
   async walkComponentParents (instance: ComponentInstance) {

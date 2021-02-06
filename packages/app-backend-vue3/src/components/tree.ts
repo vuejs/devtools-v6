@@ -18,7 +18,7 @@ export class ComponentWalker {
     this.componentFilter = new ComponentFilter(filter)
   }
 
-  getComponentTree (instance: any) {
+  getComponentTree (instance: any): Promise<ComponentTreeNode[]> {
     this.captureIds = new Map()
     return this.findQualifiedChildren(instance, 0)
   }
@@ -43,9 +43,9 @@ export class ComponentWalker {
    * @param {Vue|Vnode} instance
    * @return {Vue|Array}
    */
-  private findQualifiedChildren (instance: any, depth: number) {
+  private async findQualifiedChildren (instance: any, depth: number): Promise<ComponentTreeNode[]> {
     if (this.componentFilter.isQualified(instance)) {
-      return [this.capture(instance, null, depth)]
+      return [await this.capture(instance, null, depth)]
     } else if (instance.subTree) {
       // TODO functional components
       return this.findQualifiedChildrenFromList(this.getInternalInstanceChildren(instance.subTree), depth)
@@ -63,12 +63,14 @@ export class ComponentWalker {
    * @param {Array} instances
    * @return {Array}
    */
-  private findQualifiedChildrenFromList (instances, depth: number) {
+  private async findQualifiedChildrenFromList (instances, depth: number): Promise<ComponentTreeNode[]> {
     instances = instances
       .filter(child => !isBeingDestroyed(child))
-    return !this.componentFilter.filter
-      ? instances.map((child, index, list) => this.capture(child, list, depth))
-      : Array.prototype.concat.apply([], instances.map(i => this.findQualifiedChildren(i, depth)))
+    if (!this.componentFilter.filter) {
+      return Promise.all(instances.map((child, index, list) => this.capture(child, list, depth)))
+    } else {
+      return Array.prototype.concat.apply([], await Promise.all(instances.map(i => this.findQualifiedChildren(i, depth))))
+    }
   }
 
   /**
@@ -119,7 +121,7 @@ export class ComponentWalker {
    * @param {Vue} instance
    * @return {Object}
    */
-  private capture (instance: any, list: any[], depth: number): ComponentTreeNode {
+  private async capture (instance: any, list: any[], depth: number): Promise<ComponentTreeNode> {
     const id = this.captureId(instance)
 
     const name = getInstanceName(instance)
@@ -127,7 +129,7 @@ export class ComponentWalker {
     const children = this.getInternalInstanceChildren(instance.subTree)
       .filter(child => !isBeingDestroyed(child))
 
-    const ret: ComponentTreeNode = {
+    const treeNode: ComponentTreeNode = {
       uid: instance.uid,
       id,
       name,
@@ -141,26 +143,26 @@ export class ComponentWalker {
 
     // capture children
     if (depth < this.maxDepth) {
-      ret.children = children
+      treeNode.children = await Promise.all(children
         .map((child, index, list) => this.capture(child, list, depth + 1))
-        .filter(Boolean)
+        .filter(Boolean))
     }
 
     // record screen position to ensure correct ordering
     if ((!list || list.length > 1) && !instance._inactive) {
       const rect = getInstanceOrVnodeRect(instance)
-      ret.positionTop = rect ? rect.positionTop : Infinity
+      treeNode.positionTop = rect ? rect.positionTop : Infinity
     }
 
     if (instance.suspense) {
-      ret.tags.push({
+      treeNode.tags.push({
         label: 'suspense',
         backgroundColor: 0xc5c4fc,
         textColor: 0xffffff
       })
     }
 
-    return ret
+    return this.ctx.api.visitComponentTree(instance, treeNode, this.componentFilter.filter)
   }
 
   /**

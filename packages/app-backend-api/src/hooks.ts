@@ -61,6 +61,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.WALK_COMPONENT_TREE, handler)
   }
 
+  visitComponentTree (handler: Handler<HookPayloads[Hooks.VISIT_COMPONENT_TREE]>) {
+    this.hook(Hooks.VISIT_COMPONENT_TREE, handler)
+  }
+
   walkComponentParents (handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS]>) {
     this.hook(Hooks.WALK_COMPONENT_PARENTS, handler)
   }
