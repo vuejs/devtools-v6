@@ -40,7 +40,6 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
     if (backend.frameworkVersion === baseFrameworkVersion) {
       // Enabled backend
       if (!enabledBackends.has(backend)) {
-        console.log('Enabling backend for Vue', backend.frameworkVersion)
         backend.setup(ctx.api)
         enabledBackends.add(backend)
       }

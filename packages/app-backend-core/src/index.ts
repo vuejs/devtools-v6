@@ -80,8 +80,6 @@ async function connect () {
 
   await waitForAppsRegistration()
 
-  console.log('%cconnect', 'color: blue;')
-
   ctx.currentTab = BuiltinTabs.COMPONENTS
 
   // Subscriptions
@@ -137,8 +135,6 @@ async function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_ADDED, (app, uid, parentUid, component) => {
-    // console.log('hook: component added', app, uid, parentUid, component)
-
     const id = getComponentId(app, uid, ctx)
     if (component) {
       if (component.__VUE_DEVTOOLS_UID__ == null) {
@@ -337,10 +333,6 @@ async function connect () {
   hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
     addPlugin(pluginDescriptor, setupFn, ctx)
   })
-
-  // @TODO
-
-  console.log('%cconnect done', 'color: green')
 }
 
 async function flushAll () {

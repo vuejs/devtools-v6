@@ -8,7 +8,6 @@ import { HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
  * Get the detailed information of an inspected instance.
  */
 export async function getInstanceDetails (instance: any, ctx: BackendContext): Promise<InspectedComponentData> {
-  console.log(instance)
   return {
     id: getUniqueComponentId(instance, ctx),
     name: getInstanceName(instance),
