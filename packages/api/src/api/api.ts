@@ -5,7 +5,7 @@ import { ID } from './util'
 
 export interface DevtoolsPluginApi {
   on: Hookable<Context>
-  notifyComponentUpdate (instance: ComponentInstance)
+  notifyComponentUpdate (instance?: ComponentInstance)
   addTimelineLayer (options: TimelineLayerOptions)
   addTimelineEvent (options: TimelineEventOptions)
   addInspector (options: CustomInspectorOptions)
