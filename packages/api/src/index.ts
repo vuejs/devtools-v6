@@ -11,6 +11,7 @@ export interface PluginDescriptor {
   packageName?: string
   homepage?: string
   componentStateTypes?: string[]
+  logo?: string
 }
 
 export type SetupFunction = (api: DevtoolsPluginApi) => void

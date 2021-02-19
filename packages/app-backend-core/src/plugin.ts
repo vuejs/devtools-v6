@@ -62,6 +62,7 @@ export function serializePlugin (plugin: Plugin) {
     appId: getAppRecordId(plugin.descriptor.app),
     packageName: plugin.descriptor.packageName,
     homepage: plugin.descriptor.homepage,
+    logo: plugin.descriptor.logo,
     componentStateTypes: plugin.descriptor.componentStateTypes
   }
 }

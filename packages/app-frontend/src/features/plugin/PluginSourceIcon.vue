@@ -49,7 +49,14 @@ export default {
     <template #popper>
       <div class="flex space-x-3 items-center">
         <div class="flex items-center justify-center w-8 h-8 bg-gray-700 dark:bg-gray-200 rounded-full">
+          <img
+            v-if="plugin.logo"
+            :src="plugin.logo"
+            alt="Plugin logo"
+            class="logo"
+          >
           <VueIcon
+            v-else
             icon="extension"
           />
         </div>
@@ -66,3 +73,10 @@ export default {
     </template>
   </VTooltip>
 </template>
+
+<style lang="postcss" scoped>
+.logo {
+  max-width: 24px;
+  max-height: 24px;
+}
+</style>

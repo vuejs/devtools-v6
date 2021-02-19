@@ -12,6 +12,7 @@ export default {
       label: 'Test devtools plugin',
       packageName: '@vue/devtools-shell-dev-vue3',
       homepage: 'https://github.com/vuejs/vue-devtools',
+      logo: 'https://nodepackjs.com/favicon.png',
       componentStateTypes: [
         stateType
       ],
