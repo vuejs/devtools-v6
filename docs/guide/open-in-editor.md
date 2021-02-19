@@ -1,5 +1,11 @@
 # Open component in editor
 
+When you select a component, you have the option to open the corresponding source file in your code editor.
+
+![Open in editor screenshot](../assets/open-in-editor.png)
+
+To able to work, this feature may need some configuration in your project.
+
 ## Vue CLI 3
 
 Vue CLI 3 supports this feature out-of-the-box when running `vue-cli-service serve`.

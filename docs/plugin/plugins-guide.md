@@ -4,5 +4,5 @@
 
 ## Architecture
 
-![Vue Devtools Architectue](./assets/vue-devtools-architecture.svg)
+![Vue Devtools Architectue](../assets/vue-devtools-architecture.svg)
 

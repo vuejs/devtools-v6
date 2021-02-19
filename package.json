@@ -27,7 +27,10 @@
     "test": "npm run lint",
     "test:e2e": "cross-env PORT=4040 start-server-and-test dev:shell http://localhost:4040 test:e2e:run",
     "test:e2e:run": "cypress run --config baseUrl=http://localhost:4040",
-    "test:open": "cypress open --config baseUrl=http://localhost:8100"
+    "test:open": "cypress open --config baseUrl=http://localhost:8100",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
   },
   "repository": {
     "type": "git",
@@ -64,6 +67,7 @@
     "start-server-and-test": "^1.7.1",
     "tailwindcss": "^1.7.5",
     "tailwindcss-dark-mode": "^1.1.6",
+    "vitepress": "^0.12.2",
     "vue-loader": "^15.9.0"
   },
   "resolutions": {
