@@ -32,8 +32,8 @@ export default {
         } else {
           node.tags.push({
             label: 'test',
-            textColor: 0x000000,
-            backgroundColor: 0xFF5555
+            textColor: 0xFFAAAA,
+            backgroundColor: 0xFFEEEE
           })
         }
       })
