@@ -84,5 +84,5 @@ export interface InspectorNodeTag {
 }
 
 export interface CustomInspectorState {
-  [key: string]: (StateBase | ComponentState)[]
+  [key: string]: (StateBase | Omit<ComponentState, 'type'>)[]
 }
