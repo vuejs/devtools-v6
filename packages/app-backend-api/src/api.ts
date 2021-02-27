@@ -151,10 +151,11 @@ export class DevtoolsApi {
     return payload.componentInstance
   }
 
-  async inspectTimelineEvent (eventData: TimelineEventOptions & WithId) {
+  async inspectTimelineEvent (eventData: TimelineEventOptions & WithId, app: App) {
     const payload = await this.callHook(Hooks.INSPECT_TIMELINE_EVENT, {
       event: eventData.event,
       layerId: eventData.layerId,
+      app,
       data: eventData.event.data,
       all: eventData.all
     })

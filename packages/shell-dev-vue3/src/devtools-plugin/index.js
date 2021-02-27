@@ -106,7 +106,7 @@ export default {
       }
 
       api.on.inspectTimelineEvent(payload => {
-        if (payload.layerId === 'test-layer') {
+        if (payload.app === app && payload.layerId === 'test-layer') {
           return new Promise(resolve => {
             payload.data = {
               ...payload.data,

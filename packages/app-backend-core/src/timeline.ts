@@ -144,7 +144,7 @@ export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
   let data = null
   const eventData = ctx.currentAppRecord.timelineEventMap.get(id)
   if (eventData) {
-    data = await ctx.api.inspectTimelineEvent(eventData)
+    data = await ctx.api.inspectTimelineEvent(eventData, ctx.currentAppRecord.options.app)
     data = stringify(data)
   } else {
     console.warn(`Event ${id} not found`)

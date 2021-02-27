@@ -87,6 +87,7 @@ export type HookPayloads = {
     state: EditStatePayload
   }
   [Hooks.INSPECT_TIMELINE_EVENT]: {
+    app: App
     layerId: string
     event: TimelineEvent
     all?: boolean
