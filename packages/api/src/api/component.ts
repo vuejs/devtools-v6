@@ -29,7 +29,7 @@ export interface InspectedComponentData {
 export interface StateBase {
   key: string
   value: any
-  editable: boolean
+  editable?: boolean
   objectType?: 'ref' | 'reactive' | 'computed' | 'other'
   raw?: string
 }
