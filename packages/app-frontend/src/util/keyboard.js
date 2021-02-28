@@ -1,9 +1,9 @@
 import { onMounted, onUnmounted } from '@vue/composition-api'
 
-/**
- * @param {(event: KeyboardEvent) => void | Promise<void>} cb
- */
-export function onKeyUp (cb) {
+function handleKeyboard (type, cb) {
+  /**
+   * @param {KeyboardEvent} event
+   */
   function handler (event) {
     if (
       event.target.tagName === 'INPUT' ||
@@ -12,14 +12,31 @@ export function onKeyUp (cb) {
       return
     }
 
-    cb(event)
+    const result = cb(event)
+    if (!result) {
+      event.preventDefault()
+    }
   }
 
   onMounted(() => {
-    window.addEventListener('keyup', handler)
+    document.addEventListener(type, handler)
   })
 
   onUnmounted(() => {
-    window.removeEventListener('keyup', handler)
+    document.removeEventListener(type, handler)
   })
+}
+
+/**
+ * @param {(event: KeyboardEvent) => void | Promise<void>} cb
+ */
+export function onKeyUp (cb) {
+  handleKeyboard('keyup', cb)
+}
+
+/**
+ * @param {(event: KeyboardEvent) => void | Promise<void>} cb
+ */
+export function onKeyDown (cb) {
+  handleKeyboard('keydown', cb)
 }

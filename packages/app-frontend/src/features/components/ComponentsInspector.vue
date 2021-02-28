@@ -5,7 +5,7 @@ import { useComponentPick } from './pick'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
-import { onKeyUp } from '@front/util/keyboard'
+import { onKeyDown, onKeyUp } from '@front/util/keyboard'
 
 export default {
   components: {
@@ -30,6 +30,8 @@ export default {
       selectLastComponent()
     })
 
+    const treeFilterInput = ref()
+
     // Pick
 
     const {
@@ -37,6 +39,14 @@ export default {
       startPickingComponent,
       stopPickingComponent
     } = useComponentPick()
+
+    onKeyDown(event => {
+      if (event.key === 'f' && event.ctrlKey) {
+        console.log('meow')
+        treeFilterInput.value.focus()
+        return false
+      }
+    })
 
     onKeyUp(event => {
       console.log(event.key)
@@ -55,6 +65,7 @@ export default {
     return {
       rootInstances,
       treeFilter,
+      treeFilterInput,
       pickingComponent,
       startPickingComponent,
       stopPickingComponent,
@@ -72,9 +83,11 @@ export default {
       <template #left>
         <div class="flex flex-col h-full">
           <VueInput
+            ref="treeFilterInput"
             v-model="treeFilter"
             icon-left="search"
             placeholder="Find components..."
+            select-all
             class="search flat border-b border-gray-200 dark:border-gray-900"
           />
 
