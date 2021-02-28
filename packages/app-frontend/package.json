@@ -6,7 +6,7 @@
     "@pixi/unsafe-eval": "^5.3.7",
     "@vue-devtools/shared-utils": "^0.0.0",
     "@vue/composition-api": "^0.6.7",
-    "@vue/ui": "^0.12.2",
+    "@vue/ui": "^0.12.3",
     "circular-json-es6": "^2.0.2",
     "d3": "^5.16.0",
     "lodash": "^4.17.15",
