@@ -184,7 +184,8 @@ function processComputed (instance) {
       computedProp = {
         type,
         key,
-        value: instance.proxy[key]
+        value: instance.proxy[key],
+        editable: typeof def.set === 'function'
       }
     } catch (e) {
       computedProp = {
@@ -261,10 +262,7 @@ export function editState ({ componentInstance, path, state }: HookPayloads[Hook
   let target: any
   const targetPath: string[] = path.slice()
 
-  if (Object.keys(componentInstance.data).includes(path[0])) {
-    // Data
-    target = componentInstance.data
-  } else if (Object.keys(componentInstance.props).includes(path[0])) {
+  if (Object.keys(componentInstance.props).includes(path[0])) {
     // Props
     target = componentInstance.props
   } else if (Object.keys(componentInstance.devtoolsRawSetupState).includes(path[0])) {
@@ -280,6 +278,8 @@ export function editState ({ componentInstance, path, state }: HookPayloads[Hook
         targetPath.splice(1, 0, 'value')
       }
     }
+  } else {
+    target = componentInstance.proxy
   }
 
   if (target && targetPath) {

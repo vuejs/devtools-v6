@@ -48,6 +48,15 @@ export default {
   computed: {
     classicDoubleAnswer () {
       return this.classicAnswer * 2
+    },
+
+    classicEditableComputed: {
+      get () {
+        return this.classicAnswer
+      },
+      set (value) {
+        this.classicAnswer = value
+      }
     }
   }
 }
