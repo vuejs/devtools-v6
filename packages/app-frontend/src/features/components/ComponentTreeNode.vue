@@ -1,5 +1,5 @@
 <script>
-import { computed, toRefs, onMounted, ref, watchEffect } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref, watchEffect, inject } from '@vue/composition-api'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { useComponent } from '.'
@@ -60,9 +60,17 @@ export default {
 
     // Auto scroll
 
+    /** @type {import('@vue/composition-api').Ref<HTMLElement>} */
+    const treeScroller = inject('treeScroller')
+
     watchEffect(() => {
-      if (selected.value && toggleEl.value) {
-        toggleEl.value.scrollIntoView()
+      if (selected.value && toggleEl.value && treeScroller.value) {
+        /** @type {HTMLElement} */
+        const el = toggleEl.value
+        const scroller = treeScroller.value
+        if (el.offsetTop + el.offsetHeight < scroller.scrollTop || el.offsetTop > scroller.scrollTop + scroller.offsetHeight) {
+          el.scrollIntoView()
+        }
       }
     })
 

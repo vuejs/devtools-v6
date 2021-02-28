@@ -1,5 +1,5 @@
 <script>
-import { onMounted } from '@vue/composition-api'
+import { onMounted, ref, provide } from '@vue/composition-api'
 import { useComponents } from '.'
 import { useComponentPick } from './pick'
 import SplitPane from '@front/features/layout/SplitPane.vue'
@@ -47,12 +47,18 @@ export default {
       }
     })
 
+    // Scroller
+
+    const treeScroller = ref()
+    provide('treeScroller', treeScroller)
+
     return {
       rootInstances,
       treeFilter,
       pickingComponent,
       startPickingComponent,
-      stopPickingComponent
+      stopPickingComponent,
+      treeScroller
     }
   }
 }
@@ -72,7 +78,10 @@ export default {
             class="search flat border-b border-gray-200 dark:border-gray-900"
           />
 
-          <div class="flex-1 p-2 overflow-auto">
+          <div
+            ref="treeScroller"
+            class="flex-1 p-2 overflow-auto"
+          >
             <ComponentTreeNode
               v-for="instance of rootInstances"
               :key="instance.id"
