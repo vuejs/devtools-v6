@@ -152,6 +152,11 @@
               >
                 {{ $t('DataField.contextMenu.copyValue') }}
               </VueDropdownButton>
+
+              <VueDropdownButton
+                icon-left="bug_report"
+                @click="storeAsGlobal"
+              >{{ $t('DataField.contextMenu.storeGlobal') }}</VueDropdownButton>
             </div>
           </VueDropdown>
         </span>
@@ -223,7 +228,8 @@ import {
   isPlainObject,
   sortByKey,
   openInEditor,
-  copyToClipboard
+  copyToClipboard,
+  storeAsGlobal
 } from '@utils/util'
 import { formattedValue, valueType } from '@front/util/format'
 
@@ -439,6 +445,10 @@ export default {
   methods: {
     copyToClipboard () {
       copyToClipboard(this.field.value)
+    },
+
+    storeAsGlobal () {
+      storeAsGlobal(this.field.value)
     },
 
     onClick (event) {

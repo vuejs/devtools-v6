@@ -650,3 +650,20 @@ export function copyToClipboard (state) {
   document.execCommand('copy')
   document.body.removeChild(dummyTextArea)
 }
+
+let globalCount = 0
+export function storeAsGlobal (state) {
+  const target = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {}
+
+  const name = 'vueTemp'
+
+  let i = 0 // prevent infinite loop
+  let varName = name + globalCount
+  do {
+    ++globalCount
+    varName = name + globalCount
+  } while (!!target[varName] || (++i) > 500)
+
+  target[varName] = state
+  console.log(varName, state)
+}
