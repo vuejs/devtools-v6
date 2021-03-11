@@ -579,7 +579,7 @@ api.on.getInspectorState(payload => {
     const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
 
     if (instance) {
-      api.highlightElement(instance)
+      api.unhighlightElement(instance)
     }
 
     // something todo ...
