@@ -1,5 +1,6 @@
 import { classify } from '@vue-devtools/shared-utils'
 import { basename } from '../util'
+import { ComponentInstance, App } from '@vue/devtools-api'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 
 export function isBeingDestroyed (instance) {
@@ -65,4 +66,11 @@ export function getRenderKey (value): string {
   } else {
     return 'Object'
   }
+}
+
+export function getComponentInstances (app: App): ComponentInstance[] {
+  const appRecord = app.__VUE_DEVTOOLS_APP_RECORD__
+  return [...appRecord.instanceMap]
+    .filter(([key]) => key.split(':')[0] === appRecord.id.toString())
+    .map(([,instance]) => instance)
 }

@@ -88,6 +88,8 @@ export enum HookEvents {
   COMPONENT_ADDED = 'component:added',
   COMPONENT_REMOVED = 'component:removed',
   COMPONENT_EMIT = 'component:emit',
+  COMPONENT_HIGHLIGHT = 'component:highlight',
+  COMPONENT_UNHIGHLIGHT = 'component:unhighlight',
   SETUP_DEVTOOLS_PLUGIN = 'devtools-plugin:setup',
   TIMELINE_LAYER_ADDED = 'timeline:layer-added',
   TIMELINE_EVENT_ADDED = 'timeline:event-added',
