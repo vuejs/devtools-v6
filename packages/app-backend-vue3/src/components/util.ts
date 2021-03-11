@@ -70,7 +70,8 @@ export function getRenderKey (value): string {
 
 export function getComponentInstances (app: App): ComponentInstance[] {
   const appRecord = app.__VUE_DEVTOOLS_APP_RECORD__
+  const appId = appRecord.id.toString()
   return [...appRecord.instanceMap]
-    .filter(([key]) => key.split(':')[0] === appRecord.id.toString())
-    .map(([,instance]) => instance)
+    .filter(([key]) => key.split(':')[0] === appId)
+    .map(([,instance]) => instance) // eslint-disable-line comma-spacing
 }
