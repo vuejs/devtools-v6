@@ -27,7 +27,7 @@ export default {
     class="h-full overflow-y-auto"
   >
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex space-x-6">
-      <div class="flex items-center justify-center w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full">
+      <div class="flex items-center justify-center w-16 h-16 bg-gray-200 dark:bg-gray-900 rounded">
         <img
           v-if="plugin.logo"
           :src="plugin.logo"

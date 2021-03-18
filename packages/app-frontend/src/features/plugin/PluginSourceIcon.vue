@@ -48,7 +48,7 @@ export default {
 
     <template #popper>
       <div class="flex space-x-3 items-center">
-        <div class="flex items-center justify-center w-8 h-8 bg-gray-700 dark:bg-gray-200 rounded-full">
+        <div class="flex items-center justify-center w-8 h-8 bg-gray-700 dark:bg-gray-200 rounded">
           <img
             v-if="plugin.logo"
             :src="plugin.logo"
