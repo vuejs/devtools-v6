@@ -57,10 +57,10 @@ export default {
           </a>
         </div>
         <div>
-          ID: <span class="font-mono text-sm px-1 bg-gray-200 rounded">{{ plugin.id }}</span>
+          ID: <span class="font-mono text-sm px-1 bg-gray-200 dark:bg-gray-900 rounded">{{ plugin.id }}</span>
         </div>
         <div v-if="plugin.packageName">
-          Package: <span class="font-mono text-sm px-1 bg-gray-200 rounded">{{ plugin.packageName }}</span>
+          Package: <span class="font-mono text-sm px-1 bg-gray-200 dark:bg-gray-900 rounded">{{ plugin.packageName }}</span>
         </div>
       </div>
     </div>
