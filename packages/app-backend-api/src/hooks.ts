@@ -81,6 +81,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.GET_COMPONENT_NAME, handler)
   }
 
+  getComponentInstances (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES]>) {
+    this.hook(Hooks.GET_COMPONENT_INSTANCES, handler)
+  }
+
   getElementComponent (handler: Handler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT]>) {
     this.hook(Hooks.GET_ELEMENT_COMPONENT, handler)
   }

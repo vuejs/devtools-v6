@@ -200,6 +200,14 @@ async function connect () {
     unHighlight()
   })
 
+  hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+  })
+
+  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
+    unHighlight()
+  })
+
   // Component picker
 
   const componentPicker = new ComponentPicker(ctx)
