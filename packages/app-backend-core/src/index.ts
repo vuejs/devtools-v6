@@ -96,6 +96,7 @@ async function connect () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async tab => {
     ctx.currentTab = tab
+    await unHighlight()
     await flushAll()
   })
 
