@@ -146,7 +146,7 @@ export default {
       <slot name="left" />
 
       <div
-        class="dragger absolute z-100"
+        class="dragger absolute z-100 hover:bg-green-500 hover:bg-opacity-25 transition-colors duration-150 delay-150"
         :class="{
           'top-0 bottom-0 cursor-ew-resize': orientation === 'landscape',
           'left-0 right-0 cursor-ns-resize': orientation === 'portrait',

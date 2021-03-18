@@ -43,6 +43,7 @@
   },
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
+    "@tailwindcss/postcss7-compat": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "@vue/eslint-config-standard": "^5.0.0",
@@ -65,8 +66,7 @@
     "rimraf": "^3.0.2",
     "semver": "^5.5.1",
     "start-server-and-test": "^1.7.1",
-    "tailwindcss": "^1.7.5",
-    "tailwindcss-dark-mode": "^1.1.6",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "vitepress": "^0.12.2",
     "vue-loader": "^15.9.0"
   },

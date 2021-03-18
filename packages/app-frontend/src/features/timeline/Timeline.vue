@@ -267,7 +267,7 @@ export default {
               v-for="layer of allLayers"
               :key="layer.id"
               :value="!isLayerHidden(layer)"
-              class="extend-left px-2 py-1 hover:bg-green-100 dark-hover:bg-green-900"
+              class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
               @update="value => setLayerHidden(layer, !value)"
             >
               <div class="flex items-center space-x-2">

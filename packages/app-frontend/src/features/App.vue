@@ -29,9 +29,11 @@ export default {
     function updateTheme (theme) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
         document.body.classList.add('vue-ui-dark-mode')
+        document.body.classList.add('dark')
         darkMode.value = true
       } else {
         document.body.classList.remove('vue-ui-dark-mode')
+        document.body.classList.remove('dark')
         darkMode.value = false
       }
       if (theme === 'high-contrast') {

@@ -31,7 +31,7 @@ export default {
               pluginId: plugin.id
             }
           }"
-          class="flex items-center space-x-2 px-3 py-1 hover:bg-green-100 dark-hover:bg-green-900"
+          class="flex items-center space-x-2 px-3 py-1 hover:bg-green-100 dark:hover:bg-green-900"
           active-class="text-green-500"
         >
           <VueIcon

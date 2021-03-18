@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         green: {
+          50:  '#ecf8f7',
           100: '#d3f7ef',
           200: '#a5f2db',
           300: '#66e9c2',
@@ -18,26 +19,28 @@ module.exports = {
           900: '#115937'
         },
         purple: {
-          900: '#350066',
-          800: '#4f0098',
-          700: '#6806c1',
-          600: '#8929e3',
+          50:  '#f3f3fa',
+          100: '#ece3fa',
+          200: '#ddc3f9',
+          300: '#cea3f9',
+          400: '#c378f9',
           500: '#a44cf6',
-          400: '#b96dff',
-          300: '#c88eff',
-          200: '#d7adff',
-          100: '#e6ccff'
+          600: '#a331f7',
+          700: '#8128e8',
+          800: '#6523c4',
+          900: '#521fa0'
         },
         bluegray: {
-          100: '#d9f9ff',
-          200: '#c5e5ff',
-          300: '#b1d1f1',
-          400: '#9dbddd',
-          500: '#89a9c9',
-          600: '#7595b5',
-          700: '#6181a1',
-          800: '#4d6d8d',
-          900: '#395979'
+          50:  '#f3f9fb',
+          100: '#e4f4f9',
+          200: '#c5e7f4',
+          300: '#9cd5f0',
+          400: '#89a9c9',
+          500: '#328de3',
+          600: '#266ad2',
+          700: '#2653ae',
+          800: '#224082',
+          900: '#1d3564'
         },
         black: '#0b1015'
       },
@@ -66,26 +69,17 @@ module.exports = {
         96: '24rem'
       }
     },
-    darkSelector: '.vue-ui-dark-mode'
   },
   variants: {
-    backgroundColor: ['hover', 'dark', 'dark-hover', 'group-hover', 'dark-group-hover', 'dark-even', 'dark-odd'],
-    backgroundOpacity: ['dark'],
-    borderColor: ['dark', 'dark-focus', 'dark-focus-within'],
-    textColor: ['hover', 'dark', 'dark-hover', 'group-hover', 'dark-group-hover', 'dark-active', 'dark-placeholder'],
+    backgroundColor: ['hover', 'group-hover', 'dark'],
+    backgroundOpacity: ['hover', 'group-hover', 'dark'],
+    textColor: ['hover', 'group-hover', 'dark'],
     visibility: ['group-hover']
   },
-  plugins: [
-    require('tailwindcss-dark-mode')()
-  ],
+  darkMode: 'class',
   purge: {
     content: [
       path.resolve(__dirname, './packages/app-frontend/src/**/*.vue')
     ],
-    options: {
-      whitelist: [
-        'vue-ui-dark-mode'
-      ]
-    }
   }
 }

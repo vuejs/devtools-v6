@@ -57,7 +57,7 @@ export default {
 <template>
   <div>
     <div
-      class="font-mono cursor-pointer relative overflow-hidden z-10 rounded whitespace-no-wrap flex items-center pr-2 text-sm selectable-item"
+      class="font-mono cursor-pointer relative overflow-hidden z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm selectable-item"
       :class="{
         selected
       }"
