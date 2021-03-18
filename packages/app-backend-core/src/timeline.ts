@@ -124,7 +124,7 @@ export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: 
 
   if (!isAllApps && app) {
     const appRecord = getAppRecord(app, ctx)
-    registerTimelineEvent(eventData, appRecord, ctx)
+    appRecord && registerTimelineEvent(eventData, appRecord, ctx)
   } else {
     ctx.appRecords.forEach(appRecord => registerTimelineEvent(eventData, appRecord, ctx))
   }
