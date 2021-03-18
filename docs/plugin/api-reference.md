@@ -471,6 +471,31 @@ api.on.inspectTimelineEvent(payload => {
 
 ## Utilities
 
+### getComponentInstances
+
+Component instances on the Vue app.
+- `app`: the target Vue app instance
+
+Example:
+
+```js
+let componentInstances = []
+
+api.on.getInspectorTree(async (payload) => {
+  if (payload.inspectorId === 'test-inspector') { // e.g. custom inspector
+    componentInstances = await api.getComponentInstances(app)
+      for (const instance of instances) {
+      payload.rootNodes.push({
+        id: instance.uid.toString(),
+        label: `Component ${instance.uid}`
+      })
+    }
+
+    // something todo ...
+  }
+})
+```
+
 ### getComponentBounds
 
 Computes the component bounds on the page.
@@ -510,6 +535,54 @@ api.on.inspectComponent(async payload => {
       key: 'component name',
       value: name
     })
+  }
+})
+```
+
+### highlightElement
+
+Highlight the element of the component.
+- `instance`: the target component instance
+
+Example:
+
+```js
+let componentInstances = [] // keeped component instance of the Vue app (e.g. `getComponentInstances`)
+
+api.on.getInspectorState(payload => {
+  if (payload.inspectorId === 'test-inspector') { // e.g. custom inspector
+    // find component instance from custom inspector node
+    const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
+
+    if (instance) {
+      api.highlightElement(instance)
+    }
+
+    // something todo ...
+  }
+})
+```
+
+### unhighlightElement
+
+Unhighlight the element.
+- `instance`: the target component instance
+
+Example:
+
+```js
+let componentInstances = [] // keeped component instance of the Vue app (e.g. `getComponentInstances`)
+
+api.on.getInspectorState(payload => {
+  if (payload.inspectorId === 'test-inspector') { // e.g. custom inspector
+    // find component instance from custom inspector node
+    const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
+
+    if (instance) {
+      api.unhighlightElement(instance)
+    }
+
+    // something todo ...
   }
 })
 ```

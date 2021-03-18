@@ -129,6 +129,8 @@ export default {
         label: 'Test inspector 2'
       })
 
+      let componentInstances = []
+
       api.on.getInspectorTree(payload => {
         if (payload.app === app && payload.inspectorId === 'test-inspector') {
           payload.rootNodes = [
@@ -155,6 +157,16 @@ export default {
               ]
             }
           ]
+        } else if (payload.app === app && payload.inspectorId === 'test-inspector2') {
+          api.getComponentInstances(app).then((instances) => {
+            componentInstances = instances
+            for (const instance of instances) {
+              payload.rootNodes.push({
+                id: instance.uid.toString(),
+                label: `Component ${instance.uid}`
+              })
+            }
+          })
         }
       })
 
@@ -193,6 +205,12 @@ export default {
                 }
               ]
             }
+          }
+        } else if (payload.app === app && payload.inspectorId === 'test-inspector2') {
+          const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
+          if (instance) {
+            api.unhighlightElement()
+            api.highlightElement(instance)
           }
         }
       })

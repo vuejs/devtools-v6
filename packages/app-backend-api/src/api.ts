@@ -126,6 +126,14 @@ export class DevtoolsApi {
     return payload.name
   }
 
+  async getComponentInstances (app: App) {
+    const payload = await this.callHook(Hooks.GET_COMPONENT_INSTANCES, {
+      app,
+      componentInstances: []
+    })
+    return payload.componentInstances
+  }
+
   async getElementComponent (element: HTMLElement | any) {
     const payload = await this.callHook(Hooks.GET_ELEMENT_COMPONENT, {
       element,
@@ -258,5 +266,17 @@ export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
 
   getComponentName (instance: ComponentInstance) {
     return this.ctx.api.getComponentName(instance)
+  }
+
+  getComponentInstances (app: App) {
+    return this.ctx.api.getComponentInstances(app)
+  }
+
+  highlightElement (instance: ComponentInstance) {
+    this.ctx.hook.emit(HookEvents.COMPONENT_HIGHLIGHT, instance.__VUE_DEVTOOLS_UID__, this.plugin)
+  }
+
+  unhighlightElement () {
+    this.ctx.hook.emit(HookEvents.COMPONENT_UNHIGHLIGHT, this.plugin)
   }
 }

@@ -1,6 +1,7 @@
 import { ComponentBounds, Hookable } from './hooks'
 import { Context } from './context'
 import { ComponentInstance, ComponentState, StateBase } from './component'
+import { App } from './app'
 import { ID } from './util'
 
 export interface DevtoolsPluginApi {
@@ -13,6 +14,9 @@ export interface DevtoolsPluginApi {
   sendInspectorState (inspectorId: string)
   getComponentBounds (instance: ComponentInstance): Promise<ComponentBounds>
   getComponentName (instance: ComponentInstance): Promise<string>
+  getComponentInstances (app: App): Promise<ComponentInstance[]>
+  highlightElement (instance: ComponentInstance)
+  unhighlightElement ()
 }
 
 export interface AppRecord {

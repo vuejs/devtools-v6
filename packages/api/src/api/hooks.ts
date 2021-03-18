@@ -13,6 +13,7 @@ export const enum Hooks {
   INSPECT_COMPONENT = 'inspectComponent',
   GET_COMPONENT_BOUNDS = 'getComponentBounds',
   GET_COMPONENT_NAME = 'getComponentName',
+  GET_COMPONENT_INSTANCES = 'getComponentInstances',
   GET_ELEMENT_COMPONENT = 'getElementComponent',
   GET_COMPONENT_ROOT_ELEMENTS = 'getComponentRootElements',
   EDIT_COMPONENT_STATE = 'editComponentState',
@@ -72,6 +73,10 @@ export type HookPayloads = {
   [Hooks.GET_COMPONENT_NAME]: {
     componentInstance: ComponentInstance
     name: string
+  }
+  [Hooks.GET_COMPONENT_INSTANCES]: {
+    app: App
+    componentInstances: ComponentInstance[]
   }
   [Hooks.GET_ELEMENT_COMPONENT]: {
     element: HTMLElement | any
@@ -138,6 +143,7 @@ export interface Hookable<TContext> {
   inspectComponent (handler: HookHandler<HookPayloads[Hooks.INSPECT_COMPONENT], TContext>)
   getComponentBounds (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS], TContext>)
   getComponentName (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_NAME], TContext>)
+  getComponentInstances (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES], TContext>)
   getElementComponent (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT], TContext>)
   getComponentRootElements (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS], TContext>)
   editComponentState (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>)
