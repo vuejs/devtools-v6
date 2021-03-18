@@ -158,7 +158,7 @@ export default {
             }
           ]
         } else if (payload.app === app && payload.inspectorId === 'test-inspector2') {
-          api.getComponentInstances(app).then((instances) => {
+          return api.getComponentInstances(app).then((instances) => {
             componentInstances = instances
             for (const instance of instances) {
               payload.rootNodes.push({
