@@ -9,7 +9,7 @@ interface ConnectOptions {
 export function connect(
   host?: string,
   port?: number | string,
-  options: ConnectOptions
+  options?: ConnectOptions
 ): void;
 
 export function init(vue: Vue | Vue[]): void;
