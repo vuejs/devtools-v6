@@ -1,9 +1,9 @@
-import type Vue from "vue";
+import type { VueConstructor } from "vue";
 
 interface ConnectOptions {
   io?: Function;
   showToast?: Function;
-  app?: Vue | Vue[];
+  app?: VueConstructor | VueConstructor[];
 }
 
 export function connect(
@@ -12,4 +12,4 @@ export function connect(
   options?: ConnectOptions
 ): void;
 
-export function init(vue: Vue | Vue[]): void;
+export function init(vue: VueConstructor | VueConstructor[]): void;
