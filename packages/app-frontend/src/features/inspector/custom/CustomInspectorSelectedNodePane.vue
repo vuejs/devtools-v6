@@ -11,6 +11,7 @@ export default {
   setup () {
     const {
       currentInspector: inspector,
+      filteredState,
       refreshState,
       editState
     } = useCurrentInspector()
@@ -23,6 +24,7 @@ export default {
 
     return {
       inspector,
+      filteredState,
       editState
     }
   }
@@ -49,7 +51,7 @@ export default {
 
     <StateInspector
       v-if="inspector.state"
-      :state="inspector.state"
+      :state="filteredState"
       class="flex-1 overflow-y-auto"
       @edit-state="editState"
     />

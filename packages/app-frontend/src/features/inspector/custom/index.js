@@ -1,7 +1,7 @@
 import { ref, computed } from '@vue/composition-api'
 import { useRoute } from '@front/util/router'
 import { useApps } from '@front/features/apps'
-import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, searchDeepInObject } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
 
 function inspectorFactory (options) {
@@ -33,6 +33,24 @@ export function useCurrentInspector () {
 
   const currentInspector = computed(() => inspectors.value.find(i => i.id === route.value.params.inspectorId))
 
+  const filteredState = computed(() => {
+    if (currentInspector.value.stateFilter) {
+      const result = {}
+      for (const groupKey in currentInspector.value.state) {
+        const group = currentInspector.value.state[groupKey]
+        const groupFields = group.filter(el => searchDeepInObject({
+          [el.key]: el.value
+        }, currentInspector.value.stateFilter))
+        if (groupFields.length) {
+          result[groupKey] = groupFields
+        }
+      }
+      return result
+    } else {
+      return currentInspector.value.state
+    }
+  })
+
   function selectNode (node) {
     currentInspector.value.selectedNode = node
     fetchState(currentInspector.value)
@@ -63,6 +81,7 @@ export function useCurrentInspector () {
 
   return {
     currentInspector,
+    filteredState,
     selectNode,
     refreshInspector,
     refreshTree,
