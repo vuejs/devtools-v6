@@ -1,10 +1,12 @@
 <script>
 import StateInspector from '@front/features/inspector/StateInspector.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import { useSelectedComponent } from '.'
 
 export default {
   components: {
-    StateInspector
+    StateInspector,
+    EmptyPane
   },
 
   setup () {
@@ -63,14 +65,10 @@ export default {
     />
   </div>
 
-  <div
+  <EmptyPane
     v-else
-    class="h-full flex flex-col items-center justify-center space-y-6 p-12 text-gray-400 dark:text-gray-600"
+    icon="device_hub"
   >
-    <VueIcon
-      icon="device_hub"
-      class="w-10 h-10 opacity-50"
-    />
-    <div>Select a component</div>
-  </div>
+    Select a component
+  </EmptyPane>
 </template>

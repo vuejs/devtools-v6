@@ -1,13 +1,18 @@
 <script>
 import { useInspectedEvent, useSelectedEvent } from '.'
 import Defer from '@front/mixins/defer'
-import { computed, onMounted, ref, watch } from '@vue/composition-api'
+import { computed, ref, watch } from '@vue/composition-api'
 import TimelineEventListItem from './TimelineEventListItem.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 const itemHeight = 34
 
 export default {
-  components: { TimelineEventListItem },
+  components: {
+    TimelineEventListItem,
+    EmptyPane
+  },
+
   mixins: [
     Defer()
   ],
@@ -227,14 +232,10 @@ export default {
     </RecycleScroller>
   </div>
 
-  <div
+  <EmptyPane
     v-else
-    class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 space-y-6"
+    icon="border_clear"
   >
-    <VueIcon
-      icon="border_clear"
-      class="w-10 h-10 opacity-50"
-    />
-    <span>No events</span>
-  </div>
+    No events
+  </EmptyPane>
 </template>

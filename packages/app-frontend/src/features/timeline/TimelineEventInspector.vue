@@ -1,12 +1,14 @@
 <script>
 import StateInspector from '../inspector/StateInspector.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 import { computed } from '@vue/composition-api'
 import { useInspectedEvent, useSelectedEvent } from '.'
 
 export default {
   components: {
-    StateInspector
+    StateInspector,
+    EmptyPane
   },
   setup () {
     const {
@@ -106,14 +108,10 @@ export default {
     <VueLoadingIndicator class="primary overlay big" />
   </div>
 
-  <div
+  <EmptyPane
     v-else
-    class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 p-12 space-y-6"
+    icon="subject"
   >
-    <VueIcon
-      icon="subject"
-      class="w-10 h-10 opacity-50"
-    />
-    <span>Select an event to display details</span>
-  </div>
+    Select an event to display details
+  </EmptyPane>
 </template>
