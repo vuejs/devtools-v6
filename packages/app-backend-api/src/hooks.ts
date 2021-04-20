@@ -97,6 +97,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.EDIT_COMPONENT_STATE, handler)
   }
 
+  getComponentDevtoolsOptions (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS]>) {
+    this.hook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, handler)
+  }
+
   inspectTimelineEvent (handler: Handler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT]>) {
     this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler)
   }

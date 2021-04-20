@@ -1,4 +1,4 @@
-import { ComponentTreeNode, InspectedComponentData, ComponentInstance } from './component'
+import { ComponentTreeNode, InspectedComponentData, ComponentInstance, ComponentDevtoolsOptions } from './component'
 import { App } from './app'
 import { CustomInspectorNode, CustomInspectorState, TimelineEvent } from './api'
 
@@ -17,6 +17,7 @@ export const enum Hooks {
   GET_ELEMENT_COMPONENT = 'getElementComponent',
   GET_COMPONENT_ROOT_ELEMENTS = 'getComponentRootElements',
   EDIT_COMPONENT_STATE = 'editComponentState',
+  GET_COMPONENT_DEVTOOLS_OPTIONS = 'getAppDevtoolsOptions',
   INSPECT_TIMELINE_EVENT = 'inspectTimelineEvent',
   GET_INSPECTOR_TREE = 'getInspectorTree',
   GET_INSPECTOR_STATE = 'getInspectorState',
@@ -91,6 +92,10 @@ export type HookPayloads = {
     path: string[]
     state: EditStatePayload
   }
+  [Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS]: {
+    componentInstance: ComponentInstance
+    options: ComponentDevtoolsOptions
+  }
   [Hooks.INSPECT_TIMELINE_EVENT]: {
     app: App
     layerId: string
@@ -147,6 +152,7 @@ export interface Hookable<TContext> {
   getElementComponent (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT], TContext>)
   getComponentRootElements (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS], TContext>)
   editComponentState (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>)
+  getComponentDevtoolsOptions (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS], TContext>)
   inspectTimelineEvent (handler: HookHandler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT], TContext>)
   getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
   getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)

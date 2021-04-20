@@ -10,7 +10,8 @@ import {
   CustomInspectorOptions,
   EditStatePayload,
   WithId,
-  ComponentTreeNode
+  ComponentTreeNode,
+  ComponentDevtoolsOptions
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
@@ -157,6 +158,14 @@ export class DevtoolsApi {
       state
     })
     return payload.componentInstance
+  }
+
+  async getComponentDevtoolsOptions (instance: ComponentInstance): Promise<ComponentDevtoolsOptions> {
+    const payload = await this.callHook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, {
+      componentInstance: instance,
+      options: null
+    })
+    return payload.options || {}
   }
 
   async inspectTimelineEvent (eventData: TimelineEventOptions & WithId, app: App) {

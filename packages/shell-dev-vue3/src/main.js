@@ -25,7 +25,14 @@ app.use(router)
 app.mount('#app')
 
 createApp({
-  render: () => h('h1', {}, 'App 2')
+  render: () => h('h1', 'App 2')
 }).mount('#app2')
 
 createApp(App3).mount('#app3')
+
+createApp({
+  render: () => h('h1', 'Ghost app'),
+  devtools: {
+    hide: true
+  }
+}).mount('#ghost-app')

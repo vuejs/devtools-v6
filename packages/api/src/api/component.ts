@@ -69,3 +69,7 @@ export interface ComponentCustomState extends ComponentStateBase {
 }
 
 export type ComponentState = ComponentStateBase | ComponentPropState | ComponentCustomState
+
+export interface ComponentDevtoolsOptions {
+  hide?: boolean
+}

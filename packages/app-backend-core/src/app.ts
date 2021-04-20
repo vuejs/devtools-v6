@@ -111,8 +111,17 @@ export function waitForAppsRegistration () {
   return jobs.queue(async () => { /* NOOP */ })
 }
 
-export function sendApps (ctx: BackendContext) {
+export async function sendApps (ctx: BackendContext) {
+  const appRecords = []
+
+  for (const k in ctx.appRecords) {
+    const appRecord = ctx.appRecords[k]
+    if (!(await ctx.api.getComponentDevtoolsOptions(appRecord.rootInstance)).hide) {
+      appRecords.push(appRecord)
+    }
+  }
+
   ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {
-    apps: ctx.appRecords.map(mapAppRecord)
+    apps: appRecords.map(mapAppRecord)
   })
 }

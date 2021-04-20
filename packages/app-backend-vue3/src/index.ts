@@ -63,6 +63,10 @@ export const backend: DevtoolsBackend = {
       editState(payload, ctx)
     })
 
+    api.on.getComponentDevtoolsOptions(payload => {
+      payload.options = payload.componentInstance.type.devtools
+    })
+
     api.on.transformCall(payload => {
       if (payload.callName === HookEvents.COMPONENT_UPDATED) {
         const component = payload.inArgs[0]
