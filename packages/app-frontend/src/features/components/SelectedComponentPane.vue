@@ -62,4 +62,15 @@ export default {
       @edit-state="editState"
     />
   </div>
+
+  <div
+    v-else
+    class="h-full flex flex-col items-center justify-center space-y-6 p-12 text-gray-400 dark:text-gray-600"
+  >
+    <VueIcon
+      icon="device_hub"
+      class="w-10 h-10 opacity-50"
+    />
+    <div>Select a component</div>
+  </div>
 </template>
