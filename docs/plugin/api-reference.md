@@ -164,12 +164,15 @@ The options are:
 - `icon` (optional): [Material icon code](https://material.io/resources/icons/), for example `'star'`
 - `treeFilterPlaceholder` (optional): placeholder of the filter input above the tree
 - `stateFilterPlaceholder` (optional): placeholder of the filter input in the state inspector
+- `noSelectionText` (optional): text displayed in the inspector pane when no node is selected
 
 Example:
 
 ```js
+const INSPECTOR_ID = 'test-inspector'
+
 api.addInspector({
-  id: 'test-inspector',
+  id: INSPECTOR_ID,
   label: 'Test inspector',
   icon: 'tab_unselected',
   treeFilterPlaceholder: 'Search for test...'

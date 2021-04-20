@@ -2,10 +2,12 @@
 import { watch } from '@vue/composition-api'
 import { useCurrentInspector } from '.'
 import StateInspector from '../StateInspector.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 export default {
   components: {
-    StateInspector
+    StateInspector,
+    EmptyPane
   },
 
   setup () {
@@ -56,4 +58,11 @@ export default {
       @edit-state="editState"
     />
   </div>
+
+  <EmptyPane
+    v-else-if="inspector.noSelectionText"
+    :icon="inspector.icon"
+  >
+    {{ inspector.noSelectionText }}
+  </EmptyPane>
 </template>

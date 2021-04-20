@@ -72,6 +72,7 @@ export interface CustomInspectorOptions {
   icon?: string
   treeFilterPlaceholder?: string
   stateFilterPlaceholder?: string
+  noSelectionText?: string
 }
 
 export interface CustomInspectorNode {

@@ -121,7 +121,8 @@ export default {
         id: 'test-inspector',
         label: 'Test inspector',
         icon: 'tab_unselected',
-        treeFilterPlaceholder: 'Search for test...'
+        treeFilterPlaceholder: 'Search for test...',
+        noSelectionText: 'Select a node to view details'
       })
 
       api.addInspector({

@@ -35,3 +35,18 @@ export async function editInspectorState (inspector: CustomInspector, nodeId: st
     value: state.value != null ? parse(state.value, true) : state.value
   })
 }
+
+export async function sendCustomInspectors (ctx: BackendContext) {
+  ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_LIST, {
+    inspectors: ctx.customInspectors.map(i => ({
+      id: i.id,
+      appId: getAppRecordId(i.app),
+      pluginId: i.plugin.descriptor.id,
+      label: i.label,
+      icon: i.icon,
+      treeFilterPlaceholder: i.treeFilterPlaceholder,
+      stateFilterPlaceholder: i.stateFilterPlaceholder,
+      noSelectionText: i.noSelectionText
+    }))
+  })
+}

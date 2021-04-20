@@ -25,9 +25,9 @@ import {
   getComponentInstance
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, App, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, mapAppRecord, getAppRecordId, waitForAppsRegistration } from './app'
-import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState } from './inspector'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
+import { registerApp, selectApp, mapAppRecord, waitForAppsRegistration } from './app'
+import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 
 let ctx: BackendContext
@@ -257,17 +257,7 @@ async function connect () {
   // Custom inspectors
 
   ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_LIST, () => {
-    ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_LIST, {
-      inspectors: ctx.customInspectors.map(i => ({
-        id: i.id,
-        appId: getAppRecordId(i.app),
-        pluginId: i.plugin.descriptor.id,
-        label: i.label,
-        icon: i.icon,
-        treeFilterPlaceholder: i.treeFilterPlaceholder,
-        stateFilterPlaceholder: i.stateFilterPlaceholder
-      }))
-    })
+    sendCustomInspectors(ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_TREE, ({ inspectorId, appId, treeFilter }) => {
