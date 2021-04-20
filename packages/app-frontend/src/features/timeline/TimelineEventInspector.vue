@@ -105,4 +105,15 @@ export default {
   >
     <VueLoadingIndicator class="primary overlay big" />
   </div>
+
+  <div
+    v-else
+    class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 p-12 space-y-6"
+  >
+    <VueIcon
+      icon="subject"
+      class="w-10 h-10 opacity-50"
+    />
+    <span>Select an event to display details</span>
+  </div>
 </template>

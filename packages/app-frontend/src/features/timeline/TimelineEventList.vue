@@ -226,4 +226,15 @@ export default {
       </template>
     </RecycleScroller>
   </div>
+
+  <div
+    v-else
+    class="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 space-y-6"
+  >
+    <VueIcon
+      icon="border_clear"
+      class="w-10 h-10 opacity-50"
+    />
+    <span>No events</span>
+  </div>
 </template>
