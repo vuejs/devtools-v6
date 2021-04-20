@@ -110,3 +110,9 @@ export function getAppRecord (app: any, ctx: BackendContext) {
 export function waitForAppsRegistration () {
   return jobs.queue(async () => { /* NOOP */ })
 }
+
+export function sendApps (ctx: BackendContext) {
+  ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {
+    apps: ctx.appRecords.map(mapAppRecord)
+  })
+}

@@ -26,7 +26,7 @@ import {
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, mapAppRecord, waitForAppsRegistration } from './app'
+import { registerApp, selectApp, waitForAppsRegistration, sendApps } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 
@@ -103,9 +103,7 @@ async function connect () {
   // Apps
 
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_LIST, () => {
-    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {
-      apps: ctx.appRecords.map(mapAppRecord)
-    })
+    sendApps(ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
