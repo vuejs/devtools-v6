@@ -7,7 +7,7 @@ module.exports = {
     extend: {
       colors: {
         green: {
-          50:  '#ecf8f7',
+          50: '#ecf8f7',
           100: '#d3f7ef',
           200: '#a5f2db',
           300: '#66e9c2',
@@ -19,7 +19,7 @@ module.exports = {
           900: '#115937'
         },
         purple: {
-          50:  '#f3f3fa',
+          50: '#f3f3fa',
           100: '#ece3fa',
           200: '#ddc3f9',
           300: '#cea3f9',
@@ -31,7 +31,7 @@ module.exports = {
           900: '#521fa0'
         },
         bluegray: {
-          50:  '#f3f9fb',
+          50: '#f3f9fb',
           100: '#e4f4f9',
           200: '#c5e7f4',
           300: '#9cd5f0',
@@ -68,7 +68,7 @@ module.exports = {
         80: '20rem',
         96: '24rem'
       }
-    },
+    }
   },
   variants: {
     backgroundColor: ['hover', 'group-hover', 'dark'],
@@ -80,6 +80,6 @@ module.exports = {
   purge: {
     content: [
       path.resolve(__dirname, './packages/app-frontend/src/**/*.vue')
-    ],
+    ]
   }
 }
