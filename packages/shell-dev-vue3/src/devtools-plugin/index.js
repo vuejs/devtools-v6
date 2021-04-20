@@ -93,7 +93,7 @@ export default {
 
       api.addTimelineLayer({
         id: 'test-layer',
-        label: 'Test layer',
+        label: 'Test layer with a name far too long that should really be much shorter',
         color: 0x92A2BF
       })
 
