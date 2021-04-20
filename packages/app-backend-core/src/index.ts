@@ -26,7 +26,7 @@ import {
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, waitForAppsRegistration, sendApps } from './app'
+import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 
@@ -47,13 +47,11 @@ export async function initBackend (bridge: Bridge) {
 
   if (hook.Vue) {
     connect()
-    registerApp({
-      app: hook.Vue,
-      types: {},
-      version: hook.Vue.version
-    }, ctx)
+    _legacy_getAndRegisterApps(hook.Vue, ctx)
   } else {
-    hook.once(HookEvents.INIT, connect)
+    hook.once(HookEvents.INIT, (Vue) => {
+      _legacy_getAndRegisterApps(Vue, ctx)
+    })
   }
 
   hook.on(HookEvents.APP_ADD, async app => {

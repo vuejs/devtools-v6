@@ -11,6 +11,7 @@ import { JobQueue } from './util/queue'
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
 import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
 import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
+import { scan } from './legacy/scan'
 
 const availableBackends = [
   backendVue1,
@@ -124,4 +125,17 @@ export async function sendApps (ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {
     apps: appRecords.map(mapAppRecord)
   })
+}
+
+// eslint-disable-next-line @typescript-eslint/camelcase
+export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext) {
+  const apps = scan()
+  apps.forEach(app => {
+    registerApp({
+      app,
+      types: {},
+      version: Vue.version
+    }, ctx)
+  })
+  console.log(apps)
 }

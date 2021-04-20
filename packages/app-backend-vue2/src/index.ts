@@ -12,6 +12,10 @@ export const backend: DevtoolsBackend = {
       }
     })
 
+    api.on.getAppRootInstance(payload => {
+      payload.root = payload.app
+    })
+
     // @TODO
   }
 }
