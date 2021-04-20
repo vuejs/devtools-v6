@@ -4,14 +4,14 @@ const openInEditor = require('launch-editor-middleware')
 
 module.exports = createConfig({
   entry: {
-    devtools: require.resolve('@vue-devtools/shell-host/src/devtools.js'),
+    // devtools: require.resolve('@vue-devtools/shell-host/src/devtools.js'),
     backend: require.resolve('@vue-devtools/shell-host/src/backend.js'),
     hook: require.resolve('@vue-devtools/shell-host/src/hook.js'),
     target: './src/index.js'
   },
   output: {
     path: path.join(__dirname, '/build'),
-    publicPath: '/build/',
+    publicPath: '/target/',
     filename: '[name].js'
   },
   devtool: '#cheap-module-source-map',
@@ -19,6 +19,16 @@ module.exports = createConfig({
     quiet: true,
     before (app) {
       app.use('/__open-in-editor', openInEditor())
+    },
+    proxy: {
+      '/': {
+        target: 'http://localhost:8091',
+        bypass: (req, res, proxyOptions) => {
+          if (req.url.startsWith('/target')) {
+            return req.url
+          }
+        }
+      }
     }
   }
 })

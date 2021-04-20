@@ -6,9 +6,9 @@ const openInEditor = require('launch-editor-middleware')
 module.exports = createConfig({
   context: __dirname,
   entry: {
-    target: './src/main.js',
+    backend: require.resolve('@vue-devtools/shell-host/src/backend.js'),
     hook: require.resolve('@vue-devtools/shell-host/src/hook.js'),
-    backend: require.resolve('@vue-devtools/shell-host/src/backend.js')
+    target: './src/main.js'
   },
   output: {
     path: path.join(__dirname, '/build'),
