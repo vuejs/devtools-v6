@@ -1,5 +1,5 @@
 <script>
-import { ref, computed } from '@vue/composition-api'
+import { ref, computed, watch } from '@vue/composition-api'
 import { useCurrentInspector } from '.'
 
 const DEFAULT_EXPAND_DEPTH = 2
@@ -36,6 +36,15 @@ export default {
     }
 
     const selected = computed(() => inspector.value.selectedNodeId === props.node.id)
+
+    // Init selection if an id is set but the selection wasn't loaded yet
+    watch(() => selected && inspector.value.selectNode !== props.node, value => {
+      if (value) {
+        selectNode(props.node)
+      }
+    }, {
+      immediate: true
+    })
 
     return {
       expanded,

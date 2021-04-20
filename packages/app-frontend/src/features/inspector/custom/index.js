@@ -1,15 +1,18 @@
 import { ref, computed } from '@vue/composition-api'
 import { useRoute } from '@front/util/router'
 import { useApps } from '@front/features/apps'
-import { BridgeEvents, parse, searchDeepInObject } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse, searchDeepInObject, getStorage, setStorage } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
+
+const SELECTED_NODES_STORAGE = 'custom-inspector-selected-nodes'
+let selectedIdsStorage = {}
 
 function inspectorFactory (options) {
   return {
     ...options,
     rootNodes: [],
     treeFilter: '',
-    selectedNodeId: null,
+    selectedNodeId: selectedIdsStorage[options.id] || null,
     selectedNode: null,
     stateFilter: '',
     state: null
@@ -55,6 +58,8 @@ export function useCurrentInspector () {
   function selectNode (node) {
     currentInspector.value.selectedNodeId = node.id
     currentInspector.value.selectedNode = node
+    selectedIdsStorage[currentInspector.value.id] = node.id
+    setStorage(SELECTED_NODES_STORAGE, selectedIdsStorage)
     fetchState(currentInspector.value)
   }
 
@@ -107,7 +112,6 @@ function fetchTree (inspector) {
 
 function fetchState (inspector) {
   if (!inspector || !inspector.selectedNodeId) return
-  console.log('fetchState')
   getBridge().send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, {
     inspectorId: inspector.id,
     appId: inspector.appId,
@@ -121,6 +125,8 @@ export function resetInspectors () {
 }
 
 export function setupCustomInspectorBridgeEvents (bridge) {
+  selectedIdsStorage = getStorage(SELECTED_NODES_STORAGE, {})
+
   bridge.on(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_LIST, ({ inspectors: list }) => {
     list.forEach(inspector => {
       if (!inspectors.value.some(i => i.id === inspector.id && i.appId === inspector.appId)) {
