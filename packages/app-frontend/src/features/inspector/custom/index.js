@@ -9,6 +9,7 @@ function inspectorFactory (options) {
     ...options,
     rootNodes: [],
     treeFilter: '',
+    selectedNodeId: null,
     selectedNode: null,
     stateFilter: '',
     state: null
@@ -52,6 +53,7 @@ export function useCurrentInspector () {
   })
 
   function selectNode (node) {
+    currentInspector.value.selectedNodeId = node.id
     currentInspector.value.selectedNode = node
     fetchState(currentInspector.value)
   }
@@ -73,7 +75,7 @@ export function useCurrentInspector () {
     bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, {
       inspectorId: currentInspector.value.id,
       appId: currentInspector.value.appId,
-      nodeId: currentInspector.value.selectedNode.id,
+      nodeId: currentInspector.value.selectedNodeId,
       path,
       payload
     })
@@ -104,12 +106,12 @@ function fetchTree (inspector) {
 }
 
 function fetchState (inspector) {
-  if (!inspector || !inspector.selectedNode) return
+  if (!inspector || !inspector.selectedNodeId) return
   console.log('fetchState')
   getBridge().send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, {
     inspectorId: inspector.id,
     appId: inspector.appId,
-    nodeId: inspector.selectedNode.id
+    nodeId: inspector.selectedNodeId
   })
 }
 

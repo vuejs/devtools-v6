@@ -16,7 +16,7 @@ export default {
       editState
     } = useCurrentInspector()
 
-    watch(() => inspector.value && inspector.value.selectedNode, value => {
+    watch(() => inspector.value && inspector.value.selectedNodeId, value => {
       if (value && !inspector.state) {
         refreshState()
       }
