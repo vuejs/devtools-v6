@@ -40,14 +40,14 @@ export default {
             backgroundColor: `#${layer.color.toString(16)}`
           }"
         />
-        <div class="flex-1 truncate text-sm">
-          {{ layer.label }}
-        </div>
+        <div class="flex-1 overflow-hidden flex items-center space-x-2">
+          <span class="truncate text-sm">{{ layer.label }}</span>
 
-        <PluginSourceIcon
-          v-if="layer.pluginId"
-          :plugin-id="layer.pluginId"
-        />
+          <PluginSourceIcon
+            v-if="layer.pluginId"
+            :plugin-id="layer.pluginId"
+          />
+        </div>
       </div>
     </div>
 
