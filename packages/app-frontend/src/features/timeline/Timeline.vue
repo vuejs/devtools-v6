@@ -260,7 +260,7 @@ export default {
 
         <div
           style="max-height: 250px;"
-          class="overflow-y-auto"
+          class="overflow-x-hidden overflow-y-auto"
         >
           <div class="flex flex-col">
             <VueSwitch
@@ -270,7 +270,7 @@ export default {
               class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
               @update="value => setLayerHidden(layer, !value)"
             >
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center space-x-2 max-w-xs">
                 <div
                   class="flex-none w-3 h-3 rounded-full"
                   :style="{
@@ -278,7 +278,9 @@ export default {
                   }"
                 />
 
-                <span>{{ layer.label }}</span>
+                <div class="flex-1 truncate">
+                  {{ layer.label }}
+                </div>
 
                 <PluginSourceIcon
                   v-if="layer.pluginId"
