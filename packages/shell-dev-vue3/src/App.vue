@@ -9,6 +9,7 @@ import SuspenseExample from './SuspenseExample.vue'
 import Provide from './Provide.vue'
 import Condition from './Condition.vue'
 import VModelExample from './VModelExample.vue'
+import Ghost from './Ghost.vue'
 
 export default {
   name: 'MyApp',
@@ -23,7 +24,8 @@ export default {
     SuspenseExample,
     Provide,
     Condition,
-    VModelExample
+    VModelExample,
+    Ghost
   }
 }
 </script>
@@ -40,6 +42,7 @@ export default {
   <Provide />
   <Condition />
   <VModelExample />
+  <Ghost />
 
   <nav>
     <router-link to="/p1">

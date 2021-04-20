@@ -44,7 +44,7 @@ export class ComponentWalker {
    * @return {Vue|Array}
    */
   private async findQualifiedChildren (instance: any, depth: number): Promise<ComponentTreeNode[]> {
-    if (this.componentFilter.isQualified(instance)) {
+    if (this.componentFilter.isQualified(instance) && !instance.type.devtools?.hide) {
       return [await this.capture(instance, null, depth)]
     } else if (instance.subTree) {
       // TODO functional components
@@ -65,7 +65,7 @@ export class ComponentWalker {
    */
   private async findQualifiedChildrenFromList (instances, depth: number): Promise<ComponentTreeNode[]> {
     instances = instances
-      .filter(child => !isBeingDestroyed(child))
+      .filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
     if (!this.componentFilter.filter) {
       return Promise.all(instances.map((child, index, list) => this.capture(child, list, depth)))
     } else {
@@ -93,7 +93,7 @@ export class ComponentWalker {
         }
       })
     }
-    return list
+    return list.filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
   }
 
   private captureId (instance) {
