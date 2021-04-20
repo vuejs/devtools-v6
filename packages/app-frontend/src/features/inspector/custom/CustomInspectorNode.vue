@@ -93,7 +93,7 @@ export default {
           color: `#${tag.textColor.toString(16).padStart(6, '0')}`,
           backgroundColor: `#${tag.backgroundColor.toString(16).padStart(6, '0')}`,
         }"
-        class="tag px-1 rounded-sm ml-2"
+        class="tag px-1 rounded-sm ml-2 leading-snug"
       >
         {{ tag.label }}
       </span>
