@@ -117,6 +117,7 @@ async function connect () {
   // Components
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
+    ctx.currentAppRecord.componentFilter = filter
     sendComponentTreeData(instanceId, filter, ctx)
   })
 
@@ -144,9 +145,8 @@ async function connect () {
 
     const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-      // @TODO take into account current filter
       requestAnimationFrame(() => {
-        sendComponentTreeData(parentId, null, ctx)
+        sendComponentTreeData(parentId, ctx.currentAppRecord.componentFilter, ctx)
       })
     }
 
@@ -158,9 +158,8 @@ async function connect () {
   hook.on(HookEvents.COMPONENT_REMOVED, (app, uid, parentUid) => {
     const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-      // @TODO take into account current filter
       requestAnimationFrame(() => {
-        sendComponentTreeData(parentId, null, ctx)
+        sendComponentTreeData(parentId, ctx.currentAppRecord.componentFilter, ctx)
       })
     }
 
