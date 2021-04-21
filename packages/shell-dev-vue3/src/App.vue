@@ -10,6 +10,7 @@ import Provide from './Provide.vue'
 import Condition from './Condition.vue'
 import VModelExample from './VModelExample.vue'
 import Ghost from './Ghost.vue'
+import Other from './Other.vue'
 
 export default {
   name: 'MyApp',
@@ -25,7 +26,8 @@ export default {
     Provide,
     Condition,
     VModelExample,
-    Ghost
+    Ghost,
+    Other
   }
 }
 </script>
@@ -43,6 +45,7 @@ export default {
   <Condition />
   <VModelExample />
   <Ghost />
+  <Other />
 
   <nav>
     <router-link to="/p1">

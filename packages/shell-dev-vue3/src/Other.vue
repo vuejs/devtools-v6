@@ -8,6 +8,8 @@
 <script>
 /* eslint-disable @typescript-eslint/no-empty-function */
 
+import { h } from 'vue'
+
 // this computed property should be visible
 // even if component has no 'computed' defined
 const computedPropMixin = {
@@ -23,7 +25,7 @@ export default {
   components: {
     mine: {
       inject: ['foo', 'noop', 'answer'],
-      render: h => h('div', { class: 'mine' }, 'mine'),
+      render: () => h('div', { class: 'mine' }, 'mine'),
       data () {
         return {
           // testing all data types
