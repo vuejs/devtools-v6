@@ -331,7 +331,7 @@ async function connect () {
   // Legacy flush
   hook.off('flush')
   hook.on('flush', () => {
-    if (ctx.currentAppRecord.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
+    if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
       sendComponentTreeData('_root', ctx.currentAppRecord.componentFilter, ctx)
       if (ctx.currentInspectedComponentId) {
         sendSelectedComponentData(ctx.currentInspectedComponentId, ctx)
