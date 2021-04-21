@@ -1,4 +1,5 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
+import { getInstanceDetails } from './components/data'
 import { walkTree } from './components/tree'
 
 export const backend: DevtoolsBackend = {
@@ -18,8 +19,12 @@ export const backend: DevtoolsBackend = {
       payload.root = payload.app
     })
 
-    api.on.walkComponentTree(payload => {
-      payload.componentTreeData = walkTree(payload.componentInstance, payload.filter)
+    api.on.walkComponentTree((payload, ctx) => {
+      payload.componentTreeData = walkTree(payload.componentInstance, payload.filter, ctx)
+    })
+
+    api.on.inspectComponent(payload => {
+      payload.instanceData = getInstanceDetails(payload.componentInstance)
     })
 
     // @TODO

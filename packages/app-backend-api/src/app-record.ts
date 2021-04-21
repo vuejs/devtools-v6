@@ -17,6 +17,7 @@ export interface AppRecord {
   rootInstance: ComponentInstance
   timelineEventMap: Map<ID, TimelineEventOptions & WithId>
   componentFilter?: string
+  meta: any
 }
 
 /**

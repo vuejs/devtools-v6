@@ -1,10 +1,11 @@
-import { classify, target } from '@vue-devtools/shared-utils'
+import { BackendContext } from '@vue-devtools/app-backend-api'
+import { classify } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import { getInstanceOrVnodeRect } from './el'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
-export const instanceMap = target.__VUE_DEVTOOLS_INSTANCE_MAP__ = new Map()
-export const functionalVnodeMap = target.__VUE_DEVTOOLS_FUNCTIONAL_VNODE_MAP__ = new Map()
+export let instanceMap: Map<any, any>
+export let functionalVnodeMap: Map<any, any>
 
 const consoleBoundInstances = Array(5)
 
@@ -15,7 +16,12 @@ const functionalIds = new Map()
 // Some instances may be both on a component and on a child abstract/functional component
 const captureIds = new Map()
 
-export function walkTree (instance, pFilter: string): ComponentTreeNode[] {
+export function walkTree (instance, pFilter: string, ctx: BackendContext): ComponentTreeNode[] {
+  instanceMap = ctx.currentAppRecord.instanceMap
+  if (!ctx.currentAppRecord.meta.functionalVnodeMap) {
+    ctx.currentAppRecord.meta.functionalVnodeMap = new Map()
+  }
+  functionalVnodeMap = ctx.currentAppRecord.meta.functionalVnodeMap
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
