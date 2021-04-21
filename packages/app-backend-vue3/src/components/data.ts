@@ -297,3 +297,31 @@ export function editState ({ componentInstance, path, state }: HookPayloads[Hook
     })
   }
 }
+
+function reduceStateList (list) {
+  if (!list.length) {
+    return undefined
+  }
+  return list.reduce((map, item) => {
+    const key = item.type || 'data'
+    const obj = map[key] = map[key] || {}
+    obj[item.key] = item.value
+    return map
+  }, {})
+}
+
+export function getCustomInstanceDetails (instance) {
+  const state = getInstanceState(instance)
+  return {
+    _custom: {
+      type: 'component',
+      id: instance.__VUE_DEVTOOLS_UID__,
+      display: getInstanceName(instance),
+      tooltip: 'Component instance',
+      value: reduceStateList(state),
+      fields: {
+        abstract: true
+      }
+    }
+  }
+}

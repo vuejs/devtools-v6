@@ -1,9 +1,9 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { ComponentWalker } from './components/tree'
-import { editState, getInstanceDetails } from './components/data'
+import { editState, getInstanceDetails, getCustomInstanceDetails } from './components/data'
 import { getInstanceName, getComponentInstances } from './components/util'
 import { getComponentInstanceFromElement, getInstanceOrVnodeRect, getRootElementsFromComponentInstance } from './components/el'
-import { HookEvents } from '@vue-devtools/shared-utils'
+import { backendInjections, HookEvents } from '@vue-devtools/shared-utils'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 3,
@@ -36,6 +36,8 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.inspectComponent(async (payload, ctx) => {
+      backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
+      backendInjections.instanceMap = ctx.currentAppRecord.instanceMap
       payload.instanceData = await getInstanceDetails(payload.componentInstance, ctx)
     })
 
