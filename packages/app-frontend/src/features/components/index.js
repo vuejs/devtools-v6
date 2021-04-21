@@ -261,7 +261,6 @@ export function setupComponentsBridgeEvents (bridge) {
 
     // Handle tree data
     const data = parse(treeData)
-    console.log('component tree:', data, instanceId)
     const instance = componentsMap[instanceId]
     if (instance) {
       for (const item of data) {

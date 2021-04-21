@@ -12,8 +12,6 @@ export function getInstanceDetails (instance): InspectedComponentData {
 
     if (!vnode) return null
 
-    console.log('vnode', vnode, vnode.devtoolsMeta?.renderContext.props)
-
     const fakeInstance = {
       $options: vnode.fnOptions,
       ...(vnode.devtoolsMeta?.renderContext.props)
@@ -25,8 +23,6 @@ export function getInstanceDetails (instance): InspectedComponentData {
         return obj
       }, {})
     }
-
-    console.log(fakeInstance)
 
     const data = {
       id: instance.__VUE_DEVTOOLS_UID__,

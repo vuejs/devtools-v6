@@ -42,7 +42,6 @@ export default {
 
     onKeyDown(event => {
       if (event.key === 'f' && event.ctrlKey) {
-        console.log('meow')
         treeFilterInput.value.focus()
         return false
       }
