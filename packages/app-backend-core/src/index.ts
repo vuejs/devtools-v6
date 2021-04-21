@@ -1,7 +1,8 @@
 import {
   createBackendContext,
   BackendContext,
-  Plugin
+  Plugin,
+  BuiltinBackendFeature
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -95,7 +96,6 @@ async function connect () {
   ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async tab => {
     ctx.currentTab = tab
     await unHighlight()
-    await flushAll()
   })
 
   // Apps
@@ -327,8 +327,15 @@ async function connect () {
   hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
     addPlugin(pluginDescriptor, setupFn, ctx)
   })
-}
 
-async function flushAll () {
-  // @TODO notify frontend
+  // Legacy flush
+  hook.off('flush')
+  hook.on('flush', () => {
+    if (ctx.currentAppRecord.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
+      sendComponentTreeData('_root', ctx.currentAppRecord.componentFilter, ctx)
+      if (ctx.currentInspectedComponentId) {
+        sendSelectedComponentData(ctx.currentInspectedComponentId, ctx)
+      }
+    }
+  })
 }

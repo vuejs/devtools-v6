@@ -3,7 +3,7 @@ import { InspectorNodeTag } from './api'
 export type ComponentInstance = any // @TODO
 
 export interface ComponentTreeNode {
-  uid: number
+  uid: number | string
   id: string
   name: string
   renderKey: string
@@ -16,6 +16,7 @@ export interface ComponentTreeNode {
   isRouterView?: boolean
   macthedRouteSegment?: string
   tags: InspectorNodeTag[]
+  meta?: any
 }
 
 export interface InspectedComponentData {
