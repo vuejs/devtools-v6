@@ -103,6 +103,7 @@ function processState (instance) {
     ))
     .map(key => ({
       key,
+      type: 'data',
       value: data[key],
       editable: true
     }))
