@@ -1,4 +1,4 @@
-import { BackendContext } from '@vue-devtools/app-backend-api'
+import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
 import { classify } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import { getInstanceOrVnodeRect } from './el'
@@ -6,6 +6,8 @@ import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './
 
 export let instanceMap: Map<any, any>
 export let functionalVnodeMap: Map<any, any>
+
+let appRecord: AppRecord
 
 const consoleBoundInstances = Array(5)
 
@@ -17,11 +19,15 @@ const functionalIds = new Map()
 const captureIds = new Map()
 
 export function walkTree (instance, pFilter: string, ctx: BackendContext): ComponentTreeNode[] {
-  instanceMap = ctx.currentAppRecord.instanceMap
-  if (!ctx.currentAppRecord.meta.functionalVnodeMap) {
-    ctx.currentAppRecord.meta.functionalVnodeMap = new Map()
+  appRecord = ctx.currentAppRecord
+  if (!appRecord.meta.instanceMap) {
+    appRecord.meta.instanceMap = new Map()
   }
-  functionalVnodeMap = ctx.currentAppRecord.meta.functionalVnodeMap
+  instanceMap = appRecord.meta.instanceMap
+  if (!appRecord.meta.functionalVnodeMap) {
+    appRecord.meta.functionalVnodeMap = new Map()
+  }
+  functionalVnodeMap = appRecord.meta.functionalVnodeMap
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
@@ -110,6 +116,10 @@ function captureChild (child) {
  * Capture the meta information of an instance. (recursive)
  */
 function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
+  if (instance.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
+    instance = instance.vnode
+  }
+
   if (instance.$options && instance.$options.abstract && instance._vnode && instance._vnode.componentInstance) {
     instance = instance._vnode.componentInstance
   }
@@ -231,10 +241,12 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
  */
 
 function mark (instance) {
-  if (!instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
-    instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
+  const refId = instance.__VUE_DEVTOOLS_UID__
+  if (!instanceMap.has(refId)) {
+    instanceMap.set(refId, instance)
+    appRecord.instanceMap.set(refId, instance)
     instance.$on('hook:beforeDestroy', function () {
-      instanceMap.delete(instance.__VUE_DEVTOOLS_UID__)
+      instanceMap.delete(refId)
     })
   }
 }
@@ -249,4 +261,10 @@ function markFunctional (id, vnode) {
   }
 
   functionalVnodeMap.get(refId)[id] = vnode
+
+  appRecord.instanceMap.set(id, {
+    __VUE_DEVTOOLS_UID__: id,
+    __VUE_DEVTOOLS_FUNCTIONAL_LEGACY__: true,
+    vnode
+  })
 }

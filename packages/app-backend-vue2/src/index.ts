@@ -1,6 +1,7 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
-import { getInstanceDetails } from './components/data'
-import { walkTree } from './components/tree'
+import { backendInjections } from '@vue-devtools/shared-utils'
+import { getCustomInstanceDetails, getInstanceDetails } from './components/data'
+import { instanceMap, walkTree } from './components/tree'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 2,
@@ -24,6 +25,8 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.inspectComponent(payload => {
+      backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
+      backendInjections.instanceMap = instanceMap
       payload.instanceData = getInstanceDetails(payload.componentInstance)
     })
 

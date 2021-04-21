@@ -7,6 +7,38 @@ import { functionalVnodeMap, instanceMap } from './tree'
  * Get the detailed information of an inspected instance.
  */
 export function getInstanceDetails (instance): InspectedComponentData {
+  if (instance.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
+    const vnode = findInstanceOrVnode(instance.__VUE_DEVTOOLS_UID__)
+
+    if (!vnode) return null
+
+    console.log('vnode', vnode, vnode.devtoolsMeta?.renderContext.props)
+
+    const fakeInstance = {
+      $options: vnode.fnOptions,
+      ...(vnode.devtoolsMeta?.renderContext.props)
+    }
+
+    if (!fakeInstance.$options.props && vnode.devtoolsMeta?.renderContext.props) {
+      fakeInstance.$options.props = Object.keys(vnode.devtoolsMeta.renderContext.props).reduce((obj, key) => {
+        obj[key] = {}
+        return obj
+      }, {})
+    }
+
+    console.log(fakeInstance)
+
+    const data = {
+      id: instance.__VUE_DEVTOOLS_UID__,
+      name: getComponentName(vnode.fnOptions),
+      file: instance.type ? instance.type.__file : vnode.fnOptions.__file || null,
+      state: getFunctionalInstanceState(fakeInstance),
+      functional: true
+    }
+
+    return data
+  }
+
   const data: InspectedComponentData = {
     id: instance.__VUE_DEVTOOLS_UID__,
     name: getInstanceName(instance),
@@ -34,6 +66,10 @@ function getInstanceState (instance): ComponentState[] {
     processObservables(instance),
     processAttrs(instance)
   )
+}
+
+function getFunctionalInstanceState (instance): ComponentState[] {
+  return processProps(instance)
 }
 
 export function getCustomInstanceDetails (instance) {
