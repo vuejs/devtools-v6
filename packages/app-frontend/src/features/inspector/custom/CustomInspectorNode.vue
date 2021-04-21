@@ -38,7 +38,7 @@ export default {
     const selected = computed(() => inspector.value.selectedNodeId === props.node.id)
 
     // Init selection if an id is set but the selection wasn't loaded yet
-    watch(() => selected && inspector.value.selectNode !== props.node, value => {
+    watch(() => selected.value && inspector.value.selectNode !== props.node, value => {
       if (value) {
         selectNode(props.node)
       }
