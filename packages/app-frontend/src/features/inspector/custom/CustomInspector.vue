@@ -1,6 +1,7 @@
 <script>
 import { watch } from '@vue/composition-api'
 import SplitPane from '@front/features/layout/SplitPane.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
 import { useCurrentInspector } from '.'
@@ -8,6 +9,7 @@ import { useCurrentInspector } from '.'
 export default {
   components: {
     SplitPane,
+    EmptyPane,
     CustomInspectorNode,
     CustomInspectorSelectedNodePane
   },
@@ -75,12 +77,13 @@ export default {
       />
     </portal>
   </div>
-  <div
+  <EmptyPane
     v-else
-    class="flex items-center justify-center text-opacity-50"
+    icon="explore"
+    class="wait"
   >
     Inspector {{ $route.params.inspectorId }} not found
-  </div>
+  </EmptyPane>
 </template>
 
 <style lang="postcss" scoped>
@@ -93,6 +96,19 @@ export default {
     .content {
       border: none !important;
     }
+  }
+}
+
+.wait {
+  animation: wait 1s;
+}
+
+@keyframes wait {
+  0%, 99% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
   }
 }
 </style>
