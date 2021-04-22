@@ -57,7 +57,7 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
         instanceMap: new Map(),
         rootInstance: await ctx.api.getAppRootInstance(options.app),
         timelineEventMap: new Map(),
-        meta: {}
+        meta: options.meta ?? {}
       }
       options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
       const rootId = `${record.id}:root`
@@ -68,6 +68,10 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
       ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
         appRecord: mapAppRecord(record)
       })
+
+      if (backend.setupApp) {
+        backend.setupApp(ctx.api, record)
+      }
 
       // Auto select first app
       if (ctx.currentAppRecord == null) {
@@ -135,7 +139,10 @@ export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext)
     registerApp({
       app,
       types: {},
-      version: Vue.version
+      version: Vue.version,
+      meta: {
+        Vue
+      }
     }, ctx)
   })
   console.log(apps)

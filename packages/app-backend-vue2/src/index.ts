@@ -4,6 +4,7 @@ import { getCustomInstanceDetails, getInstanceDetails } from './components/data'
 import { getInstanceOrVnodeRect, findRelatedComponent } from './components/el'
 import { instanceMap, walkTree } from './components/tree'
 import { getInstanceName } from './components/util'
+import { wrapVueForEvents } from './events'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 2,
@@ -47,5 +48,10 @@ export const backend: DevtoolsBackend = {
     })
 
     // @TODO
+  },
+
+  setupApp (api, appRecord) {
+    const { Vue } = appRecord.options.meta
+    wrapVueForEvents(appRecord.options.app, Vue, api.ctx)
   }
 }

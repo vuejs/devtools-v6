@@ -5,6 +5,7 @@ export interface AppRecordOptions {
   app: App
   version: string
   types: { [key: string]: string | symbol }
+  meta?: any
 }
 
 export interface AppRecord {
