@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, watch } from '@vue/composition-api'
+import { ref, computed, watch, inject, watchEffect } from '@vue/composition-api'
 import { useCurrentInspector } from '.'
 
 const DEFAULT_EXPAND_DEPTH = 2
@@ -46,11 +46,34 @@ export default {
       immediate: true
     })
 
+    // Auto scroll
+
+    const toggleEl = ref()
+
+    /** @type {import('@vue/composition-api').Ref<HTMLElement>} */
+    const treeScroller = inject('treeScroller')
+
+    watchEffect(() => {
+      if (selected.value && toggleEl.value && treeScroller.value) {
+        /** @type {HTMLElement} */
+        const el = toggleEl.value
+        const scroller = treeScroller.value
+        if (el.offsetTop + el.offsetHeight < scroller.scrollTop || el.offsetTop > scroller.scrollTop + scroller.offsetHeight) {
+          el.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+            behavior: 'smooth'
+          })
+        }
+      }
+    })
+
     return {
       expanded,
       toggle,
       select,
-      selected
+      selected,
+      toggleEl
     }
   }
 }
@@ -59,6 +82,7 @@ export default {
 <template>
   <div>
     <div
+      ref="toggleEl"
       class="font-mono cursor-pointer relative overflow-hidden z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm selectable-item"
       :class="{
         selected

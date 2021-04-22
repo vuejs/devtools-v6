@@ -1,5 +1,5 @@
 <script>
-import { watch } from '@vue/composition-api'
+import { watch, ref, provide } from '@vue/composition-api'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
@@ -31,9 +31,15 @@ export default {
       immediate: true
     })
 
+    // Scroller
+
+    const treeScroller = ref()
+    provide('treeScroller', treeScroller)
+
     return {
       inspector,
-      refreshInspector
+      refreshInspector,
+      treeScroller
     }
   }
 }
@@ -53,7 +59,10 @@ export default {
             class="search flat border-b border-gray-200 dark:border-gray-900"
           />
 
-          <div class="flex-1 p-2 overflow-auto">
+          <div
+            ref="treeScroller"
+            class="flex-1 p-2 overflow-auto"
+          >
             <CustomInspectorNode
               v-for="node of inspector.rootNodes"
               :key="node.id"

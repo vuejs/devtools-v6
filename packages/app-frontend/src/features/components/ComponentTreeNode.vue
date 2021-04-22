@@ -69,7 +69,11 @@ export default {
         const el = toggleEl.value
         const scroller = treeScroller.value
         if (el.offsetTop + el.offsetHeight < scroller.scrollTop || el.offsetTop > scroller.scrollTop + scroller.offsetHeight) {
-          el.scrollIntoView()
+          el.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+            behavior: 'smooth'
+          })
         }
       }
     })
