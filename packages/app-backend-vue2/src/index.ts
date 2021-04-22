@@ -35,7 +35,6 @@ export const backend: DevtoolsBackend = {
 
     api.on.getComponentBounds(payload => {
       payload.bounds = getInstanceOrVnodeRect(payload.componentInstance)
-      console.log(payload.componentInstance, payload.bounds)
     })
 
     api.on.getComponentName(payload => {

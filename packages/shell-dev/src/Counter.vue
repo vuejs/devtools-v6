@@ -8,6 +8,12 @@
       +1
     </button>
     <button
+      class="increment"
+      @click="asyncIncrement()"
+    >
+      +1 (Async)
+    </button>
+    <button
       class="decrement"
       @click="decrement()"
     >
@@ -169,6 +175,10 @@ export default {
   methods: {
     increment () {
       this.$store.commit('INCREMENT', { a: 1, b: { c: 3 } })
+    },
+
+    asyncIncrement () {
+      this.$store.dispatch('ASYNC_INCREMENT')
     },
 
     decrement () {

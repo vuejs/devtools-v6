@@ -145,5 +145,4 @@ export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext)
       }
     }, ctx)
   })
-  console.log(apps)
 }

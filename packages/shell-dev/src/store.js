@@ -44,6 +44,13 @@ export default new Vuex.Store({
       state.map.set(`mykey_${state.map.size}`, state.map.size)
     }
   },
+  actions: {
+    ASYNC_INCREMENT: ({ commit }) => {
+      return wait(100).then(() => {
+        commit('INCREMENT', 1)
+      })
+    }
+  },
   getters: {
     isPositive: state => state.count >= 0,
     hours: state => state.date.getHours(),
@@ -77,3 +84,9 @@ export default new Vuex.Store({
     }
   }
 })
+
+function wait (ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}

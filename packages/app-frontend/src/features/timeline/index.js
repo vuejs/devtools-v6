@@ -101,7 +101,7 @@ function addEvent (appId, event, layer) {
   const wasStacked = stackEvent(event)
 
   // Groups
-  if (event.groupId) {
+  if (event.groupId != null) {
     let group = layer.groupsMap[event.groupId]
     if (!group) {
       group = layer.groupsMap[event.groupId] = {
