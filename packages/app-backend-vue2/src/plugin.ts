@@ -3,7 +3,7 @@ import { App, ComponentState, CustomInspectorNode, setupDevtoolsPlugin } from '@
 import { isEmptyObject } from '@vue-devtools/shared-utils'
 
 export function setupPlugin (api: DevtoolsApi, app: App) {
-  const ROUTER_INSPECTOR_ID = 'vue2-router-inspector-id'
+  const ROUTER_INSPECTOR_ID = 'vue2-router-inspector'
   const ROUTER_CHANGES_LAYER_ID = 'vue2-router-changes'
 
   setupDevtoolsPlugin({
@@ -29,7 +29,7 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
 
       api.on.getInspectorTree(payload => {
         if (payload.app === app && payload.inspectorId === ROUTER_INSPECTOR_ID) {
-          payload.rootNodes = router.options.routes.map(route => formatRouteNode(router, route, ''))
+          payload.rootNodes = router.options.routes.map(route => formatRouteNode(router, route, '', payload.filter)).filter(Boolean)
         }
       })
 
@@ -70,15 +70,24 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
   })
 }
 
-function formatRouteNode (router, route, parentPath: string): CustomInspectorNode {
+/**
+ * Extracted from tailwind palette
+ */
+const BLUE_600 = 0x2563eb
+const LIME_500 = 0x84cc16
+const CYAN_400 = 0x22d3ee
+const ORANGE_400 = 0xfb923c
+const DARK = 0x666666
+
+function formatRouteNode (router, route, parentPath: string, filter: string): CustomInspectorNode {
   const node: CustomInspectorNode = {
     id: parentPath + route.path,
     label: route.path,
-    children: route.children?.map(child => formatRouteNode(router, child, route.path)),
+    children: route.children?.map(child => formatRouteNode(router, child, route.path, filter)).filter(Boolean),
     tags: []
   }
 
-  console.log('route', route)
+  if (filter && !node.id.includes(filter) && !node.children?.length) return null
 
   if (route.name != null) {
     node.tags.push({
@@ -165,14 +174,3 @@ function getPathId (routeMatcher) {
   }
   return path
 }
-
-/**
- * Extracted from tailwind palette
- */
-const PINK_500 = 0xec4899
-const BLUE_600 = 0x2563eb
-const LIME_500 = 0x84cc16
-const CYAN_400 = 0x22d3ee
-const ORANGE_400 = 0xfb923c
-// const GRAY_100 = 0xf4f4f5
-const DARK = 0x666666
