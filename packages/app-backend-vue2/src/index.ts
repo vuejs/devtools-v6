@@ -5,6 +5,7 @@ import { getInstanceOrVnodeRect, findRelatedComponent } from './components/el'
 import { instanceMap, walkTree } from './components/tree'
 import { getInstanceName } from './components/util'
 import { wrapVueForEvents } from './events'
+import { setupPlugin } from './plugin'
 
 export const backend: DevtoolsBackend = {
   frameworkVersion: 2,
@@ -28,8 +29,7 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.inspectComponent(payload => {
-      backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
-      backendInjections.instanceMap = instanceMap
+      injectToUtils()
       payload.instanceData = getInstanceDetails(payload.componentInstance)
     })
 
@@ -51,7 +51,15 @@ export const backend: DevtoolsBackend = {
   },
 
   setupApp (api, appRecord) {
+    injectToUtils()
     const { Vue } = appRecord.options.meta
-    wrapVueForEvents(appRecord.options.app, Vue, api.ctx)
+    const app = appRecord.options.app
+    wrapVueForEvents(app, Vue, api.ctx)
+    setupPlugin(api, app)
   }
+}
+
+function injectToUtils () {
+  backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
+  backendInjections.instanceMap = instanceMap
 }

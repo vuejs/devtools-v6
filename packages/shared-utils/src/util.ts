@@ -650,3 +650,7 @@ export function copyToClipboard (state) {
   document.execCommand('copy')
   document.body.removeChild(dummyTextArea)
 }
+
+export function isEmptyObject (obj) {
+  return obj === UNDEFINED || !obj || Object.keys(obj).length === 0
+}

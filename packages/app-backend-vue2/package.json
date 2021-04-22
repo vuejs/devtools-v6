@@ -10,6 +10,7 @@
     "ts": "tsc -d -outDir lib"
   },
   "dependencies": {
+    "@vue/devtools-api": "^6.0.0-beta.7",
     "@vue-devtools/app-backend-api": "^0.0.0",
     "@vue-devtools/shared-utils": "^0.0.0"
   },
