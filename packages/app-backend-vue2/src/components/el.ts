@@ -88,3 +88,10 @@ function getTextRect (node: Text) {
 function util () {
   return target.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue.util
 }
+
+export function findRelatedComponent (el) {
+  while (!el.__vue__ && el.parentElement) {
+    el = el.parentElement
+  }
+  return el.__vue__
+}

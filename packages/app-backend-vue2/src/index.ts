@@ -1,7 +1,7 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { backendInjections, getComponentName } from '@vue-devtools/shared-utils'
 import { getCustomInstanceDetails, getInstanceDetails } from './components/data'
-import { getInstanceOrVnodeRect } from './components/el'
+import { getInstanceOrVnodeRect, findRelatedComponent } from './components/el'
 import { instanceMap, walkTree } from './components/tree'
 import { getInstanceName } from './components/util'
 
@@ -40,6 +40,10 @@ export const backend: DevtoolsBackend = {
     api.on.getComponentName(payload => {
       const instance = payload.componentInstance
       payload.name = instance.fnContext ? getComponentName(instance.fnOptions) : getInstanceName(instance)
+    })
+
+    api.on.getElementComponent(payload => {
+      payload.componentInstance = findRelatedComponent(payload.element)
     })
 
     // @TODO
