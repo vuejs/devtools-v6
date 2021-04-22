@@ -234,7 +234,7 @@ export default {
 
   <EmptyPane
     v-else
-    icon="border_clear"
+    icon="inbox"
   >
     No events
   </EmptyPane>
