@@ -1,6 +1,6 @@
 export const backendInjections = {
-  instanceMap: null,
-  getCustomInstanceDetails: null
+  instanceMap: new Map(),
+  getCustomInstanceDetails: () => ({})
 }
 
 export function getInstanceMap () {
