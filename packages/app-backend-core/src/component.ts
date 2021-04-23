@@ -34,9 +34,11 @@ export async function sendSelectedComponentData (instanceId: string, ctx: Backen
     if (typeof window !== 'undefined') {
       (window as any).$vm = instance
     }
+    const parentInstances = await ctx.api.walkComponentParents(instance)
     const payload = {
       instanceId,
-      data: stringify(await ctx.api.inspectComponent(instance))
+      data: stringify(await ctx.api.inspectComponent(instance)),
+      parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__)
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
   }

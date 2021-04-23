@@ -16,27 +16,11 @@ const selectedComponentStateFilter = ref('')
 let selectedComponentPendingId = null
 let lastSelectedApp = null
 let lastSelectedComponentId = null
-// @TODO auto expand to selected component after target page refresh
-let lastSelectedComponentPath = []
 const expandedMap = ref({})
 let resetComponentsQueued = false
 
 export function useComponentRequests () {
-  const { bridge } = useBridge()
   const router = useRouter()
-
-  function requestComponentTree (instanceId = null) {
-    if (!instanceId) {
-      instanceId = '_root'
-    }
-    if (instanceId === '_root') {
-      resetComponentsQueued = true
-    }
-    bridge.send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
-      instanceId,
-      filter: treeFilter.value
-    })
-  }
 
   function selectComponent (id, replace = false) {
     if (selectedComponentId.value !== id) {
@@ -281,17 +265,38 @@ export function setupComponentsBridgeEvents (bridge) {
     }
   })
 
-  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data }) => {
+  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data, parentIds }) => {
     if (instanceId === selectedComponentId.value) {
       selectedComponentData.value = parse(data)
     }
     if (instanceId === selectedComponentPendingId) {
       selectedComponentPendingId = null
     }
+    if (parentIds) {
+      parentIds.reverse().forEach(id => {
+        // Ignore root
+        if (id.endsWith('root')) return
+        setComponentOpen(id, true)
+        requestComponentTree(id)
+      })
+    }
   })
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, () => {
     chrome.devtools.inspectedWindow.eval('inspect(window.__VUE_DEVTOOLS_INSPECT_TARGET__)')
+  })
+}
+
+function requestComponentTree (instanceId = null) {
+  if (!instanceId) {
+    instanceId = '_root'
+  }
+  if (instanceId === '_root') {
+    resetComponentsQueued = true
+  }
+  getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
+    instanceId,
+    filter: treeFilter.value
   })
 }
 
