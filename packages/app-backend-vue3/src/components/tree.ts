@@ -148,6 +148,20 @@ export class ComponentWalker {
         .filter(Boolean))
     }
 
+    // keep-alive
+    if (instance.type.__isKeepAlive && instance.__v_cache) {
+      const cachedComponents = Array.from(instance.__v_cache.values()).map(vnode => vnode.component).filter(Boolean)
+      for (const child of cachedComponents) {
+        if (!children.includes(child)) {
+          const node = await this.capture(child, null, depth + 1)
+          if (node) {
+            node.inactive = true
+            treeNode.children.push(node)
+          }
+        }
+      }
+    }
+
     // record screen position to ensure correct ordering
     if ((!list || list.length > 1) && !instance._inactive) {
       const rect = getInstanceOrVnodeRect(instance)
@@ -160,10 +174,6 @@ export class ComponentWalker {
         backgroundColor: 0xc5c4fc,
         textColor: 0xffffff
       })
-    }
-
-    if (name === 'KeepAlive') {
-      console.log(instance, treeNode)
     }
 
     return this.ctx.api.visitComponentTree(instance, treeNode, this.componentFilter.filter)
