@@ -1865,15 +1865,6 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.7.tgz#96d52988efc07444c108c7c6803ba7cc93e40045"
   integrity sha512-dn5FyfSc4ky424jH4FntiHno7Ss5yLkqKNmM/NXwANRnlkmqu74pnGetexDFVG5phMk9/FhwovUZCWGxsotVKg==
 
-"@vue/ui@^0.11.5":
-  version "0.11.6"
-  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.11.6.tgz#4b249774812e0025812adeb74b7078a4be43dfaf"
-  integrity sha512-wYM3j3+mY7VcfpRNRMVXMwPjYHmYy90TDbOi5RXA7Vj3E0fkX9Pd+Mb0KxMmcIbIfWNJVTBzCFX6uzI0nBWCyg==
-  dependencies:
-    focus-visible "^4.1.5"
-    v-tooltip "^3.0.0-alpha.11"
-    vue-resize "^0.4.5"
-
 "@vue/ui@^0.12.4":
   version "0.12.4"
   resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.12.4.tgz#d5160feb0ae0e4dfd6d8d9e455a4d31e5b90f459"
@@ -4030,7 +4021,7 @@ d3-zoom@1:
     d3-selection "1"
     d3-transition "1"
 
-d3@^5.16.0, d3@^5.9.2:
+d3@^5.16.0:
   version "5.16.0"
   resolved "https://registry.yarnpkg.com/d3/-/d3-5.16.0.tgz#9c5e8d3b56403c79d4ed42fbd62f6113f199c877"
   integrity sha512-4PL5hHaHwX4m7Zr1UapXW23apo6pexCgdetdJ5kTmADpG/7T9Gkxw0M0tf/pjoB63ezCCm0u5UaFYy2aMt0Mcw==
@@ -5404,11 +5395,6 @@ flush-write-stream@^1.0.0:
   dependencies:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
-
-focus-visible@^4.1.5:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/focus-visible/-/focus-visible-4.1.5.tgz#50b44e2e84c24b831ceca3cce84d57c2b311c855"
-  integrity sha512-yo/njtk/BB4Z2euzaZe3CZrg4u5s5uEi7ZwbHBJS2quHx51N0mmcx9nTIiImUGlgy+vf26d0CcQluahBBBL/Fw==
 
 focus-visible@^5.2.0:
   version "5.2.0"
@@ -11434,7 +11420,7 @@ uuid@^3.0.1, uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-v-tooltip@^3.0.0-alpha.11, v-tooltip@^3.0.0-alpha.20:
+v-tooltip@^3.0.0-alpha.20:
   version "3.0.0-alpha.21"
   resolved "https://registry.yarnpkg.com/v-tooltip/-/v-tooltip-3.0.0-alpha.21.tgz#249f5c57f2efef971497775c3e7d77e9e607593a"
   integrity sha512-k+4oj+UBKnhONFoenbRLIzCQj500R2MDUm953kgRrZAKQRGXU9kVI7bJirvJLZG73b7LE7vx/dUDirHc+wIovg==
@@ -11578,7 +11564,7 @@ vue-resize@^1.0.0:
   resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-1.0.0.tgz#380565b36e411190d85f8fbd3aa230a4cc22f1a5"
   integrity sha512-SkIi19neeJClapYavfmHiewFZkkTfITVWskg/dIL8b1Eb+RlvnCb8fjGUwLjQJmsw2qsRiiAo4o7BAJVM4pcOA==
 
-vue-router@^3.0.2, vue-router@^3.3.4:
+vue-router@^3.3.4:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.5.1.tgz#edf3cf4907952d1e0583e079237220c5ff6eb6c9"
   integrity sha512-RRQNLT8Mzr8z7eL4p7BtKvRaTSGdCbTy2+Mm5HTJvLGYSSeG9gDzNasJPP/yOYKLy+/cLG/ftrqq5fvkFwBJEw==
@@ -11609,7 +11595,7 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue-virtual-scroller@^1.0.0-rc.2, vue-virtual-scroller@^1.0.10:
+vue-virtual-scroller@^1.0.10:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/vue-virtual-scroller/-/vue-virtual-scroller-1.0.10.tgz#fdf243240001f05bd79aa77f2e2e60403760e2fb"
   integrity sha512-Hn4qSBDhRY4XdngPioYy/ykDjrLX/NMm1fQXm/4UQQ/Xv1x8JbHGFZNftQowTcfICgN7yc31AKnUk1UGLJ2ndA==
@@ -11618,7 +11604,7 @@ vue-virtual-scroller@^1.0.0-rc.2, vue-virtual-scroller@^1.0.10:
     vue-observe-visibility "^0.4.4"
     vue-resize "^0.4.5"
 
-vue@^2.6.10, vue@^2.6.11:
+vue@^2.6.11:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
@@ -11632,7 +11618,7 @@ vue@^3.0.2, vue@^3.0.5:
     "@vue/runtime-dom" "3.0.7"
     "@vue/shared" "3.0.7"
 
-vuex@^3.1.0, vuex@^3.4.0:
+vuex@^3.4.0:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.6.2.tgz#236bc086a870c3ae79946f107f16de59d5895e71"
   integrity sha512-ETW44IqCgBpVomy520DT5jf8n0zoCac+sxWnn+hMe/CzaSejb/eVw2YToiXYX+Ex/AuHHia28vWTq4goAexFbw==
