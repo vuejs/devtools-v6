@@ -1,3 +1,4 @@
+import { hasPluginPermission, PluginPermission } from '@vue-devtools/shared-utils'
 import { Hooks, HookPayloads, Hookable, HookHandler } from '@vue/devtools-api'
 import { BackendContext } from './backend-context'
 import { Plugin } from './plugin'
@@ -12,13 +13,26 @@ export interface HookHandlerData<THandlerPayload> {
 export class DevtoolsHookable implements Hookable<BackendContext> {
   private handlers: Partial<{ [eventType in Hooks]: HookHandlerData<HookPayloads[eventType]>[] }> = {}
   private ctx: BackendContext
+  private plugin: Plugin
 
-  constructor (ctx: BackendContext) {
+  constructor (ctx: BackendContext, plugin: Plugin = null) {
     this.ctx = ctx
+    this.plugin = plugin
   }
 
-  private hook<T extends Hooks> (eventType: T, handler: Handler<HookPayloads[T]>) {
+  private hook<T extends Hooks> (eventType: T, handler: Handler<HookPayloads[T]>, pluginPermision: PluginPermission = null) {
     const handlers = (this.handlers[eventType] = this.handlers[eventType] || []) as HookHandlerData<HookPayloads[T]>[]
+
+    if (this.plugin) {
+      const originalHandler = handler
+      handler = (...args) => {
+        if (!hasPluginPermission(this.plugin.descriptor.id, PluginPermission.ENABLED) ||
+          (pluginPermision && !hasPluginPermission(this.plugin.descriptor.id, pluginPermision))
+        ) return
+        return originalHandler(...args)
+      }
+    }
+
     handlers.push({
       handler,
       plugin: this.ctx.currentPlugin
@@ -58,62 +72,62 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
   }
 
   walkComponentTree (handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_TREE]>) {
-    this.hook(Hooks.WALK_COMPONENT_TREE, handler)
+    this.hook(Hooks.WALK_COMPONENT_TREE, handler, PluginPermission.COMPONENTS)
   }
 
   visitComponentTree (handler: Handler<HookPayloads[Hooks.VISIT_COMPONENT_TREE]>) {
-    this.hook(Hooks.VISIT_COMPONENT_TREE, handler)
+    this.hook(Hooks.VISIT_COMPONENT_TREE, handler, PluginPermission.COMPONENTS)
   }
 
   walkComponentParents (handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS]>) {
-    this.hook(Hooks.WALK_COMPONENT_PARENTS, handler)
+    this.hook(Hooks.WALK_COMPONENT_PARENTS, handler, PluginPermission.COMPONENTS)
   }
 
   inspectComponent (handler: Handler<HookPayloads[Hooks.INSPECT_COMPONENT]>) {
-    this.hook(Hooks.INSPECT_COMPONENT, handler)
+    this.hook(Hooks.INSPECT_COMPONENT, handler, PluginPermission.COMPONENTS)
   }
 
   getComponentBounds (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS]>) {
-    this.hook(Hooks.GET_COMPONENT_BOUNDS, handler)
+    this.hook(Hooks.GET_COMPONENT_BOUNDS, handler, PluginPermission.COMPONENTS)
   }
 
   getComponentName (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_NAME]>) {
-    this.hook(Hooks.GET_COMPONENT_NAME, handler)
+    this.hook(Hooks.GET_COMPONENT_NAME, handler, PluginPermission.COMPONENTS)
   }
 
   getComponentInstances (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES]>) {
-    this.hook(Hooks.GET_COMPONENT_INSTANCES, handler)
+    this.hook(Hooks.GET_COMPONENT_INSTANCES, handler, PluginPermission.COMPONENTS)
   }
 
   getElementComponent (handler: Handler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT]>) {
-    this.hook(Hooks.GET_ELEMENT_COMPONENT, handler)
+    this.hook(Hooks.GET_ELEMENT_COMPONENT, handler, PluginPermission.COMPONENTS)
   }
 
   getComponentRootElements (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS]>) {
-    this.hook(Hooks.GET_COMPONENT_ROOT_ELEMENTS, handler)
+    this.hook(Hooks.GET_COMPONENT_ROOT_ELEMENTS, handler, PluginPermission.COMPONENTS)
   }
 
   editComponentState (handler: Handler<HookPayloads[Hooks.EDIT_COMPONENT_STATE]>) {
-    this.hook(Hooks.EDIT_COMPONENT_STATE, handler)
+    this.hook(Hooks.EDIT_COMPONENT_STATE, handler, PluginPermission.COMPONENTS)
   }
 
   getComponentDevtoolsOptions (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS]>) {
-    this.hook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, handler)
+    this.hook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, handler, PluginPermission.COMPONENTS)
   }
 
   inspectTimelineEvent (handler: Handler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT]>) {
-    this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler)
+    this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler, PluginPermission.TIMELINE)
   }
 
   getInspectorTree (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_TREE]>) {
-    this.hook(Hooks.GET_INSPECTOR_TREE, handler)
+    this.hook(Hooks.GET_INSPECTOR_TREE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }
 
   getInspectorState (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_STATE]>) {
-    this.hook(Hooks.GET_INSPECTOR_STATE, handler)
+    this.hook(Hooks.GET_INSPECTOR_STATE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }
 
   editInspectorState (handler: Handler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE]>) {
-    this.hook(Hooks.EDIT_INSPECTOR_STATE, handler)
+    this.hook(Hooks.EDIT_INSPECTOR_STATE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }
 }

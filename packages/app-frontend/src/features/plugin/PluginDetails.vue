@@ -1,8 +1,13 @@
 <script>
 import { usePlugins } from '.'
 import { computed } from '@vue/composition-api'
+import PluginPermission from './PluginPermission.vue'
 
 export default {
+  components: {
+    PluginPermission
+  },
+
   props: {
     pluginId: {
       type: [String, Number],
@@ -24,9 +29,10 @@ export default {
 <template>
   <div
     v-if="plugin"
-    class="h-full overflow-y-auto"
+    :key="plugin.id"
+    class="h-full overflow-y-auto divide-y divide-gray-200 dark:divide-gray-800"
   >
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex space-x-6">
+    <div class="px-6 py-4 flex space-x-6">
       <div class="flex items-center justify-center w-16 h-16 bg-gray-200 dark:bg-gray-900 rounded">
         <img
           v-if="plugin.logo"
@@ -63,6 +69,40 @@ export default {
           Package: <span class="font-mono text-sm px-1 bg-gray-200 dark:bg-gray-900 rounded">{{ plugin.packageName }}</span>
         </div>
       </div>
+    </div>
+
+    <div>
+      <PluginPermission
+        :plugin-id="plugin.id"
+        permission="enabled"
+        label="Enabled"
+        class="px-6 py-4"
+      />
+    </div>
+
+    <div>
+      <h2 class="px-6 py-2 text-gray-500">
+        Permissions
+      </h2>
+
+      <PluginPermission
+        :plugin-id="plugin.id"
+        permission="components"
+        label="Components"
+        class="px-6 py-2"
+      />
+      <PluginPermission
+        :plugin-id="plugin.id"
+        permission="custom-inspector"
+        label="Custom inspectors"
+        class="px-6 py-2"
+      />
+      <PluginPermission
+        :plugin-id="plugin.id"
+        permission="timeline"
+        label="Timeline"
+        class="px-6 py-2"
+      />
     </div>
   </div>
 </template>

@@ -22,7 +22,8 @@ const internalSharedData = {
   showMenuScrollTip: true,
   timelineTimeGrid: true,
   timelineScreenshots: true,
-  menuStepScrolling: isMac
+  menuStepScrolling: isMac,
+  pluginPermissions: {},
 }
 
 const persisted = [
@@ -39,7 +40,8 @@ const persisted = [
   'showMenuScrollTip',
   'timelineTimeGrid',
   'timelineScreenshots',
-  'menuStepScrolling'
+  'menuStepScrolling',
+  'pluginPermissions'
 ]
 
 const storageVersion = '6.0.0-alpha.1'
