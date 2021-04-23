@@ -55,7 +55,7 @@ export default {
     // @TODO support custom routes
     const allMainRoutes = computed(() => defaultMainRoutes.value)
 
-    const currentMainRoute = computed(() => allMainRoutes.value.find(r => route.value.matched.some(m => m.name === r.matchRoute)))
+    const currentMainRoute = computed(() => allMainRoutes.value.find(r => route.value.matched.some(m => m.name === r.matchRoute || (m.meta && m.meta.match === r.matchRoute))))
 
     // Inspector routes
 
