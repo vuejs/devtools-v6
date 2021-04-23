@@ -23,7 +23,7 @@ const internalSharedData = {
   timelineTimeGrid: true,
   timelineScreenshots: true,
   menuStepScrolling: isMac,
-  pluginPermissions: {},
+  pluginPermissions: {}
 }
 
 const persisted = [

@@ -150,8 +150,9 @@ export class ComponentWalker {
 
     // keep-alive
     if (instance.type.__isKeepAlive && instance.__v_cache) {
-      const cachedComponents = Array.from(instance.__v_cache.values()).map(vnode => vnode.component).filter(Boolean)
-      for (const child of cachedComponents) {
+      const cachedComponents = Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
+      for (const k in cachedComponents) {
+        const child = cachedComponents[k]
         if (!children.includes(child)) {
           const node = await this.capture(child, null, depth + 1)
           if (node) {
