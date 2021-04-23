@@ -58,7 +58,9 @@ export const backend: DevtoolsBackend = {
       payload.rootElements = [payload.componentInstance.$el]
     })
 
-    // @TODO
+    api.on.getComponentDevtoolsOptions(payload => {
+      payload.options = payload.componentInstance.$options.devtools
+    })
   },
 
   setupApp (api, appRecord) {
