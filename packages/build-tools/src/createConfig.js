@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const { merge } = require('webpack-merge')
 const { VueLoaderPlugin } = require('vue-loader')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const path = require('path')
 
 exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
   const bubleOptions = {
@@ -13,8 +14,11 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     }
   }
 
+  const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
+  const workspace = path.basename(process.cwd())
+
   const baseConfig = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+    mode,
     resolve: {
       extensions: ['.js', '.vue'],
       alias: {
@@ -92,6 +96,11 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     },
     stats: {
       colors: true
+    },
+    cache: {
+      type: 'filesystem',
+      cacheDirectory: path.resolve(process.cwd(), 'node_modules/.cache/webpack'),
+      name: `${workspace}-${mode}`
     }
   }
 
