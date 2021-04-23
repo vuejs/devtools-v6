@@ -77,6 +77,7 @@ module.exports = {
     visibility: ['group-hover']
   },
   darkMode: 'class',
+  mode: 'jit',
   purge: {
     content: [
       path.resolve(__dirname, './packages/app-frontend/src/**/*.vue')
