@@ -19,6 +19,39 @@ const functionalIds = new Map()
 const captureIds = new Map()
 
 export function walkTree (instance, pFilter: string, ctx: BackendContext): ComponentTreeNode[] {
+  initCtx(ctx)
+  filter = pFilter
+  functionalIds.clear()
+  captureIds.clear()
+  const result = findQualifiedChildren(instance)
+  if (Array.isArray(result)) {
+    return result
+  }
+  return [result]
+}
+
+export function getComponentParents (instance, ctx: BackendContext) {
+  initCtx(ctx)
+  const captureIds = new Map()
+
+  const captureId = vm => {
+    const id = getUniqueId(vm)
+    if (captureIds.has(id)) return
+    captureIds.set(id, undefined)
+    mark(vm)
+  }
+
+  const parents = []
+  captureId(instance)
+  let parent = instance
+  while ((parent = parent.$parent)) {
+    captureId(parent)
+    parents.push(parent)
+  }
+  return parents
+}
+
+function initCtx (ctx: BackendContext) {
   appRecord = ctx.currentAppRecord
   if (!appRecord.meta.instanceMap) {
     appRecord.meta.instanceMap = new Map()
@@ -28,14 +61,6 @@ export function walkTree (instance, pFilter: string, ctx: BackendContext): Compo
     appRecord.meta.functionalVnodeMap = new Map()
   }
   functionalVnodeMap = appRecord.meta.functionalVnodeMap
-  filter = pFilter
-  functionalIds.clear()
-  captureIds.clear()
-  const result = findQualifiedChildren(instance)
-  if (Array.isArray(result)) {
-    return result
-  }
-  return [result]
 }
 
 /**
