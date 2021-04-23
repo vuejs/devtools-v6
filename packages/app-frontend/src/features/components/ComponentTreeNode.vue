@@ -100,7 +100,8 @@ export default {
       ref="toggleEl"
       class="font-mono cursor-pointer relative overflow-hidden z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm selectable-item"
       :class="{
-        selected
+        selected,
+        'opacity-50': instance.inactive,
       }"
       :style="{
         paddingLeft: depth * 15 + 4 + 'px'
@@ -155,6 +156,12 @@ export default {
           class="info fragment bg-blue-300 dark:bg-blue-800"
         >
           fragment
+        </span>
+        <span
+          v-if="instance.inactive"
+          class="info inactive bg-gray-500"
+        >
+          inactive
         </span>
         <span
           v-for="(tag, index) of instance.tags"

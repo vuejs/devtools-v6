@@ -213,9 +213,11 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
   } else {
     ret.meta.top = Infinity
   }
+
   // check if instance is available in console
   const consoleId = consoleBoundInstances.indexOf(instance.__VUE_DEVTOOLS_UID__)
   ret.consoleId = consoleId > -1 ? '$vm' + consoleId : null
+
   // check router view
   const isRouterView2 = instance.$vnode && instance.$vnode.data.routerView
   if (instance._routerView || isRouterView2) {
@@ -230,6 +232,11 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
         matched[depth] &&
         (isRouterView2 ? matched[depth].path : matched[depth].handler.path)
     }
+    ret.tags.push({
+      label: `router-view${ret.meta.matchedRouteSegment ? `: ${ret.meta.matchedRouteSegment}` : ''}`,
+      textColor: 0x000000,
+      backgroundColor: 0xff8344
+    })
   }
   return ret
 }
