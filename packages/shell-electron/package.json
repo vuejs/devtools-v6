@@ -14,7 +14,7 @@
   "types": "types/index.d.ts",
   "scripts": {
     "start": "node bin.js",
-    "dev": "webpack --watch --hide-modules",
+    "dev": "webpack --watch",
     "build": "webpack",
     "prepublishOnly": "npm run build"
   },
