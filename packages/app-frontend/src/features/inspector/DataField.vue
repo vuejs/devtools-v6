@@ -280,7 +280,7 @@ export default {
     return {
       contextMenuOpen: false,
       limit: 20,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(value) < 6)
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(value) < 12)
     }
   },
 
