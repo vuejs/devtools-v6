@@ -61,7 +61,7 @@
     "eslint-plugin-vue": "^6.0.0",
     "execa": "^4.0.3",
     "inquirer": "^6.2.0",
-    "lerna": "^3.22.0",
+    "lerna": "^4.0.0",
     "postcss-nested": "^4.2.1",
     "rimraf": "^3.0.2",
     "semver": "^5.5.1",
