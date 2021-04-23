@@ -10,9 +10,6 @@
     "build:watch": "yarn ts -w",
     "ts": "tsc -p tsconfig.json -d -outDir lib"
   },
-  "dependencies": {
-    "@vue-devtools/app-backend": "^0.0.0"
-  },
   "devDependencies": {
     "@types/node": "^13.9.1",
     "@types/webpack-env": "^1.15.1",
