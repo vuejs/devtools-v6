@@ -572,7 +572,7 @@ export function has (object, path, parent = false) {
     return false
   }
 
-  const sections = Array.isArray(path) ? path : path.split('.')
+  const sections = Array.isArray(path) ? path.slice() : path.split('.')
   const size = !parent ? 1 : 2
   while (object && sections.length > size) {
     object = object[sections.shift()]
