@@ -2,10 +2,12 @@
 import { usePlugins } from '.'
 import { computed } from '@vue/composition-api'
 import PluginPermission from './PluginPermission.vue'
+import EmptyPane from '../layout/EmptyPane.vue'
 
 export default {
   components: {
-    PluginPermission
+    PluginPermission,
+    EmptyPane
   },
 
   props: {
@@ -105,6 +107,13 @@ export default {
       />
     </div>
   </div>
+
+  <EmptyPane
+    v-else
+    icon="error"
+  >
+    Plugin not found
+  </EmptyPane>
 </template>
 
 <style lang="postcss" scoped>

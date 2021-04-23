@@ -67,8 +67,17 @@ export default {
             />
           </template>
 
-          <div class="px-4 py-2 max-w-lg">
-            Devtools plugins are added by packages in your application. They can provide new features to the Vue devtools, such as custom inspectors, additional component data or timeline layers.
+          <div>
+            <div class="px-10 py-8 flex items-center space-x-8 max-w-lg">
+              <img
+                src="~@front/assets/undraw_Gift_box.svg"
+                class="max-h-32 flex-none"
+              >
+
+              <p class="flex-1">
+                Devtools plugins are added by packages in your application. They can provide new features to the Vue devtools, such as custom inspectors, additional component data or timeline layers.
+              </p>
+            </div>
           </div>
         </VueDropdown>
       </portal>
