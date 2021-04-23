@@ -29,7 +29,6 @@ module.exports = createConfig({
       }
     ]
   },
-  devtool: '#cheap-module-source-map',
   devServer: {
     port: 8090,
     quiet: true,

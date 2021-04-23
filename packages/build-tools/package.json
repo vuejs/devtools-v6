@@ -6,17 +6,17 @@
   "dependencies": {
     "buble": "^0.20.0",
     "buble-loader": "^0.5.1",
-    "css-loader": "^1.0.0",
+    "css-loader": "^5.2.4",
     "friendly-errors-webpack-plugin": "^1.7.0",
-    "postcss-loader": "^3.0.0",
+    "path-browserify": "^1.0.1",
+    "postcss-loader": "^5.2.0",
     "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1",
+    "stylus-loader": "^5.0.0",
     "style-resources-loader": "^1.2.1",
-    "terser-webpack-plugin": "^3.0.7",
-    "url-loader": "^1.1.1",
+    "terser-webpack-plugin": "^5.1.1",
     "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",
-    "webpack": "^4.41.2",
-    "webpack-merge": "^4.2.2"
+    "webpack": "^5.35.1",
+    "webpack-merge": "^5.7.3"
   }
 }

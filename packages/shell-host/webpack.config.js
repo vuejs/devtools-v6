@@ -11,7 +11,6 @@ module.exports = createConfig({
     publicPath: '/build/',
     filename: '[name].js'
   },
-  devtool: '#cheap-module-source-map',
   devServer: {
     port: 8091,
     quiet: true,

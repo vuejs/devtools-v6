@@ -18,6 +18,5 @@ module.exports = createConfig({
     path: path.join(__dirname, '/build'),
     publicPath: '/build/',
     filename: '[name].js'
-  },
-  devtool: '#cheap-module-source-map'
+  }
 }, target)

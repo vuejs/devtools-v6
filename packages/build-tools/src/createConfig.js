@@ -1,5 +1,5 @@
 const webpack = require('webpack')
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const { VueLoaderPlugin } = require('vue-loader')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
@@ -22,7 +22,10 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
         '@back': '@vue-devtools/app-backend-core/lib',
         '@utils': '@vue-devtools/shared-utils/lib'
       },
-      symlinks: false
+      symlinks: false,
+      fallback: {
+        path: require.resolve('path-browserify')
+      }
     },
     module: {
       rules: [
@@ -69,7 +72,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
         },
         {
           test: /\.(png|woff2|svg)$/,
-          loader: 'url-loader?limit=0'
+          type: 'asset/inline'
         }
       ]
     },
@@ -83,6 +86,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
         'process.env.RELEASE_CHANNEL': JSON.stringify(process.env.RELEASE_CHANNEL || 'stable')
       })
     ],
+    devtool: 'eval-source-map',
     devServer: {
       port: process.env.PORT
     },
@@ -146,5 +150,5 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     }
   }
 
-  return merge.smart(baseConfig, config)
+  return merge(baseConfig, config)
 }

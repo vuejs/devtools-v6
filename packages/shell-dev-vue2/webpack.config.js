@@ -14,7 +14,6 @@ module.exports = createConfig({
     publicPath: '/target/',
     filename: '[name].js'
   },
-  devtool: '#cheap-module-source-map',
   devServer: {
     quiet: true,
     before (app) {
