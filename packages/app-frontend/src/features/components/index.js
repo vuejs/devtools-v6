@@ -87,7 +87,7 @@ export function useComponents () {
     deep: true
   })
 
-  onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, ({ id, lastInspectedComponentId }) => {
+  onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, ({ id }) => {
     requestComponentTree()
     selectedComponentData.value = null
     if (lastSelectedApp !== null) {
@@ -314,15 +314,5 @@ function loadComponent (id) {
   if (!id || selectedComponentPendingId === id) return
   lastSelectedComponentId = id
   selectedComponentPendingId = id
-  lastSelectedComponentPath = getPath(id)
   bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
-}
-
-function getPath (instanceId) {
-  const path = [instanceId]
-  const parentId = componentsParent[instanceId]
-  if (parentId) {
-    path.unshift(...getPath(parentId))
-  }
-  return path
 }
