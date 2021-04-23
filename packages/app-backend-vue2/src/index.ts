@@ -54,6 +54,10 @@ export const backend: DevtoolsBackend = {
       editState(payload)
     })
 
+    api.on.getComponentRootElements(payload => {
+      payload.rootElements = [payload.componentInstance.$el]
+    })
+
     // @TODO
   },
 
