@@ -61,6 +61,10 @@ export const backend: DevtoolsBackend = {
     api.on.getComponentDevtoolsOptions(payload => {
       payload.options = payload.componentInstance.$options.devtools
     })
+
+    api.on.getComponentInstances(() => {
+      console.warn('on.getComponentInstances is not implemented for Vue 2')
+    })
   },
 
   setupApp (api, appRecord) {
