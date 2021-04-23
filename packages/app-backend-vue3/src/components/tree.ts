@@ -162,6 +162,10 @@ export class ComponentWalker {
       })
     }
 
+    if (name === 'KeepAlive') {
+      console.log(instance, treeNode)
+    }
+
     return this.ctx.api.visitComponentTree(instance, treeNode, this.componentFilter.filter)
   }
 

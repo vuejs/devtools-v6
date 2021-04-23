@@ -209,9 +209,9 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
   // record screen position to ensure correct ordering
   if ((!list || list.length > 1) && !instance._inactive) {
     const rect = getInstanceOrVnodeRect(instance)
-    ret.meta.top = rect ? rect.top : Infinity
+    ret.positionTop = rect ? rect.top : Infinity
   } else {
-    ret.meta.top = Infinity
+    ret.positionTop = Infinity
   }
 
   // check if instance is available in console
