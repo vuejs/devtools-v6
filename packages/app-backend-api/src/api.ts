@@ -36,8 +36,8 @@ export class DevtoolsApi {
 
   async callHook<T extends Hooks> (eventType: T, payload: HookPayloads[T], ctx: BackendContext = this.ctx) {
     payload = await backendOn.callHandlers(eventType, payload, ctx)
-    for (const k in pluginOn) {
-      payload = await pluginOn[k].callHandlers(eventType, payload, ctx)
+    for (const plugin of pluginOn) {
+      payload = await plugin.callHandlers(eventType, payload, ctx)
     }
     return payload
   }
