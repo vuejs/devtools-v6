@@ -79,7 +79,7 @@ export function getComponentInstance (instanceId: string, ctx: BackendContext) {
     instanceId = `${ctx.currentAppRecord.id}:root`
   }
   const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
-  if (!instance) {
+  if (!instance && process.env.NODE_ENV !== 'production') {
     console.warn(`Instance uid=${instanceId} not found`)
   }
   return instance
