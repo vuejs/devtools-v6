@@ -2,11 +2,15 @@
   "name": "@vue-devtools/shell-dev-vue2",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "dev": "cross-env TAILWIND_MODE=watch PORT=8100 webpack serve"
+  },
   "dependencies": {
     "@vue-devtools/shell-host": "^0.0.0"
   },
   "devDependencies": {
     "@vue-devtools/build-tools": "^0.0.0",
+    "cross-env": "^5.2.0",
     "launch-editor-middleware": "^2.2.1",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0"

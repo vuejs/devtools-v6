@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:shell-vue2": "concurrently \"cd packages/shell-dev-vue2 && cross-env PORT=8100 webpack serve\" \"cd packages/shell-host && yarn dev\"",
+    "dev:shell-vue2": "concurrently \"cd packages/shell-dev-vue2 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:shell-vue3": "concurrently \"cd packages/shell-dev-vue3 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:chrome": "cd packages/shell-chrome && webpack --watch",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch",

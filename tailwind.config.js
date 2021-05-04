@@ -80,7 +80,7 @@ module.exports = {
   mode: 'jit',
   purge: {
     content: [
-      path.resolve(__dirname, './packages/app-frontend/src/**/*.vue')
+      path.resolve(__dirname, './packages/app-frontend/src/**/*.{js,jsx,ts,tsx,vue}')
     ]
   }
 }

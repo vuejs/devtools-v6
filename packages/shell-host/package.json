@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "webpack serve"
+    "dev": "cross-env TAILWIND_MODE=watch webpack serve"
   },
   "dependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",
@@ -11,6 +11,7 @@
     "@vue-devtools/shared-utils": "^0.0.0"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0"
   }
