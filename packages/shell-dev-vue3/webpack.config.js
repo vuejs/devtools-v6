@@ -1,7 +1,8 @@
 const path = require('path')
-const { createConfig } = require('@vue-devtools/build-tools')
 const { VueLoaderPlugin } = require('vue-loader')
+const vueLoaderPath = require.resolve('vue-loader')
 const openInEditor = require('launch-editor-middleware')
+const { createConfig } = require('@vue-devtools/build-tools')
 
 module.exports = createConfig({
   context: __dirname,
@@ -25,7 +26,8 @@ module.exports = createConfig({
     rules: [
       {
         test: /\.vue$/,
-        loader: require.resolve('vue-loader')
+        loader: vueLoaderPath,
+        options: {}
       }
     ]
   },

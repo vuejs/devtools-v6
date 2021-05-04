@@ -1,10 +1,11 @@
 const webpack = require('webpack')
-const { merge } = require('webpack-merge')
-const { VueLoaderPlugin } = require('vue-loader')
+const { mergeWithRules } = require('webpack-merge')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const path = require('path')
 
 exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
+  const { VueLoaderPlugin } = require('vue-loader')
+
   const bubleOptions = {
     target,
     objectAssign: 'Object.assign',
@@ -157,5 +158,13 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     }
   }
 
-  return merge(baseConfig, config)
+  return mergeWithRules({
+    module: {
+      rules: {
+        test: 'match',
+        loader: 'replace',
+        options: 'merge'
+      }
+    }
+  })(baseConfig, config)
 }

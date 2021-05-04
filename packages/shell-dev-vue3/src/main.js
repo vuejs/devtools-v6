@@ -1,11 +1,11 @@
 import { createApp, h } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import App3 from './App3.vue'
 import TestPlugin from './devtools-plugin'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
 
   routes: [
     {
