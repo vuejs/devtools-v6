@@ -101,6 +101,9 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       type: 'filesystem',
       cacheDirectory: path.resolve(process.cwd(), 'node_modules/.cache/webpack'),
       name: `${workspace}-${mode}`
+    },
+    snapshot: {
+      managedPaths: []
     }
   }
 
