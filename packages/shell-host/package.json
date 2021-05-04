@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "webpack serve --inline --hot"
+    "dev": "webpack serve"
   },
   "dependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",

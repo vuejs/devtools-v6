@@ -15,8 +15,7 @@ module.exports = createConfig({
     filename: '[name].js'
   },
   devServer: {
-    quiet: true,
-    before (app) {
+    onBeforeSetupMiddleware (app) {
       app.use('/__open-in-editor', openInEditor())
     },
     proxy: {

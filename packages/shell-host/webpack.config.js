@@ -13,8 +13,7 @@ module.exports = createConfig({
   },
   devServer: {
     port: 8091,
-    quiet: true,
-    before (app) {
+    onBeforeSetupMiddleware (app) {
       app.use('/__open-in-editor', openInEditor())
     }
   }
