@@ -248,10 +248,8 @@ export function setupComponentsBridgeEvents (bridge) {
     const instance = componentsMap[instanceId]
     if (instance) {
       for (const item of data) {
-        const component = componentsMap[item.id]
-        for (const key in item) {
-          Vue.set(component, key, item[key])
-        }
+        restoreChildrenFromComponentsMap(item)
+        const component = updateComponentsMapData(item)
         addToComponentsMap(component)
       }
     } else if (Array.isArray(data)) {
@@ -298,6 +296,27 @@ function requestComponentTree (instanceId = null) {
     instanceId,
     filter: treeFilter.value
   })
+}
+
+function restoreChildrenFromComponentsMap (data) {
+  const instance = componentsMap[data.id]
+  if (instance && data.hasChildren) {
+    if (!data.children.length && instance.children.length) {
+      data.children = instance.children
+    } else {
+      for (const child of data.children) {
+        restoreChildrenFromComponentsMap(child)
+      }
+    }
+  }
+}
+
+function updateComponentsMapData (data) {
+  const component = componentsMap[data.id]
+  for (const key in data) {
+    Vue.set(component, key, data[key])
+  }
+  return component
 }
 
 function addToComponentsMap (instance) {
