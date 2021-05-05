@@ -174,6 +174,9 @@ export default {
         >
           {{ tag.label }}
         </span>
+        <!-- <span class="info bg-gray-500">
+          {{ instance.uid }}
+        </span> -->
       </span>
     </div>
 
