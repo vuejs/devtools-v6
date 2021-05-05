@@ -34,6 +34,9 @@ export async function sendSelectedComponentData (instanceId: string, ctx: Backen
     if (typeof window !== 'undefined') {
       (window as any).$vm = instance
     }
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('inspect', instance)
+    }
     const parentInstances = await ctx.api.walkComponentParents(instance)
     const payload = {
       instanceId,
