@@ -5,14 +5,6 @@ const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path')
 
 exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
-  const bubleOptions = {
-    target,
-    objectAssign: 'Object.assign',
-    transforms: {
-      modules: false
-    }
-  }
-
   const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
   const workspace = path.basename(process.cwd())
 
@@ -25,7 +17,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
         '@back': '@vue-devtools/app-backend-core/lib',
         '@utils': '@vue-devtools/shared-utils/lib'
       },
-      symlinks: false,
+      // symlinks: false,
       fallback: {
         path: require.resolve('path-browserify')
       }
@@ -36,7 +28,14 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
           test: /\.js$/,
           loader: 'buble-loader',
           exclude: /node_modules|vue\/dist|vuex\/dist/,
-          options: bubleOptions
+          options: {
+            target,
+            objectAssign: 'Object.assign',
+            transforms: {
+              modules: false,
+              asyncAwait: false
+            }
+          }
         },
         {
           test: /\.vue$/,
@@ -45,7 +44,13 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
             compilerOptions: {
               preserveWhitespace: false
             },
-            transpileOptions: bubleOptions
+            transpileOptions: {
+              target,
+              objectAssign: 'Object.assign',
+              transforms: {
+                modules: false
+              }
+            }
           }
         },
         {
