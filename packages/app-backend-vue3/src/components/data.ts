@@ -266,7 +266,7 @@ export function editState ({ componentInstance, path, state }: HookPayloads[Hook
   if (Object.keys(componentInstance.props).includes(path[0])) {
     // Props
     target = componentInstance.props
-  } else if (Object.keys(componentInstance.devtoolsRawSetupState).includes(path[0])) {
+  } else if (componentInstance.devtoolsRawSetupState && Object.keys(componentInstance.devtoolsRawSetupState).includes(path[0])) {
     // Setup
     target = componentInstance.devtoolsRawSetupState
 
