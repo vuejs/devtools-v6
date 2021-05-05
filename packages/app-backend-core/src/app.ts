@@ -120,8 +120,7 @@ export function waitForAppsRegistration () {
 export async function sendApps (ctx: BackendContext) {
   const appRecords = []
 
-  for (const k in ctx.appRecords) {
-    const appRecord = ctx.appRecords[k]
+  for (const appRecord of ctx.appRecords) {
     if (!(await ctx.api.getComponentDevtoolsOptions(appRecord.rootInstance)).hide) {
       appRecords.push(appRecord)
     }

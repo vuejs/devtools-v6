@@ -4,6 +4,9 @@ import App from './App.vue'
 import App3 from './App3.vue'
 import TestPlugin from './devtools-plugin'
 
+// eslint-disable-next-line no-extend-native
+Array.prototype.foo = 'bar'
+
 const router = createRouter({
   history: createWebHashHistory(),
 

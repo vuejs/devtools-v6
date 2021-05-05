@@ -9,7 +9,6 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     target,
     objectAssign: 'Object.assign',
     transforms: {
-      forOf: false,
       modules: false
     }
   }

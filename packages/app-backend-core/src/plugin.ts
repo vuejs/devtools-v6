@@ -32,8 +32,7 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
 
 export async function addQueuedPlugins (ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_PLUGINS__)) {
-    for (const k in target.__VUE_DEVTOOLS_PLUGINS__) {
-      const plugin = target.__VUE_DEVTOOLS_PLUGINS__[k]
+    for (const plugin of target.__VUE_DEVTOOLS_PLUGINS__) {
       addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
     }
     target.__VUE_DEVTOOLS_PLUGINS__ = null
@@ -42,8 +41,7 @@ export async function addQueuedPlugins (ctx: BackendContext) {
 
 export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__)) {
-    for (const k in target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
-      const plugin = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__[k]
+    for (const plugin of target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
       addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
     }
   }
