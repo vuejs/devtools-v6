@@ -28,12 +28,25 @@ export default {
     VModelExample,
     Ghost,
     Other
+  },
+
+  data () {
+    return {
+      count: 0
+    }
   }
 }
 </script>
 
 <template>
   <h1>Hello from Vue 3</h1>
+
+  <div style="margin-bottom: 12px;">
+    {{ count }} <button @click="count++">
+      +1
+    </button>
+  </div>
+
   <Child question="Life" />
   <NestedMore />
   <NativeTypes />
