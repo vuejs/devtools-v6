@@ -1,5 +1,6 @@
 <script>
 import { ref, computed, watch, inject, watchEffect } from '@vue/composition-api'
+import scrollIntoView from 'scroll-into-view-if-needed'
 import { useCurrentInspector } from '.'
 
 const DEFAULT_EXPAND_DEPTH = 2
@@ -50,21 +51,16 @@ export default {
 
     const toggleEl = ref()
 
-    /** @type {import('@vue/composition-api').Ref<HTMLElement>} */
-    const treeScroller = inject('treeScroller')
-
     watchEffect(() => {
-      if (selected.value && toggleEl.value && treeScroller.value) {
+      if (selected.value && toggleEl.value) {
         /** @type {HTMLElement} */
         const el = toggleEl.value
-        const scroller = treeScroller.value
-        if (el.offsetTop + el.offsetHeight < scroller.scrollTop || el.offsetTop > scroller.scrollTop + scroller.offsetHeight) {
-          el.scrollIntoView({
-            block: 'center',
-            inline: 'center',
-            behavior: 'smooth'
-          })
-        }
+        scrollIntoView(el, {
+          scrollMode: 'if-needed',
+          block: 'center',
+          inline: 'center',
+          behavior: 'smooth'
+        })
       }
     })
 

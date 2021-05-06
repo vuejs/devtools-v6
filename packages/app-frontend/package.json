@@ -13,6 +13,7 @@
     "lru-cache": "^5.1.1",
     "pixi.js-legacy": "^5.3.7",
     "portal-vue": "^2.1.7",
+    "scroll-into-view-if-needed": "^2.2.28",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "vue": "^2.6.11",
