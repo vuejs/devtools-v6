@@ -1,5 +1,8 @@
 <template>
-  {{ message }}
+  <div>
+    Async setup:<br>
+    <pre>{{ message }}</pre>
+  </div>
 </template>
 
 <script>

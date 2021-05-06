@@ -11,6 +11,7 @@ import Condition from './Condition.vue'
 import VModelExample from './VModelExample.vue'
 import Ghost from './Ghost.vue'
 import Other from './Other.vue'
+import SetupRender from './SetupRender.js'
 
 export default {
   name: 'MyApp',
@@ -27,7 +28,8 @@ export default {
     Condition,
     VModelExample,
     Ghost,
-    Other
+    Other,
+    SetupRender
   },
 
   data () {
@@ -59,6 +61,7 @@ export default {
   <VModelExample />
   <Ghost />
   <Other />
+  <SetupRender />
 
   <nav>
     <router-link to="/p1">
