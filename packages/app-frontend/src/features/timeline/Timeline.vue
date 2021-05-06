@@ -6,7 +6,7 @@ import LayerItem from './LayerItem.vue'
 import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
 
-import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent, useScreenshots } from '.'
+import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent, useScreenshots, supportsScreenshot } from '.'
 import { computed, onMounted, ref, watch } from '@vue/composition-api'
 import { formatTime } from '@front/util/format'
 import SharedData from '@utils/shared-data'
@@ -101,6 +101,10 @@ export default {
 
     const askScreenshotPermission = ref(false)
 
+    if (!supportsScreenshot) {
+      SharedData.timelineScreenshots = false
+    }
+
     onSharedDataChange('timelineScreenshots', (value) => {
       if (value) {
         chrome.permissions.contains({
@@ -158,7 +162,8 @@ export default {
       setLayerHidden,
       resetTimeline,
       formattedCursorTime,
-      askScreenshotPermission
+      askScreenshotPermission,
+      supportsScreenshot
     }
   }
 }
@@ -310,6 +315,7 @@ export default {
       </VueSwitch>
 
       <VueSwitch
+        v-if="supportsScreenshot"
         v-model="$shared.timelineScreenshots"
         class="w-full px-4 py-1 extend-left"
       >

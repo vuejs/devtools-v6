@@ -338,7 +338,7 @@ async function takeScreenshot (event) {
         action: 'vue-take-screenshot',
         id: screenshot.id
       })
-    } else if (typeof chrome !== 'undefined') {
+    } else if (typeof chrome !== 'undefined' && chrome.tabs) {
       chrome.tabs.captureVisibleTab({
         format: 'png'
       }, dataUrl => {
@@ -350,6 +350,8 @@ async function takeScreenshot (event) {
     lastScreenshot.events.push(event)
   }
 }
+
+export const supportsScreenshot = typeof browser !== 'undefined' || (typeof chrome !== 'undefined' && chrome.tabs)
 
 if (typeof browser !== 'undefined') {
   browser.runtime.onMessage.addListener(req => {
