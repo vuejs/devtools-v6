@@ -33,7 +33,8 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
             objectAssign: 'Object.assign',
             transforms: {
               modules: false,
-              asyncAwait: false
+              asyncAwait: false,
+              forOf: false
             }
           }
         },
