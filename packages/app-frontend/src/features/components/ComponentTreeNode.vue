@@ -1,5 +1,5 @@
 <script>
-import { computed, toRefs, onMounted, ref, watchEffect, inject } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref, watchEffect, watch } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
@@ -61,7 +61,7 @@ export default {
 
     // Auto scroll
 
-    watchEffect(() => {
+    function autoScroll () {
       if (selected.value && toggleEl.value) {
         /** @type {HTMLElement} */
         const el = toggleEl.value
@@ -72,7 +72,10 @@ export default {
           behavior: 'smooth'
         })
       }
-    })
+    }
+
+    watch(selected, () => autoScroll())
+    watch(toggleEl, () => autoScroll())
 
     return {
       toggleEl,

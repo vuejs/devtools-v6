@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, watch, inject, watchEffect } from '@vue/composition-api'
+import { ref, computed, watch, watchEffect } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { useCurrentInspector } from '.'
 
@@ -51,7 +51,7 @@ export default {
 
     const toggleEl = ref()
 
-    watchEffect(() => {
+    function autoScroll () {
       if (selected.value && toggleEl.value) {
         /** @type {HTMLElement} */
         const el = toggleEl.value
@@ -62,7 +62,10 @@ export default {
           behavior: 'smooth'
         })
       }
-    })
+    }
+
+    watch(selected, () => autoScroll())
+    watch(toggleEl, () => autoScroll())
 
     return {
       expanded,
