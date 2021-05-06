@@ -76,6 +76,13 @@ export default {
     }
   },
 
+  props: {
+    multiTypeProp: {
+      type: [Date, Boolean],
+      default: false
+    }
+  },
+
   data () {
     return {
       localDate: new Date(),

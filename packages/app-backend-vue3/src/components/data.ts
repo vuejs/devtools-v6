@@ -67,6 +67,9 @@ const fnTypeRE = /^(?:function|class) (\w+)/
  * Convert prop type constructor to string.
  */
 function getPropType (type) {
+  if (Array.isArray(type)) {
+    return type.map(t => getPropType(t)).join(' or ')
+  }
   const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
     ? (match && match[1]) || 'any'
