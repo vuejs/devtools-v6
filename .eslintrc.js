@@ -14,7 +14,7 @@ module.exports = {
   globals: {
     bridge: true,
     chrome: true,
-    localStorage: true,
+    localStorage: 'off',
     HTMLDocument: true,
     name: 'off',
     browser: true
@@ -44,6 +44,12 @@ module.exports = {
     '@typescript-eslint/camelcase': 'warn',
     'no-prototype-builtins': 'off'
   },
+  ignorePatterns: [
+    'node_modules/',
+    '/packages/*/lib/',
+    'dist/',
+    'build/',
+  ],
   overrides: [
     {
       files: [

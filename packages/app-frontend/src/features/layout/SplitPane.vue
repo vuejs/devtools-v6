@@ -1,5 +1,6 @@
 <script>
 import { ref, computed, watch } from '@vue/composition-api'
+import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 import { useOrientation } from './orientation'
 
 export default {
@@ -39,22 +40,13 @@ export default {
     if (props.saveId) {
       const storageKey = `split-pane-${props.saveId}`
 
-      const savedValue = localStorage.getItem(storageKey)
-      if (savedValue != null) {
-        let parsedValue
-        try {
-          parsedValue = JSON.parse(savedValue)
-        } catch (e) {
-          console.error(e)
-        }
-
-        if (typeof parsedValue === 'number') {
-          split.value = parsedValue
-        }
+      const savedValue = getStorage(storageKey)
+      if (savedValue != null && typeof savedValue === 'number') {
+        split.value = savedValue
       }
 
       watch(split, value => {
-        localStorage.setItem(storageKey, JSON.stringify(value))
+        setStorage(storageKey, value)
       })
     }
 
