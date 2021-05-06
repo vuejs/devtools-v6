@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, watch, watchEffect } from '@vue/composition-api'
+import { ref, computed, watch } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { useCurrentInspector } from '.'
 
