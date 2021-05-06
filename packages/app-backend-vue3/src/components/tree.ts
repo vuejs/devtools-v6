@@ -165,7 +165,7 @@ export class ComponentWalker {
     // record screen position to ensure correct ordering
     if ((!list || list.length > 1) && !instance._inactive) {
       const rect = getInstanceOrVnodeRect(instance)
-      treeNode.positionTop = rect ? rect.positionTop : Infinity
+      treeNode.positionTop = rect ? rect.top : Infinity
     }
 
     if (instance.suspense) {
