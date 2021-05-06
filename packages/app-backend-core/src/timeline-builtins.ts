@@ -51,7 +51,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
     label: 'Component events',
     color: 0x41B883,
     screenshotOverlayRender: (event, { events }) => {
-      if (events.some(e => e !== event && e.layerId === event.layerId && e.renderMeta.drawn && (e.meta.componentId === event.meta.componentId || (
+      if (!event.meta.bounds || events.some(e => e !== event && e.layerId === event.layerId && e.renderMeta.drawn && (e.meta.componentId === event.meta.componentId || (
         e.meta.bounds.left === event.meta.bounds.left &&
         e.meta.bounds.top === event.meta.bounds.top &&
         e.meta.bounds.width === event.meta.bounds.width &&
