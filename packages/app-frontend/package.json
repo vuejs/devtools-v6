@@ -7,7 +7,7 @@
     "@vue-devtools/shared-utils": "^0.0.0",
     "circular-json-es6": "^2.0.2",
     "d3": "^5.9.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "lru-cache": "^5.1.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
