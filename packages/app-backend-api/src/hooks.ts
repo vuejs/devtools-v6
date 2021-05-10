@@ -26,9 +26,14 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     if (this.plugin) {
       const originalHandler = handler
       handler = (...args) => {
+        // Plugin permission
         if (!hasPluginPermission(this.plugin.descriptor.id, PluginPermission.ENABLED) ||
           (pluginPermision && !hasPluginPermission(this.plugin.descriptor.id, pluginPermision))
         ) return
+
+        // App scope
+        if (!this.plugin.descriptor.disableAppScope &&
+          this.ctx.currentAppRecord.options.app !== this.plugin.descriptor.app) return
         return originalHandler(...args)
       }
     }

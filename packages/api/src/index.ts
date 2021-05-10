@@ -12,6 +12,7 @@ export interface PluginDescriptor {
   homepage?: string
   componentStateTypes?: string[]
   logo?: string
+  disableAppScope?: boolean
 }
 
 export type SetupFunction = (api: DevtoolsPluginApi) => void

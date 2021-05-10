@@ -25,6 +25,7 @@ It has the following properties:
 - `homepage` (optional): URL to your documentation.
 - `logo` (optional): URL to a logo of your Vue plugin.
 - `componentStateTypes` (optional): an array of custom component state section names you are going to add to the Component inspector. If you add new state to the component inspector, you should declare their sections here so the devtools can display the plugin icon.
+- `disableAppScope` (optional): if set to `true`, the hooks registered with this plugin will not be scoped to the associated app. In that case, you might need to use the `app` payload property to check what the current app is inside each hook.
 
 Example:
 
@@ -58,16 +59,6 @@ The `payload` argument:
 - `treeNode`: the tree node that will be sent to the devtools
 - `filter`: the current value of the seach input above the tree in the component inspector
 
-You have to put a condition in the callback to target only the current application:
-
-```js
-api.on.visitComponentTree(payload => {
-  if (payload.app === app) {
-    // Your logic here
-  }
-})
-```
-
 Example:
 
 ```js
@@ -97,16 +88,6 @@ The `payload` argument:
 - `app`: app instance currently active in the devtools
 - `componentInstance`: the current component instance data in the tree
 - `instanceData`: the state that will be sent to the devtools
-
-You have to put a condition in the callback to target only the current application:
-
-```js
-api.on.inspectComponent(payload => {
-  if (payload.app === app) {
-    // Your logic here
-  }
-})
-```
 
 To add new state, you can push new fields into the `instanceData.state` array:
 
@@ -138,7 +119,7 @@ Example:
 
 ```js
 api.on.inspectComponent(payload => {
-  if (payload.app === app && payload.instanceData) {
+  if (payload.instanceData) {
     payload.instanceData.state.push({
       type: stateType,
       key: 'foo',
@@ -165,11 +146,11 @@ api.on.inspectComponent(payload => {
 
 If you mark a field as `editable: true`, you should also use this hook to apply the new value sent by the devtools.
 
-You have to put a condition in the callback to target only the current application and your field type:
+You have to put a condition in the callback to target only your field type:
 
 ```js
 api.on.editComponentState(payload => {
-  if (payload.app === app && payload.type === stateType) {
+  if (payload.type === stateType) {
     // Edit logic here
   }
 })
@@ -189,7 +170,7 @@ Example:
 
 ```js
 api.on.editComponentState(payload => {
-  if (payload.app === app && payload.type === stateType) {
+  if (payload.type === stateType) {
     payload.set(myState)
   }
 })
@@ -214,7 +195,7 @@ api.on.inspectComponent(payload => {
 })
 
 api.on.editComponentState(payload => {
-  if (payload.app === app && payload.type === stateType) {
+  if (payload.type === stateType) {
     payload.set(myState)
   }
 })
@@ -270,11 +251,11 @@ It's recommended to use a variable to put the `id`, so that you can reuse it aft
 
 This hook is called when the devtools wants to load the tree of any custom inspector.
 
-You have to put a condition in the callback to target only the current application and the current inspector:
+You have to put a condition in the callback to target only your inspector:
 
 ```js
 api.on.getInspectorTree(payload => {
-  if (payload.app === app && payload.inspectorId === 'test-inspector') {
+  if (payload.inspectorId === 'test-inspector') {
     // Your logic here
   }
 })
@@ -299,7 +280,7 @@ Example:
 
 ```js
 api.on.getInspectorTree(payload => {
-  if (payload.app === app && payload.inspectorId === 'test-inspector') {
+  if (payload.inspectorId === 'test-inspector') {
     payload.rootNodes = [
       {
         id: 'root',
@@ -332,11 +313,11 @@ api.on.getInspectorTree(payload => {
 
 This hook is called when the devtools needs to load the state for the currently selected node in a custom inspector.
 
-You have to put a condition in the callback to target only the current application and the current inspector:
+You have to put a condition in the callback to target only your inspector:
 
 ```js
 api.on.getInspectorState(payload => {
-  if (payload.app === app && payload.inspectorId === 'test-inspector') {
+  if (payload.inspectorId === 'test-inspector') {
     // Your logic here
   }
 })
@@ -374,7 +355,7 @@ Example:
 
 ```js
 api.on.getInspectorState(payload => {
-  if (payload.app === app && payload.inspectorId === 'test-inspector') {
+  if (payload.inspectorId === 'test-inspector') {
     if (payload.nodeId === 'root') {
       payload.state = {
         'root info': [
@@ -413,11 +394,11 @@ api.on.getInspectorState(payload => {
 
 If you mark a field as `editable: true`, you should also use this hook to apply the new value sent by the devtools.
 
-You have to put a condition in the callback to target only the current application and the current inspector:
+You have to put a condition in the callback to target only your inspector:
 
 ```js
 api.on.editInspectorState(payload => {
-  if (payload.app === app && payload.inspectorId === 'test-inspector') {
+  if (payload.inspectorId === 'test-inspector') {
     // Edit logic here
   }
 })
@@ -438,7 +419,7 @@ Example:
 
 ```js
 api.on.editInspectorState(payload => {
-  if (payload.app === app && payload.inspectorId === 'test-inspector') {
+  if (payload.inspectorId === 'test-inspector') {
     if (payload.nodeId === 'root') {
       payload.set(myState)
     }
@@ -526,11 +507,11 @@ api.addTimelineEvent({
 
 This hook is called when a timline event is selected. It's useful if you want to send additional information to the devtools in a lazy way.
 
-You have to put a condition in the callback to target only the current application and the current timeline layer:
+You have to put a condition in the callback to target only your timeline layer:
 
 ```js
 api.on.inspectTimelineEvent(payload => {
-  if (payload.app === app && payload.layerId === 'test-layer') {
+  if (payload.layerId === 'test-layer') {
     // Your logic here
   }
 })
@@ -540,7 +521,7 @@ Example:
 
 ```js
 api.on.inspectTimelineEvent(payload => {
-  if (payload.app === app && payload.layerId === 'test-layer') {
+  if (payload.layerId === 'test-layer') {
     // Async operation example
     return new Promise(resolve => {
       setTimeout(() => {

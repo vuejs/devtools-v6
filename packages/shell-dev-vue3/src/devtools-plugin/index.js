@@ -23,21 +23,19 @@ export default {
       let time = 0
 
       api.on.visitComponentTree((payload, ctx) => {
-        if (payload.app === app) {
-          const node = payload.treeNode
-          if (node.name === 'MyApp') {
-            node.tags.push({
-              label: 'root',
-              textColor: 0x000000,
-              backgroundColor: 0xFF984F
-            })
-          } else {
-            node.tags.push({
-              label: 'test',
-              textColor: 0xFFAAAA,
-              backgroundColor: 0xFFEEEE
-            })
-          }
+        const node = payload.treeNode
+        if (node.name === 'MyApp') {
+          node.tags.push({
+            label: 'root',
+            textColor: 0x000000,
+            backgroundColor: 0xFF984F
+          })
+        } else {
+          node.tags.push({
+            label: 'test',
+            textColor: 0xFFAAAA,
+            backgroundColor: 0xFFEEEE
+          })
         }
       })
 
@@ -46,7 +44,7 @@ export default {
       }
 
       api.on.inspectComponent((payload, ctx) => {
-        if (payload.app === app && payload.instanceData) {
+        if (payload.instanceData) {
           payload.instanceData.state.push({
             type: stateType,
             key: 'foo',
@@ -90,7 +88,7 @@ export default {
       })
 
       api.on.editComponentState(payload => {
-        if (payload.app === app && payload.type === stateType) {
+        if (payload.type === stateType) {
           payload.set(componentState)
         }
       })
@@ -119,7 +117,7 @@ export default {
       }
 
       api.on.inspectTimelineEvent(payload => {
-        if (payload.app === app && payload.layerId === 'test-layer') {
+        if (payload.layerId === 'test-layer') {
           return new Promise(resolve => {
             payload.data = {
               ...payload.data,
@@ -146,7 +144,7 @@ export default {
       let componentInstances = []
 
       api.on.getInspectorTree(payload => {
-        if (payload.app === app && payload.inspectorId === 'test-inspector') {
+        if (payload.inspectorId === 'test-inspector') {
           payload.rootNodes = [
             {
               id: 'root',
@@ -171,7 +169,7 @@ export default {
               ]
             }
           ]
-        } else if (payload.app === app && payload.inspectorId === 'test-inspector2') {
+        } else if (payload.inspectorId === 'test-inspector2') {
           return api.getComponentInstances(app).then((instances) => {
             componentInstances = instances
             for (const instance of instances) {
@@ -189,7 +187,7 @@ export default {
       }
 
       api.on.getInspectorState(payload => {
-        if (payload.app === app && payload.inspectorId === 'test-inspector') {
+        if (payload.inspectorId === 'test-inspector') {
           if (payload.nodeId === 'root') {
             payload.state = {
               'root info': [
@@ -220,7 +218,7 @@ export default {
               ]
             }
           }
-        } else if (payload.app === app && payload.inspectorId === 'test-inspector2') {
+        } else if (payload.inspectorId === 'test-inspector2') {
           const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
           if (instance) {
             api.unhighlightElement()
@@ -230,7 +228,7 @@ export default {
       })
 
       api.on.editInspectorState(payload => {
-        if (payload.app === app && payload.inspectorId === 'test-inspector') {
+        if (payload.inspectorId === 'test-inspector') {
           if (payload.nodeId === 'root') {
             payload.set(myState)
           }
