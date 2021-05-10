@@ -87,8 +87,9 @@ export class DevtoolsApi {
     return payload.componentTreeData
   }
 
-  async visitComponentTree (instance: ComponentInstance, treeNode: ComponentTreeNode, filter: string = null) {
+  async visitComponentTree (instance: ComponentInstance, treeNode: ComponentTreeNode, filter: string = null, app: App) {
     const payload = await this.callHook(Hooks.VISIT_COMPONENT_TREE, {
+      app,
       componentInstance: instance,
       treeNode,
       filter
@@ -104,8 +105,9 @@ export class DevtoolsApi {
     return payload.parentInstances
   }
 
-  async inspectComponent (instance: ComponentInstance) {
+  async inspectComponent (instance: ComponentInstance, app: App) {
     const payload = await this.callHook(Hooks.INSPECT_COMPONENT, {
+      app,
       componentInstance: instance,
       instanceData: null
     })

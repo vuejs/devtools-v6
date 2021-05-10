@@ -23,19 +23,21 @@ export default {
       let time = 0
 
       api.on.visitComponentTree((payload, ctx) => {
-        const node = payload.treeNode
-        if (node.name === 'MyApp') {
-          node.tags.push({
-            label: 'root',
-            textColor: 0x000000,
-            backgroundColor: 0xFF984F
-          })
-        } else {
-          node.tags.push({
-            label: 'test',
-            textColor: 0xFFAAAA,
-            backgroundColor: 0xFFEEEE
-          })
+        if (payload.app === app) {
+          const node = payload.treeNode
+          if (node.name === 'MyApp') {
+            node.tags.push({
+              label: 'root',
+              textColor: 0x000000,
+              backgroundColor: 0xFF984F
+            })
+          } else {
+            node.tags.push({
+              label: 'test',
+              textColor: 0xFFAAAA,
+              backgroundColor: 0xFFEEEE
+            })
+          }
         }
       })
 
@@ -44,7 +46,7 @@ export default {
       }
 
       api.on.inspectComponent((payload, ctx) => {
-        if (payload.instanceData) {
+        if (payload.app === app && payload.instanceData) {
           payload.instanceData.state.push({
             type: stateType,
             key: 'foo',

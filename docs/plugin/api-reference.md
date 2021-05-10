@@ -53,9 +53,20 @@ setupDevtoolsPlugin({
 Use this hook to add tags in the component tree.
 
 The `payload` argument:
+- `app`: app instance currently active in the devtools
 - `componentInstance`: the current component instance data in the tree
 - `treeNode`: the tree node that will be sent to the devtools
 - `filter`: the current value of the seach input above the tree in the component inspector
+
+You have to put a condition in the callback to target only the current application:
+
+```js
+api.on.visitComponentTree(payload => {
+  if (payload.app === app) {
+    // Your logic here
+  }
+})
+```
 
 Example:
 
@@ -83,8 +94,19 @@ api.on.visitComponentTree(payload => {
 Use this hook to add new information to the state of the selected component.
 
 The `payload` argument:
+- `app`: app instance currently active in the devtools
 - `componentInstance`: the current component instance data in the tree
 - `instanceData`: the state that will be sent to the devtools
+
+You have to put a condition in the callback to target only the current application:
+
+```js
+api.on.inspectComponent(payload => {
+  if (payload.app === app) {
+    // Your logic here
+  }
+})
+```
 
 To add new state, you can push new fields into the `instanceData.state` array:
 
@@ -116,7 +138,7 @@ Example:
 
 ```js
 api.on.inspectComponent(payload => {
-  if (payload.instanceData) {
+  if (payload.app === app && payload.instanceData) {
     payload.instanceData.state.push({
       type: stateType,
       key: 'foo',

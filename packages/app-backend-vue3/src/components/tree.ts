@@ -176,7 +176,7 @@ export class ComponentWalker {
       })
     }
 
-    return this.ctx.api.visitComponentTree(instance, treeNode, this.componentFilter.filter)
+    return this.ctx.api.visitComponentTree(instance, treeNode, this.componentFilter.filter, this.ctx.currentAppRecord.options.app)
   }
 
   /**

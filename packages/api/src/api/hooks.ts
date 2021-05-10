@@ -55,6 +55,7 @@ export type HookPayloads = {
     filter: string
   }
   [Hooks.VISIT_COMPONENT_TREE]: {
+    app: App
     componentInstance: ComponentInstance
     treeNode: ComponentTreeNode
     filter: string
@@ -64,6 +65,7 @@ export type HookPayloads = {
     parentInstances: ComponentInstance[]
   }
   [Hooks.INSPECT_COMPONENT]: {
+    app: App
     componentInstance: ComponentInstance
     instanceData: InspectedComponentData
   }
