@@ -34,7 +34,8 @@ export default {
 
   data () {
     return {
-      count: 0
+      count: 0,
+      text: 'Meow'
     }
   }
 }
@@ -47,6 +48,8 @@ export default {
     {{ count }} <button @click="count++">
       +1
     </button>
+    <input v-model="text">
+    <span>{{ text }}</span>
   </div>
 
   <Child question="Life" />
