@@ -19,8 +19,8 @@ The plugin descriptor is an object describing the devtools plugin to the Vue dev
 It has the following properties:
 
 - `id`: a unique id between all possible plugins. It's recommended to use a Reverse Domain Name notation, for example: `org.vuejs.router`, or the npm package name.
-- `label`: the label displayed to the user. It's recommended to use a user-friendly name from your plugin, for example: `'Vue Router'`. Do not put `'devtools'` or `'plugin'` in the name, since the user will be seeing this devtools plugin while using your Vue plugin already.
 - `app`: the current application instance. The devtools is scoped to a specific application, so you have to specify on which application instance the devtools plugin is going to work.
+- `label`: the label displayed to the user. It's recommended to use a user-friendly name from your plugin, for example: `'Vue Router'`. Do not put `'devtools'` or `'plugin'` in the name, since the user will be seeing this devtools plugin while using your Vue plugin already.
 - `packageName` (optional): The `npm` package name associated with the devtools plugin, for example `'vue-router'`.
 - `homepage` (optional): URL to your documentation.
 - `logo` (optional): URL to a logo of your Vue plugin.
@@ -34,14 +34,14 @@ const stateType = 'routing properties'
 
 setupDevtoolsPlugin({
   id: 'org.vuejs.router',
+  app,
   label: 'Vue Router',
   packageName: 'vue-router',
   homepage: 'https://router.vuejs.org/',
   logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
   componentStateTypes: [
     stateType
-  ],
-  app
+  ]
 }, api => {
   // Use the API here
 })
