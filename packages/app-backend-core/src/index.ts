@@ -170,8 +170,8 @@ async function connect () {
     ctx.currentAppRecord.instanceMap.delete(id)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, value, newKey, remove }) => {
-    editComponentState(instanceId, dotPath, { value, newKey, remove }, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, type, value, newKey, remove }) => {
+    editComponentState(instanceId, dotPath, type, { value, newKey, remove }, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, async ({ instanceId }) => {

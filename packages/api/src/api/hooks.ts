@@ -88,9 +88,12 @@ export type HookPayloads = {
     rootElements: (HTMLElement | any)[]
   }
   [Hooks.EDIT_COMPONENT_STATE]: {
+    app: App
     componentInstance: ComponentInstance
     path: string[]
+    type: string
     state: EditStatePayload
+    set: (object: any, path: string | (string[]), value: any, cb?: (object: any, field: string, value: any) => void) => void
   }
   [Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS]: {
     componentInstance: ComponentInstance

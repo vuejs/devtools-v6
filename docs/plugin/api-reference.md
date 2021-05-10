@@ -139,6 +139,67 @@ api.on.inspectComponent(payload => {
 })
 ```
 
+### on.editComponentState
+
+If you mark a field as `editable: true`, you should also use this hook to apply the new value sent by the devtools.
+
+You have to put a condition in the callback to target only the current application and your field type:
+
+```js
+api.on.editComponentState(payload => {
+  if (payload.app === app && payload.type === stateType) {
+    // Edit logic here
+  }
+})
+```
+
+The `payload` argument:
+- `app`: app instance currently active in the devtools
+- `type`: the current field type
+- `path`: an array of string that represents the property edited by the user. For example, if the user edits the `myObj.myProp.hello` property, the `path` will be `['myObj', 'myProp', 'hello']`.
+- `state`: object describing the edit with those properties:
+  - `value`: new value
+  - `newKey`: string that is set if the key of the value changed, usually when it's in an object
+  - `remove`: if `true`, the value should be removed from the object or array
+- `set`: an helper function that makes it easy to apply the edit on a state object
+
+Example:
+
+```js
+api.on.editComponentState(payload => {
+  if (payload.app === app && payload.type === stateType) {
+    payload.set(myState)
+  }
+})
+```
+
+Here is a full example of an editable custom component field:
+
+```js
+const myState = {
+  foo: 'bar'
+}
+
+api.on.inspectComponent(payload => {
+  if (payload.instanceData) {
+    payload.instanceData.state.push({
+      type: stateType,
+      key: 'foo',
+      value: myState.foo,
+      editable: true
+    })
+  }
+})
+
+api.on.editComponentState(payload => {
+  if (payload.app === app && payload.type === stateType) {
+    payload.set(myState)
+  }
+})
+```
+
+As you can see, you should use an object to hold the field value so that it can be assigned to.
+
 ### notifyComponentUpdate
 
 If your state has changed, you can tell the devtools to refresh the selected component state with the `notifyComponentUpdate` method:
@@ -335,7 +396,7 @@ You have to put a condition in the callback to target only the current applicati
 ```js
 api.on.editInspectorState(payload => {
   if (payload.app === app && payload.inspectorId === 'test-inspector') {
-    // Your logic here
+    // Edit logic here
   }
 })
 ```
@@ -357,7 +418,7 @@ Example:
 api.on.editInspectorState(payload => {
   if (payload.app === app && payload.inspectorId === 'test-inspector') {
     if (payload.nodeId === 'root') {
-      payload.set(myState, payload.path, payload.state.value)
+      payload.set(myState)
     }
   }
 })

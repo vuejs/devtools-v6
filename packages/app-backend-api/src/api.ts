@@ -152,11 +152,15 @@ export class DevtoolsApi {
     return payload.rootElements
   }
 
-  async editComponentState (instance: ComponentInstance, dotPath: string, state: EditStatePayload) {
+  async editComponentState (instance: ComponentInstance, dotPath: string, type: string, state: EditStatePayload, app: App) {
+    const arrayPath = dotPath.split('.')
     const payload = await this.callHook(Hooks.EDIT_COMPONENT_STATE, {
+      app,
       componentInstance: instance,
-      path: dotPath.split('.'),
-      state
+      path: arrayPath,
+      type,
+      state,
+      set: (object, path = arrayPath, value = state.value, cb?) => set(object, path, value, cb || createDefaultSetCallback(state))
     })
     return payload.componentInstance
   }
@@ -201,26 +205,30 @@ export class DevtoolsApi {
   }
 
   async editInspectorState (inspectorId: string, app: App, nodeId: string, dotPath: string, state: EditStatePayload) {
-    const defaultSetCallback = (obj, field, value) => {
-      if (state.remove || state.newKey) {
-        if (Array.isArray(obj)) {
-          obj.splice(field, 1)
-        } else {
-          delete obj[field]
-        }
-      }
-      if (!state.remove) {
-        obj[state.newKey || field] = value
-      }
-    }
+    const arrayPath = dotPath.split('.')
     await this.callHook(Hooks.EDIT_INSPECTOR_STATE, {
       inspectorId,
       app,
       nodeId,
-      path: dotPath.split('.'),
+      path: arrayPath,
       state,
-      set: (object, path, value, cb?) => set(object, path, value, cb || defaultSetCallback)
+      set: (object, path = arrayPath, value = state.value, cb?) => set(object, path, value, cb || createDefaultSetCallback(state))
     })
+  }
+}
+
+function createDefaultSetCallback (state: EditStatePayload) {
+  return (obj, field, value) => {
+    if (state.remove || state.newKey) {
+      if (Array.isArray(obj)) {
+        obj.splice(field, 1)
+      } else {
+        delete obj[field]
+      }
+    }
+    if (!state.remove) {
+      obj[state.newKey || field] = value
+    }
   }
 }
 

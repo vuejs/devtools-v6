@@ -39,12 +39,17 @@ export default {
         }
       })
 
+      const componentState = {
+        foo: 'bar'
+      }
+
       api.on.inspectComponent((payload, ctx) => {
         if (payload.instanceData) {
           payload.instanceData.state.push({
             type: stateType,
             key: 'foo',
-            value: 'bar'
+            value: componentState.foo,
+            editable: true
           })
           payload.instanceData.state.push({
             type: stateType,
@@ -79,6 +84,12 @@ export default {
                 value: name
               })
             })
+        }
+      })
+
+      api.on.editComponentState(payload => {
+        if (payload.app === app && payload.type === stateType) {
+          payload.set(componentState)
         }
       })
 
@@ -219,7 +230,7 @@ export default {
       api.on.editInspectorState(payload => {
         if (payload.app === app && payload.inspectorId === 'test-inspector') {
           if (payload.nodeId === 'root') {
-            payload.set(myState, payload.path, payload.state.value)
+            payload.set(myState)
           }
         }
       })

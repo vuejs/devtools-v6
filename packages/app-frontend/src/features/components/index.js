@@ -197,10 +197,11 @@ export function useSelectedComponent () {
 
   const { bridge } = useBridge()
 
-  function editState (dotPath, payload) {
+  function editState (dotPath, payload, type) {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, {
       instanceId: data.value.id,
       dotPath,
+      type,
       ...payload
     })
   }

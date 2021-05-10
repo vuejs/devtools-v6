@@ -59,14 +59,14 @@ export function sendEmptyComponentData (instanceId: string, ctx: BackendContext)
   })
 }
 
-export async function editComponentState (instanceId: string, dotPath: string, state: EditStatePayload, ctx: BackendContext) {
+export async function editComponentState (instanceId: string, dotPath: string, type: string, state: EditStatePayload, ctx: BackendContext) {
   if (!instanceId) return
   const instance = getComponentInstance(instanceId, ctx)
   if (instance) {
     if ('value' in state && state.value != null) {
       state.value = parse(state.value, true)
     }
-    await ctx.api.editComponentState(instance, dotPath, state)
+    await ctx.api.editComponentState(instance, dotPath, type, state, ctx.currentAppRecord.options.app)
     await sendSelectedComponentData(instanceId, ctx)
   }
 }
