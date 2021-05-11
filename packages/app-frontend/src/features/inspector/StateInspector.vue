@@ -1,23 +1,3 @@
-<template>
-  <div class="data-wrapper">
-    <template v-for="(dataType, index) in dataTypes">
-      <StateType
-        v-if="defer(index + 1)"
-        :key="dataType"
-        :data-type="dataType"
-        :index="index"
-        :state="state"
-        :expanded-state="expandedState"
-        :force-collapse="forceCollapse"
-        :high-density="highDensity"
-        :dim-after="dimAfter"
-        @toggle="toggle"
-        @edit-state="(path, payload) => $emit('edit-state', path, payload, dataType)"
-      />
-    </template>
-  </div>
-</template>
-
 <script>
 import StateType from './StateType.vue'
 
@@ -119,3 +99,23 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="data-wrapper">
+    <template v-for="(dataType, index) in dataTypes">
+      <StateType
+        v-if="defer(index + 1)"
+        :key="dataType"
+        :data-type="dataType"
+        :index="index"
+        :state="state"
+        :expanded-state="expandedState"
+        :force-collapse="forceCollapse"
+        :high-density="highDensity"
+        :dim-after="dimAfter"
+        @toggle="toggle"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload, dataType)"
+      />
+    </template>
+  </div>
+</template>

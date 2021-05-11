@@ -1,229 +1,3 @@
-<template>
-  <div class="data-field">
-    <VTooltip
-      :style="{ marginLeft: depth * 14 + 'px' }"
-      :disabled="!field.meta"
-      :class="{
-        'force-toolbar z-10': contextMenuOpen || editing,
-      }"
-      class="self"
-      placement="left"
-      :offset="[0, 24]"
-      @click.native="onClick"
-      @mouseenter.native="onContextMenuMouseEnter"
-      @mouseleave.native="onContextMenuMouseLeave"
-    >
-      <span
-        v-show="isExpandableType"
-        :class="{ rotated: expanded }"
-        class="arrow right"
-      />
-      <span
-        v-if="editing && renamable"
-      >
-        <input
-          ref="keyInput"
-          v-model="editedKey"
-          class="edit-input key-input"
-          :class="{ error: !keyValid }"
-          @keydown.esc.capture.stop.prevent="cancelEdit()"
-          @keydown.enter="submitEdit()"
-        >
-      </span>
-      <span
-        v-else
-        :class="{ abstract: fieldOptions.abstract }"
-        class="key"
-      >{{ displayedKey }}</span><span
-        v-if="!fieldOptions.abstract"
-        class="colon"
-      >:</span>
-
-      <span
-        v-if="editing"
-        class="edit-overlay"
-      >
-        <input
-          ref="editInput"
-          v-model="editedValue"
-          class="edit-input value-input text-black"
-          :class="{ error: !valueValid }"
-          list="special-tokens"
-          @keydown.esc.capture.stop.prevent="cancelEdit()"
-          @keydown.enter="submitEdit()"
-        >
-        <span class="actions">
-          <VueIcon
-            v-if="!editValid"
-            v-tooltip="editErrorMessage"
-            class="small-icon warning"
-            icon="warning"
-          />
-          <template v-else>
-            <VueButton
-              v-tooltip="{
-                content: $t('DataField.edit.cancel.tooltip'),
-                html: true
-              }"
-              class="icon-button flat"
-              icon-left="cancel"
-              @click="cancelEdit()"
-            />
-            <VueButton
-              v-tooltip="{
-                content: $t('DataField.edit.submit.tooltip'),
-                html: true
-              }"
-              class="icon-button flat"
-              icon-left="save"
-              @click="submitEdit()"
-            />
-          </template>
-        </span>
-      </span>
-      <template v-else>
-        <!-- eslint-disable vue/no-v-html -->
-        <span
-          v-tooltip="{
-            content: valueTooltip,
-            html: true
-          }"
-          :class="valueClass"
-          class="value"
-          @dblclick="openEdit()"
-          v-html="formattedValue"
-        />
-        <!-- eslint-enable vue/no-v-html -->
-        <span class="actions">
-          <VueButton
-            v-if="isValueEditable"
-            v-tooltip="'Edit value'"
-            class="edit-value icon-button flat"
-            icon-left="edit"
-            @click="openEdit()"
-          />
-          <template v-if="quickEdits">
-            <VueButton
-              v-for="(info, index) of quickEdits"
-              :key="index"
-              v-tooltip="{
-                content: info.title || 'Quick edit',
-                html: true,
-              }"
-              :class="info.class"
-              :icon-left="info.icon"
-              class="quick-edit icon-button flat"
-              @click="quickEdit(info, $event)"
-            />
-          </template>
-          <VueButton
-            v-if="isSubfieldsEditable && !addingValue"
-            v-tooltip="'Add new value'"
-            class="add-value icon-button flat"
-            icon-left="add_circle"
-            @click="addNewValue()"
-          />
-          <VueButton
-            v-if="removable"
-            v-tooltip="'Remove value'"
-            class="remove-field icon-button flat"
-            icon-left="delete"
-            @click="removeField()"
-          />
-
-          <!-- Context menu -->
-          <VueDropdown
-            :open.sync="contextMenuOpen"
-          >
-            <VueButton
-              slot="trigger"
-              icon-left="more_vert"
-              class="icon-button flat"
-            />
-
-            <div
-              class="context-menu-dropdown"
-              @mouseenter="onContextMenuMouseEnter"
-              @mouseleave="onContextMenuMouseLeave"
-            >
-              <VueDropdownButton
-                icon-left="flip_to_front"
-                @click="copyValue"
-              >
-                {{ $t('DataField.contextMenu.copyValue') }}
-              </VueDropdownButton>
-              <VueDropdownButton
-                icon-left="flip_to_front"
-                @click="copyPath"
-              >
-                {{ $t('DataField.contextMenu.copyPath') }}
-              </VueDropdownButton>
-            </div>
-          </VueDropdown>
-        </span>
-      </template>
-
-      <template #popper>
-        <div
-          v-if="field.meta"
-          class="meta"
-        >
-          <div
-            v-for="(val, key) in field.meta"
-            :key="key"
-            class="meta-field"
-          >
-            <span class="key">{{ key }}</span>
-            <span class="value">{{ val }}</span>
-          </div>
-        </div>
-      </template>
-    </VTooltip>
-    <div
-      v-if="expanded && isExpandableType"
-      class="children"
-    >
-      <DataField
-        v-for="subField in formattedSubFields"
-        :key="subField.key"
-        :field="subField"
-        :parent-field="field"
-        :depth="depth + 1"
-        :path="`${path}.${subField.key}`"
-        :editable="isEditable"
-        :removable="isSubfieldsEditable"
-        :renamable="editable && valueType === 'plain-object'"
-        :force-collapse="forceCollapse"
-        :is-state-field="isStateField"
-        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
-      />
-      <VueButton
-        v-if="subFieldCount > limit"
-        v-tooltip="'Show more'"
-        :style="{ marginLeft: depthMargin + 'px' }"
-        icon-left="more_horiz"
-        class="icon-button flat more"
-        @click="showMoreSubfields()"
-      />
-      <DataField
-        v-if="isSubfieldsEditable && addingValue"
-        ref="newField"
-        :field="newField"
-        :depth="depth + 1"
-        :path="`${path}.${newField.key}`"
-        :renamable="valueType === 'plain-object'"
-        :force-collapse="forceCollapse"
-        editable
-        removable
-        :is-state-field="isStateField"
-        @cancel-edit="addingValue = false"
-        @submit-edit="addingValue = false"
-        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
-      />
-    </div>
-  </div>
-</template>
-
 <script>
 import {
   isPlainObject,
@@ -501,6 +275,232 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="data-field">
+    <VTooltip
+      :style="{ marginLeft: depth * 14 + 'px' }"
+      :disabled="!field.meta"
+      :class="{
+        'force-toolbar z-10': contextMenuOpen || editing,
+      }"
+      class="self"
+      placement="left"
+      :offset="[0, 24]"
+      @click.native="onClick"
+      @mouseenter.native="onContextMenuMouseEnter"
+      @mouseleave.native="onContextMenuMouseLeave"
+    >
+      <span
+        v-show="isExpandableType"
+        :class="{ rotated: expanded }"
+        class="arrow right"
+      />
+      <span
+        v-if="editing && renamable"
+      >
+        <input
+          ref="keyInput"
+          v-model="editedKey"
+          class="edit-input key-input"
+          :class="{ error: !keyValid }"
+          @keydown.esc.capture.stop.prevent="cancelEdit()"
+          @keydown.enter="submitEdit()"
+        >
+      </span>
+      <span
+        v-else
+        :class="{ abstract: fieldOptions.abstract }"
+        class="key"
+      >{{ displayedKey }}</span><span
+        v-if="!fieldOptions.abstract"
+        class="colon"
+      >:</span>
+
+      <span
+        v-if="editing"
+        class="edit-overlay"
+      >
+        <input
+          ref="editInput"
+          v-model="editedValue"
+          class="edit-input value-input text-black"
+          :class="{ error: !valueValid }"
+          list="special-tokens"
+          @keydown.esc.capture.stop.prevent="cancelEdit()"
+          @keydown.enter="submitEdit()"
+        >
+        <span class="actions">
+          <VueIcon
+            v-if="!editValid"
+            v-tooltip="editErrorMessage"
+            class="small-icon warning"
+            icon="warning"
+          />
+          <template v-else>
+            <VueButton
+              v-tooltip="{
+                content: $t('DataField.edit.cancel.tooltip'),
+                html: true
+              }"
+              class="icon-button flat"
+              icon-left="cancel"
+              @click="cancelEdit()"
+            />
+            <VueButton
+              v-tooltip="{
+                content: $t('DataField.edit.submit.tooltip'),
+                html: true
+              }"
+              class="icon-button flat"
+              icon-left="save"
+              @click="submitEdit()"
+            />
+          </template>
+        </span>
+      </span>
+      <template v-else>
+        <!-- eslint-disable vue/no-v-html -->
+        <span
+          v-tooltip="{
+            content: valueTooltip,
+            html: true
+          }"
+          :class="valueClass"
+          class="value"
+          @dblclick="openEdit()"
+          v-html="formattedValue"
+        />
+        <!-- eslint-enable vue/no-v-html -->
+        <span class="actions">
+          <VueButton
+            v-if="isValueEditable"
+            v-tooltip="'Edit value'"
+            class="edit-value icon-button flat"
+            icon-left="edit"
+            @click="openEdit()"
+          />
+          <template v-if="quickEdits">
+            <VueButton
+              v-for="(info, index) of quickEdits"
+              :key="index"
+              v-tooltip="{
+                content: info.title || 'Quick edit',
+                html: true,
+              }"
+              :class="info.class"
+              :icon-left="info.icon"
+              class="quick-edit icon-button flat"
+              @click="quickEdit(info, $event)"
+            />
+          </template>
+          <VueButton
+            v-if="isSubfieldsEditable && !addingValue"
+            v-tooltip="'Add new value'"
+            class="add-value icon-button flat"
+            icon-left="add_circle"
+            @click="addNewValue()"
+          />
+          <VueButton
+            v-if="removable"
+            v-tooltip="'Remove value'"
+            class="remove-field icon-button flat"
+            icon-left="delete"
+            @click="removeField()"
+          />
+
+          <!-- Context menu -->
+          <VueDropdown
+            :open.sync="contextMenuOpen"
+          >
+            <VueButton
+              slot="trigger"
+              icon-left="more_vert"
+              class="icon-button flat"
+            />
+
+            <div
+              class="context-menu-dropdown"
+              @mouseenter="onContextMenuMouseEnter"
+              @mouseleave="onContextMenuMouseLeave"
+            >
+              <VueDropdownButton
+                icon-left="flip_to_front"
+                @click="copyValue"
+              >
+                {{ $t('DataField.contextMenu.copyValue') }}
+              </VueDropdownButton>
+              <VueDropdownButton
+                icon-left="flip_to_front"
+                @click="copyPath"
+              >
+                {{ $t('DataField.contextMenu.copyPath') }}
+              </VueDropdownButton>
+            </div>
+          </VueDropdown>
+        </span>
+      </template>
+
+      <template #popper>
+        <div
+          v-if="field.meta"
+          class="meta"
+        >
+          <div
+            v-for="(val, key) in field.meta"
+            :key="key"
+            class="meta-field"
+          >
+            <span class="key">{{ key }}</span>
+            <span class="value">{{ val }}</span>
+          </div>
+        </div>
+      </template>
+    </VTooltip>
+    <div
+      v-if="expanded && isExpandableType"
+      class="children"
+    >
+      <DataField
+        v-for="subField in formattedSubFields"
+        :key="subField.key"
+        :field="subField"
+        :parent-field="field"
+        :depth="depth + 1"
+        :path="`${path}.${subField.key}`"
+        :editable="isEditable"
+        :removable="isSubfieldsEditable"
+        :renamable="editable && valueType === 'plain-object'"
+        :force-collapse="forceCollapse"
+        :is-state-field="isStateField"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+      />
+      <VueButton
+        v-if="subFieldCount > limit"
+        v-tooltip="'Show more'"
+        :style="{ marginLeft: depthMargin + 'px' }"
+        icon-left="more_horiz"
+        class="icon-button flat more"
+        @click="showMoreSubfields()"
+      />
+      <DataField
+        v-if="isSubfieldsEditable && addingValue"
+        ref="newField"
+        :field="newField"
+        :depth="depth + 1"
+        :path="`${path}.${newField.key}`"
+        :renamable="valueType === 'plain-object'"
+        :force-collapse="forceCollapse"
+        editable
+        removable
+        :is-state-field="isStateField"
+        @cancel-edit="addingValue = false"
+        @submit-edit="addingValue = false"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+      />
+    </div>
+  </div>
+</template>
 
 <style lang="stylus" scoped>
 .data-field

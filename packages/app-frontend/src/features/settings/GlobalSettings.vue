@@ -1,3 +1,13 @@
+<script>
+// import NewTag from './NewTag.vue'
+
+// export default {
+//   components: {
+//     NewTag
+//   }
+// }
+</script>
+
 <template>
   <div class="global-preferences preferences">
     <VueFormField title="Theme">
@@ -51,13 +61,3 @@
     </VueFormField>
   </div>
 </template>
-
-<script>
-// import NewTag from './NewTag.vue'
-
-// export default {
-//   components: {
-//     NewTag
-//   }
-// }
-</script>

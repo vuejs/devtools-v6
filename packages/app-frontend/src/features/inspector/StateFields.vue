@@ -1,41 +1,3 @@
-<template>
-  <div
-    class="data-fields"
-  >
-    <template v-if="isFieldsArray">
-      <DataField
-        v-for="field in displayedFields"
-        :key="field.key"
-        :field="field"
-        :depth="0"
-        :path="field.key"
-        :editable="field.editable"
-        :force-collapse="forceCollapse"
-        :is-state-field="isStateField(field)"
-        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
-      />
-    </template>
-    <template v-else>
-      <DataField
-        v-for="(value, key) in displayedFields"
-        :key="key"
-        :field="{ value, key }"
-        :depth="0"
-        :path="key.toString()"
-        :editable="false"
-        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
-      />
-    </template>
-    <VueButton
-      v-if="fieldsCount > limit"
-      v-tooltip="'Show more'"
-      icon-left="more_horiz"
-      class="icon-button flat more"
-      @click="showMore()"
-    />
-  </div>
-</template>
-
 <script>
 import DataField from './DataField.vue'
 
@@ -100,6 +62,44 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div
+    class="data-fields"
+  >
+    <template v-if="isFieldsArray">
+      <DataField
+        v-for="field in displayedFields"
+        :key="field.key"
+        :field="field"
+        :depth="0"
+        :path="field.key"
+        :editable="field.editable"
+        :force-collapse="forceCollapse"
+        :is-state-field="isStateField(field)"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+      />
+    </template>
+    <template v-else>
+      <DataField
+        v-for="(value, key) in displayedFields"
+        :key="key"
+        :field="{ value, key }"
+        :depth="0"
+        :path="key.toString()"
+        :editable="false"
+        @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+      />
+    </template>
+    <VueButton
+      v-if="fieldsCount > limit"
+      v-tooltip="'Show more'"
+      icon-left="more_horiz"
+      class="icon-button flat more"
+      @click="showMore()"
+    />
+  </div>
+</template>
 
 <style lang="stylus" scoped>
 .more
