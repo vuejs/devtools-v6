@@ -1,7 +1,8 @@
 <script>
-import { formatTime } from '@front/util/format'
 import { computed } from '@vue/composition-api'
-import { useInspectedEvent } from '.'
+import { formatTime } from '@front/util/format'
+import { useInspectedEvent } from './composable'
+
 export default {
   props: {
     event: {

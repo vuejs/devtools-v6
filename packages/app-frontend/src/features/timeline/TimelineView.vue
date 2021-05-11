@@ -1,10 +1,23 @@
 <script>
 import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
-import { ref, onMounted, onUnmounted, watch, watchEffect } from '@vue/composition-api'
-import { useLayers, useTime, useSelectedEvent, onTimelineReset, onEventAdd, useCursor } from '.'
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  watch,
+  watchEffect
+} from '@vue/composition-api'
 import Vue from 'vue'
-import { useApps } from '../apps'
+import {
+  useLayers,
+  useTime,
+  useSelectedEvent,
+  onTimelineReset,
+  onEventAdd,
+  useCursor
+} from './composable'
+import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
 import SharedData from '@utils/shared-data'

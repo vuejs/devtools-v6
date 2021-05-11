@@ -8,7 +8,7 @@ import { setAppConnected, setAppInitializing } from './features/connection'
 import { setupPlugins } from './plugins'
 import { setupAppsBridgeEvents } from './features/apps'
 import { setupComponentsBridgeEvents } from './features/components'
-import { setupTimelineBridgeEvents } from './features/timeline'
+import { setupTimelineBridgeEvents } from './features/timeline/composable'
 import { setupCustomInspectorBridgeEvents } from './features/inspector/custom'
 import { setupPluginsBridgeEvents } from './features/plugin'
 

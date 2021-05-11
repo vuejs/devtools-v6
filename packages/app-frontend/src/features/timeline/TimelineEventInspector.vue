@@ -1,9 +1,9 @@
 <script>
-import StateInspector from '../inspector/StateInspector.vue'
+import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 import { computed } from '@vue/composition-api'
-import { useInspectedEvent, useSelectedEvent } from '.'
+import { useInspectedEvent, useSelectedEvent } from './composable'
 
 export default {
   components: {

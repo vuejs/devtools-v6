@@ -1,5 +1,5 @@
 <script>
-import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
+import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
 export default {
   components: {

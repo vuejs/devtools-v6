@@ -1,9 +1,10 @@
 <script>
-import { useInspectedEvent, useSelectedEvent } from '.'
-import Defer from '@front/mixins/defer'
-import { computed, ref, watch } from '@vue/composition-api'
-import TimelineEventListItem from './TimelineEventListItem.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
+import TimelineEventListItem from './TimelineEventListItem.vue'
+
+import { computed, ref, watch } from '@vue/composition-api'
+import Defer from '@front/mixins/defer'
+import { useInspectedEvent, useSelectedEvent } from './composable'
 
 const itemHeight = 34
 

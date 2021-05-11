@@ -1,18 +1,26 @@
 <script>
 import SplitPane from '@front/features/layout/SplitPane.vue'
+import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import TimelineView from './TimelineView.vue'
 import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
 import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
+import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
-import { useTime, useLayers, resetTimeline, useCursor, useSelectedEvent, useScreenshots, supportsScreenshot } from '.'
 import { computed, onMounted, ref, watch } from '@vue/composition-api'
+import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
 import SharedData from '@utils/shared-data'
-import { onSharedDataChange } from '../../util/shared-data'
-import AskScreenshotPermission from './AskScreenshotPermission.vue'
-import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
+import {
+  useTime,
+  useLayers,
+  resetTimeline,
+  useCursor,
+  useSelectedEvent,
+  useScreenshots,
+  supportsScreenshot
+} from './composable'
 
 export default {
   components: {
