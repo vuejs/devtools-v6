@@ -122,12 +122,14 @@ function processProps (instance): ComponentState[] {
       type: 'props',
       key,
       value: instance[key],
-      meta: prop ? {
-        type: prop.type ? getPropType(prop.type) : 'any',
-        required: !!prop.required
-      } : {
-        type: 'invalid'
-      },
+      meta: prop
+        ? {
+            type: prop.type ? getPropType(prop.type) : 'any',
+            required: !!prop.required
+          }
+        : {
+            type: 'invalid'
+          },
       editable: SharedData.editableProps
     })
   }

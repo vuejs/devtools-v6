@@ -179,11 +179,13 @@ export function setComponentOpen (id, isOpen) {
 
 export function useSelectedComponent () {
   const data = computed(() => selectedComponentData.value)
-  const state = computed(() => selectedComponentData.value ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
-    return searchDeepInObject({
-      [el.key]: el.value
-    }, selectedComponentStateFilter.value)
-  })), 'type') : ({}))
+  const state = computed(() => selectedComponentData.value
+    ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
+      return searchDeepInObject({
+        [el.key]: el.value
+      }, selectedComponentStateFilter.value)
+    })), 'type')
+    : ({}))
 
   const fileIsPath = computed(() => data.value.file && /[/\\]/.test(data.value.file))
 

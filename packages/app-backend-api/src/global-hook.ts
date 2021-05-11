@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { AppRecordOptions } from './app-record'
 
 export interface DevtoolsHook {
   emit: (event: string, ...payload: any[]) => void
-  on: (event: string, handler: Function) => void
-  once: (event: string, handler: Function) => void
-  off: (event?: string, handler?: Function) => void
+  on: <T extends Function>(event: string, handler: T) => void
+  once: <T extends Function>(event: string, handler: T) => void
+  off: <T extends Function>(event?: string, handler?: T) => void
   Vue?: any
   apps: AppRecordOptions[]
 }

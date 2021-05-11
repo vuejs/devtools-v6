@@ -674,11 +674,13 @@ function processProps (instance) {
         type: 'props',
         key: prop.path,
         value: instance[prop.path],
-        meta: options ? {
-          type: options.type ? getPropType(options.type) : 'any',
-          required: !!options.required,
-          mode: propModes[prop.mode]
-        } : {}
+        meta: options
+          ? {
+              type: options.type ? getPropType(options.type) : 'any',
+              required: !!options.required,
+              mode: propModes[prop.mode]
+            }
+          : {}
       }
     })
   } else if (instance.$options && (props = instance.$options.props)) {
@@ -691,12 +693,14 @@ function processProps (instance) {
         type: 'props',
         key,
         value: instance[key],
-        meta: prop ? {
-          type: prop.type ? getPropType(prop.type) : 'any',
-          required: !!prop.required
-        } : {
-          type: 'invalid'
-        },
+        meta: prop
+          ? {
+              type: prop.type ? getPropType(prop.type) : 'any',
+              required: !!prop.required
+            }
+          : {
+              type: 'invalid'
+            },
         editable: SharedData.editableProps
       })
     }
@@ -713,12 +717,14 @@ function processProps (instance) {
         type: 'props',
         key,
         value: instance.props[key],
-        meta: propDefinition ? {
-          type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
-          required: !!propDefinition.required
-        } : {
-          type: 'invalid'
-        },
+        meta: propDefinition
+          ? {
+              type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
+              required: !!propDefinition.required
+            }
+          : {
+              type: 'invalid'
+            },
         editable: SharedData.editableProps
       })
     }
@@ -1060,10 +1066,12 @@ function setStateValue ({ id, path, value, newKey, remove }) {
       if (value) {
         parsedValue = parse(value, true)
       }
-      const api = isLegacy ? {
-        $set: hook.Vue.set,
-        $delete: hook.Vue.delete
-      } : instance
+      const api = isLegacy
+        ? {
+            $set: hook.Vue.set,
+            $delete: hook.Vue.delete
+          }
+        : instance
       const data = has(instance._props, path, newKey)
         ? instance._props
         : instance._data

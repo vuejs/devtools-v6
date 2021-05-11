@@ -29,11 +29,13 @@ export default {
 
     const componentHasKey = computed(() => (props.instance.renderKey === 0 || !!props.instance.renderKey) && props.instance.renderKey !== UNDEFINED)
 
-    const sortedChildren = computed(() => props.instance.children ? props.instance.children.slice().sort((a, b) => {
-      return a.positionTop === b.positionTop
-        ? a.id - b.id
-        : a.positionTop - b.positionTop
-    }) : [])
+    const sortedChildren = computed(() => props.instance.children
+      ? props.instance.children.slice().sort((a, b) => {
+        return a.positionTop === b.positionTop
+          ? a.id - b.id
+          : a.positionTop - b.positionTop
+      })
+      : [])
 
     const {
       isSelected: selected,

@@ -162,13 +162,14 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
     const functionalId = contextUid + ':functional:' + id
     markFunctional(functionalId, instance)
 
-    const children = (instance.children ? instance.children.map(
-      child => child.fnContext
-        ? captureChild(child)
-        : child.componentInstance
-          ? capture(child.componentInstance)
-          : undefined
-    )
+    const children = (instance.children
+      ? instance.children.map(
+        child => child.fnContext
+          ? captureChild(child)
+          : child.componentInstance
+            ? capture(child.componentInstance)
+            : undefined
+      )
       // router-view has both fnContext and componentInstance on vnode.
       : instance.componentInstance ? [capture(instance.componentInstance)] : []).filter(Boolean)
 

@@ -131,7 +131,7 @@ export async function sendApps (ctx: BackendContext) {
   })
 }
 
-// eslint-disable-next-line @typescript-eslint/camelcase
+// eslint-disable-next-line camelcase
 export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext) {
   const apps = scan()
   apps.forEach(app => {

@@ -58,7 +58,7 @@ function decode (list, reviver) {
   }
 }
 
-export function stringifyCircularAutoChunks (data: any, replacer: Function = null, space: number = null) {
+export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
   let result
   try {
     result = arguments.length === 1
@@ -79,7 +79,7 @@ export function stringifyCircularAutoChunks (data: any, replacer: Function = nul
   return result
 }
 
-export function parseCircularAutoChunks (data: any, reviver: Function = null) {
+export function parseCircularAutoChunks (data: any, reviver: (this: any, key: string, value: any) => any = null) {
   if (Array.isArray(data)) {
     data = data.join('')
   }
@@ -96,7 +96,7 @@ export function parseCircularAutoChunks (data: any, reviver: Function = null) {
   }
 }
 
-export function stringifyStrictCircularAutoChunks (data: any, replacer: Function = null, space: number = null) {
+export function stringifyStrictCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
   const list = []
   encode(data, replacer, list, new Map())
   return space

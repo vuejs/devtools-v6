@@ -9,6 +9,7 @@
     "css-loader": "^5.2.4",
     "esbuild": "^0.11.20",
     "esbuild-loader": "^2.13.0",
+    "eslint-webpack-plugin": "^2.5.4",
     "fork-ts-checker-webpack-plugin": "^6.2.6",
     "friendly-errors-webpack-plugin": "^1.7.0",
     "path-browserify": "^1.0.1",

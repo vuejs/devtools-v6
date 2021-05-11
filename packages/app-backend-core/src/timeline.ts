@@ -9,7 +9,7 @@ export function setupTimeline (ctx: BackendContext) {
 }
 
 function setupBuiltinLayers (ctx: BackendContext) {
-  ;['mousedown', 'mouseup', 'click', 'dblclick'].forEach(eventType => {
+  ['mousedown', 'mouseup', 'click', 'dblclick'].forEach(eventType => {
     // @ts-ignore
     window.addEventListener(eventType, (event: MouseEvent) => {
       addTimelineEvent({

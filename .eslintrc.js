@@ -39,16 +39,19 @@ module.exports = {
         }
       }
     ],
-    '@typescript-eslint/ban-ts-ignore': 'warn',
+    '@typescript-eslint/ban-ts-comment': 'warn',
     '@typescript-eslint/no-use-before-define': 'off',
-    '@typescript-eslint/camelcase': 'warn',
-    'no-prototype-builtins': 'off'
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    camelcase: 'warn',
+    'no-prototype-builtins': 'off',
+    'no-use-before-define': 'off'
   },
   ignorePatterns: [
     'node_modules/',
     '/packages/*/lib/',
     'dist/',
     'build/',
+    '/legacy'
   ],
   overrides: [
     {
@@ -68,6 +71,17 @@ module.exports = {
       files: ['packages/shell-dev-vue3/**'],
       rules: {
         'vue/valid-template-root': 'off'
+      }
+    },
+    {
+      files: [
+        'packages/shell-dev-vue2/**',
+        'packages/shell-dev-vue3/**'
+      ],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'vue/require-default-prop': 'off',
+        'vue/require-prop-types': 'off'
       }
     }
   ]

@@ -106,7 +106,7 @@ export function specialTokenToString (value) {
  * (.i.e `{ _custom: { ... } }`)
  */
 class EncodeCache {
-  map: Map<any, Function>
+  map: Map<any, any>
 
   constructor () {
     this.map = new Map()
@@ -117,8 +117,8 @@ class EncodeCache {
    * @param {*} data Input data
    * @param {*} factory Function used to create the unique result
    */
-  cache (data: any, factory: Function) {
-    const cached = this.map.get(data)
+  cache<TResult, TData> (data: TData, factory: (data: TData) => TResult): TResult {
+    const cached: TResult = this.map.get(data)
     if (cached) {
       return cached
     } else {
@@ -288,9 +288,11 @@ export function getCustomComponentDefinitionDetails (def) {
       type: 'component-definition',
       display,
       tooltip: 'Component definition',
-      ...def.__file ? {
-        file: def.__file
-      } : {}
+      ...def.__file
+        ? {
+            file: def.__file
+          }
+        : {}
     }
   }
 }
@@ -307,7 +309,8 @@ export function getCustomFunctionDetails (func) {
   // Trim any excess whitespace from the argument string
   const match = matches && matches[0]
   const args = typeof match === 'string'
-    ? `(${match.substr(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})` : '(?)'
+    ? `(${match.substr(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})`
+    : '(?)'
   const name = typeof func.name === 'string' ? func.name : ''
   return {
     _custom: {

@@ -63,10 +63,12 @@ export function useScreenshots () {
 
   function showScreenshot (screenshot = null) {
     bridge.send(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, {
-      screenshot: screenshot ? {
-        ...screenshot,
-        events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => event.id)
-      } : null
+      screenshot: screenshot
+        ? {
+            ...screenshot,
+            events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => event.id)
+          }
+        : null
     })
   }
 

@@ -47,15 +47,19 @@ function processProps (instance) {
       type: 'props',
       key,
       value: instance.props[key],
-      meta: propDefinition ? {
-        type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
-        required: !!propDefinition.required,
-        ...propDefinition.default != null ? {
-          default: propDefinition.default.toString()
-        } : {}
-      } : {
-        type: 'invalid'
-      },
+      meta: propDefinition
+        ? {
+            type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
+            required: !!propDefinition.required,
+            ...propDefinition.default != null
+              ? {
+                  default: propDefinition.default.toString()
+                }
+              : {}
+          }
+        : {
+            type: 'invalid'
+          },
       editable: SharedData.editableProps
     })
   }

@@ -26,7 +26,7 @@ function wrap (app, Vue, method, ctx: BackendContext) {
 }
 
 export function wrapVueForEvents (app, Vue, ctx: BackendContext) {
-  ;['$emit', '$broadcast', '$dispatch'].forEach(method => {
+  ['$emit', '$broadcast', '$dispatch'].forEach(method => {
     wrap(app, Vue, method, ctx)
   })
 }

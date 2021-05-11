@@ -4,6 +4,7 @@ const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
   const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
@@ -27,8 +28,8 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       rules: [
         {
           test: /\.js$/,
-          loader: 'buble-loader',
           exclude: /node_modules|vue\/dist|vuex\/dist/,
+          loader: 'buble-loader',
           options: {
             target,
             objectAssign: 'Object.assign',
@@ -103,7 +104,10 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       new webpack.DefinePlugin({
         'process.env.RELEASE_CHANNEL': JSON.stringify(process.env.RELEASE_CHANNEL || 'stable')
       }),
-      new ForkTsCheckerWebpackPlugin()
+      new ForkTsCheckerWebpackPlugin(),
+      new ESLintPlugin({
+        threads: true
+      })
     ],
     devtool: 'eval-source-map',
     devServer: {
