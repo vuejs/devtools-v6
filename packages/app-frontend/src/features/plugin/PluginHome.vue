@@ -1,11 +1,13 @@
-<script>
+<script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-export default {
+import { defineComponent } from '@vue/composition-api'
+
+export default defineComponent({
   components: {
     EmptyPane
   }
-}
+})
 </script>
 
 <template>

@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 import PluginPermission from './PluginPermission.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
+import { computed, defineComponent } from '@vue/composition-api'
 import { usePlugins } from '.'
-import { computed } from '@vue/composition-api'
 
-export default {
+export default defineComponent({
   components: {
     PluginPermission,
     EmptyPane
@@ -26,7 +26,7 @@ export default {
       plugin
     }
   }
-}
+})
 </script>
 
 <template>

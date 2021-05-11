@@ -1,9 +1,9 @@
-<script>
-import { computed } from '@vue/composition-api'
+<script lang="ts">
+import { computed, defineComponent } from '@vue/composition-api'
 import { useRouter } from '@front/util/router'
 import { usePlugins } from '.'
 
-export default {
+export default defineComponent({
   props: {
     pluginId: {
       type: String,
@@ -33,7 +33,7 @@ export default {
       go
     }
   }
-}
+})
 </script>
 
 <template>

@@ -1,8 +1,8 @@
-<script>
-import { computed } from '@vue/composition-api'
+<script lang="ts">
+import { computed, defineComponent } from '@vue/composition-api'
 import { hasPluginPermission, PluginPermission } from '@vue-devtools/shared-utils'
 
-export default {
+export default defineComponent({
   props: {
     plugin: {
       type: Object,
@@ -16,7 +16,7 @@ export default {
       enabled
     }
   }
-}
+})
 </script>
 
 <template>
