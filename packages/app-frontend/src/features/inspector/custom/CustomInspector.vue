@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
 
-import { watch, ref, provide } from '@vue/composition-api'
+import { watch, ref, provide, defineComponent } from '@vue/composition-api'
 import { useCurrentInspector } from './composable'
 
-export default {
+export default defineComponent({
   components: {
     SplitPane,
     EmptyPane,
@@ -22,7 +22,7 @@ export default {
       refreshTree
     } = useCurrentInspector()
 
-    watch(() => inspector.value && inspector.value.treeFilter, (value) => {
+    watch(() => inspector.value && inspector.value.treeFilter, () => {
       refreshTree()
     })
 
@@ -43,7 +43,7 @@ export default {
       treeScroller
     }
   }
-}
+})
 </script>
 
 <template>

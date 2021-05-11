@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-import { watch } from '@vue/composition-api'
+import { watch, defineComponent } from '@vue/composition-api'
 import { useCurrentInspector } from './composable'
 import StateInspector from '../StateInspector.vue'
 
-export default {
+export default defineComponent({
   components: {
     StateInspector,
     EmptyPane
@@ -20,7 +20,7 @@ export default {
     } = useCurrentInspector()
 
     watch(() => inspector.value && inspector.value.selectedNodeId, value => {
-      if (value && !inspector.state) {
+      if (value && !inspector.value.state) {
         refreshState()
       }
     })
@@ -31,7 +31,7 @@ export default {
       editState
     }
   }
-}
+})
 </script>
 
 <template>

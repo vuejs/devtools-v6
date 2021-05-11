@@ -1,11 +1,11 @@
-<script>
-import { ref, computed, watch } from '@vue/composition-api'
+<script lang="ts">
+import { ref, computed, watch, defineComponent } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { useCurrentInspector } from './composable'
 
 const DEFAULT_EXPAND_DEPTH = 2
 
-export default {
+export default defineComponent({
   name: 'CustomInspectorNode',
 
   props: {
@@ -39,7 +39,7 @@ export default {
     const selected = computed(() => inspector.value.selectedNodeId === props.node.id)
 
     // Init selection if an id is set but the selection wasn't loaded yet
-    watch(() => selected.value && inspector.value.selectNode !== props.node, value => {
+    watch(() => selected.value && inspector.value.selectedNode !== props.node, value => {
       if (value) {
         selectNode(props.node)
       }
@@ -75,7 +75,7 @@ export default {
       toggleEl
     }
   }
-}
+})
 </script>
 
 <template>
