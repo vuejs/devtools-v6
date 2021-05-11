@@ -2,11 +2,15 @@ import { get } from '@utils/util'
 
 const reg = /\{\{\s*([\w_.-]+)\s*\}\}/g
 
-let strings
-let defaultValues
-let replacer
+type StringMap = { [key: string]: string | StringMap }
+type ValuesMap = { [key: string]: any }
+type Replacer = (text: string) => string
 
-export function translate (path, values = {}) {
+let strings: StringMap
+let defaultValues: ValuesMap
+let replacer: Replacer
+
+export function translate (path: string | string[], values: ValuesMap = {}) {
   values = Object.assign({}, defaultValues, values)
   let text = get(strings, path)
   text = text.replace(reg, (substring, matched) => {
@@ -17,8 +21,14 @@ export function translate (path, values = {}) {
   return text
 }
 
+interface Options {
+  strings: StringMap
+  defaultValues: ValuesMap
+  replacer: Replacer
+}
+
 export default {
-  install (Vue, options) {
+  install (Vue, options: Options) {
     strings = options.strings || {}
     defaultValues = options.defaultValues || {}
     replacer = options.replacer

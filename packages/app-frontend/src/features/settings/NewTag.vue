@@ -1,6 +1,8 @@
 
 <script>
-export default {
+import { defineComponent } from '@vue/composition-api'
+
+export default defineComponent({
   inject: [
     'currentSettingsVersion'
   ],
@@ -11,7 +13,7 @@ export default {
       required: true
     }
   }
-}
+})
 </script>
 
 <template>

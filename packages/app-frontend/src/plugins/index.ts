@@ -31,6 +31,7 @@ export function setupPlugins () {
     },
     replacer: text => {
       for (const replacer of replacers) {
+        // @ts-ignore
         text = text.replace(replacer.reg, replacer.replace)
       }
       return text

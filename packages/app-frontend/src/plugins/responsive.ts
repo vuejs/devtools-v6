@@ -1,7 +1,18 @@
 export let responsive
 
+interface Base {
+  width: number
+  height: number
+}
+
+interface Options {
+  computed: {
+    [key: string]: (this: Base) => boolean
+  }
+}
+
 export default {
-  install (Vue, options) {
+  install (Vue, options: Options) {
     const finalOptions = Object.assign({}, {
       computed: {}
     }, options)
