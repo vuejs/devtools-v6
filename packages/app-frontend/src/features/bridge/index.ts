@@ -1,7 +1,7 @@
 import { onUnmounted } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 
-let bridge
+let bridge: Bridge
 
 export function useBridge () {
   const cbs = []
@@ -43,10 +43,10 @@ export function useBridge () {
   }
 }
 
-export function setBridge (b) {
+export function setBridge (b: Bridge) {
   bridge = b
 }
 
-export function getBridge () {
+export function getBridge (): Bridge | null {
   return bridge
 }

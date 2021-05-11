@@ -104,7 +104,11 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       new webpack.DefinePlugin({
         'process.env.RELEASE_CHANNEL': JSON.stringify(process.env.RELEASE_CHANNEL || 'stable')
       }),
-      new ForkTsCheckerWebpackPlugin(),
+      new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          configFile: path.resolve(__dirname, '../../../tsconfig.json')
+        }
+      }),
       new ESLintPlugin({
         threads: true
       })
