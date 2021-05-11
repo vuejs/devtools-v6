@@ -1,6 +1,8 @@
+import { defineComponent } from '@vue/composition-api'
+
 export default function (count = 10) {
   // @vue/component
-  return {
+  return defineComponent({
     data () {
       return {
         displayPriority: 0
@@ -28,5 +30,5 @@ export default function (count = 10) {
         return this.displayPriority >= priority
       }
     }
-  }
+  })
 }

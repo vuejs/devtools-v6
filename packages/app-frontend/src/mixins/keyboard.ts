@@ -1,3 +1,5 @@
+import { defineComponent } from '@vue/composition-api'
+
 export const LEFT = 'ArrowLeft'
 export const UP = 'ArrowUp'
 export const RIGHT = 'ArrowRight'
@@ -43,7 +45,7 @@ document.addEventListener('keydown', (event) => {
 })
 
 export default function (options) {
-  return {
+  return defineComponent({
     mounted () {
       activeInstances.push({
         vm: this,
@@ -58,5 +60,5 @@ export default function (options) {
         activeInstances.splice(i, 1)
       }
     }
-  }
+  })
 }

@@ -1,10 +1,11 @@
+import { defineComponent } from '@vue/composition-api'
 import debounce from 'lodash/debounce'
 
 export default function ({
   indexOffset = 0
 } = {}) {
   // @vue/component
-  return {
+  return defineComponent({
     watch: {
       inspectedIndex: 'refreshScrollToInspected'
     },
@@ -42,11 +43,11 @@ export default function ({
         } else if (top + height > scrollTop + parentHeight) {
           scroller.scrollTop = top + height - parentHeight
         }
-      }, 200, {
+      } as (this: any, index: number) => Promise<void>, 200, {
         leading: true
       })
     }
-  }
+  })
 }
 
 function waitForFrame () {
