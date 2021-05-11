@@ -4,7 +4,7 @@ import Vue from 'vue'
 import { isChrome, initEnv } from '@utils/env'
 import SharedData, { initSharedData, destroySharedData } from '@utils/shared-data'
 import { createRouter } from './router'
-import { setBridge } from './features/bridge'
+import { getBridge, setBridge } from './features/bridge'
 import { setAppConnected, setAppInitializing } from './features/connection'
 import { setupAppsBridgeEvents } from './features/apps'
 import { setupComponentsBridgeEvents } from './features/components/composable'
@@ -20,14 +20,15 @@ setupPlugins()
 // We do want the errors to be thrown in the dev shell though.
 if (isChrome) {
   Vue.config.errorHandler = (e, vm) => {
-    bridge.send('ERROR', {
+    getBridge()?.send('ERROR', {
       message: e.message,
       stack: e.stack,
-      component: vm.$options.name || vm.$options._componentTag || 'anonymous'
+      component: vm.$options.name || (vm.$options as any)._componentTag || 'anonymous'
     })
   }
 }
 
+// @ts-ignore
 Vue.options.renderError = (h, e) => {
   return h('pre', {
     style: {
@@ -60,6 +61,7 @@ export function connectApp (app, shell) {
   shell.connect(async bridge => {
     setBridge(bridge)
     // @TODO remove
+    // @ts-ignore
     window.bridge = bridge
 
     if (Object.prototype.hasOwnProperty.call(Vue.prototype, '$shared')) {
