@@ -3,7 +3,6 @@ import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
 import {
   BridgeEvents,
-  parse,
   sortByKey,
   searchDeepInObject,
   BridgeSubscriptions,
@@ -11,21 +10,20 @@ import {
   openInEditor
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
-import { putError } from '@front/features/error'
 import { useRoute, useRouter } from '@front/util/router'
 
-const rootInstances = ref([])
-let componentsMap = {}
+export const rootInstances = ref([])
+export const componentsMap = ref({})
 let componentsParent = {}
 const treeFilter = ref('')
-const selectedComponentId = ref(null)
-const selectedComponentData = ref(null)
+export const selectedComponentId = ref(null)
+export const selectedComponentData = ref(null)
 const selectedComponentStateFilter = ref('')
-let selectedComponentPendingId = null
+export const selectedComponentPendingId = ref(null)
 let lastSelectedApp = null
 let lastSelectedComponentId = null
-const expandedMap = ref({})
-let resetComponentsQueued = false
+export const expandedMap = ref({})
+export const resetComponentsQueued = ref(false)
 
 export function useComponentRequests () {
   const router = useRouter()
@@ -86,8 +84,8 @@ export function useComponents () {
   }
 
   // We watch for the tree data so that we can auto load the current selected component
-  watch(() => componentsMap, () => {
-    if (selectedComponentId.value && selectedComponentPendingId !== selectedComponentId.value && !selectedComponentData.value) {
+  watch(componentsMap, () => {
+    if (selectedComponentId.value && selectedComponentPendingId.value !== selectedComponentId.value && !selectedComponentData.value) {
       selectComponent(selectedComponentId.value)
     }
   }, {
@@ -226,80 +224,18 @@ export function useSelectedComponent () {
 }
 
 export function resetComponents () {
-  resetComponentsQueued = false
+  resetComponentsQueued.value = false
   rootInstances.value = []
-  componentsMap = {}
+  componentsMap.value = {}
   componentsParent = {}
 }
 
-export function setupComponentsBridgeEvents (bridge) {
-  selectedComponentPendingId = null
-  expandedMap.value = {}
-
-  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData, notFound }) => {
-    const isRoot = instanceId.endsWith('root')
-
-    // Reset
-    if (resetComponentsQueued) {
-      resetComponents()
-    }
-
-    // Not supported
-    if (!treeData) {
-      if (isRoot && !notFound) {
-        putError('Component tree not supported')
-      }
-      return
-    }
-
-    // Handle tree data
-    const data = parse(treeData)
-    const instance = componentsMap[instanceId]
-    if (instance) {
-      for (const item of data) {
-        restoreChildrenFromComponentsMap(item)
-        const component = updateComponentsMapData(item)
-        addToComponentsMap(component)
-      }
-    } else if (Array.isArray(data)) {
-      rootInstances.value = data
-      data.forEach(i => addToComponentsMap(i))
-    }
-
-    // Try to load selected component again
-    if (isRoot && selectedComponentId.value && !selectedComponentData.value && !selectedComponentPendingId) {
-      loadComponent(selectedComponentId.value)
-    }
-  })
-
-  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, ({ instanceId, data, parentIds }) => {
-    if (instanceId === selectedComponentId.value) {
-      selectedComponentData.value = parse(data)
-    }
-    if (instanceId === selectedComponentPendingId) {
-      selectedComponentPendingId = null
-    }
-    if (parentIds) {
-      parentIds.reverse().forEach(id => {
-        // Ignore root
-        if (id.endsWith('root')) return
-        setComponentOpen(id, true)
-        requestComponentTree(id)
-      })
-    }
-  })
-
-  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, () => {
-    chrome.devtools.inspectedWindow.eval('inspect(window.__VUE_DEVTOOLS_INSPECT_TARGET__)')
-  })
-}
-
-function requestComponentTree (instanceId = null) {
+export function requestComponentTree (instanceId = null) {
   if (!instanceId) {
     instanceId = '_root'
   }
   if (instanceId === '_root') {
-    resetComponentsQueued = true
+    resetComponentsQueued.value = true
   }
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
@@ -307,8 +243,8 @@ function requestComponentTree (instanceId = null) {
   })
 }
 
-function restoreChildrenFromComponentsMap (data) {
-  const instance = componentsMap[data.id]
+export function restoreChildrenFromComponentsMap (data) {
+  const instance = componentsMap.value[data.id]
   if (instance && data.hasChildren) {
     if (!data.children.length && instance.children.length) {
       data.children = instance.children
@@ -320,16 +256,16 @@ function restoreChildrenFromComponentsMap (data) {
   }
 }
 
-function updateComponentsMapData (data) {
-  const component = componentsMap[data.id]
+export function updateComponentsMapData (data) {
+  const component = componentsMap.value[data.id]
   for (const key in data) {
     Vue.set(component, key, data[key])
   }
   return component
 }
 
-function addToComponentsMap (instance) {
-  componentsMap[instance.id] = instance
+export function addToComponentsMap (instance) {
+  componentsMap.value[instance.id] = instance
   if (instance.children) {
     instance.children.forEach(c => {
       componentsParent[c.id] = instance.id
@@ -338,9 +274,9 @@ function addToComponentsMap (instance) {
   }
 }
 
-function loadComponent (id) {
-  if (!id || selectedComponentPendingId === id) return
+export function loadComponent (id) {
+  if (!id || selectedComponentPendingId.value === id) return
   lastSelectedComponentId = id
-  selectedComponentPendingId = id
+  selectedComponentPendingId.value = id
   bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
 }

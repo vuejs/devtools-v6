@@ -5,8 +5,7 @@ import SelectedComponentPane from './SelectedComponentPane.vue'
 
 import { onMounted, ref, provide } from '@vue/composition-api'
 import { onKeyDown, onKeyUp } from '@front/util/keyboard'
-import { useComponentPick } from './pick'
-import { useComponents } from '.'
+import { useComponentPick, useComponents } from './composable'
 
 export default {
   components: {

@@ -1,7 +1,7 @@
 <script>
 import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
-import { useSelectedComponent } from '.'
+import { useSelectedComponent } from './composable'
 
 export default {
   components: {
