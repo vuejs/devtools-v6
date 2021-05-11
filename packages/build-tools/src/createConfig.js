@@ -3,6 +3,7 @@ const { mergeWithRules } = require('webpack-merge')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
 exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
   const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
@@ -11,7 +12,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
   const baseConfig = {
     mode,
     resolve: {
-      extensions: ['.js', '.vue'],
+      extensions: ['.js', '.ts', '.vue'],
       alias: {
         '@front': '@vue-devtools/app-frontend/src',
         '@back': '@vue-devtools/app-backend-core/lib',
@@ -36,6 +37,14 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
               asyncAwait: false,
               forOf: false
             }
+          }
+        },
+        {
+          test: /\.ts$/,
+          loader: 'esbuild-loader',
+          options: {
+            loader: 'ts',
+            target: 'es2015'
           }
         },
         {
@@ -93,7 +102,8 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       ...(process.env.VUE_DEVTOOL_TEST ? [] : [new FriendlyErrorsPlugin()]),
       new webpack.DefinePlugin({
         'process.env.RELEASE_CHANNEL': JSON.stringify(process.env.RELEASE_CHANNEL || 'stable')
-      })
+      }),
+      new ForkTsCheckerWebpackPlugin()
     ],
     devtool: 'eval-source-map',
     devServer: {
