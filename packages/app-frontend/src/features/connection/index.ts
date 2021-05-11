@@ -10,10 +10,10 @@ export function useAppConnection () {
   }
 }
 
-export function setAppConnected (value) {
+export function setAppConnected (value: boolean) {
   isConnected.value = value
 }
 
-export function setAppInitializing (value) {
+export function setAppInitializing (value: boolean) {
   isInitializing.value = value
 }

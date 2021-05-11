@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginListItem from './PluginListItem.vue'
 
-import { ref, computed } from '@vue/composition-api'
+import { defineComponent, ref, computed } from '@vue/composition-api'
 import { usePlugins } from '.'
 
-export default {
+export default defineComponent({
   components: {
     SplitPane,
     PluginListItem
@@ -29,7 +29,7 @@ export default {
       search
     }
   }
-}
+})
 </script>
 
 <template>

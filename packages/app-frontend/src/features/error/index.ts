@@ -1,8 +1,13 @@
 import { ref, computed } from '@vue/composition-api'
 
-const errors = ref([])
+export interface ErrorMessage {
+  message: string
+  icon: string
+}
 
-export function putError (message, icon = null) {
+const errors = ref<ErrorMessage[]>([])
+
+export function putError (message: string, icon: string = null) {
   // Dedupe
   if (errors.value.find(e => e.message === message)) {
     return

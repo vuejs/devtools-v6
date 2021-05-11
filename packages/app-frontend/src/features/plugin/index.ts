@@ -1,12 +1,26 @@
 import Vue from 'vue'
 import { computed, ref } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { useCurrentApp } from '@front/features/apps'
 
-const pluginsPerApp = ref({})
+export interface Plugin {
+  id: string
+  label: string
+  appId: number
+  packageName: string
+  homepage: string
+  logo: string
+  componentStateTypes: string[]
+}
 
-function getPlugins (appId) {
+interface PluginsPerApp {
+  [appId: number]: Plugin[]
+}
+
+const pluginsPerApp = ref<PluginsPerApp>({})
+
+function getPlugins (appId: number) {
   let plugins = pluginsPerApp.value[appId]
   if (!plugins) {
     plugins = []
@@ -34,8 +48,8 @@ export function usePlugins () {
 export function useComponentStateTypePlugin () {
   const { plugins } = usePlugins()
 
-  function getStateTypePlugin (type) {
-    return plugins.value.find(p => p.componentStateTypes && p.componentStateTypes.includes(type))
+  function getStateTypePlugin (type: string) {
+    return plugins.value.find(p => p.componentStateTypes?.includes(type))
   }
 
   return {
@@ -43,7 +57,7 @@ export function useComponentStateTypePlugin () {
   }
 }
 
-function addPlugin (plugin) {
+function addPlugin (plugin: Plugin) {
   const list = getPlugins(plugin.appId)
   const index = list.findIndex(p => p.id === plugin.id)
   if (index !== -1) {
@@ -53,7 +67,7 @@ function addPlugin (plugin) {
   }
 }
 
-export function setupPluginsBridgeEvents (bridge) {
+export function setupPluginsBridgeEvents (bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, ({ plugin }) => {
     addPlugin(plugin)
   })

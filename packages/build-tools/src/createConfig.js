@@ -106,7 +106,10 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       }),
       new ForkTsCheckerWebpackPlugin({
         typescript: {
-          configFile: path.resolve(__dirname, '../../../tsconfig.json')
+          configFile: path.resolve(__dirname, '../../../tsconfig.json'),
+          extensions: {
+            vue: true
+          }
         }
       }),
       new ESLintPlugin({

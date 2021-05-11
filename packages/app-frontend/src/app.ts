@@ -45,7 +45,7 @@ export function createApp () {
 
   const app = new Vue({
     router,
-    render: h => h(App)
+    render: h => h(App as any)
   })
 
   // @TODO [Vue 3] Setup plugins

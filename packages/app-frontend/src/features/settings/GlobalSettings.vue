@@ -1,4 +1,6 @@
-<script>
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
+
 // import NewTag from './NewTag.vue'
 
 // export default {
@@ -6,6 +8,8 @@
 //     NewTag
 //   }
 // }
+
+export default defineComponent({})
 </script>
 
 <template>
