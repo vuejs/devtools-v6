@@ -1,4 +1,4 @@
-import { useBridge } from '../bridge'
+import { useBridge } from '@front/features/bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 
 export function useComponentHighlight (id) {

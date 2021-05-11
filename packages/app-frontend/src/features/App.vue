@@ -3,11 +3,12 @@ import AppHeader from './header/AppHeader.vue'
 import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
 import ErrorOverlay from './error/ErrorOverlay.vue'
-import { useAppConnection } from './connection'
+
+import { onMounted } from '@vue/composition-api'
 import { isChrome, setStorage, getStorage } from '@vue-devtools/shared-utils'
 import SharedData, { watchSharedData, onSharedDataInit } from '@utils/shared-data'
 import { darkMode } from '@front/util/theme'
-import { onMounted } from '@vue/composition-api'
+import { useAppConnection } from './connection'
 
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 

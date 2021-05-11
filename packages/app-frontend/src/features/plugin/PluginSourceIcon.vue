@@ -1,7 +1,7 @@
 <script>
-import { usePlugins } from '.'
 import { computed } from '@vue/composition-api'
 import { useRouter } from '@front/util/router'
+import { usePlugins } from '.'
 
 export default {
   props: {

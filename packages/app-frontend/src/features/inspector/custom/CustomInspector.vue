@@ -1,9 +1,10 @@
 <script>
-import { watch, ref, provide } from '@vue/composition-api'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
+
+import { watch, ref, provide } from '@vue/composition-api'
 import { useCurrentInspector } from './composable'
 
 export default {

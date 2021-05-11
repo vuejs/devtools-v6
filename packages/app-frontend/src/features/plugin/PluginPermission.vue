@@ -1,6 +1,7 @@
 <script>
 import { computed } from '@vue/composition-api'
 import { hasPluginPermission, setPluginPermission } from '@vue-devtools/shared-utils'
+
 export default {
   props: {
     pluginId: {

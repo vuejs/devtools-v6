@@ -1,16 +1,17 @@
+import App from './features/App.vue'
+
 import Vue from 'vue'
 import { isChrome, initEnv } from '@utils/env'
 import SharedData, { initSharedData, destroySharedData } from '@utils/shared-data'
-import App from './features/App.vue'
 import { createRouter } from './router'
 import { setBridge } from './features/bridge'
 import { setAppConnected, setAppInitializing } from './features/connection'
-import { setupPlugins } from './plugins'
 import { setupAppsBridgeEvents } from './features/apps'
 import { setupComponentsBridgeEvents } from './features/components'
 import { setupTimelineBridgeEvents } from './features/timeline/composable'
 import { setupCustomInspectorBridgeEvents } from './features/inspector/custom/composable'
 import { setupPluginsBridgeEvents } from './features/plugin'
+import { setupPlugins } from './plugins'
 
 setupPlugins()
 

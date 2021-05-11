@@ -1,15 +1,16 @@
 <script>
-import { computed, ref, watch } from '@vue/composition-api'
-import { useRoute } from '@front/util/router'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import AppMainMenu from './AppMainMenu.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from './AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
-import { useBridge } from '../bridge'
+
+import { computed, ref, watch } from '@vue/composition-api'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { useRoute } from '@front/util/router'
+import { useBridge } from '@front/features/bridge'
+import { useInspectors } from '@front/features/inspector/custom/composable'
 import { useTabs } from './tabs'
-import { useInspectors } from '../inspector/custom/composable'
-import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
 
 export default {
   components: {

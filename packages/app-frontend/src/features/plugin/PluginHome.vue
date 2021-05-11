@@ -1,5 +1,5 @@
 <script>
-import EmptyPane from '../layout/EmptyPane.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 export default {
   components: {

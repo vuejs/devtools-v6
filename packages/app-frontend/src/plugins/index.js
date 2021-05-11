@@ -1,12 +1,13 @@
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+
 import Vue from 'vue'
 import PortalVue from 'portal-vue'
 import VueUi, { generateHtmlIcon } from '@vue/ui'
 import VueVirtualScroller from 'vue-virtual-scroller'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import { keys } from '@utils/env'
 import VI18n from './i18n'
 import Responsive from './responsive'
 import GlobalRefs from './global-refs'
-import { keys } from '@utils/env'
 
 export function setupPlugins () {
   Vue.use(PortalVue)

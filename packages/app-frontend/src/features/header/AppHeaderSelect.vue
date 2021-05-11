@@ -1,7 +1,7 @@
 <script>
 import { ref, computed, watch } from '@vue/composition-api'
-import { useOrientation } from '../layout/orientation'
 import SharedData from '@utils/shared-data'
+import { useOrientation } from '@front/features/layout/orientation'
 
 export default {
   props: {

@@ -1,8 +1,9 @@
 <script>
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
+
 import { watch } from '@vue/composition-api'
 import { useCurrentInspector } from './composable'
 import StateInspector from '../StateInspector.vue'
-import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 export default {
   components: {

@@ -1,8 +1,9 @@
 <script>
+import PluginPermission from './PluginPermission.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
+
 import { usePlugins } from '.'
 import { computed } from '@vue/composition-api'
-import PluginPermission from './PluginPermission.vue'
-import EmptyPane from '../layout/EmptyPane.vue'
 
 export default {
   components: {

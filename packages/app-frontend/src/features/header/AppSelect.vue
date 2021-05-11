@@ -1,9 +1,9 @@
 <script>
-import { watch, computed } from '@vue/composition-api'
+import { watch } from '@vue/composition-api'
+import { useApps } from '@front/features/apps'
+import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
-import { useApps } from '../apps'
 import AppHeaderSelect from './AppHeaderSelect.vue'
-import { useOrientation } from '../layout/orientation'
 
 export default {
   components: {

@@ -19,9 +19,10 @@
 </template>
 
 <script>
+import StateType from './StateType.vue'
+
 import Vue from 'vue'
 import Defer from '@front/mixins/defer'
-import StateType from './StateType.vue'
 
 const keyOrder = {
   props: 1,

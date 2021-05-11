@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import { computed, ref } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { getBridge } from '../bridge'
-import { useCurrentApp } from '../apps'
+import { getBridge } from '@front/features/bridge'
+import { useCurrentApp } from '@front/features/apps'
 
 const pluginsPerApp = ref({})
 

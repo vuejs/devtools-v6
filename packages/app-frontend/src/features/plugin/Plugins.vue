@@ -1,8 +1,9 @@
 <script>
-import { usePlugins } from '.'
-import SplitPane from '../layout/SplitPane.vue'
+import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginListItem from './PluginListItem.vue'
+
 import { ref, computed } from '@vue/composition-api'
+import { usePlugins } from '.'
 
 export default {
   components: {

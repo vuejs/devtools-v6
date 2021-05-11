@@ -1,6 +1,6 @@
 import { ref } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { useBridge } from '../bridge'
+import { useBridge } from '@front/features/bridge'
 import { useComponentRequests, setComponentOpen } from '.'
 
 export function useComponentPick () {

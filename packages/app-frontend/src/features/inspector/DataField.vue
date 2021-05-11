@@ -231,9 +231,8 @@ import {
   openInEditor,
   copyToClipboard
 } from '@utils/util'
-import { formattedValue, valueType } from '@front/util/format'
-
 import DataFieldEdit from '@front/mixins/data-field-edit'
+import { formattedValue, valueType } from '@front/util/format'
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {

@@ -1,11 +1,12 @@
 <script>
-import { onMounted, ref, provide } from '@vue/composition-api'
-import { useComponents } from '.'
-import { useComponentPick } from './pick'
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
+
+import { onMounted, ref, provide } from '@vue/composition-api'
 import { onKeyDown, onKeyUp } from '@front/util/keyboard'
+import { useComponentPick } from './pick'
+import { useComponents } from '.'
 
 export default {
   components: {

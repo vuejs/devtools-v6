@@ -1,9 +1,10 @@
 <script>
-import { computed } from '@vue/composition-api'
-import { useComponentStateTypePlugin } from '../plugin'
-import { useOrientation } from '../layout/orientation'
 import StateFields from './StateFields.vue'
-import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
+import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
+
+import { computed } from '@vue/composition-api'
+import { useComponentStateTypePlugin } from '@front/features/plugin'
+import { useOrientation } from '@front/features/layout/orientation'
 
 export default {
   components: {

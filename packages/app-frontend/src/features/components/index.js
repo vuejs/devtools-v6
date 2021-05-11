@@ -1,10 +1,18 @@
 import { ref, computed, watch } from '@vue/composition-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
-import { BridgeEvents, parse, sortByKey, searchDeepInObject, BridgeSubscriptions, isChrome, openInEditor } from '@vue-devtools/shared-utils'
-import { getBridge, useBridge } from '../bridge'
+import {
+  BridgeEvents,
+  parse,
+  sortByKey,
+  searchDeepInObject,
+  BridgeSubscriptions,
+  isChrome,
+  openInEditor
+} from '@vue-devtools/shared-utils'
+import { getBridge, useBridge } from '@front/features/bridge'
+import { putError } from '@front/features/error'
 import { useRoute, useRouter } from '@front/util/router'
-import { putError } from '../error'
 
 const rootInstances = ref([])
 let componentsMap = {}
