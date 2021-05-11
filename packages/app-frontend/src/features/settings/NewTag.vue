@@ -1,11 +1,3 @@
-<template>
-  <div
-    v-if="version > currentSettingsVersion"
-    class="new-tag"
-  >
-    New
-  </div>
-</template>
 
 <script>
 export default {
@@ -21,6 +13,15 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div
+    v-if="version > currentSettingsVersion"
+    class="new-tag"
+  >
+    New
+  </div>
+</template>
 
 <style lang="stylus" scoped>
 .new-tag
