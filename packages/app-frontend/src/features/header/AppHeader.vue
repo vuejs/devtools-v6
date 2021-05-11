@@ -8,7 +8,7 @@ import AppSelect from './AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
 import { useBridge } from '../bridge'
 import { useTabs } from './tabs'
-import { useInspectors } from '../inspector/custom'
+import { useInspectors } from '../inspector/custom/composable'
 import PluginSourceIcon from '../plugin/PluginSourceIcon.vue'
 
 export default {

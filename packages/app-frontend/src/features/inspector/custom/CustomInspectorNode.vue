@@ -1,7 +1,7 @@
 <script>
 import { ref, computed, watch } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import { useCurrentInspector } from '.'
+import { useCurrentInspector } from './composable'
 
 const DEFAULT_EXPAND_DEPTH = 2
 

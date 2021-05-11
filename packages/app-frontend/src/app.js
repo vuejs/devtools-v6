@@ -9,7 +9,7 @@ import { setupPlugins } from './plugins'
 import { setupAppsBridgeEvents } from './features/apps'
 import { setupComponentsBridgeEvents } from './features/components'
 import { setupTimelineBridgeEvents } from './features/timeline/composable'
-import { setupCustomInspectorBridgeEvents } from './features/inspector/custom'
+import { setupCustomInspectorBridgeEvents } from './features/inspector/custom/composable'
 import { setupPluginsBridgeEvents } from './features/plugin'
 
 setupPlugins()
