@@ -1,9 +1,15 @@
 import { ref, computed, watch } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { BridgeEvents, Bridge } from '@vue-devtools/shared-utils'
 import { useBridge, getBridge } from '@front/features/bridge'
 import { useRoute, useRouter } from '@front/util/router'
 
-const apps = ref([])
+export interface App {
+  id: number
+  name: string
+  version: string
+}
+
+const apps = ref<App[]>([])
 
 export function useCurrentApp () {
   const route = useRoute()
@@ -25,11 +31,11 @@ export function useApps () {
     currentApp
   } = useCurrentApp()
 
-  function selectApp (id) {
+  function selectApp (id: number) {
     if (currentAppId.value !== id) {
       router.push({
         params: {
-          appId: id,
+          appId: id.toString(),
           componentId: null
         }
       })
@@ -50,12 +56,12 @@ export function useApps () {
   }
 }
 
-function addApp (app) {
+function addApp (app: App) {
   removeApp(app.id)
   apps.value.push(app)
 }
 
-function removeApp (appId) {
+function removeApp (appId: number) {
   const index = apps.value.findIndex(app => app.id === appId)
   if (index !== -1) {
     apps.value.splice(index, 1)
@@ -70,7 +76,7 @@ function fetchApps () {
   getBridge().send(BridgeEvents.TO_BACK_APP_LIST, {})
 }
 
-export function setupAppsBridgeEvents (bridge) {
+export function setupAppsBridgeEvents (bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_APP_ADD, ({ appRecord }) => {
     addApp(appRecord)
   })

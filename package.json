@@ -45,6 +45,7 @@
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
     "@tailwindcss/postcss7-compat": "^2.0.4",
+    "@types/chrome": "^0.0.139",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "@vue/eslint-config-standard": "^6.0.0",

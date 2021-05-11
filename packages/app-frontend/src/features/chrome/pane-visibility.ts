@@ -13,7 +13,7 @@ if (isChrome) {
   })
 }
 
-export function ensurePaneShown (cb) {
+export function ensurePaneShown (cb: () => void | Promise<void>) {
   if (panelShown) {
     cb()
   } else {
