@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
 import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import { useSelectedComponent } from './composable'
+import { defineComponent } from '@vue/composition-api'
 
-export default {
+export default defineComponent({
   components: {
     StateInspector,
     EmptyPane
@@ -14,7 +15,7 @@ export default {
       ...useSelectedComponent()
     }
   }
-}
+})
 </script>
 
 <template>

@@ -1,7 +1,7 @@
-<script>
-import { onMounted } from '@vue/composition-api'
+<script lang="ts">
+import { onMounted, defineComponent } from '@vue/composition-api'
 
-export default {
+export default defineComponent({
   setup () {
     onMounted(() => {
       if (typeof Headway !== 'undefined') {
@@ -13,7 +13,7 @@ export default {
       }
     })
   }
-}
+})
 </script>
 
 <template>

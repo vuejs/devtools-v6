@@ -1,11 +1,12 @@
-<script>
-import { watch } from '@vue/composition-api'
+<script lang="ts">
+import AppHeaderSelect from './AppHeaderSelect.vue'
+
+import { watch, defineComponent } from '@vue/composition-api'
 import { useApps } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
-import AppHeaderSelect from './AppHeaderSelect.vue'
 
-export default {
+export default defineComponent({
   components: {
     AppHeaderSelect
   },
@@ -39,7 +40,7 @@ export default {
       orientation
     }
   }
-}
+})
 </script>
 
 <template>

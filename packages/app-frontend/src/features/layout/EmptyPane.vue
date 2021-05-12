@@ -1,12 +1,14 @@
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
+
+export default defineComponent({
   props: {
     icon: {
       type: String,
       default: null
     }
   }
-}
+})
 </script>
 
 <template>

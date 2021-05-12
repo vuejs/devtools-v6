@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
 import { useError } from '.'
 
-export default {
+export default defineComponent({
   setup () {
     const {
       error,
@@ -13,7 +14,7 @@ export default {
       clearError
     }
   }
-}
+})
 </script>
 
 <template>

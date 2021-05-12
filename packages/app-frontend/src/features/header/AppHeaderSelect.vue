@@ -1,9 +1,9 @@
-<script>
-import { ref, computed, watch } from '@vue/composition-api'
+<script lang="ts">
+import { ref, computed, watch, defineComponent } from '@vue/composition-api'
 import SharedData from '@utils/shared-data'
 import { useOrientation } from '@front/features/layout/orientation'
 
-export default {
+export default defineComponent({
   props: {
     items: {
       type: Array,
@@ -122,7 +122,7 @@ export default {
 
     let wheelEnabled = true
 
-    function onMouseWheel (e) {
+    function onMouseWheel (e: WheelEvent) {
       if (!wheelEnabled) return
 
       if (e.deltaY > 0) {
@@ -155,7 +155,7 @@ export default {
       onMouseWheel
     }
   }
-}
+})
 </script>
 
 <template>

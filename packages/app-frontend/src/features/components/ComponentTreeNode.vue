@@ -1,5 +1,5 @@
-<script>
-import { computed, toRefs, onMounted, ref, watch } from '@vue/composition-api'
+<script lang="ts">
+import { computed, toRefs, onMounted, ref, watch, defineComponent } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
@@ -7,7 +7,7 @@ import { useComponent, useComponentHighlight } from './composable'
 
 const DEFAULT_EXPAND_DEPTH = 2
 
-export default {
+export default defineComponent({
   name: 'ComponentTreeNode',
 
   props: {
@@ -48,7 +48,7 @@ export default {
 
     subscribeToComponentTree()
 
-    const toggleEl = ref(null)
+    const toggleEl = ref<HTMLElement>(null)
 
     onMounted(() => {
       if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {
@@ -91,7 +91,7 @@ export default {
       unhighlight
     }
   }
-}
+})
 </script>
 
 <template>

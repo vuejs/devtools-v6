@@ -1,18 +1,18 @@
-<script>
+<script lang="ts">
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import AppMainMenu from './AppMainMenu.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from './AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
 
-import { computed, ref, watch } from '@vue/composition-api'
+import { computed, ref, watch, defineComponent } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useRoute } from '@front/util/router'
 import { useBridge } from '@front/features/bridge'
 import { useInspectors } from '@front/features/inspector/custom/composable'
 import { useTabs } from './tabs'
 
-export default {
+export default defineComponent({
   components: {
     AppMainMenu,
     AppHistoryNav,
@@ -103,7 +103,7 @@ export default {
       currentInspectorRoute
     }
   }
-}
+})
 </script>
 
 <template>

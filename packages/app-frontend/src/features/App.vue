@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
 import AppHeader from './header/AppHeader.vue'
 import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
 import ErrorOverlay from './error/ErrorOverlay.vue'
 
-import { onMounted } from '@vue/composition-api'
+import { onMounted, defineComponent } from '@vue/composition-api'
 import { isChrome, setStorage, getStorage } from '@vue-devtools/shared-utils'
 import SharedData, { watchSharedData, onSharedDataInit } from '@utils/shared-data'
 import { darkMode } from '@front/util/theme'
@@ -14,7 +14,7 @@ const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 
 const STORAGE_PREVIOUS_SESSION_THEME = 'previous-session-theme'
 
-export default {
+export default defineComponent({
   name: 'App',
 
   components: {
@@ -27,7 +27,7 @@ export default {
   setup () {
     const { isConnected, isInitializing } = useAppConnection()
 
-    function updateTheme (theme) {
+    function updateTheme (theme: string) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
         document.body.classList.add('vue-ui-dark-mode')
         document.body.classList.add('dark')
@@ -66,7 +66,7 @@ export default {
       isInitializing
     }
   }
-}
+})
 </script>
 
 <template>

@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
-import { onMounted, ref, provide } from '@vue/composition-api'
+import { onMounted, ref, provide, defineComponent } from '@vue/composition-api'
 import { onKeyDown, onKeyUp } from '@front/util/keyboard'
 import { useComponentPick, useComponents } from './composable'
 
-export default {
+export default defineComponent({
   components: {
     SplitPane,
     ComponentTreeNode,
@@ -71,7 +71,7 @@ export default {
       treeScroller
     }
   }
-}
+})
 </script>
 
 <template>

@@ -1,9 +1,9 @@
-<script>
-import { ref, computed, watch } from '@vue/composition-api'
+<script lang="ts">
+import { ref, computed, watch, defineComponent, PropType } from '@vue/composition-api'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 import { useOrientation } from './orientation'
 
-export default {
+export default defineComponent({
   props: {
     defaultSplit: {
       type: Number,
@@ -21,7 +21,7 @@ export default {
     },
 
     draggerOffset: {
-      type: String,
+      type: String as PropType<'before' | 'center' | 'after'>,
       default: 'center',
       validator: value => ['before', 'center', 'after'].includes(value)
     },
@@ -73,13 +73,13 @@ export default {
     let startSplit = 0
     const el = ref(null)
 
-    function dragStart (e) {
+    function dragStart (e: MouseEvent) {
       dragging.value = true
       startPosition = orientation.value === 'landscape' ? e.pageX : e.pageY
       startSplit = boundSplit.value
     }
 
-    function dragMove (e) {
+    function dragMove (e: MouseEvent) {
       if (dragging.value) {
         let position
         let totalSize
@@ -110,7 +110,7 @@ export default {
       rightStyle
     }
   }
-}
+})
 </script>
 
 <template>
