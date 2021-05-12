@@ -1,14 +1,14 @@
-<script>
+<script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import TimelineEventListItem from './TimelineEventListItem.vue'
 
-import { computed, ref, watch } from '@vue/composition-api'
+import { computed, ref, watch, defineComponent } from '@vue/composition-api'
 import Defer from '@front/mixins/defer'
-import { useInspectedEvent, useSelectedEvent } from './composable'
+import { useInspectedEvent, useSelectedEvent, TimelineEvent } from './composable'
 
 const itemHeight = 34
 
-export default {
+export default defineComponent({
   components: {
     TimelineEventListItem,
     EmptyPane
@@ -155,7 +155,7 @@ export default {
       }
     })
 
-    function selectEvent (event) {
+    function selectEvent (event: TimelineEvent) {
       if (event.stackParent) {
         selectedEvent.value = event.stackParent
       } else {
@@ -178,7 +178,7 @@ export default {
       onScroll
     }
   }
-}
+})
 </script>
 
 <template>

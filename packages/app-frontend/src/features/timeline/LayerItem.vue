@@ -1,14 +1,17 @@
-<script>
+<script lang="ts">
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
-export default {
+import { defineComponent, PropType } from '@vue/composition-api'
+import { Layer } from './composable'
+
+export default defineComponent({
   components: {
     PluginSourceIcon
   },
 
   props: {
     layer: {
-      type: Object,
+      type: Object as PropType<Layer>,
       required: true
     },
 
@@ -22,7 +25,7 @@ export default {
       default: false
     }
   }
-}
+})
 </script>
 
 <template>

@@ -1,12 +1,12 @@
-<script>
-import { computed } from '@vue/composition-api'
+<script lang="ts">
+import { computed, defineComponent, PropType } from '@vue/composition-api'
 import { formatTime } from '@front/util/format'
-import { useInspectedEvent } from './composable'
+import { useInspectedEvent, TimelineEvent } from './composable'
 
-export default {
+export default defineComponent({
   props: {
     event: {
-      type: Object,
+      type: Object as PropType<TimelineEvent>,
       required: true
     },
 
@@ -30,7 +30,7 @@ export default {
       isInspected
     }
   }
-}
+})
 </script>
 
 <template>

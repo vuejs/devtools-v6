@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep'
-import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import { Bridge, BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { getApps } from '@front/features/apps'
 import {
   inspectedEvent,
@@ -10,7 +10,7 @@ import { getLayers, fetchLayers, layerFactory } from './layers'
 import { addEvent } from './events'
 import { resetTimeline } from './reset'
 
-export function setupTimelineBridgeEvents (bridge) {
+export function setupTimelineBridgeEvents (bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ appId, layerId, event }) => {
     const appIds = appId === 'all' ? getApps().map(app => app.id) : [appId]
     for (const appId of appIds) {

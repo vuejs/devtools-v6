@@ -1,20 +1,23 @@
-<script>
-import { ref, onUnmounted } from '@vue/composition-api'
+<script lang="ts">
+import { ref, onUnmounted, defineComponent } from '@vue/composition-api'
 
-export default {
+export default defineComponent({
   props: {
     start: {
       type: Number,
       required: true
     },
+
     end: {
       type: Number,
       required: true
     },
+
     min: {
       type: Number,
       required: true
     },
+
     max: {
       type: Number,
       required: true
@@ -30,7 +33,7 @@ export default {
 
     const moving = ref(false)
 
-    function onMainBarMouseDown (event) {
+    function onMainBarMouseDown (event: MouseEvent) {
       mouseStartX = event.clientX
       initialValue = props.start
       moving.value = true
@@ -38,7 +41,7 @@ export default {
       window.addEventListener('mouseup', onMainBarMouseUp)
     }
 
-    function onMainBarMouseMove (event) {
+    function onMainBarMouseMove (event: MouseEvent) {
       let start = props.start
       const size = props.end - props.start
       start = initialValue + (event.clientX - mouseStartX) / el.value.offsetWidth * (props.max - props.min)
@@ -67,14 +70,14 @@ export default {
 
     // Start resize handle
 
-    function onStartHandleMouseDown (event) {
+    function onStartHandleMouseDown (event: MouseEvent) {
       mouseStartX = event.clientX
       initialValue = props.start
       window.addEventListener('mousemove', onStartHandleMouseMove)
       window.addEventListener('mouseup', onStartHandleMouseUp)
     }
 
-    function onStartHandleMouseMove (event) {
+    function onStartHandleMouseMove (event: MouseEvent) {
       let start = props.start
       start = initialValue + (event.clientX - mouseStartX) / el.value.offsetWidth * (props.max - props.min)
       if (start < props.min) {
@@ -100,14 +103,14 @@ export default {
 
     // End resize handle
 
-    function onEndHandleMouseDown (event) {
+    function onEndHandleMouseDown (event: MouseEvent) {
       mouseStartX = event.clientX
       initialValue = props.end
       window.addEventListener('mousemove', onEndHandleMouseMove)
       window.addEventListener('mouseup', onEndHandleMouseUp)
     }
 
-    function onEndHandleMouseMove (event) {
+    function onEndHandleMouseMove (event: MouseEvent) {
       let end = props.end
       end = initialValue + (event.clientX - mouseStartX) / el.value.offsetWidth * (props.max - props.min)
       if (end < props.start + 1) {
@@ -139,7 +142,7 @@ export default {
       onEndHandleMouseDown
     }
   }
-}
+})
 </script>
 
 <template>

@@ -19,7 +19,9 @@ import {
 } from './store'
 import { fetchLayers } from './layers'
 
-const resetCbs = []
+type ResetCb = () => void
+
+const resetCbs: ResetCb[] = []
 
 export function resetTimeline () {
   selectedEvent.value = null
@@ -53,10 +55,10 @@ export function resetTime () {
   maxTime.value = now
 }
 
-export function onTimelineReset (cb) {
+export function onTimelineReset (cb: ResetCb) {
   onUnmounted(() => {
     const index = resetCbs.indexOf(cb)
-    if (index !== -1) resetCbs.splice(cb)
+    if (index !== -1) resetCbs.splice(index, 1)
   })
 
   resetCbs.push(cb)

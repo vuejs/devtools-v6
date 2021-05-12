@@ -2,11 +2,11 @@ import SharedData from '@utils/shared-data'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useApps } from '@front/features/apps'
 import { useBridge } from '@front/features/bridge'
-import { screenshots } from './store'
+import { EventScreenshot, screenshots, TimelineEvent } from './store'
 
 let nextScreenshotId = 0
 
-export async function takeScreenshot (event) {
+export async function takeScreenshot (event: TimelineEvent) {
   if (!SharedData.timelineScreenshots) return
 
   const time = Math.round(event.time / 100) * 100
@@ -14,7 +14,7 @@ export async function takeScreenshot (event) {
   const lastScreenshot = screenshots.value[screenshots.value.length - 1]
 
   if (!lastScreenshot || lastScreenshot.time !== time) {
-    const screenshot = {
+    const screenshot: EventScreenshot = {
       id: nextScreenshotId++,
       time,
       image: null,
@@ -44,7 +44,7 @@ export async function takeScreenshot (event) {
   }
 }
 
-export const supportsScreenshot = typeof browser !== 'undefined' || (typeof chrome !== 'undefined' && chrome.tabs)
+export const supportsScreenshot = typeof browser !== 'undefined' || (typeof chrome !== 'undefined' && !!chrome.tabs)
 
 if (typeof browser !== 'undefined') {
   browser.runtime.onMessage.addListener(req => {
@@ -61,7 +61,7 @@ export function useScreenshots () {
   const { bridge } = useBridge()
   const { currentAppId } = useApps()
 
-  function showScreenshot (screenshot = null) {
+  function showScreenshot (screenshot: EventScreenshot = null) {
     bridge.send(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, {
       screenshot: screenshot
         ? {

@@ -1,15 +1,16 @@
-<script>
+<script lang="ts">
 import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-import { computed } from '@vue/composition-api'
+import { computed, defineComponent } from '@vue/composition-api'
 import { useInspectedEvent, useSelectedEvent } from './composable'
 
-export default {
+export default defineComponent({
   components: {
     StateInspector,
     EmptyPane
   },
+
   setup () {
     const {
       inspectedEvent,
@@ -32,7 +33,7 @@ export default {
       isSelected
     }
   }
-}
+})
 </script>
 
 <template>

@@ -8,10 +8,12 @@ import {
   hiddenLayersPerApp,
   selectedEvent,
   vScrollPerApp,
-  hoverLayerId
+  hoverLayerId,
+  LayerFromBackend,
+  Layer
 } from './store'
 
-export function layerFactory (options) {
+export function layerFactory (options: LayerFromBackend): Layer {
   return {
     ...options,
     events: [],
@@ -43,7 +45,7 @@ function builtinLayersFactory () {
   ].map(options => layerFactory(options))
 }
 
-export function getLayers (appId) {
+export function getLayers (appId: number) {
   let layers = layersPerApp.value[appId]
   if (!layers) {
     layers = builtinLayersFactory()
@@ -54,7 +56,7 @@ export function getLayers (appId) {
   return layers
 }
 
-function getHiddenLayers (appId) {
+function getHiddenLayers (appId: number) {
   let layers = hiddenLayersPerApp.value[appId]
   if (!layers) {
     layers = []
@@ -70,12 +72,12 @@ export function useLayers () {
 
   const allLayers = computed(() => getLayers(currentAppId.value))
 
-  function isLayerHidden (layer) {
+  function isLayerHidden (layer: Layer) {
     const list = getHiddenLayers(currentAppId.value)
     return list.includes(layer.id)
   }
 
-  function setLayerHidden (layer, hidden) {
+  function setLayerHidden (layer: Layer, hidden: boolean) {
     const list = getHiddenLayers(currentAppId.value)
     const index = list.indexOf(layer.id)
     if (hidden && index === -1) {
@@ -95,7 +97,7 @@ export function useLayers () {
     allLayers,
     vScroll: computed({
       get: () => vScrollPerApp.value[currentAppId.value] || 0,
-      set: value => {
+      set: (value: number) => {
         Vue.set(vScrollPerApp.value, currentAppId.value, value)
       }
     }),

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
 import {
@@ -6,7 +6,8 @@ import {
   onMounted,
   onUnmounted,
   watch,
-  watchEffect
+  watchEffect,
+  defineComponent
 } from '@vue/composition-api'
 import Vue from 'vue'
 import {
@@ -15,7 +16,9 @@ import {
   useSelectedEvent,
   onTimelineReset,
   onEventAdd,
-  useCursor
+  useCursor,
+  Layer,
+  TimelineEvent
 } from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
@@ -27,9 +30,9 @@ const GROUP_SIZE = 6
 
 installUnsafeEval(PIXI)
 
-export default {
+export default defineComponent({
   setup () {
-    const wrapper = ref(null)
+    const wrapper = ref<HTMLElement>(null)
 
     const { currentAppId } = useApps()
     const { startTime, endTime, minTime, maxTime } = useTime()
@@ -37,9 +40,11 @@ export default {
 
     // Reset
 
-    const resetCbs = []
+    type ResetCb = () => void
 
-    function onReset (cb) {
+    const resetCbs: ResetCb[] = []
+
+    function onReset (cb: ResetCb) {
       resetCbs.push(cb)
     }
 
@@ -55,14 +60,10 @@ export default {
 
     // Pixi App
 
-    /** @type {PIXI.Application} */
-    let app
+    let app: PIXI.Application
 
-    /** @type {PIXI.Container} */
-    let verticalScrollingContainer
-
-    /** @type {PIXI.Container} */
-    let horizontalScrollingContainer
+    let verticalScrollingContainer: PIXI.Container
+    let horizontalScrollingContainer: PIXI.Container
 
     onMounted(() => {
       app = new PIXI.Application({
@@ -111,9 +112,8 @@ export default {
       selectedEventLayerId
     } = useLayers()
 
-    /** @type {Container[]} */
-    let layerContainers = []
-    let layersMap = {}
+    let layerContainers: PIXI.Container[] = []
+    let layersMap: Record<Layer['id'], { layer: Layer, container: PIXI.Container }> = {}
 
     function initLayers () {
       let y = 0
@@ -154,8 +154,7 @@ export default {
 
     // Layer hover
 
-    /** @type {import('pixi.js').Graphics} */
-    let layerHoverEffect
+    let layerHoverEffect: PIXI.Graphics
 
     onMounted(() => {
       layerHoverEffect = new PIXI.Graphics()
@@ -164,7 +163,7 @@ export default {
       verticalScrollingContainer.addChild(layerHoverEffect)
     })
 
-    function getLayerY (layer) {
+    function getLayerY (layer: Layer) {
       return layers.value.slice(0, layers.value.indexOf(layer)).reduce((sum, layer) => sum + (layer.height + 1) * LAYER_SIZE, 0)
     }
 
@@ -191,7 +190,7 @@ export default {
       }
     }
 
-    function drawLayerBackground (layerId, alpha = 1) {
+    function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
       const { layer } = layersMap[layerId]
       layerHoverEffect.beginFill(layer.color, alpha)
       layerHoverEffect.drawRect(0, getLayerY(layer), app.view.width, (layer.height + 1) * LAYER_SIZE)
@@ -205,10 +204,7 @@ export default {
       drawLayerBackgroundEffects()
     })
 
-    /**
-     * @param {MouseEvent} event
-     */
-    function updateLayerHover (event) {
+    function updateLayerHover (event: MouseEvent) {
       let { offsetY } = event
       offsetY -= verticalScrollingContainer.y
       if (offsetY >= 0) {
@@ -233,13 +229,13 @@ export default {
 
     const { selectedEvent } = useSelectedEvent()
 
-    let events = []
+    let events: TimelineEvent[] = []
 
-    function getEventPosition (event) {
+    function getEventPosition (event: TimelineEvent) {
       return (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
     }
 
-    function updateEventPosition (event) {
+    function updateEventPosition (event: TimelineEvent) {
       event.container.x = getEventPosition(event)
 
       let y = 0
@@ -271,7 +267,7 @@ export default {
       event.container.y = (y + 1) * LAYER_SIZE
     }
 
-    function addEvent (event, layerContainer) {
+    function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
       // Container
       const eventContainer = new PIXI.Container()
       event.container = eventContainer
@@ -325,7 +321,7 @@ export default {
       initEvents()
     }
 
-    onEventAdd(event => {
+    onEventAdd((event: TimelineEvent) => {
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
 
       if (event.stackParent) {
@@ -385,7 +381,7 @@ export default {
       })
     })
 
-    function drawEvent (selected, event) {
+    function drawEvent (selected: boolean, event: TimelineEvent) {
       if (event) {
         let color = event.layer.color
         for (const subEvent of event.stackedEvents) {
@@ -420,7 +416,7 @@ export default {
     const drawSelectedEvent = drawEvent.bind(null, true)
     const drawUnselectedEvent = drawEvent.bind(null, false)
 
-    function refreshEventGraphics (event) {
+    function refreshEventGraphics (event: TimelineEvent) {
       if (selectedEvent.value === event) {
         drawSelectedEvent(event)
       } else {
@@ -463,7 +459,7 @@ export default {
 
     // Event Groups
 
-    function drawEventGroup (event) {
+    function drawEventGroup (event: TimelineEvent) {
       if (event.groupG) {
         /** @type {PIXI.Graphics} */
         const g = event.groupG
@@ -480,8 +476,7 @@ export default {
 
     const { cursorTime } = useCursor()
 
-    /** @type {PIXI.Graphics} */
-    let timeCursor
+    let timeCursor: PIXI.Graphics
 
     onMounted(() => {
       timeCursor = new PIXI.Graphics()
@@ -497,10 +492,7 @@ export default {
       timeCursor.lineTo(0.5, app.view.height)
     }
 
-    /**
-     * @param {MouseEvent} event
-     */
-    function updateCursorPosition (event) {
+    function updateCursorPosition (event: MouseEvent) {
       const { offsetX } = event
       timeCursor.x = offsetX
       timeCursor.visible = true
@@ -514,8 +506,7 @@ export default {
 
     // Time grid
 
-    /** @type {PIXI.Graphics} */
-    let timeGrid
+    let timeGrid: PIXI.Graphics
 
     onMounted(() => {
       timeGrid = new PIXI.Graphics()
@@ -575,10 +566,7 @@ export default {
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
 
-    /**
-     * @param {MouseWheelEvent} event
-     */
-    function onMouseWheel (event) {
+    function onMouseWheel (event: WheelEvent) {
       const size = endTime.value - startTime.value
       const viewWidth = wrapper.value.offsetWidth
 
@@ -657,7 +645,7 @@ export default {
 
     // Events
 
-    function onMouseMove (event) {
+    function onMouseMove (event: MouseEvent) {
       updateLayerHover(event)
       updateCursorPosition(event)
     }
@@ -675,7 +663,7 @@ export default {
       onResize
     }
   }
-}
+})
 </script>
 
 <template>

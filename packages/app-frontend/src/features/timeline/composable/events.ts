@@ -11,7 +11,9 @@ import {
   selectedEvent,
   inspectedEvent,
   inspectedEventData,
-  inspectedEventPendingId
+  inspectedEventPendingId,
+  TimelineEvent,
+  Layer
 } from './store'
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
@@ -19,18 +21,20 @@ import { takeScreenshot } from './screenshot'
 const STACK_DURATION = 50
 const AUTOSCROLL_DURATION = 10000
 
-const addEventCbs = []
+type AddEventCb = (event: TimelineEvent) => void
 
-export function onEventAdd (cb) {
+const addEventCbs: AddEventCb[] = []
+
+export function onEventAdd (cb: AddEventCb) {
   onUnmounted(() => {
     const index = addEventCbs.indexOf(cb)
-    if (index !== -1) addEventCbs.splice(cb)
+    if (index !== -1) addEventCbs.splice(index, 1)
   })
 
   addEventCbs.push(cb)
 }
 
-export function addEvent (appId, event, layer) {
+export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
   if (timelineIsEmpty.value) {
     timelineIsEmpty.value = false
     resetTime()
@@ -90,7 +94,7 @@ export function addEvent (appId, event, layer) {
   }
 }
 
-function stackEvent (event) {
+function stackEvent (event: TimelineEvent) {
   const roundedTime = Math.round(event.time / STACK_DURATION)
   const wasStacked = _stackEvent(event, roundedTime)
   if (!wasStacked) {
@@ -101,7 +105,7 @@ function stackEvent (event) {
   return wasStacked
 }
 
-function _stackEvent (event, roundedTime) {
+function _stackEvent (event: TimelineEvent, roundedTime: number) {
   const existingEvent = event.layer.eventTimeMap[roundedTime]
   if (existingEvent && existingEvent.groupId === event.groupId) {
     existingEvent.stackedEvents.push(event)
@@ -136,7 +140,7 @@ export function useInspectedEvent () {
   }
 }
 
-function loadEvent (id) {
+function loadEvent (id: TimelineEvent['id']) {
   if (!id || inspectedEventPendingId.value === id) return
   inspectedEventPendingId.value = id
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, { id })

@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
 import SharedData from '@utils/shared-data'
 
-export default {
+export default defineComponent({
   setup (props, { emit }) {
     function requestPermission () {
       chrome.permissions.request({
@@ -32,7 +33,7 @@ export default {
       cancel
     }
   }
-}
+})
 </script>
 
 <template>

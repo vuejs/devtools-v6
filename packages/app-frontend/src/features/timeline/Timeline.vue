@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import TimelineView from './TimelineView.vue'
@@ -8,7 +8,7 @@ import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
-import { computed, onMounted, ref, watch } from '@vue/composition-api'
+import { computed, onMounted, ref, watch, defineComponent } from '@vue/composition-api'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
 import SharedData from '@utils/shared-data'
@@ -19,10 +19,11 @@ import {
   useCursor,
   useSelectedEvent,
   useScreenshots,
-  supportsScreenshot
+  supportsScreenshot,
+  TimelineEvent
 } from './composable'
 
-export default {
+export default defineComponent({
   components: {
     SplitPane,
     LayerItem,
@@ -62,7 +63,7 @@ export default {
       applyScroll()
     })
 
-    function onLayersScroll (event) {
+    function onLayersScroll (event: TimelineEvent) {
       if (event.currentTarget.scrollTop !== vScroll.value) {
         vScroll.value = event.currentTarget.scrollTop
       }
@@ -174,7 +175,7 @@ export default {
       supportsScreenshot
     }
   }
-}
+})
 </script>
 
 <template>

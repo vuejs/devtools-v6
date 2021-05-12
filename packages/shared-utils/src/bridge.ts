@@ -29,7 +29,7 @@ export class Bridge extends EventEmitter {
     this._time = null
   }
 
-  send (event: string, payload: any) {
+  send (event: string, payload?: any) {
     if (Array.isArray(payload)) {
       const lastIndex = payload.length - 1
       payload.forEach((chunk, index) => {
