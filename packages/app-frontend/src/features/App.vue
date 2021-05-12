@@ -87,7 +87,7 @@ export default defineComponent({
     />
 
     <template v-else>
-      <AppHeader class="flex-none" />
+      <AppHeader class="flex-none relative z-10" />
 
       <router-view class="flex-1 overflow-auto" />
     </template>
