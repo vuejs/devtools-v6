@@ -1,6 +1,6 @@
-import { ref } from '@vue/composition-api'
+import { Ref, ref } from '@vue/composition-api'
 import { ID } from '@vue/devtools-api'
-import type { Container, Graphics } from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy'
 
 export interface TimelineEventFromBackend {
   id: number
@@ -28,13 +28,14 @@ export interface EventScreenshot {
 
 export interface TimelineEvent extends TimelineEventFromBackend {
   layer: Layer
-  appId: number
+  appId: number | 'all'
   stackedEvents: TimelineEvent[]
   group: EventGroup
   stackParent: TimelineEvent
   screenshot: EventScreenshot
-  container: Container
-  g: Graphics
+  container: PIXI.Container
+  g: PIXI.Graphics
+  groupG: PIXI.Graphics
 }
 
 export interface LayerFromBackend {
@@ -67,10 +68,10 @@ export const layersPerApp = ref<{[appId: number]: Layer[]}>({})
 export const hiddenLayersPerApp = ref<{[appId: number]: Layer['id'][]}>({})
 export const vScrollPerApp = ref<{[appId: number]: number}>({})
 
-export const selectedEvent = ref<TimelineEvent>(null)
+export const selectedEvent: Ref<TimelineEvent> = ref(null)
 export const hoverLayerId = ref<Layer['id']>(null)
 
-export const inspectedEvent = ref<TimelineEvent>(null)
+export const inspectedEvent: Ref<TimelineEvent> = ref(null)
 export const inspectedEventData = ref(null)
 export const inspectedEventPendingId = ref<TimelineEvent['id']>(null)
 

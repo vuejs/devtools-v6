@@ -23,7 +23,7 @@ export default defineComponent({
     draggerOffset: {
       type: String as PropType<'before' | 'center' | 'after'>,
       default: 'center',
-      validator: value => ['before', 'center', 'after'].includes(value)
+      validator: (value: any) => ['before', 'center', 'after'].includes(value)
     },
 
     saveId: {

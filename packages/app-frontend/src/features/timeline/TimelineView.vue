@@ -75,9 +75,9 @@ export default defineComponent({
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       updateBackground()
       wrapper.value.appendChild(app.view)
-      app.view.style.opacity = 0
+      app.view.style.opacity = '0'
       app.renderer.on('postrender', () => {
-        app.view.style.opacity = 1
+        app.view.style.opacity = '1'
       })
 
       verticalScrollingContainer = new PIXI.Container()
@@ -635,7 +635,7 @@ export default defineComponent({
     // Resize
 
     function onResize () {
-      app.view.style.opacity = 0
+      app.view.style.opacity = '0'
       app.queueResize()
       queueEventsUpdate()
       drawLayerBackgroundEffects()

@@ -19,8 +19,7 @@ import {
   useCursor,
   useSelectedEvent,
   useScreenshots,
-  supportsScreenshot,
-  TimelineEvent
+  supportsScreenshot
 } from './composable'
 
 export default defineComponent({
@@ -63,9 +62,10 @@ export default defineComponent({
       applyScroll()
     })
 
-    function onLayersScroll (event: TimelineEvent) {
-      if (event.currentTarget.scrollTop !== vScroll.value) {
-        vScroll.value = event.currentTarget.scrollTop
+    function onLayersScroll (event: WheelEvent) {
+      const target = event.currentTarget as HTMLElement
+      if (target.scrollTop !== vScroll.value) {
+        vScroll.value = target.scrollTop
       }
     }
 
