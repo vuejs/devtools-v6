@@ -29,7 +29,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative group">
     <div
       class="border-b border-gray-200 dark:border-gray-900"
       :style="{
@@ -38,19 +38,49 @@ export default defineComponent({
     >
       <div class="flex items-center space-x-2 px-2 py-1">
         <div
-          class="flex-none w-3 h-3 rounded-full"
-          :style="{
-            backgroundColor: `#${layer.color.toString(16)}`
-          }"
-        />
+          class="flex-none w-3 h-3 relative cursor-pointer"
+          @click="$emit('select')"
+        >
+          <div
+            class="absolute inset-0 rounded-full"
+            :style="{
+              backgroundColor: `#${layer.color.toString(16)}`
+            }"
+          />
+          <transition
+            appear
+            enter-active-class="transform transition-transform duration-300 ease-in-out"
+            leave-active-class="transform transition-transform duration-300 ease-in-out"
+            enter-class="scale-0"
+            leave-to-class="scale-0"
+          >
+            <div
+              v-if="selected"
+              class="absolute inset-0.5 rounded-full bg-white dark:bg-black z-10"
+            />
+          </transition>
+        </div>
         <div class="flex-1 overflow-hidden flex items-center space-x-2">
-          <span class="truncate text-sm">{{ layer.label }}</span>
+          <span
+            class="truncate text-sm cursor-pointer"
+            @click="$emit('select')"
+          >{{ layer.label }}</span>
 
           <PluginSourceIcon
             v-if="layer.pluginId"
             :plugin-id="layer.pluginId"
           />
         </div>
+
+        <VueButton
+          class="text-xs px-1 py-0 h-6 opacity-0 group-hover:opacity-100"
+          :style="{
+            backgroundColor: `#${layer.color.toString(16)}28`,
+          }"
+          @click="$emit('select')"
+        >
+          Select
+        </VueButton>
       </div>
     </div>
 

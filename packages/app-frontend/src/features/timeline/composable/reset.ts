@@ -15,7 +15,8 @@ import {
   startTime,
   endTime,
   minTime,
-  maxTime
+  maxTime,
+  selectedLayer
 } from './store'
 import { fetchLayers } from './layers'
 
@@ -24,6 +25,7 @@ type ResetCb = () => void
 const resetCbs: ResetCb[] = []
 
 export function resetTimeline () {
+  selectedLayer.value = null
   selectedEvent.value = null
   inspectedEvent.value = null
   inspectedEventData.value = null

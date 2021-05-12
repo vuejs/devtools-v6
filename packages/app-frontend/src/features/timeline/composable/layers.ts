@@ -6,11 +6,13 @@ import { getBridge } from '@front/features/bridge'
 import {
   layersPerApp,
   hiddenLayersPerApp,
-  selectedEvent,
+  selectedLayer,
   vScrollPerApp,
   hoverLayerId,
   LayerFromBackend,
-  Layer
+  Layer,
+  selectedEvent,
+  inspectedEvent
 } from './store'
 
 export function layerFactory (options: LayerFromBackend): Layer {
@@ -90,7 +92,13 @@ export function useLayers () {
 
   const layers = computed(() => allLayers.value.filter(l => !isLayerHidden(l)))
 
-  const selectedEventLayerId = computed(() => selectedEvent.value ? selectedEvent.value.layer.id : null)
+  function selectLayer (layer: Layer) {
+    selectedLayer.value = layer
+    let event = layer.events.length ? layer.events[layer.events.length - 1] : null
+    inspectedEvent.value = event
+    if (event?.stackParent) event = event.stackParent
+    selectedEvent.value = event
+  }
 
   return {
     layers,
@@ -104,7 +112,8 @@ export function useLayers () {
     isLayerHidden,
     setLayerHidden,
     hoverLayerId,
-    selectedEventLayerId
+    selectedLayer: computed(() => selectedLayer.value),
+    selectLayer
   }
 }
 

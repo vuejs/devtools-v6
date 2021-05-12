@@ -38,7 +38,7 @@ export default defineComponent({
 
 <template>
   <div
-    v-if="inspectedEventState"
+    v-if="inspectedEvent && inspectedEventState"
     class="flex flex-col h-full"
   >
     <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-900 p-2 pl-3 text-bluegray-900 dark:text-bluegray-100 space-x-2">

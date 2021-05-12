@@ -69,6 +69,7 @@ export const hiddenLayersPerApp = ref<{[appId: number]: Layer['id'][]}>({})
 export const vScrollPerApp = ref<{[appId: number]: number}>({})
 
 export const selectedEvent: Ref<TimelineEvent> = ref(null)
+export const selectedLayer: Ref<Layer> = ref(null)
 export const hoverLayerId = ref<Layer['id']>(null)
 
 export const inspectedEvent: Ref<TimelineEvent> = ref(null)

@@ -14,6 +14,7 @@ import {
   useLayers,
   useTime,
   useSelectedEvent,
+  selectEvent,
   onTimelineReset,
   onEventAdd,
   useCursor,
@@ -109,7 +110,7 @@ export default defineComponent({
       layers,
       vScroll,
       hoverLayerId,
-      selectedEventLayerId
+      selectedLayer
     } = useLayers()
 
     let layerContainers: PIXI.Container[] = []
@@ -176,7 +177,7 @@ export default defineComponent({
           alpha: 1
         },
         {
-          id: hoverLayerId.value !== selectedEventLayerId.value ? selectedEventLayerId.value : null,
+          id: hoverLayerId.value !== selectedLayer.value?.id ? selectedLayer.value?.id : null,
           alpha: 0.5
         }
       ].filter(({ id }) => id != null)
@@ -200,7 +201,7 @@ export default defineComponent({
       drawLayerBackgroundEffects()
     })
 
-    watch(selectedEventLayerId, () => {
+    watch(selectedLayer, () => {
       drawLayerBackgroundEffects()
     })
 
@@ -377,7 +378,7 @@ export default defineComponent({
             distance = d
           }
         }
-        selectedEvent.value = choice
+        selectEvent(choice)
       })
     })
 
@@ -442,7 +443,7 @@ export default defineComponent({
         } else {
           index = events.length - 1
         }
-        selectedEvent.value = events[index]
+        selectEvent(events[index])
       } else if (event.key === 'ArrowRight') {
         let index
         if (selectedEvent.value) {
@@ -453,7 +454,7 @@ export default defineComponent({
         } else {
           index = 0
         }
-        selectedEvent.value = events[index]
+        selectEvent(events[index])
       }
     })
 

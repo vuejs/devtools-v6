@@ -4,7 +4,7 @@ import TimelineEventListItem from './TimelineEventListItem.vue'
 
 import { computed, ref, watch, defineComponent } from '@vue/composition-api'
 import Defer from '@front/mixins/defer'
-import { useInspectedEvent, useSelectedEvent, TimelineEvent } from './composable'
+import { useInspectedEvent, useSelectedEvent, selectEvent, TimelineEvent, useLayers } from './composable'
 
 const itemHeight = 34
 
@@ -20,6 +20,10 @@ export default defineComponent({
 
   setup () {
     const {
+      selectedLayer
+    } = useLayers()
+
+    const {
       selectedEvent,
       selectedStackedEvents,
       selectedGroupEvents
@@ -28,8 +32,6 @@ export default defineComponent({
     const {
       inspectedEvent
     } = useInspectedEvent()
-
-    const layer = computed(() => selectedEvent.value.layer)
 
     // Tabs
 
@@ -46,7 +48,7 @@ export default defineComponent({
         case 'group':
           return selectedGroupEvents.value
         case 'all':
-          return selectedEvent.value ? selectedEvent.value.layer.events : []
+          return selectedLayer.value?.events ?? []
         case 'nearby':
         default:
           return selectedStackedEvents.value
@@ -149,23 +151,9 @@ export default defineComponent({
       inspectedEvent.value = event
     }
 
-    watch(selectedEvent, value => {
-      if (!inspectedEvent.value || !selectedStackedEvents.value.includes(inspectedEvent.value)) {
-        inspectedEvent.value = value
-      }
-    })
-
-    function selectEvent (event: TimelineEvent) {
-      if (event.stackParent) {
-        selectedEvent.value = event.stackParent
-      } else {
-        selectedEvent.value = event
-      }
-    }
-
     return {
       selectedEvent,
-      layer,
+      selectedLayer,
       selectedStackedEvents,
       tabId,
       scroller,
@@ -183,7 +171,7 @@ export default defineComponent({
 
 <template>
   <div
-    v-if="selectedEvent"
+    v-if="selectedEvent && selectedLayer"
     class="h-full flex flex-col"
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-900 border-b">
@@ -210,7 +198,7 @@ export default defineComponent({
       <VueInput
         v-model="filter"
         icon-left="search"
-        :placeholder="`Filter ${layer.label}`"
+        :placeholder="`Filter ${selectedLayer.label}`"
         class="search flat"
       />
     </div>
@@ -235,8 +223,13 @@ export default defineComponent({
 
   <EmptyPane
     v-else
-    icon="inbox"
+    :icon="!selectedLayer ? 'layers' : 'inbox'"
   >
-    No events
+    <template v-if="!selectedLayer">
+      Select a layer to get started
+    </template>
+    <template v-else>
+      No events
+    </template>
   </EmptyPane>
 </template>

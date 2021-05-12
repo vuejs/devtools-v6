@@ -42,7 +42,8 @@ export default defineComponent({
       isLayerHidden,
       setLayerHidden,
       hoverLayerId,
-      selectedEventLayerId
+      selectedLayer,
+      selectLayer
     } = useLayers()
     const layersEl = ref()
 
@@ -165,7 +166,8 @@ export default defineComponent({
       layersEl,
       onLayersScroll,
       hoverLayerId,
-      selectedEventLayerId,
+      selectedLayer,
+      selectLayer,
       allLayers,
       isLayerHidden,
       setLayerHidden,
@@ -200,10 +202,11 @@ export default defineComponent({
               :key="layer.id"
               :layer="layer"
               :hover="hoverLayerId === layer.id"
-              :selected="selectedEventLayerId === layer.id"
+              :selected="selectedLayer === layer"
               class="flex-none"
               @mouseover.native="hoverLayerId = layer.id"
               @mouseout.native="hoverLayerId = null"
+              @select="selectLayer(layer)"
             />
           </div>
         </div>

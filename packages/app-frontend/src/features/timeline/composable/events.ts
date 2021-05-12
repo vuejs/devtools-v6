@@ -13,7 +13,8 @@ import {
   inspectedEventData,
   inspectedEventPendingId,
   TimelineEvent,
-  Layer
+  Layer,
+  selectedLayer
 } from './store'
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
@@ -117,9 +118,9 @@ function _stackEvent (event: TimelineEvent, roundedTime: number) {
 
 export function useSelectedEvent () {
   return {
-    selectedEvent,
-    selectedStackedEvents: computed(() => selectedEvent.value.stackedEvents),
-    selectedGroupEvents: computed(() => selectedEvent.value.group ? selectedEvent.value.group.events : [])
+    selectedEvent: computed(() => selectedEvent.value),
+    selectedStackedEvents: computed(() => selectedEvent.value?.stackedEvents ?? []),
+    selectedGroupEvents: computed(() => selectedEvent.value?.group?.events ?? [])
   }
 }
 
@@ -144,4 +145,10 @@ function loadEvent (id: TimelineEvent['id']) {
   if (!id || inspectedEventPendingId.value === id) return
   inspectedEventPendingId.value = id
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, { id })
+}
+
+export function selectEvent (event: TimelineEvent) {
+  if (event.stackParent) event = event.stackParent
+  selectedEvent.value = inspectedEvent.value = event
+  selectedLayer.value = event.layer
 }
