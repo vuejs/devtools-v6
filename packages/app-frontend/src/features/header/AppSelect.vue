@@ -25,7 +25,7 @@ export default defineComponent({
       if (!currentApp.value && apps.value.length && currentAppId.value !== apps.value[0].id) {
         router.push({
           params: {
-            appId: apps.value[0].id
+            appId: apps.value[0].id.toString()
           }
         })
       }

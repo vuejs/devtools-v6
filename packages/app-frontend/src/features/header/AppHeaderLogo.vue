@@ -26,7 +26,7 @@ export default defineComponent({
       <img
         src="~@front/assets/vue-logo.svg"
         alt="Vue logo"
-        class="w-10 h-10"
+        class="w-8 h-8"
       >
     </VueButton>
 

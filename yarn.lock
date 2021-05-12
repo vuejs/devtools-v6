@@ -1928,10 +1928,10 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.11.tgz#20d22dd0da7d358bb21c17f9bde8628152642c77"
   integrity sha512-b+zB8A2so8eCE0JsxjL24J7vdGl8rzPQ09hZNhystm+KqSbKcAej1A+Hbva1rCMmTTqA+hFnUSDc5kouEo0JzA==
 
-"@vue/ui@^0.12.4":
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.12.4.tgz#d5160feb0ae0e4dfd6d8d9e455a4d31e5b90f459"
-  integrity sha512-bPyfI4+q2UmWmG0Xx1BxlmSc3Oz3c5PG27i1T2YD0XaJXwHzNxAd5ioz2GYqaG9fOxRPII0RrEnWo5j3lM6Stg==
+"@vue/ui@^0.12.5":
+  version "0.12.5"
+  resolved "https://registry.yarnpkg.com/@vue/ui/-/ui-0.12.5.tgz#3c3456c8e4dcb3360a9228de0270921906bb7097"
+  integrity sha512-YBdl5y0XcM/RnLK8mxBQFS1SdcGtUnWcA0Aw4/geE8ZHehi3ZkBGocmZm0mK5HPlwH/+d0G+w18dbDjVaFWcKg==
   dependencies:
     focus-visible "^5.2.0"
     v-tooltip "^3.0.0-alpha.20"
