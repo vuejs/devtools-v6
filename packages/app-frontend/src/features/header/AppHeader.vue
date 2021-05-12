@@ -1,6 +1,6 @@
 <script lang="ts">
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
-import AppMainMenu from './AppMainMenu.vue'
+import AppHeaderLogo from './AppHeaderLogo.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from './AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
@@ -14,7 +14,7 @@ import { useTabs } from './tabs'
 
 export default defineComponent({
   components: {
-    AppMainMenu,
+    AppHeaderLogo,
     AppHistoryNav,
     AppSelect,
     AppHeaderSelect,
@@ -108,7 +108,7 @@ export default defineComponent({
 
 <template>
   <div class="border-b border-gray-200 dark:border-gray-900 flex items-center space-x-2 px-2 h-10">
-    <AppMainMenu />
+    <AppHeaderLogo />
 
     <AppHistoryNav />
 
