@@ -14,6 +14,7 @@ import {
   selectedEvent,
   inspectedEvent
 } from './store'
+import { useRouter } from '@front/util/router'
 
 export function layerFactory (options: LayerFromBackend): Layer {
   return {
@@ -92,12 +93,21 @@ export function useLayers () {
 
   const layers = computed(() => allLayers.value.filter(l => !isLayerHidden(l)))
 
+  const router = useRouter()
+
   function selectLayer (layer: Layer) {
     selectedLayer.value = layer
     let event = layer.events.length ? layer.events[layer.events.length - 1] : null
     inspectedEvent.value = event
     if (event?.stackParent) event = event.stackParent
     selectedEvent.value = event
+
+    router.push({
+      query: {
+        ...router.currentRoute.query,
+        tabId: 'all'
+      }
+    })
   }
 
   return {

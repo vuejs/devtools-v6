@@ -3,10 +3,14 @@ import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import TimelineEventListItem from './TimelineEventListItem.vue'
 
 import { computed, ref, watch, defineComponent } from '@vue/composition-api'
+import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 import Defer from '@front/mixins/defer'
-import { useInspectedEvent, useSelectedEvent, selectEvent, TimelineEvent, useLayers } from './composable'
+import { useInspectedEvent, useSelectedEvent, selectEvent, useLayers } from './composable'
+import { useRoute, useRouter } from '@front/util/router'
 
 const itemHeight = 34
+
+const STORAGE_TAB_ID = 'timeline.event-list.tab-id'
 
 export default defineComponent({
   components: {
@@ -19,6 +23,9 @@ export default defineComponent({
   ],
 
   setup () {
+    const route = useRoute()
+    const router = useRouter()
+
     const {
       selectedLayer
     } = useLayers()
@@ -35,7 +42,22 @@ export default defineComponent({
 
     // Tabs
 
-    const tabId = ref('nearby')
+    const tabId = computed({
+      get: () => route.value.query.tabId,
+      set: value => {
+        setStorage(STORAGE_TAB_ID, value)
+        router.push({
+          query: {
+            ...route.value.query,
+            tabId: value
+          }
+        })
+      }
+    })
+
+    if (!route.value.query.tabId) {
+      tabId.value = getStorage(STORAGE_TAB_ID, 'nearby')
+    }
 
     watch(selectedEvent, value => {
       if (value && !value.group && tabId.value === 'group') {
@@ -175,26 +197,28 @@ export default defineComponent({
     class="h-full flex flex-col"
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
-      <VueTabs
-        :tab-id.sync="tabId"
-        group-class="accent extend"
-        tab-class="flat"
-        class="border-gray-200 dark:border-gray-800 border-b"
+      <VueGroup
+        v-model="tabId"
+        indicator
+        class="accent extend border-gray-200 dark:border-gray-800 border-b"
       >
-        <VueTab
-          id="nearby"
+        <VueGroupButton
+          value="nearby"
           :label="selectedStackedEvents.length > 1 ? 'Nearby' : 'Selected'"
+          class="flat"
         />
-        <VueTab
+        <VueGroupButton
           v-if="selectedEvent.group"
-          id="group"
+          value="group"
           label="Group"
+          class="flat"
         />
-        <VueTab
-          id="all"
+        <VueGroupButton
+          value="all"
           label="All"
+          class="flat"
         />
-      </VueTabs>
+      </VueGroup>
 
       <VueInput
         v-model="filter"
