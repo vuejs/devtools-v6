@@ -190,7 +190,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="h-4 flex-none border-b border-gray-200 dark:border-gray-900" />
+          <div class="h-4 flex-none border-b border-gray-200 dark:border-gray-800" />
 
           <div
             ref="layersEl"

@@ -45,7 +45,7 @@ export default defineComponent({
             icon-left="search"
             placeholder="Filter devtools plugins..."
             select-all
-            class="w-full flat border-b border-gray-200 dark:border-gray-900"
+            class="w-full flat border-b border-gray-200 dark:border-gray-800"
           />
         </div>
         <div class="overflow-y-auto">

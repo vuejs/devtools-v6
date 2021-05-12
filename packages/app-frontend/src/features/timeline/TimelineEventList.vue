@@ -174,11 +174,12 @@ export default defineComponent({
     v-if="selectedEvent && selectedLayer"
     class="h-full flex flex-col"
   >
-    <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-900 border-b">
+    <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
       <VueTabs
         :tab-id.sync="tabId"
         group-class="accent extend"
         tab-class="flat"
+        class="border-gray-200 dark:border-gray-800 border-b"
       >
         <VueTab
           id="nearby"

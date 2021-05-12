@@ -131,7 +131,7 @@ export default defineComponent({
       class="relative top-0 left-0"
       :class="{
         'pointer-events-none': dragging,
-        'border-r border-gray-200 dark:border-gray-900': orientation === 'landscape'
+        'border-r border-gray-200 dark:border-gray-800': orientation === 'landscape'
       }"
       :style="leftStyle"
     >

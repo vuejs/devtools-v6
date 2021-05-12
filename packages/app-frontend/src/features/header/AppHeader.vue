@@ -74,7 +74,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="flex items-center space-x-2 px-2 h-8 shadow">
+  <div class="flex items-center space-x-2 px-2 h-8">
     <AppHeaderLogo />
 
     <AppHistoryNav />
@@ -144,7 +144,7 @@ export default defineComponent({
           Global settings...
         </VueDropdownButton>
 
-        <div class="border-t border-gray-200 dark:border-gray-900 my-1" />
+        <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
 
         <VueDropdownButton
           href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"

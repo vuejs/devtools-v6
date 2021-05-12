@@ -57,7 +57,7 @@ export default defineComponent({
             v-model="inspector.treeFilter"
             icon-left="search"
             :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
-            class="search flat border-b border-gray-200 dark:border-gray-900"
+            class="search flat border-b border-gray-200 dark:border-gray-800"
           />
 
           <div

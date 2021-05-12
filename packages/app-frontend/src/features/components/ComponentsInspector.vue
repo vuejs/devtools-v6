@@ -87,7 +87,7 @@ export default defineComponent({
             icon-left="search"
             placeholder="Find components..."
             select-all
-            class="search flat border-b border-gray-200 dark:border-gray-900"
+            class="search flat border-b border-gray-200 dark:border-gray-800"
           />
 
           <div

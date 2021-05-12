@@ -39,7 +39,7 @@ export default defineComponent({
     v-if="inspector.selectedNode"
     class="h-full flex flex-col"
   >
-    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-900 flex items-center flex-none">
+    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
       <div>
         {{ inspector.selectedNode.label }}
       </div>

@@ -41,7 +41,7 @@ export default defineComponent({
     v-if="inspectedEvent && inspectedEventState"
     class="flex flex-col h-full"
   >
-    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-900 p-2 pl-3 text-bluegray-900 dark:text-bluegray-100 space-x-2">
+    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-800 p-2 pl-3 text-bluegray-900 dark:text-bluegray-100 space-x-2">
       <div
         class="flex-none w-2 h-2 rounded-full border"
         :style="{

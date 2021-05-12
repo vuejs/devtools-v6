@@ -31,7 +31,7 @@ export default defineComponent({
 <template>
   <div class="relative group">
     <div
-      class="border-b border-gray-200 dark:border-gray-900"
+      class="border-b border-gray-200 dark:border-gray-800"
       :style="{
         height: `${(layer.height + 1) * 16}px`
       }"
