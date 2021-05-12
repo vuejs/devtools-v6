@@ -1,4 +1,4 @@
-import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import { Bridge, BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { putError } from '@front/features/error'
 import {
   selectedComponentPendingId,
@@ -17,7 +17,7 @@ import {
   requestComponentTree
 } from './components'
 
-export function setupComponentsBridgeEvents (bridge) {
+export function setupComponentsBridgeEvents (bridge: Bridge) {
   selectedComponentPendingId.value = null
   expandedMap.value = {}
 

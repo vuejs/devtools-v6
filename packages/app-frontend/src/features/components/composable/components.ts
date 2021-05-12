@@ -1,4 +1,5 @@
-import { ref, computed, watch } from '@vue/composition-api'
+import { ref, computed, watch, Ref } from '@vue/composition-api'
+import { ComponentTreeNode, EditStatePayload, InspectedComponentData } from '@vue/devtools-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
 import {
@@ -10,25 +11,26 @@ import {
   openInEditor
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
+import { App } from '@front/features/apps'
 import { useRoute, useRouter } from '@front/util/router'
 
-export const rootInstances = ref([])
-export const componentsMap = ref({})
-let componentsParent = {}
+export const rootInstances = ref<ComponentTreeNode[]>([])
+export const componentsMap = ref<Record<ComponentTreeNode['id'], ComponentTreeNode>>({})
+let componentsParent: Record<ComponentTreeNode['id'], ComponentTreeNode['id']> = {}
 const treeFilter = ref('')
-export const selectedComponentId = ref(null)
-export const selectedComponentData = ref(null)
+export const selectedComponentId = ref<ComponentTreeNode['id']>(null)
+export const selectedComponentData = ref<InspectedComponentData>(null)
 const selectedComponentStateFilter = ref('')
-export const selectedComponentPendingId = ref(null)
-let lastSelectedApp = null
-let lastSelectedComponentId = null
-export const expandedMap = ref({})
+export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
+let lastSelectedApp: App = null
+let lastSelectedComponentId: ComponentTreeNode['id'] = null
+export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
 export const resetComponentsQueued = ref(false)
 
 export function useComponentRequests () {
   const router = useRouter()
 
-  function selectComponent (id, replace = false) {
+  function selectComponent (id: ComponentTreeNode['id'], replace = false) {
     if (selectedComponentId.value !== id) {
       router[replace ? 'replace' : 'push']({
         params: {
@@ -120,7 +122,7 @@ export function useComponents () {
   }
 }
 
-export function useComponent (instance) {
+export function useComponent (instance: Ref<ComponentTreeNode>) {
   const { selectComponent, requestComponentTree } = useComponentRequests()
   const { subscribe } = useBridge()
 
@@ -173,7 +175,7 @@ export function useComponent (instance) {
   }
 }
 
-export function setComponentOpen (id, isOpen) {
+export function setComponentOpen (id: ComponentTreeNode['id'], isOpen: boolean) {
   Vue.set(expandedMap.value, id, isOpen)
 }
 
@@ -205,7 +207,7 @@ export function useSelectedComponent () {
 
   const { bridge } = useBridge()
 
-  function editState (dotPath, payload, type) {
+  function editState (dotPath: string, payload: EditStatePayload, type?: string) {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, {
       instanceId: data.value.id,
       dotPath,
@@ -232,7 +234,7 @@ export function resetComponents () {
   componentsParent = {}
 }
 
-export function requestComponentTree (instanceId = null) {
+export function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
   if (!instanceId) {
     instanceId = '_root'
   }
@@ -245,7 +247,7 @@ export function requestComponentTree (instanceId = null) {
   })
 }
 
-export function restoreChildrenFromComponentsMap (data) {
+export function restoreChildrenFromComponentsMap (data: ComponentTreeNode) {
   const instance = componentsMap.value[data.id]
   if (instance && data.hasChildren) {
     if (!data.children.length && instance.children.length) {
@@ -258,7 +260,7 @@ export function restoreChildrenFromComponentsMap (data) {
   }
 }
 
-export function updateComponentsMapData (data) {
+export function updateComponentsMapData (data: ComponentTreeNode) {
   const component = componentsMap.value[data.id]
   for (const key in data) {
     Vue.set(component, key, data[key])
@@ -266,7 +268,7 @@ export function updateComponentsMapData (data) {
   return component
 }
 
-export function addToComponentsMap (instance) {
+export function addToComponentsMap (instance: ComponentTreeNode) {
   componentsMap.value[instance.id] = instance
   if (instance.children) {
     instance.children.forEach(c => {
@@ -276,9 +278,9 @@ export function addToComponentsMap (instance) {
   }
 }
 
-export function loadComponent (id) {
+export function loadComponent (id: ComponentTreeNode['id']) {
   if (!id || selectedComponentPendingId.value === id) return
   lastSelectedComponentId = id
   selectedComponentPendingId.value = id
-  bridge.send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
+  getBridge().send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
 }

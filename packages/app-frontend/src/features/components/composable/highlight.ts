@@ -1,7 +1,8 @@
 import { useBridge } from '@front/features/bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { Ref } from '@vue/composition-api'
 
-export function useComponentHighlight (id) {
+export function useComponentHighlight (id: Ref<string>) {
   const { bridge } = useBridge()
 
   function highlight () {

@@ -1,5 +1,6 @@
 <script lang="ts">
-import { computed, toRefs, onMounted, ref, watch, defineComponent } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from '@vue/composition-api'
+import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
@@ -12,7 +13,7 @@ export default defineComponent({
 
   props: {
     instance: {
-      type: Object,
+      type: Object as PropType<ComponentTreeNode>,
       required: true
     },
 
@@ -31,9 +32,11 @@ export default defineComponent({
 
     const sortedChildren = computed(() => props.instance.children
       ? props.instance.children.slice().sort((a, b) => {
-        return a.positionTop === b.positionTop
-          ? a.id - b.id
-          : a.positionTop - b.positionTop
+        if (a.positionTop === b.positionTop) {
+          return a.id.localeCompare(b.id)
+        } else {
+          return a.positionTop - b.positionTop
+        }
       })
       : [])
 

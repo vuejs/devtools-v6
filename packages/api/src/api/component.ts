@@ -1,12 +1,13 @@
 import { InspectorNodeTag } from './api'
+import { ID } from './util'
 
 export type ComponentInstance = any // @TODO
 
 export interface ComponentTreeNode {
-  uid: number | string
+  uid: ID
   id: string
   name: string
-  renderKey: string
+  renderKey: string | number
   inactive: boolean
   isFragment: boolean
   hasChildren: boolean
