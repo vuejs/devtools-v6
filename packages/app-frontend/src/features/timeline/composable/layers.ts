@@ -24,7 +24,8 @@ export function layerFactory (options: LayerFromBackend): Layer {
     eventTimeMap: {},
     groupsMap: {},
     groups: [],
-    height: 1
+    height: 1,
+    lastInspectedEvent: null
   }
 }
 
@@ -96,8 +97,11 @@ export function useLayers () {
   const router = useRouter()
 
   function selectLayer (layer: Layer) {
+    let event = selectedLayer.value !== layer ? layer.lastInspectedEvent : null
+
     selectedLayer.value = layer
-    let event = layer.events.length ? layer.events[layer.events.length - 1] : null
+
+    if (!event) event = layer.events.length ? layer.events[layer.events.length - 1] : null
     inspectedEvent.value = event
     if (event?.stackParent) event = event.stackParent
     selectedEvent.value = event

@@ -128,6 +128,7 @@ export function useInspectedEvent () {
   watch(inspectedEvent, event => {
     if (event) {
       loadEvent(event.id)
+      event.layer.lastInspectedEvent = event
     }
   }, {
     immediate: true

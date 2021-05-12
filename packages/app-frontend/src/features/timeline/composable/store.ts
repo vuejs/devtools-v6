@@ -53,6 +53,7 @@ export interface Layer extends LayerFromBackend {
   groupsMap: Record<EventGroup['id'], EventGroup>
   groups: EventGroup[]
   height: number
+  lastInspectedEvent: TimelineEvent
 }
 
 export const startTime = ref(0)
