@@ -215,7 +215,7 @@ export default defineComponent({
       <template #right>
         <SplitPane
           save-id="timeline-right"
-          :default-split="70"
+          :default-split="50"
           :max="85"
           dragger-offset="after"
         >
