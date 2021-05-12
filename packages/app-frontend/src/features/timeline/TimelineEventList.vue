@@ -114,11 +114,11 @@ export default defineComponent({
       if (value) {
         onScroll()
       }
-    })
+    }, { immediate: true })
 
     watch(tabId, () => {
       scrollToInspectedEvent()
-    })
+    }, { immediate: true })
 
     function scrollToInspectedEvent () {
       if (!scroller.value) return
@@ -135,20 +135,22 @@ export default defineComponent({
 
     watch(inspectedEvent, () => {
       checkScrollToInspectedEvent()
-    })
+    }, { immediate: true })
 
     function checkScrollToInspectedEvent () {
-      if (!scroller.value) return
+      requestAnimationFrame(() => {
+        if (!scroller.value) return
 
-      const scrollerEl = scroller.value.$el
+        const scrollerEl = scroller.value.$el
 
-      const index = filteredEvents.value.indexOf(inspectedEvent.value)
-      const minPosition = itemHeight * index
-      const maxPosition = minPosition + itemHeight
+        const index = filteredEvents.value.indexOf(inspectedEvent.value)
+        const minPosition = itemHeight * index
+        const maxPosition = minPosition + itemHeight
 
-      if (scrollerEl.scrollTop > minPosition || scrollerEl.scrollTop + scrollerEl.clientHeight < maxPosition) {
-        scrollToInspectedEvent()
-      }
+        if (scrollerEl.scrollTop > minPosition || scrollerEl.scrollTop + scrollerEl.clientHeight < maxPosition) {
+          scrollToInspectedEvent()
+        }
+      })
     }
 
     // Auto bottom scroll
@@ -165,7 +167,7 @@ export default defineComponent({
       if (isAtScrollBottom.value) {
         scrollToBottom()
       }
-    })
+    }, { immediate: true })
 
     // List interactions
 
