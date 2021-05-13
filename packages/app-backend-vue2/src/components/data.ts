@@ -346,7 +346,8 @@ export function findInstanceOrVnode (id) {
   return instanceMap.get(id)
 }
 
-export function editState ({ componentInstance, path, state }: HookPayloads[Hooks.EDIT_COMPONENT_STATE]) {
+export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE]) {
+  if (!['data', 'props', 'computed', 'setup'].includes(type)) return
   const data = has(componentInstance._props, path, !!state.newKey)
     ? componentInstance._props
     : componentInstance._data

@@ -266,7 +266,8 @@ function processRefs (instance) {
     }))
 }
 
-export function editState ({ componentInstance, path, state }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
+export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
+  if (!['data', 'props', 'computed', 'setup'].includes(type)) return
   let target: any
   const targetPath: string[] = path.slice()
 
