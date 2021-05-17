@@ -346,7 +346,7 @@ function extractNameFromPath (path: string) {
 }
 
 function formatStoreForInspectorState (module, getters, path): CustomInspectorState {
-  getters = path === 'root' ? getters : getters[path]
+  getters = !module.namespaced || path === 'root' ? module.context.getters : getters[path]
   const gettersKeys = Object.keys(getters)
   const storeState: CustomInspectorState = {
     state: Object.keys(module.state).map((key) => ({
