@@ -360,7 +360,7 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     storeState.getters = gettersKeys.map((key) => ({
       key: key.endsWith('/') ? extractNameFromPath(key) : key,
       editable: false,
-      value: getters[key]
+      value: canThrow(() => getters[key])
     }))
   }
 
@@ -379,4 +379,12 @@ function getStoreModule (moduleMap, path) {
     },
     path === 'root' ? moduleMap : moduleMap.root._children
   )
+}
+
+function canThrow (cb: () => any) {
+  try {
+    return cb()
+  } catch (e) {
+    return e
+  }
 }
