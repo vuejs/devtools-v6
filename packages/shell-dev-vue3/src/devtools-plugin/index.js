@@ -20,7 +20,7 @@ export default {
     }, (api) => {
       devtoolsApi = api
 
-      let time = 0
+      const time = 0
 
       api.on.visitComponentTree((payload, ctx) => {
         const node = payload.treeNode
@@ -95,14 +95,14 @@ export default {
         }
       })
 
-      setInterval(() => {
-        time += 5
-        // Update component
-        api.notifyComponentUpdate()
-        // Update custom inspector
-        api.sendInspectorTree('test-inspector')
-        api.sendInspectorState('test-inspector')
-      }, 5000)
+      // setInterval(() => {
+      //   time += 5
+      //   // Update component
+      //   api.notifyComponentUpdate()
+      //   // Update custom inspector
+      //   api.sendInspectorTree('test-inspector')
+      //   api.sendInspectorState('test-inspector')
+      // }, 5000)
 
       api.addTimelineLayer({
         id: 'test-layer',

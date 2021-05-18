@@ -116,6 +116,13 @@ export default {
     }
   },
 
+  computed: {
+    // eslint-disable-next-line vue/return-in-computed-property
+    throws () {
+      throw new Error('Some error')
+    }
+  },
+
   mounted () {
     this.testComponent = this.$refs.component
   },

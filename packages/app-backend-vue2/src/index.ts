@@ -79,4 +79,5 @@ export const backend: DevtoolsBackend = {
 function injectToUtils () {
   backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
   backendInjections.instanceMap = instanceMap
+  backendInjections.isVueInstance = val => val._isVue
 }

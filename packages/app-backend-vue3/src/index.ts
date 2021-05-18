@@ -35,18 +35,19 @@ export const backend: DevtoolsBackend = {
       payload.parentInstances = walker.getComponentParents(payload.componentInstance)
     })
 
-    api.on.inspectComponent(async (payload, ctx) => {
+    api.on.inspectComponent((payload, ctx) => {
       backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
       backendInjections.instanceMap = ctx.currentAppRecord.instanceMap
-      payload.instanceData = await getInstanceDetails(payload.componentInstance, ctx)
+      backendInjections.isVueInstance = val => val._ && Object.keys(val._).includes('vnode')
+      payload.instanceData = getInstanceDetails(payload.componentInstance, ctx)
     })
 
-    api.on.getComponentName(async payload => {
-      payload.name = await getInstanceName(payload.componentInstance)
+    api.on.getComponentName(payload => {
+      payload.name = getInstanceName(payload.componentInstance)
     })
 
-    api.on.getComponentBounds(async payload => {
-      payload.bounds = await getInstanceOrVnodeRect(payload.componentInstance)
+    api.on.getComponentBounds(payload => {
+      payload.bounds = getInstanceOrVnodeRect(payload.componentInstance)
     })
 
     api.on.getElementComponent(payload => {

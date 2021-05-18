@@ -37,13 +37,6 @@ export default {
       count: 0,
       text: 'Meow'
     }
-  },
-
-  computed: {
-    // eslint-disable-next-line vue/return-in-computed-property
-    throws () {
-      throw new Error('Some error')
-    }
   }
 }
 </script>

@@ -4,7 +4,9 @@ import {
   getInstanceMap,
   getCustomInstanceDetails,
   getCustomRouterDetails,
-  getCustomStoreDetails
+  getCustomStoreDetails,
+  isVueInstance,
+  backendInjections
 } from './backend'
 import SharedData from './shared-data'
 import { isChrome, target } from './env'
@@ -188,7 +190,7 @@ function replacer (key) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
     } else if (val.constructor && val.constructor.name === 'VueRouter') {
       return encodeCache.cache(val, () => getCustomRouterDetails(val))
-    } else if (val._isVue) {
+    } else if (isVueInstance(val)) {
       return encodeCache.cache(val, () => getCustomInstanceDetails(val))
     } else if (typeof val.render === 'function') {
       return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))

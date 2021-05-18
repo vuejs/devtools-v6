@@ -8,16 +8,16 @@ import { returnError } from '../util'
 /**
  * Get the detailed information of an inspected instance.
  */
-export async function getInstanceDetails (instance: any, ctx: BackendContext): Promise<InspectedComponentData> {
+export function getInstanceDetails (instance: any, ctx: BackendContext): InspectedComponentData {
   return {
     id: getUniqueComponentId(instance, ctx),
     name: getInstanceName(instance),
     file: instance.type?.__file,
-    state: await getInstanceState(instance)
+    state: getInstanceState(instance)
   }
 }
 
-async function getInstanceState (instance) {
+function getInstanceState (instance) {
   return processProps(instance).concat(
     processState(instance),
     processSetupState(instance),
@@ -308,6 +308,7 @@ function reduceStateList (list) {
 }
 
 export function getCustomInstanceDetails (instance) {
+  if (instance._) instance = instance._
   const state = getInstanceState(instance)
   return {
     _custom: {

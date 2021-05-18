@@ -1,5 +1,6 @@
 export const backendInjections = {
   instanceMap: new Map(),
+  isVueInstance: (() => false) as ((value: any) => boolean),
   getCustomInstanceDetails: (() => ({})) as ((instance: any) => any)
 }
 
@@ -11,6 +12,11 @@ export function getCustomInstanceDetails (instance) {
   return backendInjections.getCustomInstanceDetails(instance)
 }
 
+export function isVueInstance (value) {
+  return backendInjections.isVueInstance(value)
+}
+
+// @TODO refactor
 export function getCustomRouterDetails (router) {
   return {
     _custom: {
@@ -27,6 +33,7 @@ export function getCustomRouterDetails (router) {
   }
 }
 
+// @TODO refactor
 export function getCustomStoreDetails (store) {
   return {
     _custom: {
@@ -43,6 +50,7 @@ export function getCustomStoreDetails (store) {
   }
 }
 
+// @TODO refactor
 export function getCatchedGetters (store) {
   const getters = {}
 
