@@ -358,10 +358,14 @@ export function parse (data: any, revive = false) {
     : parseCircularAutoChunks(data)
 }
 
-const specialTypeRE = /^\[native (\w+) (.*)\]$/
+const specialTypeRE = /^\[native (\w+) (.*?)(<>((.|\s)*))?\]$/
 const symbolRE = /^\[native Symbol Symbol\((.*)\)\]$/
 
 function reviver (key, val) {
+  return revive(val)
+}
+
+export function revive (val) {
   if (val === UNDEFINED) {
     return undefined
   } else if (val === INFINITY) {
@@ -382,8 +386,12 @@ function reviver (key, val) {
     const [, string] = symbolRE.exec(val)
     return Symbol.for(string)
   } else if (specialTypeRE.test(val)) {
-    const [, type, string] = specialTypeRE.exec(val)
-    return new window[type](string)
+    const [, type, string,, details] = specialTypeRE.exec(val)
+    const result = new window[type](string)
+    if (type === 'Error' && details) {
+      result.stack = details
+    }
+    return result
   } else {
     return val
   }

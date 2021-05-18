@@ -7,6 +7,8 @@ import {
 } from '@utils/util'
 import DataFieldEdit from '@front/mixins/data-field-edit'
 import { formattedValue, valueType, valueDetails } from '@front/util/format'
+import { getBridge } from '../bridge'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -274,6 +276,14 @@ export default {
 
     showMoreSubfields () {
       this.limit += 20
+    },
+
+    logToConsole (level = 'log') {
+      getBridge().send(BridgeEvents.TO_BACK_LOG, {
+        level,
+        value: this.field.value,
+        revive: true
+      })
     }
   }
 }
@@ -400,6 +410,13 @@ export default {
               </div>
             </template>
           </VueDropdown>
+          <VueButton
+            v-if="valueType === 'native Error'"
+            v-tooltip="'Log error to console'"
+            class="edit-value icon-button flat"
+            icon-left="input"
+            @click="logToConsole('error')"
+          />
           <VueButton
             v-if="isValueEditable"
             v-tooltip="'Edit value'"

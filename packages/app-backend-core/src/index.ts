@@ -10,7 +10,9 @@ import {
   BridgeEvents,
   BuiltinTabs,
   initSharedData,
-  BridgeSubscriptions
+  BridgeSubscriptions,
+  parse,
+  revive
 } from '@vue-devtools/shared-utils'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
@@ -313,6 +315,18 @@ async function connect () {
     } else {
       console.error(`Inspector ${inspectorId} not found`)
     }
+  })
+
+  // Misc
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_LOG, (payload: { level: string, value: any, serialized?: boolean, revive?: boolean }) => {
+    let value = payload.value
+    if (payload.serialized) {
+      value = parse(value, payload.revive)
+    } else if (payload.revive) {
+      value = revive(value)
+    }
+    console[payload.level](value)
   })
 
   // Plugins

@@ -17,6 +17,7 @@ export enum BridgeEvents {
   TO_BACK_REFRESH = 'b:refresh',
   /** Tab was switched */
   TO_BACK_TAB_SWITCH = 'b:tab:switch',
+  TO_BACK_LOG = 'b:log',
 
   // Apps
   /** App was registered */
