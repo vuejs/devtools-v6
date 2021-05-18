@@ -3,6 +3,7 @@ import { getInstanceName, getUniqueComponentId } from './util'
 import { camelize, get, set } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
+import { returnError } from '../util'
 
 /**
  * Get the detailed information of an inspected instance.
@@ -46,7 +47,7 @@ function processProps (instance) {
     propsData.push({
       type: 'props',
       key,
-      value: instance.props[key],
+      value: returnError(() => instance.props[key]),
       meta: propDefinition
         ? {
             type: propDefinition.type ? getPropType(propDefinition.type) : 'any',
@@ -111,7 +112,7 @@ function processState (instance) {
     .map(key => ({
       key,
       type: 'data',
-      value: data[key],
+      value: returnError(() => data[key]),
       editable: true
     }))
 }
@@ -122,7 +123,7 @@ function processSetupState (instance) {
     .map(key => ({
       key,
       type: 'setup',
-      value: instance.setupState[key],
+      value: returnError(() => instance.setupState[key]),
       ...getSetupStateExtra(raw[key])
     }))
 }
@@ -185,25 +186,12 @@ function processComputed (instance) {
     const type = typeof def === 'function' && def.vuex
       ? 'vuex bindings'
       : 'computed'
-    // use try ... catch here because some computed properties may
-    // throw error during its evaluation
-    let computedProp = null
-    try {
-      computedProp = {
-        type,
-        key,
-        value: instance.proxy[key],
-        editable: typeof def.set === 'function'
-      }
-    } catch (e) {
-      computedProp = {
-        type,
-        key,
-        value: '(error during evaluation)'
-      }
-    }
-
-    computed.push(computedProp)
+    computed.push({
+      type,
+      key,
+      value: returnError(() => instance.proxy[key]),
+      editable: typeof def.set === 'function'
+    })
   }
 
   return computed
@@ -214,7 +202,7 @@ function processAttrs (instance) {
     .map(key => ({
       type: 'attrs',
       key,
-      value: instance.attrs[key]
+      value: returnError(() => instance.attrs[key])
     }))
 }
 
@@ -223,7 +211,7 @@ function processProvide (instance) {
     .map(key => ({
       type: 'provided',
       key,
-      value: instance.provides[key]
+      value: returnError(() => instance.provides[key])
     }))
 }
 
@@ -253,7 +241,7 @@ function processInject (instance) {
   return keys.map(({ key, originalKey }) => ({
     type: 'injected',
     key: originalKey && key !== originalKey ? `${originalKey} ➞ ${key}` : key,
-    value: instance.ctx[key]
+    value: returnError(() => instance.ctx[key])
   }))
 }
 
@@ -262,7 +250,7 @@ function processRefs (instance) {
     .map(key => ({
       type: 'refs',
       key,
-      value: instance.refs[key]
+      value: returnError(() => instance.refs[key])
     }))
 }
 

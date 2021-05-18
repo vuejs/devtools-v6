@@ -17,3 +17,11 @@ export function basename (filename, ext) {
     ext
   )
 }
+
+export function returnError (cb: () => any) {
+  try {
+    return cb()
+  } catch (e) {
+    return e
+  }
+}
