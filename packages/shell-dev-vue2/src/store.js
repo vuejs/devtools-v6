@@ -81,6 +81,16 @@ export default new Vuex.Store({
           state.foo = state.foo.substr('bar'.length)
         }
       }
+    },
+    notNamespaced: {
+      state () {
+        return {
+          hello: 'world'
+        }
+      },
+      getters: {
+        hello2: state => state.notNamespaced.hello.repeat(2)
+      }
     }
   }
 })
