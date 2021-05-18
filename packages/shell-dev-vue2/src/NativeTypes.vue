@@ -140,7 +140,8 @@ export default {
     ]),
 
     ...mapGetters([
-      'hours'
+      'hours',
+      'errorGetter'
     ]),
 
     theRouter () {
