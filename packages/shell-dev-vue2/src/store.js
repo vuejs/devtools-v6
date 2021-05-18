@@ -89,7 +89,7 @@ export default new Vuex.Store({
         }
       },
       getters: {
-        hello2: state => state.notNamespaced.hello.repeat(2)
+        hello2: state => state.hello.repeat(2)
       }
     }
   }
