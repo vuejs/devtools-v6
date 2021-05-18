@@ -9,7 +9,7 @@ import {
 } from '@utils/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
-const specialTypeRE = /^\[native (\w+) (.*)\]$/
+const specialTypeRE = /^\[native (\w+) (.*?)(<>((.|\s)*))?\]$/
 
 export function valueType (value) {
   const type = typeof value
@@ -26,8 +26,9 @@ export function valueType (value) {
   } else if (value && value._custom) {
     return 'custom'
   } else if (type === 'string') {
-    if (specialTypeRE.test(value)) {
-      const [, type] = specialTypeRE.exec(value)
+    const typeMatch = specialTypeRE.exec(value)
+    if (typeMatch) {
+      const [, type] = typeMatch
       return `native ${type}`
     } else {
       return 'string'
@@ -67,4 +68,13 @@ export function formattedValue (value, quotes = true) {
       .replace(/\n/g, '<span>\\n</span>')
   }
   return value
+}
+
+export function valueDetails (value: string) {
+  const matched = specialTypeRE.exec(value)
+  if (matched) {
+    const [,,,, param] = matched
+    return param
+  }
+  return null
 }

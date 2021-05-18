@@ -6,7 +6,7 @@ import {
   copyToClipboard
 } from '@utils/util'
 import DataFieldEdit from '@front/mixins/data-field-edit'
-import { formattedValue, valueType } from '@front/util/format'
+import { formattedValue, valueType, valueDetails } from '@front/util/format'
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -63,8 +63,11 @@ export default {
     },
 
     valueType () {
-      const value = this.field.value
-      return valueType(value)
+      return valueType(this.field.value)
+    },
+
+    valueDetails () {
+      return valueDetails(this.field.value)
     },
 
     rawValueType () {
@@ -373,6 +376,30 @@ export default {
         />
         <!-- eslint-enable vue/no-v-html -->
         <span class="actions">
+          <VueDropdown
+            v-if="valueDetails"
+          >
+            <template #trigger>
+              <VueButton
+                v-tooltip="'More details'"
+                class="edit-value icon-button flat"
+                icon-left="info"
+              />
+            </template>
+
+            <template #default>
+              <div class="px-4 py-2 flex flex-col max-h-48 overflow-auto relative">
+                <div class="flex items-center fixed top-0 right-0">
+                  <VueButton
+                    v-close-popper
+                    class="edit-value icon-button flat"
+                    icon-left="close"
+                  />
+                </div>
+                <div class="whitespace-pre-wrap max-w-lg break-words text-xs font-mono">{{ valueDetails }}</div>
+              </div>
+            </template>
+          </VueDropdown>
           <VueButton
             v-if="isValueEditable"
             v-tooltip="'Edit value'"
@@ -506,7 +533,7 @@ export default {
 .data-field
   user-select text
   font-size 12px
-  font-family Menlo, Consolas, monospace
+  @apply font-mono;
   cursor pointer
 
 .self
@@ -529,19 +556,22 @@ export default {
     &.rotated
       transform rotate(90deg)
   .actions
-    visibility hidden
     display inline-flex
     align-items center
     position relative
     top -1px
-    .icon-button
-      user-select none
-      width 20px
-      height @width
+    > *
+      visibility hidden
       &:first-child
         margin-left 6px
       &:not(:last-child)
         margin-right 6px
+      &.v-popper--shown
+        visibility visible
+    .icon-button
+      user-select none
+      width 20px
+      height @width
     .icon-button >>> .vue-ui-icon,
     .small-icon
       width 16px
@@ -550,7 +580,7 @@ export default {
       fill $orange
   &:hover,
   &.force-toolbar
-    .actions
+    .actions > *
       visibility visible
   .colon
     margin-right .5em

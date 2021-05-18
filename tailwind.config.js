@@ -56,7 +56,7 @@ module.exports = {
         100: 100
       },
       fontFamily: {
-        mono: '\'Roboto Mono\', monospace'
+        mono: '\'Roboto Mono\', Menlo, Consolas, monospace'
       },
       fontSize: {
         '2xs': '.65rem',

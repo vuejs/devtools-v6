@@ -183,7 +183,7 @@ function replacer (key) {
     } else if (proto === '[object Date]') {
       return `[native Date ${Date.prototype.toString.call(val)}]`
     } else if (proto === '[object Error]') {
-      return `[native Error ${val.message}]`
+      return `[native Error ${val.message}<>${val.stack}]`
     } else if (val.state && val._vm) {
       return encodeCache.cache(val, () => getCustomStoreDetails(val))
     } else if (val.constructor && val.constructor.name === 'VueRouter') {
