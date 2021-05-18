@@ -149,6 +149,11 @@ export default {
 
     theStore () {
       return this.$store
+    },
+
+    // eslint-disable-next-line vue/return-in-computed-property
+    throws () {
+      throw new Error('Some error')
     }
   },
 

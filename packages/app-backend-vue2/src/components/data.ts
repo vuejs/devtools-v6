@@ -221,7 +221,7 @@ function processComputed (instance): ComponentState[] {
       computedProp = {
         type,
         key,
-        value: '(error during evaluation)'
+        value: e
       }
     }
 
