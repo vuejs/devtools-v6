@@ -57,12 +57,14 @@ export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
         events: [],
         firstEvent: event,
         lastEvent: event,
-        y: 0
+        y: 0,
+        duration: 0
       }
       layer.groups.push(group)
     }
     group.events.push(event)
     group.lastEvent = event
+    group.duration = event.time - group.firstEvent.time
     event.group = group
   }
 

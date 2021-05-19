@@ -93,7 +93,18 @@ export default defineComponent({
 
     <StateInspector
       :state="{
-        'event info': inspectedEventState
+        'event info': inspectedEventState,
+        ...inspectedEvent.group ? {
+          'group info': {
+            events: inspectedEvent.group.events.length,
+            duration: {
+              _custom: {
+                value: inspectedEvent.group.duration,
+                display: `${inspectedEvent.group.duration} ms`
+              }
+            }
+          }
+        } : {}
       }"
       class="flex-1 overflow-x-auto"
       :class="{

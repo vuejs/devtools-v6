@@ -16,6 +16,7 @@ export interface EventGroup {
   events: TimelineEvent[]
   firstEvent: TimelineEvent
   lastEvent: TimelineEvent
+  duration: number
   y: number
 }
 
