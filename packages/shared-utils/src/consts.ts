@@ -97,6 +97,8 @@ export enum HookEvents {
   CUSTOM_INSPECTOR_ADD = 'custom-inspector:add',
   CUSTOM_INSPECTOR_SEND_TREE = 'custom-inspector:send-tree',
   CUSTOM_INSPECTOR_SEND_STATE = 'custom-inspector:send-state',
+  PERFORMANCE_START = 'perf:start',
+  PERFORMANCE_END = 'perf:end',
   /**
    * @deprecated
    */

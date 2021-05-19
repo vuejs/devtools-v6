@@ -17,6 +17,7 @@ export interface AppRecord {
   instanceMap: Map<string, ComponentInstance>
   rootInstance: ComponentInstance
   componentFilter?: string
+  perfGroupIds: Map<string, { groupId: number, time: number }>
   meta: any
 }
 

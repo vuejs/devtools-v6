@@ -30,7 +30,7 @@ export function layerFactory (options: LayerFromBackend): Layer {
 }
 
 function builtinLayersFactory () {
-  return [
+  return ([
     {
       id: 'mouse',
       label: 'Mouse',
@@ -45,8 +45,15 @@ function builtinLayersFactory () {
       id: 'component-event',
       label: 'Component events',
       color: 0x41B883
+    },
+    {
+      id: 'performance',
+      label: 'Performance',
+      color: 0x03a0be,
+      simple: true,
+      groupsOnly: true
     }
-  ].map(options => layerFactory(options))
+  ] as LayerFromBackend[]).map(options => layerFactory(options))
 }
 
 export function getLayers (appId: number) {

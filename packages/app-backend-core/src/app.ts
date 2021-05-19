@@ -56,6 +56,7 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
         lastInspectedComponentId: null,
         instanceMap: new Map(),
         rootInstance: await ctx.api.getAppRootInstance(options.app),
+        perfGroupIds: new Map(),
         meta: options.meta ?? {}
       }
       options.app.__VUE_DEVTOOLS_APP_RECORD__ = record

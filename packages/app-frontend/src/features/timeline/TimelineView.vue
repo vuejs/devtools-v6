@@ -136,7 +136,10 @@ export default defineComponent({
     function updateLayerPositions () {
       let y = 0
       for (const layer of layers.value) {
-        layersMap[layer.id].container.y = y
+        const payload = layersMap[layer.id]
+        if (payload) {
+          payload.container.y = y
+        }
         y += (layer.height + 1) * LAYER_SIZE
       }
     }
@@ -247,6 +250,9 @@ export default defineComponent({
     function updateEventPosition (event: TimelineEvent) {
       event.container.x = getEventPosition(event)
 
+      const offset = event.layer.simple ? 0 : 100
+      const lastOffset = event.layer.simple ? -1 : 0
+
       let y = 0
       if (event.group && event !== event.group.firstEvent) {
         // If the event is inside a group, just use the group position
@@ -256,7 +262,7 @@ export default defineComponent({
         const l = event.layer.groups.length
         for (let i = 0; i < l; i++) {
           const group = event.layer.groups[i]
-          if (group !== event.group && group.y === y && event.time >= group.firstEvent.time - 100 && event.time <= group.lastEvent.time + 100) {
+          if (group !== event.group && group.y === y && event.time >= group.firstEvent.time - offset && event.time <= group.lastEvent.time + offset + lastOffset) {
             y++
             // We need to check all the layers again since we moved the event
             i = 0
@@ -411,17 +417,23 @@ export default defineComponent({
           const g = event.g
           let size = event.stackedEvents.length > 1 ? 4 : 3
           g.clear()
-          if (selected) {
-            // Border-only style
-            size -= 0.5
-            g.lineStyle(1, color)
-            g.beginFill(darkMode.value ? 0x0b1015 : 0xffffff)
-            event.container.zIndex = 999999999
-          } else {
-            g.beginFill(color)
-            event.container.zIndex = size
+          if (!event.layer.groupsOnly || selected) {
+            if (selected && !event.layer.groupsOnly) {
+              // Border-only style
+              size -= 0.5
+              if (!event.layer.simple) g.lineStyle(1, color)
+              g.beginFill(darkMode.value ? 0x0b1015 : 0xffffff)
+              event.container.zIndex = 999999999
+            } else {
+              g.beginFill(color)
+              event.container.zIndex = size
+            }
+            if (event.layer.simple) {
+              g.drawRect(0, -LAYER_SIZE / 2, size, LAYER_SIZE - 1)
+            } else {
+              g.drawCircle(0, 0, size)
+            }
           }
-          g.drawCircle(0, 0, size)
         }
       }
     }
@@ -477,11 +489,53 @@ export default defineComponent({
         /** @type {PIXI.Graphics} */
         const g = event.groupG
         g.clear()
-        g.lineStyle(1, event.layer.color, 0.5)
-        g.beginFill(event.layer.color, 0.1)
         const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
-        // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)
-        g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
+        if (event.layer.simple) {
+          let opacity: number
+          if (size < 2) {
+            opacity = 0.05
+          } else {
+            opacity = Math.min(0.4, Math.max(0.2, size / 100))
+          }
+          g.beginFill(event.layer.color, opacity)
+        } else {
+          g.lineStyle(1, event.layer.color, 0.5)
+          g.beginFill(event.layer.color, 0.1)
+        }
+        if (event.layer.simple) {
+          g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
+        } else {
+          // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)
+          g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
+        }
+
+        // Title
+        if (event.layer.groupsOnly && event.title && size > 32) {
+          let t = event.groupT
+          if (!t) {
+            t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
+              fontSize: 10,
+              color: event.layer.color
+            })
+            t.y = -t.height / 2
+            event.container.addChild(t)
+
+            // Mask
+            const mask = new PIXI.Graphics()
+            event.container.addChild(mask)
+            t.mask = mask
+          }
+
+          const mask = t.mask as PIXI.Graphics
+          mask.clear()
+          mask.beginFill(0)
+          mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
+        } else if (event.groupT) {
+          const mask = event.groupT.mask as PIXI.Graphics
+          mask?.destroy()
+          event.groupT.destroy()
+          event.groupT = null
+        }
       }
     }
 
@@ -592,8 +646,8 @@ export default defineComponent({
         const center = size * centerRatio + startTime.value
 
         let newSize = size + event.deltaY / viewWidth * size * 2
-        if (newSize < 100) {
-          newSize = 100
+        if (newSize < 10) {
+          newSize = 10
         }
 
         let start = center - newSize * centerRatio

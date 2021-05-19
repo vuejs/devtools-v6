@@ -13,6 +13,7 @@ import Ghost from './Ghost.vue'
 import Other from './Other.vue'
 import SetupRender from './SetupRender.js'
 import Form from './Form.vue'
+import Heavy from './Heavy.vue'
 
 export default {
   name: 'MyApp',
@@ -31,7 +32,8 @@ export default {
     Ghost,
     Other,
     SetupRender,
-    Form
+    Form,
+    Heavy
   },
 
   data () {
@@ -52,6 +54,13 @@ export default {
     </button>
     <input v-model="text">
     <span>{{ text }}</span>
+  </div>
+
+  <div>
+    <Heavy
+      v-for="i in count"
+      :key="i"
+    />
   </div>
 
   <Child question="Life" />

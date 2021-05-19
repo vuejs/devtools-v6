@@ -36,6 +36,7 @@ export interface TimelineEvent extends TimelineEventFromBackend {
   container: PIXI.Container
   g: PIXI.Graphics
   groupG: PIXI.Graphics
+  groupT: PIXI.Text
 }
 
 export interface LayerFromBackend {
@@ -44,6 +45,8 @@ export interface LayerFromBackend {
   color: number
   appId?: number
   pluginId?: string
+  simple?: boolean
+  groupsOnly?: boolean
 }
 
 export interface Layer extends LayerFromBackend {

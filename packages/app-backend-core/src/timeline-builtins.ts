@@ -90,5 +90,10 @@ export const builtinLayers: TimelineLayerOptions[] = [
 
       return div
     }
+  },
+  {
+    id: 'performance',
+    label: 'Performance',
+    color: 0x03a0be
   }
 ]

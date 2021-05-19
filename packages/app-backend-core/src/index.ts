@@ -32,6 +32,7 @@ import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOpt
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
+import { performanceMarkEnd, performanceMarkStart } from './perf'
 
 let ctx: BackendContext
 let connected = false
@@ -188,6 +189,16 @@ async function connect () {
         ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, null)
       }
     }
+  })
+
+  // Component perf
+
+  hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {
+    performanceMarkStart(app, uid, vm, type, time, ctx)
+  })
+
+  hook.on(HookEvents.PERFORMANCE_END, (app, uid, vm, type, time) => {
+    performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
   // Highlighter
