@@ -290,8 +290,8 @@ export default defineComponent({
         const l = event.layer.groups.length
         let checkAgain = true
         while (checkAgain) {
+          checkAgain = false
           for (let i = 0; i < l; i++) {
-            checkAgain = false
             const otherGroup = event.layer.groups[i]
             if (
               // Different group
