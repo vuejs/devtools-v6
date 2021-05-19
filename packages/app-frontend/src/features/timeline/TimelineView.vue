@@ -258,11 +258,33 @@ export default defineComponent({
         // If the event is inside a group, just use the group position
         y = event.group.y
       } else {
+        const firstEvent = event.group ? event.group.firstEvent : event
+        const lastEvent = event.group ? event.group.lastEvent : event
         // Check for 'collision' with other event groups
         const l = event.layer.groups.length
         for (let i = 0; i < l; i++) {
-          const group = event.layer.groups[i]
-          if (group !== event.group && group.y === y && event.time >= group.firstEvent.time - offset && event.time <= group.lastEvent.time + offset + lastOffset) {
+          const otherGroup = event.layer.groups[i]
+          if (
+            // Different group
+            (
+              !event.group ||
+              event.group !== otherGroup
+            ) &&
+            // Same row
+            otherGroup.y === y &&
+            (
+              // Horizontal intersection (first event)
+              (
+                firstEvent.time >= otherGroup.firstEvent.time - offset &&
+                firstEvent.time <= otherGroup.lastEvent.time + offset + lastOffset
+              ) ||
+              // Horizontal intersection (last event)
+              (
+                lastEvent.time >= otherGroup.firstEvent.time - offset &&
+                lastEvent.time <= otherGroup.lastEvent.time + offset + lastOffset
+              )
+            )
+          ) {
             y++
             // We need to check all the layers again since we moved the event
             i = 0
