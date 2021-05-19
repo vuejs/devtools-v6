@@ -1,7 +1,7 @@
 <script lang="ts">
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
-import { defineComponent, PropType } from '@vue/composition-api'
+import { defineComponent, PropType, computed } from '@vue/composition-api'
 import { Layer } from './composable'
 
 export default defineComponent({
@@ -31,8 +31,11 @@ export default defineComponent({
       emit('select')
     }
 
+    const color = computed(() => props.layer.color.toString(16).padStart(6, '0'))
+
     return {
-      select
+      select,
+      color
     }
   }
 })
@@ -54,7 +57,7 @@ export default defineComponent({
           <div
             class="absolute inset-0 rounded-full"
             :style="{
-              backgroundColor: `#${layer.color.toString(16)}`
+              backgroundColor: `#${color}`
             }"
           />
           <transition
@@ -82,7 +85,7 @@ export default defineComponent({
         <VueButton
           class="text-xs px-1 py-0 h-6 opacity-0 group-hover:opacity-100"
           :style="{
-            backgroundColor: `#${layer.color.toString(16)}28`,
+            backgroundColor: `#${color}28`,
           }"
         >
           Select
@@ -94,7 +97,7 @@ export default defineComponent({
       v-if="hover || selected"
       class="absolute inset-0 pointer-events-none"
       :style="{
-        backgroundColor: `#${layer.color.toString(16)}`,
+        backgroundColor: `#${color}`,
         opacity: hover ? 0.1 : 0.05
       }"
     />

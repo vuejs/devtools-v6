@@ -45,9 +45,9 @@ export default defineComponent({
       <div
         class="flex-none w-2 h-2 rounded-full border"
         :style="{
-          borderColor: `#${inspectedEvent.layer.color.toString(16)}`,
+          borderColor: `#${inspectedEvent.layer.color.toString(16).padStart(6, '0')}`,
           ... isSelected ? {} : {
-            backgroundColor: `#${inspectedEvent.layer.color.toString(16)}`
+            backgroundColor: `#${inspectedEvent.layer.color.toString(16).padStart(6, '0')}`
           }
         }"
       />

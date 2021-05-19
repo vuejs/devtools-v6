@@ -291,7 +291,7 @@ export default defineComponent({
                 <div
                   class="flex-none w-3 h-3 rounded-full"
                   :style="{
-                    backgroundColor: `#${layer.color.toString(16)}`
+                    backgroundColor: `#${layer.color.toString(16).padStart(6, '0')}`
                   }"
                 />
 
