@@ -47,6 +47,7 @@ export interface LayerFromBackend {
   pluginId?: string
   simple?: boolean
   groupsOnly?: boolean
+  skipScreenshots?: boolean
 }
 
 export interface Layer extends LayerFromBackend {

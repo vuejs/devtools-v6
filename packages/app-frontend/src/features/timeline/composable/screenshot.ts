@@ -7,7 +7,7 @@ import { EventScreenshot, screenshots, TimelineEvent } from './store'
 let nextScreenshotId = 0
 
 export async function takeScreenshot (event: TimelineEvent) {
-  if (!SharedData.timelineScreenshots) return
+  if (!SharedData.timelineScreenshots || event.layer.skipScreenshots) return
 
   const time = Math.round(event.time / 100) * 100
 

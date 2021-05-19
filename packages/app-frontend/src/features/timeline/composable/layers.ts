@@ -51,7 +51,8 @@ function builtinLayersFactory () {
       label: 'Performance',
       color: 0x41b86a,
       simple: true,
-      groupsOnly: true
+      groupsOnly: true,
+      skipScreenshots: true
     }
   ] as LayerFromBackend[]).map(options => layerFactory(options))
 }
