@@ -252,6 +252,9 @@ export default defineComponent({
 
     function queueEventPositionUpdate (...events: TimelineEvent[]) {
       for (const e of events) {
+        const ignored = isEventIgnored(e)
+        e.container.visible = !ignored
+        if (ignored) continue
         // Update horizontal position immediately
         e.container.x = getEventPosition(e)
         // Queue vertical position compute
@@ -266,6 +269,10 @@ export default defineComponent({
       if (event) {
         computeEventVerticalPosition(event)
       }
+    }
+
+    function isEventIgnored (event: TimelineEvent) {
+      return event.layer.ignoreNoDurationGroups && event.group && event.group.duration <= 0
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
@@ -445,6 +452,7 @@ export default defineComponent({
         let choice
         let distance = Number.POSITIVE_INFINITY
         for (const e of events) {
+          if (isEventIgnored(e)) continue
           const globalPosition = e.g.getGlobalPosition()
           const d = Math.abs(globalPosition.x - event.data.global.x) + Math.abs(globalPosition.y - event.data.global.y)
 
@@ -513,29 +521,55 @@ export default defineComponent({
 
     // Event selection with keyboard
 
+    function selectPreviousEvent () {
+      let index
+      if (selectedEvent.value) {
+        index = events.indexOf(selectedEvent.value)
+      } else {
+        index = events.length
+      }
+
+      let fullLoops = 0
+      do {
+        index--
+        if (index < 0) {
+          index = events.length - 1
+          fullLoops++
+        }
+      } while (isEventIgnored(events[index]) && fullLoops < 2)
+
+      if (events[index]) {
+        selectEvent(events[index])
+      }
+    }
+
+    function selectNextEvent () {
+      let index
+      if (selectedEvent.value) {
+        index = events.indexOf(selectedEvent.value)
+      } else {
+        index = -1
+      }
+
+      let fullLoops = 0
+      do {
+        index++
+        if (index >= events.length) {
+          index = 0
+          fullLoops++
+        }
+      } while (isEventIgnored(events[index]) && fullLoops < 2)
+
+      if (events[index]) {
+        selectEvent(events[index])
+      }
+    }
+
     onKeyUp(event => {
       if (event.key === 'ArrowLeft') {
-        let index
-        if (selectedEvent.value) {
-          index = events.indexOf(selectedEvent.value) - 1
-          if (index < 0) {
-            index = events.length - 1
-          }
-        } else {
-          index = events.length - 1
-        }
-        selectEvent(events[index])
+        selectPreviousEvent()
       } else if (event.key === 'ArrowRight') {
-        let index
-        if (selectedEvent.value) {
-          index = events.indexOf(selectedEvent.value) + 1
-          if (index >= events.length) {
-            index = 0
-          }
-        } else {
-          index = 0
-        }
-        selectEvent(events[index])
+        selectNextEvent()
       }
     })
 

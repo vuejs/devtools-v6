@@ -49,6 +49,7 @@ export interface LayerFromBackend {
   simple?: boolean
   groupsOnly?: boolean
   skipScreenshots?: boolean
+  ignoreNoDurationGroups?: boolean
 }
 
 export interface Layer extends LayerFromBackend {
