@@ -11,6 +11,8 @@ import { addEvent } from './events'
 import { resetTimeline } from './reset'
 
 export function setupTimelineBridgeEvents (bridge: Bridge) {
+  resetTimeline(false)
+
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ appId, layerId, event }) => {
     const appIds = appId === 'all' ? getApps().map(app => app.id) : [appId]
     for (const appId of appIds) {
@@ -51,6 +53,4 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
       }
     }
   })
-
-  resetTimeline()
 }

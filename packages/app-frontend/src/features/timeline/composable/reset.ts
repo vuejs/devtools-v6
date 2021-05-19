@@ -24,7 +24,7 @@ type ResetCb = () => void
 
 const resetCbs: ResetCb[] = []
 
-export function resetTimeline () {
+export function resetTimeline (sync = true) {
   selectedLayer.value = null
   selectedEvent.value = null
   inspectedEvent.value = null
@@ -38,7 +38,9 @@ export function resetTimeline () {
 
   resetTime()
 
-  getBridge().send(BridgeEvents.TO_BACK_TIMELINE_CLEAR)
+  if (sync) {
+    getBridge().send(BridgeEvents.TO_BACK_TIMELINE_CLEAR)
+  }
 
   // Layers
   fetchLayers()
