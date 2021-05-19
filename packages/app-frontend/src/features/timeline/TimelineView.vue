@@ -491,13 +491,7 @@ export default defineComponent({
         g.clear()
         const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
         if (event.layer.simple) {
-          let opacity: number
-          if (size < 2) {
-            opacity = 0.05
-          } else {
-            opacity = Math.min(0.4, Math.max(0.2, size / 100))
-          }
-          g.beginFill(event.layer.color, opacity)
+          g.beginFill(event.layer.color, 0.5)
         } else {
           g.lineStyle(1, event.layer.color, 0.5)
           g.beginFill(event.layer.color, 0.1)
