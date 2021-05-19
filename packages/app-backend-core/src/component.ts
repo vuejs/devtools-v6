@@ -1,11 +1,11 @@
 import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
-import { BackendContext } from '@vue-devtools/app-backend-api'
+import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, EditStatePayload } from '@vue/devtools-api'
 
-export async function sendComponentTreeData (instanceId: string, filter = '', ctx: BackendContext) {
+export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', ctx: BackendContext) {
   if (!instanceId) return
-  const instance = getComponentInstance(instanceId, ctx)
+  const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
       instanceId,
@@ -23,10 +23,10 @@ export async function sendComponentTreeData (instanceId: string, filter = '', ct
   }
 }
 
-export async function sendSelectedComponentData (instanceId: string, ctx: BackendContext) {
+export async function sendSelectedComponentData (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
   if (!instanceId) return
   markSelectedInstance(instanceId, ctx)
-  const instance = getComponentInstance(instanceId, ctx)
+  const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     sendEmptyComponentData(instanceId, ctx)
   } else {
@@ -61,13 +61,13 @@ export function sendEmptyComponentData (instanceId: string, ctx: BackendContext)
 
 export async function editComponentState (instanceId: string, dotPath: string, type: string, state: EditStatePayload, ctx: BackendContext) {
   if (!instanceId) return
-  const instance = getComponentInstance(instanceId, ctx)
+  const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
   if (instance) {
     if ('value' in state && state.value != null) {
       state.value = parse(state.value, true)
     }
     await ctx.api.editComponentState(instance, dotPath, type, state, ctx.currentAppRecord.options.app)
-    await sendSelectedComponentData(instanceId, ctx)
+    await sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
   }
 }
 
@@ -77,11 +77,11 @@ export function getComponentId (app: App, uid: number, ctx: BackendContext) {
   return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
 }
 
-export function getComponentInstance (instanceId: string, ctx: BackendContext) {
+export function getComponentInstance (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
   if (instanceId === '_root') {
-    instanceId = `${ctx.currentAppRecord.id}:root`
+    instanceId = `${appRecord.id}:root`
   }
-  const instance = ctx.currentAppRecord.instanceMap.get(instanceId)
+  const instance = appRecord.instanceMap.get(instanceId)
   if (!instance && process.env.NODE_ENV !== 'production') {
     console.warn(`Instance uid=${instanceId} not found`)
   }

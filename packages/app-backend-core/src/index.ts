@@ -29,7 +29,7 @@ import {
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps } from './app'
+import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 
@@ -120,17 +120,17 @@ async function connect () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
     ctx.currentAppRecord.componentFilter = filter
-    sendComponentTreeData(instanceId, filter, ctx)
+    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
-    sendSelectedComponentData(instanceId, ctx)
+    sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
   })
 
   hook.on(HookEvents.COMPONENT_UPDATED, (app, uid) => {
     const id = app ? getComponentId(app, uid, ctx) : ctx.currentInspectedComponentId
     if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-      sendSelectedComponentData(id, ctx)
+      sendSelectedComponentData(getAppRecord(app, ctx), id, ctx)
     }
   })
 
@@ -145,15 +145,17 @@ async function connect () {
       }
     }
 
+    const appRecord = getAppRecord(app, ctx)
+
     const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       requestAnimationFrame(() => {
-        sendComponentTreeData(parentId, ctx.currentAppRecord.componentFilter, ctx)
+        sendComponentTreeData(appRecord, parentId, ctx.currentAppRecord.componentFilter, ctx)
       })
     }
 
     if (ctx.currentInspectedComponentId === id) {
-      sendSelectedComponentData(id, ctx)
+      sendSelectedComponentData(appRecord, id, ctx)
     }
   })
 
@@ -161,7 +163,7 @@ async function connect () {
     const parentId = getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       requestAnimationFrame(() => {
-        sendComponentTreeData(parentId, ctx.currentAppRecord.componentFilter, ctx)
+        sendComponentTreeData(getAppRecord(app, ctx), parentId, ctx.currentAppRecord.componentFilter, ctx)
       })
     }
 
@@ -177,7 +179,7 @@ async function connect () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, async ({ instanceId }) => {
-    const instance = getComponentInstance(instanceId, ctx)
+    const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const [el] = await ctx.api.getComponentRootElements(instance)
       if (el) {
@@ -346,9 +348,9 @@ async function connect () {
   hook.off('flush')
   hook.on('flush', () => {
     if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
-      sendComponentTreeData('_root', ctx.currentAppRecord.componentFilter, ctx)
+      sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, ctx)
       if (ctx.currentInspectedComponentId) {
-        sendSelectedComponentData(ctx.currentInspectedComponentId, ctx)
+        sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
       }
     }
   })
