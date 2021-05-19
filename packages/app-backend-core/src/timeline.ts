@@ -1,4 +1,4 @@
-import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
+import { BackendContext } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
 import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
 import { hook } from './global-hook'
@@ -97,6 +97,7 @@ export function sendTimelineLayers (ctx: BackendContext) {
 }
 
 let nextTimelineEventId = 0
+export const timelineEventMap: Map<ID, TimelineEventOptions & WithId> = new Map()
 
 export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: BackendContext) {
   const appId = app && getAppRecordId(app)
@@ -121,33 +122,25 @@ export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: 
     id,
     ...options
   }
-
-  if (!isAllApps && app) {
-    const appRecord = getAppRecord(app, ctx)
-    appRecord && registerTimelineEvent(eventData, appRecord, ctx)
-  } else {
-    ctx.appRecords.forEach(appRecord => registerTimelineEvent(eventData, appRecord, ctx))
-  }
+  registerTimelineEvent(eventData, ctx)
 }
 
-function registerTimelineEvent (options: TimelineEventOptions & WithId, appRecord: AppRecord, ctx: BackendContext) {
-  appRecord.timelineEventMap.set(options.id, options)
+function registerTimelineEvent (options: TimelineEventOptions & WithId, ctx: BackendContext) {
+  timelineEventMap.set(options.id, options)
 }
 
 export function clearTimeline (ctx: BackendContext) {
-  ctx.appRecords.forEach(appRecord => {
-    appRecord.timelineEventMap.clear()
-  })
+  timelineEventMap.clear()
 }
 
 export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
   let data = null
-  const eventData = ctx.currentAppRecord.timelineEventMap.get(id)
+  const eventData = timelineEventMap.get(id)
   if (eventData) {
     data = await ctx.api.inspectTimelineEvent(eventData, ctx.currentAppRecord.options.app)
     data = stringify(data)
   } else if (process.env.NODE_ENV !== 'production') {
-    console.warn(`Event ${id} not found`)
+    console.warn(`Event ${id} not found`, timelineEventMap.keys())
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT_DATA, {
     eventId: id,
