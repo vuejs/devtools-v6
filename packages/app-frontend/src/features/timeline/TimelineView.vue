@@ -247,11 +247,29 @@ export default defineComponent({
       return (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
     }
 
-    function updateEventPosition (event: TimelineEvent) {
-      event.container.x = getEventPosition(event)
+    const updateEventPositionQueue = new Set<TimelineEvent>()
+    let currentEventPositionUpdate: TimelineEvent = null
 
+    function queueEventPositionUpdate (...events: TimelineEvent[]) {
+      for (const e of events) {
+        // Update horizontal position immediately
+        e.container.x = getEventPosition(e)
+        // Queue vertical position compute
+        updateEventPositionQueue.add(e)
+      }
+      nextEventPositionUpdate()
+    }
+
+    function nextEventPositionUpdate () {
+      if (currentEventPositionUpdate) return
+      const event = currentEventPositionUpdate = updateEventPositionQueue.values().next().value
+      if (event) {
+        computeEventVerticalPosition(event)
+      }
+    }
+
+    function computeEventVerticalPosition (event: TimelineEvent) {
       const offset = event.layer.simple ? 0 : 100
-      const lastOffset = event.layer.simple ? -1 : 0
 
       let y = 0
       if (event.group && event !== event.group.firstEvent) {
@@ -260,34 +278,47 @@ export default defineComponent({
       } else {
         const firstEvent = event.group ? event.group.firstEvent : event
         const lastEvent = event.group ? event.group.lastEvent : event
+        const lastOffset = event.layer.simple && event.group?.duration > 0 ? -1 : 0
         // Check for 'collision' with other event groups
         const l = event.layer.groups.length
-        for (let i = 0; i < l; i++) {
-          const otherGroup = event.layer.groups[i]
-          if (
-            // Different group
-            (
-              !event.group ||
-              event.group !== otherGroup
-            ) &&
-            // Same row
-            otherGroup.y === y &&
-            (
-              // Horizontal intersection (first event)
+        let checkAgain = true
+        while (checkAgain) {
+          for (let i = 0; i < l; i++) {
+            checkAgain = false
+            const otherGroup = event.layer.groups[i]
+            if (
+              // Different group
               (
-                firstEvent.time >= otherGroup.firstEvent.time - offset &&
-                firstEvent.time <= otherGroup.lastEvent.time + offset + lastOffset
-              ) ||
-              // Horizontal intersection (last event)
+                !event.group ||
+                event.group !== otherGroup
+              ) &&
+              // Same row
+              otherGroup.y === y &&
               (
-                lastEvent.time >= otherGroup.firstEvent.time - offset &&
-                lastEvent.time <= otherGroup.lastEvent.time + offset + lastOffset
+                // Horizontal intersection (first event)
+                (
+                  firstEvent.time >= otherGroup.firstEvent.time - offset &&
+                  firstEvent.time <= otherGroup.lastEvent.time + offset + lastOffset
+                ) ||
+                // Horizontal intersection (last event)
+                (
+                  lastEvent.time >= otherGroup.firstEvent.time - offset - lastOffset &&
+                  lastEvent.time <= otherGroup.lastEvent.time + offset
+                )
               )
-            )
-          ) {
-            y++
-            // We need to check all the layers again since we moved the event
-            i = 0
+            ) {
+              // Collision!
+              if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
+                // Invert positions because current group has higher priority
+                queueEventPositionUpdate(otherGroup.firstEvent)
+              } else {
+                // Offset the current group/event
+                y++
+                // We need to check all the layers again since we moved the event
+                checkAgain = true
+                break
+              }
+            }
           }
         }
 
@@ -306,13 +337,18 @@ export default defineComponent({
         }
       }
       event.container.y = (y + 1) * LAYER_SIZE
+
+      // Next
+      updateEventPositionQueue.delete(event)
+      currentEventPositionUpdate = null
+      nextEventPositionUpdate()
     }
 
     function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
       // Container
       const eventContainer = new PIXI.Container()
       event.container = eventContainer
-      updateEventPosition(event)
+      queueEventPositionUpdate(event)
       layerContainer.addChild(eventContainer)
 
       // Graphics
@@ -389,9 +425,8 @@ export default defineComponent({
     }
 
     function updateEvents () {
+      queueEventPositionUpdate(...events)
       for (const event of events) {
-        updateEventPosition(event)
-
         if (event.groupG) {
           drawEventGroup(event)
         }
