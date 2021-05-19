@@ -133,6 +133,14 @@ export default defineComponent({
       }
     }
 
+    function updateLayerPositions () {
+      let y = 0
+      for (const layer of layers.value) {
+        layersMap[layer.id].container.y = y
+        y += (layer.height + 1) * LAYER_SIZE
+      }
+    }
+
     onMounted(() => {
       initLayers()
     })
@@ -262,7 +270,11 @@ export default defineComponent({
 
         // Might update the layer's height as well
         if (y + 1 > event.layer.height) {
-          event.layer.height = y + 1
+          const oldLayerHeight = event.layer.height
+          const newLayerHeight = event.layer.height = y + 1
+          if (oldLayerHeight !== newLayerHeight) {
+            updateLayerPositions()
+          }
         }
       }
       event.container.y = (y + 1) * LAYER_SIZE
