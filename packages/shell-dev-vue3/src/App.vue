@@ -12,6 +12,7 @@ import VModelExample from './VModelExample.vue'
 import Ghost from './Ghost.vue'
 import Other from './Other.vue'
 import SetupRender from './SetupRender.js'
+import Form from './Form.vue'
 
 export default {
   name: 'MyApp',
@@ -29,7 +30,8 @@ export default {
     VModelExample,
     Ghost,
     Other,
-    SetupRender
+    SetupRender,
+    Form
   },
 
   data () {
@@ -65,6 +67,7 @@ export default {
   <Ghost />
   <Other />
   <SetupRender />
+  <Form />
 
   <nav>
     <router-link to="/p1">
