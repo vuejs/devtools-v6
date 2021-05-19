@@ -94,6 +94,6 @@ export const builtinLayers: TimelineLayerOptions[] = [
   {
     id: 'performance',
     label: 'Performance',
-    color: 0x03a0be
+    color: 0x41b86a
   }
 ]

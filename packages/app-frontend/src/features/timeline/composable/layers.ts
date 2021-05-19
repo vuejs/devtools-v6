@@ -49,7 +49,7 @@ function builtinLayersFactory () {
     {
       id: 'performance',
       label: 'Performance',
-      color: 0x03a0be,
+      color: 0x41b86a,
       simple: true,
       groupsOnly: true
     }
