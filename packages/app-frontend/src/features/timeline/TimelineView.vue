@@ -251,6 +251,7 @@ export default defineComponent({
 
     const updateEventPositionQueue = new Set<TimelineEvent>()
     let currentEventPositionUpdate: TimelineEvent = null
+    let updateEventPositionQueued = false
 
     function queueEventPositionUpdate (...events: TimelineEvent[]) {
       for (const e of events) {
@@ -263,7 +264,13 @@ export default defineComponent({
         // Queue vertical position compute
         updateEventPositionQueue.add(e)
       }
-      nextEventPositionUpdate()
+      if (!updateEventPositionQueued) {
+        updateEventPositionQueued = true
+        Vue.nextTick(() => {
+          nextEventPositionUpdate()
+          updateEventPositionQueued = false
+        })
+      }
     }
 
     function nextEventPositionUpdate () {
