@@ -1,4 +1,5 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { App, ComponentInstance } from '@vue/devtools-api'
 import { addTimelineEvent } from './timeline'
 import { getAppRecord } from './app'
@@ -13,6 +14,7 @@ export async function performanceMarkStart (
   time: number,
   ctx: BackendContext
 ) {
+  if (!SharedData.performanceMonitoringEnabled) return
   const appRecord = getAppRecord(app, ctx)
   const componentName = await ctx.api.getComponentName(instance)
   const groupId = uniqueGroupId++
@@ -42,6 +44,7 @@ export async function performanceMarkEnd (
   time: number,
   ctx: BackendContext
 ) {
+  if (!SharedData.performanceMonitoringEnabled) return
   const appRecord = getAppRecord(app, ctx)
   const componentName = await ctx.api.getComponentName(instance)
   const groupKey = `${instanceId}-${type}`

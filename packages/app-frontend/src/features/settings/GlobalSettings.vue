@@ -63,5 +63,16 @@ export default defineComponent({})
         Useful for trackpads
       </template>
     </VueFormField>
+
+    <VueFormField
+      title="Performance monitoring"
+    >
+      <VueSwitch v-model="$shared.performanceMonitoringEnabled">
+        Enable
+      </VueSwitch>
+      <template #subtitle>
+        Turn off if your app is slowed down
+      </template>
+    </VueFormField>
   </div>
 </template>

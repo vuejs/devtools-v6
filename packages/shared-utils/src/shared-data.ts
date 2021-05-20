@@ -13,7 +13,7 @@ const internalSharedData = {
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
   snapshotLoading: false,
-  recordPerf: false,
+  performanceMonitoringEnabled: true,
   editableProps: false,
   logDetected: true,
   vuexNewBackend: false,
@@ -41,7 +41,8 @@ const persisted = [
   'timelineTimeGrid',
   'timelineScreenshots',
   'menuStepScrolling',
-  'pluginPermissions'
+  'pluginPermissions',
+  'performanceMonitoringEnabled'
 ]
 
 const storageVersion = '6.0.0-alpha.1'

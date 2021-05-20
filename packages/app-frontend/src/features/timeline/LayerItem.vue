@@ -53,7 +53,12 @@ export default defineComponent({
       }"
     >
       <div class="flex items-center space-x-2 px-2 py-1">
-        <div class="flex-none w-3 h-3 relative">
+        <div
+          class="flex-none w-3 h-3 relative"
+          :class="{
+            'opacity-50': layer.id === 'performance' && !$shared.performanceMonitoringEnabled,
+          }"
+        >
           <div
             class="absolute inset-0 rounded-full"
             :style="{
@@ -73,7 +78,12 @@ export default defineComponent({
           </transition>
         </div>
         <div class="flex-1 overflow-hidden flex items-center space-x-2">
-          <span class="truncate text-sm">{{ layer.label }}</span>
+          <span
+            class="truncate text-sm"
+            :class="{
+              'opacity-50': layer.id === 'performance' && !$shared.performanceMonitoringEnabled,
+            }"
+          >{{ layer.label }}</span>
 
           <PluginSourceIcon
             v-if="layer.pluginId"
@@ -81,6 +91,17 @@ export default defineComponent({
             @click.native.stop
           />
         </div>
+
+        <VueButton
+          v-if="hover && layer.id === 'performance'"
+          class="text-xs px-1 py-0 h-5 hover:opacity-80"
+          :style="{
+            backgroundColor: `#${color}28`,
+          }"
+          @click.stop="$shared.performanceMonitoringEnabled = !$shared.performanceMonitoringEnabled"
+        >
+          {{ $shared.performanceMonitoringEnabled ? 'Disable' : 'Enable' }}
+        </VueButton>
 
         <VueButton
           v-if="hover"
