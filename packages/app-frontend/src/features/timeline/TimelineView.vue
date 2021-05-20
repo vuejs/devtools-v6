@@ -630,8 +630,6 @@ export default defineComponent({
           mask.clear()
           mask.beginFill(0)
           mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
-
-          console.log(event.container.children)
         } else if (event.groupT) {
           const mask = event.groupT.mask as PIXI.Graphics
           mask?.destroy()
