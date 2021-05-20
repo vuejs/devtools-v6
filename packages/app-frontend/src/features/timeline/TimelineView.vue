@@ -624,7 +624,7 @@ export default defineComponent({
           if (!t) {
             t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
               fontSize: 10,
-              color: event.layer.color
+              fill: darkMode.value ? 0xffffff : 0
             })
             t.y = -t.height / 2
             event.container.addChild(t)
