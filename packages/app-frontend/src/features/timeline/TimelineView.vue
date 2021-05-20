@@ -764,6 +764,17 @@ export default defineComponent({
           }
           startTime.value = start
           endTime.value = start + size
+        } else if (event.deltaY !== 0) {
+          // Vertical scroll
+          const layersScroller = document.querySelector('[data-scroller="layers"]')
+          if (layersScroller) {
+            const speed = SharedData.menuStepScrolling ? 1 : LAYER_SIZE * 4
+            if (event.deltaY < 0) {
+              layersScroller.scrollTop -= speed
+            } else {
+              layersScroller.scrollTop += speed
+            }
+          }
         }
       }
     }

@@ -195,6 +195,7 @@ export default defineComponent({
           <div
             ref="layersEl"
             class="flex flex-col flex-1 overflow-y-auto"
+            data-scroller="layers"
             @scroll="onLayersScroll"
           >
             <LayerItem
