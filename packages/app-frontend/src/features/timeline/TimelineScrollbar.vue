@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, onUnmounted, defineComponent } from '@vue/composition-api'
+import { ref, onUnmounted, defineComponent, computed } from '@vue/composition-api'
 
 export default defineComponent({
   props: {
@@ -25,6 +25,9 @@ export default defineComponent({
   },
 
   setup (props, { emit }) {
+    const startRatio = computed(() => (props.start - props.min) / (props.max - props.min))
+    const endRatio = computed(() => (props.max - props.end) / (props.max - props.min))
+
     const el = ref(null)
 
     let mouseStartX, initialValue
@@ -136,6 +139,8 @@ export default defineComponent({
 
     return {
       el,
+      startRatio,
+      endRatio,
       onMainBarMouseDown,
       moving,
       onStartHandleMouseDown,
@@ -152,7 +157,7 @@ export default defineComponent({
   >
     <!-- Main Bar -->
     <div
-      class="absolute h-full top-0 bg-white dark:bg-gray-800 hover:bg-green-200 dark:hover:bg-green-800 cursor-move rounded"
+      class="absolute h-full top-0 bg-white dark:bg-gray-800 hover:bg-green-200 dark:hover:bg-green-800 cursor-move"
       :class="{
         'bg-green-200 dark:bg-green-800': moving
       }"
@@ -167,7 +172,7 @@ export default defineComponent({
     <div
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
-        left: `${(start - min) / (max - min) * 100}%`,
+        left: `calc(${startRatio * 100}% - ${startRatio < 0.05 ? 0 : 6}px)`,
         width: '6px'
       }"
       @mousedown="onStartHandleMouseDown"
@@ -177,7 +182,7 @@ export default defineComponent({
     <div
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
-        right: `${(max - end) / (max - min) * 100}%`,
+        right: `calc(${endRatio * 100}% - ${endRatio < 0.05 ? 0 : 6}px)`,
         width: '6px'
       }"
       @mousedown="onEndHandleMouseDown"
