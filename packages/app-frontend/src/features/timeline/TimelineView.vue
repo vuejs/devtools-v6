@@ -402,6 +402,19 @@ export default defineComponent({
       for (const e of events) {
         e.g.destroy()
         e.g = null
+
+        if (e.groupG) {
+          e.groupG.destroy()
+          e.groupG = null
+        }
+
+        if (e.groupT) {
+          e.groupT.destroy()
+          e.groupT = null
+        }
+
+        e.container.destroy()
+        e.container = null
       }
       events = []
       initEvents()
@@ -617,6 +630,8 @@ export default defineComponent({
           mask.clear()
           mask.beginFill(0)
           mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
+
+          console.log(event.container.children)
         } else if (event.groupT) {
           const mask = event.groupT.mask as PIXI.Graphics
           mask?.destroy()
