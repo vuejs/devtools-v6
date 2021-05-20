@@ -162,7 +162,9 @@ export default defineComponent({
       resetLayers()
     })
 
-    watch(layers, () => resetLayers())
+    watch(() => layers.value.map(l => l.id).join(','), () => {
+      resetLayers()
+    })
 
     // Layer hover
 
