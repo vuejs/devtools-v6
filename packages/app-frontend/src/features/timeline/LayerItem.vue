@@ -83,7 +83,8 @@ export default defineComponent({
         </div>
 
         <VueButton
-          class="text-xs px-1 py-0 h-6 opacity-0 group-hover:opacity-100"
+          v-if="hover"
+          class="text-xs px-1 py-0 h-5 hover:opacity-80"
           :style="{
             backgroundColor: `#${color}28`,
           }"

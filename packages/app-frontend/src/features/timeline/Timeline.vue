@@ -205,8 +205,8 @@ export default defineComponent({
               :hover="hoverLayerId === layer.id"
               :selected="selectedLayer === layer"
               class="flex-none"
-              @mouseover.native="hoverLayerId = layer.id"
-              @mouseout.native="hoverLayerId = null"
+              @mouseenter.native="hoverLayerId = layer.id"
+              @mouseleave.native="hoverLayerId = null"
               @select="selectLayer(layer)"
             />
           </div>
