@@ -506,8 +506,8 @@ export default defineComponent({
           const g = event.g
           let size = event.stackedEvents.length > 1 ? 4 : 3
           g.clear()
-          if (!event.layer.groupsOnly || selected) {
-            if (selected && !event.layer.groupsOnly) {
+          if (!event.layer.groupsOnly) {
+            if (selected) {
               // Border-only style
               size -= 0.5
               if (!event.layer.simple) g.lineStyle(1, color)
@@ -522,6 +522,8 @@ export default defineComponent({
             } else {
               g.drawCircle(0, 0, size)
             }
+          } else {
+            drawEventGroup(event, selected)
           }
         }
       }
@@ -599,13 +601,13 @@ export default defineComponent({
 
     // Event Groups
 
-    function drawEventGroup (event: TimelineEvent) {
+    function drawEventGroup (event: TimelineEvent, drawAsSelected = false) {
       if (event.groupG) {
         /** @type {PIXI.Graphics} */
         const g = event.groupG
         g.clear()
         const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
-        if (event.layer.simple) {
+        if (event.layer.simple && !drawAsSelected) {
           g.beginFill(event.layer.color, 0.5)
         } else {
           g.lineStyle(1, event.layer.color, 0.5)
