@@ -77,6 +77,7 @@ export default defineComponent({
             />
           </transition>
         </div>
+
         <div class="flex-1 overflow-hidden flex items-center space-x-2">
           <span
             class="truncate text-sm"
@@ -92,26 +93,28 @@ export default defineComponent({
           />
         </div>
 
-        <VueButton
-          v-if="hover && layer.id === 'performance'"
-          class="text-xs px-1 py-0 h-5 hover:opacity-80"
-          :style="{
-            backgroundColor: `#${color}28`,
-          }"
-          @click.stop="$shared.performanceMonitoringEnabled = !$shared.performanceMonitoringEnabled"
-        >
-          {{ $shared.performanceMonitoringEnabled ? 'Disable' : 'Enable' }}
-        </VueButton>
+        <div class="flex items-center space-x-1">
+          <VueButton
+            v-if="hover && layer.id === 'performance'"
+            class="text-xs px-1 py-0 h-5 hover:opacity-80"
+            :style="{
+              backgroundColor: `#${color}28`,
+            }"
+            @click.stop="$shared.performanceMonitoringEnabled = !$shared.performanceMonitoringEnabled"
+          >
+            {{ $shared.performanceMonitoringEnabled ? 'Disable' : 'Enable' }}
+          </VueButton>
 
-        <VueButton
-          v-if="hover"
-          class="text-xs px-1 py-0 h-5 hover:opacity-80"
-          :style="{
-            backgroundColor: `#${color}28`,
-          }"
-        >
-          Select
-        </VueButton>
+          <VueButton
+            v-if="hover"
+            class="text-xs px-1 py-0 h-5 hover:opacity-80"
+            :style="{
+              backgroundColor: `#${color}28`,
+            }"
+          >
+            Select
+          </VueButton>
+        </div>
       </div>
     </div>
 
