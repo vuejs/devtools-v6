@@ -254,6 +254,7 @@ export default defineComponent({
 
     function queueEventPositionUpdate (...events: TimelineEvent[]) {
       for (const e of events) {
+        if (!e.container) continue
         const ignored = isEventIgnored(e)
         e.container.visible = !ignored
         if (ignored) continue
@@ -357,7 +358,6 @@ export default defineComponent({
       // Container
       const eventContainer = new PIXI.Container()
       event.container = eventContainer
-      queueEventPositionUpdate(event)
       layerContainer.addChild(eventContainer)
 
       // Graphics
@@ -381,6 +381,8 @@ export default defineComponent({
       }
 
       events.push(event)
+
+      queueEventPositionUpdate(event)
 
       return event
     }
