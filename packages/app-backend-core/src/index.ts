@@ -32,7 +32,7 @@ import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOpt
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
-import { performanceMarkEnd, performanceMarkStart } from './perf'
+import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
 
 let ctx: BackendContext
 let connected = false
@@ -201,16 +201,7 @@ async function connect () {
     performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
-  ctx.api.on.visitComponentTree(payload => {
-    if (payload.componentInstance.__VUE_DEVTOOLS_SLOW__) {
-      const { duration } = payload.componentInstance.__VUE_DEVTOOLS_SLOW__
-      payload.treeNode.tags.push({
-        backgroundColor: duration > 30 ? 0xF87171 : 0xFBBF24,
-        textColor: 0x000000,
-        label: `${duration} ms`
-      })
-    }
-  })
+  handleAddPerformanceTag(ctx)
 
   // Highlighter
 

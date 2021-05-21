@@ -76,16 +76,58 @@ export async function performanceMarkEnd (
   }, app, ctx)
 
   // Mark on component
-  if (duration > 10 && (!instance.__VUE_DEVTOOLS_SLOW__ || instance.__VUE_DEVTOOLS_SLOW__.duration < duration)) {
-    instance.__VUE_DEVTOOLS_SLOW__ = {
-      duration
+  const tooSlow = duration > 10
+  if (tooSlow || instance.__VUE_DEVTOOLS_SLOW__) {
+    let change = false
+    if (tooSlow && !instance.__VUE_DEVTOOLS_SLOW__) {
+      instance.__VUE_DEVTOOLS_SLOW__ = {
+        duration: null,
+        measures: {}
+      }
     }
 
-    const id = getComponentId(app, uid, ctx)
-    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-      requestAnimationFrame(() => {
-        sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, ctx)
-      })
+    const data = instance.__VUE_DEVTOOLS_SLOW__
+
+    if (tooSlow && (data.duration == null || data.duration < duration)) {
+      data.duration = duration
+      change = true
+    }
+
+    if (data.measures[type] == null || data.measures[type] < duration) {
+      data.measures[type] = duration
+      change = true
+    }
+
+    if (change) {
+      // Update component tree
+      const id = getComponentId(app, uid, ctx)
+      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
+        requestAnimationFrame(() => {
+          sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, ctx)
+        })
+      }
     }
   }
+}
+
+export function handleAddPerformanceTag (ctx: BackendContext) {
+  ctx.api.on.visitComponentTree(payload => {
+    if (payload.componentInstance.__VUE_DEVTOOLS_SLOW__) {
+      const { duration, measures } = payload.componentInstance.__VUE_DEVTOOLS_SLOW__
+
+      let tooltip = '<div class="grid grid-cols-2 gap-2 font-mono text-xs">'
+      for (const type in measures) {
+        const d = measures[type]
+        tooltip += `<div>${type}</div><div class="text-right text-black rounded px-1 ${d > 30 ? 'bg-red-400' : d > 10 ? 'bg-yellow-400' : 'bg-green-400'}">${d} ms</div>`
+      }
+      tooltip += '</div>'
+
+      payload.treeNode.tags.push({
+        backgroundColor: duration > 30 ? 0xF87171 : 0xFBBF24,
+        textColor: 0x000000,
+        label: `${duration} ms`,
+        tooltip
+      })
+    }
+  })
 }
