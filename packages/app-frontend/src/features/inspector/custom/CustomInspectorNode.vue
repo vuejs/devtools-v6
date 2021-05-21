@@ -114,6 +114,10 @@ export default defineComponent({
       <span
         v-for="(tag, index) of node.tags"
         :key="index"
+        v-tooltip="{
+          content: tag.tooltip,
+          html: true
+        }"
         :style="{
           color: `#${tag.textColor.toString(16).padStart(6, '0')}`,
           backgroundColor: `#${tag.backgroundColor.toString(16).padStart(6, '0')}`,

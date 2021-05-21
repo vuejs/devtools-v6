@@ -276,6 +276,7 @@ Each node can have those properties:
   - `label`: text displayed in the tag
   - `textColor`: text color, for example: `0x000000` for black
   - `backgroundColor`: background color, for example: `0xffffff` for white
+  - `tooltip` (optional): HTML for a tooltip over the tag
 
 Example:
 
