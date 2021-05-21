@@ -286,7 +286,7 @@ export default defineComponent({
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
-      const offset = event.layer.simple ? 0 : 100
+      const offset = event.layer.groupsOnly ? 0 : 100
 
       let y = 0
       if (event.group && event !== event.group.firstEvent) {
@@ -295,7 +295,7 @@ export default defineComponent({
       } else {
         const firstEvent = event.group ? event.group.firstEvent : event
         const lastEvent = event.group ? event.group.lastEvent : event
-        const lastOffset = event.layer.simple && event.group?.duration > 0 ? -1 : 0
+        const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
         // Check for 'collision' with other event groups
         const l = event.layer.groups.length
         let checkAgain = true
@@ -543,18 +543,14 @@ export default defineComponent({
             if (selected) {
               // Border-only style
               size -= 0.5
-              if (!event.layer.simple) g.lineStyle(1, color)
+              g.lineStyle(1, color)
               g.beginFill(darkMode.value ? 0x0b1015 : 0xffffff)
               event.container.zIndex = 999999999
             } else {
               g.beginFill(color)
               event.container.zIndex = size
             }
-            if (event.layer.simple) {
-              g.drawRect(0, -LAYER_SIZE / 2, size, LAYER_SIZE - 1)
-            } else {
-              g.drawCircle(0, 0, size)
-            }
+            g.drawCircle(0, 0, size)
           } else {
             drawEventGroup(event)
           }
@@ -642,13 +638,13 @@ export default defineComponent({
         const g = event.groupG
         g.clear()
         const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
-        if (event.layer.simple && !drawAsSelected) {
+        if (event.layer.groupsOnly && !drawAsSelected) {
           g.beginFill(event.layer.color, 0.5)
         } else {
           g.lineStyle(1, event.layer.color, 0.5)
           g.beginFill(event.layer.color, 0.1)
         }
-        if (event.layer.simple) {
+        if (event.layer.groupsOnly) {
           g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
         } else {
           // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)

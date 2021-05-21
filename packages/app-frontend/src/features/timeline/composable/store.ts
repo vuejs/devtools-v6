@@ -46,7 +46,6 @@ export interface LayerFromBackend {
   color: number
   appId?: number
   pluginId?: string
-  simple?: boolean
   groupsOnly?: boolean
   skipScreenshots?: boolean
   ignoreNoDurationGroups?: boolean

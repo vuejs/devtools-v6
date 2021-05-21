@@ -50,7 +50,6 @@ function builtinLayersFactory () {
       id: 'performance',
       label: 'Performance',
       color: 0x41b86a,
-      simple: true,
       groupsOnly: true,
       skipScreenshots: true,
       ignoreNoDurationGroups: true
