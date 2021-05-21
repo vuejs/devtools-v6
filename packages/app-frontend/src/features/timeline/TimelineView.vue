@@ -744,6 +744,10 @@ export default defineComponent({
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
 
+    onMounted(() => {
+      queueCameraUpdate()
+    })
+
     function onMouseWheel (event: WheelEvent) {
       const size = endTime.value - startTime.value
       const viewWidth = wrapper.value.offsetWidth
