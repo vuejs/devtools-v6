@@ -370,16 +370,16 @@ export default defineComponent({
       // Graphics
       const g = new PIXI.Graphics()
       event.g = g
-      refreshEventGraphics(event)
       eventContainer.addChild(g)
+      refreshEventGraphics(event)
 
       // Group graphics
       if (event.group) {
         if (event.group.firstEvent === event) {
           const groupG = new PIXI.Graphics()
           event.groupG = groupG
-          drawEventGroup(event)
           eventContainer.addChild(groupG)
+          drawEventGroup(event)
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
           // We need to check for collisions again
@@ -633,6 +633,7 @@ export default defineComponent({
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
           if (!t) {
+            console.log('create group text')
             t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
               fontSize: 10,
               fill: darkMode.value ? 0xffffff : 0
