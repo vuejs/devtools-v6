@@ -371,7 +371,6 @@ export default defineComponent({
       const g = new PIXI.Graphics()
       event.g = g
       eventContainer.addChild(g)
-      refreshEventGraphics(event)
 
       // Group graphics
       if (event.group) {
@@ -389,6 +388,7 @@ export default defineComponent({
 
       events.push(event)
 
+      refreshEventGraphics(event)
       queueEventPositionUpdate(event)
 
       return event
@@ -532,7 +532,7 @@ export default defineComponent({
               g.drawCircle(0, 0, size)
             }
           } else {
-            drawEventGroup(event, selected)
+            drawEventGroup(event)
           }
         }
       }
@@ -610,8 +610,10 @@ export default defineComponent({
 
     // Event Groups
 
-    function drawEventGroup (event: TimelineEvent, drawAsSelected = false) {
+    function drawEventGroup (event: TimelineEvent) {
       if (event.groupG) {
+        const drawAsSelected = event === selectedEvent.value && event.layer.groupsOnly
+
         /** @type {PIXI.Graphics} */
         const g = event.groupG
         g.clear()
