@@ -461,6 +461,9 @@ Register a new timeline layer with this method. The options are:
 - `id`: unique id of the layer. It's recommended to use a variable to store it.
 - `label`: text displayed in the layer list
 - `color`: color of the layer background and event graphics
+- `skipScreenshots` (optional): don't trigger a screenshot for the layer events
+- `groupsOnly` (optional): only display groups of events (they will be drawn as rectangles)
+- `ignoreNoDurationGroups` (optional): skip groups with no duration (useful when `groupsOnly` is `true`)
 
 Example:
 

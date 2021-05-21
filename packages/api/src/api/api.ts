@@ -30,6 +30,9 @@ export interface TimelineLayerOptions<TData = any, TMeta = any> {
   id: string
   label: string
   color: number
+  skipScreenshots?: boolean
+  groupsOnly?: boolean
+  ignoreNoDurationGroups?: boolean
   screenshotOverlayRender?: (event: TimelineEvent<TData, TMeta> & ScreenshotOverlayEvent, ctx: ScreenshotOverlayRenderContext) => ScreenshotOverlayRenderResult | Promise<ScreenshotOverlayRenderResult>
 }
 
