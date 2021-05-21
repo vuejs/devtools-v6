@@ -407,27 +407,36 @@ export default defineComponent({
       initEvents()
     })
 
-    function resetEvents () {
+    function clearEvents () {
       for (const e of events) {
         e.g.destroy()
         e.g = null
+
+        if (e.groupT) {
+          (e.groupT.mask as PIXI.Graphics).destroy()
+          e.groupT.destroy()
+          e.groupT = null
+        }
 
         if (e.groupG) {
           e.groupG.destroy()
           e.groupG = null
         }
 
-        if (e.groupT) {
-          e.groupT.destroy()
-          e.groupT = null
-        }
-
         e.container.destroy()
         e.container = null
       }
       events = []
+    }
+
+    function resetEvents () {
+      clearEvents()
       initEvents()
     }
+
+    onUnmounted(() => {
+      clearEvents()
+    })
 
     onEventAdd((event: TimelineEvent) => {
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
