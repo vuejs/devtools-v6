@@ -481,20 +481,44 @@ export default defineComponent({
 
     onMounted(() => {
       app.stage.addListener('click', event => {
-        // We find the nearest event from the mouse click position
-        let choice
-        let distance = Number.POSITIVE_INFINITY
-        for (const e of events) {
-          if (isEventIgnored(e)) continue
-          const globalPosition = e.g.getGlobalPosition()
-          const d = Math.abs(globalPosition.x - event.data.global.x) + Math.abs(globalPosition.y - event.data.global.y)
+        const targetX = event.data.global.x
+        const targetY = event.data.global.y
+        let choice: TimelineEvent
 
-          if (!choice || d < distance) {
-            choice = e
-            distance = d
+        let y = 0
+        for (const layer of layers.value) {
+          y += (layer.height + 1) * LAYER_SIZE
+          if (targetY < y) {
+            let distance = Number.POSITIVE_INFINITY
+            for (const e of layer.events) {
+              if (isEventIgnored(e)) continue
+
+              if (layer.groupsOnly) {
+                // We find the group inside of which the mouse is
+                const bounds = e.group.firstEvent.groupG.getBounds()
+                if (bounds.contains(targetX, targetY)) {
+                  choice = e
+                  break
+                }
+              } else {
+                if (!e.g) continue
+                // We find the nearest event from the mouse click position
+                const globalPosition = e.g.getGlobalPosition()
+                const d = Math.abs(globalPosition.x - targetX) + Math.abs(globalPosition.y - targetY)
+
+                if (!choice || d < distance) {
+                  choice = e
+                  distance = d
+                }
+              }
+            }
+            break
           }
         }
-        selectEvent(choice)
+
+        if (choice) {
+          selectEvent(choice)
+        }
       })
     })
 
