@@ -201,6 +201,17 @@ async function connect () {
     performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
+  ctx.api.on.visitComponentTree(payload => {
+    if (payload.componentInstance.__VUE_DEVTOOLS_SLOW__) {
+      const { duration } = payload.componentInstance.__VUE_DEVTOOLS_SLOW__
+      payload.treeNode.tags.push({
+        backgroundColor: duration > 30 ? 0xF87171 : 0xFBBF24,
+        textColor: 0x000000,
+        label: `${duration} ms`
+      })
+    }
+  })
+
   // Highlighter
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {

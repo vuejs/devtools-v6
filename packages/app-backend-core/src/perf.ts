@@ -1,14 +1,17 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { App, ComponentInstance } from '@vue/devtools-api'
+import { BridgeSubscriptions } from '@vue-devtools/shared-utils'
 import { addTimelineEvent } from './timeline'
 import { getAppRecord } from './app'
+import { getComponentId, sendComponentTreeData } from './component'
+import { isSubscribed } from './util/subscriptions'
 
 let uniqueGroupId = 0
 
 export async function performanceMarkStart (
   app: App,
-  instanceId: string,
+  uid: number,
   instance: ComponentInstance,
   type: string,
   time: number,
@@ -18,7 +21,7 @@ export async function performanceMarkStart (
   const appRecord = getAppRecord(app, ctx)
   const componentName = await ctx.api.getComponentName(instance)
   const groupId = uniqueGroupId++
-  const groupKey = `${instanceId}-${type}`
+  const groupKey = `${uid}-${type}`
   appRecord.perfGroupIds.set(groupKey, { groupId, time })
   addTimelineEvent({
     layerId: 'performance',
@@ -38,7 +41,7 @@ export async function performanceMarkStart (
 
 export async function performanceMarkEnd (
   app: App,
-  instanceId: string,
+  uid: number,
   instance: ComponentInstance,
   type: string,
   time: number,
@@ -47,7 +50,7 @@ export async function performanceMarkEnd (
   if (!SharedData.performanceMonitoringEnabled) return
   const appRecord = getAppRecord(app, ctx)
   const componentName = await ctx.api.getComponentName(instance)
-  const groupKey = `${instanceId}-${type}`
+  const groupKey = `${uid}-${type}`
   const { groupId, time: startTime } = appRecord.perfGroupIds.get(groupKey)
   const duration = time - startTime
   addTimelineEvent({
@@ -71,4 +74,18 @@ export async function performanceMarkEnd (
       groupId
     }
   }, app, ctx)
+
+  // Mark on component
+  if (duration > 10 && (!instance.__VUE_DEVTOOLS_SLOW__ || instance.__VUE_DEVTOOLS_SLOW__.duration < duration)) {
+    instance.__VUE_DEVTOOLS_SLOW__ = {
+      duration
+    }
+
+    const id = getComponentId(app, uid, ctx)
+    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
+      requestAnimationFrame(() => {
+        sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, ctx)
+      })
+    }
+  }
 }
