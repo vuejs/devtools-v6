@@ -74,7 +74,8 @@ api.on.visitComponentTree(payload => {
     node.tags.push({
       label: 'test',
       textColor: 0xFFAAAA,
-      backgroundColor: 0xFFEEEE
+      backgroundColor: 0xFFEEEE,
+      tooltip: `It's a test!`
     })
   }
 })

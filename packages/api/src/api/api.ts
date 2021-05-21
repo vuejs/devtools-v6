@@ -86,6 +86,7 @@ export interface InspectorNodeTag {
   label: string
   textColor: number
   backgroundColor: number
+  tooltip?: string
 }
 
 export interface CustomInspectorState {

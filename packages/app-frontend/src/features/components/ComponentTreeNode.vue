@@ -156,12 +156,14 @@ export default defineComponent({
       <span class="flex items-center space-x-2 ml-2 h-full">
         <span
           v-if="instance.isFragment"
+          v-tooltip="'Has multiple root DOM nodes'"
           class="info fragment bg-blue-300 dark:bg-blue-800"
         >
           fragment
         </span>
         <span
           v-if="instance.inactive"
+          v-tooltip="'Currently inactive but not destroyed'"
           class="info inactive bg-gray-500"
         >
           inactive
@@ -169,6 +171,10 @@ export default defineComponent({
         <span
           v-for="(tag, index) of instance.tags"
           :key="index"
+          v-tooltip="{
+            content: tag.tooltip,
+            html: true
+          }"
           :style="{
             color: `#${tag.textColor.toString(16).padStart(6, '0')}`,
             backgroundColor: `#${tag.backgroundColor.toString(16).padStart(6, '0')}`,
