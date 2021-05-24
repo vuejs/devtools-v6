@@ -58,7 +58,7 @@ export default defineComponent({
         scrollIntoView(el, {
           scrollMode: 'if-needed',
           block: 'center',
-          inline: 'center',
+          inline: 'nearest',
           behavior: 'smooth'
         })
       }
@@ -79,10 +79,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
+  <div class="min-w-max">
     <div
       ref="toggleEl"
-      class="font-mono cursor-pointer relative overflow-hidden z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm selectable-item"
+      class="font-mono cursor-pointer relative z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm selectable-item"
       :class="{
         selected
       }"
