@@ -323,6 +323,10 @@ export default {
       </span>
       <span
         v-else
+        v-tooltip="fieldOptions.abstract && {
+          content: valueTooltip,
+          html: true
+        }"
         :class="{ abstract: fieldOptions.abstract }"
         class="key"
       >{{ displayedKey }}</span><span
