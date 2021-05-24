@@ -19,7 +19,7 @@ module.exports = {
         ]
       },
       {
-        text: 'Sponsor',
+        text: '💚️ Sponsor',
         link: 'https://github.com/sponsors/Akryum',
       },
     ],
