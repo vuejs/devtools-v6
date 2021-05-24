@@ -2,7 +2,8 @@ import {
   createBackendContext,
   BackendContext,
   Plugin,
-  BuiltinBackendFeature
+  BuiltinBackendFeature,
+  AppRecord
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -129,9 +130,17 @@ async function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_UPDATED, (app, uid) => {
-    const id = app ? getComponentId(app, uid, ctx) : ctx.currentInspectedComponentId
+    let id: string
+    let appRecord: AppRecord
+    if (app && uid != null) {
+      id = getComponentId(app, uid, ctx)
+      appRecord = getAppRecord(app, ctx)
+    } else {
+      id = ctx.currentInspectedComponentId
+      appRecord = ctx.currentAppRecord
+    }
     if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-      sendSelectedComponentData(getAppRecord(app, ctx), id, ctx)
+      sendSelectedComponentData(appRecord, id, ctx)
     }
   })
 
