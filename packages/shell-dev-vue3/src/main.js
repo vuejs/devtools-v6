@@ -23,6 +23,9 @@ const router = createRouter({
 })
 
 const app = createApp(App)
+app.component('global', {
+  render: () => 'I\'m a global component'
+})
 app.use(TestPlugin)
 app.use(router)
 app.mount('#app')

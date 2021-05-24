@@ -15,6 +15,8 @@ import SetupRender from './SetupRender.js'
 import Form from './Form.vue'
 import Heavy from './Heavy.vue'
 
+import { h } from 'vue'
+
 export default {
   name: 'MyApp',
 
@@ -33,7 +35,10 @@ export default {
     Other,
     SetupRender,
     Form,
-    Heavy
+    Heavy,
+    inline: {
+      render: () => h('h3', 'Inline component definition')
+    }
   },
 
   data () {
@@ -77,6 +82,8 @@ export default {
   <Other />
   <SetupRender />
   <Form />
+  <inline />
+  <global />
 
   <nav>
     <router-link to="/p1">

@@ -26,9 +26,18 @@ for (let i = 0; i < 100; i++) {
 const circular = {}
 circular.self = circular
 
+Vue.component('global', {
+  render: h => h('h3', 'Global component')
+})
+
 const app = new Vue({
   store,
   router,
+  components: {
+    inline: {
+      render: h => h('h3', 'Inline component definition')
+    }
+  },
   data: {
     obj: {
       items: items,
@@ -47,7 +56,9 @@ const app = new Vue({
       h(VuexObject),
       h(Init),
       h(RefTester),
-      h(Hidden)
+      h(Hidden),
+      h('global'),
+      h('inline')
     ])
   }
 })
