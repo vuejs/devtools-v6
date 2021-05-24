@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import App3 from './App3.vue'
 import TestPlugin from './devtools-plugin'
+import store from './store'
 
 // eslint-disable-next-line no-extend-native
 Array.prototype.foo = 'bar'
@@ -26,8 +27,9 @@ const app = createApp(App)
 app.component('global', {
   render: () => 'I\'m a global component'
 })
-app.use(TestPlugin)
 app.use(router)
+app.use(store)
+app.use(TestPlugin)
 app.mount('#app')
 
 createApp({

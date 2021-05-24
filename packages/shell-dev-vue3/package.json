@@ -10,7 +10,8 @@
     "@vue-devtools/shell-host": "^0.0.0",
     "core-js": "^3.6.4",
     "vue": "^3.0.2",
-    "vue-router": "^4"
+    "vue-router": "^4",
+    "vuex": "^4.0.1"
   },
   "devDependencies": {
     "@vue/compiler-sfc": "^3.0.0-beta.15",

@@ -85,6 +85,12 @@ export default {
   <inline />
   <global />
 
+  <h2>Store</h2>
+  <div>
+    {{ $store.getters.answer }}
+    {{ $store.getters.twoFoo }}
+  </div>
+
   <nav>
     <router-link to="/p1">
       page 1
