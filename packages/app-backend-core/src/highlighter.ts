@@ -17,13 +17,14 @@ function createOverlay () {
   overlayContent.style.position = 'fixed'
   overlayContent.style.zIndex = '99999999999999'
   overlayContent.style.pointerEvents = 'none'
-  overlayContent.style.backgroundColor = 'rgba(65, 184, 131, 0.9)'
+  overlayContent.style.backgroundColor = 'white'
   overlayContent.style.fontFamily = 'monospace'
   overlayContent.style.fontSize = '11px'
-  overlayContent.style.padding = '2px 3px'
+  overlayContent.style.padding = '4px 8px'
   overlayContent.style.borderRadius = '3px'
-  overlayContent.style.color = 'white'
+  overlayContent.style.color = '#333'
   overlayContent.style.textAlign = 'center'
+  overlayContent.style.border = '#42B983 1px solid'
 }
 
 // Use a job queue to preserve highlight/unhighlight calls order
@@ -36,16 +37,33 @@ export async function highlight (instance, ctx: BackendContext) {
 
     const bounds = await ctx.api.getComponentBounds(instance)
     if (bounds) {
-      const name = (await ctx.api.getComponentName(instance)) || 'Anonymous'
       createOverlay()
+
+      // Name
+      const name = (await ctx.api.getComponentName(instance)) || 'Anonymous'
       const pre = document.createElement('span')
       pre.style.opacity = '0.6'
       pre.innerText = '<'
-      const text = document.createTextNode(name)
+      const text = document.createElement('span')
+      text.style.fontWeight = 'bold'
+      text.style.color = '#09ab56'
+      text.innerText = name
       const post = document.createElement('span')
       post.style.opacity = '0.6'
       post.innerText = '>'
-      await showOverlay(bounds, [pre, text, post])
+
+      // Size
+      const size = document.createElement('span')
+      size.style.opacity = '0.5'
+      size.style.marginLeft = '6px'
+      size.appendChild(document.createTextNode((Math.round(bounds.width * 100) / 100).toString()))
+      const multiply = document.createElement('span')
+      multiply.style.marginLeft = multiply.style.marginRight = '2px'
+      multiply.innerText = '×'
+      size.appendChild(multiply)
+      size.appendChild(document.createTextNode((Math.round(bounds.height * 100) / 100).toString()))
+
+      await showOverlay(bounds, [pre, text, post, size])
     }
   })
 }
