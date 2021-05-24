@@ -24,7 +24,8 @@ function createOverlay () {
   overlayContent.style.borderRadius = '3px'
   overlayContent.style.color = '#333'
   overlayContent.style.textAlign = 'center'
-  overlayContent.style.border = '#42B983 1px solid'
+  overlayContent.style.border = 'rgba(65, 184, 131, 0.5) 1px solid'
+  overlayContent.style.backgroundClip = 'padding-box'
 }
 
 // Use a job queue to preserve highlight/unhighlight calls order
@@ -91,13 +92,16 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, children: No
   // Content position (prevents overflow)
   const contentWidth = overlayContent.offsetWidth
   const contentHeight = overlayContent.offsetHeight
-  let contentLeft = left + (width - contentWidth) / 2
+  let contentLeft = left
   if (contentLeft < 0) {
     contentLeft = 0
   } else if (contentLeft + contentWidth > window.innerWidth) {
     contentLeft = window.innerWidth - contentWidth
   }
-  let contentTop = top + (height - contentHeight) / 2
+  let contentTop = top - contentHeight - 2
+  if (contentTop < 0) {
+    contentTop = top + height + 2
+  }
   if (contentTop < 0) {
     contentTop = 0
   } else if (contentTop + contentHeight > window.innerHeight) {
