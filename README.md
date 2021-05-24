@@ -1,6 +1,6 @@
 # vue-devtools
 
-<p align="center"><img width="720px" src="./media/screenshot-shadow.png" alt="screenshot"></p>
+![screenshot](./media/screenshot-shadow.png)
 
 [Documentation](https://devtools.vuejs.org/)
 
