@@ -357,14 +357,43 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
   }
 
   if (gettersKeys.length) {
-    storeState.getters = gettersKeys.map((key) => ({
+    const tree = transformPathsToObjectTree(getters)
+    storeState.getters = Object.keys(tree).map((key) => ({
       key: key.endsWith('/') ? extractNameFromPath(key) : key,
       editable: false,
-      value: canThrow(() => getters[key])
+      value: canThrow(() => tree[key])
     }))
   }
 
   return storeState
+}
+
+function transformPathsToObjectTree (getters) {
+  const result = {}
+  Object.keys(getters).forEach(key => {
+    const path = key.split('/')
+    if (path.length > 1) {
+      let target = result
+      const leafKey = path.pop()
+      for (const p of path) {
+        if (!target[p]) {
+          target[p] = {
+            _custom: {
+              value: {},
+              display: p,
+              tooltip: 'Module',
+              abstract: true
+            }
+          }
+        }
+        target = target[p]._custom.value
+      }
+      target[leafKey] = canThrow(() => getters[key])
+    } else {
+      result[key] = canThrow(() => getters[key])
+    }
+  })
+  return result
 }
 
 function getStoreModule (moduleMap, path) {
