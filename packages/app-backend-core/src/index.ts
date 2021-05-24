@@ -34,6 +34,7 @@ import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getA
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
+import { initOnPageConfig } from './page-config'
 
 let ctx: BackendContext
 let connected = false
@@ -49,6 +50,8 @@ export async function initBackend (bridge: Bridge) {
     bridge,
     persist: false
   })
+
+  initOnPageConfig()
 
   if (hook.Vue) {
     connect()
