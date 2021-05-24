@@ -149,6 +149,8 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
     instance = instance._vnode.componentInstance
   }
 
+  if (instance.$options?.devtools?.hide) return
+
   // Functional component.
   if (instance.fnContext && !instance.componentInstance) {
     const contextUid = instance.fnContext.__VUE_DEVTOOLS_UID__

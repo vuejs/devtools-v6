@@ -12,6 +12,7 @@ import MyClass from './MyClass.js'
 import router from './router'
 import TransitionExample from './TransitionExample.vue'
 import Router from './router/Router.vue'
+import Hidden from './Hidden.vue'
 
 window.VUE_DEVTOOLS_CONFIG = {
   openInEditorHost: '/'
@@ -45,7 +46,8 @@ const app = new Vue({
       h(TransitionExample),
       h(VuexObject),
       h(Init),
-      h(RefTester)
+      h(RefTester),
+      h(Hidden)
     ])
   }
 })
