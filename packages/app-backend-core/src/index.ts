@@ -203,6 +203,26 @@ async function connect () {
     }
   })
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
+    const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
+    if (instance) {
+      const [el] = await ctx.api.getComponentRootElements(instance)
+      if (el) {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        })
+        setTimeout(() => {
+          highlight(instance, ctx)
+        }, 500)
+        setTimeout(() => {
+          unHighlight()
+        }, 2000)
+      }
+    }
+  })
+
   // Component perf
 
   hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {

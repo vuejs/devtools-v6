@@ -40,9 +40,16 @@ export default defineComponent({
       />
 
       <VueButton
+        v-tooltip="'Scroll to component'"
+        icon-left="preview"
+        class="flat icon-button"
+        @click="scrollToComponent()"
+      />
+
+      <VueButton
         v-if="$isChrome"
         v-tooltip="'Inspect DOM'"
-        icon-left="code"
+        icon-left="menu_open"
         class="flat icon-button"
         @click="inspectDOM()"
       />

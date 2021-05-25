@@ -216,6 +216,12 @@ export function useSelectedComponent () {
     })
   }
 
+  function scrollToComponent () {
+    bridge.send(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, {
+      instanceId: data.value.id
+    })
+  }
+
   return {
     data,
     state,
@@ -223,7 +229,8 @@ export function useSelectedComponent () {
     inspectDOM,
     fileIsPath,
     openFile,
-    editState
+    editState,
+    scrollToComponent
   }
 }
 
