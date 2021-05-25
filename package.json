@@ -1,30 +1,35 @@
 {
   "name": "vue-devtools",
-  "version": "3.1.7",
+  "version": "5.3.4",
   "description": "devtools for Vue.js!",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
-    "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
-    "dev:safari": "cd shells/safari && webpack --watch --hide-modules",
-    "lint": "eslint src --ext=js,vue && eslint shells/chrome/src && eslint shells/dev/src && eslint shells/safari/src",
-    "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "build:safari": "cd shells/safari && NODE_ENV=production webpack --progress --hide-modules -p",
-    "run:firefox": "web-ext run -s shells/chrome -a dist -i src",
+    "dev": "cross-env PORT=8100 npm run dev:shell",
+    "dev:shell": "cd packages/shell-dev && webpack-dev-server --inline --hot --no-info",
+    "dev:chrome": "cd packages/shell-chrome && webpack --watch --hide-modules",
+    "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch --hide-modules",
+    "lint": "eslint --ext=js,vue packages/app-backend/src packages/app-frontend/src packages/shared-utils/src packages/shell-chrome/src packages/shell-dev/src packages/shell-electron/src",
+    "build": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "run:firefox": "web-ext run -s packages/shell-chrome -a dist -i src",
     "zip": "npm run zip:chrome && npm run zip:firefox",
-    "zip:chrome": "cd shells && zip -r -FS ../dist/chrome.zip chrome -x *src/* -x *webpack.config.js",
-    "zip:firefox": "web-ext build -s shells/chrome -a dist -i src --overwrite-dest",
-    "release": "npm run test && npm run build && npm run zip",
-    "test": "npm run lint && bash test/test.sh"
+    "zip:chrome": "cd packages && zip -r -FS ../dist/chrome.zip shell-chrome -x *src/* -x *webpack.config.js",
+    "zip:firefox": "web-ext build -s packages/shell-chrome -a dist -i src --overwrite-dest",
+    "sign:firefox": "cross-env WEB_EXT_API_KEY=VUE_DEVTOOLS_AMO_KEY WEB_EXT_API_SECRET=VUE_DEVTOOLS_AMO_SECRET web-ext sign -s packages/shell-chrome -a dist -i src --id {f0beaa66-17d0-42e9-b1c9-c52da6252db8}",
+    "release": "npm run test && node release.js && npm run build && npm run zip && npm run pub",
+    "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox && npm run pub",
+    "pub": "cd packages/shell-electron && npm publish",
+    "test": "npm run lint && npm run test:e2e",
+    "test:e2e": "cross-env PORT=4040 start-server-and-test dev:shell http://localhost:4040 test:e2e:run",
+    "test:e2e:run": "cypress run --config baseUrl=http://localhost:4040",
+    "test:open": "cypress open --config baseUrl=http://localhost:8100"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/vue-devtools.git"
   },
-  "keywords": [
-    "vue",
-    "devtools"
-  ],
   "author": "Evan You",
   "license": "MIT",
   "bugs": {
@@ -32,32 +37,25 @@
   },
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
-    "buble": "^0.18.0",
-    "buble-loader": "^0.4.1",
-    "chromedriver": "^2.33.2",
-    "cross-env": "^5.1.1",
-    "css-loader": "^0.28.7",
-    "eslint": "^4.13.1",
-    "eslint-plugin-vue-libs": "^2.0.1",
-    "file-loader": "^1.1.5",
-    "friendly-errors-webpack-plugin": "^1.6.1",
-    "nightwatch": "^0.9.19",
-    "nightwatch-helpers": "^1.2.0",
-    "selenium-server": "2.52.0",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1",
-    "url-loader": "^0.6.2",
-    "vue-loader": "^13.5.0",
-    "vue-template-compiler": "^2.5.11",
-    "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7"
+    "autoprefixer": "^9.1.5",
+    "cross-env": "^5.2.0",
+    "cypress": "^4.12.0",
+    "eslint": "^5.6.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-cypress": "^2.0.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.0",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^5.0.0-beta.3",
+    "inquirer": "^6.2.0",
+    "semver": "^5.5.1",
+    "start-server-and-test": "^1.7.1"
   },
-  "dependencies": {
-    "circular-json-es6": "^2.0.1",
-    "lodash.debounce": "^4.0.8",
-    "lodash.groupby": "^4.6.0",
-    "uglifyjs-webpack-plugin": "^1.1.4",
-    "vue": "^2.5.11",
-    "vuex": "^3.0.1"
+  "resolutions": {
+    "cypress": "=3.4.1"
+  },
+  "engines": {
+    "node": ">=8.10"
   }
 }

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@back/*": ["packages/app-backend/src/*"],
+      "@front/*": ["packages/app-frontend/src/*"],
+      "@utils/*": ["packages/shared-utils/src/*"]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Plain Shell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      #target {
+        flex: 1;
+        border: none;
+        border-bottom: 1px solid #ccc;
+      }
+      #container {
+        display: flex;
+        height: 400px;
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div>Not Vue</div>
+    <iframe id="target" name="target" src="target.html"></iframe>
+    <div id="container">
+      <div id="app"></div>
+    </div>
+    <script src="build/devtools.js"></script>
+  </body>
+</html>
