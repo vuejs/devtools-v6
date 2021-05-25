@@ -1,0 +1,25 @@
+.slide-up-enter
+  opacity 0
+  transform translate(0, 50%)
+
+.slide-up-leave-to
+  opacity 0
+  transform translate(0, -50%)
+
+.slide-down-enter, .slide-down-leave-to
+  opacity 0
+  transform translate(0, -20px)
+
+@keyframes rotate
+  0%
+    transform rotate(0deg)
+  100%
+    transform rotate(360deg)
+
+@keyframes pulse
+  0%
+    opacity 1
+  50%
+    opacity .2
+  100%
+    opacity 1

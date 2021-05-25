@@ -1,0 +1,9 @@
+{
+  "name": "@vue-devtools/shared-utils",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "dependencies": {
+    "@vue-devtools/app-backend": "^0.0.0"
+  }
+}
