@@ -92,7 +92,13 @@ export default defineComponent({
     icon="explore"
     class="wait"
   >
-    Inspector {{ $route.params.inspectorId }} not found
+    <div class="flex flex-col items-center">
+      <div>Inspector {{ $route.params.inspectorId }} not found</div>
+      <a
+        class="text-green-500 hover:underline cursor-pointer"
+        @click="$router.replace({ name: 'inspector-components' })"
+      >Go back</a>
+    </div>
   </EmptyPane>
 </template>
 
