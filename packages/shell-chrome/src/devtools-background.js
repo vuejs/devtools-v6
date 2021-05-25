@@ -46,7 +46,7 @@ chrome.runtime.onMessage.addListener(request => {
   if (request === 'vue-panel-load') {
     onPanelLoad()
   } else if (request.vueToast) {
-    toast(request.vueToast.message, request.vueToast.type)
+    toast(request.vueToast)
   } else if (request.vueContextMenu) {
     onContextMenu(request.vueContextMenu)
   }
@@ -65,10 +65,10 @@ function onContextMenu ({ id }) {
       if (typeof res !== 'undefined' && res) {
         panelAction(() => {
           chrome.runtime.sendMessage('vue-get-context-menu-target')
-        }, 'Open Vue devtools to see component details')
+        }, 'open-devtools')
       } else {
         pendingAction = null
-        toast('No Vue component was found', 'warn')
+        toast('component-not-found')
       }
     })
   }
@@ -113,7 +113,16 @@ function onPanelHidden () {
 
 // Toasts
 
-function toast (message, type = 'normal') {
+const toastMessages = {
+  'open-devtools': { message: 'Open Vue devtools to see component details', type: 'normal' },
+  'component-not-found': { message: 'No Vue component was found', type: 'warn' }
+}
+
+function toast (id) {
+  if (!Object.keys(toastMessages).includes(id)) return
+
+  const { message, type } = toastMessages[id]
+
   const src = `(function() {
     __VUE_DEVTOOLS_TOAST__(\`${message}\`, '${type}');
   })()`
