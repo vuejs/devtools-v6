@@ -147,6 +147,13 @@ export default defineComponent({
         <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
 
         <VueDropdownButton
+          href="https://devtools.vuejs.org"
+          target="_blank"
+        >
+          Documentation
+        </VueDropdownButton>
+
+        <VueDropdownButton
           href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
           target="_blank"
         >
