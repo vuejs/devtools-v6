@@ -40,7 +40,7 @@ export default defineComponent({
 <template>
   <VueSwitch
     v-model="model"
-    class="right w-full hover:bg-green-50 dark:bg-green-900"
+    class="right w-full hover:bg-green-50 dark:hover:bg-green-900"
   >
     {{ label }}
   </VueSwitch>
