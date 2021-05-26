@@ -171,7 +171,7 @@ export class ComponentWalker {
     if (instance.suspense) {
       treeNode.tags.push({
         label: 'suspense',
-        backgroundColor: 0xc5c4fc,
+        backgroundColor: 0x7d7dd7,
         textColor: 0xffffff
       })
     }

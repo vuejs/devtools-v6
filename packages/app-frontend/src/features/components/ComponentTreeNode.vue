@@ -157,7 +157,7 @@ export default defineComponent({
         <span
           v-if="instance.isFragment"
           v-tooltip="'Has multiple root DOM nodes'"
-          class="info fragment bg-blue-300 dark:bg-blue-800"
+          class="info fragment bg-blue-400 dark:bg-blue-800"
         >
           fragment
         </span>
