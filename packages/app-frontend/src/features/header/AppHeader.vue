@@ -132,6 +132,7 @@ export default defineComponent({
           :to="{
             name: 'plugins'
           }"
+          icon-left="extension"
         >
           Devtools plugins...
         </VueDropdownButton>
@@ -140,6 +141,7 @@ export default defineComponent({
           :to="{
             name: 'global-settings'
           }"
+          icon-left="settings"
         >
           Global settings...
         </VueDropdownButton>
@@ -149,6 +151,7 @@ export default defineComponent({
         <VueDropdownButton
           href="https://devtools.vuejs.org"
           target="_blank"
+          icon-left="description"
         >
           Documentation
         </VueDropdownButton>
@@ -156,6 +159,7 @@ export default defineComponent({
         <VueDropdownButton
           href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
           target="_blank"
+          icon-left="bug_report"
         >
           Report a bug
         </VueDropdownButton>
@@ -163,8 +167,9 @@ export default defineComponent({
         <VueDropdownButton
           href="https://github.com/vuejs/vue-devtools/releases"
           target="_blank"
+          icon-left="campaign"
         >
-          Full changelog
+          What's new
         </VueDropdownButton>
       </VueDropdown>
     </div>
