@@ -117,15 +117,15 @@ export default defineComponent({
         >
           <VueGroupButton
             value="original"
-            label="Original name"
+            label="Original"
           />
           <VueGroupButton
             value="class"
-            label="Pascal case"
+            label="PascalCase"
           />
           <VueGroupButton
             value="kebab"
-            label="Kebab case"
+            label="kebab-case"
           />
         </VueGroup>
       </div>
