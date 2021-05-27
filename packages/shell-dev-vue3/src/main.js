@@ -32,14 +32,17 @@ app.use(store)
 app.use(TestPlugin)
 app.mount('#app')
 
-createApp({
+const app2 = createApp({
   render: () => h('h1', 'App 2')
-}).mount('#app2')
+})
+app2.mount('#app2')
 
 createApp(App3).mount('#app3')
 
 createApp({
-  render: () => h('h1', 'Ghost app'),
+  render: () => h('button', {
+    onClick: () => app2.unmount()
+  }, 'Remove app 2'),
   devtools: {
     hide: true
   }

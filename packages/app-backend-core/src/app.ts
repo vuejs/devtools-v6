@@ -131,6 +131,15 @@ export async function sendApps (ctx: BackendContext) {
   })
 }
 
+export function removeApp (app: any, ctx: BackendContext) {
+  const appRecord = getAppRecord(app, ctx)
+  if (appRecord) {
+    const index = ctx.appRecords.indexOf(appRecord)
+    if (index !== -1) ctx.appRecords.splice(index, 1)
+    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
+  }
+}
+
 // eslint-disable-next-line camelcase
 export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext) {
   const apps = scan()

@@ -30,7 +30,7 @@ import {
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
-import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord } from './app'
+import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
@@ -119,6 +119,10 @@ async function connect () {
     } else {
       await selectApp(record, ctx)
     }
+  })
+
+  hook.on(HookEvents.APP_UNMOUNT, app => {
+    removeApp(app, ctx)
   })
 
   // Components
