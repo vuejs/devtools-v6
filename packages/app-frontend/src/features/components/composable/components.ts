@@ -126,7 +126,11 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   const { selectComponent, requestComponentTree } = useComponentRequests()
   const { subscribe } = useBridge()
 
-  const isExpanded = computed(() => !!expandedMap.value[instance.value.id])
+  function checkIsExpanded (id) {
+    return !!expandedMap.value[id]
+  }
+
+  const isExpanded = computed(() => checkIsExpanded(instance.value.id))
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
   function toggleExpand (load = true) {
@@ -139,8 +143,8 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
 
   const isSelected = computed(() => selectedComponentId.value === instance.value.id)
 
-  function select () {
-    selectComponent(instance.value.id)
+  function select (id = instance.value.id) {
+    selectComponent(id)
   }
 
   function subscribeToComponentTree () {
@@ -168,6 +172,7 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   return {
     isExpanded,
     isExpandedUndefined,
+    checkIsExpanded,
     toggleExpand,
     isSelected,
     select,
@@ -290,4 +295,14 @@ export function loadComponent (id: ComponentTreeNode['id']) {
   lastSelectedComponentId = id
   selectedComponentPendingId.value = id
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
+}
+
+export function sortChildren (children: ComponentTreeNode[]) {
+  return children.slice().sort((a, b) => {
+    if (a.positionTop === b.positionTop) {
+      return a.id.localeCompare(b.id)
+    } else {
+      return a.positionTop - b.positionTop
+    }
+  })
 }

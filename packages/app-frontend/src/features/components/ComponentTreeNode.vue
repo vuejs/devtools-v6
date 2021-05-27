@@ -4,7 +4,8 @@ import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
-import { useComponent, useComponentHighlight } from './composable'
+import { sortChildren, useComponent, useComponentHighlight } from './composable'
+import { onKeyDown } from '@front/util/keyboard'
 
 const DEFAULT_EXPAND_DEPTH = 2
 
@@ -23,21 +24,15 @@ export default defineComponent({
     }
   },
 
-  setup (props) {
+  setup (props, { emit }) {
     const { instance } = toRefs(props)
 
     const displayName = computed(() => getComponentDisplayName(props.instance.name, SharedData.componentNameStyle))
 
     const componentHasKey = computed(() => (props.instance.renderKey === 0 || !!props.instance.renderKey) && props.instance.renderKey !== UNDEFINED)
 
-    const sortedChildren = computed(() => props.instance.children
-      ? props.instance.children.slice().sort((a, b) => {
-        if (a.positionTop === b.positionTop) {
-          return a.id.localeCompare(b.id)
-        } else {
-          return a.positionTop - b.positionTop
-        }
-      })
+    const sortedChildren = computed<ComponentTreeNode[]>(() => props.instance.children
+      ? sortChildren(props.instance.children)
       : [])
 
     const {
@@ -45,6 +40,7 @@ export default defineComponent({
       select,
       isExpanded: expanded,
       isExpandedUndefined,
+      checkIsExpanded,
       toggleExpand: toggle,
       subscribeToComponentTree
     } = useComponent(instance)
@@ -81,6 +77,70 @@ export default defineComponent({
     watch(selected, () => autoScroll())
     watch(toggleEl, () => autoScroll())
 
+    // Keyboard
+
+    onKeyDown(event => {
+      if (selected.value) {
+        requestAnimationFrame(() => {
+          switch (event.key) {
+            case 'ArrowRight': {
+              if (!expanded.value) {
+                toggle()
+              }
+              break
+            }
+            case 'ArrowLeft': {
+              if (expanded.value) {
+                toggle()
+              }
+              break
+            }
+            case 'ArrowDown': {
+              if (expanded.value && sortedChildren.value.length) {
+                // Select first child
+                select(sortedChildren.value[0].id)
+              } else {
+                emit('select-next-sibling')
+              }
+              break
+            }
+            case 'ArrowUp': {
+              emit('select-previous-sibling')
+            }
+          }
+        })
+      }
+    })
+
+    function selectNextSibling (index) {
+      if (index + 1 >= sortedChildren.value.length) {
+        emit('select-next-sibling')
+      } else {
+        select(sortedChildren.value[index + 1].id)
+      }
+    }
+
+    function selectPreviousSibling (index) {
+      if (index === 0 || !sortedChildren.value.length) {
+        if (selected.value) {
+          emit('select-previous-sibling')
+        } else {
+          select()
+        }
+      } else {
+        let child = sortedChildren.value[index - 1]
+        while (child) {
+          if (child.children.length && checkIsExpanded(child.id)) {
+            const children = sortChildren(child.children)
+            child = children[children.length - 1]
+          } else {
+            select(child.id)
+            child = null
+          }
+        }
+      }
+    }
+
     return {
       toggleEl,
       sortedChildren,
@@ -91,7 +151,9 @@ export default defineComponent({
       expanded,
       toggle,
       highlight,
-      unhighlight
+      unhighlight,
+      selectNextSibling,
+      selectPreviousSibling
     }
   }
 })
@@ -191,10 +253,12 @@ export default defineComponent({
 
     <div v-if="expanded && instance.children">
       <ComponentTreeNode
-        v-for="child in sortedChildren"
+        v-for="(child, index) in sortedChildren"
         :key="child.id"
         :instance="child"
         :depth="depth + 1"
+        @select-next-sibling="selectNextSibling(index)"
+        @select-previous-sibling="selectPreviousSibling(index)"
       />
     </div>
   </div>

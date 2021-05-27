@@ -48,7 +48,6 @@ export default defineComponent({
     })
 
     onKeyUp(event => {
-      console.log(event.key)
       if (event.key === 's' && !pickingComponent.value) {
         startPickingComponent()
       } else if (event.key === 'Escape' && pickingComponent.value) {
