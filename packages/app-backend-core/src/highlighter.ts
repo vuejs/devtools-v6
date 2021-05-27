@@ -79,10 +79,10 @@ export async function unHighlight () {
 function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, children: Node[] = []) {
   if (!isBrowser || !children.length) return
 
-  overlay.style.width = ~~width + 'px'
-  overlay.style.height = ~~height + 'px'
-  overlay.style.left = ~~left + 'px'
-  overlay.style.top = ~~top + 'px'
+  overlay.style.width = Math.round(width) + 'px'
+  overlay.style.height = Math.round(height) + 'px'
+  overlay.style.left = Math.round(left) + 'px'
+  overlay.style.top = Math.round(top) + 'px'
   document.body.appendChild(overlay)
 
   overlayContent.innerHTML = ''
