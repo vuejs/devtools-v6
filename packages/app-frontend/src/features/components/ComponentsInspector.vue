@@ -109,7 +109,7 @@ export default defineComponent({
     </SplitPane>
 
     <portal to="more-menu">
-      <div class="space-y-1 px-4 py-2 text-sm">
+      <div class="space-y-1 px-3 py-2 text-sm">
         <div>Component names:</div>
 
         <VueGroup
@@ -129,6 +129,21 @@ export default defineComponent({
           />
         </VueGroup>
       </div>
+
+      <div class="space-y-1 px-3 py-2 text-sm">
+        <VueSwitch v-model="$shared.editableProps">
+          Editable props
+        </VueSwitch>
+        <div class="flex items-center space-x-1 text-xs opacity-50">
+          <VueIcon
+            icon="warning"
+            class="w-4 h-4 flex-none"
+          />
+          <span>May print warnings in the console</span>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
     </portal>
 
     <portal to="header-end">

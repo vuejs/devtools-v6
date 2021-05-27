@@ -322,7 +322,7 @@ export default defineComponent({
     <portal to="more-menu">
       <VueSwitch
         v-model="$shared.timelineTimeGrid"
-        class="w-full px-4 py-1 extend-left"
+        class="w-full px-3 py-1 extend-left"
       >
         Time grid
       </VueSwitch>
@@ -330,10 +330,12 @@ export default defineComponent({
       <VueSwitch
         v-if="supportsScreenshot"
         v-model="$shared.timelineScreenshots"
-        class="w-full px-4 py-1 extend-left"
+        class="w-full px-3 py-1 extend-left"
       >
         Screenshots
       </VueSwitch>
+
+      <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
     </portal>
 
     <AskScreenshotPermission

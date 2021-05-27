@@ -39,21 +39,6 @@ export default defineComponent({})
     </VueFormField>
 
     <VueFormField
-      title="Editable props"
-    >
-      <VueSwitch v-model="$shared.editableProps">
-        Enable
-      </VueSwitch>
-      <template #subtitle>
-        <VueIcon
-          icon="warning"
-          class="medium"
-        />
-        May print warnings in the console
-      </template>
-    </VueFormField>
-
-    <VueFormField
       title="Menu Step Scrolling"
     >
       <VueSwitch v-model="$shared.menuStepScrolling">
