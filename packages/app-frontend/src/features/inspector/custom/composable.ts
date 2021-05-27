@@ -22,6 +22,7 @@ export interface Inspector extends InspectorFromBackend {
   selectedNode: any
   stateFilter: string
   state: any
+  expandedMap: Record<string, boolean>
 }
 
 const SELECTED_NODES_STORAGE = 'custom-inspector-selected-nodes'
@@ -35,7 +36,8 @@ function inspectorFactory (options: InspectorFromBackend): Inspector {
     selectedNodeId: selectedIdsStorage[options.id] || null,
     selectedNode: null,
     stateFilter: '',
-    state: null
+    state: null,
+    expandedMap: {}
   }
 }
 

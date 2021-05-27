@@ -1,6 +1,8 @@
 <script lang="ts">
+import Vue from 'vue'
 import { ref, computed, watch, defineComponent } from '@vue/composition-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import { onKeyDown } from '@front/util/keyboard'
 import { useCurrentInspector } from './composable'
 
 const DEFAULT_EXPAND_DEPTH = 2
@@ -20,13 +22,23 @@ export default defineComponent({
     }
   },
 
-  setup (props) {
+  setup (props, { emit }) {
     const {
       currentInspector: inspector,
       selectNode
     } = useCurrentInspector()
 
-    const expanded = ref(props.depth < DEFAULT_EXPAND_DEPTH)
+    const expanded = computed({
+      get: () => !!inspector.value.expandedMap[props.node.id],
+      set: value => {
+        Vue.set(inspector.value.expandedMap, props.node.id, value)
+      }
+    })
+
+    // Init expanded
+    if (props.node.expanded == null) {
+      expanded.value = inspector.value.expandedMap[props.node.id] ?? props.depth < DEFAULT_EXPAND_DEPTH
+    }
 
     function toggle () {
       expanded.value = !expanded.value
@@ -67,12 +79,77 @@ export default defineComponent({
     watch(selected, () => autoScroll())
     watch(toggleEl, () => autoScroll())
 
+    // Keyboard
+
+    onKeyDown(event => {
+      if (selected.value) {
+        requestAnimationFrame(() => {
+          switch (event.key) {
+            case 'ArrowRight': {
+              if (!expanded.value) {
+                toggle()
+              }
+              break
+            }
+            case 'ArrowLeft': {
+              if (expanded.value) {
+                toggle()
+              }
+              break
+            }
+            case 'ArrowDown': {
+              if (expanded.value && props.node.children.length) {
+                // Select first child
+                selectNode(props.node.children[0])
+              } else {
+                emit('select-next-sibling')
+              }
+              break
+            }
+            case 'ArrowUp': {
+              emit('select-previous-sibling')
+            }
+          }
+        })
+      }
+    })
+
+    function selectNextSibling (index) {
+      if (index + 1 >= props.node.children.length) {
+        emit('select-next-sibling')
+      } else {
+        selectNode(props.node.children[index + 1])
+      }
+    }
+
+    function selectPreviousSibling (index) {
+      if (index === 0 || !props.node.children.length) {
+        if (selected.value) {
+          emit('select-previous-sibling')
+        } else {
+          select()
+        }
+      } else {
+        let child = props.node.children[index - 1]
+        while (child) {
+          if (child.children.length && child.expanded) {
+            child = child.children[child.children.length - 1]
+          } else {
+            selectNode(child)
+            child = null
+          }
+        }
+      }
+    }
+
     return {
       expanded,
       toggle,
       select,
       selected,
-      toggleEl
+      toggleEl,
+      selectNextSibling,
+      selectPreviousSibling
     }
   }
 })
@@ -130,10 +207,12 @@ export default defineComponent({
 
     <div v-if="expanded && node.children">
       <CustomInspectorNode
-        v-for="child in node.children"
+        v-for="(child, index) in node.children"
         :key="child.id"
         :node="child"
         :depth="depth + 1"
+        @select-next-sibling="selectNextSibling(index)"
+        @select-previous-sibling="selectPreviousSibling(index)"
       />
     </div>
   </div>

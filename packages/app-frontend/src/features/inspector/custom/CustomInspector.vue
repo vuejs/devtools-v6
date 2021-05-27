@@ -19,7 +19,8 @@ export default defineComponent({
     const {
       currentInspector: inspector,
       refreshInspector,
-      refreshTree
+      refreshTree,
+      selectNode
     } = useCurrentInspector()
 
     watch(() => inspector.value && inspector.value.treeFilter, () => {
@@ -37,10 +38,26 @@ export default defineComponent({
     const treeScroller = ref()
     provide('treeScroller', treeScroller)
 
+    // Keyboard
+
+    function selectNextChild (index) {
+      if (index + 1 < inspector.value.rootNodes.length) {
+        selectNode(inspector.value.rootNodes[index + 1])
+      }
+    }
+
+    function selectPreviousChild (index) {
+      if (index - 1 >= 0) {
+        selectNode(inspector.value.rootNodes[index - 1])
+      }
+    }
+
     return {
       inspector,
       refreshInspector,
-      treeScroller
+      treeScroller,
+      selectNextChild,
+      selectPreviousChild
     }
   }
 })
@@ -65,9 +82,11 @@ export default defineComponent({
             class="flex-1 p-2 overflow-auto"
           >
             <CustomInspectorNode
-              v-for="node of inspector.rootNodes"
+              v-for="(node, index) of inspector.rootNodes"
               :key="node.id"
               :node="node"
+              @select-next-sibling="selectNextChild(index)"
+              @select-previous-sibling="selectPreviousChild(index)"
             />
           </div>
         </div>
