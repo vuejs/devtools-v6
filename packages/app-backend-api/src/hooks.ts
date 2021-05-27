@@ -120,6 +120,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, handler, PluginPermission.COMPONENTS)
   }
 
+  getComponentRenderCode (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_RENDER_CODE]>) {
+    this.hook(Hooks.GET_COMPONENT_RENDER_CODE, handler, PluginPermission.COMPONENTS)
+  }
+
   inspectTimelineEvent (handler: Handler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT]>) {
     this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler, PluginPermission.TIMELINE)
   }

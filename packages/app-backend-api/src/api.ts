@@ -175,6 +175,18 @@ export class DevtoolsApi {
     return payload.options || {}
   }
 
+  async getComponentRenderCode (instance: ComponentInstance): Promise<{
+    code: string
+  }> {
+    const payload = await this.callHook(Hooks.GET_COMPONENT_RENDER_CODE, {
+      componentInstance: instance,
+      code: null
+    })
+    return {
+      code: payload.code
+    }
+  }
+
   async inspectTimelineEvent (eventData: TimelineEventOptions & WithId, app: App) {
     const payload = await this.callHook(Hooks.INSPECT_TIMELINE_EVENT, {
       event: eventData.event,

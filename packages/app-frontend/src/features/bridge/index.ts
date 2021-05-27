@@ -6,14 +6,14 @@ let bridge: Bridge
 export function useBridge () {
   const cbs = []
 
-  function onBridge (event, cb) {
+  function onBridge (event: BridgeEvents, cb: (payload: any) => void | Promise<void>) {
     cbs.push({ event, cb })
     bridge.on(event, cb)
   }
 
   const subs = []
 
-  function subscribe (type, payload) {
+  function subscribe (type: string, payload: any) {
     const sub = { type, payload }
     subs.push(sub)
     bridge.send(BridgeEvents.TO_BACK_SUBSCRIBE, sub)

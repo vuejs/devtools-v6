@@ -235,7 +235,8 @@ export function useSelectedComponent () {
     fileIsPath,
     openFile,
     editState,
-    scrollToComponent
+    scrollToComponent,
+    selectedComponentId
   }
 }
 

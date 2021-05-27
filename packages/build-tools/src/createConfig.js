@@ -5,10 +5,11 @@ const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
+const MonacoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
   const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
-  const workspace = path.basename(process.cwd())
+  // const workspace = path.basename(process.cwd())
 
   const baseConfig = {
     mode,
@@ -90,7 +91,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
           ]
         },
         {
-          test: /\.(png|woff2|svg)$/,
+          test: /\.(png|woff2|svg|ttf)$/,
           type: 'asset/inline'
         }
       ]
@@ -114,6 +115,10 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       }),
       new ESLintPlugin({
         threads: true
+      }),
+      new MonacoEditorPlugin({
+        // https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+        languages: ['javascript']
       })
     ],
     devtool: 'eval-source-map',

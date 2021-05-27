@@ -48,6 +48,8 @@ export enum BridgeEvents {
   TO_FRONT_COMPONENT_PICK_CANCELED = 'f:component:pick-canceled',
   TO_BACK_COMPONENT_INSPECT_DOM = 'b:component:inspect-dom',
   TO_FRONT_COMPONENT_INSPECT_DOM = 'f:component:inspect-dom',
+  TO_BACK_COMPONENT_RENDER_CODE = 'b:component:render-code',
+  TO_FRONT_COMPONENT_RENDER_CODE = 'f:component:render-code',
 
   // Timeline
   TO_FRONT_TIMELINE_EVENT = 'f:timeline:event',

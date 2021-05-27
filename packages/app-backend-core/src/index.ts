@@ -227,6 +227,17 @@ async function connect () {
     }
   })
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
+    const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
+    if (instance) {
+      const { code } = await ctx.api.getComponentRenderCode(instance)
+      ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_RENDER_CODE, {
+        instanceId,
+        code
+      })
+    }
+  })
+
   // Component perf
 
   hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {

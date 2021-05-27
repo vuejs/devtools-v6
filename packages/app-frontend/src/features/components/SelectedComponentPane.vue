@@ -1,18 +1,24 @@
 <script lang="ts">
 import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
+import RenderCode from './RenderCode.vue'
+
+import { defineComponent, ref } from '@vue/composition-api'
 import { useSelectedComponent } from './composable'
-import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   components: {
     StateInspector,
-    EmptyPane
+    EmptyPane,
+    RenderCode
   },
 
   setup () {
+    const showRenderCode = ref(false)
+
     return {
-      ...useSelectedComponent()
+      ...useSelectedComponent(),
+      showRenderCode
     }
   }
 })
@@ -21,7 +27,7 @@ export default defineComponent({
 <template>
   <div
     v-if="data"
-    class="h-full flex flex-col"
+    class="h-full flex flex-col relative"
   >
     <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
       <div class="flex items-baseline">
@@ -44,6 +50,13 @@ export default defineComponent({
         icon-left="preview"
         class="flat icon-button"
         @click="scrollToComponent()"
+      />
+
+      <VueButton
+        v-tooltip="'Show render code'"
+        icon-left="code"
+        class="flat icon-button"
+        @click="showRenderCode = true"
       />
 
       <VueButton
@@ -70,6 +83,13 @@ export default defineComponent({
       :state="state"
       class="flex-1 overflow-y-auto"
       @edit-state="editState"
+    />
+
+    <RenderCode
+      v-if="showRenderCode"
+      :instance-id="selectedComponentId"
+      class="absolute inset-0 w-full h-full z-10"
+      @close="showRenderCode = false"
     />
   </div>
 
