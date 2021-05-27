@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { provide, inject } from 'vue'
+
 export default {
   components: {
     Inject: {
@@ -21,7 +23,12 @@ export default {
         }
       },
       inject: ['injectedData'],
-      template: '<div>injected: {{ injectedData }}<NestedInject /></div>'
+      setup () {
+        return {
+          comingFromSetup: inject('fromSetup')
+        }
+      },
+      template: '<div>injected: {{ injectedData }} | {{ comingFromSetup }}<NestedInject /></div>'
     }
   },
 
@@ -29,6 +36,10 @@ export default {
     return {
       injectedData: 'bar'
     }
+  },
+
+  setup () {
+    provide('fromSetup', 'Setup!!')
   }
 }
 </script>
