@@ -98,7 +98,7 @@ export default defineComponent({
               break
             }
             case 'ArrowDown': {
-              if (expanded.value && props.node.children.length) {
+              if (expanded.value && props.node.children?.length) {
                 // Select first child
                 selectNode(props.node.children[0])
               } else {
