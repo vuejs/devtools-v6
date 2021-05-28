@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-black flex flex-col">
+  <div class="bg-white dark:bg-black flex flex-col overflow-hidden">
     <div class="flex items-center px-2 py-1 space-x-2 flex-none">
       <div class="flex-1">
         Render code
