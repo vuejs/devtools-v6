@@ -14,6 +14,7 @@ import Other from './Other.vue'
 import SetupRender from './SetupRender.js'
 import Form from './Form.vue'
 import Heavy from './Heavy.vue'
+import Mixins from './Mixins.vue'
 
 import { h } from 'vue'
 
@@ -36,6 +37,7 @@ export default {
     SetupRender,
     Form,
     Heavy,
+    Mixins,
     inline: {
       render: () => h('h3', 'Inline component definition')
     }
@@ -82,6 +84,7 @@ export default {
   <Other />
   <SetupRender />
   <Form />
+  <Mixins />
   <inline />
   <global />
 
