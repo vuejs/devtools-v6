@@ -1,4 +1,6 @@
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
 import {
   isPlainObject,
   sortByKey,
@@ -8,7 +10,6 @@ import {
 import DataFieldEdit from '@front/mixins/data-field-edit'
 import { formattedValue, valueType, valueDetails } from '@front/util/format'
 import { getBridge } from '../bridge'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
 
 function subFieldCount (value) {
   if (Array.isArray(value)) {
@@ -20,7 +21,7 @@ function subFieldCount (value) {
   }
 }
 
-export default {
+export default defineComponent({
   name: 'DataField',
 
   mixins: [
@@ -60,23 +61,23 @@ export default {
   },
 
   computed: {
-    depthMargin () {
+    depthMargin (): number {
       return (this.depth + 1) * 14 + 10
     },
 
-    valueType () {
+    valueType (): string {
       return valueType(this.field.value)
     },
 
-    valueDetails () {
+    valueDetails (): string {
       return valueDetails(this.field.value)
     },
 
-    rawValueType () {
+    rawValueType (): string {
       return typeof this.field.value
     },
 
-    isExpandableType () {
+    isExpandableType (): boolean {
       let value = this.field.value
       if (this.valueType === 'custom') {
         value = value._custom.value
@@ -94,7 +95,7 @@ export default {
         )
     },
 
-    formattedValue () {
+    formattedValue (): string {
       const value = this.field.value
       if (this.field.objectType === 'Reactive') {
         return 'Reactive'
@@ -109,7 +110,7 @@ export default {
       }
     },
 
-    rawValue () {
+    rawValue (): any {
       let value = this.field.value
 
       // CustomValue API
@@ -126,7 +127,7 @@ export default {
       return { value, inherit }
     },
 
-    formattedSubFields () {
+    formattedSubFields (): any[] {
       let { value, inherit } = this.rawValue
 
       if (Array.isArray(value)) {
@@ -149,12 +150,12 @@ export default {
       return value.slice(0, this.limit)
     },
 
-    subFieldCount () {
+    subFieldCount (): number {
       const { value } = this.rawValue
       return subFieldCount(value)
     },
 
-    valueTooltip () {
+    valueTooltip (): string {
       const type = this.valueType
       if (this.field.raw) {
         return `<span class="font-mono">${this.field.raw}</span>`
@@ -167,7 +168,7 @@ export default {
       }
     },
 
-    fieldOptions () {
+    fieldOptions (): any {
       if (this.valueType === 'custom') {
         return Object.assign({}, this.field, this.field.value._custom)
       } else {
@@ -175,7 +176,7 @@ export default {
       }
     },
 
-    editErrorMessage () {
+    editErrorMessage (): string {
       if (!this.valueValid) {
         return 'Invalid value (must be valid JSON)'
       } else if (!this.keyValid) {
@@ -188,7 +189,7 @@ export default {
       return ''
     },
 
-    valueClass () {
+    valueClass (): string[] {
       const cssClass = [this.valueType, `raw-${this.rawValueType}`]
       if (this.valueType === 'custom') {
         const value = this.field.value
@@ -198,7 +199,7 @@ export default {
       return cssClass
     },
 
-    displayedKey () {
+    displayedKey (): string {
       let key = this.field.key
       if (typeof key === 'string') {
         key = key.replace('__vue__', '')
@@ -206,7 +207,7 @@ export default {
       return key
     },
 
-    customActions () {
+    customActions (): { icon: string, tooltip?: string }[] {
       return this.field.value?._custom?.actions ?? []
     }
   },
@@ -261,6 +262,7 @@ export default {
       if (this.isExpandableType) {
         this.expanded = !this.expanded
 
+        // @ts-ignore
         !this.expanded && this.cancelCurrentEdition()
       }
     },
@@ -268,10 +270,12 @@ export default {
     hyphen: v => v.replace(/\s/g, '-'),
 
     onContextMenuMouseEnter () {
+      // @ts-ignore
       clearTimeout(this.$_contextMenuTimer)
     },
 
     onContextMenuMouseLeave () {
+      // @ts-ignore
       clearTimeout(this.$_contextMenuTimer)
       this.$_contextMenuTimer = setTimeout(() => {
         this.contextMenuOpen = false
@@ -297,7 +301,7 @@ export default {
       })
     }
   }
-}
+})
 </script>
 
 <template>
