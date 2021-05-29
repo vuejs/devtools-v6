@@ -140,7 +140,10 @@ export default {
           {
             icon: 'star',
             tooltip: 'Test custom action',
-            action: () => console.log('Meow! 🐱')
+            action: () => {
+              console.log('Meow! 🐱')
+              api.selectInspectorNode('test-inspector', 'child')
+            }
           }
         ]
       })

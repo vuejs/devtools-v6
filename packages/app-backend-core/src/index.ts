@@ -31,7 +31,7 @@ import {
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
-import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors } from './inspector'
+import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
@@ -402,6 +402,15 @@ async function connect () {
       } catch (e) {
         console.error(e)
       }
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SELECT_NODE, async (inspectorId: string, nodeId: string, plugin: Plugin) => {
+    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
+    if (inspector) {
+      await selectInspectorNode(inspector, nodeId, ctx)
     } else {
       console.error(`Inspector ${inspectorId} not found`)
     }

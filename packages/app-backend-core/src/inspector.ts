@@ -54,3 +54,11 @@ export async function sendCustomInspectors (ctx: BackendContext) {
     }))
   })
 }
+
+export async function selectInspectorNode (inspector: CustomInspector, nodeId: string, ctx: BackendContext) {
+  ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE, {
+    appId: getAppRecordId(inspector.app),
+    inspectorId: inspector.id,
+    nodeId
+  })
+}

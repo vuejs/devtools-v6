@@ -475,6 +475,19 @@ setInterval(() => {
 }, 5000)
 ```
 
+### selectInspectorNode
+
+Select a specific node in the inspector tree. The arguments are:
+
+- `inspectorId`: the id of your inspector
+- `nodeId`: the id of the node to be selected
+
+Example:
+
+```js
+api.selectInspectorNode('test-inspector', 'some-node-id')
+```
+
 ## Timeline
 
 ### addTimelineLayer

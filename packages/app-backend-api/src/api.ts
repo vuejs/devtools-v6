@@ -307,6 +307,13 @@ export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
     return true
   }
 
+  selectInspectorNode (inspectorId: string, nodeId: string) {
+    if (!this.enabled || !this.hasPermission(PluginPermission.CUSTOM_INSPECTOR)) return false
+
+    this.ctx.hook.emit(HookEvents.CUSTOM_INSPECTOR_SELECT_NODE, inspectorId, nodeId, this.plugin)
+    return true
+  }
+
   getComponentBounds (instance: ComponentInstance) {
     return this.ctx.api.getComponentBounds(instance)
   }

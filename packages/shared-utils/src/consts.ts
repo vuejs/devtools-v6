@@ -76,6 +76,7 @@ export enum BridgeEvents {
   TO_FRONT_CUSTOM_INSPECTOR_STATE = 'f:custom-inspector:state',
   TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE = 'b:custom-inspector:edit-state',
   TO_BACK_CUSTOM_INSPECTOR_ACTION = 'b:custom-inspector:action',
+  TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE = 'f:custom-inspector:select-node',
 
   // Custom state
   TO_BACK_CUSTOM_STATE_ACTION = 'b:custom-state:action'
@@ -103,6 +104,7 @@ export enum HookEvents {
   CUSTOM_INSPECTOR_ADD = 'custom-inspector:add',
   CUSTOM_INSPECTOR_SEND_TREE = 'custom-inspector:send-tree',
   CUSTOM_INSPECTOR_SEND_STATE = 'custom-inspector:send-state',
+  CUSTOM_INSPECTOR_SELECT_NODE = 'custom-inspector:select-node',
   PERFORMANCE_START = 'perf:start',
   PERFORMANCE_END = 'perf:end',
   /**

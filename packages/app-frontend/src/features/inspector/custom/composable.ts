@@ -187,5 +187,20 @@ export function setupCustomInspectorBridgeEvents (bridge: Bridge) {
     inspector.state = parse(state)
   })
 
+  bridge.on(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE, ({ appId, inspectorId, nodeId }) => {
+    const inspector = inspectors.value.find(i => i.id === inspectorId && i.appId === appId)
+
+    if (!inspector) {
+      console.error(`Inspector ${inspectorId} not found`)
+      return
+    }
+
+    inspector.selectedNodeId = nodeId
+    inspector.selectedNode = null
+    selectedIdsStorage[inspector.id] = nodeId
+    setStorage(SELECTED_NODES_STORAGE, selectedIdsStorage)
+    fetchState(inspector)
+  })
+
   resetInspectors()
 }
