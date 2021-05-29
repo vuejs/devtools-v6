@@ -363,7 +363,16 @@ export function getCustomHTMLElementDetails (value: HTMLElement): CustomState {
     _custom: {
       type: 'HTMLElement',
       display: `<span class="opacity-30">&lt;</span><span class="text-blue-500">${value.tagName.toLowerCase()}</span><span class="opacity-30">&gt;</span>`,
-      value: namedNodeMapToObject(value.attributes)
+      value: namedNodeMapToObject(value.attributes),
+      actions: [
+        {
+          icon: 'input',
+          tooltip: 'Log element to console',
+          action: () => {
+            console.log(value)
+          }
+        }
+      ]
     }
   }
 }
