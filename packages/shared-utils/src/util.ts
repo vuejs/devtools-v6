@@ -1,12 +1,12 @@
 import path from 'path'
+import { CustomState } from '@vue/devtools-api'
 import { stringifyCircularAutoChunks, parseCircularAutoChunks } from './transfer'
 import {
   getInstanceMap,
   getCustomInstanceDetails,
   getCustomRouterDetails,
   getCustomStoreDetails,
-  isVueInstance,
-  backendInjections
+  isVueInstance
 } from './backend'
 import SharedData from './shared-data'
 import { isChrome, target } from './env'
@@ -196,6 +196,8 @@ function replacer (key) {
       return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))
     } else if (val.constructor && val.constructor.name === 'VNode') {
       return `[native VNode <${val.tag}>]`
+    } else if (val instanceof HTMLElement) {
+      return encodeCache.cache(val, () => getCustomHTMLElementDetails(val))
     }
   } else if (Number.isNaN(val)) {
     return NAN
@@ -320,6 +322,26 @@ export function getCustomFunctionDetails (func) {
       display: `<span>ƒ</span> ${escape(name)}${args}`
     }
   }
+}
+
+export function getCustomHTMLElementDetails (value: HTMLElement): CustomState {
+  return {
+    _custom: {
+      type: 'HTMLElement',
+      display: `<span class="opacity-30">&lt;</span><span class="text-blue-500">${value.tagName.toLowerCase()}</span><span class="opacity-30">&gt;</span>`,
+      value: namedNodeMapToObject(value.attributes)
+    }
+  }
+}
+
+function namedNodeMapToObject (map: NamedNodeMap) {
+  const result: any = {}
+  const l = map.length
+  for (let i = 0; i < l; i++) {
+    const node = map.item(i)
+    result[node.name] = node.value
+  }
+  return result
 }
 
 export function getCustomRefDetails (instance, key, ref) {

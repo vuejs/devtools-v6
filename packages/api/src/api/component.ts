@@ -52,20 +52,22 @@ export interface ComponentPropState extends ComponentStateBase {
 export type ComponentBuiltinCustomStateTypes = 'function' | 'map' | 'set' | 'reference' | 'component' | 'component-definition' | 'router' | 'store'
 
 export interface ComponentCustomState extends ComponentStateBase {
-  value: {
-    _custom: {
-      type: ComponentBuiltinCustomStateTypes | string
-      display?: string
-      tooltip?: string
-      value?: any
+  value: CustomState
+}
+
+export type CustomState = {
+  _custom: {
+    type: ComponentBuiltinCustomStateTypes | string
+    display?: string
+    tooltip?: string
+    value?: any
+    abstract?: boolean
+    file?: string
+    uid?: number
+    readOnly?: boolean
+    /** Configure immediate child fields */
+    fields?: {
       abstract?: boolean
-      file?: string
-      uid?: number
-      readOnly?: boolean
-      /** Configure immediate child fields */
-      fields?: {
-        abstract?: boolean
-      }
     }
   }
 }

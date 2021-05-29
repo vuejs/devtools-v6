@@ -5,6 +5,8 @@
     <div
       id="aDiv"
       ref="someDiv"
+      class="foo bar"
+      data-testid="some-div"
     />
 
     <p>
@@ -112,7 +114,8 @@ export default {
       multiLineParameterFunction: function (a,
         b,
         c) {},
-      veryLongText
+      veryLongText,
+      someElement: null
     }
   },
 
@@ -125,6 +128,7 @@ export default {
 
   mounted () {
     this.testComponent = this.$refs.component
+    this.someElement = this.$refs.someDiv
   },
 
   methods: {

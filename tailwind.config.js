@@ -84,7 +84,8 @@ module.exports = {
       path.resolve(__dirname, './packages/app-backend-core/src/**/*.{js,jsx,ts,tsx,vue}'),
       path.resolve(__dirname, './packages/app-backend-vue1/src/**/*.{js,jsx,ts,tsx,vue}'),
       path.resolve(__dirname, './packages/app-backend-vue2/src/**/*.{js,jsx,ts,tsx,vue}'),
-      path.resolve(__dirname, './packages/app-backend-vue3/src/**/*.{js,jsx,ts,tsx,vue}')
+      path.resolve(__dirname, './packages/app-backend-vue3/src/**/*.{js,jsx,ts,tsx,vue}'),
+      path.resolve(__dirname, './packages/shared-utils/src/**/*.{js,jsx,ts,tsx,vue}')
     ]
   }
 }
