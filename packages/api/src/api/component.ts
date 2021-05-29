@@ -69,6 +69,14 @@ export type CustomState = {
     fields?: {
       abstract?: boolean
     }
+    id?: any
+    actions?: {
+      icon: string
+      tooltip?: string
+      action: () => void | Promise<void>
+    }[]
+    /** internal */
+    _reviveId?: number
   }
 }
 

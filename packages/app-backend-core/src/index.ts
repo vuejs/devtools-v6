@@ -238,6 +238,20 @@ async function connect () {
     }
   })
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_STATE_ACTION, async ({ value, actionIndex }) => {
+    const rawAction = value._custom.actions[actionIndex]
+    const action = revive(rawAction?.action)
+    if (action) {
+      try {
+        await action()
+      } catch (e) {
+        console.error(e)
+      }
+    } else {
+      console.warn(`Couldn't revive action ${actionIndex} from`, value)
+    }
+  })
+
   // Component perf
 
   hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {

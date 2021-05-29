@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {
   isPlainObject,
   sortByKey,
@@ -204,6 +204,10 @@ export default {
         key = key.replace('__vue__', '')
       }
       return key
+    },
+
+    customActions () {
+      return this.field.value?._custom?.actions ?? []
     }
   },
 
@@ -283,6 +287,13 @@ export default {
         level,
         value: this.field.value,
         revive: true
+      })
+    },
+
+    executeCustomAction (index: number) {
+      getBridge().send(BridgeEvents.TO_BACK_CUSTOM_STATE_ACTION, {
+        value: this.field.value,
+        actionIndex: index
       })
     }
   }
@@ -415,9 +426,17 @@ export default {
             </template>
           </VueDropdown>
           <VueButton
+            v-for="(action, index) of customActions"
+            :key="index"
+            v-tooltip="action.tooltip"
+            class="icon-button flat"
+            :icon-left="action.icon"
+            @click="executeCustomAction(index)"
+          />
+          <VueButton
             v-if="valueType === 'native Error'"
             v-tooltip="'Log error to console'"
-            class="edit-value icon-button flat"
+            class=" icon-button flat"
             icon-left="input"
             @click="logToConsole('error')"
           />

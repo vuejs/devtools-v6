@@ -113,6 +113,10 @@ The `_custom` object has the following properties:
 - `readOnly`: mark this value has not editable
 - `fields`: an object of configure immediate child fields
   - `abstract`
+- `actions`: an array of buttons to add to the field
+  - `icon`: material icon identifier
+  - `tooltip`: button tooltip
+  - `action`: function to be executed
 
 When you add new sections with the `type` property, you should declare them in the `componentStateTypes` array in the plugin descriptor when you call the `setupDevtoolsPlugin`.
 
@@ -135,7 +139,14 @@ api.on.inspectComponent(payload => {
           readOnly: true,
           display: `${time}s`,
           tooltip: 'Elapsed time',
-          value: time
+          value: time,
+          actions: [
+            {
+              icon: 'input',
+              tooltip: 'Log to console',
+              action: () => console.log('current time:', time)
+            }
+          ]
         }
       }
     })

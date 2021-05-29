@@ -137,6 +137,38 @@ class EncodeCache {
 
 const encodeCache = new EncodeCache()
 
+class ReviveCache {
+  map: Map<number, any>
+  index: number
+  size: number
+  maxSize: number
+
+  constructor (maxSize: number) {
+    this.maxSize = maxSize
+    this.map = new Map()
+    this.index = 0
+    this.size = 0
+  }
+
+  cache (value: any) {
+    const currentIndex = this.index
+    this.map.set(currentIndex, value)
+    this.size++
+    if (this.size > this.maxSize) {
+      this.map.delete(currentIndex - this.size)
+      this.size--
+    }
+    this.index++
+    return currentIndex
+  }
+
+  read (id: number) {
+    return this.map.get(id)
+  }
+}
+
+const reviveCache = new ReviveCache(1000)
+
 export function stringify (data) {
   // Create a fresh cache for each serialization
   encodeCache.clear()
@@ -231,7 +263,7 @@ export function reviveMap (val) {
   const list = val._custom.value
   for (let i = 0; i < list.length; i++) {
     const { key, value } = list[i]
-    result.set(key, reviver(null, value))
+    result.set(key, revive(value))
   }
   return result
 }
@@ -253,7 +285,7 @@ export function reviveSet (val) {
   const list = val._custom.value
   for (let i = 0; i < list.length; i++) {
     const value = list[i]
-    result.add(reviver(null, value))
+    result.add(revive(value))
   }
   return result
 }
@@ -301,7 +333,8 @@ export function getCustomComponentDefinitionDetails (def) {
   }
 }
 
-export function getCustomFunctionDetails (func) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function getCustomFunctionDetails (func: Function): CustomState {
   let string = ''
   let matches = null
   try {
@@ -319,7 +352,8 @@ export function getCustomFunctionDetails (func) {
   return {
     _custom: {
       type: 'function',
-      display: `<span>ƒ</span> ${escape(name)}${args}`
+      display: `<span>ƒ</span> ${escape(name)}${args}`,
+      _reviveId: reviveCache.cache(func)
     }
   }
 }
@@ -397,12 +431,17 @@ export function revive (val) {
   } else if (val === NAN) {
     return NaN
   } else if (val && val._custom) {
-    if (val._custom.type === 'component') {
-      return getInstanceMap().get(val._custom.id)
-    } else if (val._custom.type === 'map') {
+    const { _custom: custom }: CustomState = val
+    if (custom.type === 'component') {
+      return getInstanceMap().get(custom.id)
+    } else if (custom.type === 'map') {
       return reviveMap(val)
-    } else if (val._custom.type === 'set') {
+    } else if (custom.type === 'set') {
       return reviveSet(val)
+    } else if (custom._reviveId) {
+      return reviveCache.read(custom._reviveId)
+    } else {
+      return revive(custom.value)
     }
   } else if (symbolRE.test(val)) {
     const [, string] = symbolRE.exec(val)
