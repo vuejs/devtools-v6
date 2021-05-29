@@ -6,18 +6,22 @@ import Defer from '@front/mixins/defer'
 
 const keyOrder = {
   props: 1,
-  undefined: 3,
-  computed: 4,
   'register module': 1,
   'unregister module': 1,
+  mutation: 1,
   setup: 2,
   data: 2,
   state: 2,
+  undefined: 3,
   getters: 3,
-  mutation: 1,
+  computed: 4,
+  injected: 5,
+  provided: 5,
   'vuex bindings': 5,
   $refs: 6,
-  $attrs: 7
+  refs: 6,
+  $attrs: 7,
+  attrs: 7
 }
 
 export default {
@@ -52,8 +56,8 @@ export default {
     dataTypes () {
       return Object.keys(this.state).sort((a, b) => {
         return (
-          (keyOrder[a] || (a.charCodeAt(0) + 999)) -
-          (keyOrder[b] || (b.charCodeAt(0) + 999))
+          (keyOrder[a] || (a.toLowerCase().charCodeAt(0) + 999)) -
+          (keyOrder[b] || (b.toLowerCase().charCodeAt(0) + 999))
         )
       })
     },
