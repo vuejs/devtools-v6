@@ -2,7 +2,7 @@
   "name": "@vue-devtools/shell-chrome",
   "version": "0.0.0",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --progress"
+    "build": "rm -rf ./build && cross-env NODE_ENV=production webpack --progress"
   },
   "dependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",

@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node bin.js",
     "dev": "webpack --watch",
-    "build": "webpack",
+    "build": "rm -rf ./build && webpack",
     "prepublishOnly": "npm run build"
   },
   "author": "",
