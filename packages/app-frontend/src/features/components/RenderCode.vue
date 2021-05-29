@@ -1,10 +1,10 @@
 <script>
-import CodeEditor from '@front/features/code/CodeEditor.vue'
-
 import { reactive, watch } from '@vue/composition-api'
 import { BridgeEvents } from '@utils/consts'
 import { useBridge } from '@front/features/bridge'
 import { darkMode } from '@front/util/theme'
+
+const CodeEditor = () => import('@front/features/code/CodeEditor.vue')
 
 export default {
   components: {
