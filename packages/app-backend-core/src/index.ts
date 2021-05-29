@@ -393,6 +393,20 @@ async function connect () {
     }
   })
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, async ({ inspectorId, appId, actionIndex }) => {
+    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+    if (inspector) {
+      const action = inspector.actions[actionIndex]
+      try {
+        await action.action()
+      } catch (e) {
+        console.error(e)
+      }
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
   // Misc
 
   ctx.bridge.on(BridgeEvents.TO_BACK_LOG, (payload: { level: string, value: any, serialized?: boolean, revive?: boolean }) => {

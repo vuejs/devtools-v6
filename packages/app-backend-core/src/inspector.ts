@@ -46,7 +46,11 @@ export async function sendCustomInspectors (ctx: BackendContext) {
       icon: i.icon,
       treeFilterPlaceholder: i.treeFilterPlaceholder,
       stateFilterPlaceholder: i.stateFilterPlaceholder,
-      noSelectionText: i.noSelectionText
+      noSelectionText: i.noSelectionText,
+      actions: i.actions?.map(a => ({
+        icon: a.icon,
+        tooltip: a.tooltip
+      }))
     }))
   })
 }

@@ -241,6 +241,10 @@ The options are:
 - `treeFilterPlaceholder` (optional): placeholder of the filter input above the tree
 - `stateFilterPlaceholder` (optional): placeholder of the filter input in the state inspector
 - `noSelectionText` (optional): text displayed in the inspector pane when no node is selected
+- `actions`: an array of buttons to add to the header of the inspector
+  - `icon`: material icon identifier
+  - `tooltip`: button tooltip
+  - `action`: function to be executed
 
 Example:
 
@@ -251,7 +255,14 @@ api.addInspector({
   id: INSPECTOR_ID,
   label: 'Test inspector',
   icon: 'tab_unselected',
-  treeFilterPlaceholder: 'Search for test...'
+  treeFilterPlaceholder: 'Search for test...',
+  actions: [
+    {
+      icon: 'star',
+      tooltip: 'Test custom action',
+      action: () => console.log('Meow! 🐱')
+    }
+  ]
 })
 ```
 

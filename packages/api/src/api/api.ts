@@ -76,6 +76,11 @@ export interface CustomInspectorOptions {
   treeFilterPlaceholder?: string
   stateFilterPlaceholder?: string
   noSelectionText?: string
+  actions?: {
+    icon: string
+    tooltip?: string
+    action: () => void | Promise<void>
+  }[]
 }
 
 export interface CustomInspectorNode {

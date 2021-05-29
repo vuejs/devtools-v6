@@ -13,6 +13,10 @@ export interface InspectorFromBackend {
   treeFilterPlaceholder: string
   stateFilterPlaceholder: string
   noSelectionText: string
+  actions?: {
+    icon: string
+    tooltip?: string
+  }[]
 }
 
 export interface Inspector extends InspectorFromBackend {

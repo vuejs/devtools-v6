@@ -135,7 +135,14 @@ export default {
         label: 'Test inspector',
         icon: 'tab_unselected',
         treeFilterPlaceholder: 'Search for test...',
-        noSelectionText: 'Select a node to view details'
+        noSelectionText: 'Select a node to view details',
+        actions: [
+          {
+            icon: 'star',
+            tooltip: 'Test custom action',
+            action: () => console.log('Meow! 🐱')
+          }
+        ]
       })
 
       api.addInspector({

@@ -5,6 +5,8 @@ import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
 
 import { watch, ref, provide, defineComponent } from '@vue/composition-api'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { useBridge } from '@front/features/bridge'
 import { useCurrentInspector } from './composable'
 
 export default defineComponent({
@@ -52,12 +54,26 @@ export default defineComponent({
       }
     }
 
+    // Custom actions
+    const {
+      bridge
+    } = useBridge()
+
+    function executeCustomAction (index: number) {
+      bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, {
+        inspectorId: inspector.value.id,
+        appId: inspector.value.appId,
+        actionIndex: index
+      })
+    }
+
     return {
       inspector,
       refreshInspector,
       treeScroller,
       selectNextChild,
-      selectPreviousChild
+      selectPreviousChild,
+      executeCustomAction
     }
   }
 })
@@ -98,6 +114,16 @@ export default defineComponent({
     </SplitPane>
 
     <portal to="header-end">
+      <template v-if="inspector.actions">
+        <VueButton
+          v-for="(action, index) of inspector.actions"
+          :key="index"
+          v-tooltip="action.tooltip"
+          class="icon-button flat"
+          :icon-left="action.icon"
+          @click="executeCustomAction(index)"
+        />
+      </template>
       <VueButton
         v-tooltip="'Refresh'"
         class="icon-button flat"
