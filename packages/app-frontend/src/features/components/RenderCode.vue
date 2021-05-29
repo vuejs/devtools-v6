@@ -4,7 +4,10 @@ import { BridgeEvents } from '@utils/consts'
 import { useBridge } from '@front/features/bridge'
 import { darkMode } from '@front/util/theme'
 
-const CodeEditor = () => import('@front/features/code/CodeEditor.vue')
+const CodeEditor = () => import(
+  /* webpackChunkName: "CodeEditor" */
+  '@front/features/code/CodeEditor.vue'
+)
 
 export default {
   components: {
