@@ -10338,11 +10338,6 @@ vue@^3.1.0-beta.5:
     "@vue/runtime-dom" "3.1.0-beta.6"
     "@vue/shared" "3.1.0-beta.6"
 
-vuex@^3.4.0:
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.6.2.tgz#236bc086a870c3ae79946f107f16de59d5895e71"
-  integrity sha512-ETW44IqCgBpVomy520DT5jf8n0zoCac+sxWnn+hMe/CzaSejb/eVw2YToiXYX+Ex/AuHHia28vWTq4goAexFbw==
-
 vuex@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-4.0.1.tgz#e83c541d6f31173969efabb2c5d1c465b682887e"

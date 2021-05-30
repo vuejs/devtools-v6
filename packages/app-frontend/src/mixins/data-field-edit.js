@@ -175,18 +175,6 @@ export default {
 
     sendEdit (payload) {
       this.$emit('edit-state', this.path, payload)
-      // if (this.isStateField) {
-      //   this.$store.dispatch('vuex/editState', {
-      //     path: this.path,
-      //     payload
-      //   })
-      // } else {
-      //   bridge.send(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, {
-      //     instanceId: this.instanceId,
-      //     dotPath: this.path,
-      //     ...payload
-      //   })
-      // }
     },
 
     transformSpecialTokens (str, display) {
