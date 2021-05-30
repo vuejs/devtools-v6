@@ -15,6 +15,7 @@ import SetupRender from './SetupRender.js'
 import Form from './Form.vue'
 import Heavy from './Heavy.vue'
 import Mixins from './Mixins.vue'
+import Animation from './Animation.vue'
 
 import { h } from 'vue'
 
@@ -38,6 +39,7 @@ export default {
     Form,
     Heavy,
     Mixins,
+    Animation,
     inline: {
       render: () => h('h3', 'Inline component definition')
     }
@@ -78,6 +80,7 @@ export default {
   <AsyncComponent />
   <SuspenseExample />
   <Provide />
+  <Animation />
   <Condition />
   <VModelExample />
   <Ghost />

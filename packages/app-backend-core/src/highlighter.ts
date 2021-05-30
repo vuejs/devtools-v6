@@ -1,9 +1,11 @@
 import { isBrowser } from '@vue-devtools/shared-utils'
 import { BackendContext } from '@vue-devtools/app-backend-api'
+import { ComponentBounds } from '@vue/devtools-api'
 import { JobQueue } from './util/queue'
 
 let overlay: HTMLDivElement
 let overlayContent: HTMLDivElement
+let currentInstance
 
 function createOverlay () {
   if (overlay || !isBrowser) return
@@ -64,8 +66,12 @@ export async function highlight (instance, ctx: BackendContext) {
       size.appendChild(multiply)
       size.appendChild(document.createTextNode((Math.round(bounds.height * 100) / 100).toString()))
 
+      currentInstance = instance
+
       await showOverlay(bounds, [pre, text, post, size])
     }
+
+    startUpdateTimer(ctx)
   })
 }
 
@@ -73,22 +79,33 @@ export async function unHighlight () {
   await jobQueue.queue(async () => {
     overlay?.parentNode?.removeChild(overlay)
     overlayContent?.parentNode?.removeChild(overlayContent)
+    currentInstance = null
+
+    stopUpdateTimer()
   })
 }
 
-function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, children: Node[] = []) {
+function showOverlay (bounds: ComponentBounds, children: Node[] = null) {
   if (!isBrowser || !children.length) return
 
-  overlay.style.width = Math.round(width) + 'px'
-  overlay.style.height = Math.round(height) + 'px'
-  overlay.style.left = Math.round(left) + 'px'
-  overlay.style.top = Math.round(top) + 'px'
+  positionOverlay(bounds)
   document.body.appendChild(overlay)
 
   overlayContent.innerHTML = ''
   children.forEach(child => overlayContent.appendChild(child))
   document.body.appendChild(overlayContent)
 
+  positionOverlayContent(bounds)
+}
+
+function positionOverlay ({ width = 0, height = 0, top = 0, left = 0 }) {
+  overlay.style.width = Math.round(width) + 'px'
+  overlay.style.height = Math.round(height) + 'px'
+  overlay.style.left = Math.round(left) + 'px'
+  overlay.style.top = Math.round(top) + 'px'
+}
+
+function positionOverlayContent ({ wifth = 0, height = 0, top = 0, left = 0 }) {
   // Content position (prevents overflow)
   const contentWidth = overlayContent.offsetWidth
   const contentHeight = overlayContent.offsetHeight
@@ -109,4 +126,36 @@ function showOverlay ({ width = 0, height = 0, top = 0, left = 0 }, children: No
   }
   overlayContent.style.left = ~~contentLeft + 'px'
   overlayContent.style.top = ~~contentTop + 'px'
+}
+
+async function updateOverlay (ctx: BackendContext) {
+  if (currentInstance) {
+    const bounds = await ctx.api.getComponentBounds(currentInstance)
+    if (bounds) {
+      const sizeEl = overlayContent.children.item(3)
+      console.log(sizeEl)
+      const widthEl = sizeEl.childNodes[0] as unknown as Text
+      widthEl.textContent = (Math.round(bounds.width * 100) / 100).toString()
+      const heightEl = sizeEl.childNodes[2] as unknown as Text
+      heightEl.textContent = (Math.round(bounds.height * 100) / 100).toString()
+
+      positionOverlay(bounds)
+      positionOverlayContent(bounds)
+    }
+  }
+}
+
+let updateTimer
+
+function startUpdateTimer (ctx: BackendContext) {
+  stopUpdateTimer()
+  updateTimer = setInterval(() => {
+    jobQueue.queue(async () => {
+      await updateOverlay(ctx)
+    })
+  }, 1000 / 30) // 30fps
+}
+
+function stopUpdateTimer () {
+  clearInterval(updateTimer)
 }

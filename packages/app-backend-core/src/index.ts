@@ -217,9 +217,7 @@ async function connect () {
           block: 'center',
           inline: 'center'
         })
-        setTimeout(() => {
-          highlight(instance, ctx)
-        }, 500)
+        highlight(instance, ctx)
         setTimeout(() => {
           unHighlight()
         }, 2000)
