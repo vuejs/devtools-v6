@@ -6,16 +6,16 @@
     "dev": "cross-env TAILWIND_MODE=watch webpack serve"
   },
   "dependencies": {
-    "@vue/devtools-api": "^6.0.0-beta.1",
     "@vue-devtools/shell-host": "^0.0.0",
+    "@vue/devtools-api": "^6.0.0-beta.1",
     "core-js": "^3.6.4",
-    "vue": "^3.0.2",
+    "vue": "^3.1.0-beta.5",
     "vue-router": "^4",
     "vuex": "^4.0.1"
   },
   "devDependencies": {
-    "@vue/compiler-sfc": "^3.0.0-beta.15",
     "@vue-devtools/build-tools": "^0.0.0",
+    "@vue/compiler-sfc": "^3.1.0-beta.5",
     "cross-env": "^5.2.0",
     "launch-editor-middleware": "^2.2.1",
     "mini-css-extract-plugin": "^1.5.0",
