@@ -3,7 +3,7 @@ import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import RenderCode from './RenderCode.vue'
 
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
 import { useSelectedComponent } from './composable'
 
 export default defineComponent({
@@ -14,11 +14,21 @@ export default defineComponent({
   },
 
   setup () {
+    const selectedComponent = useSelectedComponent()
     const showRenderCode = ref(false)
 
+    const { selectedComponentId } = selectedComponent
+    const inspector = ref()
+    watch(selectedComponentId, () => {
+      if (inspector.value?.$el) {
+        inspector.value.$el.scrollTop = 0
+      }
+    })
+
     return {
-      ...useSelectedComponent(),
-      showRenderCode
+      ...selectedComponent,
+      showRenderCode,
+      inspector
     }
   }
 })
@@ -80,6 +90,7 @@ export default defineComponent({
     </div>
 
     <StateInspector
+      ref="inspector"
       :state="state"
       class="flex-1 overflow-y-auto"
       @edit-state="editState"

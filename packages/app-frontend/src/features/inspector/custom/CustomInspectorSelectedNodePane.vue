@@ -1,7 +1,7 @@
 <script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-import { watch, defineComponent } from '@vue/composition-api'
+import { watch, defineComponent, ref } from '@vue/composition-api'
 import { useCurrentInspector } from './composable'
 import StateInspector from '../StateInspector.vue'
 
@@ -19,16 +19,24 @@ export default defineComponent({
       editState
     } = useCurrentInspector()
 
-    watch(() => inspector.value && inspector.value.selectedNodeId, value => {
+    watch(() => inspector.value?.selectedNodeId, value => {
       if (value && !inspector.value.state) {
         refreshState()
+      }
+    })
+
+    const stateInspector = ref(null)
+    watch(() => inspector.value?.selectedNodeId, () => {
+      if (stateInspector.value?.$el) {
+        stateInspector.value.$el.scrollTop = 0
       }
     })
 
     return {
       inspector,
       filteredState,
-      editState
+      editState,
+      stateInspector
     }
   }
 })
@@ -54,6 +62,7 @@ export default defineComponent({
 
     <StateInspector
       v-if="inspector.state"
+      ref="stateInspector"
       :state="filteredState"
       class="flex-1 overflow-y-auto"
       @edit-state="editState"
