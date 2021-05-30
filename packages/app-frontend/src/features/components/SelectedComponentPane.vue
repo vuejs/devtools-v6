@@ -89,10 +89,19 @@ export default defineComponent({
       />
     </div>
 
+    <VueLoadingBar
+      v-if="data && data.id !== selectedComponentId"
+      unknown
+      class="primary ghost"
+    />
+
     <StateInspector
       ref="inspector"
       :state="state"
       class="flex-1 overflow-y-auto"
+      :class="{
+        'grayscale': data && data.id !== selectedComponentId
+      }"
       @edit-state="editState"
     />
 
