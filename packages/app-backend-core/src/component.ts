@@ -3,6 +3,9 @@ import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, EditStatePayload } from '@vue/devtools-api'
 
+const MAX_$VM = 10
+const $vmQueue = []
+
 export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', ctx: BackendContext) {
   if (!instanceId) return
   const instance = getComponentInstance(appRecord, instanceId, ctx)
@@ -32,7 +35,19 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
   } else {
     // Expose instance on window
     if (typeof window !== 'undefined') {
-      (window as any).$vm = instance
+      const win = (window as any)
+      win.$vm = instance
+
+      // $vm0, $vm1, $vm2, ...
+      if ($vmQueue[0] !== instance) {
+        if ($vmQueue.length >= MAX_$VM) {
+          $vmQueue.pop()
+        }
+        for (let i = $vmQueue.length; i > 0; i--) {
+          win[`$vm${i}`] = $vmQueue[i] = $vmQueue[i - 1]
+        }
+        win.$vm0 = $vmQueue[0] = instance
+      }
     }
     if (process.env.NODE_ENV !== 'production') {
       console.log('inspect', instance)
