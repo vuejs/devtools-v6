@@ -8,7 +8,7 @@ import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
-import { computed, onMounted, ref, watch, defineComponent } from '@vue/composition-api'
+import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from '@vue/composition-api'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
 import SharedData from '@utils/shared-data'
@@ -156,6 +156,64 @@ export default defineComponent({
       showScreenshot(choice)
     })
 
+    // Zoom
+
+    let zoomTimer
+    let zoomDelayTimer
+
+    function zoom (delta: number) {
+      const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
+      const viewWidth = wrapper.offsetWidth
+      const size = endTime.value - startTime.value
+
+      const center = size * 0.5 + startTime.value
+
+      let newSize = size + delta / viewWidth * size * 2
+      if (newSize < 10) {
+        newSize = 10
+      }
+
+      let start = center - newSize * 0.5
+      let end = center + newSize * (1 - 0.5)
+      if (start < minTime.value) {
+        start = minTime.value
+      }
+      if (end > maxTime.value) {
+        end = maxTime.value
+      }
+      startTime.value = start
+      endTime.value = end
+    }
+
+    function zoomIn () {
+      zoom(-50)
+      zoomDelayTimer = setTimeout(() => {
+        zoomTimer = setInterval(() => {
+          zoom(-50)
+        }, 75)
+      }, 200)
+      window.addEventListener('mouseup', () => stopZoom())
+    }
+
+    function zoomOut () {
+      zoom(50)
+      zoomDelayTimer = setTimeout(() => {
+        zoomTimer = setInterval(() => {
+          zoom(50)
+        }, 75)
+      }, 200)
+      window.addEventListener('mouseup', () => stopZoom())
+    }
+
+    function stopZoom () {
+      clearInterval(zoomTimer)
+      clearTimeout(zoomDelayTimer)
+    }
+
+    onUnmounted(() => {
+      stopZoom()
+    })
+
     return {
       startTime,
       endTime,
@@ -174,7 +232,9 @@ export default defineComponent({
       resetTimeline,
       formattedCursorTime,
       askScreenshotPermission,
-      supportsScreenshot
+      supportsScreenshot,
+      zoomIn,
+      zoomOut
     }
   }
 })
@@ -190,7 +250,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="h-4 flex-none border-b border-gray-200 dark:border-gray-800" />
+          <div class="h-4 flex-none border-b border-gray-200 dark:border-gray-800 box-content" />
 
           <div
             ref="layersEl"
@@ -222,13 +282,29 @@ export default defineComponent({
         >
           <template #left>
             <div class="h-full flex flex-col">
-              <TimelineScrollbar
-                :min.sync="minTime"
-                :max.sync="maxTime"
-                :start.sync="startTime"
-                :end.sync="endTime"
-                class="flex-none"
-              />
+              <div class="flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
+                <TimelineScrollbar
+                  :min.sync="minTime"
+                  :max.sync="maxTime"
+                  :start.sync="startTime"
+                  :end.sync="endTime"
+                  class="flex-1"
+                />
+
+                <VueButton
+                  v-tooltip="'Zoom in'"
+                  icon-left="add"
+                  class="flex-none w-4 h-4 p-0 flat zoom-btn"
+                  @mousedown.native="zoomIn()"
+                />
+
+                <VueButton
+                  v-tooltip="'Zoom out'"
+                  icon-left="remove"
+                  class="flex-none w-4 h-4 p-0 flat zoom-btn"
+                  @mousedown.native="zoomOut()"
+                />
+              </div>
               <TimelineView
                 class="h-full"
               />
@@ -349,5 +425,11 @@ export default defineComponent({
 <style lang="postcss" scoped>
 .ask-permission {
   z-index: 11000;
+}
+
+.zoom-btn {
+  /deep/ .vue-ui-icon {
+    @apply w-3 h-3 mr-0 left-0 right-0 !important;
+  }
 }
 </style>

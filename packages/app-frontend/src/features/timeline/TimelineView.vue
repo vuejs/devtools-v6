@@ -900,6 +900,7 @@ export default defineComponent({
   <div
     ref="wrapper"
     class="relative overflow-hidden"
+    data-id="timeline-view-wrapper"
     @wheel="onMouseWheel"
     @mousemove="onMouseMove"
     @mouseout="onMouseOut"

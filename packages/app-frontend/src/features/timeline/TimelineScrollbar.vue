@@ -153,7 +153,7 @@ export default defineComponent({
 <template>
   <div
     ref="el"
-    class="h-4 bg-gray-200 dark:bg-black relative border-b border-gray-200 dark:border-gray-800 select-none"
+    class="h-4 bg-gray-200 dark:bg-black relative select-none"
   >
     <!-- Main Bar -->
     <div
