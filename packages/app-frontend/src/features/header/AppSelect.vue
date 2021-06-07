@@ -74,16 +74,28 @@ export default defineComponent({
     </template>
 
     <template #default="{ item: app }">
-      <div class="app-button flex items-center">
-        <span class="truncate flex-1">{{ app.name }}</span>
-        <span class="opacity-50 flex-none flex items-center">
-          <img
-            src="~@front/assets/vue-logo.svg"
-            class="w-6 h-6 mr-2"
-            alt="Vue"
-          >
-          {{ app.version }}
-        </span>
+      <div class="leading-tight">
+        <div class="app-button flex items-center">
+          <span class="truncate flex-1">{{ app.name }}</span>
+          <span class="opacity-50 flex-none flex items-center">
+            <img
+              src="~@front/assets/vue-logo.svg"
+              class="w-6 h-6 mr-2"
+              alt="Vue"
+            >
+            {{ app.version }}
+          </span>
+        </div>
+        <div
+          v-if="app.iframe"
+          class="flex items-center space-x-1 text-2xs font-mono text-gray-500"
+        >
+          <VueIcon
+            icon="web"
+            class="w-4 h-4"
+          />
+          <span>{{ app.iframe }}</span>
+        </div>
       </div>
     </template>
   </AppHeaderSelect>

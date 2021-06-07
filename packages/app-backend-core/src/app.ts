@@ -54,6 +54,9 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
       if (rootInstance) {
         const id = getAppRecordId(options.app)
         const name = await ctx.api.getAppRecordName(options.app, id)
+
+        const [el]: HTMLElement[] = await ctx.api.getComponentRootElements(rootInstance)
+
         record = {
           id,
           name,
@@ -63,6 +66,7 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
           instanceMap: new Map(),
           rootInstance,
           perfGroupIds: new Map(),
+          iframe: document !== el.ownerDocument ? el.ownerDocument.location.pathname : null,
           meta: options.meta ?? {}
         }
         options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
@@ -111,7 +115,8 @@ export function mapAppRecord (record: AppRecord): SimpleAppRecord {
   return {
     id: record.id,
     name: record.name,
-    version: record.options.version
+    version: record.options.version,
+    iframe: record.iframe
   }
 }
 

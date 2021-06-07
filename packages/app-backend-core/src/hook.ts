@@ -8,147 +8,208 @@
  *
  * @param {Window|global} target
  */
-
-export function installHook (target) {
+export function installHook (target, iframe = false) {
   let listeners = {}
+
+  let iframeChecks = 0
+  function injectToIframes () {
+    const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe')
+    for (const iframe of iframes) {
+      try {
+        if (iframe.getAttribute('data-vdevtools-injection')) continue
+        iframe.setAttribute('data-vdevtools-injection', 'true')
+        const script = iframe.contentDocument.createElement('script')
+        script.textContent = ';(' + installHook.toString() + ')(window, true)'
+        iframe.contentDocument.documentElement.appendChild(script)
+        script.parentNode.removeChild(script)
+      } catch (e) {
+        // Ignore
+      }
+    }
+  }
+  injectToIframes()
+  const iframeTimer = setInterval(() => {
+    injectToIframes()
+    iframeChecks++
+    if (iframeChecks >= 5) {
+      clearInterval(iframeTimer)
+    }
+  }, 1000)
 
   if (Object.prototype.hasOwnProperty.call(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__')) return
 
-  const hook = {
-    Vue: null,
-    _buffer: [],
-    store: null,
-    initialState: null,
-    storeModules: null,
-    flushStoreModules: null,
-    apps: [],
+  let hook
 
-    _replayBuffer (event) {
-      const buffer = this._buffer
-      this._buffer = []
-
-      for (let i = 0, l = buffer.length; i < l; i++) {
-        const allArgs = buffer[i]
-        allArgs[0] === event
-          // eslint-disable-next-line prefer-spread
-          ? this.emit.apply(this, allArgs)
-          : this._buffer.push(allArgs)
+  if (iframe) {
+    const sendToParent = cb => {
+      try {
+        const hook = (window.parent as any).__VUE_DEVTOOLS_GLOBAL_HOOK__
+        if (hook) {
+          cb(hook)
+        } else {
+          console.warn('[Vue Devtools] No hook in parent window')
+        }
+      } catch (e) {
+        console.warn('[Vue Devtools] Failed to send message to parend window', e)
       }
-    },
+    }
 
-    on (event, fn) {
-      const $event = '$' + event
-      if (listeners[$event]) {
-        listeners[$event].push(fn)
-      } else {
-        listeners[$event] = [fn]
-        this._replayBuffer(event)
+    hook = {
+      Vue: null,
+
+      on (event, fn) {
+        sendToParent(hook => hook.on(event, fn))
+      },
+
+      once (event, fn) {
+        sendToParent(hook => hook.once(event, fn))
+      },
+
+      off (event, fn) {
+        sendToParent(hook => hook.off(event, fn))
+      },
+
+      emit (event, ...args) {
+        sendToParent(hook => hook.emit(event, ...args))
       }
-    },
+    }
+  } else {
+    hook = {
+      Vue: null,
+      _buffer: [],
+      store: null,
+      initialState: null,
+      storeModules: null,
+      flushStoreModules: null,
+      apps: [],
 
-    once (event, fn) {
-      const on = (...args) => {
-        this.off(event, on)
-        fn.apply(this, args)
-      }
-      this.on(event, on)
-    },
+      _replayBuffer (event) {
+        const buffer = this._buffer
+        this._buffer = []
 
-    off (event, fn) {
-      event = '$' + event
-      if (!arguments.length) {
-        listeners = {}
-      } else {
-        const cbs = listeners[event]
-        if (cbs) {
-          if (!fn) {
-            listeners[event] = null
-          } else {
-            for (let i = 0, l = cbs.length; i < l; i++) {
-              const cb = cbs[i]
-              if (cb === fn || cb.fn === fn) {
-                cbs.splice(i, 1)
-                break
+        for (let i = 0, l = buffer.length; i < l; i++) {
+          const allArgs = buffer[i]
+          allArgs[0] === event
+            // eslint-disable-next-line prefer-spread
+            ? this.emit.apply(this, allArgs)
+            : this._buffer.push(allArgs)
+        }
+      },
+
+      on (event, fn) {
+        const $event = '$' + event
+        if (listeners[$event]) {
+          listeners[$event].push(fn)
+        } else {
+          listeners[$event] = [fn]
+          this._replayBuffer(event)
+        }
+      },
+
+      once (event, fn) {
+        const on = (...args) => {
+          this.off(event, on)
+          fn.apply(this, args)
+        }
+        this.on(event, on)
+      },
+
+      off (event, fn) {
+        event = '$' + event
+        if (!arguments.length) {
+          listeners = {}
+        } else {
+          const cbs = listeners[event]
+          if (cbs) {
+            if (!fn) {
+              listeners[event] = null
+            } else {
+              for (let i = 0, l = cbs.length; i < l; i++) {
+                const cb = cbs[i]
+                if (cb === fn || cb.fn === fn) {
+                  cbs.splice(i, 1)
+                  break
+                }
               }
             }
           }
         }
-      }
-    },
+      },
 
-    emit (event, ...args) {
-      const $event = '$' + event
-      let cbs = listeners[$event]
-      if (cbs) {
-        cbs = cbs.slice()
-        for (let i = 0, l = cbs.length; i < l; i++) {
-          cbs[i].apply(this, args)
+      emit (event, ...args) {
+        const $event = '$' + event
+        let cbs = listeners[$event]
+        if (cbs) {
+          cbs = cbs.slice()
+          for (let i = 0, l = cbs.length; i < l; i++) {
+            cbs[i].apply(this, args)
+          }
+        } else {
+          this._buffer.push([event, ...args])
         }
-      } else {
-        this._buffer.push([event, ...args])
       }
     }
-  }
 
-  hook.once('init', Vue => {
-    hook.Vue = Vue
+    hook.once('init', Vue => {
+      hook.Vue = Vue
 
-    if (Vue) {
-      Vue.prototype.$inspect = function () {
-        const fn = target.__VUE_DEVTOOLS_INSPECT__
-        fn && fn(this)
+      if (Vue) {
+        Vue.prototype.$inspect = function () {
+          const fn = target.__VUE_DEVTOOLS_INSPECT__
+          fn && fn(this)
+        }
       }
-    }
-  })
+    })
 
-  hook.on('app:init', (app, version, types) => {
-    const appRecord = {
-      app,
-      version,
-      types
-    }
-    hook.apps.push(appRecord)
-    hook.emit('app:add', appRecord)
-  })
+    hook.on('app:init', (app, version, types) => {
+      const appRecord = {
+        app,
+        version,
+        types
+      }
+      hook.apps.push(appRecord)
+      hook.emit('app:add', appRecord)
+    })
 
-  hook.once('vuex:init', store => {
-    hook.store = store
-    hook.initialState = clone(store.state)
-    const origReplaceState = store.replaceState.bind(store)
-    store.replaceState = state => {
-      hook.initialState = clone(state)
-      origReplaceState(state)
-    }
-    // Dynamic modules
-    let origRegister, origUnregister
-    if (store.registerModule) {
-      hook.storeModules = []
-      origRegister = store.registerModule.bind(store)
-      store.registerModule = (path, module, options) => {
-        if (typeof path === 'string') path = [path]
-        hook.storeModules.push({ path, module, options })
-        origRegister(path, module, options)
-        if (process.env.NODE_ENV !== 'production') console.log('early register module', path, module, options)
+    hook.once('vuex:init', store => {
+      hook.store = store
+      hook.initialState = clone(store.state)
+      const origReplaceState = store.replaceState.bind(store)
+      store.replaceState = state => {
+        hook.initialState = clone(state)
+        origReplaceState(state)
       }
-      origUnregister = store.unregisterModule.bind(store)
-      store.unregisterModule = (path) => {
-        if (typeof path === 'string') path = [path]
-        const key = path.join('/')
-        const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
-        if (index !== -1) hook.storeModules.splice(index, 1)
-        origUnregister(path)
-        if (process.env.NODE_ENV !== 'production') console.log('early unregister module', path)
-      }
-    }
-    hook.flushStoreModules = () => {
-      store.replaceState = origReplaceState
+      // Dynamic modules
+      let origRegister, origUnregister
       if (store.registerModule) {
-        store.registerModule = origRegister
-        store.unregisterModule = origUnregister
+        hook.storeModules = []
+        origRegister = store.registerModule.bind(store)
+        store.registerModule = (path, module, options) => {
+          if (typeof path === 'string') path = [path]
+          hook.storeModules.push({ path, module, options })
+          origRegister(path, module, options)
+          if (process.env.NODE_ENV !== 'production') console.log('early register module', path, module, options)
+        }
+        origUnregister = store.unregisterModule.bind(store)
+        store.unregisterModule = (path) => {
+          if (typeof path === 'string') path = [path]
+          const key = path.join('/')
+          const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
+          if (index !== -1) hook.storeModules.splice(index, 1)
+          origUnregister(path)
+          if (process.env.NODE_ENV !== 'production') console.log('early unregister module', path)
+        }
       }
-      return hook.storeModules || []
-    }
-  })
+      hook.flushStoreModules = () => {
+        store.replaceState = origReplaceState
+        if (store.registerModule) {
+          store.registerModule = origRegister
+          store.unregisterModule = origUnregister
+        }
+        return hook.storeModules || []
+      }
+    })
+  }
 
   Object.defineProperty(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
     get () {

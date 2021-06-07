@@ -249,6 +249,11 @@ export default defineComponent({
 }
 
 .vue-ui-dropdown-button /deep/ {
+  min-height: 32px;
+  height: auto;
+  padding-top: 6px;
+  padding-bottom: 6px;
+
   .default-slot {
     flex: 1;
   }

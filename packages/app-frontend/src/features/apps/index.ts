@@ -7,6 +7,7 @@ export interface App {
   id: number
   name: string
   version: string
+  iframe: string
 }
 
 const apps = ref<App[]>([])

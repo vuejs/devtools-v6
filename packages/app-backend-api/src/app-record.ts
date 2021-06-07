@@ -18,6 +18,7 @@ export interface AppRecord {
   rootInstance: ComponentInstance
   componentFilter?: string
   perfGroupIds: Map<string, { groupId: number, time: number }>
+  iframe: string
   meta: any
 }
 
@@ -28,4 +29,5 @@ export interface SimpleAppRecord {
   id: number
   name: string
   version: string
+  iframe: string
 }
