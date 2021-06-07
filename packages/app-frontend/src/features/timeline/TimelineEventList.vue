@@ -202,13 +202,13 @@ export default defineComponent({
         class="accent extend border-gray-200 dark:border-gray-800 border-b"
       >
         <VueGroupButton
-          value="group"
-          label="Group"
+          value="all"
+          label="All"
           class="flat"
         />
         <VueGroupButton
-          value="all"
-          label="All"
+          value="group"
+          label="Group"
           class="flat"
         />
       </VueGroup>
