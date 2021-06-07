@@ -380,10 +380,10 @@ async function connect () {
     }
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, async ({ inspectorId, appId, nodeId, path, payload }) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, async ({ inspectorId, appId, nodeId, path, type, payload }) => {
     const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
-      await editInspectorState(inspector, nodeId, path, payload, ctx)
+      await editInspectorState(inspector, nodeId, path, type, payload, ctx)
       inspector.selectedNodeId = nodeId
       await sendInspectorState(inspector, ctx)
     } else {

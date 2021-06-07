@@ -29,8 +29,8 @@ export async function sendInspectorState (inspector: CustomInspector, ctx: Backe
   })
 }
 
-export async function editInspectorState (inspector: CustomInspector, nodeId: string, dotPath: string, state: any, ctx: BackendContext) {
-  await ctx.api.editInspectorState(inspector.id, inspector.app, nodeId, dotPath, {
+export async function editInspectorState (inspector: CustomInspector, nodeId: string, dotPath: string, type: string, state: any, ctx: BackendContext) {
+  await ctx.api.editInspectorState(inspector.id, inspector.app, nodeId, dotPath, type, {
     ...state,
     value: state.value != null ? parse(state.value, true) : state.value
   })

@@ -102,12 +102,13 @@ export function useCurrentInspector () {
     fetchState(currentInspector.value)
   }
 
-  function editState (path: string, payload: any) {
+  function editState (path: string, payload: any, type: string) {
     bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, {
       inspectorId: currentInspector.value.id,
       appId: currentInspector.value.appId,
       nodeId: currentInspector.value.selectedNodeId,
       path,
+      type,
       payload
     })
   }

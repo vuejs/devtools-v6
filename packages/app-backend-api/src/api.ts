@@ -218,13 +218,14 @@ export class DevtoolsApi {
     return payload.state
   }
 
-  async editInspectorState (inspectorId: string, app: App, nodeId: string, dotPath: string, state: EditStatePayload) {
+  async editInspectorState (inspectorId: string, app: App, nodeId: string, dotPath: string, type: string, state: EditStatePayload) {
     const arrayPath = dotPath.split('.')
     await this.callHook(Hooks.EDIT_INSPECTOR_STATE, {
       inspectorId,
       app,
       nodeId,
       path: arrayPath,
+      type,
       state,
       set: (object, path = arrayPath, value = state.value, cb?) => set(object, path, value, cb || createDefaultSetCallback(state))
     })
