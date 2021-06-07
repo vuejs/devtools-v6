@@ -50,42 +50,47 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
       }
 
       // Create app record
-      const id = getAppRecordId(options.app)
-      const name = await ctx.api.getAppRecordName(options.app, id)
-      record = {
-        id,
-        name,
-        options,
-        backend,
-        lastInspectedComponentId: null,
-        instanceMap: new Map(),
-        rootInstance: await ctx.api.getAppRootInstance(options.app),
-        perfGroupIds: new Map(),
-        meta: options.meta ?? {}
-      }
-      options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
-      const rootId = `${record.id}:root`
-      record.instanceMap.set(rootId, record.rootInstance)
-      record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
-      await ctx.api.registerApplication(record)
-      ctx.appRecords.push(record)
-      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
-        appRecord: mapAppRecord(record)
-      })
-
-      if (backend.setupApp) {
-        backend.setupApp(ctx.api, record)
-      }
-
-      if (appRecordPromises.has(options.app)) {
-        for (const r of appRecordPromises.get(options.app)) {
-          await r(record)
+      const rootInstance = await ctx.api.getAppRootInstance(options.app)
+      if (rootInstance) {
+        const id = getAppRecordId(options.app)
+        const name = await ctx.api.getAppRecordName(options.app, id)
+        record = {
+          id,
+          name,
+          options,
+          backend,
+          lastInspectedComponentId: null,
+          instanceMap: new Map(),
+          rootInstance,
+          perfGroupIds: new Map(),
+          meta: options.meta ?? {}
         }
-      }
+        options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
+        const rootId = `${record.id}:root`
+        record.instanceMap.set(rootId, record.rootInstance)
+        record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
+        await ctx.api.registerApplication(record)
+        ctx.appRecords.push(record)
+        ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
+          appRecord: mapAppRecord(record)
+        })
 
-      // Auto select first app
-      if (ctx.currentAppRecord == null) {
-        await selectApp(record, ctx)
+        if (backend.setupApp) {
+          backend.setupApp(ctx.api, record)
+        }
+
+        if (appRecordPromises.has(options.app)) {
+          for (const r of appRecordPromises.get(options.app)) {
+            await r(record)
+          }
+        }
+
+        // Auto select first app
+        if (ctx.currentAppRecord == null) {
+          await selectApp(record, ctx)
+        }
+      } else {
+        console.warn('[Vue devtools] No root instance found for app, it might have been unmounted', options.app)
       }
 
       break
