@@ -483,7 +483,7 @@ export default defineComponent({
         let y = 0
         for (const layer of layers.value) {
           y += (layer.height + 1) * LAYER_SIZE
-          if (targetY < y) {
+          if (targetY - verticalScrollingContainer.y < y) {
             let distance = Number.POSITIVE_INFINITY
             for (const e of layer.events) {
               if (isEventIgnored(e)) continue
