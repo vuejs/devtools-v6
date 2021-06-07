@@ -95,6 +95,9 @@ export default defineComponent({
             :class="{
               'opacity-50': layer.id === 'performance' && !$shared.performanceMonitoringEnabled,
             }"
+            :style="{
+              'color': selected ? `#${color}` : undefined
+            }"
           >{{ layer.label }}</span>
 
           <PluginSourceIcon
