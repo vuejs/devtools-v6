@@ -20,8 +20,6 @@ export function layerFactory (options: LayerFromBackend): Layer {
   return {
     ...options,
     events: [],
-    displayedEvents: [],
-    eventTimeMap: {},
     groupsMap: {},
     groups: [],
     height: 1,

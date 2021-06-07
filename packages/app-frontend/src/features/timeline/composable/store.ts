@@ -51,8 +51,6 @@ export interface LayerFromBackend {
 
 export interface Layer extends LayerFromBackend {
   events: TimelineEvent[]
-  displayedEvents: TimelineEvent[]
-  eventTimeMap: { [time: number]: TimelineEvent }
   groupsMap: Record<EventGroup['id'], EventGroup>
   groups: EventGroup[]
   height: number

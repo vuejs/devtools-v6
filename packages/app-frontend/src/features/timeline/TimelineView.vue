@@ -399,7 +399,7 @@ export default defineComponent({
     function initEvents () {
       for (const k in layersMap) {
         const { layer, container } = layersMap[k]
-        for (const event of layer.displayedEvents) {
+        for (const event of layer.events) {
           addEvent(event, container)
         }
       }
