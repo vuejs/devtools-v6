@@ -17,7 +17,7 @@ import Heavy from './Heavy.vue'
 import Mixins from './Mixins.vue'
 import Animation from './Animation.vue'
 
-import { h } from 'vue'
+import { h, createApp } from 'vue'
 
 export default {
   name: 'MyApp',
@@ -49,6 +49,12 @@ export default {
     return {
       count: 0,
       text: 'Meow'
+    }
+  },
+
+  methods: {
+    createApp () {
+      createApp(Child).mount('#nested-app')
     }
   }
 }
@@ -96,6 +102,11 @@ export default {
     {{ $store.getters.answer }}
     {{ $store.getters.twoFoo }}
   </div>
+
+  <button @click="createApp()">
+    Create nested app
+  </button>
+  <div id="nested-app" />
 
   <nav>
     <router-link to="/p1">

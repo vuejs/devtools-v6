@@ -58,6 +58,10 @@ export default {
         this.classicAnswer = value
       }
     }
+  },
+
+  mounted () {
+    this.$emit('child mounted', 'bar')
   }
 }
 </script>

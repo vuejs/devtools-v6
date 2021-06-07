@@ -55,7 +55,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
   })
 
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
-    const appRecord = getAppRecord(app, ctx)
+    const appRecord = await getAppRecord(app, ctx)
     const componentId = `${appRecord.id}:${instance.uid}`
     const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
 
@@ -84,15 +84,19 @@ function setupBuiltinLayers (ctx: BackendContext) {
   })
 }
 
-export function sendTimelineLayers (ctx: BackendContext) {
-  ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, {
-    layers: ctx.timelineLayers.map(layer => ({
+export async function sendTimelineLayers (ctx: BackendContext) {
+  const layers = []
+  for (const layer of ctx.timelineLayers) {
+    layers.push({
       id: layer.id,
       label: layer.label,
       color: layer.color,
-      appId: getAppRecord(layer.app, ctx)?.id,
+      appId: (await getAppRecord(layer.app, ctx))?.id,
       pluginId: layer.plugin.descriptor.id
-    }))
+    })
+  }
+  ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, {
+    layers
   })
 }
 

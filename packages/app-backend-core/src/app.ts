@@ -6,12 +6,13 @@ import {
   DevtoolsBackend
 } from '@vue-devtools/app-backend-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { App } from '@vue/devtools-api'
 import { JobQueue } from './util/queue'
+import { scan } from './legacy/scan'
 
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
 import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
 import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
-import { scan } from './legacy/scan'
 
 const availableBackends = [
   backendVue1,
@@ -23,6 +24,9 @@ const enabledBackends: Set<DevtoolsBackend> = new Set()
 const jobs = new JobQueue()
 
 let recordId = 0
+
+type AppRecordResolver = (record: AppRecord) => void | Promise<void>
+const appRecordPromises = new Map<App, AppRecordResolver[]>()
 
 export async function registerApp (options: AppRecordOptions, ctx: BackendContext) {
   return jobs.queue(() => registerAppJob(options, ctx))
@@ -73,6 +77,12 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
         backend.setupApp(ctx.api, record)
       }
 
+      if (appRecordPromises.has(options.app)) {
+        for (const r of appRecordPromises.get(options.app)) {
+          await r(record)
+        }
+      }
+
       // Auto select first app
       if (ctx.currentAppRecord == null) {
         await selectApp(record, ctx)
@@ -109,8 +119,29 @@ export function getAppRecordId (app): number {
   return id
 }
 
-export function getAppRecord (app: any, ctx: BackendContext) {
-  return ctx.appRecords.find(ar => ar.options.app === app)
+export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppRecord> {
+  const record = ctx.appRecords.find(ar => ar.options.app === app)
+  if (record) {
+    return record
+  }
+  return new Promise((resolve, reject) => {
+    let timedOut = false
+    const timer = setTimeout(() => {
+      timedOut = true
+      reject(new Error(`Timed out getting app record for app ${app}`))
+    }, 2000)
+    let resolvers = appRecordPromises.get(app)
+    if (!resolvers) {
+      resolvers = []
+      appRecordPromises.set(app, resolvers)
+    }
+    resolvers.push((record) => {
+      if (!timedOut) {
+        clearTimeout(timer)
+        resolve(record)
+      }
+    })
+  })
 }
 
 export function waitForAppsRegistration () {
@@ -131,8 +162,8 @@ export async function sendApps (ctx: BackendContext) {
   })
 }
 
-export function removeApp (app: any, ctx: BackendContext) {
-  const appRecord = getAppRecord(app, ctx)
+export async function removeApp (app: any, ctx: BackendContext) {
+  const appRecord = await getAppRecord(app, ctx)
   if (appRecord) {
     const index = ctx.appRecords.indexOf(appRecord)
     if (index !== -1) ctx.appRecords.splice(index, 1)
