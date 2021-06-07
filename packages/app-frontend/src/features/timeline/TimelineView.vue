@@ -287,7 +287,7 @@ export default defineComponent({
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
-      const offset = event.layer.groupsOnly ? 0 : 100
+      const offset = event.layer.groupsOnly ? 0 : 12
 
       let y = 0
       if (event.group && event !== event.group.firstEvent) {
@@ -315,13 +315,13 @@ export default defineComponent({
               (
                 // Horizontal intersection (first event)
                 (
-                  firstEvent.time >= otherGroup.firstEvent.time - offset &&
-                  firstEvent.time <= otherGroup.lastEvent.time + offset + lastOffset
+                  getEventPosition(firstEvent) >= getEventPosition(otherGroup.firstEvent) - offset &&
+                  getEventPosition(firstEvent) <= getEventPosition(otherGroup.lastEvent) + offset + lastOffset
                 ) ||
                 // Horizontal intersection (last event)
                 (
-                  lastEvent.time >= otherGroup.firstEvent.time - offset - lastOffset &&
-                  lastEvent.time <= otherGroup.lastEvent.time + offset
+                  getEventPosition(lastEvent) >= getEventPosition(otherGroup.firstEvent) - offset - lastOffset &&
+                  getEventPosition(lastEvent) <= getEventPosition(otherGroup.lastEvent) + offset
                 )
               )
             ) {
@@ -351,6 +351,7 @@ export default defineComponent({
           const newLayerHeight = event.layer.height = y + 1
           if (oldLayerHeight !== newLayerHeight) {
             updateLayerPositions()
+            drawLayerBackgroundEffects()
           }
         }
       }
@@ -378,7 +379,7 @@ export default defineComponent({
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
           // We need to check for collisions again
-          queueEventsUpdate()
+          Vue.nextTick(() => queueEventsUpdate())
         }
       }
 
@@ -460,6 +461,10 @@ export default defineComponent({
     }
 
     function updateEvents () {
+      for (const layer of layers.value) {
+        layer.height = 1
+      }
+      updateLayerPositions()
       queueEventPositionUpdate(...events)
       for (const event of events) {
         if (event.groupG) {
