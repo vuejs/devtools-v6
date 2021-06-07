@@ -20,7 +20,9 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.getAppRootInstance(payload => {
-      if (payload.app._container?._vnode?.component) {
+      if (payload.app._instance) {
+        payload.root = payload.app._instance
+      } else if (payload.app._container?._vnode?.component) {
         payload.root = payload.app._container?._vnode?.component
       }
     })
