@@ -3,6 +3,8 @@ import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 import { computed, defineComponent } from '@vue/composition-api'
+import { useDarkMode } from '@front/util/theme'
+import { toStrHex, dimColor, boostColor } from '@front/util/color'
 import { useInspectedEvent, useSelectedEvent } from './composable'
 
 export default defineComponent({
@@ -25,12 +27,21 @@ export default defineComponent({
 
     const isSelected = computed(() => selectedStackedEvents.value.includes(inspectedEvent.value))
 
+    const { darkMode } = useDarkMode()
+
+    const color = computed(() => toStrHex(inspectedEvent.value?.layer.color))
+    const dimmedColor = computed(() => toStrHex(dimColor(inspectedEvent.value?.layer.color, darkMode.value)))
+    const boostedColor = computed(() => toStrHex(boostColor(inspectedEvent.value?.layer.color, darkMode.value)))
+
     return {
       inspectedEvent,
       inspectedEventState,
       time,
       loading,
-      isSelected
+      isSelected,
+      color,
+      dimmedColor,
+      boostedColor
     }
   }
 })
@@ -43,17 +54,20 @@ export default defineComponent({
   >
     <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-800 p-2 pl-3 text-bluegray-900 dark:text-bluegray-100 space-x-2">
       <div
-        class="flex-none w-2 h-2 rounded-full border"
+        class="flex-none w-2.5 h-2.5 rounded-full border-2"
         :style="{
-          borderColor: `#${inspectedEvent.layer.color.toString(16).padStart(6, '0')}`,
-          ... isSelected ? {} : {
-            backgroundColor: `#${inspectedEvent.layer.color.toString(16).padStart(6, '0')}`
-          }
+          borderColor: `#${isSelected ? boostedColor : color}`,
+          backgroundColor: `#${isSelected ? dimmedColor : color}`
         }"
       />
 
       <span class="flex-1 font-mono truncate text-xs">
-        <span class="font-medium">
+        <span
+          class="font-medium"
+          :style="{
+            color: `#${boostedColor}`
+          }"
+        >
           {{ inspectedEvent.title || 'Event' }}
         </span>
 

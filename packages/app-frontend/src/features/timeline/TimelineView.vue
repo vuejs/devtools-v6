@@ -23,8 +23,9 @@ import {
 } from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
-import { useDarkMode } from '@front/util/theme'
 import SharedData from '@utils/shared-data'
+import { useDarkMode } from '@front/util/theme'
+import { dimColor, boostColor } from '@front/util/color'
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
@@ -367,11 +368,6 @@ export default defineComponent({
       event.container = eventContainer
       layerContainer.addChild(eventContainer)
 
-      // Graphics
-      const g = new PIXI.Graphics()
-      event.g = g
-      eventContainer.addChild(g)
-
       // Group graphics
       if (event.group) {
         if (event.group.firstEvent === event) {
@@ -385,6 +381,11 @@ export default defineComponent({
           queueEventsUpdate()
         }
       }
+
+      // Graphics
+      const g = new PIXI.Graphics()
+      event.g = g
+      eventContainer.addChild(g)
 
       events.push(event)
 
@@ -542,15 +543,19 @@ export default defineComponent({
           if (!event.layer.groupsOnly) {
             if (selected) {
               // Border-only style
-              size -= 0.5
-              g.lineStyle(1, color)
-              g.beginFill(darkMode.value ? 0x0b1015 : 0xffffff)
-              event.container.zIndex = 999999999
+              size--
+              g.lineStyle(2, boostColor(color, darkMode.value))
+              g.beginFill(dimColor(color, darkMode.value))
+              if (!event.group || event.group.firstEvent !== event) {
+                event.container.zIndex = 999999999
+              }
             } else {
               g.beginFill(color)
-              event.container.zIndex = size
+              if (!event.group || event.group.firstEvent !== event) {
+                event.container.zIndex = size
+              }
             }
-            g.drawCircle(0, 0, size)
+            g.drawCircle(0, 0, size + (selected ? 1 : 0))
           } else {
             drawEventGroup(event)
           }
@@ -638,11 +643,16 @@ export default defineComponent({
         const g = event.groupG
         g.clear()
         const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
-        if (event.layer.groupsOnly && !drawAsSelected) {
-          g.beginFill(event.layer.color, 0.5)
+        if (event.layer.groupsOnly) {
+          if (drawAsSelected) {
+            g.lineStyle(2, boostColor(event.layer.color, darkMode.value))
+            g.beginFill(dimColor(event.layer.color, darkMode.value, 30))
+          } else {
+            g.beginFill(event.layer.color, 0.5)
+          }
         } else {
-          g.lineStyle(1, event.layer.color, 0.5)
-          g.beginFill(event.layer.color, 0.1)
+          g.lineStyle(1, dimColor(event.layer.color, darkMode.value))
+          g.beginFill(dimColor(event.layer.color, darkMode.value, 25))
         }
         if (event.layer.groupsOnly) {
           g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
@@ -655,7 +665,6 @@ export default defineComponent({
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
           if (!t) {
-            console.log('create group text')
             t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
               fontSize: 10,
               fill: darkMode.value ? 0xffffff : 0

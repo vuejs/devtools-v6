@@ -2,6 +2,8 @@
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
 import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { useDarkMode } from '@front/util/theme'
+import { toStrHex, dimColor, boostColor } from '@front/util/color'
 import { Layer } from './composable'
 
 export default defineComponent({
@@ -31,11 +33,17 @@ export default defineComponent({
       emit('select')
     }
 
-    const color = computed(() => props.layer.color.toString(16).padStart(6, '0'))
+    const { darkMode } = useDarkMode()
+
+    const color = computed(() => toStrHex(props.layer.color))
+    const dimmedColor = computed(() => toStrHex(dimColor(props.layer.color, darkMode.value)))
+    const boostedColot = computed(() => toStrHex(boostColor(props.layer.color, darkMode.value)))
 
     return {
       select,
-      color
+      color,
+      dimmedColor,
+      boostedColot
     }
   }
 })
@@ -60,9 +68,9 @@ export default defineComponent({
           }"
         >
           <div
-            class="absolute inset-0 rounded-full"
+            class="absolute inset-0 rounded-full transition-colors duration-300 ease-in-out"
             :style="{
-              backgroundColor: `#${color}`
+              backgroundColor: `#${selected ? boostedColot : color}`,
             }"
           />
           <transition
@@ -73,7 +81,10 @@ export default defineComponent({
           >
             <div
               v-if="selected"
-              class="absolute inset-0.5 rounded-full bg-white dark:bg-black z-10"
+              class="absolute inset-0.5 rounded-full z-10"
+              :style="{
+                backgroundColor: `#${dimmedColor}`,
+              }"
             />
           </transition>
         </div>
