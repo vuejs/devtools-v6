@@ -214,6 +214,59 @@ export default defineComponent({
       stopZoom()
     })
 
+    // Move buttons
+
+    let moveTimer
+    let moveDelayTimer
+
+    function move (delta: number) {
+      const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
+      const viewWidth = wrapper.offsetWidth
+      const size = endTime.value - startTime.value
+      const maxSize = maxTime.value - minTime.value
+      let start = startTime.value + delta * maxSize / viewWidth
+      let end = start + size
+      if (start < minTime.value) {
+        start = minTime.value
+        end = start + size
+      }
+      if (end > maxTime.value) {
+        end = maxTime.value
+        start = end - size
+      }
+      startTime.value = start
+      endTime.value = end
+    }
+
+    function moveLeft () {
+      move(-25)
+      moveDelayTimer = setTimeout(() => {
+        moveTimer = setInterval(() => {
+          move(-25)
+        }, 75)
+      }, 200)
+      window.addEventListener('mouseup', () => stopMove())
+    }
+
+    function moveRight () {
+      move(25)
+      moveDelayTimer = setTimeout(() => {
+        moveTimer = setInterval(() => {
+          move(25)
+        }, 75)
+      }, 200)
+      window.addEventListener('mouseup', () => stopMove())
+    }
+
+    function stopMove () {
+      clearInterval(moveTimer)
+      clearTimeout(moveDelayTimer)
+    }
+
+    onUnmounted(() => {
+      stopMove()
+    })
+
     return {
       startTime,
       endTime,
@@ -234,7 +287,9 @@ export default defineComponent({
       askScreenshotPermission,
       supportsScreenshot,
       zoomIn,
-      zoomOut
+      zoomOut,
+      moveLeft,
+      moveRight
     }
   }
 })
@@ -283,12 +338,24 @@ export default defineComponent({
           <template #left>
             <div class="h-full flex flex-col">
               <div class="flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
+                <VueButton
+                  icon-left="arrow_left"
+                  class="flex-none w-4 h-4 p-0 flat zoom-btn"
+                  @mousedown.native="moveLeft()"
+                />
+
                 <TimelineScrollbar
                   :min.sync="minTime"
                   :max.sync="maxTime"
                   :start.sync="startTime"
                   :end.sync="endTime"
                   class="flex-1"
+                />
+
+                <VueButton
+                  icon-left="arrow_right"
+                  class="flex-none w-4 h-4 p-0 flat zoom-btn"
+                  @mousedown.native="moveRight()"
                 />
 
                 <VueButton
@@ -428,8 +495,9 @@ export default defineComponent({
 }
 
 .zoom-btn {
+  @apply rounded-none;
   /deep/ .vue-ui-icon {
-    @apply w-3 h-3 mr-0 left-0 right-0 !important;
+    @apply w-3.5 h-3.5 mr-0 left-0 right-0 !important;
   }
 }
 </style>
