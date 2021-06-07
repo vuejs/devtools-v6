@@ -432,6 +432,7 @@ The `payload` argument:
 - `app`: app instance currently active in the devtools
 - `inspectorId`: id of the current custom inspector
 - `nodeId`: id of the currently selected node
+- `type`: the current field type
 - `path`: an array of string that represents the property edited by the user. For example, if the user edits the `myObj.myProp.hello` property, the `path` will be `['myObj', 'myProp', 'hello']`.
 - `state`: object describing the edit with those properties:
   - `value`: new value
