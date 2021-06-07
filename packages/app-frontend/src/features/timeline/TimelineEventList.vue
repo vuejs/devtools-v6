@@ -5,8 +5,9 @@ import TimelineEventListItem from './TimelineEventListItem.vue'
 import { computed, ref, watch, defineComponent } from '@vue/composition-api'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 import Defer from '@front/mixins/defer'
-import { useInspectedEvent, useSelectedEvent, selectEvent, useLayers } from './composable'
 import { useRoute, useRouter } from '@front/util/router'
+import { onKeyDown } from '@front/util/keyboard'
+import { useInspectedEvent, useSelectedEvent, selectEvent, useLayers } from './composable'
 
 const itemHeight = 34
 
@@ -171,6 +172,25 @@ export default defineComponent({
     function inspectEvent (event) {
       inspectedEvent.value = event
     }
+
+    // Keyboard
+
+    onKeyDown(event => {
+      const index = filteredEvents.value.indexOf(inspectedEvent.value)
+      if (event.key === 'ArrowDown') {
+        if (index < filteredEvents.value.length - 1) {
+          inspectEvent(filteredEvents.value[index + 1])
+        }
+      } else if (event.key === 'ArrowUp') {
+        if (index > 0) {
+          inspectEvent(filteredEvents.value[index - 1])
+        }
+      } else if (event.key === 'Enter' || event.key === ' ') {
+        if (inspectedEvent.value) {
+          selectEvent(inspectedEvent.value)
+        }
+      }
+    })
 
     return {
       selectedEvent,
