@@ -19,7 +19,6 @@ import {
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
 
-const STACK_DURATION = 50
 const AUTOSCROLL_DURATION = 10000
 
 type AddEventCb = (event: TimelineEvent) => void
@@ -44,9 +43,6 @@ export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
   event.layer = layer
   event.appId = appId
   layer.events.push(event)
-  event.stackedEvents = []
-
-  const wasStacked = stackEvent(event)
 
   // Groups
   if (event.groupId != null) {
@@ -69,59 +65,31 @@ export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
   }
 
   // Update scrollbar
-  if (!wasStacked) {
-    const scrollTime = event.time + 100
-    if (scrollTime > maxTime.value) {
-      if (endTime.value === maxTime.value) {
-        if (startTime.value !== minTime.value) {
-          // Autoscroll
-          startTime.value = scrollTime - (endTime.value - startTime.value)
-        } else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
-          // Autoscroll
-          startTime.value = scrollTime - AUTOSCROLL_DURATION
-        }
-        endTime.value = scrollTime
+  const scrollTime = event.time + 100
+  if (scrollTime > maxTime.value) {
+    if (endTime.value === maxTime.value) {
+      if (startTime.value !== minTime.value) {
+        // Autoscroll
+        startTime.value = scrollTime - (endTime.value - startTime.value)
+      } else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
+        // Autoscroll
+        startTime.value = scrollTime - AUTOSCROLL_DURATION
       }
-      maxTime.value = scrollTime
+      endTime.value = scrollTime
     }
-
-    takeScreenshot(event)
-  } else {
-    if (event.stackParent.screenshot) {
-      event.stackParent.screenshot.events.push(event)
-    }
+    maxTime.value = scrollTime
   }
+
+  takeScreenshot(event)
 
   for (const cb of addEventCbs) {
     cb(event)
   }
 }
 
-function stackEvent (event: TimelineEvent) {
-  const roundedTime = Math.round(event.time / STACK_DURATION)
-  const wasStacked = _stackEvent(event, roundedTime)
-  if (!wasStacked) {
-    event.layer.eventTimeMap[roundedTime] = event
-    event.layer.displayedEvents.push(event)
-    event.stackedEvents = [event]
-  }
-  return wasStacked
-}
-
-function _stackEvent (event: TimelineEvent, roundedTime: number) {
-  const existingEvent = event.layer.eventTimeMap[roundedTime]
-  if (existingEvent && existingEvent.groupId === event.groupId) {
-    existingEvent.stackedEvents.push(event)
-    event.stackParent = existingEvent
-    return true
-  }
-  return false
-}
-
 export function useSelectedEvent () {
   return {
     selectedEvent: computed(() => selectedEvent.value),
-    selectedStackedEvents: computed(() => selectedEvent.value?.stackedEvents ?? []),
     selectedGroupEvents: computed(() => selectedEvent.value?.group?.events ?? [])
   }
 }
@@ -151,7 +119,6 @@ function loadEvent (id: TimelineEvent['id']) {
 }
 
 export function selectEvent (event: TimelineEvent) {
-  if (event.stackParent) event = event.stackParent
   selectedEvent.value = inspectedEvent.value = event
   selectedLayer.value = event.layer
 }

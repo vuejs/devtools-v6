@@ -32,7 +32,6 @@ export default defineComponent({
 
     const {
       selectedEvent,
-      selectedStackedEvents,
       selectedGroupEvents
     } = useSelectedEvent()
 
@@ -56,12 +55,12 @@ export default defineComponent({
     })
 
     if (!route.value.query.tabId) {
-      tabId.value = getStorage(STORAGE_TAB_ID, 'nearby')
+      tabId.value = getStorage(STORAGE_TAB_ID, 'all')
     }
 
     watch(selectedEvent, value => {
       if (value && !value.group && tabId.value === 'group') {
-        tabId.value = 'nearby'
+        tabId.value = 'all'
       }
     })
 
@@ -70,10 +69,8 @@ export default defineComponent({
         case 'group':
           return selectedGroupEvents.value
         case 'all':
-          return selectedLayer.value?.events ?? []
-        case 'nearby':
         default:
-          return selectedStackedEvents.value
+          return selectedLayer.value?.events ?? []
       }
     })
 
@@ -178,7 +175,6 @@ export default defineComponent({
     return {
       selectedEvent,
       selectedLayer,
-      selectedStackedEvents,
       tabId,
       scroller,
       filter,
@@ -200,17 +196,12 @@ export default defineComponent({
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
       <VueGroup
+        v-if="selectedEvent.group"
         v-model="tabId"
         indicator
         class="accent extend border-gray-200 dark:border-gray-800 border-b"
       >
         <VueGroupButton
-          value="nearby"
-          :label="selectedStackedEvents.length > 1 ? 'Nearby' : 'Selected'"
-          class="flat"
-        />
-        <VueGroupButton
-          v-if="selectedEvent.group"
           value="group"
           label="Group"
           class="flat"
@@ -240,7 +231,7 @@ export default defineComponent({
       <template #default="{ item: event }">
         <TimelineEventListItem
           :event="event"
-          :selected="tabId !== 'nearby' && selectedStackedEvents.includes(event)"
+          :selected="selectedEvent === event"
           @inspect="inspectEvent(event)"
           @select="selectEvent(event)"
         />

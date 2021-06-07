@@ -22,10 +22,10 @@ export default defineComponent({
     } = useInspectedEvent()
 
     const {
-      selectedStackedEvents
+      selectedEvent
     } = useSelectedEvent()
 
-    const isSelected = computed(() => selectedStackedEvents.value.includes(inspectedEvent.value))
+    const isSelected = computed(() => selectedEvent.value === inspectedEvent.value)
 
     const { darkMode } = useDarkMode()
 

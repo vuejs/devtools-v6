@@ -442,12 +442,6 @@ export default defineComponent({
     onEventAdd((event: TimelineEvent) => {
       if (event.appId !== 'all' && event.appId !== currentAppId.value) return
 
-      if (event.stackParent) {
-        // The event graphics might grow
-        refreshEventGraphics(event.stackParent)
-        return
-      }
-
       const layer = layersMap[event.layer.id]
       if (layer) {
         addEvent(event, layer.container)
@@ -526,19 +520,16 @@ export default defineComponent({
     function drawEvent (selected: boolean, event: TimelineEvent) {
       if (event) {
         let color = event.layer.color
-        for (const subEvent of event.stackedEvents) {
-          if (subEvent.logType === 'error') {
-            color = 0xE53E3E
-            break
-          } else if (subEvent.logType === 'warning') {
-            color = 0xECC94B
-          }
+        if (event.logType === 'error') {
+          color = 0xE53E3E
+        } else if (event.logType === 'warning') {
+          color = 0xECC94B
         }
 
         if (event.g) {
           /** @type {PIXI.Graphics} */
           const g = event.g
-          let size = event.stackedEvents.length > 1 ? 4 : 3
+          let size = 3
           g.clear()
           if (!event.layer.groupsOnly) {
             if (selected) {

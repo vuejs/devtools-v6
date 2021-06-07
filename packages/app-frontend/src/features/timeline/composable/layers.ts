@@ -111,7 +111,6 @@ export function useLayers () {
 
     if (!event) event = layer.events.length ? layer.events[layer.events.length - 1] : null
     inspectedEvent.value = event
-    if (event?.stackParent) event = event.stackParent
     selectedEvent.value = event
 
     router.push({

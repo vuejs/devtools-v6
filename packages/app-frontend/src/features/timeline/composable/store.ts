@@ -30,9 +30,7 @@ export interface EventScreenshot {
 export interface TimelineEvent extends TimelineEventFromBackend {
   layer: Layer
   appId: number | 'all'
-  stackedEvents: TimelineEvent[]
   group: EventGroup
-  stackParent: TimelineEvent
   screenshot: EventScreenshot
   container: PIXI.Container
   g: PIXI.Graphics
