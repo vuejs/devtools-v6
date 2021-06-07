@@ -133,7 +133,6 @@ async function updateOverlay (ctx: BackendContext) {
     const bounds = await ctx.api.getComponentBounds(currentInstance)
     if (bounds) {
       const sizeEl = overlayContent.children.item(3)
-      console.log(sizeEl)
       const widthEl = sizeEl.childNodes[0] as unknown as Text
       widthEl.textContent = (Math.round(bounds.width * 100) / 100).toString()
       const heightEl = sizeEl.childNodes[2] as unknown as Text
