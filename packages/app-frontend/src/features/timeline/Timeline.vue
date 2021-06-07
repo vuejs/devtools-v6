@@ -223,8 +223,7 @@ export default defineComponent({
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
       const viewWidth = wrapper.offsetWidth
       const size = endTime.value - startTime.value
-      const maxSize = maxTime.value - minTime.value
-      let start = startTime.value + delta * maxSize / viewWidth
+      let start = startTime.value + delta / viewWidth * size
       let end = start + size
       if (start < minTime.value) {
         start = minTime.value
