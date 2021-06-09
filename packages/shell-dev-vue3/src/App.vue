@@ -18,6 +18,7 @@ import Mixins from './Mixins.vue'
 import Animation from './Animation.vue'
 
 import { h, createApp } from 'vue'
+import SimplePlugin from './devtools-plugin/simple'
 
 export default {
   name: 'MyApp',
@@ -54,7 +55,9 @@ export default {
 
   methods: {
     createApp () {
-      createApp(Child).mount('#nested-app')
+      const app = createApp(Child)
+      app.use(SimplePlugin)
+      app.mount('#nested-app')
     }
   }
 }
