@@ -25,13 +25,14 @@ function mergeRects (a, b) {
   if (!a.right || b.right > a.right) {
     a.right = b.right
   }
+  return a
 }
 
 /**
  * Get the client rect for an instance.
  */
 export function getInstanceOrVnodeRect (instance) {
-  const el = instance.subTree ? instance.subTree.el : instance.$el || instance.elm
+  const el = instance.$el || instance.elm
 
   if (!isBrowser) {
     // TODO: Find position from instance or a vnode (for functional components).
@@ -43,9 +44,9 @@ export function getInstanceOrVnodeRect (instance) {
   }
 
   if (instance._isFragment) {
-    return getLegacyFragmentRect(instance)
+    return addIframePosition(getLegacyFragmentRect(instance), getElWindow(instance.$root.$el))
   } else if (el.nodeType === 1) {
-    return el.getBoundingClientRect()
+    return addIframePosition(el.getBoundingClientRect(), getElWindow(el))
   }
 }
 
@@ -94,4 +95,24 @@ export function findRelatedComponent (el) {
     el = el.parentElement
   }
   return el.__vue__
+}
+
+function getElWindow (el: HTMLElement) {
+  return el.ownerDocument.defaultView
+}
+
+function addIframePosition (bounds, win: any) {
+  if (win.__VUE_DEVTOOLS_IFRAME__) {
+    const rect = mergeRects(createRect(), bounds)
+    const iframeBounds = win.__VUE_DEVTOOLS_IFRAME__.getBoundingClientRect()
+    rect.top += iframeBounds.top
+    rect.bottom += iframeBounds.top
+    rect.left += iframeBounds.left
+    rect.right += iframeBounds.left
+    if (win.parent) {
+      return addIframePosition(rect, win.parent)
+    }
+    return rect
+  }
+  return bounds
 }

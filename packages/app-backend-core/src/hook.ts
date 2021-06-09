@@ -8,7 +8,7 @@
  *
  * @param {Window|global} target
  */
-export function installHook (target, iframe = false) {
+export function installHook (target, isIframe = false) {
   let listeners = {}
 
   let iframeChecks = 0
@@ -16,12 +16,17 @@ export function installHook (target, iframe = false) {
     const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe')
     for (const iframe of iframes) {
       try {
-        if (iframe.getAttribute('data-vdevtools-injection')) continue
-        iframe.setAttribute('data-vdevtools-injection', 'true')
-        const script = iframe.contentDocument.createElement('script')
-        script.textContent = ';(' + installHook.toString() + ')(window, true)'
-        iframe.contentDocument.documentElement.appendChild(script)
-        script.parentNode.removeChild(script)
+        if ((iframe as any).__vdevtools__injected) continue
+        (iframe as any).__vdevtools__injected = true
+        const inject = () => {
+          (iframe.contentWindow as any).__VUE_DEVTOOLS_IFRAME__ = iframe
+          const script = iframe.contentDocument.createElement('script')
+          script.textContent = ';(' + installHook.toString() + ')(window, true)'
+          iframe.contentDocument.documentElement.appendChild(script)
+          script.parentNode.removeChild(script)
+        }
+        inject()
+        iframe.addEventListener('load', () => inject())
       } catch (e) {
         // Ignore
       }
@@ -40,7 +45,7 @@ export function installHook (target, iframe = false) {
 
   let hook
 
-  if (iframe) {
+  if (isIframe) {
     const sendToParent = cb => {
       try {
         const hook = (window.parent as any).__VUE_DEVTOOLS_GLOBAL_HOOK__

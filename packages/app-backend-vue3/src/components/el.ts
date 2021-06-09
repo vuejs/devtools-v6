@@ -47,9 +47,9 @@ export function getInstanceOrVnodeRect (instance) {
   }
 
   if (isFragment(instance)) {
-    return getFragmentRect(instance.subTree)
+    return addIframePosition(getFragmentRect(instance.subTree), getElWindow(el))
   } else if (el.nodeType === 1) {
-    return el.getBoundingClientRect()
+    return addIframePosition(el.getBoundingClientRect(), getElWindow(el))
   }
 }
 
@@ -78,6 +78,7 @@ function mergeRects (a, b) {
   if (!a.right || b.right > a.right) {
     a.right = b.right
   }
+  return a
 }
 
 let range
@@ -119,4 +120,24 @@ function getFragmentRect (vnode) {
   }
 
   return rect
+}
+
+function getElWindow (el: HTMLElement) {
+  return el.ownerDocument.defaultView
+}
+
+function addIframePosition (bounds, win: any) {
+  if (win.__VUE_DEVTOOLS_IFRAME__) {
+    const rect = mergeRects(createRect(), bounds)
+    const iframeBounds = win.__VUE_DEVTOOLS_IFRAME__.getBoundingClientRect()
+    rect.top += iframeBounds.top
+    rect.bottom += iframeBounds.top
+    rect.left += iframeBounds.left
+    rect.right += iframeBounds.left
+    if (win.parent) {
+      return addIframePosition(rect, win.parent)
+    }
+    return rect
+  }
+  return bounds
 }
