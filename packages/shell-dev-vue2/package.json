@@ -6,7 +6,8 @@
     "dev": "cross-env TAILWIND_MODE=watch PORT=8100 webpack serve"
   },
   "dependencies": {
-    "@vue-devtools/shell-host": "^0.0.0"
+    "@vue-devtools/shell-host": "^0.0.0",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue-devtools/build-tools": "^0.0.0",

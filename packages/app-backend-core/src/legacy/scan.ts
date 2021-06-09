@@ -42,18 +42,30 @@ export function scan () {
   }
 
   if (isBrowser) {
-    walk(document, function (node) {
-      if (inFragment) {
-        if (node === currentFragment._fragmentEnd) {
-          inFragment = false
-          currentFragment = null
+    const walkDocument = document => {
+      walk(document, function (node) {
+        if (inFragment) {
+          if (node === currentFragment._fragmentEnd) {
+            inFragment = false
+            currentFragment = null
+          }
+          return true
         }
-        return true
-      }
-      const instance = node.__vue__
+        const instance = node.__vue__
 
-      return processInstance(instance)
-    })
+        return processInstance(instance)
+      })
+    }
+    walkDocument(document)
+
+    const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe')
+    for (const iframe of iframes) {
+      try {
+        walkDocument(iframe.contentDocument)
+      } catch (e) {
+        // Ignore
+      }
+    }
   } else {
     if (Array.isArray(target.__VUE_ROOT_INSTANCES__)) {
       target.__VUE_ROOT_INSTANCES__.map(processInstance)

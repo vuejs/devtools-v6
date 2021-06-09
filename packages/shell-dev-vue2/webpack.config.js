@@ -7,7 +7,8 @@ module.exports = createConfig({
     // devtools: require.resolve('@vue-devtools/shell-host/src/devtools.js'),
     backend: require.resolve('@vue-devtools/shell-host/src/backend.js'),
     hook: require.resolve('@vue-devtools/shell-host/src/hook.js'),
-    target: './src/index.js'
+    target: './src/index.js',
+    'iframe-app': './src/iframe-app.js'
   },
   output: {
     path: path.join(__dirname, '/build'),

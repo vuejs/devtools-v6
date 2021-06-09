@@ -55,7 +55,10 @@ export function installHook (target, iframe = false) {
     }
 
     hook = {
-      Vue: null,
+      // eslint-disable-next-line accessor-pairs
+      set Vue (value) {
+        sendToParent(hook => { hook.Vue = value })
+      },
 
       on (event, fn) {
         sendToParent(hook => hook.on(event, fn))
