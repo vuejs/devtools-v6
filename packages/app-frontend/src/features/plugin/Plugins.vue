@@ -4,11 +4,13 @@ import PluginListItem from './PluginListItem.vue'
 
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import { usePlugins } from '.'
+import EmptyPane from '../layout/EmptyPane.vue'
 
 export default defineComponent({
   components: {
     SplitPane,
-    PluginListItem
+    PluginListItem,
+    EmptyPane
   },
 
   setup () {
@@ -33,7 +35,14 @@ export default defineComponent({
 </script>
 
 <template>
+  <EmptyPane
+    v-if="!plugins.length"
+    icon="extension"
+  >
+    No devtools plugins found
+  </EmptyPane>
   <SplitPane
+    v-else
     save-id="plugins"
     :default-split="30"
   >
