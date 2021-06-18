@@ -468,7 +468,7 @@ async function connect () {
   hook.off('flush')
   hook.on('flush', () => {
     if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
-      sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, ctx)
+      sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
       if (ctx.currentInspectedComponentId) {
         sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
       }
