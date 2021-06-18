@@ -194,7 +194,7 @@ export function useSelectedComponent () {
     })), 'type')
     : ({}))
 
-  const fileIsPath = computed(() => data.value.file && /[/\\]/.test(data.value.file))
+  const fileIsPath = computed(() => data.value?.file && /[/\\]/.test(data.value.file))
 
   function inspectDOM () {
     if (!data.value) return
