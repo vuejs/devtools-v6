@@ -225,6 +225,12 @@ setInterval(() => {
 }, 5000)
 ```
 
+You can also pass a specific component instance:
+
+```js
+api.notifyComponentUpdate(vm)
+```
+
 ## Custom inspector
 
 Custom inspectors are useful to display debugging information about your library using an inspectable tree.
