@@ -63,8 +63,6 @@ export default defineComponent({
       loadComponent(selectedComponentId.value)
     }
 
-    const refreshDisabled = computed(() => !selectedComponentId.value)
-
     // Scroller
 
     const treeScroller = ref()
@@ -78,7 +76,6 @@ export default defineComponent({
       startPickingComponent,
       stopPickingComponent,
       refresh,
-      refreshDisabled,
       treeScroller
     }
   }
@@ -170,7 +167,6 @@ export default defineComponent({
 
       <VueButton
         v-tooltip="'Force refresh'"
-        :disabled="refreshDisabled"
         class="icon-button flat"
         icon-left="refresh"
         @click="refresh()"
