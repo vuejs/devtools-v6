@@ -19,11 +19,15 @@ export function installHook (target, isIframe = false) {
         if ((iframe as any).__vdevtools__injected) continue
         (iframe as any).__vdevtools__injected = true
         const inject = () => {
-          (iframe.contentWindow as any).__VUE_DEVTOOLS_IFRAME__ = iframe
-          const script = iframe.contentDocument.createElement('script')
-          script.textContent = ';(' + installHook.toString() + ')(window, true)'
-          iframe.contentDocument.documentElement.appendChild(script)
-          script.parentNode.removeChild(script)
+          try {
+            (iframe.contentWindow as any).__VUE_DEVTOOLS_IFRAME__ = iframe
+            const script = iframe.contentDocument.createElement('script')
+            script.textContent = ';(' + installHook.toString() + ')(window, true)'
+            iframe.contentDocument.documentElement.appendChild(script)
+            script.parentNode.removeChild(script)
+          } catch (e) {
+            // Ignore
+          }
         }
         inject()
         iframe.addEventListener('load', () => inject())
