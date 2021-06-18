@@ -3,9 +3,9 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
-import { onMounted, ref, provide, defineComponent } from '@vue/composition-api'
+import { onMounted, ref, provide, defineComponent, computed } from '@vue/composition-api'
 import { onKeyDown, onKeyUp } from '@front/util/keyboard'
-import { useComponentPick, useComponents } from './composable'
+import { useComponentPick, useComponents, loadComponent } from './composable'
 
 export default defineComponent({
   components: {
@@ -20,7 +20,8 @@ export default defineComponent({
       requestComponentTree,
       treeFilter,
       selectLastComponent,
-      subscribeToSelectedData
+      subscribeToSelectedData,
+      selectedComponentId
     } = useComponents()
 
     subscribeToSelectedData()
@@ -55,6 +56,15 @@ export default defineComponent({
       }
     })
 
+    // Refresh
+
+    function refresh () {
+      requestComponentTree(null)
+      loadComponent(selectedComponentId.value)
+    }
+
+    const refreshDisabled = computed(() => !selectedComponentId.value)
+
     // Scroller
 
     const treeScroller = ref()
@@ -67,6 +77,8 @@ export default defineComponent({
       pickingComponent,
       startPickingComponent,
       stopPickingComponent,
+      refresh,
+      refreshDisabled,
       treeScroller
     }
   }
@@ -154,6 +166,14 @@ export default defineComponent({
         class="icon-button flat"
         icon-left="gps_fixed"
         @click="startPickingComponent()"
+      />
+
+      <VueButton
+        v-tooltip="'Force refresh'"
+        :disabled="refreshDisabled"
+        class="icon-button flat"
+        icon-left="refresh"
+        @click="refresh()"
       />
     </portal>
 
