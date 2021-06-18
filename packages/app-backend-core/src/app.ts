@@ -173,11 +173,17 @@ export async function sendApps (ctx: BackendContext) {
 }
 
 export async function removeApp (app: any, ctx: BackendContext) {
-  const appRecord = await getAppRecord(app, ctx)
-  if (appRecord) {
-    const index = ctx.appRecords.indexOf(appRecord)
-    if (index !== -1) ctx.appRecords.splice(index, 1)
-    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
+  try {
+    const appRecord = await getAppRecord(app, ctx)
+    if (appRecord) {
+      const index = ctx.appRecords.indexOf(appRecord)
+      if (index !== -1) ctx.appRecords.splice(index, 1)
+      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(e)
+    }
   }
 }
 

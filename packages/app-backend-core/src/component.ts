@@ -87,9 +87,16 @@ export async function editComponentState (instanceId: string, dotPath: string, t
 }
 
 export async function getComponentId (app: App, uid: number, ctx: BackendContext) {
-  const appRecord = await getAppRecord(app, ctx)
-  if (!appRecord) return null
-  return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
+  try {
+    const appRecord = await getAppRecord(app, ctx)
+    if (!appRecord) return null
+    return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(e)
+    }
+    return null
+  }
 }
 
 export function getComponentInstance (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {

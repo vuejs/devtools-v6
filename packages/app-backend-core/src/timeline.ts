@@ -55,45 +55,57 @@ function setupBuiltinLayers (ctx: BackendContext) {
   })
 
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
-    const appRecord = await getAppRecord(app, ctx)
-    const componentId = `${appRecord.id}:${instance.uid}`
-    const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
+    try {
+      const appRecord = await getAppRecord(app, ctx)
+      const componentId = `${appRecord.id}:${instance.uid}`
+      const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
 
-    addTimelineEvent({
-      layerId: 'component-event',
-      event: {
-        time: Date.now(),
-        data: {
-          component: {
-            _custom: {
-              type: 'component-definition',
-              display: componentDisplay
-            }
+      addTimelineEvent({
+        layerId: 'component-event',
+        event: {
+          time: Date.now(),
+          data: {
+            component: {
+              _custom: {
+                type: 'component-definition',
+                display: componentDisplay
+              }
+            },
+            event,
+            params
           },
-          event,
-          params
-        },
-        title: event,
-        subtitle: `by ${componentDisplay}`,
-        meta: {
-          componentId,
-          bounds: await ctx.api.getComponentBounds(instance)
+          title: event,
+          subtitle: `by ${componentDisplay}`,
+          meta: {
+            componentId,
+            bounds: await ctx.api.getComponentBounds(instance)
+          }
         }
+      }, app, ctx)
+    } catch (e) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(e)
       }
-    }, app, ctx)
+    }
   })
 }
 
 export async function sendTimelineLayers (ctx: BackendContext) {
   const layers = []
   for (const layer of ctx.timelineLayers) {
-    layers.push({
-      id: layer.id,
-      label: layer.label,
-      color: layer.color,
-      appId: (await getAppRecord(layer.app, ctx))?.id,
-      pluginId: layer.plugin.descriptor.id
-    })
+    try {
+      layers.push({
+        id: layer.id,
+        label: layer.label,
+        color: layer.color,
+        appId: layer.app ? (await getAppRecord(layer.app, ctx))?.id : null,
+        pluginId: layer.plugin.descriptor.id
+      })
+    } catch (e) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(e)
+      }
+    }
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, {
     layers

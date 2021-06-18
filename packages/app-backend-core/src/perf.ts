@@ -17,26 +17,32 @@ export async function performanceMarkStart (
   time: number,
   ctx: BackendContext
 ) {
-  if (!SharedData.performanceMonitoringEnabled) return
-  const appRecord = await getAppRecord(app, ctx)
-  const componentName = await ctx.api.getComponentName(instance)
-  const groupId = uniqueGroupId++
-  const groupKey = `${uid}-${type}`
-  appRecord.perfGroupIds.set(groupKey, { groupId, time })
-  addTimelineEvent({
-    layerId: 'performance',
-    event: {
-      time,
-      data: {
-        component: componentName,
-        type,
-        measure: 'start'
-      },
-      title: componentName,
-      subtitle: type,
-      groupId
+  try {
+    if (!SharedData.performanceMonitoringEnabled) return
+    const appRecord = await getAppRecord(app, ctx)
+    const componentName = await ctx.api.getComponentName(instance)
+    const groupId = uniqueGroupId++
+    const groupKey = `${uid}-${type}`
+    appRecord.perfGroupIds.set(groupKey, { groupId, time })
+    addTimelineEvent({
+      layerId: 'performance',
+      event: {
+        time,
+        data: {
+          component: componentName,
+          type,
+          measure: 'start'
+        },
+        title: componentName,
+        subtitle: type,
+        groupId
+      }
+    }, app, ctx)
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(e)
     }
-  }, app, ctx)
+  }
 }
 
 export async function performanceMarkEnd (
@@ -47,65 +53,71 @@ export async function performanceMarkEnd (
   time: number,
   ctx: BackendContext
 ) {
-  if (!SharedData.performanceMonitoringEnabled) return
-  const appRecord = await getAppRecord(app, ctx)
-  const componentName = await ctx.api.getComponentName(instance)
-  const groupKey = `${uid}-${type}`
-  const { groupId, time: startTime } = appRecord.perfGroupIds.get(groupKey)
-  const duration = time - startTime
-  addTimelineEvent({
-    layerId: 'performance',
-    event: {
-      time,
-      data: {
-        component: componentName,
-        type,
-        measure: 'end',
-        duration: {
-          _custom: {
-            type: 'Duration',
-            value: duration,
-            display: `${duration} ms`
+  try {
+    if (!SharedData.performanceMonitoringEnabled) return
+    const appRecord = await getAppRecord(app, ctx)
+    const componentName = await ctx.api.getComponentName(instance)
+    const groupKey = `${uid}-${type}`
+    const { groupId, time: startTime } = appRecord.perfGroupIds.get(groupKey)
+    const duration = time - startTime
+    addTimelineEvent({
+      layerId: 'performance',
+      event: {
+        time,
+        data: {
+          component: componentName,
+          type,
+          measure: 'end',
+          duration: {
+            _custom: {
+              type: 'Duration',
+              value: duration,
+              display: `${duration} ms`
+            }
           }
+        },
+        title: componentName,
+        subtitle: type,
+        groupId
+      }
+    }, app, ctx)
+
+    // Mark on component
+    const tooSlow = duration > 10
+    if (tooSlow || instance.__VUE_DEVTOOLS_SLOW__) {
+      let change = false
+      if (tooSlow && !instance.__VUE_DEVTOOLS_SLOW__) {
+        instance.__VUE_DEVTOOLS_SLOW__ = {
+          duration: null,
+          measures: {}
         }
-      },
-      title: componentName,
-      subtitle: type,
-      groupId
-    }
-  }, app, ctx)
+      }
 
-  // Mark on component
-  const tooSlow = duration > 10
-  if (tooSlow || instance.__VUE_DEVTOOLS_SLOW__) {
-    let change = false
-    if (tooSlow && !instance.__VUE_DEVTOOLS_SLOW__) {
-      instance.__VUE_DEVTOOLS_SLOW__ = {
-        duration: null,
-        measures: {}
+      const data = instance.__VUE_DEVTOOLS_SLOW__
+
+      if (tooSlow && (data.duration == null || data.duration < duration)) {
+        data.duration = duration
+        change = true
+      }
+
+      if (data.measures[type] == null || data.measures[type] < duration) {
+        data.measures[type] = duration
+        change = true
+      }
+
+      if (change) {
+        // Update component tree
+        const id = await getComponentId(app, uid, ctx)
+        if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
+          requestAnimationFrame(() => {
+            sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, ctx)
+          })
+        }
       }
     }
-
-    const data = instance.__VUE_DEVTOOLS_SLOW__
-
-    if (tooSlow && (data.duration == null || data.duration < duration)) {
-      data.duration = duration
-      change = true
-    }
-
-    if (data.measures[type] == null || data.measures[type] < duration) {
-      data.measures[type] = duration
-      change = true
-    }
-
-    if (change) {
-      // Update component tree
-      const id = await getComponentId(app, uid, ctx)
-      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        requestAnimationFrame(() => {
-          sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, ctx)
-        })
-      }
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(e)
     }
   }
 }
