@@ -129,14 +129,14 @@ async function connect () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
     ctx.currentAppRecord.componentFilter = filter
-    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, ctx)
+    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
     sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
   })
 
-  hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid) => {
+  hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
     try {
       let id: string
       let appRecord: AppRecord
@@ -147,8 +147,15 @@ async function connect () {
         id = ctx.currentInspectedComponentId
         appRecord = ctx.currentAppRecord
       }
+
+      // Update component inspector
       if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
         sendSelectedComponentData(appRecord, id, ctx)
+      }
+
+      // Update tree (tags)
+      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
+        sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, 0, ctx)
       }
     } catch (e) {
       if (process.env.NODE_ENV !== 'production') {
@@ -174,7 +181,7 @@ async function connect () {
       const parentId = await getComponentId(app, parentUid, ctx)
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
         requestAnimationFrame(() => {
-          sendComponentTreeData(appRecord, parentId, ctx.currentAppRecord.componentFilter, ctx)
+          sendComponentTreeData(appRecord, parentId, ctx.currentAppRecord.componentFilter, null, ctx)
         })
       }
 
@@ -188,12 +195,12 @@ async function connect () {
     }
   })
 
-  hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid) => {
+  hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     const parentId = await getComponentId(app, parentUid, ctx)
     if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
       requestAnimationFrame(async () => {
         try {
-          sendComponentTreeData(await getAppRecord(app, ctx), parentId, ctx.currentAppRecord.componentFilter, ctx)
+          sendComponentTreeData(await getAppRecord(app, ctx), parentId, ctx.currentAppRecord.componentFilter, null, ctx)
         } catch (e) {
           if (process.env.NODE_ENV !== 'production') {
             console.error(e)

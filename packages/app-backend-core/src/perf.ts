@@ -110,7 +110,7 @@ export async function performanceMarkEnd (
         const id = await getComponentId(app, uid, ctx)
         if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
           requestAnimationFrame(() => {
-            sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, ctx)
+            sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, null, ctx)
           })
         }
       }

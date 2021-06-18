@@ -6,7 +6,7 @@ import { App, EditStatePayload } from '@vue/devtools-api'
 const MAX_$VM = 10
 const $vmQueue = []
 
-export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', ctx: BackendContext) {
+export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, ctx: BackendContext) {
   if (!instanceId) return
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
@@ -17,7 +17,9 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     })
   } else {
     if (filter) filter = filter.toLowerCase()
-    const maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
+    if (maxDepth == null) {
+      maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
+    }
     const payload = {
       instanceId,
       treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth, filter))
