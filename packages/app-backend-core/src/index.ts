@@ -155,7 +155,7 @@ async function connect () {
 
       // Update tree (tags)
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, 0, ctx)
+        sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
       }
     } catch (e) {
       if (process.env.NODE_ENV !== 'production') {
@@ -167,21 +167,20 @@ async function connect () {
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
       const id = await getComponentId(app, uid, ctx)
+      const appRecord = await getAppRecord(app, ctx)
       if (component) {
         if (component.__VUE_DEVTOOLS_UID__ == null) {
           component.__VUE_DEVTOOLS_UID__ = id
         }
-        if (!ctx.currentAppRecord.instanceMap.has(id)) {
-          ctx.currentAppRecord.instanceMap.set(id, component)
+        if (!appRecord.instanceMap.has(id)) {
+          appRecord.instanceMap.set(id, component)
         }
       }
-
-      const appRecord = await getAppRecord(app, ctx)
 
       const parentId = await getComponentId(app, parentUid, ctx)
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
         requestAnimationFrame(() => {
-          sendComponentTreeData(appRecord, parentId, ctx.currentAppRecord.componentFilter, null, ctx)
+          sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
         })
       }
 
@@ -196,24 +195,31 @@ async function connect () {
   })
 
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
-    const parentId = await getComponentId(app, parentUid, ctx)
-    if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-      requestAnimationFrame(async () => {
-        try {
-          sendComponentTreeData(await getAppRecord(app, ctx), parentId, ctx.currentAppRecord.componentFilter, null, ctx)
-        } catch (e) {
-          if (process.env.NODE_ENV !== 'production') {
-            console.error(e)
+    try {
+      const appRecord = await getAppRecord(app, ctx)
+      const parentId = await getComponentId(app, parentUid, ctx)
+      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+        requestAnimationFrame(async () => {
+          try {
+            sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
+          } catch (e) {
+            if (process.env.NODE_ENV !== 'production') {
+              console.error(e)
+            }
           }
-        }
-      })
-    }
+        })
+      }
 
-    const id = await getComponentId(app, uid, ctx)
-    if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-      sendEmptyComponentData(id, ctx)
+      const id = await getComponentId(app, uid, ctx)
+      if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
+        sendEmptyComponentData(id, ctx)
+      }
+      appRecord.instanceMap.delete(id)
+    } catch (e) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(e)
+      }
     }
-    ctx.currentAppRecord.instanceMap.delete(id)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, type, value, newKey, remove }) => {
