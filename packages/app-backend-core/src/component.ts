@@ -7,7 +7,7 @@ const MAX_$VM = 10
 const $vmQueue = []
 
 export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, ctx: BackendContext) {
-  if (!instanceId) return
+  if (!instanceId || appRecord !== ctx.currentAppRecord) return
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
@@ -29,7 +29,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
 }
 
 export async function sendSelectedComponentData (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
-  if (!instanceId) return
+  if (!instanceId || appRecord !== ctx.currentAppRecord) return
   markSelectedInstance(instanceId, ctx)
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
