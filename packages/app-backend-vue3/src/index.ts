@@ -82,7 +82,8 @@ export const backend: DevtoolsBackend = {
         payload.outArgs = [
           component.appContext.app,
           component.uid,
-          component.parent ? component.parent.uid : undefined
+          component.parent ? component.parent.uid : undefined,
+          component
         ]
       }
     })
