@@ -16,7 +16,7 @@ function detect (win) {
       let Vue
 
       if (window.$nuxt) {
-        Vue = window.$nuxt.$root.constructor
+        Vue = window.$nuxt.$root && window.$nuxt.$root.constructor
       }
 
       win.postMessage({
