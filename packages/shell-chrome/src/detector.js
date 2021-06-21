@@ -20,7 +20,8 @@ function detect (win) {
       }
 
       win.postMessage({
-        devtoolsEnabled: Vue && Vue.config.devtools,
+        // TODO disable devtools
+        devtoolsEnabled: !Vue || Vue.config.devtools,
         vueDetected: true,
         nuxtDetected: true
       }, '*')
