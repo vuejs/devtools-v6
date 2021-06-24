@@ -4,11 +4,14 @@ import { getApps } from '@front/features/apps'
 import {
   inspectedEvent,
   inspectedEventData,
-  inspectedEventPendingId
+  inspectedEventPendingId,
+  TimelineEvent
 } from './store'
 import { getLayers, fetchLayers, layerFactory } from './layers'
 import { addEvent } from './events'
 import { resetTimeline } from './reset'
+
+const pendingEvents: Record<string, TimelineEvent[]> = {}
 
 export function setupTimelineBridgeEvents (bridge: Bridge) {
   resetTimeline(false)
@@ -18,7 +21,9 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     for (const appId of appIds) {
       const layer = getLayers(appId).find(l => l.id === layerId)
       if (!layer) {
-        console.error(`Layer ${layerId} not found`)
+        const pendingKey = `${appId}:${layerId}`
+        pendingEvents[pendingKey] = pendingEvents[pendingKey] ?? []
+        pendingEvents[pendingKey].push(event)
         return
       }
 
@@ -37,6 +42,14 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
         const existingLayers = getLayers(appId)
         if (!existingLayers.some(l => l.id === layer.id)) {
           existingLayers.push(layerFactory(layer))
+
+          const pendingKey = `${appId}:${layer.id}`
+          if (pendingEvents[pendingKey] && pendingEvents[pendingKey].length) {
+            for (const event of pendingEvents[pendingKey]) {
+              addEvent(appId, cloneDeep(event), getLayers(appId).find(l => l.id === layer.id))
+            }
+            pendingEvents[pendingKey] = []
+          }
         }
       }
     }
