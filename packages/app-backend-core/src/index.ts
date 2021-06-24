@@ -357,11 +357,31 @@ function connectBridge () {
     if (instance) {
       const [el] = await ctx.api.getComponentRootElements(instance)
       if (el) {
-        el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-          inline: 'center'
-        })
+        if (typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          })
+        } else {
+          // Handle nodes that don't implement scrollIntoView
+          const bounds = await ctx.api.getComponentBounds(instance)
+          const scrollTarget = document.createElement('div')
+          scrollTarget.style.position = 'absolute'
+          scrollTarget.style.width = `${bounds.width}px`
+          scrollTarget.style.height = `${bounds.height}px`
+          scrollTarget.style.top = `${bounds.top}px`
+          scrollTarget.style.left = `${bounds.left}px`
+          document.body.appendChild(scrollTarget)
+          scrollTarget.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          })
+          setTimeout(() => {
+            document.body.removeChild(scrollTarget)
+          }, 2000)
+        }
         highlight(instance, ctx)
         setTimeout(() => {
           unHighlight()
