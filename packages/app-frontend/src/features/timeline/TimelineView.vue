@@ -29,6 +29,7 @@ import { dimColor, boostColor } from '@front/util/color'
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
+const MIN_CAMERA_SIZE = 10
 
 installUnsafeEval(PIXI)
 
@@ -733,13 +734,20 @@ export default defineComponent({
     function drawTimeGrid () {
       if (!timeGrid.visible || !app.view.width) return
 
-      const ratio = (endTime.value - startTime.value) / app.view.width
+      const size = endTime.value - startTime.value
+      const ratio = size / app.view.width
       let timeInterval = 10
       let width = timeInterval / ratio
 
-      while (width < 20) {
-        timeInterval *= 10
-        width *= 10
+      if (size <= MIN_CAMERA_SIZE * 3) {
+        // Every ms
+        timeInterval = 1
+        width = timeInterval / ratio
+      } else {
+        while (width < 20) {
+          timeInterval *= 10
+          width *= 10
+        }
       }
 
       const offset = startTime.value % timeInterval / ratio
@@ -798,8 +806,8 @@ export default defineComponent({
         const center = size * centerRatio + startTime.value
 
         let newSize = size + event.deltaY / viewWidth * size * 2
-        if (newSize < 10) {
-          newSize = 10
+        if (newSize < MIN_CAMERA_SIZE) {
+          newSize = MIN_CAMERA_SIZE
         }
 
         let start = center - newSize * centerRatio
