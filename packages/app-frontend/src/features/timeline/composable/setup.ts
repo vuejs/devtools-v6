@@ -32,9 +32,12 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
 
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, ({ layers }) => {
     for (const layer of layers) {
-      const existingLayers = getLayers(layer.appId)
-      if (!existingLayers.some(l => l.id === layer.id)) {
-        existingLayers.push(layerFactory(layer))
+      const appIds = layer.appId != null ? [layer.appId] : getApps().map(app => app.id)
+      for (const appId of appIds) {
+        const existingLayers = getLayers(appId)
+        if (!existingLayers.some(l => l.id === layer.id)) {
+          existingLayers.push(layerFactory(layer))
+        }
       }
     }
   })

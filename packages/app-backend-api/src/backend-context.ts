@@ -1,5 +1,11 @@
 import { Bridge } from '@vue-devtools/shared-utils'
-import { TimelineLayerOptions, App, CustomInspectorOptions } from '@vue/devtools-api'
+import {
+  TimelineLayerOptions,
+  App,
+  CustomInspectorOptions,
+  TimelineEventOptions,
+  WithId
+} from '@vue/devtools-api'
 import { AppRecord } from './app-record'
 import { DevtoolsApi } from './api'
 import { Plugin } from './plugin'
@@ -22,6 +28,7 @@ export interface BackendContext {
 export interface TimelineLayer extends TimelineLayerOptions {
   app: App
   plugin: Plugin
+  events: (TimelineEventOptions & WithId)[]
 }
 
 export interface CustomInspector extends CustomInspectorOptions {

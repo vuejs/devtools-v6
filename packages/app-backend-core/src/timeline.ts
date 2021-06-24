@@ -3,8 +3,17 @@ import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
 import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
+import { builtinLayers } from './timeline-builtins'
 
 export function setupTimeline (ctx: BackendContext) {
+  for (const layerDef of builtinLayers) {
+    ctx.timelineLayers.push({
+      ...layerDef,
+      app: null,
+      plugin: null,
+      events: []
+    })
+  }
   setupBuiltinLayers(ctx)
 }
 
@@ -99,7 +108,10 @@ export async function sendTimelineLayers (ctx: BackendContext) {
         label: layer.label,
         color: layer.color,
         appId: layer.app ? (await getAppRecord(layer.app, ctx))?.id : null,
-        pluginId: layer.plugin.descriptor.id
+        pluginId: layer.plugin?.descriptor.id,
+        groupsOnly: layer.groupsOnly,
+        skipScreenshots: layer.skipScreenshots,
+        ignoreNoDurationGroups: layer.ignoreNoDurationGroups
       })
     } catch (e) {
       if (process.env.NODE_ENV !== 'production') {
@@ -142,6 +154,8 @@ export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: 
 }
 
 function registerTimelineEvent (options: TimelineEventOptions & WithId, ctx: BackendContext) {
+  // @TODO add event to layer
+
   timelineEventMap.set(options.id, options)
 }
 

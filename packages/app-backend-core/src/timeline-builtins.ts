@@ -94,6 +94,9 @@ export const builtinLayers: TimelineLayerOptions[] = [
   {
     id: 'performance',
     label: 'Performance',
-    color: 0x41b86a
+    color: 0x41b86a,
+    groupsOnly: true,
+    skipScreenshots: true,
+    ignoreNoDurationGroups: true
   }
 ]

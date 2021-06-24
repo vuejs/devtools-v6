@@ -220,7 +220,8 @@ async function connect () {
     ctx.timelineLayers.push({
       ...options,
       app: plugin.descriptor.app,
-      plugin
+      plugin,
+      events: []
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
   })
