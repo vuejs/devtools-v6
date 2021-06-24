@@ -38,4 +38,4 @@ By default, the devtools will try to take screenshots of your application when s
 
 ## Some package is polluting my devtools
 
-The new Vue devtools features a powerful public API so that package authors can integrate with the devtools (for example vuex or pinia). Since great power comes with great responsibility, you can disable specific permissions of a plugin, or even turn it off entirely, by going to the 'More' menu (three vertical dots on the top right), and then 'Devtools plugins...'.
+The new Vue devtools feature a powerful public API so that package authors can integrate with the devtools (for example vuex or pinia). Since great power comes with great responsibility, you can disable specific permissions of a plugin, or even turn it off entirely, by going to the 'More' menu (three vertical dots on the top right), and then 'Devtools plugins...'.
