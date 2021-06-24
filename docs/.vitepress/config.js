@@ -41,6 +41,10 @@ module.exports = {
               text: 'F.A.Q.',
               link: '/guide/faq',
             },
+            {
+              text: 'Contributing',
+              link: '/guide/contributing',
+            },
           ],
         },
       ],
