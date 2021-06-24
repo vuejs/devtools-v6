@@ -352,7 +352,7 @@ export function getCustomFunctionDetails (func: Function): CustomState {
   return {
     _custom: {
       type: 'function',
-      display: `<span>ƒ</span> ${escape(name)}${args}`,
+      display: `<span>f</span> ${escape(name)}${args}`,
       _reviveId: reviveCache.cache(func)
     }
   }
