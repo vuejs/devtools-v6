@@ -69,7 +69,7 @@ Once you installed the package globally, run:
 vue-devtools
 ```
 
-Then add:
+Then add this code to the `<head>` section of your application HTML file:
 ```html
 <script src="http://localhost:8098"></script>
 ```
@@ -83,10 +83,17 @@ Or if you want to debug your device remotely:
 <script src="http://<your-local-ip>:8098"></script>
 ```
 
-To the `<head>` section of your app. 
 **(Don't forget to remove it before deploying to production!)**
 
 `<your-local-ip>` usually looks like this: `192.168.x.x`.
+
+Then start your development server like you are used to, *without* killing the `vue-devtools` command (for example, open a new terminal). Both need to run in parallel.
+
+```bash
+yarn dev
+#or
+yarn serve
+```
 
 ### Using dependency package
 
