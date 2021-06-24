@@ -121,28 +121,38 @@ function processState (instance) {
 function processSetupState (instance) {
   const raw = instance.devtoolsRawSetupState || {}
   return Object.keys(instance.setupState)
-    .map(key => ({
-      key,
-      type: 'setup',
-      value: returnError(() => instance.setupState[key]),
-      ...getSetupStateExtra(raw[key])
-    }))
-}
+    .map(key => {
+      const value = returnError(() => instance.setupState[key])
 
-function getSetupStateExtra (raw) {
-  if (!raw) return {}
+      const rawData = raw[key]
 
-  const info = getSetupStateInfo(raw)
+      let result: any
 
-  const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
-  const isState = info.ref || info.computed || info.reactive
+      if (rawData) {
+        const info = getSetupStateInfo(rawData)
 
-  return {
-    ...objectType ? { objectType } : {},
-    ...raw.effect ? { raw: raw.effect.raw.toString() } : {},
-    editable: isState && !info.readonly,
-    type: isState ? 'setup' : 'setup (other)'
-  }
+        const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
+        const isState = info.ref || info.computed || info.reactive
+        const isOther = typeof value === 'function' || typeof value?.render === 'function'
+
+        result = {
+          ...objectType ? { objectType } : {},
+          ...raw.effect ? { raw: raw.effect.raw.toString() } : {},
+          editable: isState && !info.readonly,
+          type: isOther ? 'setup (other)' : 'setup'
+        }
+      } else {
+        result = {
+          type: 'setup'
+        }
+      }
+
+      return {
+        key,
+        value,
+        ...result
+      }
+    })
 }
 
 function isRef (raw: any): boolean {

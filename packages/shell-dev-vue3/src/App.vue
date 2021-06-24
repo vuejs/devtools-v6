@@ -17,6 +17,7 @@ import Heavy from './Heavy.vue'
 import Mixins from './Mixins.vue'
 import Animation from './Animation.vue'
 import SetupScript from './SetupScript.vue'
+import SetupDataLike from './SetupDataLike.vue'
 
 import { h, createApp } from 'vue'
 import SimplePlugin from './devtools-plugin/simple'
@@ -43,6 +44,7 @@ export default {
     Mixins,
     Animation,
     SetupScript,
+    SetupDataLike,
     inline: {
       render: () => h('h3', 'Inline component definition')
     }
@@ -100,6 +102,7 @@ export default {
   <Form />
   <Mixins />
   <SetupScript />
+  <SetupDataLike />
   <inline />
   <global />
 
