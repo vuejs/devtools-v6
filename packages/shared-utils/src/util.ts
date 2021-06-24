@@ -300,7 +300,7 @@ function basename (filename, ext) {
 }
 
 export function getComponentName (options) {
-  const name = options.name || options._componentTag
+  const name = options.displayName || options.name || options._componentTag
   if (name) {
     return name
   }
