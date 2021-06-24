@@ -51,10 +51,12 @@ export interface LayerFromBackend {
 
 export interface Layer extends LayerFromBackend {
   events: TimelineEvent[]
-  groupsMap: Record<EventGroup['id'], EventGroup>
+  eventsMap: Record<TimelineEvent['id'], TimelineEvent>
   groups: EventGroup[]
+  groupsMap: Record<EventGroup['id'], EventGroup>
   height: number
   lastInspectedEvent: TimelineEvent
+  loaded: boolean
 }
 
 export const startTime = ref(0)

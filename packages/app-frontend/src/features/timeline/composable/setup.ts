@@ -21,6 +21,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     for (const appId of appIds) {
       const layer = getLayers(appId).find(l => l.id === layerId)
       if (!layer) {
+        // Layer not found
         const pendingKey = `${appId}:${layerId}`
         pendingEvents[pendingKey] = pendingEvents[pendingKey] ?? []
         pendingEvents[pendingKey].push(event)
@@ -43,6 +44,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
         if (!existingLayers.some(l => l.id === layer.id)) {
           existingLayers.push(layerFactory(layer))
 
+          // Add pending events
           const pendingKey = `${appId}:${layer.id}`
           if (pendingEvents[pendingKey] && pendingEvents[pendingKey].length) {
             for (const event of pendingEvents[pendingKey]) {
@@ -50,6 +52,9 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
             }
             pendingEvents[pendingKey] = []
           }
+
+          // Load existing events that may not have been catched
+          bridge.send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LOAD_EVENTS, { layerId: layer.id, appId })
         }
       }
     }
@@ -67,6 +72,21 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
       if (eventId === inspectedEventPendingId.value) {
         inspectedEventPendingId.value = null
       }
+    }
+  })
+
+  bridge.on(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LOAD_EVENTS, ({ appId, layerId, events }) => {
+    const layer = getLayers(appId).find(l => l.id === layerId)
+    if (!layer) {
+      // Layer not found
+      const pendingKey = `${appId}:${layerId}`
+      pendingEvents[pendingKey] = pendingEvents[pendingKey] ?? []
+      pendingEvents[pendingKey].push(...events)
+      return
+    }
+
+    for (const event of events) {
+      addEvent(appId, cloneDeep(event), layer)
     }
   })
 }

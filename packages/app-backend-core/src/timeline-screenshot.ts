@@ -2,7 +2,6 @@ import { BackendContext } from '@vue-devtools/app-backend-api'
 import { ID, ScreenshotOverlayRenderContext } from '@vue/devtools-api'
 import { JobQueue } from './util/queue'
 import { builtinLayers } from './timeline-builtins'
-import { timelineEventMap } from './timeline'
 
 let overlay: HTMLDivElement
 let image: HTMLImageElement
@@ -28,7 +27,7 @@ export async function showScreenshot (screenshot: Screenshot, ctx: BackendContex
 
       clearContent()
 
-      const events = screenshot.events.map(id => timelineEventMap.get(id)).filter(Boolean).map(eventData => ({
+      const events = screenshot.events.map(id => ctx.timelineEventMap.get(id)).filter(Boolean).map(eventData => ({
         layer: builtinLayers.concat(ctx.timelineLayers).find(layer => layer.id === eventData.layerId),
         event: {
           ...eventData.event,

@@ -7,8 +7,6 @@ import { getAppRecord } from './app'
 import { getComponentId, sendComponentTreeData } from './component'
 import { isSubscribed } from './util/subscriptions'
 
-let uniqueGroupId = 0
-
 export async function performanceMarkStart (
   app: App,
   uid: number,
@@ -21,7 +19,7 @@ export async function performanceMarkStart (
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
     const componentName = await ctx.api.getComponentName(instance)
-    const groupId = uniqueGroupId++
+    const groupId = ctx.perfUniqueGroupId++
     const groupKey = `${uid}-${type}`
     appRecord.perfGroupIds.set(groupKey, { groupId, time })
     addTimelineEvent({

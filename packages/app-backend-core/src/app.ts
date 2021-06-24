@@ -13,6 +13,7 @@ import { scan } from './legacy/scan'
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
 import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
 import { backend as backendVue3 } from '@vue-devtools/app-backend-vue3'
+import { addBuiltinLayers, removeLayersForApp } from './timeline'
 
 const availableBackends = [
   backendVue1,
@@ -75,6 +76,8 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
         record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
         await ctx.api.registerApplication(record)
         ctx.appRecords.push(record)
+        addBuiltinLayers(options.app, ctx)
+
         ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
           appRecord: mapAppRecord(record)
         })
@@ -172,12 +175,13 @@ export async function sendApps (ctx: BackendContext) {
   })
 }
 
-export async function removeApp (app: any, ctx: BackendContext) {
+export async function removeApp (app: App, ctx: BackendContext) {
   try {
     const appRecord = await getAppRecord(app, ctx)
     if (appRecord) {
       const index = ctx.appRecords.indexOf(appRecord)
       if (index !== -1) ctx.appRecords.splice(index, 1)
+      removeLayersForApp(app, ctx)
       ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
     }
   } catch (e) {

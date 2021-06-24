@@ -35,6 +35,8 @@ export function onEventAdd (cb: AddEventCb) {
 }
 
 export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
+  if (layer.eventsMap[event.id]) return
+
   if (timelineIsEmpty.value) {
     timelineIsEmpty.value = false
     resetTime()
@@ -43,6 +45,7 @@ export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
   event.layer = layer
   event.appId = appId
   layer.events.push(event)
+  layer.eventsMap[event.id] = event
 
   // Groups
   if (event.groupId != null) {
@@ -62,6 +65,15 @@ export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
     group.lastEvent = event
     group.duration = event.time - group.firstEvent.time
     event.group = group
+  }
+
+  // Min time
+  if (minTime.value > event.time) {
+    const stick = minTime.value === startTime.value
+    minTime.value = event.time - 100
+    if (stick) {
+      startTime.value = minTime.value
+    }
   }
 
   // Update scrollbar

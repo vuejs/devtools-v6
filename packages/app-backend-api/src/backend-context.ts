@@ -4,7 +4,8 @@ import {
   App,
   CustomInspectorOptions,
   TimelineEventOptions,
-  WithId
+  WithId,
+  ID
 } from '@vue/devtools-api'
 import { AppRecord } from './app-record'
 import { DevtoolsApi } from './api'
@@ -22,6 +23,9 @@ export interface BackendContext {
   plugins: Plugin[]
   currentPlugin: Plugin
   timelineLayers: TimelineLayer[]
+  nextTimelineEventId: number
+  timelineEventMap: Map<ID, TimelineEventOptions & WithId>
+  perfUniqueGroupId: number
   customInspectors: CustomInspector[]
 }
 
@@ -55,6 +59,9 @@ export function createBackendContext (options: CreateBackendContextOptions): Bac
     plugins: [],
     currentPlugin: null,
     timelineLayers: [],
+    nextTimelineEventId: 0,
+    timelineEventMap: new Map(),
+    perfUniqueGroupId: 0,
     customInspectors: []
   }
   ctx.api = new DevtoolsApi(options.bridge, ctx)
