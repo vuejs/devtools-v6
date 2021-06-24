@@ -40,7 +40,6 @@ export function resetTimeline (sync = true) {
 
   if (sync) {
     getBridge().send(BridgeEvents.TO_BACK_TIMELINE_CLEAR)
-    console.log('CLEAR TIMELINE')
   }
 
   // Layers

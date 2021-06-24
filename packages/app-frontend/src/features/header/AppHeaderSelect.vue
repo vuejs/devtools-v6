@@ -27,10 +27,6 @@ export default defineComponent({
     const isShown = ref(false)
     const isShowApplied = ref(false)
 
-    watch(isShown, value => {
-      console.log('isShown', value)
-    })
-
     /**
      * Delayed open should only happen on mouseover.
      * Will be overriden when clicking
