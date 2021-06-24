@@ -13,7 +13,8 @@ import {
   initSharedData,
   BridgeSubscriptions,
   parse,
-  revive
+  revive,
+  target
 } from '@vue-devtools/shared-utils'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
@@ -36,16 +37,10 @@ import { showScreenshot } from './timeline-screenshot'
 import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
 
-let ctx: BackendContext
-let connected = false
+let ctx: BackendContext = target.__vdevtools_ctx ?? null
+let connected = target.__vdevtools_connected ?? false
 
 export async function initBackend (bridge: Bridge) {
-  connected = false
-  ctx = createBackendContext({
-    bridge,
-    hook
-  })
-
   await initSharedData({
     bridge,
     persist: false
@@ -53,28 +48,39 @@ export async function initBackend (bridge: Bridge) {
 
   initOnPageConfig()
 
-  if (hook.Vue) {
-    connect()
-    _legacy_getAndRegisterApps(hook.Vue, ctx)
-  } else {
-    hook.once(HookEvents.INIT, (Vue) => {
-      _legacy_getAndRegisterApps(Vue, ctx)
+  if (!connected) {
+    // connected = false
+    ctx = target.__vdevtools_ctx = createBackendContext({
+      bridge,
+      hook
     })
-  }
 
-  hook.on(HookEvents.APP_ADD, async app => {
-    await registerApp(app, ctx)
-
-    // Will init connect
-    hook.emit(HookEvents.INIT)
-  })
-
-  // In case we close and open devtools again
-  if (hook.apps.length) {
-    hook.apps.forEach(app => {
-      registerApp(app, ctx)
+    if (hook.Vue) {
       connect()
+      _legacy_getAndRegisterApps(hook.Vue, ctx)
+    } else {
+      hook.once(HookEvents.INIT, (Vue) => {
+        _legacy_getAndRegisterApps(Vue, ctx)
+      })
+    }
+
+    hook.on(HookEvents.APP_ADD, async app => {
+      await registerApp(app, ctx)
+
+      // Will init connect
+      hook.emit(HookEvents.INIT)
     })
+
+    // Add apps that already sent init
+    if (hook.apps.length) {
+      hook.apps.forEach(app => {
+        registerApp(app, ctx)
+        connect()
+      })
+    }
+  } else {
+    ctx.bridge = bridge
+    connectBridge()
   }
 }
 
@@ -82,59 +88,21 @@ async function connect () {
   if (connected) {
     return
   }
-  connected = true
+  connected = target.__vdevtools_connected = true
 
   await waitForAppsRegistration()
 
+  connectBridge()
+
   ctx.currentTab = BuiltinTabs.COMPONENTS
 
-  // Subscriptions
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_SUBSCRIBE, ({ type, payload }) => {
-    subscribe(type, payload)
-  })
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_UNSUBSCRIBE, ({ type, payload }) => {
-    unsubscribe(type, payload)
-  })
-
-  // Tabs
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async tab => {
-    ctx.currentTab = tab
-    await unHighlight()
-  })
-
   // Apps
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_APP_LIST, () => {
-    sendApps(ctx)
-  })
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
-    if (id == null) return
-    const record = ctx.appRecords.find(r => r.id === id)
-    if (!record) {
-      console.error(`App with id ${id} not found`)
-    } else {
-      await selectApp(record, ctx)
-    }
-  })
 
   hook.on(HookEvents.APP_UNMOUNT, app => {
     removeApp(app, ctx)
   })
 
   // Components
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
-    ctx.currentAppRecord.componentFilter = filter
-    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx)
-  })
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
-    sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
-  })
 
   hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
     try {
@@ -222,6 +190,151 @@ async function connect () {
     }
   })
 
+  // Component perf
+
+  hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {
+    performanceMarkStart(app, uid, vm, type, time, ctx)
+  })
+
+  hook.on(HookEvents.PERFORMANCE_END, (app, uid, vm, type, time) => {
+    performanceMarkEnd(app, uid, vm, type, time, ctx)
+  })
+
+  handleAddPerformanceTag(ctx)
+
+  // Highlighter
+
+  hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+  })
+
+  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
+    unHighlight()
+  })
+
+  // Timeline
+
+  setupTimeline(ctx)
+
+  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, plugin: Plugin) => {
+    ctx.timelineLayers.push({
+      ...options,
+      app: plugin.descriptor.app,
+      plugin
+    })
+    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
+  })
+
+  hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, plugin: Plugin) => {
+    addTimelineEvent(options, plugin.descriptor.app, ctx)
+  })
+
+  // Custom inspectors
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, plugin: Plugin) => {
+    ctx.customInspectors.push({
+      ...options,
+      app: plugin.descriptor.app,
+      plugin,
+      treeFilter: '',
+      selectedNodeId: null
+    })
+    ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, (inspectorId: string, plugin: Plugin) => {
+    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
+    if (inspector) {
+      sendInspectorTree(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, (inspectorId: string, plugin: Plugin) => {
+    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
+    if (inspector) {
+      sendInspectorState(inspector, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SELECT_NODE, async (inspectorId: string, nodeId: string, plugin: Plugin) => {
+    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
+    if (inspector) {
+      await selectInspectorNode(inspector, nodeId, ctx)
+    } else {
+      console.error(`Inspector ${inspectorId} not found`)
+    }
+  })
+
+  // Plugins
+
+  addPreviouslyRegisteredPlugins(ctx)
+  addQueuedPlugins(ctx)
+
+  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
+    addPlugin(pluginDescriptor, setupFn, ctx)
+  })
+
+  // Legacy flush
+  hook.off('flush')
+  hook.on('flush', () => {
+    if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
+      sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
+      if (ctx.currentInspectedComponentId) {
+        sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
+      }
+    }
+  })
+}
+
+function connectBridge () {
+  // Subscriptions
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_SUBSCRIBE, ({ type, payload }) => {
+    subscribe(type, payload)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_UNSUBSCRIBE, ({ type, payload }) => {
+    unsubscribe(type, payload)
+  })
+
+  // Tabs
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async tab => {
+    ctx.currentTab = tab
+    await unHighlight()
+  })
+
+  // Apps
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_APP_LIST, () => {
+    sendApps(ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
+    if (id == null) return
+    const record = ctx.appRecords.find(r => r.id === id)
+    if (!record) {
+      console.error(`App with id ${id} not found`)
+    } else {
+      await selectApp(record, ctx)
+    }
+  })
+
+  // Components
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
+    ctx.currentAppRecord.componentFilter = filter
+    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
+    sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
+  })
+
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, type, value, newKey, remove }) => {
     editComponentState(instanceId, dotPath, type, { value, newKey, remove }, ctx)
   })
@@ -281,18 +394,6 @@ async function connect () {
     }
   })
 
-  // Component perf
-
-  hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {
-    performanceMarkStart(app, uid, vm, type, time, ctx)
-  })
-
-  hook.on(HookEvents.PERFORMANCE_END, (app, uid, vm, type, time) => {
-    performanceMarkEnd(app, uid, vm, type, time, ctx)
-  })
-
-  handleAddPerformanceTag(ctx)
-
   // Highlighter
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {
@@ -300,14 +401,6 @@ async function connect () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
-    unHighlight()
-  })
-
-  hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
-  })
-
-  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
     unHighlight()
   })
 
@@ -325,23 +418,8 @@ async function connect () {
 
   // Timeline
 
-  setupTimeline(ctx)
-
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, () => {
     sendTimelineLayers(ctx)
-  })
-
-  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, plugin: Plugin) => {
-    ctx.timelineLayers.push({
-      ...options,
-      app: plugin.descriptor.app,
-      plugin
-    })
-    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
-  })
-
-  hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, plugin: Plugin) => {
-    addTimelineEvent(options, plugin.descriptor.app, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, ({ screenshot }) => {
@@ -382,35 +460,6 @@ async function connect () {
     }
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, plugin: Plugin) => {
-    ctx.customInspectors.push({
-      ...options,
-      app: plugin.descriptor.app,
-      plugin,
-      treeFilter: '',
-      selectedNodeId: null
-    })
-    ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
-  })
-
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, (inspectorId: string, plugin: Plugin) => {
-    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
-    if (inspector) {
-      sendInspectorTree(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
-    }
-  })
-
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, (inspectorId: string, plugin: Plugin) => {
-    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
-    if (inspector) {
-      sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
-    }
-  })
-
   ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, async ({ inspectorId, appId, nodeId, path, type, payload }) => {
     const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
@@ -436,15 +485,6 @@ async function connect () {
     }
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SELECT_NODE, async (inspectorId: string, nodeId: string, plugin: Plugin) => {
-    const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
-    if (inspector) {
-      await selectInspectorNode(inspector, nodeId, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
-    }
-  })
-
   // Misc
 
   ctx.bridge.on(BridgeEvents.TO_BACK_LOG, (payload: { level: string, value: any, serialized?: boolean, revive?: boolean }) => {
@@ -459,25 +499,7 @@ async function connect () {
 
   // Plugins
 
-  addPreviouslyRegisteredPlugins(ctx)
-  addQueuedPlugins(ctx)
-
   ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, () => {
     sendPluginList(ctx)
-  })
-
-  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
-    addPlugin(pluginDescriptor, setupFn, ctx)
-  })
-
-  // Legacy flush
-  hook.off('flush')
-  hook.on('flush', () => {
-    if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
-      sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
-      if (ctx.currentInspectedComponentId) {
-        sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
-      }
-    }
   })
 }
