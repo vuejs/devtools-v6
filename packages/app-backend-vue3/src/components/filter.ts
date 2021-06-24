@@ -15,7 +15,7 @@ export class ComponentFilter {
    * @return {Boolean}
    */
   isQualified (instance) {
-    const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
+    const name = classify(getInstanceName(instance)).toLowerCase()
     return name.indexOf(this.filter) > -1
   }
 }

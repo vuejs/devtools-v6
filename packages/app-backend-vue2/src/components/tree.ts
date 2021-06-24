@@ -114,7 +114,7 @@ function getInternalInstanceChildren (instance) {
  * Check if an instance is qualified.
  */
 function isQualified (instance): boolean {
-  const name = classify(instance.name || getInstanceName(instance)).toLowerCase()
+  const name = classify(getInstanceName(instance)).toLowerCase()
   return name.indexOf(filter) > -1
 }
 
