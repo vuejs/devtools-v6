@@ -130,6 +130,10 @@ export default {
         }
       })
 
+      api.on.timelineCleared(() => {
+        console.log('timeline is cleared!')
+      })
+
       api.addInspector({
         id: 'test-inspector',
         label: 'Test inspector',

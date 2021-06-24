@@ -447,8 +447,8 @@ function connectBridge () {
     showScreenshot(screenshot, ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_CLEAR, () => {
-    clearTimeline(ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_CLEAR, async () => {
+    await clearTimeline(ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, async ({ id }) => {

@@ -198,6 +198,10 @@ export class DevtoolsApi {
     return payload.data
   }
 
+  async clearTimeline () {
+    await this.callHook(Hooks.TIMELINE_CLEARED, {})
+  }
+
   async getInspectorTree (inspectorId: string, app: App, filter: string) {
     const payload = await this.callHook(Hooks.GET_INSPECTOR_TREE, {
       inspectorId,

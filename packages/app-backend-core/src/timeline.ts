@@ -163,12 +163,12 @@ function mapTimelineEvent (eventData: TimelineEventOptions & WithId) {
   }
 }
 
-export function clearTimeline (ctx: BackendContext) {
+export async function clearTimeline (ctx: BackendContext) {
   ctx.timelineEventMap.clear()
   for (const layer of ctx.timelineLayers) {
     layer.events = []
   }
-  console.log('timeline cleared')
+  await ctx.api.clearTimeline()
 }
 
 export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
@@ -187,7 +187,6 @@ export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
 }
 
 export function removeLayersForApp (app: App, ctx: BackendContext) {
-  console.log('removeLayersForApp', app)
   const layers = ctx.timelineLayers.filter(l => l.app === app)
   for (const layer of layers) {
     const index = ctx.timelineLayers.indexOf(layer)

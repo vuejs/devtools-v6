@@ -20,6 +20,7 @@ export const enum Hooks {
   GET_COMPONENT_DEVTOOLS_OPTIONS = 'getAppDevtoolsOptions',
   GET_COMPONENT_RENDER_CODE = 'getComponentRenderCode',
   INSPECT_TIMELINE_EVENT = 'inspectTimelineEvent',
+  TIMELINE_CLEARED = 'timelineCleared',
   GET_INSPECTOR_TREE = 'getInspectorTree',
   GET_INSPECTOR_STATE = 'getInspectorState',
   EDIT_INSPECTOR_STATE = 'editInspectorState'
@@ -113,6 +114,7 @@ export type HookPayloads = {
     all?: boolean
     data: any
   }
+  [Hooks.TIMELINE_CLEARED]: Record<string, never>
   [Hooks.GET_INSPECTOR_TREE]: {
     app: App
     inspectorId: string
@@ -166,6 +168,7 @@ export interface Hookable<TContext> {
   getComponentDevtoolsOptions (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS], TContext>)
   getComponentRenderCode (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_RENDER_CODE], TContext>)
   inspectTimelineEvent (handler: HookHandler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT], TContext>)
+  timelineCleared (handler: HookHandler<HookPayloads[Hooks.TIMELINE_CLEARED], TContext>)
   getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
   getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)
   editInspectorState (handler: HookHandler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE], TContext>)

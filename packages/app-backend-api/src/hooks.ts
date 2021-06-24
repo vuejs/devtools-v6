@@ -128,6 +128,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler, PluginPermission.TIMELINE)
   }
 
+  timelineCleared (handler: Handler<HookPayloads[Hooks.TIMELINE_CLEARED]>) {
+    this.hook(Hooks.TIMELINE_CLEARED, handler, PluginPermission.TIMELINE)
+  }
+
   getInspectorTree (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_TREE]>) {
     this.hook(Hooks.GET_INSPECTOR_TREE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }

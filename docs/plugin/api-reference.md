@@ -583,6 +583,16 @@ api.on.inspectTimelineEvent(payload => {
 })
 ```
 
+### on.timelineCleared
+
+This hook is called when the timeline is cleared by the user. Note that clearing the timeline affects all apps and layers simultaneously.
+
+```js
+api.on.timelineCleared(() => {
+  console.log('timeline is cleared!')
+})
+```
+
 ## Utilities
 
 ### getComponentInstances
