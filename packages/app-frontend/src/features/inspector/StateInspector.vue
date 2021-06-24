@@ -21,7 +21,8 @@ const keyOrder = {
   $refs: 6,
   refs: 6,
   $attrs: 7,
-  attrs: 7
+  attrs: 7,
+  'setup (other)': 8
 }
 
 export default {

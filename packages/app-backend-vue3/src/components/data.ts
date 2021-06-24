@@ -135,11 +135,13 @@ function getSetupStateExtra (raw) {
   const info = getSetupStateInfo(raw)
 
   const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
+  const isState = info.ref || info.computed || info.reactive
 
   return {
     ...objectType ? { objectType } : {},
     ...raw.effect ? { raw: raw.effect.raw.toString() } : {},
-    editable: (info.ref || info.computed || info.reactive) && !info.readonly
+    editable: isState && !info.readonly,
+    type: isState ? 'setup' : 'setup (other)'
   }
 }
 
