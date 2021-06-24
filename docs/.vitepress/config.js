@@ -37,6 +37,10 @@ module.exports = {
               text: 'Open in editor',
               link: '/guide/open-in-editor',
             },
+            {
+              text: 'F.A.Q.',
+              link: '/guide/faq',
+            },
           ],
         },
       ],
