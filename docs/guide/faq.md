@@ -40,6 +40,10 @@ By default, the devtools will try to take screenshots of your application when s
 
 The new Vue devtools feature a powerful public API so that package authors can integrate with the devtools (for example vuex or pinia). Since great power comes with great responsibility, you can disable specific permissions of a plugin, or even turn it off entirely, by going to the 'More' menu (three vertical dots on the top right), and then 'Devtools plugins...'.
 
+## I can't open a component in my editor
+
+This feature needs some setup in your project to work correctly. See [here](./open-in-editor.md) for more information.
+
 ## Something is broken in the new devtools
 
 If something is very broken, please submit a new issue! In the mean time, you can install the legacy version of the devtools:
