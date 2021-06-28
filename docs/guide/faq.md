@@ -3,7 +3,7 @@
 ## How to use the devtools in IE/Edge/Safari or any other browser?
 
 In case your browser doesn't have our browser extension available, we made a standalone Vue devtools application.
-[Get it now!](./open-in-editor.md)
+[Get it now!](./installation.md#standalone)
 
 ## When opening an HTML file directly
 
