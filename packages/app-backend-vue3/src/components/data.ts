@@ -355,11 +355,11 @@ function mergeOptions (
   from: any,
   instance: ComponentInstance
 ) {
-  if (!from) return to
-
   if (typeof from === 'function') {
     from = from.options
   }
+
+  if (!from) return to
 
   const { mixins, extends: extendsOptions } = from
 
