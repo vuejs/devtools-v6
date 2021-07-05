@@ -15,6 +15,11 @@ module.exports = {
     editLinks: true,
     editLinkText: 'Suggest changes to this page',
 
+    algolia: {
+      apiKey: '4a61e935b51c9631f1d29e4270efbb72',
+      indexName: 'devtools-vuejs'
+    },
+
     nav: [
       { text: 'Guide', link: '/guide/installation' },
       {
