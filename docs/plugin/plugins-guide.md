@@ -10,7 +10,7 @@ The API is only available in Vue Devtools 6+
 
 ## Architecture
 
-A Vue Devtools Plugin is registered from your Vue package code in the user app. It interacts with the Vue Devtools Backend, *via* [the public API](./api-reference.md). The Backend is a script injected to the web page when the Vue Devtools are open by the user - it handles registering Vue applications and communicating with the Vue Devtools Frontend. The Frontend is the Vue application displayed in the browser devtools pane. The Hook is a global variable added to the page so that the Vue application and your plugin can send messages to the Backend.
+A Vue Devtools Plugin is registered from your Vue package code in the user app. It interacts with the Vue Devtools Backend, *via* [the public API](./api-reference.md). The Backend is a script injected to the web page when Vue Devtools are opened by the user - it handles registering Vue applications and communicating with the Vue Devtools Frontend. The Frontend is the Vue application displayed in the browser devtools pane. The Hook is a global variable added to the page so that the Vue application and your plugin can send messages to the Backend.
 
 There are 3 main API categories:
 - **Components Inspector**: your plugin can add more information to the component tree and state.
