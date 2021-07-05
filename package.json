@@ -70,6 +70,7 @@
     "start-server-and-test": "^1.7.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "vitepress": "^0.15.5",
+    "vue-github-button": "^3.0.1",
     "vue-loader": "^15.9.0",
     "webpack-dev-server": "^4.0.0-beta.0"
   },

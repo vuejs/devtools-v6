@@ -9,8 +9,12 @@ actionLink: /guide/installation
 footer: MIT Licensed | Copyright © 2014-present Evan You, Guillaume Chau
 ---
 
+<script setup>
+import SponsorButton from './SponsorButton.vue'
+</script>
+
 ## Sponsors
 
-[💚️ Become a Sponsor](https://github.com/sponsors/Akryum)
+<SponsorButton/>
 
 [![sponsors logos](https://guillaume-chau.info/sponsors.png)](https://guillaume-chau.info/sponsors)
