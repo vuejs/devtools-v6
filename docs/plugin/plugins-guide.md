@@ -844,6 +844,7 @@ export function setupDevtools (app) {
     // ...
   }, api => {
     api.on.visitComponentTree((payload, context) => {
+      const node = payload.treeNode
       if (payload.componentInstance.type.meow) {
         node.tags.push({
           label: 'meow',
