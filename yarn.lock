@@ -10095,13 +10095,6 @@ vue-eslint-parser@^7.0.0:
     lodash "^4.17.21"
     semver "^6.3.0"
 
-vue-github-button@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/vue-github-button/-/vue-github-button-3.0.1.tgz#f3d43820a7c3ba754924e12df53ba071089a49cb"
-  integrity sha512-E6ZOIXdAFf9aj/SdKMTVry9RHcQ1TWUsU82l//awOX6q/1pLgb+z7hhaL5tPZDqgRmkDUuYDSb8mpS7NOX5PIQ==
-  dependencies:
-    github-buttons "^2.14.3"
-
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
