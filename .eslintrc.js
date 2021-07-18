@@ -24,7 +24,7 @@ module.exports = {
       'error',
       {
         singleline: 'never',
-        multiline: 'always'
+        multiline: 'always' 
       }
     ],
     'no-var': ['error'],
