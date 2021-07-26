@@ -11,7 +11,7 @@ module.exports = {
     repo: 'vuejs/vue-devtools',
     logo: '/logo-header.svg',
     docsDir: 'docs',
-    docsBranch: 'next',
+    docsBranch: 'main',
     editLinks: true,
     editLinkText: 'Suggest changes to this page',
 
