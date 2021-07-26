@@ -1,4 +1,4 @@
-# Frenquently Asked Questions
+# Frequently Asked Questions
 
 ## How to use the devtools in IE/Edge/Safari or any other browser?
 
