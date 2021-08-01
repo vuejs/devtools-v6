@@ -1,4 +1,4 @@
-import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
+import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { classify } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import { getInstanceOrVnodeRect } from './el'
@@ -8,6 +8,7 @@ export let instanceMap: Map<any, any>
 export let functionalVnodeMap: Map<any, any>
 
 let appRecord: AppRecord
+let api: DevtoolsApi
 
 const consoleBoundInstances = Array(5)
 
@@ -53,6 +54,7 @@ export function getComponentParents (instance, ctx: BackendContext) {
 
 function initCtx (ctx: BackendContext) {
   appRecord = ctx.currentAppRecord
+  api = ctx.api
   if (!appRecord.meta.instanceMap) {
     appRecord.meta.instanceMap = new Map()
   }
@@ -175,7 +177,7 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
       // router-view has both fnContext and componentInstance on vnode.
       : instance.componentInstance ? [capture(instance.componentInstance)] : []).filter(Boolean)
 
-    return {
+    const treeNode = {
       uid: functionalId,
       id: functionalId,
       tags: [
@@ -192,6 +194,12 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
       inactive: false,
       isFragment: false // TODO: Check what is it for.
     }
+    return api.visitComponentTree(
+      instance,
+      treeNode,
+      filter,
+      appRecord?.options?.app
+    )
   }
   // instance._uid is not reliable in devtools as there
   // may be 2 roots with same _uid which causes unexpected
@@ -266,7 +274,12 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
       backgroundColor: 0xff8344
     })
   }
-  return ret
+  return api.visitComponentTree(
+    instance,
+    ret,
+    filter,
+    appRecord?.options?.app
+  )
 }
 
 /**
