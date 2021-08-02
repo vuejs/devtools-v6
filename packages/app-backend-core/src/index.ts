@@ -275,8 +275,8 @@ async function connect () {
   addPreviouslyRegisteredPlugins(ctx)
   addQueuedPlugins(ctx)
 
-  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
-    addPlugin(pluginDescriptor, setupFn, ctx)
+  hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, async (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
+    await addPlugin(pluginDescriptor, setupFn, ctx)
   })
 
   // Legacy flush

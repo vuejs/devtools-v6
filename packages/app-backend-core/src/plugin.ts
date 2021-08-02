@@ -1,9 +1,9 @@
 import { PluginDescriptor, SetupFunction } from '@vue/devtools-api'
 import { Plugin, BackendContext, DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, target } from '@vue-devtools/shared-utils'
-import { getAppRecordId } from './app'
+import { getAppRecord, getAppRecordId } from './app'
 
-export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction, ctx: BackendContext) {
+export async function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction, ctx: BackendContext) {
   const plugin: Plugin = {
     descriptor: pluginDescriptor,
     setupFn,
@@ -11,6 +11,7 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
   }
   ctx.currentPlugin = plugin
   try {
+    await getAppRecord(plugin.descriptor.app, ctx)
     const api = new DevtoolsPluginApiInstance(plugin, ctx)
     setupFn(api)
   } catch (e) {
@@ -33,7 +34,7 @@ export function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFun
 export async function addQueuedPlugins (ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_PLUGINS__)) {
     for (const plugin of target.__VUE_DEVTOOLS_PLUGINS__) {
-      addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
+      await addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
     }
     target.__VUE_DEVTOOLS_PLUGINS__ = null
   }
@@ -42,7 +43,7 @@ export async function addQueuedPlugins (ctx: BackendContext) {
 export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__)) {
     for (const plugin of target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
-      addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
+      await addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
     }
   }
 }

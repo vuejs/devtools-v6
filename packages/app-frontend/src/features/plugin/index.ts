@@ -68,13 +68,13 @@ function addPlugin (plugin: Plugin) {
 }
 
 export function setupPluginsBridgeEvents (bridge: Bridge) {
-  bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, ({ plugin }) => {
-    addPlugin(plugin)
+  bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, async ({ plugin }) => {
+    await addPlugin(plugin)
   })
 
-  bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_LIST, ({ plugins }) => {
+  bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_LIST, async ({ plugins }) => {
     for (const plugin of plugins) {
-      addPlugin(plugin)
+      await addPlugin(plugin)
     }
   })
 

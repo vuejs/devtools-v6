@@ -75,8 +75,8 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
         record.instanceMap.set(rootId, record.rootInstance)
         record.rootInstance.__VUE_DEVTOOLS_UID__ = rootId
         await ctx.api.registerApplication(record)
-        ctx.appRecords.push(record)
         addBuiltinLayers(options.app, ctx)
+        ctx.appRecords.push(record)
 
         ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
           appRecord: mapAppRecord(record)
