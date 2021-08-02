@@ -19,12 +19,12 @@ const functionalIds = new Map()
 // Some instances may be both on a component and on a child abstract/functional component
 const captureIds = new Map()
 
-export function walkTree (instance, pFilter: string, ctx: BackendContext): ComponentTreeNode[] {
+export async function walkTree (instance, pFilter: string, ctx: BackendContext): Promise<ComponentTreeNode[]> {
   initCtx(ctx)
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
-  const result = findQualifiedChildren(instance)
+  const result: ComponentTreeNode[] | ComponentTreeNode = await findQualifiedChildren(instance)
   if (Array.isArray(result)) {
     return result
   }
@@ -71,7 +71,7 @@ function initCtx (ctx: BackendContext) {
  * traversal - e.g. if an instance is not matched, we will
  * recursively go deeper until a qualified child is found.
  */
-function findQualifiedChildrenFromList (instances: any[]): any[] {
+function findQualifiedChildrenFromList (instances: any[]): ComponentTreeNode[] {
   instances = instances
     .filter(child => !isBeingDestroyed(child))
   return !filter
@@ -84,7 +84,7 @@ function findQualifiedChildrenFromList (instances: any[]): any[] {
  * If the instance itself is qualified, just return itself.
  * This is ok because [].concat works in both cases.
  */
-function findQualifiedChildren (instance) {
+async function findQualifiedChildren (instance): Promise<ComponentTreeNode[] | ComponentTreeNode> {
   if (isQualified(instance)) {
     return capture(instance)
   } else {
@@ -102,12 +102,9 @@ function findQualifiedChildren (instance) {
 /**
  * Get children from a component instance.
  */
-function getInternalInstanceChildren (instance) {
+function getInternalInstanceChildren (instance): any[] {
   if (instance.$children) {
     return instance.$children
-  }
-  if (Array.isArray(instance.subTree.children)) {
-    return instance.subTree.children.filter(vnode => !!vnode.component).map(vnode => vnode.component)
   }
   return []
 }
@@ -142,7 +139,7 @@ function captureChild (child) {
 /**
  * Capture the meta information of an instance. (recursive)
  */
-function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
+async function capture (instance, index?: number, list?: any[]): Promise<ComponentTreeNode> {
   if (instance.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
     instance = instance.vnode
   }
@@ -216,10 +213,9 @@ function capture (instance, index?: number, list?: any[]): ComponentTreeNode {
   mark(instance)
   const name = getInstanceName(instance)
 
-  const children = getInternalInstanceChildren(instance)
+  const children = (await Promise.all((await getInternalInstanceChildren(instance))
     .filter(child => !isBeingDestroyed(child))
-    .map(capture)
-    .filter(Boolean)
+    .map(capture))).filter(Boolean)
 
   const ret: ComponentTreeNode = {
     uid: instance._uid,

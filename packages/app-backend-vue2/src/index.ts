@@ -24,8 +24,8 @@ export const backend: DevtoolsBackend = {
       payload.root = payload.app
     })
 
-    api.on.walkComponentTree((payload, ctx) => {
-      payload.componentTreeData = walkTree(payload.componentInstance, payload.filter, ctx)
+    api.on.walkComponentTree(async (payload, ctx) => {
+      payload.componentTreeData = await walkTree(payload.componentInstance, payload.filter, ctx)
     })
 
     api.on.walkComponentParents((payload, ctx) => {
