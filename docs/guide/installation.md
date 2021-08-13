@@ -38,15 +38,18 @@ To install or update the beta version of the devtools, go to one of repository r
 
 If you need to use the devtools in incognito mode, you need to change the extension settings.
 
-1. Go to the extensions:
+1. Open **Menu** and click **Add-ons and Themes**
 
 ![Firefox settings 1](../assets/firefox-settings1.png)
 
-2. Click on the Vue.js Devtools extension.
+2. Click on **Manage** Option on **Vue.js devtools** Extension Options
+
+![Firefox settings 2](../assets/firefox-settings2.png)
 
 3. Make sure the relevant settings are set:
 
-![Firefox settings 2](../assets/firefox-settings2.png)
+![Firefox Settings 3](../assets/firefox-settings3.png)
+
 
 ## Standalone
 
