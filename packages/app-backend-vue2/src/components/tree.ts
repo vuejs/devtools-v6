@@ -163,7 +163,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
     const functionalId = contextUid + ':functional:' + id
     markFunctional(functionalId, instance)
 
-    const children = (instance.children
+    const childrenPromise = (instance.children
       ? instance.children.map(
         child => child.fnContext
           ? captureChild(child)
@@ -172,7 +172,10 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
             : undefined
       )
       // router-view has both fnContext and componentInstance on vnode.
-      : instance.componentInstance ? [capture(instance.componentInstance)] : []).filter(Boolean)
+      : instance.componentInstance ? [capture(instance.componentInstance)] : [])
+
+    // await all childrenCapture to-be resolved
+    const children = (await Promise.all(childrenPromise)).filter(Boolean)
 
     const treeNode = {
       uid: functionalId,
@@ -191,7 +194,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
       inactive: false,
       isFragment: false // TODO: Check what is it for.
     }
-    return api.visitComponentTree(
+    return await api.visitComponentTree(
       instance,
       treeNode,
       filter,
@@ -231,9 +234,9 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   }
 
   if (instance._vnode && instance._vnode.children) {
+    const vnodeChildren = await Promise.all(instance._vnode.children.map(captureChild))
     ret.children = ret.children.concat(
-      flatten(instance._vnode.children.map(captureChild))
-        .filter(Boolean)
+      flatten(vnodeChildren).filter(Boolean)
     )
     ret.hasChildren = !!ret.children.length
   }
@@ -270,7 +273,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
       backgroundColor: 0xff8344
     })
   }
-  return api.visitComponentTree(
+  return await api.visitComponentTree(
     instance,
     ret,
     filter,
