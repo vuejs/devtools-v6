@@ -175,7 +175,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
       : instance.componentInstance ? [capture(instance.componentInstance)] : [])
 
     // await all childrenCapture to-be resolved
-    const children = (await Promise.all(childrenPromise)).filter(Boolean)
+    const children = (await Promise.all(childrenPromise)).filter(Boolean) as ComponentTreeNode[]
 
     const treeNode = {
       uid: functionalId,
@@ -194,7 +194,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
       inactive: false,
       isFragment: false // TODO: Check what is it for.
     }
-    return await api.visitComponentTree(
+    return api.visitComponentTree(
       instance,
       treeNode,
       filter,
@@ -273,7 +273,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
       backgroundColor: 0xff8344
     })
   }
-  return await api.visitComponentTree(
+  return api.visitComponentTree(
     instance,
     ret,
     filter,
