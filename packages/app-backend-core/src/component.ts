@@ -1,7 +1,7 @@
 import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
-import { App, EditStatePayload } from '@vue/devtools-api'
+import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
 
 const MAX_$VM = 10
 const $vmQueue = []
@@ -88,11 +88,12 @@ export async function editComponentState (instanceId: string, dotPath: string, t
   }
 }
 
-export async function getComponentId (app: App, uid: number, ctx: BackendContext) {
+export async function getComponentId (app: App, uid: number, instance: ComponentInstance, ctx: BackendContext) {
   try {
     const appRecord = await getAppRecord(app, ctx)
     if (!appRecord) return null
-    return `${appRecord.id}:${uid === 0 ? 'root' : uid}`
+    const isRoot = appRecord.rootInstance === instance
+    return `${appRecord.id}:${isRoot ? 'root' : uid}`
   } catch (e) {
     if (process.env.NODE_ENV !== 'production') {
       console.error(e)

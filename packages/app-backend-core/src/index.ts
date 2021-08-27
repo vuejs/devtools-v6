@@ -109,7 +109,7 @@ async function connect () {
       let id: string
       let appRecord: AppRecord
       if (app && uid != null) {
-        id = await getComponentId(app, uid, ctx)
+        id = await getComponentId(app, uid, component, ctx)
         appRecord = await getAppRecord(app, ctx)
       } else {
         id = ctx.currentInspectedComponentId
@@ -134,7 +134,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
-      const id = await getComponentId(app, uid, ctx)
+      const id = await getComponentId(app, uid, component, ctx)
       const appRecord = await getAppRecord(app, ctx)
       if (component) {
         if (component.__VUE_DEVTOOLS_UID__ == null) {
@@ -145,11 +145,16 @@ async function connect () {
         }
       }
 
-      const parentId = await getComponentId(app, parentUid, ctx)
-      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-        requestAnimationFrame(() => {
-          sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
-        })
+      if (parentUid != null) {
+        const parentInstances = await ctx.api.walkComponentParents(component)
+        if (parentInstances.length) {
+          const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
+          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+            requestAnimationFrame(() => {
+              sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
+            })
+          }
+        }
       }
 
       if (ctx.currentInspectedComponentId === id) {
@@ -165,20 +170,25 @@ async function connect () {
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     try {
       const appRecord = await getAppRecord(app, ctx)
-      const parentId = await getComponentId(app, parentUid, ctx)
-      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-        requestAnimationFrame(async () => {
-          try {
-            sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
-          } catch (e) {
-            if (process.env.NODE_ENV !== 'production') {
-              console.error(e)
-            }
+      if (parentUid != null) {
+        const parentInstances = await ctx.api.walkComponentParents(component)
+        if (parentInstances.length) {
+          const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
+          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+            requestAnimationFrame(async () => {
+              try {
+                sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
+              } catch (e) {
+                if (process.env.NODE_ENV !== 'production') {
+                  console.error(e)
+                }
+              }
+            })
           }
-        })
+        }
       }
 
-      const id = await getComponentId(app, uid, ctx)
+      const id = await getComponentId(app, uid, component, ctx)
       if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
         sendEmptyComponentData(id, ctx)
       }
