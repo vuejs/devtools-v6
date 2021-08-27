@@ -3,7 +3,7 @@ import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import RenderCode from './RenderCode.vue'
 
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch, computed } from '@vue/composition-api'
 import { useSelectedComponent } from './composable'
 
 export default defineComponent({
@@ -25,10 +25,13 @@ export default defineComponent({
       }
     })
 
+    const sameApp = computed(() => selectedComponent.data.value?.id.split(':')[0] === selectedComponentId.value?.split(':')[0])
+
     return {
       ...selectedComponent,
       showRenderCode,
-      inspector
+      inspector,
+      sameApp
     }
   }
 })
@@ -36,7 +39,7 @@ export default defineComponent({
 
 <template>
   <div
-    v-if="data"
+    v-if="data && sameApp"
     class="h-full flex flex-col relative"
   >
     <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
