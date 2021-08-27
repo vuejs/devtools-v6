@@ -34,7 +34,7 @@ module.exports = createConfig({
   },
   devServer: {
     port: 8090,
-    onBeforeSetupMiddleware (app) {
+    onBeforeSetupMiddleware ({ app }) {
       app.use('/__open-in-editor', openInEditor())
     },
     proxy: {
