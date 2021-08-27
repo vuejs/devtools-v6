@@ -1,6 +1,7 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
-import { App, ID, TimelineEventOptions, TimelineLayerOptions, WithId } from '@vue/devtools-api'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
 import { builtinLayers } from './timeline-builtins'
@@ -68,6 +69,8 @@ function setupBuiltinLayers (ctx: BackendContext) {
 
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
     try {
+      if (!SharedData.componentEventsEnabled) return
+
       const appRecord = await getAppRecord(app, ctx)
       const componentId = `${appRecord.id}:${instance.uid}`
       const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'

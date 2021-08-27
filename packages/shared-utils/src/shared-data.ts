@@ -13,6 +13,7 @@ const internalSharedData = {
   cacheVuexSnapshotsEvery: 50,
   cacheVuexSnapshotsLimit: 10,
   snapshotLoading: false,
+  componentEventsEnabled: true,
   performanceMonitoringEnabled: true,
   editableProps: false,
   logDetected: true,
@@ -42,7 +43,8 @@ const persisted = [
   'timelineScreenshots',
   'menuStepScrolling',
   'pluginPermissions',
-  'performanceMonitoringEnabled'
+  'performanceMonitoringEnabled',
+  'componentEventsEnabled'
 ]
 
 const storageVersion = '6.0.0-alpha.1'

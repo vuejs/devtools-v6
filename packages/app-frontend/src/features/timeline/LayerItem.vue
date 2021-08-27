@@ -93,7 +93,10 @@ export default defineComponent({
           <span
             class="truncate text-sm"
             :class="{
-              'opacity-50': layer.id === 'performance' && !$shared.performanceMonitoringEnabled,
+              'opacity-50': (
+                layer.id === 'component-event' && !$shared.componentEventsEnabled ||
+                layer.id === 'performance' && !$shared.performanceMonitoringEnabled
+              ),
             }"
             :style="{
               'color': selected ? `#${color}` : undefined
@@ -108,6 +111,17 @@ export default defineComponent({
         </div>
 
         <div class="flex items-center space-x-1">
+          <VueButton
+            v-if="hover && layer.id === 'component-event'"
+            class="text-xs px-1 py-0 h-5 hover:opacity-80"
+            :style="{
+              backgroundColor: `#${color}28`,
+            }"
+            @click.stop="$shared.componentEventsEnabled = !$shared.componentEventsEnabled"
+          >
+            {{ $shared.componentEventsEnabled ? 'Disable' : 'Enable' }}
+          </VueButton>
+
           <VueButton
             v-if="hover && layer.id === 'performance'"
             class="text-xs px-1 py-0 h-5 hover:opacity-80"
