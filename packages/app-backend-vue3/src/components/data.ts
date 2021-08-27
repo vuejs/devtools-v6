@@ -137,7 +137,7 @@ function processSetupState (instance) {
 
         result = {
           ...objectType ? { objectType } : {},
-          ...raw.effect ? { raw: raw.effect.fn.toString() } : {},
+          ...rawData.effect ? { raw: rawData.effect.fn.toString() } : {},
           editable: isState && !info.readonly,
           type: isOther ? 'setup (other)' : 'setup'
         }
