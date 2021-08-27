@@ -39,7 +39,7 @@ function installProxy (tabId) {
     if (!res) {
       ports[tabId].devtools.postMessage('proxy-fail')
     } else {
-      console.log('injected proxy to tab ' + tabId)
+      if (process.env.NODE_ENV !== 'production') { console.log('injected proxy to tab ' + tabId) }
     }
   })
 }
@@ -50,7 +50,7 @@ function doublePipe (id, one, two) {
     if (message.event === 'log') {
       return console.log('tab ' + id, message.payload)
     }
-    console.log('devtools -> backend', message)
+    if (process.env.NODE_ENV !== 'production') { console.log('devtools -> backend', message) }
     two.postMessage(message)
   }
   two.onMessage.addListener(lTwo)
@@ -58,11 +58,11 @@ function doublePipe (id, one, two) {
     if (message.event === 'log') {
       return console.log('tab ' + id, message.payload)
     }
-    console.log('backend -> devtools', message)
+    if (process.env.NODE_ENV !== 'production') { console.log('backend -> devtools', message) }
     one.postMessage(message)
   }
   function shutdown () {
-    console.log('tab ' + id + ' disconnected.')
+    if (process.env.NODE_ENV !== 'production') { console.log('tab ' + id + ' disconnected.') }
     one.onMessage.removeListener(lOne)
     two.onMessage.removeListener(lTwo)
     one.disconnect()
@@ -71,7 +71,7 @@ function doublePipe (id, one, two) {
   }
   one.onDisconnect.addListener(shutdown)
   two.onDisconnect.addListener(shutdown)
-  console.log('tab ' + id + ' connected.')
+  if (process.env.NODE_ENV !== 'production') { console.log('tab ' + id + ' connected.') }
 }
 
 chrome.runtime.onMessage.addListener((req, sender) => {

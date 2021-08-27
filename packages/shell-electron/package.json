@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node bin.js",
     "dev": "webpack --watch",
-    "build": "rm -rf ./build && webpack",
+    "build": "rm -rf ./build && cross-env NODE_ENV=production webpack",
     "prepublishOnly": "npm run build"
   },
   "author": "",
