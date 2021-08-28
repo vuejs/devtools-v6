@@ -6,6 +6,7 @@ import RenderCode from './RenderCode.vue'
 import { defineComponent, ref, watch, computed } from '@vue/composition-api'
 import { useSelectedComponent } from './composable'
 
+// @ts-ignore
 export default defineComponent({
   components: {
     StateInspector,
