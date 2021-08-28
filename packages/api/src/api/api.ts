@@ -6,18 +6,18 @@ import { ID } from './util'
 
 export interface DevtoolsPluginApi {
   on: Hookable<Context>
-  notifyComponentUpdate (instance?: ComponentInstance)
-  addTimelineLayer (options: TimelineLayerOptions)
-  addTimelineEvent (options: TimelineEventOptions)
-  addInspector (options: CustomInspectorOptions)
-  sendInspectorTree (inspectorId: string)
-  sendInspectorState (inspectorId: string)
-  selectInspectorNode (inspectorId: string, nodeId: string)
+  notifyComponentUpdate (instance?: ComponentInstance): void
+  addTimelineLayer (options: TimelineLayerOptions): void
+  addTimelineEvent (options: TimelineEventOptions): void
+  addInspector (options: CustomInspectorOptions): void
+  sendInspectorTree (inspectorId: string): void
+  sendInspectorState (inspectorId: string): void
+  selectInspectorNode (inspectorId: string, nodeId: string): void
   getComponentBounds (instance: ComponentInstance): Promise<ComponentBounds>
   getComponentName (instance: ComponentInstance): Promise<string>
   getComponentInstances (app: App): Promise<ComponentInstance[]>
-  highlightElement (instance: ComponentInstance)
-  unhighlightElement ()
+  highlightElement (instance: ComponentInstance): void
+  unhighlightElement (): void
 }
 
 export interface AppRecord {

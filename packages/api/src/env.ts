@@ -1,11 +1,15 @@
 import { PluginDescriptor, SetupFunction } from '.'
-import { HookHandler } from './api'
+import { ApiProxy } from './proxy'
+
+export interface PluginQueueItem {
+  pluginDescriptor: PluginDescriptor
+  setupFn: SetupFunction
+  proxy?: ApiProxy
+}
 
 interface GlobalTarget {
-  __VUE_DEVTOOLS_PLUGINS__: Array<{
-    pluginDescriptor: PluginDescriptor
-    setupFn: SetupFunction
-  }>
+  __VUE_DEVTOOLS_PLUGINS__?: PluginQueueItem[]
+  __VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__?: boolean
 }
 
 export function getDevtoolsGlobalHook (): any {
@@ -20,3 +24,5 @@ export function getTarget (): GlobalTarget {
       ? global
       : {}
 }
+
+export const isProxyAvailable = typeof Proxy === 'function'

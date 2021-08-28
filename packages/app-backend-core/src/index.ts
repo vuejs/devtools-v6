@@ -286,8 +286,10 @@ async function connect () {
   addQueuedPlugins(ctx)
 
   hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, async (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
-    await addPlugin(pluginDescriptor, setupFn, ctx)
+    await addPlugin({ pluginDescriptor, setupFn }, ctx)
   })
+
+  target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ = true
 
   // Legacy flush
   hook.off('flush')

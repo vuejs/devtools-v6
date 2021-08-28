@@ -3,11 +3,17 @@ import { createStore } from 'vuex'
 const store = createStore({
   state () {
     return {
-      rootState: 'root'
+      rootState: 'root',
+      answer: 42
     }
   },
   getters: {
-    answer: () => 42
+    answer: (state) => state.answer
+  },
+  mutations: {
+    increment (state) {
+      state.answer++
+    }
   },
   modules: {
     nested: {

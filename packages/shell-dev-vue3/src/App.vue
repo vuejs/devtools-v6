@@ -109,6 +109,9 @@ export default {
   <h2>Store</h2>
   <div>
     {{ $store.getters.answer }}
+    <button @click="$store.commit('increment')">
+      +1
+    </button>
     {{ $store.getters.twoFoo }}
   </div>
 

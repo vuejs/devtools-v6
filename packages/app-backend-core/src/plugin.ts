@@ -1,9 +1,11 @@
-import { PluginDescriptor, SetupFunction } from '@vue/devtools-api'
+import { PluginQueueItem } from '@vue/devtools-api'
 import { Plugin, BackendContext, DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, target } from '@vue-devtools/shared-utils'
 import { getAppRecord, getAppRecordId } from './app'
 
-export async function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction, ctx: BackendContext) {
+export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendContext) {
+  const { pluginDescriptor, setupFn } = pluginQueueItem
+
   const plugin: Plugin = {
     descriptor: pluginDescriptor,
     setupFn,
@@ -13,7 +15,11 @@ export async function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: Se
   try {
     await getAppRecord(plugin.descriptor.app, ctx)
     const api = new DevtoolsPluginApiInstance(plugin, ctx)
-    setupFn(api)
+    if (pluginQueueItem.proxy) {
+      await pluginQueueItem.proxy.setRealTarget(api)
+    } else {
+      setupFn(api)
+    }
   } catch (e) {
     plugin.error = e
     console.error(e)
@@ -33,8 +39,8 @@ export async function addPlugin (pluginDescriptor: PluginDescriptor, setupFn: Se
 
 export async function addQueuedPlugins (ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_PLUGINS__)) {
-    for (const plugin of target.__VUE_DEVTOOLS_PLUGINS__) {
-      await addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
+    for (const queueItem of target.__VUE_DEVTOOLS_PLUGINS__) {
+      await addPlugin(queueItem, ctx)
     }
     target.__VUE_DEVTOOLS_PLUGINS__ = null
   }
@@ -42,8 +48,8 @@ export async function addQueuedPlugins (ctx: BackendContext) {
 
 export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__)) {
-    for (const plugin of target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
-      await addPlugin(plugin.pluginDescriptor, plugin.setupFn, ctx)
+    for (const queueItem of target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
+      await addPlugin(queueItem, ctx)
     }
   }
 }
