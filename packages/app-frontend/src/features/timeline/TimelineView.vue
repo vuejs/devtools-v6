@@ -691,13 +691,15 @@ export default defineComponent({
             eventTooltip.visible = true
           }
 
-          if (hoverEvent && hoverEvent !== event) {
+          if (hoverEvent?.container && hoverEvent !== event) {
             hoverEvent.container.alpha = 1
           }
           hoverEvent = event
-          hoverEvent.container.alpha = 0.5
+          if (hoverEvent?.container) {
+            hoverEvent.container.alpha = 0.5
+          }
         } else {
-          if (hoverEvent) {
+          if (hoverEvent?.container) {
             hoverEvent.container.alpha = 1
           }
           eventTooltip.visible = false
