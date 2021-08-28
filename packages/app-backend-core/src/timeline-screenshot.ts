@@ -24,6 +24,7 @@ export async function showScreenshot (screenshot: Screenshot, ctx: BackendContex
       }
 
       image.src = screenshot.image
+      image.style.visibility = screenshot.image ? 'visible' : 'hidden'
 
       clearContent()
 

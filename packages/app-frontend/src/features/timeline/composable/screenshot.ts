@@ -23,7 +23,6 @@ export async function takeScreenshot (event: TimelineEvent) {
       ]
     }
     event.screenshot = screenshot
-    screenshots.value.push(screenshot)
 
     // Screenshot
     if (typeof browser !== 'undefined') {
@@ -31,11 +30,19 @@ export async function takeScreenshot (event: TimelineEvent) {
         action: 'vue-take-screenshot',
         id: screenshot.id
       })
+      screenshots.value.push(screenshot)
     } else if (typeof chrome !== 'undefined' && chrome.tabs) {
       chrome.tabs.captureVisibleTab({
         format: 'png'
       }, dataUrl => {
         screenshot.image = dataUrl
+
+        if (!dataUrl) {
+          event.screenshot = lastScreenshot
+          lastScreenshot.events.push(event)
+        } else {
+          screenshots.value.push(screenshot)
+        }
       })
     }
   } else {
