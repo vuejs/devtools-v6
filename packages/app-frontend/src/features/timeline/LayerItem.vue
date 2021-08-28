@@ -110,9 +110,12 @@ export default defineComponent({
           />
         </div>
 
-        <div class="flex items-center space-x-1">
+        <div
+          v-if="hover"
+          class="flex items-center space-x-1"
+        >
           <VueButton
-            v-if="hover && layer.id === 'component-event'"
+            v-if="layer.id === 'component-event'"
             class="text-xs px-1 py-0 h-5 hover:opacity-80"
             :style="{
               backgroundColor: `#${color}28`,
@@ -123,7 +126,7 @@ export default defineComponent({
           </VueButton>
 
           <VueButton
-            v-if="hover && layer.id === 'performance'"
+            v-if="layer.id === 'performance'"
             class="text-xs px-1 py-0 h-5 hover:opacity-80"
             :style="{
               backgroundColor: `#${color}28`,
@@ -134,13 +137,26 @@ export default defineComponent({
           </VueButton>
 
           <VueButton
-            v-if="hover"
             class="text-xs px-1 py-0 h-5 hover:opacity-80"
             :style="{
               backgroundColor: `#${color}28`,
             }"
           >
             Select
+          </VueButton>
+
+          <VueButton
+            v-tooltip="'Hide layer'"
+            class="leading-[0] p-0 w-5 h-5 hover:opacity-80"
+            :style="{
+              backgroundColor: `#${color}28`,
+            }"
+            @click.stop="$emit('hide')"
+          >
+            <VueIcon
+              icon="visibility_off"
+              class="w-3 h-3"
+            />
           </VueButton>
         </div>
       </div>

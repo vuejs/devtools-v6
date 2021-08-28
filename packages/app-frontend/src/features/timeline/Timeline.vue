@@ -322,6 +322,7 @@ export default defineComponent({
               @mouseenter.native="hoverLayerId = layer.id"
               @mouseleave.native="hoverLayerId = null"
               @select="selectLayer(layer)"
+              @hide="setLayerHidden(layer, true)"
             />
           </div>
         </div>
