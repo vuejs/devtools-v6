@@ -292,8 +292,8 @@ async function connect () {
   target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ = true
 
   // Legacy flush
-  hook.off('flush')
-  hook.on('flush', () => {
+  hook.off(HookEvents.FLUSH)
+  hook.on(HookEvents.FLUSH, () => {
     if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
       sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
       if (ctx.currentInspectedComponentId) {
