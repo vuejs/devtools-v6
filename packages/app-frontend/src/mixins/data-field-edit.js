@@ -178,19 +178,21 @@ export default {
     },
 
     transformSpecialTokens (str, display) {
-      Object.keys(SPECIAL_TOKENS).forEach(key => {
-        const value = JSON.stringify(SPECIAL_TOKENS[key])
-        let search
-        let replace
-        if (display) {
-          search = value
-          replace = key
-        } else {
-          search = key
-          replace = value
-        }
-        str = str.replace(new RegExp(search, 'g'), replace)
-      })
+      if (str) {
+        Object.keys(SPECIAL_TOKENS).forEach(key => {
+          const value = JSON.stringify(SPECIAL_TOKENS[key])
+          let search
+          let replace
+          if (display) {
+            search = value
+            replace = key
+          } else {
+            search = key
+            replace = value
+          }
+          str = str.replace(new RegExp(search, 'g'), replace)
+        })
+      }
       return str
     },
 

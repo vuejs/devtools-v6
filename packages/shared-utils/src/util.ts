@@ -26,7 +26,7 @@ export const classify = cached((str) => {
 
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str) => {
-  return str.replace(camelizeRE, toUpper)
+  return str && str.replace(camelizeRE, toUpper)
 })
 
 const kebabizeRE = /([a-z0-9])([A-Z])/g
