@@ -125,7 +125,7 @@ export function useInspectedEvent () {
 }
 
 function loadEvent (id: TimelineEvent['id']) {
-  if (!id || inspectedEventPendingId.value === id) return
+  if (id == null || inspectedEventPendingId.value === id) return
   inspectedEventPendingId.value = id
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, { id })
 }
