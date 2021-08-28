@@ -68,16 +68,16 @@ export const timelineIsEmpty = ref(true)
 
 export const cursorTime = ref<number>(null)
 
-export const layersPerApp = ref<{[appId: number]: Layer[]}>({})
-export const hiddenLayersPerApp = ref<{[appId: number]: Layer['id'][]}>({})
-export const vScrollPerApp = ref<{[appId: number]: number}>({})
+export const layersPerApp: Ref<{[appId: number]: Layer[]}> = ref({})
+export const hiddenLayersPerApp: Ref<{[appId: number]: Layer['id'][]}> = ref({})
+export const vScrollPerApp: Ref<{[appId: number]: number}> = ref({})
 
 export const selectedEvent: Ref<TimelineEvent> = ref(null)
 export const selectedLayer: Ref<Layer> = ref(null)
-export const hoverLayerId = ref<Layer['id']>(null)
+export const hoverLayerId: Ref<Layer['id']> = ref(null)
 
 export const inspectedEvent: Ref<TimelineEvent> = ref(null)
 export const inspectedEventData = ref(null)
-export const inspectedEventPendingId = ref<TimelineEvent['id']>(null)
+export const inspectedEventPendingId: Ref<TimelineEvent['id']> = ref(null)
 
-export const screenshots = ref<EventScreenshot[]>([])
+export const screenshots: Ref<EventScreenshot[]> = ref([])
