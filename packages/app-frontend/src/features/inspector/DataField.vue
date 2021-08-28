@@ -52,11 +52,10 @@ export default defineComponent({
   },
 
   data () {
-    const value = this.field.value && this.field.value._custom ? this.field.value._custom.value : this.field.value
     return {
       contextMenuOpen: false,
       limit: 20,
-      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(value) < 12)
+      expanded: false
     }
   },
 
@@ -225,6 +224,11 @@ export default defineComponent({
     }
   },
 
+  created () {
+    const value = this.field.value && this.field.value._custom ? this.field.value._custom.value : this.field.value
+    this.expanded = this.depth === 0 && this.field.key !== '$route' && (subFieldCount(value) < 12)
+  },
+
   methods: {
     copyValue () {
       copyToClipboard(this.field.value)
@@ -299,7 +303,9 @@ export default defineComponent({
         actionIndex: index
       })
     }
-  }
+  },
+
+  renderError: null
 })
 </script>
 
@@ -342,7 +348,7 @@ export default defineComponent({
           html: true
         }"
         :class="{ abstract: fieldOptions.abstract }"
-        class="key"
+        class="key text-purple-700 dark:text-purple-300"
       >{{ displayedKey }}</span><span
         v-if="!fieldOptions.abstract"
         class="colon"
@@ -657,9 +663,6 @@ export default defineComponent({
     align-items center
 
 .key
-  color #881391
-  .vue-ui-dark-mode &
-    color: $lightPink
   &.abstract
     color $blueishGrey
     .vue-ui-dark-mode &

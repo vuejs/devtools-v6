@@ -188,9 +188,15 @@ export function useSelectedComponent () {
   const data = computed(() => selectedComponentData.value)
   const state = computed(() => selectedComponentData.value
     ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
-      return searchDeepInObject({
-        [el.key]: el.value
-      }, selectedComponentStateFilter.value)
+      try {
+        return searchDeepInObject({
+          [el.key]: el.value
+        }, selectedComponentStateFilter.value)
+      } catch (e) {
+        return {
+          [el.key]: e
+        }
+      }
     })), 'type')
     : ({}))
 
