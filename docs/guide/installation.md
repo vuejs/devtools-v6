@@ -2,6 +2,10 @@
 
 The Vue.js devtools allows you to inspect and debug your applications.
 
+::: tip
+If you want to install the previous version of the devtools, see [here](./faq.md#something-is-broken-in-the-new-devtools).
+:::
+
 ## Chrome
 
 Install the extension on the Chrome Web Store:
