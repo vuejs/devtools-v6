@@ -480,43 +480,46 @@ export default defineComponent({
 
     // Event selection
 
-    onMounted(() => {
-      app.stage.addListener('click', event => {
-        const targetX = event.data.global.x
-        const targetY = event.data.global.y
-        let choice: TimelineEvent
+    function getEventAtPosition (targetX: number, targetY: number): TimelineEvent | null {
+      let choice: TimelineEvent
 
-        let y = 0
-        for (const layer of layers.value) {
-          y += (layer.height + 1) * LAYER_SIZE
-          if (targetY - verticalScrollingContainer.y < y) {
-            let distance = Number.POSITIVE_INFINITY
-            for (const e of layer.events) {
-              if (isEventIgnored(e)) continue
+      let y = 0
+      for (const layer of layers.value) {
+        y += (layer.height + 1) * LAYER_SIZE
+        if (targetY - verticalScrollingContainer.y < y) {
+          let distance = Number.POSITIVE_INFINITY
+          for (const e of layer.events) {
+            if (isEventIgnored(e)) continue
 
-              if (layer.groupsOnly) {
-                // We find the group inside of which the mouse is
-                const bounds = e.group.firstEvent.groupG.getBounds()
-                if (bounds.contains(targetX, targetY)) {
-                  choice = e
-                  break
-                }
-              } else {
-                if (!e.g) continue
-                // We find the nearest event from the mouse click position
-                const globalPosition = e.g.getGlobalPosition()
-                const d = Math.abs(globalPosition.x - targetX) + Math.abs(globalPosition.y - targetY)
+            if (layer.groupsOnly) {
+              // We find the group inside of which the mouse is
+              const bounds = e.group.firstEvent.groupG.getBounds()
+              if (bounds.contains(targetX, targetY)) {
+                choice = e
+                break
+              }
+            } else {
+              if (!e.g) continue
+              // We find the nearest event from the mouse click position
+              const globalPosition = e.g.getGlobalPosition()
+              const d = Math.abs(globalPosition.x - targetX) + Math.abs(globalPosition.y - targetY)
 
-                if (!choice || d < distance) {
-                  choice = e
-                  distance = d
-                }
+              if ((!choice || d < distance) && d < 200) {
+                choice = e
+                distance = d
               }
             }
-            break
           }
+          break
         }
+      }
 
+      return choice
+    }
+
+    onMounted(() => {
+      app.stage.addListener('click', event => {
+        const choice = getEventAtPosition(event.data.global.x, event.data.global.y)
         if (choice) {
           selectEvent(choice)
         }
@@ -628,6 +631,78 @@ export default defineComponent({
       } else if (event.key === 'ArrowRight') {
         selectNextEvent()
       }
+    })
+
+    // Event tooltip
+
+    let eventTooltip: PIXI.Container
+    let eventTooltipText: PIXI.Text
+    let eventTooltipGraphics: PIXI.Graphics
+    let hoverEvent: TimelineEvent
+
+    onMounted(() => {
+      eventTooltip = new PIXI.Container()
+      eventTooltip.visible = false
+      app.stage.addChild(eventTooltip)
+
+      eventTooltipGraphics = new PIXI.Graphics()
+      eventTooltip.addChild(eventTooltipGraphics)
+
+      eventTooltipText = new PIXI.Text('', {
+        fontSize: 12,
+        fill: 0x000000
+      })
+      eventTooltipText.x = 4
+      eventTooltipText.y = 4
+      eventTooltip.addChild(eventTooltipText)
+
+      app.stage.addListener('mousemove', mouseEvent => {
+        const event = getEventAtPosition(mouseEvent.data.global.x, mouseEvent.data.global.y)
+        if (event) {
+          const text = []
+
+          text.push(event.title ?? 'Event')
+          if (event.subtitle) {
+            text.push(event.subtitle)
+          }
+
+          if (event.group) {
+            text.push(`Group: ${event.group.duration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
+          }
+
+          if (!text.length) {
+            eventTooltip.visible = false
+          } else {
+            eventTooltipText.text = text.join('\n')
+
+            eventTooltipGraphics.clear()
+            eventTooltipGraphics.beginFill(0xffffff)
+            eventTooltipGraphics.lineStyle(1, 0x000000, 0.2, 1)
+            eventTooltipGraphics.drawRoundedRect(0, 0, eventTooltipText.width + 8, eventTooltipText.height + 8, 4)
+
+            eventTooltip.x = mouseEvent.data.global.x + 12
+            if (eventTooltip.x + eventTooltip.width > app.renderer.width) {
+              eventTooltip.x = mouseEvent.data.global.x - eventTooltip.width - 12
+            }
+            eventTooltip.y = mouseEvent.data.global.y + 12
+            if (eventTooltip.y + eventTooltip.height > app.renderer.height) {
+              eventTooltip.y = mouseEvent.data.global.y - eventTooltip.height - 12
+            }
+            eventTooltip.visible = true
+          }
+
+          if (hoverEvent && hoverEvent !== event) {
+            hoverEvent.container.alpha = 1
+          }
+          hoverEvent = event
+          hoverEvent.container.alpha = 0.5
+        } else {
+          if (hoverEvent) {
+            hoverEvent.container.alpha = 1
+          }
+          eventTooltip.visible = false
+        }
+      })
     })
 
     // Event Groups
