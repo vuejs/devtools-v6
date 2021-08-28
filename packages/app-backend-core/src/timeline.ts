@@ -152,6 +152,8 @@ export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: 
   const layer = ctx.timelineLayers.find(l => (isAllApps || l.app === app) && l.id === options.layerId)
   if (layer) {
     layer.events.push(eventData)
+  } else {
+    console.warn(`Timeline layer ${options.layerId} not found`)
   }
 }
 
