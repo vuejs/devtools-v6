@@ -24,11 +24,8 @@ export async function walkTree (instance, pFilter: string, ctx: BackendContext):
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
-  const result: ComponentTreeNode[] | ComponentTreeNode = await findQualifiedChildren(instance)
-  if (Array.isArray(result)) {
-    return result
-  }
-  return [result]
+  const result: ComponentTreeNode[] = await findQualifiedChildren(instance)
+  return result
 }
 
 export function getComponentParents (instance, ctx: BackendContext) {
@@ -71,12 +68,12 @@ function initCtx (ctx: BackendContext) {
  * traversal - e.g. if an instance is not matched, we will
  * recursively go deeper until a qualified child is found.
  */
-function findQualifiedChildrenFromList (instances: any[]): ComponentTreeNode[] {
+function findQualifiedChildrenFromList (instances: any[]): Promise<ComponentTreeNode[]> {
   instances = instances
     .filter(child => !isBeingDestroyed(child))
-  return !filter
+  return Promise.all(!filter
     ? instances.map(capture)
-    : Array.prototype.concat.apply([], instances.map(findQualifiedChildren))
+    : Array.prototype.concat.apply([], instances.map(findQualifiedChildren)))
 }
 
 /**
@@ -84,18 +81,22 @@ function findQualifiedChildrenFromList (instances: any[]): ComponentTreeNode[] {
  * If the instance itself is qualified, just return itself.
  * This is ok because [].concat works in both cases.
  */
-async function findQualifiedChildren (instance): Promise<ComponentTreeNode[] | ComponentTreeNode> {
+async function findQualifiedChildren (instance): Promise<ComponentTreeNode[]> {
   if (isQualified(instance)) {
-    return capture(instance)
+    return [await capture(instance)]
   } else {
-    return findQualifiedChildrenFromList(instance.$children).concat(
-      instance._vnode && instance._vnode.children
-        // Find functional components in recursively in non-functional vnodes.
-        ? flatten(instance._vnode.children.filter(child => !child.componentInstance).map(captureChild))
-          // Filter qualified children.
-          .filter(instance => isQualified(instance))
-        : []
-    )
+    let children = await findQualifiedChildrenFromList(instance.$children)
+
+    // Find functional components in recursively in non-functional vnodes.
+    if (instance._vnode && instance._vnode.children) {
+      const list = await Promise.all((instance._vnode.children as any[]).filter(child => !child.componentInstance).map(captureChild))
+      const additionalChildren = flatten<ComponentTreeNode>(list)
+        // Filter qualified children.
+        .filter(instance => isQualified(instance))
+      children = children.concat(additionalChildren)
+    }
+
+    return children
   }
 }
 
@@ -117,22 +118,25 @@ function isQualified (instance): boolean {
   return name.indexOf(filter) > -1
 }
 
-function flatten (items) {
+function flatten<T> (items: any[]): T[] {
   return items.reduce((acc, item) => {
-    if (item instanceof Array) acc.push(...flatten(item))
-    else if (item) acc.push(item)
+    if (Array.isArray(item)) {
+      acc.push(...flatten(item))
+    } else if (item) {
+      acc.push(item)
+    }
 
     return acc
-  }, [])
+  }, [] as T[])
 }
 
-function captureChild (child) {
+function captureChild (child): Promise<ComponentTreeNode[] | ComponentTreeNode> {
   if (child.fnContext && !child.componentInstance) {
     return capture(child)
   } else if (child.componentInstance) {
     if (!isBeingDestroyed(child.componentInstance)) return capture(child.componentInstance)
   } else if (child.children) {
-    return flatten(child.children.map(captureChild))
+    return Promise.all(flatten<Promise<ComponentTreeNode>>(child.children.map(captureChild)))
   }
 }
 
@@ -236,7 +240,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   if (instance._vnode && instance._vnode.children) {
     const vnodeChildren = await Promise.all(instance._vnode.children.map(captureChild))
     ret.children = ret.children.concat(
-      flatten(vnodeChildren).filter(Boolean)
+      flatten<any>(vnodeChildren).filter(Boolean)
     )
     ret.hasChildren = !!ret.children.length
   }
