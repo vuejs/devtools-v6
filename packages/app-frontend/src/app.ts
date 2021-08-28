@@ -31,12 +31,7 @@ if (isChrome) {
 // @ts-ignore
 Vue.options.renderError = (h, e) => {
   return h('pre', {
-    style: {
-      backgroundColor: 'red',
-      color: 'white',
-      fontSize: '12px',
-      padding: '10px'
-    }
+    class: 'text-white bg-red-500 p-2 rounded text-xs overflow-auto'
   }, e.stack)
 }
 
