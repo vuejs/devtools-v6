@@ -1,6 +1,7 @@
 import { DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { App, ComponentState, CustomInspectorNode, CustomInspectorState, setupDevtoolsPlugin } from '@vue/devtools-api'
-import { isEmptyObject } from '@vue-devtools/shared-utils'
+import { isEmptyObject, target } from '@vue-devtools/shared-utils'
+import copy from 'fast-copy'
 
 let actionId = 0
 
@@ -19,6 +20,8 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
     homepage: 'https://vuejs.org/',
     logo: 'https://vuejs.org/images/icons/favicon-96x96.png'
   }, api => {
+    const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
+
     // Vue Router
     if (app.$router) {
       const router = app.$router
@@ -125,7 +128,7 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
         color: LIME_500
       })
 
-      store.subscribe((mutation, state) => {
+      hook.on('vuex:mutation', (mutation, state) => {
         api.sendInspectorState(VUEX_INSPECTOR_ID)
 
         const data: any = {}
@@ -134,7 +137,7 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
           data.payload = mutation.payload
         }
 
-        data.state = state
+        data.state = copy(state)
 
         api.addTimelineEvent({
           layerId: VUEX_MUTATIONS_ID,
@@ -144,7 +147,7 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
             data
           }
         })
-      }, { prepend: true })
+      })
 
       store.subscribeAction({
         before: (action, state) => {
