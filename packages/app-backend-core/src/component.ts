@@ -1,5 +1,5 @@
 import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
-import { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
+import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
 
@@ -8,6 +8,16 @@ const $vmQueue = []
 
 export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, ctx: BackendContext) {
   if (!instanceId || appRecord !== ctx.currentAppRecord) return
+
+  // Flush will send all components in the tree
+  // So we skip individiual tree updates
+  if (
+    instanceId !== '_root' &&
+    ctx.currentAppRecord.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)
+  ) {
+    return
+  }
+
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {

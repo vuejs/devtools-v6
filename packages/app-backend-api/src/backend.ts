@@ -5,6 +5,9 @@ export enum BuiltinBackendFeature {
   COMPONENTS = 'components',
   EVENTS = 'events',
   VUEX = 'vuex',
+  /**
+   * @deprecated
+   */
   FLUSH = 'flush'
 }
 
