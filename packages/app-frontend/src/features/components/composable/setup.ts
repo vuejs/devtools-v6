@@ -14,7 +14,8 @@ import {
   selectedComponentData,
   loadComponent,
   setComponentOpen,
-  requestComponentTree
+  requestComponentTree,
+  requestedComponentTree
 } from './components'
 
 export function setupComponentsBridgeEvents (bridge: Bridge) {
@@ -22,6 +23,8 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
   expandedMap.value = {}
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData, notFound }) => {
+    requestedComponentTree.delete(instanceId)
+
     const isRoot = instanceId.endsWith('root')
 
     // Reset

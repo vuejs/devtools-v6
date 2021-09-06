@@ -253,10 +253,18 @@ export function resetComponents () {
   componentsParent = {}
 }
 
+export const requestedComponentTree = new Set()
+
 export function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
   if (!instanceId) {
     instanceId = '_root'
   }
+
+  if (requestedComponentTree.has(instanceId)) {
+    return
+  }
+  requestedComponentTree.add(instanceId)
+
   if (instanceId === '_root') {
     resetComponentsQueued.value = true
   }
