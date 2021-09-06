@@ -24,7 +24,7 @@ export async function walkTree (instance, pFilter: string, ctx: BackendContext):
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
-  const result: ComponentTreeNode[] = await findQualifiedChildren(instance)
+  const result: ComponentTreeNode[] = flatten(await findQualifiedChildren(instance))
   return result
 }
 
@@ -89,10 +89,9 @@ async function findQualifiedChildren (instance): Promise<ComponentTreeNode[]> {
 
     // Find functional components in recursively in non-functional vnodes.
     if (instance._vnode && instance._vnode.children) {
-      const list = await Promise.all((instance._vnode.children as any[]).filter(child => !child.componentInstance).map(captureChild))
-      const additionalChildren = flatten<ComponentTreeNode>(list)
-        // Filter qualified children.
-        .filter(instance => isQualified(instance))
+      const list = await Promise.all(flatten<Promise<ComponentTreeNode>>((instance._vnode.children as any[]).filter(child => !child.componentInstance).map(captureChild)))
+      // Filter qualified children.
+      const additionalChildren = list.filter(instance => isQualified(instance))
       children = children.concat(additionalChildren)
     }
 
@@ -119,15 +118,24 @@ function isQualified (instance): boolean {
 }
 
 function flatten<T> (items: any[]): T[] {
-  return items.reduce((acc, item) => {
+  const r = items.reduce((acc, item) => {
     if (Array.isArray(item)) {
-      acc.push(...flatten(item))
+      let children = []
+      for (const i of item) {
+        if (Array.isArray(i)) {
+          children = children.concat(flatten(i))
+        } else {
+          children.push(i)
+        }
+      }
+      acc.push(...children)
     } else if (item) {
       acc.push(item)
     }
 
     return acc
   }, [] as T[])
+  return r
 }
 
 function captureChild (child): Promise<ComponentTreeNode[] | ComponentTreeNode> {
@@ -238,7 +246,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   }
 
   if (instance._vnode && instance._vnode.children) {
-    const vnodeChildren = await Promise.all(instance._vnode.children.map(captureChild))
+    const vnodeChildren = await Promise.all(flatten(instance._vnode.children.map(captureChild)))
     ret.children = ret.children.concat(
       flatten<any>(vnodeChildren).filter(Boolean)
     )
