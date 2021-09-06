@@ -16,6 +16,7 @@ import {
   revive,
   target
 } from '@vue-devtools/shared-utils'
+import debounce from 'lodash/debounce'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
@@ -292,15 +293,18 @@ async function connect () {
   target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ = true
 
   // Legacy flush
-  hook.off(HookEvents.FLUSH)
-  hook.on(HookEvents.FLUSH, () => {
+
+  const handleFlush = debounce(() => {
     if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
       sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
       if (ctx.currentInspectedComponentId) {
         sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
       }
     }
-  })
+  }, 500)
+
+  hook.off(HookEvents.FLUSH)
+  hook.on(HookEvents.FLUSH, handleFlush)
 }
 
 function connectBridge () {

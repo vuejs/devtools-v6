@@ -15,7 +15,8 @@
     "@vue-devtools/app-backend-vue1": "^0.0.0",
     "@vue-devtools/app-backend-vue2": "^0.0.0",
     "@vue-devtools/app-backend-vue3": "^0.0.0",
-    "@vue-devtools/shared-utils": "^0.0.0"
+    "@vue-devtools/shared-utils": "^0.0.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/node": "^13.9.1",
