@@ -103,6 +103,7 @@ export function initSharedData (params: SharedDataParams) {
       })
 
       initRetryCount = 0
+      clearInterval(initRetryInterval)
       initRetryInterval = setInterval(() => {
         if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init retrying...')
         bridge.send('shared-data:master-init-waiting')
