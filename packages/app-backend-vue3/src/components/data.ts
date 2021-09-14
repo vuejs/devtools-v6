@@ -134,10 +134,11 @@ function processSetupState (instance) {
         const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
         const isState = info.ref || info.computed || info.reactive
         const isOther = typeof value === 'function' || typeof value?.render === 'function'
+        const raw = rawData.effect?.raw?.toString() || rawData.effect?.fn?.toString()
 
         result = {
           ...objectType ? { objectType } : {},
-          ...rawData.effect ? { raw: rawData.effect.fn.toString() } : {},
+          ...raw ? { raw } : {},
           editable: isState && !info.readonly,
           type: isOther ? 'setup (other)' : 'setup'
         }
