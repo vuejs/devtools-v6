@@ -130,7 +130,6 @@ export async function getAppRecordId (app, defaultId?: string): Promise<string> 
     return app.__VUE_DEVTOOLS_APP_RECORD_ID__
   }
   const id = defaultId ?? (recordId++).toString()
-  console.log(id)
   app.__VUE_DEVTOOLS_APP_RECORD_ID__ = id
   return id
 }

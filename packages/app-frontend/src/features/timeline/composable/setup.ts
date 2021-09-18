@@ -113,7 +113,6 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
 
     markersAllApps.value = allList
     Vue.set(markersPerApp.value, appId, appList)
-    console.log(allList, appList)
   })
 
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_MARKER, ({ marker, appId }: { marker: MarkerFromBackend, appId: string }) => {
@@ -138,6 +137,5 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     } else {
       targetList.push(result)
     }
-    console.log(marker)
   })
 }
