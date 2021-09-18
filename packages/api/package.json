@@ -5,7 +5,7 @@
   "main": "lib/cjs/index.js",
   "browser": "lib/esm/index.js",
   "module": "lib/esm/index.js",
-  "types": "lib/cjs/index.d.ts",
+  "types": "lib/esm/index.d.ts",
   "sideEffects": false,
   "author": {
     "name": "Guillaume Chau"
