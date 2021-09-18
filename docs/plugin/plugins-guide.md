@@ -772,6 +772,70 @@ export default {
 }
 ```
 
+### Plugin settings
+
+With the `settings` option, your plugin can expose some settings to the user. This can be very useful to allow some customization!
+
+All settings items must have the following properties:
+- `type` (see below)
+- `label`: a string to describe the settings item
+- `defaultValue`
+
+Available settings types:
+- `boolean`
+- `text`
+- `choice`
+  - `options`: list of objects with type `{ value: any, label: string }`
+  - `component`: (optional) can be either `'select'` (default) or `'button-group'`
+
+Example:
+
+```js
+setupDevtoolsPlugin({
+  id: 'my-awesome-devtools-plugin',
+  settings: {
+    test1: {
+      label: 'I like vue devtools',
+      type: 'boolean',
+      defaultValue: true
+    },
+    test2: {
+      label: 'Quick choice',
+      type: 'choice',
+      defaultValue: 'a',
+      options: [
+        { value: 'a', label: 'A' },
+        { value: 'b', label: 'B' },
+        { value: 'c', label: 'C' }
+      ],
+      component: 'button-group'
+    },
+    test3: {
+      label: 'Long choice',
+      type: 'choice',
+      defaultValue: 'a',
+      options: [
+        { value: 'a', label: 'A' },
+        { value: 'b', label: 'B' },
+        { value: 'c', label: 'C' },
+        { value: 'd', label: 'D' },
+        { value: 'e', label: 'E' }
+      ]
+    },
+    test4: {
+      label: 'What is your name?',
+      type: 'text',
+      defaultValue: ''
+    }
+  },
+}, api => {
+  // Use `api.getSettings()` to get the current settings for the plugin
+  console.log(api.getSettings())
+})
+```
+
+![screenshot of the plugin settings](../assets/plugin-settings.png)
+
 ### Tree-shaking for production
 
 As we are going to write code only for integrating for the Vue Devtools, it would be a good idea to strip it for the production versions of our package - thus improving size and performance.

@@ -27,6 +27,7 @@ It has the following properties:
 - `componentStateTypes` (optional): an array of custom component state section names you are going to add to the Component inspector. If you add new state to the component inspector, you should declare their sections here so the devtools can display the plugin icon.
 - `disableAppScope` (optional): if set to `true`, the hooks registered with this plugin will not be scoped to the associated app. In that case, you might need to use the `app` payload property to check what the current app is inside each hook.
 - `enableEarlyProxy` (optional): if set to `true`, the plugin will run even if the Vue devtools are not connected yet using a proxy of the Plugin API and a buffer queue. This is useful if you need to add timeline events before the user opens the devtools.
+- `settings` (optional): an object describing the plugin settings. Learn more about plugin settings [here](./plugins-guide.md#plugin-settings).
 
 Example:
 
@@ -595,6 +596,16 @@ api.on.timelineCleared(() => {
 ```
 
 ## Utilities
+
+### getSettings
+
+Get the current plugin settings. Learn more about plugin settings [here](./plugins-guide.md#plugin-settings).
+
+Example:
+
+```js
+api.getSettings()
+```
 
 ### getComponentInstances
 
