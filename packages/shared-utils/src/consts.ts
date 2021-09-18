@@ -70,6 +70,7 @@ export enum BridgeEvents {
   TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_LIST = 'f:devtools-plugin:list',
   TO_FRONT_DEVTOOLS_PLUGIN_ADD = 'f:devtools-plugin:add',
+  TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED = 'b:devtools-plugin:setting-updated',
 
   // Custom inspectors
   TO_BACK_CUSTOM_INSPECTOR_LIST = 'b:custom-inspector:list',
@@ -112,6 +113,7 @@ export enum HookEvents {
   CUSTOM_INSPECTOR_SELECT_NODE = 'custom-inspector:select-node',
   PERFORMANCE_START = 'perf:start',
   PERFORMANCE_END = 'perf:end',
+  PLUGIN_SETTINGS_SET = 'plugin:settings:set',
   /**
    * @deprecated
    */

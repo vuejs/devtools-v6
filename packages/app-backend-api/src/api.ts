@@ -1,4 +1,13 @@
-import { Bridge, hasPluginPermission, HookEvents, PluginPermission, set } from '@vue-devtools/shared-utils'
+import {
+  Bridge,
+  hasPluginPermission,
+  HookEvents,
+  PluginPermission,
+  set,
+  getPluginDefaultSettings,
+  getPluginSettings,
+  setPluginSettings
+} from '@vue-devtools/shared-utils'
 import {
   Hooks,
   HookPayloads,
@@ -251,16 +260,18 @@ function createDefaultSetCallback (state: EditStatePayload) {
   }
 }
 
-export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
+export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPluginApi<TSettings> {
   bridge: Bridge
   ctx: BackendContext
   plugin: Plugin
   on: DevtoolsHookable
+  private defaultSettings: TSettings
 
   constructor (plugin: Plugin, ctx: BackendContext) {
     this.bridge = ctx.bridge
     this.ctx = ctx
     this.plugin = plugin
+    this.defaultSettings = getPluginDefaultSettings(plugin.descriptor.settings)
     this.on = new DevtoolsHookable(ctx, plugin)
     pluginOn.push(this.on)
   }
@@ -343,6 +354,14 @@ export class DevtoolsPluginApiInstance implements DevtoolsPluginApi {
 
     this.ctx.hook.emit(HookEvents.COMPONENT_UNHIGHLIGHT, this.plugin)
     return true
+  }
+
+  getSettings () {
+    return getPluginSettings(this.plugin.descriptor.id, this.defaultSettings)
+  }
+
+  setSettings (value: TSettings) {
+    setPluginSettings(this.plugin.descriptor.id, value)
   }
 
   private get enabled () {

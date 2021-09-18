@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import { computed, ref } from '@vue/composition-api'
+import { PluginDescriptor } from '@vue/devtools-api'
 import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { useCurrentApp } from '@front/features/apps'
@@ -12,6 +13,7 @@ export interface Plugin {
   homepage: string
   logo: string
   componentStateTypes: string[]
+  settingsSchema?: PluginDescriptor['settings']
 }
 
 interface PluginsPerApp {

@@ -14,7 +14,8 @@ import {
   BridgeSubscriptions,
   parse,
   revive,
-  target
+  target,
+  getPluginSettings
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
 import { hook } from './global-hook'
@@ -557,5 +558,9 @@ function connectBridge () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, async () => {
     await sendPluginList(ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, ({ pluginId }) => {
+    ctx.hook.emit(HookEvents.PLUGIN_SETTINGS_SET, pluginId, getPluginSettings(pluginId))
   })
 }

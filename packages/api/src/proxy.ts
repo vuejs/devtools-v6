@@ -1,4 +1,6 @@
 import { Context, DevtoolsPluginApi, Hookable } from './api'
+import { PluginDescriptor } from './plugin'
+import { HOOK_PLUGIN_SETTINGS_SET } from './const'
 
 interface QueueItem {
   method: string
@@ -6,7 +8,7 @@ interface QueueItem {
   resolve?: (value?: any) => void
 }
 
-export class ApiProxy<TTarget extends DevtoolsPluginApi = DevtoolsPluginApi> {
+export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi<any>> {
   target: TTarget | null
   targetQueue: QueueItem[]
   proxiedTarget: TTarget
@@ -14,10 +16,55 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi = DevtoolsPluginApi> {
   onQueue: QueueItem[]
   proxiedOn: Hookable<Context>
 
-  constructor () {
+  plugin: PluginDescriptor
+  hook: any
+  fallbacks: Record<string, any>
+
+  constructor (plugin: PluginDescriptor, hook: any) {
     this.target = null
     this.targetQueue = []
     this.onQueue = []
+
+    this.plugin = plugin
+    this.hook = hook
+
+    const defaultSettings: Record<string, any> = {}
+    if (plugin.settings) {
+      for (const id in plugin.settings) {
+        const item = plugin.settings[id]
+        defaultSettings[id] = item.defaultValue
+      }
+    }
+    const localSettingsSaveId = `__vue-devtools-plugin-settings__${plugin.id}`
+    let currentSettings = { ...defaultSettings }
+    try {
+      const raw = localStorage.getItem(localSettingsSaveId)
+      const data = JSON.parse(raw)
+      Object.assign(currentSettings, data)
+    } catch (e) {
+      // noop
+    }
+
+    this.fallbacks = {
+      getSettings () {
+        return currentSettings
+      },
+      setSettings (value) {
+        try {
+          localStorage.setItem(localSettingsSaveId, JSON.stringify(value))
+        } catch (e) {
+          // noop
+        }
+        currentSettings = value
+      }
+    }
+
+    hook.on(HOOK_PLUGIN_SETTINGS_SET, (pluginId, value) => {
+      console.log('settings set', pluginId, value)
+      if (pluginId === this.plugin.id) {
+        this.fallbacks.setSettings(value)
+      }
+    })
 
     this.proxiedOn = new Proxy({} as Hookable<Context>, {
       get: (_target, prop: string) => {
@@ -40,6 +87,15 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi = DevtoolsPluginApi> {
           return this.target[prop]
         } else if (prop === 'on') {
           return this.proxiedOn
+        } else if (Object.keys(this.fallbacks).includes(prop)) {
+          return (...args) => {
+            this.targetQueue.push({
+              method: prop,
+              args,
+              resolve: () => { /* noop */ }
+            })
+            return this.fallbacks[prop](...args)
+          }
         } else {
           return (...args) => {
             return new Promise(resolve => {

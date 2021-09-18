@@ -68,6 +68,7 @@ export async function serializePlugin (plugin: Plugin) {
     packageName: plugin.descriptor.packageName,
     homepage: plugin.descriptor.homepage,
     logo: plugin.descriptor.logo,
-    componentStateTypes: plugin.descriptor.componentStateTypes
+    componentStateTypes: plugin.descriptor.componentStateTypes,
+    settingsSchema: plugin.descriptor.settings
   }
 }

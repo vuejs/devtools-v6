@@ -4,7 +4,7 @@ import { ComponentInstance, ComponentState, StateBase } from './component'
 import { App } from './app'
 import { ID } from './util'
 
-export interface DevtoolsPluginApi {
+export interface DevtoolsPluginApi<TSettings> {
   on: Hookable<Context>
   notifyComponentUpdate (instance?: ComponentInstance): void
   addTimelineLayer (options: TimelineLayerOptions): void
@@ -18,6 +18,8 @@ export interface DevtoolsPluginApi {
   getComponentInstances (app: App): Promise<ComponentInstance[]>
   highlightElement (instance: ComponentInstance): void
   unhighlightElement (): void
+  getSettings (): TSettings
+  setSettings (values: TSettings): void
 }
 
 export interface AppRecord {

@@ -1,36 +1,23 @@
 import { getTarget, getDevtoolsGlobalHook, isProxyAvailable } from './env'
 import { HOOK_SETUP } from './const'
-import { DevtoolsPluginApi, App } from './api'
+import { DevtoolsPluginApi } from './api'
 import { ApiProxy } from './proxy'
+import { PluginDescriptor } from './plugin'
 
 export * from './api'
+export * from './plugin'
 export { PluginQueueItem } from './env'
 
-export interface PluginDescriptor {
-  id: string
-  label: string
-  app: App
-  packageName?: string
-  homepage?: string
-  componentStateTypes?: string[]
-  logo?: string
-  disableAppScope?: boolean
-  /**
-   * Run the plugin setup and expose the api even if the devtools is not opened yet.
-   * Useful to record timeline events early.
-   */
-  enableEarlyProxy?: boolean
-}
+export type SetupFunction<TSettings = any> = (api: DevtoolsPluginApi<TSettings>) => void
 
-export type SetupFunction = (api: DevtoolsPluginApi) => void
-
-export function setupDevtoolsPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) {
+export function setupDevtoolsPlugin<TSettings = any> (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) {
   const target = getTarget()
   const hook = getDevtoolsGlobalHook()
-  if (hook && (target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ || !isProxyAvailable || !pluginDescriptor.enableEarlyProxy)) {
+  const enableProxy = isProxyAvailable && pluginDescriptor.enableEarlyProxy
+  if (hook && (target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ || !enableProxy)) {
     hook.emit(HOOK_SETUP, pluginDescriptor, setupFn)
   } else {
-    const proxy = isProxyAvailable ? new ApiProxy() : null
+    const proxy = enableProxy ? new ApiProxy(pluginDescriptor, hook) : null
 
     const list = target.__VUE_DEVTOOLS_PLUGINS__ = target.__VUE_DEVTOOLS_PLUGINS__ || []
     list.push({
@@ -39,6 +26,6 @@ export function setupDevtoolsPlugin (pluginDescriptor: PluginDescriptor, setupFn
       proxy
     })
 
-    setupFn(proxy.proxiedTarget as DevtoolsPluginApi)
+    if (proxy) setupFn(proxy.proxiedTarget as DevtoolsPluginApi<TSettings>)
   }
 }

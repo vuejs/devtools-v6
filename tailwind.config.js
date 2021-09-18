@@ -67,7 +67,19 @@ module.exports = {
         72: '18rem',
         80: '20rem',
         96: '24rem'
-      }
+      },
+      maxWidth: theme => ({
+        ...theme('width')
+      }),
+      minWidth: theme => ({
+        ...theme('width')
+      }),
+      maxHeight: theme => ({
+        ...theme('width')
+      }),
+      minHeight: theme => ({
+        ...theme('width')
+      })
     }
   },
   variants: {

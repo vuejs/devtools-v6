@@ -1,10 +1,10 @@
 <script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
+import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import PluginListItem from './PluginListItem.vue'
 
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import { usePlugins } from '.'
-import EmptyPane from '../layout/EmptyPane.vue'
 
 export default defineComponent({
   components: {
