@@ -84,14 +84,6 @@ export async function initBackend (bridge: Bridge) {
     ctx.bridge = bridge
     connectBridge()
   }
-
-  addTimelineMarker({
-    id: 'vue-devtools-init-backend',
-    time: Date.now(),
-    label: 'Vue Devtools init',
-    color: 0x41B883,
-    all: true
-  }, ctx)
 }
 
 async function connect () {
@@ -314,6 +306,16 @@ async function connect () {
 
   hook.off(HookEvents.FLUSH)
   hook.on(HookEvents.FLUSH, handleFlush)
+
+  // Connect done
+
+  addTimelineMarker({
+    id: 'vue-devtools-init-backend',
+    time: Date.now(),
+    label: 'Vue Devtools connected',
+    color: 0x41B883,
+    all: true
+  }, ctx)
 }
 
 function connectBridge () {
