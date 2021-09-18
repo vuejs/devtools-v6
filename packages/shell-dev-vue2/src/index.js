@@ -81,3 +81,5 @@ if (ce.attachShadow) {
 
   shadowRoot.appendChild(ceVM.$el)
 }
+
+window.top.document.title = 'Vue 2 Dev Shell'

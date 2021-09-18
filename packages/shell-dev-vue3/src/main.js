@@ -58,3 +58,5 @@ setTimeout(() => {
   app.use(SimplePlugin)
   app.mount('#delay-app')
 }, 1000)
+
+window.top.document.title = 'Vue 3 Dev Shell'
