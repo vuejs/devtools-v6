@@ -126,7 +126,6 @@ export default defineComponent({
     })
 
     function drawMarkers () {
-      console.log('markers', currentAppMarkers.value)
       markerContainer.clear()
       for (const marker of currentAppMarkers.value) {
         markerContainer.lineStyle(1, marker.color, 0.5, 0, true)
