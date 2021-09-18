@@ -314,10 +314,10 @@ export function loadComponent (id: ComponentTreeNode['id']) {
 
 export function sortChildren (children: ComponentTreeNode[]) {
   return children.slice().sort((a, b) => {
-    if (a.positionTop === b.positionTop) {
+    if (a.indexInParent === b.indexInParent) {
       return a.id.localeCompare(b.id)
     } else {
-      return a.positionTop - b.positionTop
+      return a.indexInParent - b.indexInParent
     }
   })
 }

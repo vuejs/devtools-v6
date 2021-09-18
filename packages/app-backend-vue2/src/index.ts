@@ -1,7 +1,7 @@
 import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { backendInjections, getComponentName } from '@vue-devtools/shared-utils'
 import { editState, getCustomInstanceDetails, getInstanceDetails } from './components/data'
-import { getInstanceOrVnodeRect, findRelatedComponent } from './components/el'
+import { getInstanceOrVnodeRect, findRelatedComponent, getRootElementsFromComponentInstance } from './components/el'
 import { getComponentParents, instanceMap, walkTree } from './components/tree'
 import { getInstanceName } from './components/util'
 import { wrapVueForEvents } from './events'
@@ -55,7 +55,7 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.getComponentRootElements(payload => {
-      payload.rootElements = [payload.componentInstance.$el]
+      payload.rootElements = getRootElementsFromComponentInstance(payload.componentInstance)
     })
 
     api.on.getComponentDevtoolsOptions(payload => {

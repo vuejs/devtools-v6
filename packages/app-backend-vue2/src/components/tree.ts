@@ -1,7 +1,7 @@
 import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { classify } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode } from '@vue/devtools-api'
-import { getInstanceOrVnodeRect } from './el'
+import { getRootElementsFromComponentInstance } from './el'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
 export let instanceMap: Map<any, any>
@@ -253,12 +253,13 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
     ret.hasChildren = !!ret.children.length
   }
 
-  // record screen position to ensure correct ordering
-  if ((!list || list.length > 1) && !instance._inactive) {
-    const rect = getInstanceOrVnodeRect(instance)
-    ret.positionTop = rect ? rect.top : Infinity
+  // ensure correct ordering
+  const rootElements = getRootElementsFromComponentInstance(instance)
+  if (rootElements.length) {
+    const firstElement = rootElements[0]
+    ret.indexInParent = Array.from(firstElement.parentElement.childNodes).indexOf(firstElement)
   } else {
-    ret.positionTop = Infinity
+    ret.indexInParent = -1
   }
 
   // check if instance is available in console

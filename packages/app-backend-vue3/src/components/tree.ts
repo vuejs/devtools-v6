@@ -2,7 +2,7 @@ import { isBeingDestroyed, getUniqueComponentId, getInstanceName, getRenderKey, 
 import { ComponentFilter } from './filter'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { ComponentTreeNode } from '@vue/devtools-api'
-import { getInstanceOrVnodeRect } from './el'
+import { getRootElementsFromComponentInstance } from './el'
 
 export class ComponentWalker {
   ctx: BackendContext
@@ -162,10 +162,13 @@ export class ComponentWalker {
       }
     }
 
-    // record screen position to ensure correct ordering
-    if ((!list || list.length > 1) && !instance._inactive) {
-      const rect = getInstanceOrVnodeRect(instance)
-      treeNode.positionTop = rect ? rect.top : Infinity
+    // ensure correct ordering
+    const rootElements = getRootElementsFromComponentInstance(instance)
+    if (rootElements.length) {
+      const firstElement = rootElements[0]
+      treeNode.indexInParent = Array.from(firstElement.parentElement.childNodes).indexOf(firstElement)
+    } else {
+      treeNode.indexInParent = -1
     }
 
     if (instance.suspense) {
