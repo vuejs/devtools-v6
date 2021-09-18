@@ -726,6 +726,7 @@ export default defineComponent({
           if (event.subtitle) {
             text.push(event.subtitle)
           }
+          text.push(formatTime(event.time, 'ms'))
 
           if (event.group) {
             text.push(`Group: ${event.group.duration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
