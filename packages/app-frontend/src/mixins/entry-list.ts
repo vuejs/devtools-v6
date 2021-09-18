@@ -20,7 +20,7 @@ export default function ({
 
     methods: {
       refreshScrollToInspected () {
-        if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex)
+        if (this.inspectedIndex) this.scrollIntoInspected(this.inspectedIndex as number)
       },
 
       scrollIntoInspected: debounce(async function (index) {
