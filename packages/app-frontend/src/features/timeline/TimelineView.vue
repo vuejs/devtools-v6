@@ -686,6 +686,7 @@ export default defineComponent({
     // Event tooltip
 
     let eventTooltip: PIXI.Container
+    let eventTooltipTitle: PIXI.Text
     let eventTooltipText: PIXI.Text
     let eventTooltipGraphics: PIXI.Graphics
     let hoverEvent: TimelineEvent
@@ -698,12 +699,22 @@ export default defineComponent({
       eventTooltipGraphics = new PIXI.Graphics()
       eventTooltip.addChild(eventTooltipGraphics)
 
+      eventTooltipTitle = new PIXI.Text('', {
+        fontSize: 12,
+        fill: 0x000000,
+        fontWeight: 'bold'
+      })
+      eventTooltipTitle.x = 4
+      eventTooltipTitle.y = 4
+      eventTooltip.addChild(eventTooltipTitle)
+
       eventTooltipText = new PIXI.Text('', {
         fontSize: 12,
         fill: 0x000000
       })
+      eventTooltipText.alpha = 0.7
       eventTooltipText.x = 4
-      eventTooltipText.y = 4
+      eventTooltipText.y = eventTooltipTitle.height + 4
       eventTooltip.addChild(eventTooltipText)
 
       app.stage.addListener('mousemove', mouseEvent => {
@@ -740,12 +751,15 @@ export default defineComponent({
 
         if (text.length) {
           // Draw tooltip
-          eventTooltipText.text = text.join('\n')
+          eventTooltipTitle.text = text[0]
+          eventTooltipText.text = text.slice(1).join('\n')
 
           eventTooltipGraphics.clear()
           eventTooltipGraphics.beginFill(0xffffff)
           eventTooltipGraphics.lineStyle(1, 0x000000, 0.2, 1)
-          eventTooltipGraphics.drawRoundedRect(0, 0, eventTooltipText.width + 8, eventTooltipText.height + 8, 4)
+          const width = Math.max(eventTooltipTitle.width, eventTooltipText.width) + 8
+          const height = eventTooltipTitle.height + (text.length > 1 ? eventTooltipText.height : 0) + 8
+          eventTooltipGraphics.drawRoundedRect(0, 0, width, height, 4)
 
           eventTooltip.x = mouseEvent.data.global.x + 12
           if (eventTooltip.x + eventTooltip.width > app.renderer.width) {
