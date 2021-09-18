@@ -70,6 +70,14 @@ export interface TimelineEvent<TData = any, TMeta = any> {
   subtitle?: string
 }
 
+export interface TimelineMarkerOptions {
+  id: string
+  time: number
+  color: number
+  label: string
+  all?: boolean
+}
+
 export interface CustomInspectorOptions {
   id: string
   label: string

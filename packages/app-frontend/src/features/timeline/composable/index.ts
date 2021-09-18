@@ -1,5 +1,6 @@
 export * from './events'
 export * from './layers'
+export * from './markers'
 export * from './reset'
 export * from './screenshot'
 export * from './setup'

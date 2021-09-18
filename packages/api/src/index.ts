@@ -15,6 +15,11 @@ export interface PluginDescriptor {
   componentStateTypes?: string[]
   logo?: string
   disableAppScope?: boolean
+  /**
+   * Run the plugin setup and expose the api even if the devtools is not opened yet.
+   * Useful to record timeline events early.
+   */
+  enableEarlyProxy?: boolean
 }
 
 export type SetupFunction = (api: DevtoolsPluginApi) => void
@@ -22,7 +27,7 @@ export type SetupFunction = (api: DevtoolsPluginApi) => void
 export function setupDevtoolsPlugin (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) {
   const target = getTarget()
   const hook = getDevtoolsGlobalHook()
-  if (hook && (target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ || !isProxyAvailable)) {
+  if (hook && (target.__VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__ || !isProxyAvailable || !pluginDescriptor.enableEarlyProxy)) {
     hook.emit(HOOK_SETUP, pluginDescriptor, setupFn)
   } else {
     const proxy = isProxyAvailable ? new ApiProxy() : null

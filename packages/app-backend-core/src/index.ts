@@ -37,6 +37,7 @@ import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorSt
 import { showScreenshot } from './timeline-screenshot'
 import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
+import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
 
 let ctx: BackendContext = target.__vdevtools_ctx ?? null
 let connected = target.__vdevtools_connected ?? false
@@ -83,6 +84,14 @@ export async function initBackend (bridge: Bridge) {
     ctx.bridge = bridge
     connectBridge()
   }
+
+  addTimelineMarker({
+    id: 'vue-devtools-init-backend',
+    time: Date.now(),
+    label: 'Vue Devtools init',
+    color: 0x41B883,
+    all: true
+  }, ctx)
 }
 
 async function connect () {
@@ -473,6 +482,10 @@ function connectBridge () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LOAD_EVENTS, ({ appId, layerId }) => {
     sendTimelineLayerEvents(appId, layerId, ctx)
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LOAD_MARKERS, async () => {
+    await sendTimelineMarkers(ctx)
   })
 
   // Custom inspectors

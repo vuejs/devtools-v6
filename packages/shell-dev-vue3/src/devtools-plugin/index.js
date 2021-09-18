@@ -110,6 +110,15 @@ export default {
         color: 0x92A2BF
       })
 
+      api.addTimelineEvent({
+        layerId: 'test-layer',
+        event: {
+          time: Date.now(),
+          title: 'Early event',
+          data: {}
+        }
+      })
+
       for (let i = 0; i < 10; i++) {
         api.addTimelineLayer({
           id: `test-layer-${i}`,

@@ -62,6 +62,9 @@ export enum BridgeEvents {
   TO_FRONT_TIMELINE_EVENT_DATA = 'f:timeline:event-data',
   TO_BACK_TIMELINE_LAYER_LOAD_EVENTS = 'b:timeline:layer-load-events',
   TO_FRONT_TIMELINE_LAYER_LOAD_EVENTS = 'f:timeline:layer-load-events',
+  TO_BACK_TIMELINE_LOAD_MARKERS = 'b:timeline:load-markers',
+  TO_FRONT_TIMELINE_LOAD_MARKERS = 'f:timeline:load-markers',
+  TO_FRONT_TIMELINE_MARKER = 'f:timeline:marker',
 
   // Plugins
   TO_BACK_DEVTOOLS_PLUGIN_LIST = 'b:devtools-plugin:list',

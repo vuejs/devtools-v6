@@ -59,6 +59,19 @@ export interface Layer extends LayerFromBackend {
   loaded: boolean
 }
 
+export interface MarkerFromBackend {
+  id: string
+  appId: string
+  all?: boolean
+  time: number
+  label: string
+  color: number
+}
+
+export interface TimelineMarker extends MarkerFromBackend {
+  x: number
+}
+
 export const startTime = ref(0)
 export const endTime = ref(0)
 export const minTime = ref(0)
@@ -81,3 +94,6 @@ export const inspectedEventData = ref(null)
 export const inspectedEventPendingId: Ref<TimelineEvent['id']> = ref(null)
 
 export const screenshots: Ref<EventScreenshot[]> = ref([])
+
+export const markersAllApps: Ref<TimelineMarker[]> = ref([])
+export const markersPerApp: Ref<{[appId: string]: TimelineMarker[]}> = ref({})

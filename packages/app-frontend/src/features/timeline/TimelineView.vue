@@ -19,13 +19,16 @@ import {
   onEventAdd,
   useCursor,
   Layer,
-  TimelineEvent
+  TimelineEvent,
+  useMarkers,
+  TimelineMarker
 } from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
 import SharedData from '@utils/shared-data'
 import { useDarkMode } from '@front/util/theme'
 import { dimColor, boostColor } from '@front/util/color'
+import { formatTime } from '@front/util/format'
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
@@ -40,6 +43,10 @@ export default defineComponent({
     const { currentAppId } = useApps()
     const { startTime, endTime, minTime, maxTime } = useTime()
     const { darkMode } = useDarkMode()
+
+    function getTimePosition (time: number) {
+      return (time - minTime.value) / (endTime.value - startTime.value) * app.view.width
+    }
 
     // Reset
 
@@ -105,6 +112,53 @@ export default defineComponent({
     watchEffect(() => {
       updateBackground()
     })
+
+    // Markers
+
+    const { currentAppMarkers } = useMarkers()
+
+    let markerContainer: PIXI.Graphics
+
+    onMounted(() => {
+      markerContainer = new PIXI.Graphics()
+      app.stage.addChild(markerContainer)
+      drawMarkers()
+    })
+
+    function drawMarkers () {
+      console.log('markers', currentAppMarkers.value)
+      markerContainer.clear()
+      for (const marker of currentAppMarkers.value) {
+        markerContainer.lineStyle(1, marker.color, 0.5, 0, true)
+        const x = getTimePosition(marker.time)
+        marker.x = x
+        markerContainer.moveTo(x, 0)
+        markerContainer.lineTo(x, app.view.height)
+      }
+      markerContainer.x = horizontalScrollingContainer.x
+    }
+
+    watch(currentAppMarkers, () => {
+      if (markerContainer) {
+        drawMarkers()
+      }
+    })
+
+    function getMarkerAtPosition (targetX: number): TimelineMarker | null {
+      let choice: TimelineMarker = null
+      let dist: number
+
+      for (const marker of currentAppMarkers.value) {
+        const globalX = marker.x + markerContainer.x
+        const currentDist = Math.abs(targetX - globalX)
+        if (currentDist <= 50 && (currentDist < dist || !choice)) {
+          dist = currentDist
+          choice = marker
+        }
+      }
+
+      return choice
+    }
 
     // Layers
 
@@ -247,10 +301,6 @@ export default defineComponent({
 
     let events: TimelineEvent[] = []
 
-    function getEventPosition (event: TimelineEvent) {
-      return (event.time - minTime.value) / (endTime.value - startTime.value) * app.view.width
-    }
-
     const updateEventPositionQueue = new Set<TimelineEvent>()
     let currentEventPositionUpdate: TimelineEvent = null
     let updateEventPositionQueued = false
@@ -262,7 +312,7 @@ export default defineComponent({
         e.container.visible = !ignored
         if (ignored) continue
         // Update horizontal position immediately
-        e.container.x = getEventPosition(e)
+        e.container.x = getTimePosition(e.time)
         // Queue vertical position compute
         updateEventPositionQueue.add(e)
       }
@@ -316,13 +366,13 @@ export default defineComponent({
               (
                 // Horizontal intersection (first event)
                 (
-                  getEventPosition(firstEvent) >= getEventPosition(otherGroup.firstEvent) - offset &&
-                  getEventPosition(firstEvent) <= getEventPosition(otherGroup.lastEvent) + offset + lastOffset
+                  getTimePosition(firstEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset &&
+                  getTimePosition(firstEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset + lastOffset
                 ) ||
                 // Horizontal intersection (last event)
                 (
-                  getEventPosition(lastEvent) >= getEventPosition(otherGroup.firstEvent) - offset - lastOffset &&
-                  getEventPosition(lastEvent) <= getEventPosition(otherGroup.lastEvent) + offset
+                  getTimePosition(lastEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset - lastOffset &&
+                  getTimePosition(lastEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset
                 )
               )
             ) {
@@ -657,10 +707,11 @@ export default defineComponent({
       eventTooltip.addChild(eventTooltipText)
 
       app.stage.addListener('mousemove', mouseEvent => {
+        const text: string[] = []
+
+        // Event tooltip
         const event = getEventAtPosition(mouseEvent.data.global.x, mouseEvent.data.global.y)
         if (event) {
-          const text = []
-
           text.push(event.title ?? 'Event')
           if (event.subtitle) {
             text.push(event.subtitle)
@@ -670,27 +721,6 @@ export default defineComponent({
             text.push(`Group: ${event.group.duration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
           }
 
-          if (!text.length) {
-            eventTooltip.visible = false
-          } else {
-            eventTooltipText.text = text.join('\n')
-
-            eventTooltipGraphics.clear()
-            eventTooltipGraphics.beginFill(0xffffff)
-            eventTooltipGraphics.lineStyle(1, 0x000000, 0.2, 1)
-            eventTooltipGraphics.drawRoundedRect(0, 0, eventTooltipText.width + 8, eventTooltipText.height + 8, 4)
-
-            eventTooltip.x = mouseEvent.data.global.x + 12
-            if (eventTooltip.x + eventTooltip.width > app.renderer.width) {
-              eventTooltip.x = mouseEvent.data.global.x - eventTooltip.width - 12
-            }
-            eventTooltip.y = mouseEvent.data.global.y + 12
-            if (eventTooltip.y + eventTooltip.height > app.renderer.height) {
-              eventTooltip.y = mouseEvent.data.global.y - eventTooltip.height - 12
-            }
-            eventTooltip.visible = true
-          }
-
           if (hoverEvent?.container && hoverEvent !== event) {
             hoverEvent.container.alpha = 1
           }
@@ -698,6 +728,34 @@ export default defineComponent({
           if (hoverEvent?.container) {
             hoverEvent.container.alpha = 0.5
           }
+        } else {
+          // Marker tooltip
+          const marker = getMarkerAtPosition(mouseEvent.data.global.x)
+          if (marker) {
+            text.push(marker.label)
+            text.push(formatTime(marker.time, 'ms'))
+            text.push('(marker)')
+          }
+        }
+
+        if (text.length) {
+          // Draw tooltip
+          eventTooltipText.text = text.join('\n')
+
+          eventTooltipGraphics.clear()
+          eventTooltipGraphics.beginFill(0xffffff)
+          eventTooltipGraphics.lineStyle(1, 0x000000, 0.2, 1)
+          eventTooltipGraphics.drawRoundedRect(0, 0, eventTooltipText.width + 8, eventTooltipText.height + 8, 4)
+
+          eventTooltip.x = mouseEvent.data.global.x + 12
+          if (eventTooltip.x + eventTooltip.width > app.renderer.width) {
+            eventTooltip.x = mouseEvent.data.global.x - eventTooltip.width - 12
+          }
+          eventTooltip.y = mouseEvent.data.global.y + 12
+          if (eventTooltip.y + eventTooltip.height > app.renderer.height) {
+            eventTooltip.y = mouseEvent.data.global.y - eventTooltip.height - 12
+          }
+          eventTooltip.visible = true
         } else {
           if (hoverEvent?.container) {
             hoverEvent.container.alpha = 1
@@ -716,7 +774,7 @@ export default defineComponent({
         /** @type {PIXI.Graphics} */
         const g = event.groupG
         g.clear()
-        const size = getEventPosition(event.group.lastEvent) - getEventPosition(event.group.firstEvent)
+        const size = getTimePosition(event.group.lastEvent.time) - getTimePosition(event.group.firstEvent.time)
         if (event.layer.groupsOnly) {
           if (drawAsSelected) {
             g.lineStyle(2, boostColor(event.layer.color, darkMode.value))
@@ -861,6 +919,7 @@ export default defineComponent({
       horizontalScrollingContainer.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
       drawLayerBackgroundEffects()
       drawTimeGrid()
+      drawMarkers()
     }
 
     watch(startTime, () => queueCameraUpdate())
