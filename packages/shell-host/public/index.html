@@ -9,12 +9,12 @@
       #target {
         flex: 1;
         border: none;
-        border-bottom: 1px solid #ccc;
       }
       #container {
         display: flex;
         height: 400px;
         overflow: hidden;
+        border-top: 1px solid #ccc;
       }
       body {
         display: flex;
@@ -31,10 +31,10 @@
   </head>
   <body>
     <iframe id="target" name="target" src="about:blank"></iframe>
+    <div>Not Vue</div>
     <div id="container">
       <div id="app"></div>
     </div>
-    <div>Not Vue</div>
     <script async src="https://cdn.headwayapp.co/widget.js"></script>
     <script src="build/devtools.js"></script>
   </body>
