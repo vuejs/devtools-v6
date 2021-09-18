@@ -1266,6 +1266,18 @@ window.addEventListener('click', event => {
 })
 ```
 
+You can set the `enableEarlyProxy` plugin option to `true` to be able to send timeline events before the Vue devtools are opened and connected:
+
+```js{2-5}
+setupDevtoolsPlugin({
+  id: 'my-awesome-devtools-plugin',
+  app,
+  enableEarlyProxy: true
+}, api => {
+  // `api` will be a proxy waiting for the real API to be available
+})
+```
+
 ### Event group
 
 You can group events together. It will display them inside a pill-shaped rectangle, and will display the total duration of the group in the event inspector.

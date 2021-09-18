@@ -16,6 +16,7 @@ export default {
       componentStateTypes: [
         stateType
       ],
+      enableEarlyProxy: true,
       app
     }, (api) => {
       devtoolsApi = api
