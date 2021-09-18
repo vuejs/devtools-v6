@@ -312,7 +312,7 @@ export default defineComponent({
         e.container.visible = !ignored
         if (ignored) continue
         // Update horizontal position immediately
-        e.container.x = getTimePosition(e.time)
+        e.container.x = Math.round(getTimePosition(e.time))
         // Queue vertical position compute
         updateEventPositionQueue.add(e)
       }
@@ -815,7 +815,7 @@ export default defineComponent({
               fontSize: 10,
               fill: darkMode.value ? 0xffffff : 0
             })
-            t.y = -t.height / 2
+            t.y = Math.round(-t.height / 2)
             event.container.addChild(t)
 
             // Mask
