@@ -14,7 +14,7 @@ export async function addTimelineMarker (options: TimelineMarkerOptions, ctx: Ba
   ctx.timelineMarkers.push(marker)
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_MARKER, {
     marker: await serializeMarker(marker),
-    appId: ctx.currentAppRecord.id
+    appId: ctx.currentAppRecord?.id
   })
 }
 
