@@ -27,8 +27,7 @@
     "build": "rimraf lib && yarn build:esm && yarn build:cjs",
     "build:esm": "tsc --module es2015 --outDir lib/esm -d",
     "build:cjs": "tsc --module commonjs --outDir lib/cjs",
-    "build:watch": "yarn tsc --module es2015 --outDir lib/esm -d -w --sourceMap",
-    "ts": "yarn build:esm"
+    "build:watch": "yarn tsc --module es2015 --outDir lib/esm -d -w --sourceMap"
   },
   "devDependencies": {
     "@types/node": "^13.9.1",
