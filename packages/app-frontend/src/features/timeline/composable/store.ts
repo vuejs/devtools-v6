@@ -29,7 +29,7 @@ export interface EventScreenshot {
 
 export interface TimelineEvent extends TimelineEventFromBackend {
   layer: Layer
-  appId: number | 'all'
+  appId: string | 'all'
   group: EventGroup
   screenshot: EventScreenshot
   container: PIXI.Container
@@ -42,7 +42,7 @@ export interface LayerFromBackend {
   id: string
   label: string
   color: number
-  appId?: number
+  appId?: string
   pluginId?: string
   groupsOnly?: boolean
   skipScreenshots?: boolean
@@ -68,9 +68,9 @@ export const timelineIsEmpty = ref(true)
 
 export const cursorTime = ref<number>(null)
 
-export const layersPerApp: Ref<{[appId: number]: Layer[]}> = ref({})
-export const hiddenLayersPerApp: Ref<{[appId: number]: Layer['id'][]}> = ref({})
-export const vScrollPerApp: Ref<{[appId: number]: number}> = ref({})
+export const layersPerApp: Ref<{[appId: string]: Layer[]}> = ref({})
+export const hiddenLayersPerApp: Ref<{[appId: string]: Layer['id'][]}> = ref({})
+export const vScrollPerApp: Ref<{[appId: string]: number}> = ref({})
 
 export const selectedEvent: Ref<TimelineEvent> = ref(null)
 export const selectedLayer: Ref<Layer> = ref(null)

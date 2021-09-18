@@ -237,8 +237,8 @@ async function connect () {
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
   })
 
-  hook.on(HookEvents.TIMELINE_EVENT_ADDED, (options: TimelineEventOptions, plugin: Plugin) => {
-    addTimelineEvent(options, plugin.descriptor.app, ctx)
+  hook.on(HookEvents.TIMELINE_EVENT_ADDED, async (options: TimelineEventOptions, plugin: Plugin) => {
+    await addTimelineEvent(options, plugin.descriptor.app, ctx)
   })
 
   // Custom inspectors
@@ -481,8 +481,8 @@ function connectBridge () {
     sendCustomInspectors(ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_TREE, ({ inspectorId, appId, treeFilter }) => {
-    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_TREE, async ({ inspectorId, appId, treeFilter }) => {
+    const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
       inspector.treeFilter = treeFilter
       sendInspectorTree(inspector, ctx)
@@ -491,8 +491,8 @@ function connectBridge () {
     }
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, ({ inspectorId, appId, nodeId }) => {
-    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, async ({ inspectorId, appId, nodeId }) => {
+    const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
       inspector.selectedNodeId = nodeId
       sendInspectorState(inspector, ctx)
@@ -502,7 +502,7 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE, async ({ inspectorId, appId, nodeId, path, type, payload }) => {
-    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+    const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
       await editInspectorState(inspector, nodeId, path, type, payload, ctx)
       inspector.selectedNodeId = nodeId
@@ -513,7 +513,7 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, async ({ inspectorId, appId, actionIndex }) => {
-    const inspector = getInspectorWithAppId(inspectorId, appId, ctx)
+    const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
       const action = inspector.actions[actionIndex]
       try {
@@ -540,7 +540,7 @@ function connectBridge () {
 
   // Plugins
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, () => {
-    sendPluginList(ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, async () => {
+    await sendPluginList(ctx)
   })
 }

@@ -24,8 +24,8 @@ export function addBuiltinLayers (app: App, ctx: BackendContext) {
 function setupBuiltinLayers (ctx: BackendContext) {
   ['mousedown', 'mouseup', 'click', 'dblclick'].forEach(eventType => {
     // @ts-ignore
-    window.addEventListener(eventType, (event: MouseEvent) => {
-      addTimelineEvent({
+    window.addEventListener(eventType, async (event: MouseEvent) => {
+      await addTimelineEvent({
         layerId: 'mouse',
         event: {
           time: Date.now(),
@@ -45,8 +45,8 @@ function setupBuiltinLayers (ctx: BackendContext) {
 
   ;['keyup', 'keydown', 'keypress'].forEach(eventType => {
     // @ts-ignore
-    window.addEventListener(eventType, (event: KeyboardEvent) => {
-      addTimelineEvent({
+    window.addEventListener(eventType, async (event: KeyboardEvent) => {
+      await addTimelineEvent({
         layerId: 'keyboard',
         event: {
           time: Date.now(),
@@ -75,7 +75,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
       const componentId = `${appRecord.id}:${instance.uid}`
       const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
 
-      addTimelineEvent({
+      await addTimelineEvent({
         layerId: 'component-event',
         event: {
           time: Date.now(),
@@ -130,8 +130,8 @@ export async function sendTimelineLayers (ctx: BackendContext) {
   })
 }
 
-export function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: BackendContext) {
-  const appId = app && getAppRecordId(app)
+export async function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: BackendContext) {
+  const appId = app ? await getAppRecordId(app) : null
   const isAllApps = options.all || !app || appId == null
 
   const id = ctx.nextTimelineEventId++
@@ -202,7 +202,7 @@ export function removeLayersForApp (app: App, ctx: BackendContext) {
   }
 }
 
-export function sendTimelineLayerEvents (appId: number, layerId: string, ctx: BackendContext) {
+export function sendTimelineLayerEvents (appId: string, layerId: string, ctx: BackendContext) {
   const app = ctx.appRecords.find(ar => ar.id === appId)?.options.app
   if (!app) return
   const layer = ctx.timelineLayers.find(l => l.app === app && l.id === layerId)

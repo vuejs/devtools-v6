@@ -27,7 +27,7 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   ctx.currentPlugin = null
   ctx.plugins.push(plugin)
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, {
-    plugin: serializePlugin(plugin)
+    plugin: await serializePlugin(plugin)
   })
 
   const targetList = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ || []
@@ -54,17 +54,17 @@ export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
   }
 }
 
-export function sendPluginList (ctx: BackendContext) {
+export async function sendPluginList (ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_LIST, {
-    plugins: ctx.plugins.map(p => serializePlugin(p))
+    plugins: await Promise.all(ctx.plugins.map(p => serializePlugin(p)))
   })
 }
 
-export function serializePlugin (plugin: Plugin) {
+export async function serializePlugin (plugin: Plugin) {
   return {
     id: plugin.descriptor.id,
     label: plugin.descriptor.label,
-    appId: getAppRecordId(plugin.descriptor.app),
+    appId: await getAppRecordId(plugin.descriptor.app),
     packageName: plugin.descriptor.packageName,
     homepage: plugin.descriptor.homepage,
     logo: plugin.descriptor.logo,

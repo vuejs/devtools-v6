@@ -21,7 +21,7 @@ export interface DevtoolsPluginApi {
 }
 
 export interface AppRecord {
-  id: number
+  id: string
   name: string
   instanceMap: Map<string, ComponentInstance>
   rootInstance: ComponentInstance

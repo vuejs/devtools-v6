@@ -51,7 +51,7 @@ export class DevtoolsApi {
     return payload.outArgs
   }
 
-  async getAppRecordName (app: App, id: number): Promise<string> {
+  async getAppRecordName (app: App, defaultName: string): Promise<string> {
     const payload = await this.callHook(Hooks.GET_APP_RECORD_NAME, {
       app,
       name: null
@@ -59,7 +59,7 @@ export class DevtoolsApi {
     if (payload.name) {
       return payload.name
     } else {
-      return `App ${id + 1}`
+      return `App ${defaultName}`
     }
   }
 

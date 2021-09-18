@@ -6,7 +6,7 @@ import { getBridge, useBridge } from '@front/features/bridge'
 
 export interface InspectorFromBackend {
   id: string
-  appId: number
+  appId: string
   pluginId: string
   label: string
   icon: string

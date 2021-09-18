@@ -11,7 +11,7 @@ import {
   openInEditor
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
-import { App } from '@front/features/apps'
+import { AppRecord } from '@front/features/apps'
 import { useRoute, useRouter } from '@front/util/router'
 
 export const rootInstances = ref<ComponentTreeNode[]>([])
@@ -22,7 +22,7 @@ export const selectedComponentId = ref<ComponentTreeNode['id']>(null)
 export const selectedComponentData = ref<InspectedComponentData>(null)
 const selectedComponentStateFilter = ref('')
 export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
-let lastSelectedApp: App = null
+let lastSelectedApp: AppRecord = null
 let lastSelectedComponentId: ComponentTreeNode['id'] = null
 export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
 export const resetComponentsQueued = ref(false)

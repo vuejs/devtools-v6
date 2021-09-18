@@ -7,6 +7,7 @@ import {
 } from '@vue-devtools/app-backend-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { App } from '@vue/devtools-api'
+import slug from 'speakingurl'
 import { JobQueue } from './util/queue'
 import { scan } from './legacy/scan'
 
@@ -53,8 +54,9 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
       // Create app record
       const rootInstance = await ctx.api.getAppRootInstance(options.app)
       if (rootInstance) {
-        const id = getAppRecordId(options.app)
-        const name = await ctx.api.getAppRecordName(options.app, id)
+        recordId++
+        const name = await ctx.api.getAppRecordName(options.app, recordId.toString())
+        const id = await getAppRecordId(options.app, `id:${slug(name)}`)
 
         const [el]: HTMLElement[] = await ctx.api.getComponentRootElements(rootInstance)
 
@@ -123,11 +125,12 @@ export function mapAppRecord (record: AppRecord): SimpleAppRecord {
   }
 }
 
-export function getAppRecordId (app): number {
+export async function getAppRecordId (app, defaultId?: string): Promise<string> {
   if (app.__VUE_DEVTOOLS_APP_RECORD_ID__ != null) {
     return app.__VUE_DEVTOOLS_APP_RECORD_ID__
   }
-  const id = recordId++
+  const id = defaultId ?? (recordId++).toString()
+  console.log(id)
   app.__VUE_DEVTOOLS_APP_RECORD_ID__ = id
   return id
 }

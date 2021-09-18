@@ -4,18 +4,18 @@ import { useBridge, getBridge } from '@front/features/bridge'
 import { useRoute, useRouter } from '@front/util/router'
 import { fetchLayers } from '../timeline/composable'
 
-export interface App {
-  id: number
+export interface AppRecord {
+  id: string
   name: string
   version: string
   iframe: string
 }
 
-const apps = ref<App[]>([])
+const apps = ref<AppRecord[]>([])
 
 export function useCurrentApp () {
   const route = useRoute()
-  const currentAppId = computed(() => parseInt(route.value.params.appId))
+  const currentAppId = computed(() => route.value.params.appId)
   const currentApp = computed(() => apps.value.find(a => currentAppId.value === a.id))
 
   return {
@@ -33,7 +33,7 @@ export function useApps () {
     currentApp
   } = useCurrentApp()
 
-  function selectApp (id: number) {
+  function selectApp (id: string) {
     if (currentAppId.value !== id) {
       router.push({
         params: {
@@ -58,12 +58,12 @@ export function useApps () {
   }
 }
 
-function addApp (app: App) {
+function addApp (app: AppRecord) {
   removeApp(app.id)
   apps.value.push(app)
 }
 
-function removeApp (appId: number) {
+function removeApp (appId: string) {
   const index = apps.value.findIndex(app => app.id === appId)
   if (index !== -1) {
     apps.value.splice(index, 1)

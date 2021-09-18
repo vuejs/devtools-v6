@@ -34,7 +34,7 @@ export function onEventAdd (cb: AddEventCb) {
   addEventCbs.push(cb)
 }
 
-export function addEvent (appId: number, event: TimelineEvent, layer: Layer) {
+export function addEvent (appId: string, event: TimelineEvent, layer: Layer) {
   if (layer.eventsMap[event.id]) return
 
   if (timelineIsEmpty.value) {

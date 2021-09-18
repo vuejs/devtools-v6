@@ -7,7 +7,7 @@ import { useCurrentApp } from '@front/features/apps'
 export interface Plugin {
   id: string
   label: string
-  appId: number
+  appId: string
   packageName: string
   homepage: string
   logo: string
@@ -15,12 +15,12 @@ export interface Plugin {
 }
 
 interface PluginsPerApp {
-  [appId: number]: Plugin[]
+  [appId: string]: Plugin[]
 }
 
 const pluginsPerApp = ref<PluginsPerApp>({})
 
-function getPlugins (appId: number) {
+function getPlugins (appId: string) {
   let plugins = pluginsPerApp.value[appId]
   if (!plugins) {
     plugins = []
