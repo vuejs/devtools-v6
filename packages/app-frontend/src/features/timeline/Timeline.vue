@@ -415,7 +415,7 @@ export default defineComponent({
           <VueButton
             v-tooltip="'Select layers'"
             class="icon-button flat"
-            icon-left="playlist_add"
+            icon-left="layers"
           />
         </template>
 
