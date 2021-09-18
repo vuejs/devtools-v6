@@ -255,8 +255,8 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
 
   // ensure correct ordering
   const rootElements = getRootElementsFromComponentInstance(instance)
-  if (rootElements.length) {
-    const firstElement = rootElements[0]
+  const firstElement = rootElements[0]
+  if (firstElement?.parentElement) {
     ret.indexInParent = Array.from(firstElement.parentElement.childNodes).indexOf(firstElement)
   } else {
     ret.indexInParent = -1
