@@ -59,7 +59,7 @@ export default defineComponent({
     // Refresh
 
     function refresh () {
-      requestComponentTree(null)
+      requestComponentTree(selectedComponentId.value)
       loadComponent(selectedComponentId.value)
     }
 
