@@ -120,7 +120,7 @@ export function useInspectedEvent () {
     inspectedEvent,
     inspectedEventState: computed(() => inspectedEventData.value),
     time: computed(() => formatTime(inspectedEvent.value.time, 'ms')),
-    loading: computed(() => !!inspectedEventPendingId.value)
+    loading: computed(() => inspectedEventPendingId.value != null)
   }
 }
 
