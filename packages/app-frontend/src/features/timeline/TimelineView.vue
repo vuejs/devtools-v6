@@ -150,7 +150,7 @@ export default defineComponent({
       for (const marker of currentAppMarkers.value) {
         const globalX = marker.x + markerContainer.x
         const currentDist = Math.abs(targetX - globalX)
-        if (currentDist <= 50 && (currentDist < dist || !choice)) {
+        if (currentDist <= 20 && (currentDist < dist || !choice)) {
           dist = currentDist
           choice = marker
         }
