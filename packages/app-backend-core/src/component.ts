@@ -106,7 +106,7 @@ export async function getComponentId (app: App, uid: number, instance: Component
     const isRoot = appRecord.rootInstance === instance
     return `${appRecord.id}:${isRoot ? 'root' : uid}`
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (SharedData.debugInfo) {
       console.error(e)
     }
     return null
@@ -118,7 +118,7 @@ export function getComponentInstance (appRecord: AppRecord, instanceId: string, 
     instanceId = `${appRecord.id}:root`
   }
   const instance = appRecord.instanceMap.get(instanceId)
-  if (!instance && process.env.NODE_ENV !== 'production') {
+  if (!instance && SharedData.debugInfo) {
     console.warn(`Instance uid=${instanceId} not found`)
   }
   return instance

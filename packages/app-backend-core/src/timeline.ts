@@ -182,7 +182,7 @@ export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
   if (eventData) {
     data = await ctx.api.inspectTimelineEvent(eventData, ctx.currentAppRecord.options.app)
     data = stringify(data)
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (SharedData.debugInfo) {
     console.warn(`Event ${id} not found`, ctx.timelineEventMap.keys())
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT_DATA, {
