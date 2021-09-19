@@ -12,7 +12,7 @@ export interface ComponentTreeNode {
   isFragment: boolean
   hasChildren: boolean
   children: ComponentTreeNode[]
-  indexInParent?: number
+  domOrder?: number[]
   consoleId?: string
   isRouterView?: boolean
   macthedRouteSegment?: string

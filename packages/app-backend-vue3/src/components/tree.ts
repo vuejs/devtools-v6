@@ -166,9 +166,17 @@ export class ComponentWalker {
     const rootElements = getRootElementsFromComponentInstance(instance)
     const firstElement = rootElements[0]
     if (firstElement?.parentElement) {
-      treeNode.indexInParent = Array.from(firstElement.parentElement.childNodes).indexOf(firstElement)
+      const parentInstance = instance.parent
+      const parentRootElements = parentInstance ? getRootElementsFromComponentInstance(parentInstance) : []
+      let el = firstElement
+      const indexList = []
+      do {
+        indexList.push(Array.from(el.parentElement.childNodes).indexOf(el))
+        el = el.parentElement
+      } while (el.parentElement && parentRootElements.length && !parentRootElements.includes(el))
+      treeNode.domOrder = indexList.reverse()
     } else {
-      treeNode.indexInParent = -1
+      treeNode.domOrder = [-1]
     }
 
     if (instance.suspense) {

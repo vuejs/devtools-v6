@@ -18,6 +18,7 @@ import Mixins from './Mixins.vue'
 import Animation from './Animation.vue'
 import SetupScript from './SetupScript.vue'
 import SetupDataLike from './SetupDataLike.vue'
+import DomOrder from './DomOrder.vue'
 
 import { h, createApp } from 'vue'
 import SimplePlugin from './devtools-plugin/simple'
@@ -45,6 +46,7 @@ export default {
     Animation,
     SetupScript,
     SetupDataLike,
+    DomOrder,
     inline: {
       render: () => h('h3', 'Inline component definition')
     }
@@ -103,6 +105,7 @@ export default {
   <Mixins />
   <SetupScript />
   <SetupDataLike />
+  <DomOrder />
   <inline />
   <global />
 

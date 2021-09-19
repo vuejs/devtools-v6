@@ -257,9 +257,17 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   const rootElements = getRootElementsFromComponentInstance(instance)
   const firstElement = rootElements[0]
   if (firstElement?.parentElement) {
-    ret.indexInParent = Array.from(firstElement.parentElement.childNodes).indexOf(firstElement)
+    const parentInstance = instance.$parent
+    const parentRootElements = parentInstance ? getRootElementsFromComponentInstance(parentInstance) : []
+    let el = firstElement
+    const indexList = []
+    do {
+      indexList.push(Array.from(el.parentElement.childNodes).indexOf(el))
+      el = el.parentElement
+    } while (el.parentElement && parentRootElements.length && !parentRootElements.includes(el))
+    ret.domOrder = indexList.reverse()
   } else {
-    ret.indexInParent = -1
+    ret.domOrder = [-1]
   }
 
   // check if instance is available in console

@@ -314,10 +314,21 @@ export function loadComponent (id: ComponentTreeNode['id']) {
 
 export function sortChildren (children: ComponentTreeNode[]) {
   return children.slice().sort((a, b) => {
-    if (a.indexInParent === b.indexInParent) {
+    const order = compareIndexLists(a.domOrder, b.domOrder)
+    if (order === 0) {
       return a.id.localeCompare(b.id)
     } else {
-      return a.indexInParent - b.indexInParent
+      return order
     }
   })
+}
+
+function compareIndexLists (a: number[], b: number[]): number {
+  if (!a.length || !b.length) {
+    return 0
+  } else if (a[0] === b[0]) {
+    return compareIndexLists(a.slice(1), b.slice(1))
+  } else {
+    return a[0] - b[0]
+  }
 }
