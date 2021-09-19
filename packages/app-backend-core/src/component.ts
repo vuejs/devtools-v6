@@ -1,4 +1,5 @@
 import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
@@ -61,8 +62,8 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
         win.$vm0 = $vmQueue[0] = instance
       }
     }
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('inspect', instance)
+    if (process.env.NODE_ENV !== 'production' || SharedData.debugInfo) {
+      console.log('[DEBUG] inspect', instance)
     }
     const parentInstances = await ctx.api.walkComponentParents(instance)
     const payload = {

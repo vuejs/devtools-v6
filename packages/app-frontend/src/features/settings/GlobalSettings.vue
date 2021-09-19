@@ -59,5 +59,13 @@ export default defineComponent({})
         Turn off if your app is slowed down
       </template>
     </VueFormField>
+
+    <VueFormField
+      title="Debugging info"
+    >
+      <VueSwitch v-model="$shared.debugInfo">
+        Enable
+      </VueSwitch>
+    </VueFormField>
   </div>
 </template>

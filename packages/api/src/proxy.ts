@@ -60,7 +60,6 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
     }
 
     hook.on(HOOK_PLUGIN_SETTINGS_SET, (pluginId, value) => {
-      console.log('settings set', pluginId, value)
       if (pluginId === this.plugin.id) {
         this.fallbacks.setSettings(value)
       }

@@ -245,9 +245,20 @@ export default defineComponent({
         >
           {{ tag.label }}
         </span>
-        <!-- <span class="info bg-gray-500">
-          {{ instance.uid }}
-        </span> -->
+        <template v-if="$shared.debugInfo">
+          <span
+            v-tooltip="'id'"
+            class="info bg-gray-500"
+          >
+            {{ instance.id }}
+          </span>
+          <span
+            v-tooltip="'Order in DOM'"
+            class="info bg-gray-500"
+          >
+            {{ instance.domOrder }}
+          </span>
+        </template>
       </span>
     </div>
 
