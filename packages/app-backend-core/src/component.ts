@@ -62,7 +62,7 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
         win.$vm0 = $vmQueue[0] = instance
       }
     }
-    if (process.env.NODE_ENV !== 'production' || SharedData.debugInfo) {
+    if (SharedData.debugInfo) {
       console.log('[DEBUG] inspect', instance)
     }
     const parentInstances = await ctx.api.walkComponentParents(instance)
