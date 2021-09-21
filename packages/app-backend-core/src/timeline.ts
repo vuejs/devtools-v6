@@ -131,7 +131,7 @@ export async function sendTimelineLayers (ctx: BackendContext) {
 }
 
 export async function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: BackendContext) {
-  const appId = app ? await getAppRecordId(app) : null
+  const appId = app ? getAppRecordId(app) : null
   const isAllApps = options.all || !app || appId == null
 
   const id = ctx.nextTimelineEventId++

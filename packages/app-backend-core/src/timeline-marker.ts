@@ -33,7 +33,7 @@ export async function sendTimelineMarkers (ctx: BackendContext) {
 async function serializeMarker (marker: TimelineMarker) {
   return {
     id: marker.id,
-    appId: marker.app ? await getAppRecordId(marker.app) : null,
+    appId: marker.app ? getAppRecordId(marker.app) : null,
     all: marker.all,
     time: marker.time,
     label: marker.label,

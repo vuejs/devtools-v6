@@ -9,7 +9,7 @@ export function getInspector (inspectorId: string, app: App, ctx: BackendContext
 
 export async function getInspectorWithAppId (inspectorId: string, appId: string, ctx: BackendContext): Promise<CustomInspector> {
   for (const i of ctx.customInspectors) {
-    if (i.id === inspectorId && (await getAppRecordId(i.app)) === appId) {
+    if (i.id === inspectorId && (getAppRecordId(i.app)) === appId) {
       return i
     }
   }
@@ -19,7 +19,7 @@ export async function getInspectorWithAppId (inspectorId: string, appId: string,
 export async function sendInspectorTree (inspector: CustomInspector, ctx: BackendContext) {
   const rootNodes = await ctx.api.getInspectorTree(inspector.id, inspector.app, inspector.treeFilter)
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_TREE, {
-    appId: await getAppRecordId(inspector.app),
+    appId: getAppRecordId(inspector.app),
     inspectorId: inspector.id,
     rootNodes
   })
@@ -28,7 +28,7 @@ export async function sendInspectorTree (inspector: CustomInspector, ctx: Backen
 export async function sendInspectorState (inspector: CustomInspector, ctx: BackendContext) {
   const state = inspector.selectedNodeId ? await ctx.api.getInspectorState(inspector.id, inspector.app, inspector.selectedNodeId) : null
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_STATE, {
-    appId: await getAppRecordId(inspector.app),
+    appId: getAppRecordId(inspector.app),
     inspectorId: inspector.id,
     state: stringify(state)
   })
@@ -46,7 +46,7 @@ export async function sendCustomInspectors (ctx: BackendContext) {
   for (const i of ctx.customInspectors) {
     inspectors.push({
       id: i.id,
-      appId: await getAppRecordId(i.app),
+      appId: getAppRecordId(i.app),
       pluginId: i.plugin.descriptor.id,
       label: i.label,
       icon: i.icon,
@@ -66,7 +66,7 @@ export async function sendCustomInspectors (ctx: BackendContext) {
 
 export async function selectInspectorNode (inspector: CustomInspector, nodeId: string, ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE, {
-    appId: await getAppRecordId(inspector.app),
+    appId: getAppRecordId(inspector.app),
     inspectorId: inspector.id,
     nodeId
   })

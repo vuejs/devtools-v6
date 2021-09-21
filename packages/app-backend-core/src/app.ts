@@ -56,7 +56,7 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
       if (rootInstance) {
         recordId++
         const name = await ctx.api.getAppRecordName(options.app, recordId.toString())
-        const id = await getAppRecordId(options.app, `id:${slug(name)}`)
+        const id = getAppRecordId(options.app, `id:${slug(name)}`)
 
         const [el]: HTMLElement[] = await ctx.api.getComponentRootElements(rootInstance)
 
@@ -125,7 +125,7 @@ export function mapAppRecord (record: AppRecord): SimpleAppRecord {
   }
 }
 
-export async function getAppRecordId (app, defaultId?: string): Promise<string> {
+export function getAppRecordId (app, defaultId?: string): string {
   if (app.__VUE_DEVTOOLS_APP_RECORD_ID__ != null) {
     return app.__VUE_DEVTOOLS_APP_RECORD_ID__
   }

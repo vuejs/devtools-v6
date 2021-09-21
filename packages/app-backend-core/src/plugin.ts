@@ -64,7 +64,7 @@ export async function serializePlugin (plugin: Plugin) {
   return {
     id: plugin.descriptor.id,
     label: plugin.descriptor.label,
-    appId: await getAppRecordId(plugin.descriptor.app),
+    appId: getAppRecordId(plugin.descriptor.app),
     packageName: plugin.descriptor.packageName,
     homepage: plugin.descriptor.homepage,
     logo: plugin.descriptor.logo,
