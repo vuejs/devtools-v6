@@ -18,6 +18,7 @@ import Mixins from './Mixins.vue'
 import Animation from './Animation.vue'
 import SetupScript from './SetupScript.vue'
 import SetupDataLike from './SetupDataLike.vue'
+import SetupTSScriptProps from './SetupTSScriptProps.vue'
 import DomOrder from './DomOrder.vue'
 
 import { h, createApp } from 'vue'
@@ -46,6 +47,7 @@ export default {
     Animation,
     SetupScript,
     SetupDataLike,
+    SetupTSScriptProps,
     DomOrder,
     inline: {
       render: () => h('h3', 'Inline component definition')
@@ -105,6 +107,7 @@ export default {
   <Mixins />
   <SetupScript />
   <SetupDataLike />
+  <SetupTSScriptProps my-prop="42" />
   <DomOrder />
   <inline />
   <global />
