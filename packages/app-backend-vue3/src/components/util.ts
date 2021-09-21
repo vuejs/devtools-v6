@@ -60,8 +60,9 @@ function getComponentTypeName (options) {
  * @param {Vue} instance
  */
 export function getUniqueComponentId (instance, ctx: BackendContext) {
-  const instanceId = instance === ctx.currentAppRecord.rootInstance ? 'root' : instance.uid
-  return `${ctx.currentAppRecord.id}:${instanceId}`
+  const appId = instance.appContext.app.__VUE_DEVTOOLS_APP_RECORD_ID__
+  const instanceId = instance === instance.root ? 'root' : instance.uid
+  return `${appId}:${instanceId}`
 }
 
 export function getRenderKey (value): string {
