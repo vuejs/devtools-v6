@@ -1,11 +1,4 @@
-import { createApp, h } from 'vue'
-import Child from './Child.vue'
-import SetupScript from './SetupScript.vue'
+import { createApp } from 'vue'
+import IframeApp from './IframeApp.vue'
 
-createApp({
-  name: 'IframeApp',
-  render: () => [
-    h(Child),
-    h(SetupScript)
-  ]
-}).mount('#app')
+createApp(IframeApp).mount('#app')
