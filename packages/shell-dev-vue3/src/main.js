@@ -39,6 +39,12 @@ const app2 = createApp({
 })
 app2.mount('#app2')
 
+const app2bis = createApp({
+  name: 'App2',
+  render: () => h('h1', 'App 2 Bis')
+})
+app2bis.mount('#app2bis')
+
 createApp(App3).mount('#app3')
 
 createApp({

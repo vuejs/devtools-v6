@@ -125,11 +125,24 @@ export function mapAppRecord (record: AppRecord): SimpleAppRecord {
   }
 }
 
+const appIds = new Set()
+
 export function getAppRecordId (app, defaultId?: string): string {
   if (app.__VUE_DEVTOOLS_APP_RECORD_ID__ != null) {
     return app.__VUE_DEVTOOLS_APP_RECORD_ID__
   }
-  const id = defaultId ?? (recordId++).toString()
+  let id = defaultId ?? (recordId++).toString()
+
+  if (defaultId && appIds.has(id)) {
+    let count = 1
+    while (appIds.has(`${defaultId}:${count}`)) {
+      count++
+    }
+    id = `${defaultId}:${count}`
+  }
+
+  appIds.add(id)
+
   app.__VUE_DEVTOOLS_APP_RECORD_ID__ = id
   return id
 }
@@ -181,6 +194,7 @@ export async function removeApp (app: App, ctx: BackendContext) {
   try {
     const appRecord = await getAppRecord(app, ctx)
     if (appRecord) {
+      appIds.delete(appRecord.id)
       const index = ctx.appRecords.indexOf(appRecord)
       if (index !== -1) ctx.appRecords.splice(index, 1)
       removeLayersForApp(app, ctx)
