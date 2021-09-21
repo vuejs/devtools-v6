@@ -24,8 +24,9 @@ const internalSharedData = {
   timelineTimeGrid: true,
   timelineScreenshots: true,
   menuStepScrolling: isMac,
-  pluginPermissions: {},
-  pluginSettings: {},
+  pluginPermissions: {} as any,
+  pluginSettings: {} as any,
+  pageConfig: {} as any,
   debugInfo: false
 }
 

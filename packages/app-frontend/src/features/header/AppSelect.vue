@@ -2,9 +2,12 @@
 import AppHeaderSelect from './AppHeaderSelect.vue'
 
 import { watch, defineComponent } from '@vue/composition-api'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { useApps } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
+import { useBridge } from '../bridge'
 
 export default defineComponent({
   components: {
@@ -13,6 +16,7 @@ export default defineComponent({
 
   setup () {
     const router = useRouter()
+    const { bridge } = useBridge()
 
     const {
       apps,
@@ -21,13 +25,27 @@ export default defineComponent({
       selectApp
     } = useApps()
 
+    watch(currentAppId, value => {
+      bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
+    }, {
+      immediate: true
+    })
+
     watch(apps, () => {
-      if (!currentApp.value && apps.value.length && currentAppId.value !== apps.value[0].id) {
-        router.push({
-          params: {
-            appId: apps.value[0].id.toString()
-          }
-        })
+      if (!currentApp.value && apps.value.length) {
+        let targetId: string
+        if (SharedData.pageConfig?.defaultSelectedAppId) {
+          targetId = SharedData.pageConfig.defaultSelectedAppId
+        } else if (currentAppId.value !== apps.value[0].id) {
+          targetId = apps.value[0].id
+        }
+        if (targetId) {
+          router.push({
+            params: {
+              appId: apps.value[0].id.toString()
+            }
+          })
+        }
       }
     })
 
@@ -84,6 +102,15 @@ export default defineComponent({
             >
             <span>{{ app.version }}</span>
           </span>
+
+          <template v-if="$shared.debugInfo">
+            <span
+              v-tooltip="'id'"
+              class="text-white px-1 rounded bg-gray-500 mx-1"
+            >
+              {{ app.id }}
+            </span>
+          </template>
         </div>
         <div
           v-if="app.iframe"

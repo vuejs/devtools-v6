@@ -1,6 +1,6 @@
-import { ref, computed, watch } from '@vue/composition-api'
+import { ref, computed } from '@vue/composition-api'
 import { BridgeEvents, Bridge } from '@vue-devtools/shared-utils'
-import { useBridge, getBridge } from '@front/features/bridge'
+import { getBridge } from '@front/features/bridge'
 import { useRoute, useRouter } from '@front/util/router'
 import { fetchLayers } from '../timeline/composable'
 
@@ -25,7 +25,6 @@ export function useCurrentApp () {
 }
 
 export function useApps () {
-  const { bridge } = useBridge()
   const router = useRouter()
 
   const {
@@ -43,12 +42,6 @@ export function useApps () {
       })
     }
   }
-
-  watch(currentAppId, value => {
-    bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
-  }, {
-    immediate: true
-  })
 
   return {
     apps,
