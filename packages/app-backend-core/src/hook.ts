@@ -11,29 +11,33 @@
 export function installHook (target, isIframe = false) {
   let listeners = {}
 
+  function injectIframeHook (iframe) {
+    if ((iframe as any).__vdevtools__injected) return
+    try {
+      (iframe as any).__vdevtools__injected = true
+      const inject = () => {
+        try {
+          (iframe.contentWindow as any).__VUE_DEVTOOLS_IFRAME__ = iframe
+          const script = iframe.contentDocument.createElement('script')
+          script.textContent = ';(' + installHook.toString() + ')(window, true)'
+          iframe.contentDocument.documentElement.appendChild(script)
+          script.parentNode.removeChild(script)
+        } catch (e) {
+          // Ignore
+        }
+      }
+      inject()
+      iframe.addEventListener('load', () => inject())
+    } catch (e) {
+      // Ignore
+    }
+  }
+
   let iframeChecks = 0
   function injectToIframes () {
     const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe')
     for (const iframe of iframes) {
-      try {
-        if ((iframe as any).__vdevtools__injected) continue
-        (iframe as any).__vdevtools__injected = true
-        const inject = () => {
-          try {
-            (iframe.contentWindow as any).__VUE_DEVTOOLS_IFRAME__ = iframe
-            const script = iframe.contentDocument.createElement('script')
-            script.textContent = ';(' + installHook.toString() + ')(window, true)'
-            iframe.contentDocument.documentElement.appendChild(script)
-            script.parentNode.removeChild(script)
-          } catch (e) {
-            // Ignore
-          }
-        }
-        inject()
-        iframe.addEventListener('load', () => inject())
-      } catch (e) {
-        // Ignore
-      }
+      injectIframeHook(iframe)
     }
   }
   injectToIframes()
@@ -69,6 +73,11 @@ export function installHook (target, isIframe = false) {
         sendToParent(hook => { hook.Vue = value })
       },
 
+      // eslint-disable-next-line accessor-pairs
+      set enabled (value) {
+        sendToParent(hook => { hook.enabled = value })
+      },
+
       on (event, fn) {
         sendToParent(hook => hook.on(event, fn))
       },
@@ -88,6 +97,7 @@ export function installHook (target, isIframe = false) {
   } else {
     hook = {
       Vue: null,
+      enabled: undefined,
       _buffer: [],
       store: null,
       initialState: null,
@@ -228,6 +238,16 @@ export function installHook (target, isIframe = false) {
       return hook
     }
   })
+
+  // Handle apps initialized before hook injection
+  if (target.__VUE_DEVTOOLS_HOOK_REPLAY__) {
+    try {
+      target.__VUE_DEVTOOLS_HOOK_REPLAY__.forEach(cb => cb(hook))
+      target.__VUE_DEVTOOLS_HOOK_REPLAY__ = []
+    } catch (e) {
+      console.error('[vue-devtools] Error during hook replay', e)
+    }
+  }
 
   // Clone deep utility for cloning initial state of the store
   // Forked from https://github.com/planttheidea/fast-copy
