@@ -32,8 +32,7 @@ function detect (win) {
     const vueDetected = !!(window.__VUE__)
     if (vueDetected) {
       win.postMessage({
-        // TODO disable devtools
-        devtoolsEnabled: true,
+        devtoolsEnabled: window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled,
         vueDetected: true
       }, '*')
 
