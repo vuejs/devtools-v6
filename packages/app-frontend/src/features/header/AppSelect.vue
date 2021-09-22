@@ -31,22 +31,27 @@ export default defineComponent({
       immediate: true
     })
 
+    let initDefaultAppId = false
+
     watch(apps, () => {
-      if (!currentApp.value && apps.value.length) {
+      if ((!currentApp.value || (SharedData.pageConfig?.defaultSelectedAppId && !initDefaultAppId)) && apps.value.length) {
         let targetId: string
         if (SharedData.pageConfig?.defaultSelectedAppId) {
           targetId = SharedData.pageConfig.defaultSelectedAppId
+          initDefaultAppId = true
         } else if (currentAppId.value !== apps.value[0].id) {
           targetId = apps.value[0].id
         }
         if (targetId) {
           router.push({
             params: {
-              appId: apps.value[0].id.toString()
+              appId: targetId
             }
           })
         }
       }
+    }, {
+      immediate: true
     })
 
     const { orientation } = useOrientation()
