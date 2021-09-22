@@ -16,11 +16,12 @@ function detect (win) {
       let Vue
 
       if (window.$nuxt) {
-        Vue = window.$nuxt.$root.constructor
+        Vue = window.$nuxt.$root && window.$nuxt.$root.constructor
       }
 
       win.postMessage({
-        devtoolsEnabled: Vue && Vue.config.devtools,
+        devtoolsEnabled: (/* Vue 2 */ Vue && Vue.config.devtools) ||
+          (/* Vue 3.2.14+ */ window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled),
         vueDetected: true,
         nuxtDetected: true
       }, '*')
@@ -32,7 +33,7 @@ function detect (win) {
     const vueDetected = !!(window.__VUE__)
     if (vueDetected) {
       win.postMessage({
-        devtoolsEnabled: window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled,
+        devtoolsEnabled: /* Vue 3.2.14+ */ window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled,
         vueDetected: true
       }, '*')
 
