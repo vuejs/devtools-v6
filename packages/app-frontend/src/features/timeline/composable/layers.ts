@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { computed } from '@vue/composition-api'
 import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
-import { useApps } from '@front/features/apps'
+import { useApps, waitForAppSelect } from '@front/features/apps'
 import { getBridge } from '@front/features/bridge'
 import {
   layersPerApp,
@@ -110,6 +110,7 @@ export function useLayers () {
   }
 }
 
-export function fetchLayers () {
+export async function fetchLayers () {
+  await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, {})
 }

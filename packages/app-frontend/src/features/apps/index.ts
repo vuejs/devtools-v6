@@ -71,6 +71,20 @@ function fetchApps () {
   getBridge().send(BridgeEvents.TO_BACK_APP_LIST, {})
 }
 
+export const pendingSelectAppId = ref<string>(null)
+
+const pendingSelectPromises: (() => void)[] = []
+
+export function waitForAppSelect (): Promise<void> {
+  if (!pendingSelectAppId.value) {
+    return Promise.resolve()
+  } else {
+    return new Promise(resolve => {
+      pendingSelectPromises.push(resolve)
+    })
+  }
+}
+
 export function setupAppsBridgeEvents (bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_APP_ADD, ({ appRecord }) => {
     addApp(appRecord)
@@ -83,6 +97,15 @@ export function setupAppsBridgeEvents (bridge: Bridge) {
 
   bridge.on(BridgeEvents.TO_FRONT_APP_LIST, ({ apps: list }) => {
     apps.value = list
+  })
+
+  bridge.on(BridgeEvents.TO_FRONT_APP_SELECTED, ({ id }) => {
+    if (pendingSelectAppId.value === id) {
+      pendingSelectAppId.value = null
+      for (const resolve of pendingSelectPromises) {
+        resolve()
+      }
+    }
   })
 
   fetchApps()

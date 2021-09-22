@@ -11,7 +11,7 @@ import {
   openInEditor
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
-import { AppRecord } from '@front/features/apps'
+import { AppRecord, waitForAppSelect } from '@front/features/apps'
 import { useRoute, useRouter } from '@front/util/router'
 
 export const rootInstances = ref<ComponentTreeNode[]>([])
@@ -95,7 +95,8 @@ export function useComponents () {
     deep: true
   })
 
-  onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, ({ id }) => {
+  onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, async ({ id }) => {
+    await waitForAppSelect()
     requestComponentTree()
     selectedComponentData.value = null
     if (lastSelectedApp !== null) {
@@ -255,7 +256,7 @@ export function resetComponents () {
 
 export const requestedComponentTree = new Set()
 
-export function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
+export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
   if (!instanceId) {
     instanceId = '_root'
   }
@@ -268,6 +269,7 @@ export function requestComponentTree (instanceId: ComponentTreeNode['id'] = null
   if (instanceId === '_root') {
     resetComponentsQueued.value = true
   }
+  await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
     filter: treeFilter.value
@@ -305,10 +307,11 @@ export function addToComponentsMap (instance: ComponentTreeNode) {
   }
 }
 
-export function loadComponent (id: ComponentTreeNode['id']) {
+export async function loadComponent (id: ComponentTreeNode['id']) {
   if (!id || selectedComponentPendingId.value === id) return
   lastSelectedComponentId = id
   selectedComponentPendingId.value = id
+  await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
 }
 

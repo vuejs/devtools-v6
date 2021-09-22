@@ -4,7 +4,7 @@ import AppHeaderSelect from './AppHeaderSelect.vue'
 import { watch, defineComponent } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
-import { useApps } from '@front/features/apps'
+import { useApps, pendingSelectAppId } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
 import { useBridge } from '../bridge'
@@ -26,7 +26,10 @@ export default defineComponent({
     } = useApps()
 
     watch(currentAppId, value => {
-      bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
+      if (pendingSelectAppId.value !== value) {
+        pendingSelectAppId.value = value
+        bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
+      }
     }, {
       immediate: true
     })
