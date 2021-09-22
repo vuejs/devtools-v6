@@ -73,7 +73,7 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.getComponentRenderCode(payload => {
-      payload.code = payload.componentInstance.render.toString()
+      payload.code = !(payload.componentInstance.type instanceof Function) ? payload.componentInstance.render.toString() : payload.componentInstance.type.toString()
     })
 
     api.on.transformCall(payload => {
