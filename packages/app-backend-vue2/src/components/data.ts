@@ -155,6 +155,9 @@ function getPropType (type) {
   if (Array.isArray(type)) {
     return type.map(t => getPropType(t)).join(' or ')
   }
+  if (type == null) {
+    return 'null'
+  }
   const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
     ? (match && match[1]) || 'any'

@@ -44,6 +44,7 @@ function processProps (instance) {
 
   for (let key in instance.props) {
     const propDefinition = propDefinitions ? propDefinitions[key] : null
+    console.log(key, propDefinition)
     key = camelize(key)
     propsData.push({
       type: 'props',
@@ -75,6 +76,9 @@ const fnTypeRE = /^(?:function|class) (\w+)/
 function getPropType (type) {
   if (Array.isArray(type)) {
     return type.map(t => getPropType(t)).join(' or ')
+  }
+  if (type == null) {
+    return 'null'
   }
   const match = type.toString().match(fnTypeRE)
   return typeof type === 'function'
