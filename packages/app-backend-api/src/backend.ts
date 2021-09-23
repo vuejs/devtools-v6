@@ -1,5 +1,6 @@
 import { AppRecord } from './app-record'
 import { DevtoolsApi } from './api'
+import { BackendContext } from './backend-context'
 
 export enum BuiltinBackendFeature {
   COMPONENTS = 'components',
@@ -14,6 +15,7 @@ export enum BuiltinBackendFeature {
 export interface DevtoolsBackend {
   frameworkVersion: 1 | 2 | 3
   availableFeatures: (BuiltinBackendFeature | string)[]
+  canHandle: (ctx: BackendContext) => boolean
   setup: (api: DevtoolsApi) => void
   setupApp?: (api: DevtoolsApi, app: AppRecord) => void
 }

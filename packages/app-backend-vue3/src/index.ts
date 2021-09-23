@@ -1,4 +1,4 @@
-import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
+import { DevtoolsBackend, BuiltinBackendFeature, BackendContext } from '@vue-devtools/app-backend-api'
 import { ComponentWalker } from './components/tree'
 import { editState, getInstanceDetails, getCustomInstanceDetails } from './components/data'
 import { getInstanceName, getComponentInstances } from './components/util'
@@ -11,15 +11,17 @@ export const backend: DevtoolsBackend = {
   availableFeatures: [
     BuiltinBackendFeature.COMPONENTS
   ],
-
+  canHandle (ctx: BackendContext) {
+    return (ctx.currentAppRecord && ctx.currentAppRecord.options.version[0] === this.frameworkVersion.toString())
+  },
   setup (api) {
-    api.on.getAppRecordName(payload => {
+    api.on.getAppRecordName((payload, ctx) => {
       if (payload.app._component) {
         payload.name = payload.app._component.name
       }
     })
 
-    api.on.getAppRootInstance(payload => {
+    api.on.getAppRootInstance((payload, ctx) => {
       if (payload.app._instance) {
         payload.root = payload.app._instance
       } else if (payload.app._container?._vnode?.component) {
@@ -28,55 +30,66 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.walkComponentTree(async (payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       const walker = new ComponentWalker(payload.maxDepth, payload.filter, ctx)
       payload.componentTreeData = await walker.getComponentTree(payload.componentInstance)
     })
 
     api.on.walkComponentParents((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       const walker = new ComponentWalker(0, null, ctx)
       payload.parentInstances = walker.getComponentParents(payload.componentInstance)
     })
 
     api.on.inspectComponent((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
       backendInjections.instanceMap = ctx.currentAppRecord.instanceMap
       backendInjections.isVueInstance = val => val._ && Object.keys(val._).includes('vnode')
       payload.instanceData = getInstanceDetails(payload.componentInstance, ctx)
     })
 
-    api.on.getComponentName(payload => {
+    api.on.getComponentName((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       payload.name = getInstanceName(payload.componentInstance)
     })
 
-    api.on.getComponentBounds(payload => {
+    api.on.getComponentBounds((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       payload.bounds = getInstanceOrVnodeRect(payload.componentInstance)
     })
 
-    api.on.getElementComponent(payload => {
+    api.on.getElementComponent((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       payload.componentInstance = getComponentInstanceFromElement(payload.element)
     })
 
-    api.on.getComponentInstances(payload => {
+    api.on.getComponentInstances((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       payload.componentInstances = getComponentInstances(payload.app)
     })
 
-    api.on.getComponentRootElements(payload => {
+    api.on.getComponentRootElements((payload, ctx) => {
       payload.rootElements = getRootElementsFromComponentInstance(payload.componentInstance)
     })
 
     api.on.editComponentState((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       editState(payload, ctx)
     })
 
-    api.on.getComponentDevtoolsOptions(payload => {
-      payload.options = payload.componentInstance.type.devtools
+    api.on.getComponentDevtoolsOptions((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
+      payload.options = payload.componentInstance.type?.devtools
     })
 
-    api.on.getComponentRenderCode(payload => {
+    api.on.getComponentRenderCode((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       payload.code = !(payload.componentInstance.type instanceof Function) ? payload.componentInstance.render.toString() : payload.componentInstance.type.toString()
     })
 
-    api.on.transformCall(payload => {
+    api.on.transformCall((payload, ctx) => {
+      if (!this.canHandle(ctx)) return
       if (payload.callName === HookEvents.COMPONENT_UPDATED) {
         const component = payload.inArgs[0]
         payload.outArgs = [
