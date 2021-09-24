@@ -44,7 +44,6 @@ function processProps (instance) {
 
   for (let key in instance.props) {
     const propDefinition = propDefinitions ? propDefinitions[key] : null
-    console.log(key, propDefinition)
     key = camelize(key)
     propsData.push({
       type: 'props',
