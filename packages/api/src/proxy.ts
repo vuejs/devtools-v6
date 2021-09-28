@@ -36,7 +36,7 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
       }
     }
     const localSettingsSaveId = `__vue-devtools-plugin-settings__${plugin.id}`
-    let currentSettings = { ...defaultSettings }
+    let currentSettings = Object.assign({}, defaultSettings)
     try {
       const raw = localStorage.getItem(localSettingsSaveId)
       const data = JSON.parse(raw)
