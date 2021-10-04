@@ -80,11 +80,9 @@ export class ComponentWalker {
     const list = []
     if (subTree.component) {
       list.push(subTree.component)
-    }
-    if (subTree.suspense) {
+    } else if (subTree.suspense) {
       list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch))
-    }
-    if (Array.isArray(subTree.children)) {
+    } else if (Array.isArray(subTree.children)) {
       subTree.children.forEach(childSubTree => {
         if (childSubTree.component) {
           list.push(childSubTree.component)
@@ -129,20 +127,26 @@ export class ComponentWalker {
     const children = this.getInternalInstanceChildren(instance.subTree)
       .filter(child => !isBeingDestroyed(child))
 
+    const parents = this.getComponentParents(instance) || []
+
+    const inactive = !!instance.isDeactivated || parents.some(parent => parent.isDeactivated)
+
     const treeNode: ComponentTreeNode = {
       uid: instance.uid,
       id,
       name,
       renderKey: getRenderKey(instance.vnode ? instance.vnode.key : null),
-      inactive: !!instance.isDeactivated,
+      inactive,
       hasChildren: !!children.length,
       children: [],
       isFragment: isFragment(instance),
       tags: []
     }
 
+    const isKeepAliveChild = parents.some(parent => parent.type.__isKeepAlive)
+
     // capture children
-    if (depth < this.maxDepth) {
+    if (isKeepAliveChild || depth < this.maxDepth) {
       treeNode.children = await Promise.all(children
         .map((child, index, list) => this.capture(child, list, depth + 1))
         .filter(Boolean))
@@ -153,9 +157,8 @@ export class ComponentWalker {
       const cachedComponents = Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
       for (const child of cachedComponents) {
         if (!children.includes(child)) {
-          const node = await this.capture(child, null, depth + 1)
+          const node = await this.capture({ ...child, isDeactivated: true }, null, depth + 1)
           if (node) {
-            node.inactive = true
             treeNode.children.push(node)
           }
         }
