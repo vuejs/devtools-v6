@@ -94,7 +94,9 @@ export class ComponentWalker {
     return list.filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
   }
 
-  private captureId (instance) {
+  private captureId (instance): string {
+    if (!instance) return null
+
     // instance.uid is not reliable in devtools as there
     // may be 2 roots with same uid which causes unexpected
     // behaviour
