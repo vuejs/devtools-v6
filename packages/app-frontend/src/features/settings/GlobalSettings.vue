@@ -69,5 +69,17 @@ export default defineComponent({})
         </VueSwitch>
       </VueFormField>
     </div>
+
+    <portal to="header-end">
+      <VueButton
+        :to="{
+          name: 'plugins'
+        }"
+        icon-left="extension"
+        class="flat"
+      >
+        Plugin settings
+      </VueButton>
+    </portal>
   </div>
 </template>

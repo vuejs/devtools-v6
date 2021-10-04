@@ -72,6 +72,18 @@ export default defineComponent({
         </div>
       </template>
     </SplitPane>
+
+    <portal to="header-end">
+      <VueButton
+        :to="{
+          name: 'global-settings'
+        }"
+        icon-left="settings"
+        class="flat"
+      >
+        Global settings
+      </VueButton>
+    </portal>
   </div>
 </template>
 
