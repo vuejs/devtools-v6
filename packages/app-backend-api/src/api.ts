@@ -356,12 +356,12 @@ export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPlugi
     return true
   }
 
-  getSettings () {
-    return getPluginSettings(this.plugin.descriptor.id, this.defaultSettings)
+  getSettings (pluginId?: string) {
+    return getPluginSettings(pluginId ?? this.plugin.descriptor.id, this.defaultSettings)
   }
 
-  setSettings (value: TSettings) {
-    setPluginSettings(this.plugin.descriptor.id, value)
+  setSettings (value: TSettings, pluginId?: string) {
+    setPluginSettings(pluginId ?? this.plugin.descriptor.id, value)
   }
 
   private get enabled () {

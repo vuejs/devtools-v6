@@ -18,7 +18,7 @@ export interface DevtoolsPluginApi<TSettings> {
   getComponentInstances (app: App): Promise<ComponentInstance[]>
   highlightElement (instance: ComponentInstance): void
   unhighlightElement (): void
-  getSettings (): TSettings
+  getSettings (pluginId?: string): TSettings
   /**
    * @private Not implemented yet
    */
