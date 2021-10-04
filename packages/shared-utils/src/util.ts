@@ -630,6 +630,10 @@ export function set (object, path, value, cb = null) {
   const sections = Array.isArray(path) ? path : path.split('.')
   while (sections.length > 1) {
     object = object[sections.shift()]
+    // Vue 3 ref
+    if (object?.__v_isRef) {
+      object = object.value
+    }
   }
   const field = sections[0]
   if (cb) {
@@ -643,6 +647,10 @@ export function get (object, path) {
   const sections = Array.isArray(path) ? path : path.split('.')
   for (let i = 0; i < sections.length; i++) {
     object = object[sections[i]]
+    // Vue 3 ref
+    if (object?.__v_isRef) {
+      object = object.value
+    }
     if (!object) {
       return undefined
     }

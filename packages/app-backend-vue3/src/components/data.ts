@@ -286,11 +286,7 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
     const currentValue = get(componentInstance.devtoolsRawSetupState, path)
     if (currentValue != null) {
       const info = getSetupStateInfo(currentValue)
-
       if (info.readonly) return
-      if (info.ref) {
-        targetPath.splice(1, 0, 'value')
-      }
     }
   } else {
     target = componentInstance.proxy
