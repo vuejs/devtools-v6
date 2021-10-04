@@ -317,7 +317,7 @@ export async function loadComponent (id: ComponentTreeNode['id']) {
 
 export function sortChildren (children: ComponentTreeNode[]) {
   return children.slice().sort((a, b) => {
-    const order = compareIndexLists(a.domOrder, b.domOrder)
+    const order = compareIndexLists(a.domOrder ?? [], b.domOrder ?? [])
     if (order === 0) {
       return a.id.localeCompare(b.id)
     } else {
