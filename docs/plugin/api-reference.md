@@ -26,6 +26,7 @@ It has the following properties:
 - `logo` (optional): URL to a logo of your Vue plugin.
 - `componentStateTypes` (optional): an array of custom component state section names you are going to add to the Component inspector. If you add new state to the component inspector, you should declare their sections here so the devtools can display the plugin icon.
 - `disableAppScope` (optional): if set to `true`, the hooks registered with this plugin will not be scoped to the associated app. In that case, you might need to use the `app` payload property to check what the current app is inside each hook.
+- `disablePluginScope` (optional): if set to `true`, the hooks registered with this plugin will not be scoped to the current plugin. In that case, you might need to use the `pluginId` payload property (depending on the hook) to check what the related plugin is inside each hook.
 - `enableEarlyProxy` (optional): if set to `true`, the plugin will run even if the Vue devtools are not connected yet using a proxy of the Plugin API and a buffer queue. This is useful if you need to add timeline events before the user opens the devtools.
 - `settings` (optional): an object describing the plugin settings. Learn more about plugin settings [here](./plugins-guide.md#plugin-settings).
 
@@ -595,17 +596,41 @@ api.on.timelineCleared(() => {
 })
 ```
 
-## Utilities
+## Settings
+
+Plugin settings allow the user to customize the plugin behavior. Learn more about plugin settings [here](./plugins-guide.md#plugin-settings).
 
 ### getSettings
 
-Get the current plugin settings. Learn more about plugin settings [here](./plugins-guide.md#plugin-settings).
+Get the current plugin settings.
 
 Example:
 
 ```js
 api.getSettings()
 ```
+
+### on.setPluginSettings
+
+Hook called when the user changes the plugin settings.
+
+Payload properties:
+
+- `key`: settings item
+- `newValue`: new value for the changed settings
+- `oldValue`: its old value (deep clone)
+- `settings`: the whole current settings state object
+
+```js
+// Plugin settings change
+api.on.setPluginSettings(payload => {
+  console.log('plugin settings changed', payload.settings,
+    // Info about the change
+    payload.key, payload.newValue, payload.oldValue)
+})
+```
+
+## Utilities
 
 ### getComponentInstances
 

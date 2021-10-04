@@ -4,6 +4,7 @@ import PluginSettingsItem from './PluginSettingsItem.vue'
 
 import { defineComponent, computed, PropType } from '@vue/composition-api'
 import { getPluginSettings, setPluginSettings, getPluginDefaultSettings } from '@vue-devtools/shared-utils'
+import cloneDeep from 'lodash/cloneDeep'
 import { Plugin } from '.'
 import { getBridge } from '../bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils/src'
@@ -27,11 +28,12 @@ export default defineComponent({
     const currentValues = computed(() => getPluginSettings(props.plugin.id, defaultValues.value))
 
     function updateValue (id: string, value: any) {
+      const oldValue = cloneDeep(currentValues.value[id])
       setPluginSettings(props.plugin.id, {
         ...currentValues.value,
         [id]: value
       })
-      getBridge().send(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, { pluginId: props.plugin.id })
+      getBridge().send(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, { pluginId: props.plugin.id, key: id, newValue: value, oldValue })
     }
 
     return {

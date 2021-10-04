@@ -23,7 +23,8 @@ export const enum Hooks {
   TIMELINE_CLEARED = 'timelineCleared',
   GET_INSPECTOR_TREE = 'getInspectorTree',
   GET_INSPECTOR_STATE = 'getInspectorState',
-  EDIT_INSPECTOR_STATE = 'editInspectorState'
+  EDIT_INSPECTOR_STATE = 'editInspectorState',
+  SET_PLUGIN_SETTINGS = 'setPluginSettings',
 }
 
 export interface ComponentBounds {
@@ -136,6 +137,14 @@ export type HookPayloads = {
     state: EditStatePayload
     set: (object: any, path: string | (string[]), value: any, cb?: (object: any, field: string, value: any) => void) => void
   }
+  [Hooks.SET_PLUGIN_SETTINGS]: {
+    app: App
+    pluginId: string
+    key: string
+    newValue: any
+    oldValue: any
+    settings: any
+  }
 }
 
 export type EditStatePayload = {
@@ -172,4 +181,5 @@ export interface Hookable<TContext> {
   getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
   getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)
   editInspectorState (handler: HookHandler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE], TContext>)
+  setPluginSettings (handler: HookHandler<HookPayloads[Hooks.SET_PLUGIN_SETTINGS], TContext>)
 }

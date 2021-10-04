@@ -9,6 +9,7 @@ export interface PluginDescriptor {
   componentStateTypes?: string[]
   logo?: string
   disableAppScope?: boolean
+  disablePluginScope?: boolean
   /**
    * Run the plugin setup and expose the api even if the devtools is not opened yet.
    * Useful to record timeline events early.

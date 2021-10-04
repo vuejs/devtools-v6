@@ -34,6 +34,11 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
         // App scope
         if (!this.plugin.descriptor.disableAppScope &&
           this.ctx.currentAppRecord.options.app !== this.plugin.descriptor.app) return
+
+        // Plugin scope
+        if (!this.plugin.descriptor.disablePluginScope &&
+          (args[0] as any).pluginId != null && (args[0] as any).pluginId !== this.plugin.descriptor.id) return
+
         return originalHandler(...args)
       }
     }
@@ -142,5 +147,9 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
 
   editInspectorState (handler: Handler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE]>) {
     this.hook(Hooks.EDIT_INSPECTOR_STATE, handler, PluginPermission.CUSTOM_INSPECTOR)
+  }
+
+  setPluginSettings (handler: Handler<HookPayloads[Hooks.SET_PLUGIN_SETTINGS]>) {
+    this.hook(Hooks.SET_PLUGIN_SETTINGS, handler)
   }
 }

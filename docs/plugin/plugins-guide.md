@@ -836,6 +836,14 @@ setupDevtoolsPlugin({
 
 ![screenshot of the plugin settings](../assets/plugin-settings.png)
 
+You can listen for changes made to the settings by the user with the [`api.on.setPluginSettings`](./api-reference.md#on-setpluginsettings) hook:
+
+```js
+api.on.setPluginSettings(payload => {
+  // Do something...
+})
+```
+
 ### Tree-shaking for production
 
 As we are going to write code only for integrating for the Vue Devtools, it would be a good idea to strip it for the production versions of our package - thus improving size and performance.

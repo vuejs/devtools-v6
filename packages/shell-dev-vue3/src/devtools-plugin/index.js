@@ -297,6 +297,11 @@ export default {
           }
         }
       })
+
+      // Plugin settings change
+      api.on.setPluginSettings(payload => {
+        console.log('plugin settings changed', payload)
+      })
     })
 
     // Outside of setupDevtoolsPlugin

@@ -32,7 +32,7 @@ import {
   getComponentInstance
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions } from '@vue/devtools-api'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
@@ -560,7 +560,16 @@ function connectBridge () {
     await sendPluginList(ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, ({ pluginId }) => {
-    ctx.hook.emit(HookEvents.PLUGIN_SETTINGS_SET, pluginId, getPluginSettings(pluginId))
+  ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, ({ pluginId, key, newValue, oldValue }) => {
+    const settings = getPluginSettings(pluginId)
+    ctx.hook.emit(HookEvents.PLUGIN_SETTINGS_SET, pluginId, settings)
+    ctx.api.callHook(Hooks.SET_PLUGIN_SETTINGS, {
+      app: ctx.currentAppRecord.options.app,
+      pluginId,
+      key,
+      newValue,
+      oldValue,
+      settings
+    })
   })
 }
