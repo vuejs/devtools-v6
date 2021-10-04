@@ -1,17 +1,20 @@
 <script lang="ts">
 import AppHeaderSelect from './AppHeaderSelect.vue'
+import AppSelectItem from './AppSelectItem.vue'
 
-import { watch, defineComponent } from '@vue/composition-api'
+import { watch, defineComponent, computed } from '@vue/composition-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { useApps, pendingSelectAppId } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
 import { useBridge } from '../bridge'
+import { useVueVersionCheck } from './vue-version-check'
 
 export default defineComponent({
   components: {
-    AppHeaderSelect
+    AppHeaderSelect,
+    AppSelectItem
   },
 
   setup () {
@@ -59,11 +62,16 @@ export default defineComponent({
 
     const { orientation } = useOrientation()
 
+    // Vue version
+    const { getLatestVersion } = useVueVersionCheck()
+    const hasNewVueVersion = computed(() => apps.value.some(app => app.version !== getLatestVersion(app.version)))
+
     return {
       currentApp,
       apps,
       selectApp,
-      orientation
+      orientation,
+      hasNewVueVersion
     }
   }
 })
@@ -84,53 +92,32 @@ export default defineComponent({
           'icon-button': orientation === 'portrait'
         }"
       >
-        <template v-if="orientation === 'landscape'">
-          <span v-if="currentApp">
-            {{ currentApp.name }}
-          </span>
-          <span
-            v-else
-            class="opacity-50"
-          >
-            No app
-          </span>
-        </template>
+        <div class="flex items-center space-x-2">
+          <template v-if="orientation === 'landscape'">
+            <span v-if="currentApp">
+              {{ currentApp.name }}
+            </span>
+            <span
+              v-else
+              class="opacity-50"
+            >
+              No app
+            </span>
+          </template>
+
+          <VueIcon
+            v-if="hasNewVueVersion"
+            icon="new_releases"
+            class="text-green-500"
+          />
+        </div>
       </VueButton>
     </template>
 
-    <template #default="{ item: app }">
-      <div class="leading-tight">
-        <div class="app-button flex items-center">
-          <span class="truncate flex-1">{{ app.name }}</span>
-          <span class="flex-none flex items-center">
-            <img
-              src="~@front/assets/vue-logo.svg"
-              class="w-6 h-6"
-              alt="Vue"
-            >
-            <span>{{ app.version }}</span>
-          </span>
-
-          <template v-if="$shared.debugInfo">
-            <span
-              v-tooltip="'id'"
-              class="text-white px-1 rounded bg-gray-500 mx-1"
-            >
-              {{ app.id }}
-            </span>
-          </template>
-        </div>
-        <div
-          v-if="app.iframe"
-          class="flex items-center space-x-1 text-2xs font-mono text-gray-500"
-        >
-          <VueIcon
-            icon="web"
-            class="w-4 h-4"
-          />
-          <span>{{ app.iframe }}</span>
-        </div>
-      </div>
+    <template #default="{ item }">
+      <AppSelectItem
+        :app="item"
+      />
     </template>
   </AppHeaderSelect>
 </template>
