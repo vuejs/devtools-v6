@@ -31,7 +31,7 @@ export async function takeScreenshot (event: TimelineEvent) {
         id: screenshot.id
       })
       screenshots.value.push(screenshot)
-    } else if (typeof chrome !== 'undefined' && chrome.tabs) {
+    } else if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.captureVisibleTab === 'function') {
       chrome.tabs.captureVisibleTab({
         format: 'png'
       }, dataUrl => {
@@ -51,7 +51,7 @@ export async function takeScreenshot (event: TimelineEvent) {
   }
 }
 
-export const supportsScreenshot = typeof browser !== 'undefined' || (typeof chrome !== 'undefined' && !!chrome.tabs)
+export const supportsScreenshot = typeof browser !== 'undefined' || (typeof chrome !== 'undefined' && !!chrome.tabs && typeof chrome.tabs.captureVisibleTab === 'function')
 
 if (typeof browser !== 'undefined') {
   browser.runtime.onMessage.addListener(req => {
