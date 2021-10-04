@@ -1,7 +1,7 @@
 <script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
-import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import PluginListItem from './PluginListItem.vue'
+import PluginHome from './PluginHome.vue'
 
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import { usePlugins } from '.'
@@ -10,7 +10,7 @@ export default defineComponent({
   components: {
     SplitPane,
     PluginListItem,
-    EmptyPane
+    PluginHome
   },
 
   setup () {
@@ -35,12 +35,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <EmptyPane
+  <PluginHome
     v-if="!plugins.length"
-    icon="extension"
-  >
-    No devtools plugins found
-  </EmptyPane>
+    no-plugins
+  />
   <SplitPane
     v-else
     save-id="plugins"
@@ -65,32 +63,6 @@ export default defineComponent({
           />
         </div>
       </div>
-
-      <portal to="header-end">
-        <VueDropdown
-          :offset="[0, 0]"
-        >
-          <template #trigger>
-            <VueButton
-              class="icon-button flat"
-              icon-left="help"
-            />
-          </template>
-
-          <div>
-            <div class="px-10 py-8 flex items-center space-x-8 max-w-lg">
-              <img
-                src="~@front/assets/undraw_Gift_box.svg"
-                class="max-h-32 flex-none"
-              >
-
-              <p class="flex-1">
-                Devtools plugins are added by packages in your application. They can provide new features to the Vue devtools, such as custom inspectors, additional component data or timeline layers.
-              </p>
-            </div>
-          </div>
-        </VueDropdown>
-      </portal>
     </template>
 
     <template #right>
