@@ -35,40 +35,44 @@ export default defineComponent({
 </script>
 
 <template>
-  <PluginHome
-    v-if="!plugins.length"
-    no-plugins
-  />
-  <SplitPane
-    v-else
-    save-id="plugins"
-    :default-split="30"
-  >
-    <template #left>
-      <div class="h-full flex flex-col">
-        <div class="flex-none">
-          <VueInput
-            v-model="search"
-            icon-left="search"
-            placeholder="Filter devtools plugins..."
-            select-all
-            class="w-full flat border-b border-gray-200 dark:border-gray-800"
-          />
+  <div class="h-full">
+    <PluginHome
+      v-if="!plugins.length"
+      no-plugins
+    />
+    <SplitPane
+      v-else
+      save-id="plugins"
+      :default-split="30"
+    >
+      <template #left>
+        <div class="h-full flex flex-col">
+          <div class="flex-none">
+            <VueInput
+              v-model="search"
+              icon-left="search"
+              placeholder="Filter devtools plugins..."
+              select-all
+              class="w-full flat border-b border-gray-200 dark:border-gray-800"
+            />
+          </div>
+          <div class="overflow-y-auto">
+            <PluginListItem
+              v-for="plugin of plugins"
+              :key="plugin.id"
+              :plugin="plugin"
+            />
+          </div>
         </div>
-        <div class="overflow-y-auto">
-          <PluginListItem
-            v-for="plugin of plugins"
-            :key="plugin.id"
-            :plugin="plugin"
-          />
-        </div>
-      </div>
-    </template>
+      </template>
 
-    <template #right>
-      <router-view />
-    </template>
-  </SplitPane>
+      <template #right>
+        <div class="h-full overflow-y-auto">
+          <router-view />
+        </div>
+      </template>
+    </SplitPane>
+  </div>
 </template>
 
 <style scoped>
