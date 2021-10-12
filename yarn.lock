@@ -4185,9 +4185,9 @@ electron-to-chromium@^1.3.811:
   integrity sha512-IadPc2Ep1RGFYfLYdp0FTOgdPUDg3lvH7vqwGGdAuHtbnVc8M2qldS+SGESzmUaXpaSqpzROozQcBKFiRSKpOg==
 
 electron@^12.0.6:
-  version "12.0.18"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-12.0.18.tgz#34e0106567eaf1a3b2a277126d5684463970a966"
-  integrity sha512-1WZiCFHBA83thPp/o6Sh9obwKQf5AvKQn8UuRS2m56fqgs+ss5TKv6lgsUUm2BqvfTXjZCsOku2eSKROF934XA==
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-12.1.0.tgz#615a7f9dbb2fc79cc72361fba9f39d005c697bca"
+  integrity sha512-joQlYI/nTIrTUldO3GENZ2j225eKar9nTQBSEwSUSWN4h65QGDmXNQ7dbWPmLlkUQWtHhz8lXhFk30OLG9ZjLw==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
