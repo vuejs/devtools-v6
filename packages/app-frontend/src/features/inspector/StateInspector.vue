@@ -60,7 +60,7 @@ export default {
           (keyOrder[a] || (a.toLowerCase().charCodeAt(0) + 999)) -
           (keyOrder[b] || (b.toLowerCase().charCodeAt(0) + 999))
         )
-      })
+      }).concat(Object.getOwnPropertySymbols(this.state).map(name => name.description ?? 'Anonymous Symbol'))
     },
 
     totalCount () {
