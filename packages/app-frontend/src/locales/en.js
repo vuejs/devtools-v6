@@ -38,7 +38,8 @@ export default {
     },
     contextMenu: {
       copyValue: 'Copy Value',
-      copyPath: 'Copy Path'
+      copyPath: 'Copy Path',
+      copyComponentName: 'Copy Component Name'
     },
     quickEdit: {
       number: {

@@ -2,7 +2,7 @@
 import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from '@vue/composition-api'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import { getComponentDisplayName, UNDEFINED } from '@utils/util'
+import { getComponentDisplayName, copyToClipboard, UNDEFINED } from '@utils/util'
 import SharedData from '@utils/shared-data'
 import { sortChildren, useComponent, useComponentHighlight } from './composable'
 import { onKeyDown } from '@front/util/keyboard'
@@ -141,6 +141,24 @@ export default defineComponent({
       }
     }
 
+    let contextMenuTimer: NodeJS.Timeout = null
+    const contextMenuOpen = ref<boolean>(false)
+
+    function onContextMenuMouseEnter () {
+      clearTimeout(contextMenuTimer)
+    }
+
+    function onContextMenuMouseLeave () {
+      clearTimeout(contextMenuTimer)
+      contextMenuTimer = setTimeout(() => {
+        contextMenuOpen.value = false
+      }, 4000)
+    }
+
+    function copyComponentName () {
+      copyToClipboard(displayName.value)
+    }
+
     return {
       toggleEl,
       sortedChildren,
@@ -153,7 +171,11 @@ export default defineComponent({
       highlight,
       unhighlight,
       selectNextSibling,
-      selectPreviousSibling
+      selectPreviousSibling,
+      contextMenuOpen,
+      onContextMenuMouseEnter,
+      onContextMenuMouseLeave,
+      copyComponentName
     }
   }
 })
@@ -260,6 +282,31 @@ export default defineComponent({
           </span>
         </template>
       </span>
+
+      <!-- Context menu -->
+      <VueDropdown
+        :open.sync="contextMenuOpen"
+        v-if="selected"
+      >
+        <VueButton
+          slot="trigger"
+          icon-left="more_vert"
+          class="icon-button flat"
+        />
+
+          <div
+            class="context-menu-dropdown"
+            @mouseenter="onContextMenuMouseEnter()"
+            @mouseleave="onContextMenuMouseLeave()"
+          >
+          <VueDropdownButton
+            icon-left="flip_to_front"
+            @click="copyComponentName()"
+          >
+            {{ $t('DataField.contextMenu.copyComponentName') }}
+          </VueDropdownButton>
+        </div>
+      </VueDropdown>
     </div>
 
     <div v-if="expanded && instance.children">
@@ -283,4 +330,9 @@ export default defineComponent({
   display inline-block
   line-height 10px
   border-radius 3px
+
+.icon-button
+  height 16px
+  width 16px
+  margin-left 10px
 </style>
