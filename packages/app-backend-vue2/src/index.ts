@@ -76,7 +76,7 @@ export const backend: DevtoolsBackend = {
     const { Vue } = appRecord.options.meta
     const app = appRecord.options.app
     wrapVueForEvents(app, Vue, api.ctx)
-    setupPlugin(api, app)
+    setupPlugin(api, app, Vue)
   }
 }
 

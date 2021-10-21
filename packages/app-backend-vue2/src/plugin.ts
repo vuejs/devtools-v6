@@ -5,7 +5,7 @@ import copy from 'clone-deep'
 
 let actionId = 0
 
-export function setupPlugin (api: DevtoolsApi, app: App) {
+export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
   const ROUTER_INSPECTOR_ID = 'vue2-router-inspector'
   const ROUTER_CHANGES_LAYER_ID = 'vue2-router-changes'
 
@@ -198,6 +198,29 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
           })
         }
       }, { prepend: true })
+
+      // Inspect getters on mutations
+      api.on.inspectTimelineEvent(payload => {
+        if (payload.layerId === VUEX_MUTATIONS_ID) {
+          const getterKeys = Object.keys(store.getters)
+          if (getterKeys.length) {
+            const vm = new Vue({
+              data: {
+                $$state: payload.data.state
+              },
+              computed: store._vm.$options.computed
+            })
+            const originalVm = store._vm
+            store._vm = vm
+
+            const tree = transformPathsToObjectTree(store.getters)
+            payload.data.getters = copy(tree)
+
+            store._vm = originalVm
+            vm.$destroy()
+          }
+        }
+      })
     }
   })
 }
