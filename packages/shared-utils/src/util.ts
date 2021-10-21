@@ -359,20 +359,29 @@ export function getCustomFunctionDetails (func: Function): CustomState {
 }
 
 export function getCustomHTMLElementDetails (value: HTMLElement): CustomState {
-  return {
-    _custom: {
-      type: 'HTMLElement',
-      display: `<span class="opacity-30">&lt;</span><span class="text-blue-500">${value.tagName.toLowerCase()}</span><span class="opacity-30">&gt;</span>`,
-      value: namedNodeMapToObject(value.attributes),
-      actions: [
-        {
-          icon: 'input',
-          tooltip: 'Log element to console',
-          action: () => {
-            console.log(value)
+  try {
+    return {
+      _custom: {
+        type: 'HTMLElement',
+        display: `<span class="opacity-30">&lt;</span><span class="text-blue-500">${value.tagName.toLowerCase()}</span><span class="opacity-30">&gt;</span>`,
+        value: namedNodeMapToObject(value.attributes),
+        actions: [
+          {
+            icon: 'input',
+            tooltip: 'Log element to console',
+            action: () => {
+              console.log(value)
+            }
           }
-        }
-      ]
+        ]
+      }
+    }
+  } catch (e) {
+    return {
+      _custom: {
+        type: 'HTMLElement',
+        display: `<span class="text-blue-500">${String(value)}</span>`
+      }
     }
   }
 }
