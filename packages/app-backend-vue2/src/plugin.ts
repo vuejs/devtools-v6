@@ -1,7 +1,7 @@
 import { DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { App, ComponentState, CustomInspectorNode, CustomInspectorState, setupDevtoolsPlugin } from '@vue/devtools-api'
 import { isEmptyObject, target } from '@vue-devtools/shared-utils'
-import copy from 'fast-copy'
+import copy from 'clone-deep'
 
 let actionId = 0
 
