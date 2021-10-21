@@ -36,13 +36,13 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
       })
 
       api.on.getInspectorTree(payload => {
-        if (payload.app === app && payload.inspectorId === ROUTER_INSPECTOR_ID) {
+        if (payload.inspectorId === ROUTER_INSPECTOR_ID) {
           payload.rootNodes = router.options.routes.map(route => formatRouteNode(router, route, '', payload.filter)).filter(Boolean)
         }
       })
 
       api.on.getInspectorState(payload => {
-        if (payload.app === app && payload.inspectorId === ROUTER_INSPECTOR_ID) {
+        if (payload.inspectorId === ROUTER_INSPECTOR_ID) {
           const route = router.matcher.getRoutes().find(r => getPathId(r) === payload.nodeId)
           if (route) {
             payload.state = {
@@ -88,7 +88,7 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
       })
 
       api.on.getInspectorTree((payload) => {
-        if (payload.app === app && payload.inspectorId === VUEX_INSPECTOR_ID) {
+        if (payload.inspectorId === VUEX_INSPECTOR_ID) {
           if (payload.filter) {
             const nodes = []
             flattenStoreForInspectorTree(nodes, store._modules.root, payload.filter, '')
@@ -102,7 +102,7 @@ export function setupPlugin (api: DevtoolsApi, app: App) {
       })
 
       api.on.getInspectorState((payload) => {
-        if (payload.app === app && payload.inspectorId === VUEX_INSPECTOR_ID) {
+        if (payload.inspectorId === VUEX_INSPECTOR_ID) {
           const modulePath = payload.nodeId
           const module = getStoreModule(store._modules, modulePath)
           // Access the getters prop to init getters cache (which is lazy)
