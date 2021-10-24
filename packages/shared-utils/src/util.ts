@@ -699,7 +699,7 @@ export function openInEditor (file) {
       } else {
         console.log('%c' + msg, 'color:red')
       }
-      console.log('Check the setup of your project, see https://github.com/vuejs/devtools/blob/main/docs/guide/open-in-editor.md')
+      console.log('Check the setup of your project, see https://devtools.vuejs.org/guide/open-in-editor.html')
     }
   })`
   if (isChrome) {
