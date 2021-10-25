@@ -300,9 +300,11 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
         } else {
           delete obj[field]
         }
+      } else {
+        obj[field] && obj[field].__v_isRef ? obj[field].value = value : obj[field] = value
       }
-      if (!state.remove) {
-        obj[state.newKey || field] = value
+      if (state.newKey) {
+        obj[state.newKey] = value
       }
     })
   }
