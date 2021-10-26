@@ -8,7 +8,8 @@ import {
   searchDeepInObject,
   BridgeSubscriptions,
   isChrome,
-  openInEditor
+  openInEditor,
+  setStorage
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
 import { AppRecord, waitForAppSelect, useCurrentApp } from '@front/features/apps'
@@ -23,7 +24,7 @@ export const selectedComponentData = ref<InspectedComponentData>(null)
 const selectedComponentStateFilter = ref('')
 export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
 let lastSelectedApp: AppRecord = null
-let lastSelectedComponentId: ComponentTreeNode['id'] = null
+export const lastSelectedComponentId: Record<AppRecord['id'], ComponentTreeNode['id']> = {}
 export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
 export const resetComponentsQueued = ref(false)
 
@@ -112,8 +113,9 @@ export function useComponents () {
 
   // Re-select last selected component when switching back to inspector component tab
   function selectLastComponent () {
-    if (lastSelectedComponentId && getAppIdFromComponentId(lastSelectedComponentId) === currentAppId.value) {
-      selectComponent(lastSelectedComponentId, true)
+    const id = lastSelectedComponentId[currentAppId.value]
+    if (id) {
+      selectComponent(id, true)
     }
   }
 
@@ -315,7 +317,8 @@ export function addToComponentsMap (instance: ComponentTreeNode) {
 
 export async function loadComponent (id: ComponentTreeNode['id']) {
   if (!id || selectedComponentPendingId.value === id) return
-  lastSelectedComponentId = id
+  lastSelectedComponentId[getAppIdFromComponentId(id)] = id
+  setStorage('lastSelectedComponentId', lastSelectedComponentId)
   selectedComponentPendingId.value = id
   await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)

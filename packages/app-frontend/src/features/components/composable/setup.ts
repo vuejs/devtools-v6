@@ -1,4 +1,4 @@
-import { Bridge, BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import { Bridge, BridgeEvents, parse, getStorage } from '@vue-devtools/shared-utils'
 import { putError } from '@front/features/error'
 import {
   selectedComponentPendingId,
@@ -16,7 +16,8 @@ import {
   setComponentOpen,
   requestComponentTree,
   requestedComponentTree,
-  getAppIdFromComponentId
+  getAppIdFromComponentId,
+  lastSelectedComponentId
 } from './components'
 
 export function setupComponentsBridgeEvents (bridge: Bridge) {
@@ -82,4 +83,8 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, () => {
     chrome.devtools.inspectedWindow.eval('inspect(window.__VUE_DEVTOOLS_INSPECT_TARGET__)')
   })
+
+  // Persistance
+
+  Object.assign(lastSelectedComponentId, getStorage('lastSelectedComponentId', {}))
 }
