@@ -65,7 +65,7 @@ export function useComponents () {
 
   watch(() => route.value.params.componentId, () => {
     const value = route.value.params.componentId
-    if (getAppIdFromComponentId(value) === currentAppId.value) {
+    if (value && getAppIdFromComponentId(value) === currentAppId.value) {
       selectedComponentId.value = value
       loadComponent(value)
     }
