@@ -1,6 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, get, set } from '@vue-devtools/shared-utils'
+import { camelize, StateEditor } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { ComponentInstance, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
@@ -271,7 +271,7 @@ function processRefs (instance) {
     }))
 }
 
-export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
+export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor, ctx: BackendContext) {
   if (!['data', 'props', 'computed', 'setup'].includes(type)) return
   let target: any
   const targetPath: string[] = path.slice()
@@ -283,7 +283,7 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
     // Setup
     target = componentInstance.devtoolsRawSetupState
 
-    const currentValue = get(componentInstance.devtoolsRawSetupState, path)
+    const currentValue = stateEditor.get(componentInstance.devtoolsRawSetupState, path)
     if (currentValue != null) {
       const info = getSetupStateInfo(currentValue)
       if (info.readonly) return
@@ -293,18 +293,7 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
   }
 
   if (target && targetPath) {
-    set(target, targetPath, 'value' in state ? state.value : undefined, (obj, field, value) => {
-      if (state.remove || state.newKey) {
-        if (Array.isArray(obj)) {
-          obj.splice(field, 1)
-        } else {
-          delete obj[field]
-        }
-      }
-      if (!state.remove) {
-        obj[state.newKey || field] = value
-      }
-    })
+    stateEditor.set(target, targetPath, 'value' in state ? state.value : undefined, stateEditor.createDefaultSetCallback(state))
   }
 }
 

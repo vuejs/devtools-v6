@@ -1,6 +1,6 @@
 import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { classify } from '@vue-devtools/shared-utils'
-import { ComponentTreeNode } from '@vue/devtools-api'
+import { ComponentTreeNode, ComponentInstance } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
@@ -19,8 +19,8 @@ const functionalIds = new Map()
 // Some instances may be both on a component and on a child abstract/functional component
 const captureIds = new Map()
 
-export async function walkTree (instance, pFilter: string, ctx: BackendContext): Promise<ComponentTreeNode[]> {
-  initCtx(ctx)
+export async function walkTree (instance, pFilter: string, api: DevtoolsApi, ctx: BackendContext): Promise<ComponentTreeNode[]> {
+  initCtx(api, ctx)
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
@@ -28,8 +28,8 @@ export async function walkTree (instance, pFilter: string, ctx: BackendContext):
   return result
 }
 
-export function getComponentParents (instance, ctx: BackendContext) {
-  initCtx(ctx)
+export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendContext) {
+  initCtx(api, ctx)
   const captureIds = new Map()
 
   const captureId = vm => {
@@ -49,9 +49,9 @@ export function getComponentParents (instance, ctx: BackendContext) {
   return parents
 }
 
-function initCtx (ctx: BackendContext) {
+function initCtx (_api: DevtoolsApi, ctx: BackendContext) {
   appRecord = ctx.currentAppRecord
-  api = ctx.api
+  api = _api
   if (!appRecord.meta.instanceMap) {
     appRecord.meta.instanceMap = new Map()
   }
@@ -334,5 +334,5 @@ function markFunctional (id, vnode) {
     __VUE_DEVTOOLS_UID__: id,
     __VUE_DEVTOOLS_FUNCTIONAL_LEGACY__: true,
     vnode
-  })
+  } as unknown as ComponentInstance)
 }

@@ -36,7 +36,7 @@ import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOpt
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
-import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
+import { performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
 import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
 
@@ -149,7 +149,7 @@ async function connect () {
       }
 
       if (parentUid != null) {
-        const parentInstances = await ctx.api.walkComponentParents(component)
+        const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
@@ -174,7 +174,7 @@ async function connect () {
     try {
       const appRecord = await getAppRecord(app, ctx)
       if (parentUid != null) {
-        const parentInstances = await ctx.api.walkComponentParents(component)
+        const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
@@ -213,12 +213,10 @@ async function connect () {
     performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
-  handleAddPerformanceTag(ctx)
-
   // Highlighter
 
   hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
   hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
@@ -229,10 +227,11 @@ async function connect () {
 
   setupTimeline(ctx)
 
-  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, plugin: Plugin) => {
+  hook.on(HookEvents.TIMELINE_LAYER_ADDED, async (options: TimelineLayerOptions, plugin: Plugin) => {
+    const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
     ctx.timelineLayers.push({
       ...options,
-      app: plugin.descriptor.app,
+      appRecord,
       plugin,
       events: []
     })
@@ -245,10 +244,11 @@ async function connect () {
 
   // Custom inspectors
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, plugin: Plugin) => {
+  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, async (options: CustomInspectorOptions, plugin: Plugin) => {
+    const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
     ctx.customInspectors.push({
       ...options,
-      app: plugin.descriptor.app,
+      appRecord,
       plugin,
       treeFilter: '',
       selectedNodeId: null
@@ -297,7 +297,7 @@ async function connect () {
   // Legacy flush
 
   const handleFlush = debounce(() => {
-    if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
+    if (ctx.currentAppRecord?.backend.options.features.includes(BuiltinBackendFeature.FLUSH)) {
       sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
       if (ctx.currentInspectedComponentId) {
         sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
@@ -371,7 +371,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, async ({ instanceId }) => {
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
-      const [el] = await ctx.api.getComponentRootElements(instance)
+      const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         // @ts-ignore
         window.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
@@ -383,7 +383,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
-      const [el] = await ctx.api.getComponentRootElements(instance)
+      const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         if (typeof el.scrollIntoView === 'function') {
           el.scrollIntoView({
@@ -393,7 +393,7 @@ function connectBridge () {
           })
         } else {
           // Handle nodes that don't implement scrollIntoView
-          const bounds = await ctx.api.getComponentBounds(instance)
+          const bounds = await ctx.currentAppRecord.backend.api.getComponentBounds(instance)
           const scrollTarget = document.createElement('div')
           scrollTarget.style.position = 'absolute'
           scrollTarget.style.width = `${bounds.width}px`
@@ -410,7 +410,7 @@ function connectBridge () {
             document.body.removeChild(scrollTarget)
           }, 2000)
         }
-        highlight(instance, ctx)
+        highlight(instance, ctx.currentAppRecord.backend, ctx)
         setTimeout(() => {
           unHighlight()
         }, 2000)
@@ -421,7 +421,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
-      const { code } = await ctx.api.getComponentRenderCode(instance)
+      const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)
       ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_RENDER_CODE, {
         instanceId,
         code
@@ -446,7 +446,7 @@ function connectBridge () {
   // Highlighter
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
@@ -563,7 +563,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, ({ pluginId, key, newValue, oldValue }) => {
     const settings = getPluginSettings(pluginId)
     ctx.hook.emit(HookEvents.PLUGIN_SETTINGS_SET, pluginId, settings)
-    ctx.api.callHook(Hooks.SET_PLUGIN_SETTINGS, {
+    ctx.currentAppRecord.backend.api.callHook(Hooks.SET_PLUGIN_SETTINGS, {
       app: ctx.currentAppRecord.options.app,
       pluginId,
       key,

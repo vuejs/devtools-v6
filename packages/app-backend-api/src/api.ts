@@ -3,10 +3,10 @@ import {
   hasPluginPermission,
   HookEvents,
   PluginPermission,
-  set,
   getPluginDefaultSettings,
   getPluginSettings,
-  setPluginSettings
+  setPluginSettings,
+  StateEditor
 } from '@vue-devtools/shared-utils'
 import {
   Hooks,
@@ -25,6 +25,8 @@ import {
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
 import { Plugin } from './plugin'
+import { DevtoolsBackend } from './backend'
+import { AppRecord } from './app-record'
 
 let backendOn: DevtoolsHookable
 const pluginOn: DevtoolsHookable[] = []
@@ -32,10 +34,13 @@ const pluginOn: DevtoolsHookable[] = []
 export class DevtoolsApi {
   bridge: Bridge
   ctx: BackendContext
+  backend: DevtoolsBackend
+  stateEditor: StateEditor = new StateEditor()
 
-  constructor (bridge: Bridge, ctx: BackendContext) {
-    this.bridge = bridge
+  constructor (backend: DevtoolsBackend, ctx: BackendContext) {
+    this.backend = backend
     this.ctx = ctx
+    this.bridge = ctx.bridge
     if (!backendOn) { backendOn = new DevtoolsHookable(ctx) }
   }
 
@@ -171,7 +176,7 @@ export class DevtoolsApi {
       path: arrayPath,
       type,
       state,
-      set: (object, path = arrayPath, value = state.value, cb?) => set(object, path, value, cb || createDefaultSetCallback(state))
+      set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state))
     })
     return payload.componentInstance
   }
@@ -240,23 +245,8 @@ export class DevtoolsApi {
       path: arrayPath,
       type,
       state,
-      set: (object, path = arrayPath, value = state.value, cb?) => set(object, path, value, cb || createDefaultSetCallback(state))
+      set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state))
     })
-  }
-}
-
-function createDefaultSetCallback (state: EditStatePayload) {
-  return (obj, field, value) => {
-    if (state.remove || state.newKey) {
-      if (Array.isArray(obj)) {
-        obj.splice(field, 1)
-      } else {
-        delete obj[field]
-      }
-    }
-    if (!state.remove) {
-      obj[state.newKey || field] = value
-    }
   }
 }
 
@@ -264,13 +254,17 @@ export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPlugi
   bridge: Bridge
   ctx: BackendContext
   plugin: Plugin
+  appRecord: AppRecord
+  backendApi: DevtoolsApi
   on: DevtoolsHookable
   private defaultSettings: TSettings
 
-  constructor (plugin: Plugin, ctx: BackendContext) {
+  constructor (plugin: Plugin, appRecord: AppRecord, ctx: BackendContext) {
     this.bridge = ctx.bridge
     this.ctx = ctx
     this.plugin = plugin
+    this.appRecord = appRecord
+    this.backendApi = appRecord.backend.api
     this.defaultSettings = getPluginDefaultSettings(plugin.descriptor.settings)
     this.on = new DevtoolsHookable(ctx, plugin)
     pluginOn.push(this.on)
@@ -282,7 +276,7 @@ export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPlugi
     if (!this.enabled || !this.hasPermission(PluginPermission.COMPONENTS)) return
 
     if (instance) {
-      this.ctx.hook.emit(HookEvents.COMPONENT_UPDATED, ...await this.ctx.api.transformCall(HookEvents.COMPONENT_UPDATED, instance))
+      this.ctx.hook.emit(HookEvents.COMPONENT_UPDATED, ...await this.backendApi.transformCall(HookEvents.COMPONENT_UPDATED, instance))
     } else {
       this.ctx.hook.emit(HookEvents.COMPONENT_UPDATED)
     }
@@ -331,15 +325,15 @@ export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPlugi
   }
 
   getComponentBounds (instance: ComponentInstance) {
-    return this.ctx.api.getComponentBounds(instance)
+    return this.backendApi.getComponentBounds(instance)
   }
 
   getComponentName (instance: ComponentInstance) {
-    return this.ctx.api.getComponentName(instance)
+    return this.backendApi.getComponentName(instance)
   }
 
   getComponentInstances (app: App) {
-    return this.ctx.api.getComponentInstances(app)
+    return this.backendApi.getComponentInstances(app)
   }
 
   highlightElement (instance: ComponentInstance) {

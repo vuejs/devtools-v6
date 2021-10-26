@@ -13,8 +13,8 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   }
   ctx.currentPlugin = plugin
   try {
-    await getAppRecord(plugin.descriptor.app, ctx)
-    const api = new DevtoolsPluginApiInstance(plugin, ctx)
+    const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
+    const api = new DevtoolsPluginApiInstance(plugin, appRecord, ctx)
     if (pluginQueueItem.proxy) {
       await pluginQueueItem.proxy.setRealTarget(api)
     } else {

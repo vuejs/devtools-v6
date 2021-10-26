@@ -1,5 +1,6 @@
-import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
+import { defineBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { backendInjections, getComponentName } from '@vue-devtools/shared-utils'
+import { ComponentInstance } from '@vue/devtools-api'
 import { editState, getCustomInstanceDetails, getInstanceDetails } from './components/data'
 import { getInstanceOrVnodeRect, findRelatedComponent, getRootElementsFromComponentInstance } from './components/el'
 import { getComponentParents, instanceMap, walkTree } from './components/tree'
@@ -7,10 +8,9 @@ import { getInstanceName } from './components/util'
 import { wrapVueForEvents } from './events'
 import { setupPlugin } from './plugin'
 
-export const backend: DevtoolsBackend = {
+export const backend = defineBackend({
   frameworkVersion: 2,
-  availableFeatures: [
-    BuiltinBackendFeature.COMPONENTS,
+  features: [
     BuiltinBackendFeature.FLUSH
   ],
   setup (api) {
@@ -21,15 +21,15 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.getAppRootInstance(payload => {
-      payload.root = payload.app
+      payload.root = payload.app as unknown as ComponentInstance
     })
 
     api.on.walkComponentTree(async (payload, ctx) => {
-      payload.componentTreeData = await walkTree(payload.componentInstance, payload.filter, ctx)
+      payload.componentTreeData = await walkTree(payload.componentInstance, payload.filter, api, ctx)
     })
 
     api.on.walkComponentParents((payload, ctx) => {
-      payload.parentInstances = getComponentParents(payload.componentInstance, ctx)
+      payload.parentInstances = getComponentParents(payload.componentInstance, api, ctx)
     })
 
     api.on.inspectComponent(payload => {
@@ -51,7 +51,7 @@ export const backend: DevtoolsBackend = {
     })
 
     api.on.editComponentState(payload => {
-      editState(payload)
+      editState(payload, api.stateEditor)
     })
 
     api.on.getComponentRootElements(payload => {
@@ -72,14 +72,27 @@ export const backend: DevtoolsBackend = {
   },
 
   setupApp (api, appRecord) {
-    injectToUtils()
     const { Vue } = appRecord.options.meta
     const app = appRecord.options.app
+
+    // State editor overrides
+    api.stateEditor.createDefaultSetCallback = state => {
+      return (obj, field, value) => {
+        if (state.remove || state.newKey) Vue.delete(obj, field)
+        if (!state.remove) Vue.set(obj, state.newKey || field, value)
+      }
+    }
+
+    // Utils
+    injectToUtils()
     wrapVueForEvents(app, Vue, api.ctx)
+
+    // Plugin
     setupPlugin(api, app, Vue)
   }
-}
+})
 
+// @TODO refactor
 function injectToUtils () {
   backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
   backendInjections.instanceMap = instanceMap

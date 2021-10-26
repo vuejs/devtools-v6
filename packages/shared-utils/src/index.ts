@@ -1,6 +1,7 @@
 export * from './backend'
 export * from './bridge'
 export * from './consts'
+export * from './edit'
 export * from './env'
 export * from './plugin-permissions'
 export * from './plugin-settings'

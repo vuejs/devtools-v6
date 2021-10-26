@@ -1,4 +1,4 @@
-import { camelize, getComponentName, getCustomRefDetails, has, set } from '@vue-devtools/shared-utils'
+import { camelize, getComponentName, getCustomRefDetails, StateEditor } from '@vue-devtools/shared-utils'
 import { ComponentState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { functionalVnodeMap, instanceMap } from './tree'
@@ -349,13 +349,10 @@ export function findInstanceOrVnode (id) {
   return instanceMap.get(id)
 }
 
-export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE]) {
+export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor) {
   if (!['data', 'props', 'computed', 'setup'].includes(type)) return
-  const data = has(componentInstance._props, path, !!state.newKey)
+  const data = stateEditor.has(componentInstance._props, path, !!state.newKey)
     ? componentInstance._props
     : componentInstance._data
-  set(data, path, state.value, (obj, field, value) => {
-    if (state.remove || state.newKey) componentInstance.$delete(obj, field)
-    if (!state.remove) componentInstance.$set(obj, state.newKey || field, value)
-  })
+  stateEditor.set(data, path, state.value, stateEditor.createDefaultSetCallback(state))
 }

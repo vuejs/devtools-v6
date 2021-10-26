@@ -1,4 +1,4 @@
-import { BackendContext } from '@vue-devtools/app-backend-api'
+import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { App, ComponentInstance } from '@vue/devtools-api'
 import { BridgeSubscriptions } from '@vue-devtools/shared-utils'
@@ -18,7 +18,7 @@ export async function performanceMarkStart (
   try {
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
-    const componentName = await ctx.api.getComponentName(instance)
+    const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupId = ctx.perfUniqueGroupId++
     const groupKey = `${uid}-${type}`
     appRecord.perfGroupIds.set(groupKey, { groupId, time })
@@ -54,7 +54,7 @@ export async function performanceMarkEnd (
   try {
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
-    const componentName = await ctx.api.getComponentName(instance)
+    const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupKey = `${uid}-${type}`
     const { groupId, time: startTime } = appRecord.perfGroupIds.get(groupKey)
     const duration = time - startTime
@@ -120,8 +120,8 @@ export async function performanceMarkEnd (
   }
 }
 
-export function handleAddPerformanceTag (ctx: BackendContext) {
-  ctx.api.on.visitComponentTree(payload => {
+export function handleAddPerformanceTag (backend: DevtoolsBackend, ctx: BackendContext) {
+  backend.api.on.visitComponentTree(payload => {
     if (payload.componentInstance.__VUE_DEVTOOLS_SLOW__) {
       const { duration, measures } = payload.componentInstance.__VUE_DEVTOOLS_SLOW__
 
