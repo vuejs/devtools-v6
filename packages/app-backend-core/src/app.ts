@@ -93,7 +93,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
     }
 
     // Auto select first app
-    if (ctx.currentAppRecord == null) {
+    if (ctx.currentAppRecord == null && !(await record.backend.api.getComponentDevtoolsOptions(record.rootInstance)).hide) {
       await selectApp(record, ctx)
     }
   } else {
