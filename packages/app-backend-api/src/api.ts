@@ -28,28 +28,24 @@ import { Plugin } from './plugin'
 import { DevtoolsBackend } from './backend'
 import { AppRecord } from './app-record'
 
-let backendOn: DevtoolsHookable
 const pluginOn: DevtoolsHookable[] = []
 
 export class DevtoolsApi {
   bridge: Bridge
   ctx: BackendContext
   backend: DevtoolsBackend
+  on: DevtoolsHookable
   stateEditor: StateEditor = new StateEditor()
 
   constructor (backend: DevtoolsBackend, ctx: BackendContext) {
     this.backend = backend
     this.ctx = ctx
     this.bridge = ctx.bridge
-    if (!backendOn) { backendOn = new DevtoolsHookable(ctx) }
-  }
-
-  get on () {
-    return backendOn
+    this.on = new DevtoolsHookable(ctx)
   }
 
   async callHook<T extends Hooks> (eventType: T, payload: HookPayloads[T], ctx: BackendContext = this.ctx) {
-    payload = await backendOn.callHandlers(eventType, payload, ctx)
+    payload = await this.on.callHandlers(eventType, payload, ctx)
     for (const on of pluginOn) {
       payload = await on.callHandlers(eventType, payload, ctx)
     }
