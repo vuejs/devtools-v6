@@ -41,7 +41,6 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
 
 export async function sendSelectedComponentData (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
   if (!instanceId || appRecord !== ctx.currentAppRecord) return
-  markSelectedInstance(instanceId, ctx)
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     sendEmptyComponentData(instanceId, ctx)
@@ -72,6 +71,7 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
       parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__)
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
+    markSelectedInstance(instanceId, ctx)
   }
 }
 

@@ -15,7 +15,8 @@ import {
   loadComponent,
   setComponentOpen,
   requestComponentTree,
-  requestedComponentTree
+  requestedComponentTree,
+  getAppIdFromComponentId
 } from './components'
 
 export function setupComponentsBridgeEvents (bridge: Bridge) {
@@ -55,7 +56,8 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
     }
 
     // Try to load selected component again
-    if (isRoot && selectedComponentId.value && !selectedComponentData.value && !selectedComponentPendingId.value) {
+    if (isRoot && selectedComponentId.value && !selectedComponentData.value && !selectedComponentPendingId.value &&
+      getAppIdFromComponentId(selectedComponentId.value) === getAppIdFromComponentId(instanceId)) {
       loadComponent(selectedComponentId.value)
     }
   })

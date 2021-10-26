@@ -11,7 +11,7 @@ import {
   openInEditor
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
-import { AppRecord, waitForAppSelect } from '@front/features/apps'
+import { AppRecord, waitForAppSelect, useCurrentApp } from '@front/features/apps'
 import { useRoute, useRouter } from '@front/util/router'
 
 export const rootInstances = ref<ComponentTreeNode[]>([])
@@ -34,6 +34,7 @@ export function useComponentRequests () {
     if (selectedComponentId.value !== id) {
       router[replace ? 'replace' : 'push']({
         params: {
+          appId: getAppIdFromComponentId(id),
           componentId: id
         }
       })
@@ -55,14 +56,18 @@ export function useComponents () {
     requestComponentTree,
     selectComponent
   } = useComponentRequests()
+  const { currentAppId } = useCurrentApp()
 
   watch(treeFilter, () => {
     requestComponentTree()
   })
 
-  watch(() => route.value.params.componentId, value => {
-    selectedComponentId.value = value
-    loadComponent(value)
+  watch(() => route.value.params.componentId, () => {
+    const value = route.value.params.componentId
+    if (getAppIdFromComponentId(value) === currentAppId.value) {
+      selectedComponentId.value = value
+      loadComponent(value)
+    }
   }, {
     immediate: true
   })
@@ -107,7 +112,7 @@ export function useComponents () {
 
   // Re-select last selected component when switching back to inspector component tab
   function selectLastComponent () {
-    if (lastSelectedComponentId) {
+    if (lastSelectedComponentId && getAppIdFromComponentId(lastSelectedComponentId) === currentAppId.value) {
       selectComponent(lastSelectedComponentId, true)
     }
   }
@@ -270,6 +275,7 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
     resetComponentsQueued.value = true
   }
   await waitForAppSelect()
+
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
     filter: treeFilter.value
@@ -334,4 +340,10 @@ function compareIndexLists (a: number[], b: number[]): number {
   } else {
     return a[0] - b[0]
   }
+}
+
+export function getAppIdFromComponentId (id: string) {
+  const index = id.indexOf(':', 3)
+  const appId = id.substring(0, index)
+  return appId
 }

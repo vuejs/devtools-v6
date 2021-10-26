@@ -3,7 +3,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
-import { onMounted, ref, provide, defineComponent, computed } from '@vue/composition-api'
+import { onMounted, ref, provide, defineComponent } from '@vue/composition-api'
 import { onKeyDown, onKeyUp } from '@front/util/keyboard'
 import { useComponentPick, useComponents, loadComponent } from './composable'
 

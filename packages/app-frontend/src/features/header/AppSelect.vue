@@ -51,7 +51,8 @@ export default defineComponent({
         if (targetId) {
           router.push({
             params: {
-              appId: targetId
+              appId: targetId,
+              componentId: null
             }
           })
         }
