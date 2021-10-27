@@ -109,7 +109,7 @@ export function initSharedData (params: SharedDataParams) {
 
       bridge.send('shared-data:master-init-waiting')
       // In case backend init is executed after frontend
-      bridge.on('shared-data:slave-init-waiting', () => {
+      bridge.on('shared-data:minion-init-waiting', () => {
         bridge.send('shared-data:master-init-waiting')
       })
 
@@ -130,25 +130,25 @@ export function initSharedData (params: SharedDataParams) {
     } else {
       if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
-        console.log('[shared data] Slave init in progress...')
+        console.log('[shared data] Minion init in progress...')
       }
       bridge.on('shared-data:master-init-waiting', () => {
         if (process.env.NODE_ENV !== 'production') {
           // eslint-disable-next-line no-console
-          console.log('[shared data] Slave loading data...')
+          console.log('[shared data] Minion loading data...')
         }
         // Load all persisted shared data
         bridge.send('shared-data:load')
         bridge.once('shared-data:load-complete', () => {
           if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console
-            console.log('[shared data] Slave init complete')
+            console.log('[shared data] Minion init complete')
           }
           bridge.send('shared-data:init-complete')
           resolve()
         })
       })
-      bridge.send('shared-data:slave-init-waiting')
+      bridge.send('shared-data:minion-init-waiting')
     }
 
     data = {
