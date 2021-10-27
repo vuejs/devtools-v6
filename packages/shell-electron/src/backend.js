@@ -31,7 +31,7 @@ socket.on('connect', () => {
 // Global disconnect handler. Fires in two cases:
 // - after calling above socket.disconnect()
 // - once devtools is closed (that's why we need socket.disconnect() here too, to prevent further polling)
-socket.on('disconnect', (reason) => {
+socket.on('disconnect', () => {
   socket.disconnect()
   disconnectedMessage()
 })

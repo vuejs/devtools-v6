@@ -370,6 +370,7 @@ export function getCustomHTMLElementDetails (value: HTMLElement): CustomState {
             icon: 'input',
             tooltip: 'Log element to console',
             action: () => {
+              // eslint-disable-next-line no-console
               console.log(value)
             }
           }

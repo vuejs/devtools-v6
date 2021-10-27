@@ -210,7 +210,10 @@ export function installHook (target, isIframe = false) {
           if (typeof path === 'string') path = [path]
           hook.storeModules.push({ path, module, options })
           origRegister(path, module, options)
-          if (process.env.NODE_ENV !== 'production') console.log('early register module', path, module, options)
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.log('early register module', path, module, options)
+          }
         }
         origUnregister = store.unregisterModule.bind(store)
         store.unregisterModule = (path) => {
@@ -219,7 +222,10 @@ export function installHook (target, isIframe = false) {
           const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
           if (index !== -1) hook.storeModules.splice(index, 1)
           origUnregister(path)
-          if (process.env.NODE_ENV !== 'production') console.log('early unregister module', path)
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.log('early unregister module', path)
+          }
         }
       }
       hook.flushStoreModules = () => {

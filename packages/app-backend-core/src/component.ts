@@ -62,6 +62,7 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
       }
     }
     if (SharedData.debugInfo) {
+      // eslint-disable-next-line no-console
       console.log('[DEBUG] inspect', instance)
     }
     const parentInstances = await appRecord.backend.api.walkComponentParents(instance)

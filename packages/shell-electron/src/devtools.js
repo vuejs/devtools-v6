@@ -33,7 +33,10 @@ socket.on('vue-devtools-init', () => {
           socket.on('vue-message', data => fn(data))
         },
         send (data) {
-          console.log('devtools -> backend', data)
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.log('devtools -> backend', data)
+          }
           socket.emit('vue-message', data)
         }
       }

@@ -18,7 +18,10 @@ target.onload = () => {
             targetWindow.parent.addEventListener('message', evt => fn(evt.data))
           },
           send (data) {
-            console.log('devtools -> backend', data)
+            if (process.env.NODE_ENV !== 'production') {
+              // eslint-disable-next-line no-console
+              console.log('devtools -> backend', data)
+            }
             targetWindow.postMessage(data, '*')
           }
         }))

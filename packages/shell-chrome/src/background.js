@@ -39,7 +39,10 @@ function installProxy (tabId) {
     if (!res) {
       ports[tabId].devtools.postMessage('proxy-fail')
     } else {
-      if (process.env.NODE_ENV !== 'production') { console.log('injected proxy to tab ' + tabId) }
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.log('injected proxy to tab ' + tabId)
+      }
     }
   })
 }
@@ -48,21 +51,32 @@ function doublePipe (id, one, two) {
   one.onMessage.addListener(lOne)
   function lOne (message) {
     if (message.event === 'log') {
+      // eslint-disable-next-line no-console
       return console.log('tab ' + id, message.payload)
     }
-    if (process.env.NODE_ENV !== 'production') { console.log('devtools -> backend', message) }
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('devtools -> backend', message)
+    }
     two.postMessage(message)
   }
   two.onMessage.addListener(lTwo)
   function lTwo (message) {
     if (message.event === 'log') {
+      // eslint-disable-next-line no-console
       return console.log('tab ' + id, message.payload)
     }
-    if (process.env.NODE_ENV !== 'production') { console.log('backend -> devtools', message) }
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('backend -> devtools', message)
+    }
     one.postMessage(message)
   }
   function shutdown () {
-    if (process.env.NODE_ENV !== 'production') { console.log('tab ' + id + ' disconnected.') }
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('tab ' + id + ' disconnected.')
+    }
     one.onMessage.removeListener(lOne)
     two.onMessage.removeListener(lTwo)
     one.disconnect()
@@ -71,7 +85,10 @@ function doublePipe (id, one, two) {
   }
   one.onDisconnect.addListener(shutdown)
   two.onDisconnect.addListener(shutdown)
-  if (process.env.NODE_ENV !== 'production') { console.log('tab ' + id + ' connected.') }
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.log('tab ' + id + ' connected.')
+  }
 }
 
 chrome.runtime.onMessage.addListener((req, sender) => {

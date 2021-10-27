@@ -33,5 +33,6 @@ io.on('connection', function (socket) {
 })
 
 http.listen(port, '0.0.0.0', () => {
+  // eslint-disable-next-line no-console
   console.log('listening on 0.0.0.0:' + port)
 })

@@ -44,7 +44,8 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     camelcase: 'warn',
     'no-prototype-builtins': 'off',
-    'no-use-before-define': 'off'
+    'no-use-before-define': 'off',
+    'no-console': ['error', { allow: ['warn', 'error'] }]
   },
   ignorePatterns: [
     'node_modules/',
@@ -81,7 +82,8 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
         'vue/require-default-prop': 'off',
-        'vue/require-prop-types': 'off'
+        'vue/require-prop-types': 'off',
+        'no-console': 'off'
       }
     }
   ]

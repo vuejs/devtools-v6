@@ -554,6 +554,7 @@ function connectBridge () {
     } else if (payload.revive) {
       value = revive(value)
     }
+    // eslint-disable-next-line no-console
     console[payload.level](value)
   })
 

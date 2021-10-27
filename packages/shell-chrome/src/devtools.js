@@ -71,7 +71,7 @@ function injectScript (scriptName, cb) {
   `
   chrome.devtools.inspectedWindow.eval(src, function (res, err) {
     if (err) {
-      console.log(err)
+      console.error(err)
     }
     cb()
   })
