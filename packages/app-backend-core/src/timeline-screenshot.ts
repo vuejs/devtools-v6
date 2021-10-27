@@ -1,5 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { ID, ScreenshotOverlayRenderContext } from '@vue/devtools-api'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { JobQueue } from './util/queue'
 import { builtinLayers } from './timeline-builtins'
 
@@ -57,7 +58,9 @@ export async function showScreenshot (screenshot: Screenshot, ctx: BackendContex
               }
             }
           } catch (e) {
-            console.error(e)
+            if (SharedData.debugInfo) {
+              console.error(e)
+            }
           }
         }
       }

@@ -17,6 +17,7 @@ import {
   target,
   getPluginSettings
 } from '@vue-devtools/shared-utils'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import debounce from 'lodash/debounce'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
@@ -129,7 +130,7 @@ async function connect () {
         sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
       }
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -164,7 +165,7 @@ async function connect () {
         sendSelectedComponentData(appRecord, id, ctx)
       }
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -182,7 +183,7 @@ async function connect () {
               try {
                 sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
               } catch (e) {
-                if (process.env.NODE_ENV !== 'production') {
+                if (SharedData.debugInfo) {
                   console.error(e)
                 }
               }
@@ -197,7 +198,7 @@ async function connect () {
       }
       appRecord.instanceMap.delete(id)
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -260,8 +261,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       sendInspectorTree(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -269,8 +270,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -278,8 +279,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       await selectInspectorNode(inspector, nodeId, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -346,10 +347,10 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
     if (id == null) return
     const record = ctx.appRecords.find(r => r.id === id)
-    if (!record) {
-      console.error(`App with id ${id} not found`)
-    } else {
+    if (record) {
       await selectApp(record, ctx)
+    } else if (SharedData.debugInfo) {
+      console.warn(`App with id ${id} not found`)
     }
   })
 
@@ -502,8 +503,8 @@ function connectBridge () {
     if (inspector) {
       inspector.treeFilter = treeFilter
       sendInspectorTree(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -512,8 +513,8 @@ function connectBridge () {
     if (inspector) {
       inspector.selectedNodeId = nodeId
       sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -523,8 +524,8 @@ function connectBridge () {
       await editInspectorState(inspector, nodeId, path, type, payload, ctx)
       inspector.selectedNodeId = nodeId
       await sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -535,10 +536,12 @@ function connectBridge () {
       try {
         await action.action()
       } catch (e) {
-        console.error(e)
+        if (SharedData.debugInfo) {
+          console.error(e)
+        }
       }
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 

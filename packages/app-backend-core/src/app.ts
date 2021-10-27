@@ -6,6 +6,7 @@ import {
   DevtoolsBackend
 } from '@vue-devtools/app-backend-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
+import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { App } from '@vue/devtools-api'
 import slug from 'speakingurl'
 import { JobQueue } from './util/queue'
@@ -195,7 +196,7 @@ export async function removeApp (app: App, ctx: BackendContext) {
       ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
     }
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (SharedData.debugInfo) {
       console.error(e)
     }
   }

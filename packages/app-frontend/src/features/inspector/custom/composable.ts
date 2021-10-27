@@ -170,7 +170,7 @@ export function setupCustomInspectorBridgeEvents (bridge: Bridge) {
     const inspector = inspectors.value.find(i => i.id === inspectorId && i.appId === appId)
 
     if (!inspector) {
-      console.error(`Inspector ${inspectorId} not found`)
+      console.warn(`Inspector ${inspectorId} not found`)
       return
     }
 
@@ -181,7 +181,7 @@ export function setupCustomInspectorBridgeEvents (bridge: Bridge) {
     const inspector = inspectors.value.find(i => i.id === inspectorId && i.appId === appId)
 
     if (!inspector) {
-      console.error(`Inspector ${inspectorId} not found`)
+      console.warn(`Inspector ${inspectorId} not found`)
       return
     }
 
@@ -192,7 +192,7 @@ export function setupCustomInspectorBridgeEvents (bridge: Bridge) {
     const inspector = inspectors.value.find(i => i.id === inspectorId && i.appId === appId)
 
     if (!inspector) {
-      console.error(`Inspector ${inspectorId} not found`)
+      console.warn(`Inspector ${inspectorId} not found`)
       return
     }
 

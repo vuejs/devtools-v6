@@ -37,7 +37,7 @@ export async function performanceMarkStart (
       }
     }, app, ctx)
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (SharedData.debugInfo) {
       console.error(e)
     }
   }
@@ -114,7 +114,7 @@ export async function performanceMarkEnd (
       }
     }
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (SharedData.debugInfo) {
       console.error(e)
     }
   }

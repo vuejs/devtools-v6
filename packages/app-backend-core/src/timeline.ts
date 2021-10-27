@@ -98,7 +98,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
         }
       }, app, ctx)
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -120,7 +120,7 @@ export async function sendTimelineLayers (ctx: BackendContext) {
         ignoreNoDurationGroups: layer.ignoreNoDurationGroups
       })
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -152,7 +152,7 @@ export async function addTimelineEvent (options: TimelineEventOptions, app: App,
   const layer = ctx.timelineLayers.find(l => (isAllApps || l.appRecord?.options.app === app) && l.id === options.layerId)
   if (layer) {
     layer.events.push(eventData)
-  } else {
+  } else if (SharedData.debugInfo) {
     console.warn(`Timeline layer ${options.layerId} not found`)
   }
 }
