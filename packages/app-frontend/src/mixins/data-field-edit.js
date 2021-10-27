@@ -2,7 +2,7 @@ import {
   UNDEFINED,
   SPECIAL_TOKENS,
   parse,
-} from '@utils/util'
+} from '@vue-devtools/shared-utils'
 
 let currentEditedField = null
 

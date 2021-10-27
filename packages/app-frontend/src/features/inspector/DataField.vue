@@ -1,12 +1,12 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
 import {
+  BridgeEvents,
   isPlainObject,
   sortByKey,
   openInEditor,
   copyToClipboard,
-} from '@utils/util'
+} from '@vue-devtools/shared-utils'
 import DataFieldEdit from '@front/mixins/data-field-edit'
 import { formattedValue, valueType, valueDetails } from '@front/util/format'
 import { getBridge } from '../bridge'

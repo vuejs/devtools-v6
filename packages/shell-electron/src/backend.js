@@ -1,8 +1,7 @@
 import io from 'socket.io-client'
 import { initBackend } from '@back'
-import { Bridge } from '@utils/bridge'
 import { installToast } from '@back/toast'
-import { target } from '@utils/env'
+import { Bridge, target } from '@vue-devtools/shared-utils'
 
 const host = target.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
 const port = target.__VUE_DEVTOOLS_PORT__ !== undefined ? target.__VUE_DEVTOOLS_PORT__ : 8098

@@ -1,4 +1,4 @@
-import { simpleGet } from '@utils/util'
+import { simpleGet } from '@vue-devtools/shared-utils'
 
 const reg = /\{\{\s*([\w_.-]+)\s*\}\}/g
 

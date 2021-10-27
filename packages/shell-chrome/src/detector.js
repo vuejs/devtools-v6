@@ -1,5 +1,5 @@
 import { installToast } from '@back/toast'
-import { isFirefox } from '@utils/env'
+import { isFirefox } from '@vue-devtools/shared-utils'
 
 window.addEventListener('message', e => {
   if (e.source === window && e.data.vueDetected) {

@@ -1,5 +1,5 @@
 import { initBackend } from '@back'
-import { Bridge } from '@utils/bridge'
+import { Bridge } from '@vue-devtools/shared-utils'
 
 const bridge = new Bridge({
   listen (fn) {

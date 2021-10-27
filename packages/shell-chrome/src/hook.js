@@ -1,6 +1,6 @@
 // This script is injected into every page.
 import { installHook } from '@back/hook'
-import { isFirefox } from '@utils/env'
+import { isFirefox } from '@vue-devtools/shared-utils'
 
 // inject the hook
 if (document instanceof HTMLDocument) {
