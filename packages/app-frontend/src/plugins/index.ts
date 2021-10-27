@@ -21,13 +21,13 @@ export function setupPlugins () {
     { reg: /<mono>/g, replace: '<span class="mono">' },
     { reg: /<\/(input|mono)>/g, replace: '</span>' },
     { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
-    { reg: /<<(\S+)>>/g, replace: (match, p1) => generateHtmlIcon(p1) }
+    { reg: /<<(\S+)>>/g, replace: (match, p1) => generateHtmlIcon(p1) },
   ]
 
   Vue.use(VI18n, {
     strings: locales(`./${currentLocale}`).default,
     defaultValues: {
-      keys
+      keys,
     },
     replacer: text => {
       for (const replacer of replacers) {
@@ -35,7 +35,7 @@ export function setupPlugins () {
         text = text.replace(replacer.reg, replacer.replace)
       }
       return text
-    }
+    },
   })
 
   Vue.use(Responsive, {
@@ -45,15 +45,15 @@ export function setupPlugins () {
       },
       tall () {
         return this.height >= 350
-      }
-    }
+      },
+    },
   })
 
   Vue.use(GlobalRefs, {
     refs: {
       leftScroll: () => document.querySelector('.left .scroll'),
       leftRecycleList: () => document.querySelector('.left .vue-recycle-scroller'),
-      rightScroll: () => document.querySelector('.right .scroll')
-    }
+      rightScroll: () => document.querySelector('.right .scroll'),
+    },
   })
 }

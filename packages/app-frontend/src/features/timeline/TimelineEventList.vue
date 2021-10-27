@@ -16,11 +16,11 @@ const STORAGE_TAB_ID = 'timeline.event-list.tab-id'
 export default defineComponent({
   components: {
     TimelineEventListItem,
-    EmptyPane
+    EmptyPane,
   },
 
   mixins: [
-    Defer()
+    Defer(),
   ],
 
   setup () {
@@ -28,16 +28,16 @@ export default defineComponent({
     const router = useRouter()
 
     const {
-      selectedLayer
+      selectedLayer,
     } = useLayers()
 
     const {
       selectedEvent,
-      selectedGroupEvents
+      selectedGroupEvents,
     } = useSelectedEvent()
 
     const {
-      inspectedEvent
+      inspectedEvent,
     } = useInspectedEvent()
 
     // Tabs
@@ -49,10 +49,10 @@ export default defineComponent({
         router.push({
           query: {
             ...route.value.query,
-            tabId: value
-          }
+            tabId: value,
+          },
         })
-      }
+      },
     })
 
     if (!route.value.query.tabId) {
@@ -90,7 +90,7 @@ export default defineComponent({
         const reg = new RegExp(rawFilter, 'i')
         return displayedEvents.value.filter(event =>
           (event.title && reg.test(event.title)) ||
-          (event.subtitle && reg.test(event.subtitle))
+          (event.subtitle && reg.test(event.subtitle)),
         )
       } else {
         return displayedEvents.value
@@ -203,9 +203,9 @@ export default defineComponent({
       inspectedEvent,
       inspectEvent,
       selectEvent,
-      onScroll
+      onScroll,
     }
-  }
+  },
 })
 </script>
 

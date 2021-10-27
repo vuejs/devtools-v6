@@ -5,7 +5,7 @@ export default function (count = 10) {
   return defineComponent({
     data () {
       return {
-        displayPriority: 0
+        displayPriority: 0,
       }
     },
 
@@ -28,7 +28,7 @@ export default function (count = 10) {
 
       defer (priority) {
         return this.displayPriority >= priority
-      }
-    }
+      },
+    },
   })
 }

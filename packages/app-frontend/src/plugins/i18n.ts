@@ -33,5 +33,5 @@ export default {
     defaultValues = options.defaultValues || {}
     replacer = options.replacer
     Vue.prototype.$t = translate
-  }
+  },
 }

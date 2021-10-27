@@ -7,13 +7,13 @@ export default defineComponent({
   props: {
     pluginId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
     const {
-      plugins
+      plugins,
     } = usePlugins()
 
     const plugin = computed(() => plugins.value.find(p => p.id === props.pluginId))
@@ -23,16 +23,16 @@ export default defineComponent({
       router.push({
         name: 'plugin-details',
         params: {
-          pluginId: props.pluginId
-        }
+          pluginId: props.pluginId,
+        },
       })
     }
 
     return {
       plugin,
-      go
+      go,
     }
-  }
+  },
 })
 </script>
 

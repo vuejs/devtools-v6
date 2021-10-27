@@ -19,7 +19,7 @@ import {
   useCursor,
   useSelectedEvent,
   useScreenshots,
-  supportsScreenshot
+  supportsScreenshot,
 } from './composable'
 
 export default defineComponent({
@@ -31,7 +31,7 @@ export default defineComponent({
     TimelineEventList,
     TimelineEventInspector,
     AskScreenshotPermission,
-    PluginSourceIcon
+    PluginSourceIcon,
   },
 
   setup () {
@@ -43,7 +43,7 @@ export default defineComponent({
       setLayerHidden,
       hoverLayerId,
       selectedLayer,
-      selectLayer
+      selectLayer,
     } = useLayers()
     const layersEl = ref()
 
@@ -56,7 +56,7 @@ export default defineComponent({
     watch(vScroll, () => {
       applyScroll()
     }, {
-      immediate: true
+      immediate: true,
     })
 
     onMounted(() => {
@@ -76,11 +76,11 @@ export default defineComponent({
       startTime,
       endTime,
       minTime,
-      maxTime
+      maxTime,
     } = useTime()
 
     const {
-      selectedEvent
+      selectedEvent,
     } = useSelectedEvent()
 
     // Scroll to selected event
@@ -122,8 +122,8 @@ export default defineComponent({
           origins: [
             'http://*/*',
             'https://*/*',
-            'file:///*'
-          ]
+            'file:///*',
+          ],
         }, granted => {
           if (!granted) {
             /* Ask modal disabled for now */
@@ -136,7 +136,7 @@ export default defineComponent({
 
     const {
       screenshots,
-      showScreenshot
+      showScreenshot,
     } = useScreenshots()
 
     watch(cursorTime, value => {
@@ -288,9 +288,9 @@ export default defineComponent({
       zoomIn,
       zoomOut,
       moveLeft,
-      moveRight
+      moveRight,
     }
-  }
+  },
 })
 </script>
 

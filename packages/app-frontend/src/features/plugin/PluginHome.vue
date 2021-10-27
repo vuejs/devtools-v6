@@ -5,9 +5,9 @@ export default defineComponent({
   props: {
     noPlugins: {
       type: Boolean,
-      default: false
-    }
-  }
+      default: false,
+    },
+  },
 })
 </script>
 

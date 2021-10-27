@@ -17,7 +17,7 @@ import {
   requestComponentTree,
   requestedComponentTree,
   getAppIdFromComponentId,
-  lastSelectedComponentId
+  lastSelectedComponentId,
 } from './components'
 
 export function setupComponentsBridgeEvents (bridge: Bridge) {

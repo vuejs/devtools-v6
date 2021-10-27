@@ -9,8 +9,8 @@ export function useVueVersionCheck () {
       try {
         const response = await fetch('https://registry.npmjs.org/vue', {
           headers: {
-            mode: 'no-cors'
-          }
+            mode: 'no-cors',
+          },
         })
         const data = await response.json()
         packageData.value = data
@@ -30,6 +30,6 @@ export function useVueVersionCheck () {
   }
 
   return {
-    getLatestVersion
+    getLatestVersion,
   }
 }

@@ -10,7 +10,7 @@ const curVersion = pkg.version
   const { newVersion } = await inquirer.prompt([{
     type: 'input',
     name: 'newVersion',
-    message: `Please provide a version (current: ${curVersion}):`
+    message: `Please provide a version (current: ${curVersion}):`,
   }])
 
   if (!semver.valid(newVersion)) {
@@ -26,7 +26,7 @@ const curVersion = pkg.version
   const { yes } = await inquirer.prompt([{
     name: 'yes',
     message: `Release ${newVersion}?`,
-    type: 'confirm'
+    type: 'confirm',
   }])
 
   if (yes) {

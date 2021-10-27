@@ -45,7 +45,7 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
 
     handlers.push({
       handler,
-      plugin: this.ctx.currentPlugin
+      plugin: this.ctx.currentPlugin,
     })
   }
 

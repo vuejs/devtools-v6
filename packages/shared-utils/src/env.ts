@@ -15,7 +15,7 @@ export const keys = {
   alt: isMac ? '&#8997;' : 'Alt',
   del: 'Del',
   enter: 'Enter',
-  esc: 'Esc'
+  esc: 'Esc',
 }
 
 export function initEnv (Vue) {
@@ -27,7 +27,7 @@ export function initEnv (Vue) {
     $isWindows: { get: () => isWindows },
     $isMac: { get: () => isMac },
     $isLinux: { get: () => isLinux },
-    $keys: { get: () => keys }
+    $keys: { get: () => keys },
   })
 
   if (isWindows) document.body.classList.add('platform-windows')

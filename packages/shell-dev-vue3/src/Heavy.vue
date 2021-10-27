@@ -14,13 +14,13 @@
 export default {
   props: {
     n: {
-      default: 1000000
-    }
+      default: 1000000,
+    },
   },
   computed: {
     size () {
       return 20 + this.n / 9999999 * 40
-    }
+    },
   },
   methods: {
     heavy () {
@@ -30,8 +30,8 @@ export default {
         result += Math.tan(Math.sqrt(Math.cos(Math.sin(Math.random() * 100))))
       }
       return result
-    }
-  }
+    },
+  },
 }
 </script>
 

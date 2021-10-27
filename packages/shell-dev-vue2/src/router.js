@@ -14,7 +14,7 @@ import ChildRoute from './router/ChildRoute.vue'
 Vue.use(VueRouter)
 
 const DynamicComponent = {
-  render: (h) => h('div', 'Hello from dynamic component')
+  render: (h) => h('div', 'Hello from dynamic component'),
 }
 
 const routes = [
@@ -28,7 +28,7 @@ const routes = [
     component: RouteWithBeforeEnter,
     beforeEnter: (to, from, next) => {
       next()
-    }
+    },
   },
   { path: '/route-with-redirect', redirect: '/route-one' },
   { path: '/route-with-redirect-function', redirect: () => '/route-one' },
@@ -39,21 +39,21 @@ const routes = [
     component: RouteWithProps,
     props: {
       username: 'My Username',
-      id: 99
-    }
+      id: 99,
+    },
   },
   { path: '/route-with-props-default', component: RouteWithProps },
   {
     path: '/route-parent',
     component: ParentRoute,
     children: [
-      { path: '/route-child', component: ChildRoute }
-    ]
-  }
+      { path: '/route-child', component: ChildRoute },
+    ],
+  },
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
 })
 
 export default router

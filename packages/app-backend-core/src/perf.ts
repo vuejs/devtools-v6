@@ -13,7 +13,7 @@ export async function performanceMarkStart (
   instance: ComponentInstance,
   type: string,
   time: number,
-  ctx: BackendContext
+  ctx: BackendContext,
 ) {
   try {
     if (!SharedData.performanceMonitoringEnabled) return
@@ -29,12 +29,12 @@ export async function performanceMarkStart (
         data: {
           component: componentName,
           type,
-          measure: 'start'
+          measure: 'start',
         },
         title: componentName,
         subtitle: type,
-        groupId
-      }
+        groupId,
+      },
     }, app, ctx)
   } catch (e) {
     if (SharedData.debugInfo) {
@@ -49,7 +49,7 @@ export async function performanceMarkEnd (
   instance: ComponentInstance,
   type: string,
   time: number,
-  ctx: BackendContext
+  ctx: BackendContext,
 ) {
   try {
     if (!SharedData.performanceMonitoringEnabled) return
@@ -70,14 +70,14 @@ export async function performanceMarkEnd (
             _custom: {
               type: 'Duration',
               value: duration,
-              display: `${duration} ms`
-            }
-          }
+              display: `${duration} ms`,
+            },
+          },
         },
         title: componentName,
         subtitle: type,
-        groupId
-      }
+        groupId,
+      },
     }, app, ctx)
 
     // Mark on component
@@ -87,7 +87,7 @@ export async function performanceMarkEnd (
       if (tooSlow && !instance.__VUE_DEVTOOLS_SLOW__) {
         instance.__VUE_DEVTOOLS_SLOW__ = {
           duration: null,
-          measures: {}
+          measures: {},
         }
       }
 
@@ -136,7 +136,7 @@ export function handleAddPerformanceTag (backend: DevtoolsBackend, ctx: BackendC
         backgroundColor: duration > 30 ? 0xF87171 : 0xFBBF24,
         textColor: 0x000000,
         label: `${duration} ms`,
-        tooltip
+        tooltip,
       })
     }
   })

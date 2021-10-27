@@ -11,7 +11,7 @@ import { setupPlugin } from './plugin'
 export const backend = defineBackend({
   frameworkVersion: 2,
   features: [
-    BuiltinBackendFeature.FLUSH
+    BuiltinBackendFeature.FLUSH,
   ],
   setup (api) {
     api.on.getAppRecordName(payload => {
@@ -89,7 +89,7 @@ export const backend = defineBackend({
 
     // Plugin
     setupPlugin(api, app, Vue)
-  }
+  },
 })
 
 // @TODO refactor

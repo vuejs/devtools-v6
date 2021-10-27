@@ -4,16 +4,16 @@ import Nested from './Nested.vue'
 
 export default {
   components: {
-    Nested
+    Nested,
   },
 
   setup () {
     const count = ref(2)
 
     return {
-      count
+      count,
     }
-  }
+  },
 }
 </script>
 

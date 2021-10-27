@@ -9,44 +9,44 @@ import { useOrientation } from '@front/features/layout/orientation'
 export default defineComponent({
   components: {
     StateFields,
-    PluginSourceIcon
+    PluginSourceIcon,
   },
 
   props: {
     dataType: {
       type: String,
-      required: true
+      required: true,
     },
 
     index: {
       type: Number,
-      required: true
+      required: true,
     },
 
     state: {
       type: Object,
-      required: true
+      required: true,
     },
 
     expandedState: {
       type: Object,
-      required: true
+      required: true,
     },
 
     forceCollapse: {
       type: String,
-      default: null
+      default: null,
     },
 
     highDensity: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     dimAfter: {
       type: Number,
-      default: -1
-    }
+      default: -1,
+    },
   },
 
   setup (props) {
@@ -72,9 +72,9 @@ export default defineComponent({
       plugin,
       orientation,
       toDisplayType,
-      isExpanded
+      isExpanded,
     }
-  }
+  },
 })
 </script>
 

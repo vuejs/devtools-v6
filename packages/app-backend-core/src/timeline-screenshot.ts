@@ -34,14 +34,14 @@ export async function showScreenshot (screenshot: Screenshot, ctx: BackendContex
         event: {
           ...eventData.event,
           layerId: eventData.layerId,
-          renderMeta: {}
-        }
+          renderMeta: {},
+        },
       }))
 
       const renderContext: ScreenshotOverlayRenderContext = {
         screenshot,
         events: events.map(({ event }) => event),
-        index: 0
+        index: 0,
       }
 
       for (let i = 0; i < events.length; i++) {

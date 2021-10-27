@@ -27,7 +27,7 @@ const internalSharedData = {
   pluginPermissions: {} as any,
   pluginSettings: {} as any,
   pageConfig: {} as any,
-  debugInfo: false
+  debugInfo: false,
 }
 
 const persisted = [
@@ -49,7 +49,7 @@ const persisted = [
   'pluginSettings',
   'performanceMonitoringEnabled',
   'componentEventsEnabled',
-  'debugInfo'
+  'debugInfo',
 ]
 
 const storageVersion = '6.0.0-alpha.1'
@@ -152,7 +152,7 @@ export function initSharedData (params: SharedDataParams) {
     }
 
     data = {
-      ...internalSharedData
+      ...internalSharedData,
     }
 
     if (params.Vue) {
@@ -201,7 +201,7 @@ function setValue (key: string, value: any) {
 function sendValue (key: string, value: any) {
   bridge && bridge.send('shared-data:set', {
     key,
-    value
+    value,
   })
 }
 
@@ -222,7 +222,7 @@ Object.keys(internalSharedData).forEach(key => {
     set: (value) => {
       sendValue(key, value)
       setValue(key, value)
-    }
+    },
   })
 })
 

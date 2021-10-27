@@ -14,14 +14,14 @@ export default {
       homepage: 'https://github.com/vuejs/vue-devtools',
       logo: 'https://nodepackjs.com/favicon.png',
       componentStateTypes: [
-        stateType
+        stateType,
       ],
       enableEarlyProxy: true,
       settings: {
         test1: {
           label: 'I like vue devtools',
           type: 'boolean',
-          defaultValue: true
+          defaultValue: true,
         },
         test2: {
           label: 'Quick choice',
@@ -30,9 +30,9 @@ export default {
           options: [
             { value: 'a', label: 'A' },
             { value: 'b', label: 'B' },
-            { value: 'c', label: 'C' }
+            { value: 'c', label: 'C' },
           ],
-          component: 'button-group'
+          component: 'button-group',
         },
         test3: {
           label: 'Long choice',
@@ -43,16 +43,16 @@ export default {
             { value: 'b', label: 'B' },
             { value: 'c', label: 'C' },
             { value: 'd', label: 'D' },
-            { value: 'e', label: 'E' }
-          ]
+            { value: 'e', label: 'E' },
+          ],
         },
         test4: {
           label: 'What is your name?',
           type: 'text',
-          defaultValue: ''
-        }
+          defaultValue: '',
+        },
       },
-      app
+      app,
     }, (api) => {
       devtoolsApi = api
 
@@ -66,19 +66,19 @@ export default {
           node.tags.push({
             label: 'root',
             textColor: 0x000000,
-            backgroundColor: 0xFF984F
+            backgroundColor: 0xFF984F,
           })
         } else {
           node.tags.push({
             label: 'test',
             textColor: 0xFFAAAA,
-            backgroundColor: 0xFFEEEE
+            backgroundColor: 0xFFEEEE,
           })
         }
       })
 
       const componentState = {
-        foo: 'bar'
+        foo: 'bar',
       }
 
       api.on.inspectComponent((payload, ctx) => {
@@ -87,7 +87,7 @@ export default {
             type: stateType,
             key: 'foo',
             value: componentState.foo,
-            editable: true
+            editable: true,
           })
           payload.instanceData.state.push({
             type: stateType,
@@ -98,9 +98,9 @@ export default {
                 readOnly: true,
                 display: `${time}s`,
                 tooltip: 'Elapsed time',
-                value: time
-              }
-            }
+                value: time,
+              },
+            },
           })
 
           return api.getComponentBounds(payload.componentInstance).then(bounds => {
@@ -112,16 +112,16 @@ export default {
                     left: bounds.left,
                     top: bounds.top,
                     width: bounds.width,
-                    height: bounds.height
+                    height: bounds.height,
                   }
-                : null
+                : null,
             })
           }).then(() => api.getComponentName(payload.componentInstance))
             .then(name => {
               payload.instanceData.state.push({
                 type: stateType,
                 key: 'component name',
-                value: name
+                value: name,
               })
             })
         }
@@ -145,7 +145,7 @@ export default {
       api.addTimelineLayer({
         id: 'test-layer',
         label: 'Test layer with a name far too long that should really be much shorter',
-        color: 0x92A2BF
+        color: 0x92A2BF,
       })
 
       api.addTimelineEvent({
@@ -153,15 +153,15 @@ export default {
         event: {
           time: Date.now(),
           title: 'Early event',
-          data: {}
-        }
+          data: {},
+        },
       })
 
       for (let i = 0; i < 10; i++) {
         api.addTimelineLayer({
           id: `test-layer-${i}`,
           label: `Empty ${i}`,
-          color: 0x92A2BF
+          color: 0x92A2BF,
         })
       }
 
@@ -170,7 +170,7 @@ export default {
           return new Promise(resolve => {
             payload.data = {
               ...payload.data,
-              hey: 'hello'
+              hey: 'hello',
             }
             setTimeout(resolve, 1000)
           })
@@ -194,14 +194,14 @@ export default {
             action: () => {
               console.log('Meow! 🐱')
               api.selectInspectorNode('test-inspector', 'child')
-            }
-          }
-        ]
+            },
+          },
+        ],
       })
 
       api.addInspector({
         id: 'test-inspector2',
-        label: 'Test inspector 2'
+        label: 'Test inspector 2',
       })
 
       let componentInstances = []
@@ -220,17 +220,17 @@ export default {
                     {
                       label: 'active',
                       textColor: 0x000000,
-                      backgroundColor: 0xFF984F
+                      backgroundColor: 0xFF984F,
                     },
                     {
                       label: 'test',
                       textColor: 0xffffff,
-                      backgroundColor: 0x000000
-                    }
-                  ]
-                }
-              ]
-            }
+                      backgroundColor: 0x000000,
+                    },
+                  ],
+                },
+              ],
+            },
           ]
         } else if (payload.inspectorId === 'test-inspector2') {
           return api.getComponentInstances(app).then((instances) => {
@@ -238,7 +238,7 @@ export default {
             for (const instance of instances) {
               payload.rootNodes.push({
                 id: instance.uid.toString(),
-                label: `Component ${instance.uid}`
+                label: `Component ${instance.uid}`,
               })
             }
           })
@@ -246,7 +246,7 @@ export default {
       })
 
       const myState = {
-        foo: 'bar'
+        foo: 'bar',
       }
 
       api.on.getInspectorState(payload => {
@@ -257,13 +257,13 @@ export default {
                 {
                   key: 'foo',
                   value: myState.foo,
-                  editable: true
+                  editable: true,
                 },
                 {
                   key: 'time',
-                  value: time
-                }
-              ]
+                  value: time,
+                },
+              ],
             }
           } else {
             payload.state = {
@@ -274,11 +274,11 @@ export default {
                     _custom: {
                       display: '42!!!',
                       value: 42,
-                      tooltip: 'The answer'
-                    }
-                  }
-                }
-              ]
+                      tooltip: 'The answer',
+                    },
+                  },
+                },
+              ],
             }
           }
         } else if (payload.inspectorId === 'test-inspector2') {
@@ -314,10 +314,10 @@ export default {
           data: {
             info: 'window.mouseup',
             x: event.clientX,
-            y: event.clientY
+            y: event.clientY,
           },
-          logType: event.clientX < 100 ? 'error' : event.clientY < 100 ? 'warning' : 'default'
-        }
+          logType: event.clientX < 100 ? 'error' : event.clientY < 100 ? 'warning' : 'default',
+        },
       })
     })
 
@@ -328,19 +328,19 @@ export default {
           time: Date.now(),
           data: {
             info: 'window.keyup',
-            key: event.key
+            key: event.key,
           },
           groupId: event.key,
           title: 'Group test',
           meta: {
-            foo: 'bar'
-          }
-        }
+            foo: 'bar',
+          },
+        },
       })
 
       if (devtoolsApi && event.key === 's') {
         console.log('settings', devtoolsApi.getSettings())
       }
     })
-  }
+  },
 }

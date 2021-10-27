@@ -3,7 +3,7 @@ import {
   BackendContext,
   Plugin,
   BuiltinBackendFeature,
-  AppRecord
+  AppRecord,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -15,7 +15,7 @@ import {
   parse,
   revive,
   target,
-  getPluginSettings
+  getPluginSettings,
 } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import debounce from 'lodash/debounce'
@@ -30,7 +30,7 @@ import {
   sendEmptyComponentData,
   getComponentId,
   editComponentState,
-  getComponentInstance
+  getComponentInstance,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
@@ -47,7 +47,7 @@ let connected = target.__vdevtools_connected ?? false
 export async function initBackend (bridge: Bridge) {
   await initSharedData({
     bridge,
-    persist: false
+    persist: false,
   })
 
   initOnPageConfig()
@@ -56,7 +56,7 @@ export async function initBackend (bridge: Bridge) {
     // connected = false
     ctx = target.__vdevtools_ctx = createBackendContext({
       bridge,
-      hook
+      hook,
     })
 
     if (hook.Vue) {
@@ -234,7 +234,7 @@ async function connect () {
       ...options,
       appRecord,
       plugin,
-      events: []
+      events: [],
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
   })
@@ -252,7 +252,7 @@ async function connect () {
       appRecord,
       plugin,
       treeFilter: '',
-      selectedNodeId: null
+      selectedNodeId: null,
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
   })
@@ -316,7 +316,7 @@ async function connect () {
     time: Date.now(),
     label: 'Vue Devtools connected',
     color: 0x41B883,
-    all: true
+    all: true,
   }, ctx)
 }
 
@@ -390,7 +390,7 @@ function connectBridge () {
           el.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
-            inline: 'center'
+            inline: 'center',
           })
         } else {
           // Handle nodes that don't implement scrollIntoView
@@ -405,7 +405,7 @@ function connectBridge () {
           scrollTarget.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
-            inline: 'center'
+            inline: 'center',
           })
           setTimeout(() => {
             document.body.removeChild(scrollTarget)
@@ -425,7 +425,7 @@ function connectBridge () {
       const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)
       ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_RENDER_CODE, {
         instanceId,
-        code
+        code,
       })
     }
   })
@@ -573,7 +573,7 @@ function connectBridge () {
       key,
       newValue,
       oldValue,
-      settings
+      settings,
     })
   })
 }

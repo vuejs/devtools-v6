@@ -3,7 +3,7 @@ import {
   SimpleAppRecord,
   AppRecordOptions,
   BackendContext,
-  DevtoolsBackend
+  DevtoolsBackend,
 } from '@vue-devtools/app-backend-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
@@ -65,7 +65,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
       rootInstance,
       perfGroupIds: new Map(),
       iframe: document !== el.ownerDocument ? el.ownerDocument.location.pathname : null,
-      meta: options.meta ?? {}
+      meta: options.meta ?? {},
     }
     options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
     const rootId = `${record.id}:root`
@@ -84,7 +84,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
     await backend.api.registerApplication(options.app)
 
     ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
-      appRecord: mapAppRecord(record)
+      appRecord: mapAppRecord(record),
     })
 
     if (appRecordPromises.has(options.app)) {
@@ -107,7 +107,7 @@ export async function selectApp (record: AppRecord, ctx: BackendContext) {
   ctx.currentInspectedComponentId = record.lastInspectedComponentId
   ctx.bridge.send(BridgeEvents.TO_FRONT_APP_SELECTED, {
     id: record.id,
-    lastInspectedComponentId: record.lastInspectedComponentId
+    lastInspectedComponentId: record.lastInspectedComponentId,
   })
 }
 
@@ -116,7 +116,7 @@ export function mapAppRecord (record: AppRecord): SimpleAppRecord {
     id: record.id,
     name: record.name,
     version: record.options.version,
-    iframe: record.iframe
+    iframe: record.iframe,
   }
 }
 
@@ -181,7 +181,7 @@ export async function sendApps (ctx: BackendContext) {
   }
 
   ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {
-    apps: appRecords.map(mapAppRecord)
+    apps: appRecords.map(mapAppRecord),
   })
 }
 
@@ -211,8 +211,8 @@ export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext)
       types: {},
       version: Vue.version,
       meta: {
-        Vue
-      }
+        Vue,
+      },
     }, ctx)
   })
 }

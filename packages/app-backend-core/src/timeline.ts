@@ -16,7 +16,7 @@ export function addBuiltinLayers (appRecord: AppRecord, ctx: BackendContext) {
       ...layerDef,
       appRecord,
       plugin: null,
-      events: []
+      events: [],
     })
   }
 }
@@ -32,14 +32,14 @@ function setupBuiltinLayers (ctx: BackendContext) {
           data: {
             type: eventType,
             x: event.clientX,
-            y: event.clientY
+            y: event.clientY,
           },
-          title: eventType
-        }
+          title: eventType,
+        },
       }, null, ctx)
     }, {
       capture: true,
-      passive: true
+      passive: true,
     })
   })
 
@@ -56,14 +56,14 @@ function setupBuiltinLayers (ctx: BackendContext) {
             ctrlKey: event.ctrlKey,
             shiftKey: event.shiftKey,
             altKey: event.altKey,
-            metaKey: event.metaKey
+            metaKey: event.metaKey,
           },
-          title: event.key
-        }
+          title: event.key,
+        },
       }, null, ctx)
     }, {
       capture: true,
-      passive: true
+      passive: true,
     })
   })
 
@@ -83,19 +83,19 @@ function setupBuiltinLayers (ctx: BackendContext) {
             component: {
               _custom: {
                 type: 'component-definition',
-                display: componentDisplay
-              }
+                display: componentDisplay,
+              },
             },
             event,
-            params
+            params,
           },
           title: event,
           subtitle: `by ${componentDisplay}`,
           meta: {
             componentId,
-            bounds: await appRecord.backend.api.getComponentBounds(instance)
-          }
-        }
+            bounds: await appRecord.backend.api.getComponentBounds(instance),
+          },
+        },
       }, app, ctx)
     } catch (e) {
       if (SharedData.debugInfo) {
@@ -117,7 +117,7 @@ export async function sendTimelineLayers (ctx: BackendContext) {
         pluginId: layer.plugin?.descriptor.id,
         groupsOnly: layer.groupsOnly,
         skipScreenshots: layer.skipScreenshots,
-        ignoreNoDurationGroups: layer.ignoreNoDurationGroups
+        ignoreNoDurationGroups: layer.ignoreNoDurationGroups,
       })
     } catch (e) {
       if (SharedData.debugInfo) {
@@ -126,7 +126,7 @@ export async function sendTimelineLayers (ctx: BackendContext) {
     }
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, {
-    layers
+    layers,
   })
 }
 
@@ -139,14 +139,14 @@ export async function addTimelineEvent (options: TimelineEventOptions, app: App,
   const eventData: TimelineEventOptions & WithId = {
     id,
     ...options,
-    all: isAllApps
+    all: isAllApps,
   }
   ctx.timelineEventMap.set(eventData.id, eventData)
 
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
     appId: eventData.all ? 'all' : appId,
     layerId: eventData.layerId,
-    event: mapTimelineEvent(eventData)
+    event: mapTimelineEvent(eventData),
   })
 
   const layer = ctx.timelineLayers.find(l => (isAllApps || l.appRecord?.options.app === app) && l.id === options.layerId)
@@ -164,7 +164,7 @@ function mapTimelineEvent (eventData: TimelineEventOptions & WithId) {
     logType: eventData.event.logType,
     groupId: eventData.event.groupId,
     title: eventData.event.title,
-    subtitle: eventData.event.subtitle
+    subtitle: eventData.event.subtitle,
   }
 }
 
@@ -189,7 +189,7 @@ export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT_DATA, {
     eventId: id,
-    data
+    data,
   })
 }
 
@@ -212,6 +212,6 @@ export function sendTimelineLayerEvents (appId: string, layerId: string, ctx: Ba
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LOAD_EVENTS, {
     appId,
     layerId,
-    events: layer.events.map(e => mapTimelineEvent(e))
+    events: layer.events.map(e => mapTimelineEvent(e)),
   })
 }

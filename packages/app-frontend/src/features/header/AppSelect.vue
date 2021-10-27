@@ -14,7 +14,7 @@ import { useVueVersionCheck } from './vue-version-check'
 export default defineComponent({
   components: {
     AppHeaderSelect,
-    AppSelectItem
+    AppSelectItem,
   },
 
   setup () {
@@ -25,7 +25,7 @@ export default defineComponent({
       apps,
       currentAppId,
       currentApp,
-      selectApp
+      selectApp,
     } = useApps()
 
     watch(currentAppId, value => {
@@ -34,7 +34,7 @@ export default defineComponent({
         bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
       }
     }, {
-      immediate: true
+      immediate: true,
     })
 
     let initDefaultAppId = false
@@ -52,13 +52,13 @@ export default defineComponent({
           router.push({
             params: {
               appId: targetId,
-              componentId: null
-            }
+              componentId: null,
+            },
           })
         }
       }
     }, {
-      immediate: true
+      immediate: true,
     })
 
     const { orientation } = useOrientation()
@@ -72,9 +72,9 @@ export default defineComponent({
       apps,
       selectApp,
       orientation,
-      hasNewVueVersion
+      hasNewVueVersion,
     }
-  }
+  },
 })
 </script>
 

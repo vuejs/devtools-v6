@@ -18,7 +18,7 @@ chrome.runtime.onConnect.addListener(port => {
   if (!ports[tab]) {
     ports[tab] = {
       devtools: null,
-      backend: null
+      backend: null,
     }
   }
   ports[tab][name] = port
@@ -34,7 +34,7 @@ function isNumeric (str) {
 
 function installProxy (tabId) {
   chrome.tabs.executeScript(tabId, {
-    file: '/build/proxy.js'
+    file: '/build/proxy.js',
   }, function (res) {
     if (!res) {
       ports[tabId].devtools.postMessage('proxy-fail')
@@ -100,23 +100,23 @@ chrome.runtime.onMessage.addListener((req, sender) => {
       path: {
         16: `icons/16${suffix}.png`,
         48: `icons/48${suffix}.png`,
-        128: `icons/128${suffix}.png`
-      }
+        128: `icons/128${suffix}.png`,
+      },
     })
     chrome.browserAction.setPopup({
       tabId: sender.tab.id,
-      popup: req.devtoolsEnabled ? `popups/enabled${suffix}.html` : `popups/disabled${suffix}.html`
+      popup: req.devtoolsEnabled ? `popups/enabled${suffix}.html` : `popups/disabled${suffix}.html`,
     })
   }
 
   if (req.action === 'vue-take-screenshot' && sender.envType === 'devtools_child') {
     browser.tabs.captureVisibleTab({
-      format: 'png'
+      format: 'png',
     }).then(dataUrl => {
       browser.runtime.sendMessage({
         action: 'vue-screenshot-result',
         id: req.id,
-        dataUrl
+        dataUrl,
       })
     })
   }

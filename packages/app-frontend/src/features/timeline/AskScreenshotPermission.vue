@@ -10,8 +10,8 @@ export default defineComponent({
         origins: [
           'http://*/*',
           'https://*/*',
-          'file:///*'
-        ]
+          'file:///*',
+        ],
       }, granted => {
         if (granted) {
           SharedData.timelineScreenshots = true
@@ -30,9 +30,9 @@ export default defineComponent({
 
     return {
       requestPermission,
-      cancel
+      cancel,
     }
-  }
+  },
 })
 </script>
 

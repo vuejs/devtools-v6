@@ -12,15 +12,15 @@ import { BuiltinTabs, getStorage, setStorage } from '@vue-devtools/shared-utils'
 Vue.use(VueRouter)
 
 const RouterView = {
-  render: h => h('router-view')
+  render: h => h('router-view'),
 }
 
 const routes = [
   {
     path: '/',
     redirect: {
-      name: 'inspector-components'
-    }
+      name: 'inspector-components',
+    },
   },
   {
     path: '/app/:appId',
@@ -36,69 +36,69 @@ const routes = [
             name: 'inspector-components',
             component: ComponentsInspector,
             meta: {
-              tab: BuiltinTabs.COMPONENTS
-            }
+              tab: BuiltinTabs.COMPONENTS,
+            },
           },
           {
             path: 'custom/:inspectorId',
             name: 'custom-inspector',
             component: CustomInspector,
             meta: {
-              tab: route => `custom-inspector:${route.params.inspectorId}`
-            }
-          }
-        ]
+              tab: route => `custom-inspector:${route.params.inspectorId}`,
+            },
+          },
+        ],
       },
       {
         path: 'timeline',
         name: 'timeline',
         component: Timeline,
         meta: {
-          tab: BuiltinTabs.TIMELINE
-        }
+          tab: BuiltinTabs.TIMELINE,
+        },
       },
       {
         path: 'plugins',
         component: Plugins,
         meta: {
           match: 'plugins',
-          tab: BuiltinTabs.PLUGINS
+          tab: BuiltinTabs.PLUGINS,
         },
         children: [
           {
             path: '',
             name: 'plugins',
-            component: PluginHome
+            component: PluginHome,
           },
           {
             path: ':pluginId',
             name: 'plugin-details',
             component: PluginDetails,
-            props: true
-          }
-        ]
+            props: true,
+          },
+        ],
       },
       {
         path: 'settings',
         name: 'global-settings',
         component: GlobalSettings,
         meta: {
-          tab: BuiltinTabs.SETTINGS
-        }
-      }
-    ]
+          tab: BuiltinTabs.SETTINGS,
+        },
+      },
+    ],
   },
   {
     path: '*',
-    redirect: '/'
-  }
+    redirect: '/',
+  },
 ]
 
 const STORAGE_ROUTE = 'route'
 
 export function createRouter () {
   const router = new VueRouter({
-    routes
+    routes,
   })
 
   const previousRoute = getStorage(STORAGE_ROUTE)

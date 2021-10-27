@@ -5,5 +5,5 @@ export const backend = defineBackend({
   features: [],
   setup (api) {
     // @TODO
-  }
+  },
 })

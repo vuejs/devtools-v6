@@ -7,20 +7,20 @@ export default defineComponent({
   props: {
     plugin: {
       type: Object as PropType<Plugin>,
-      required: true
+      required: true,
     },
 
     id: {
       type: String,
-      required: true
+      required: true,
     },
 
     schema: {
       type: Object as PropType<PluginSettingsItem>,
-      required: true
+      required: true,
     },
 
-    value: {}
+    value: {},
   },
 
   setup (props, { emit }) {
@@ -30,7 +30,7 @@ export default defineComponent({
       },
       set (value) {
         emit('update:value', value)
-      }
+      },
     })
 
     function onLabelClick () {
@@ -39,9 +39,9 @@ export default defineComponent({
 
     return {
       model,
-      onLabelClick
+      onLabelClick,
     }
-  }
+  },
 })
 </script>
 

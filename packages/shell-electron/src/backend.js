@@ -47,7 +47,7 @@ const bridge = new Bridge({
   },
   send (data) {
     socket.emit('vue-message', data)
-  }
+  },
 })
 
 bridge.on('shutdown', () => {

@@ -144,7 +144,7 @@ export class ComponentWalker {
       hasChildren: !!children.length,
       children: [],
       isFragment: isFragment(instance),
-      tags: []
+      tags: [],
     }
 
     const isKeepAliveChild = parents.some(parent => parent.type.__isKeepAlive)
@@ -191,7 +191,7 @@ export class ComponentWalker {
         label: 's',
         backgroundColor: 0x7d7dd7,
         textColor: 0xffffff,
-        tooltip: 'Suspense'
+        tooltip: 'Suspense',
       })
     }
 

@@ -11,7 +11,7 @@ const bridge = new Bridge({
       console.log('backend -> devtools', data)
     }
     window.parent.postMessage(data, '*')
-  }
+  },
 })
 
 initBackend(bridge)

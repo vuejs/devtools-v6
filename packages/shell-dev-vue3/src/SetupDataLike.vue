@@ -2,9 +2,9 @@
 export default {
   setup () {
     return {
-      msg: 'hello from script src!'
+      msg: 'hello from script src!',
     }
-  }
+  },
 }
 </script>
 

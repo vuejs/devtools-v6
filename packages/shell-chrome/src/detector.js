@@ -23,7 +23,7 @@ function detect (win) {
         devtoolsEnabled: (/* Vue 2 */ Vue && Vue.config.devtools) ||
           (/* Vue 3.2.14+ */ window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled),
         vueDetected: true,
-        nuxtDetected: true
+        nuxtDetected: true,
       }, '*')
 
       return
@@ -34,7 +34,7 @@ function detect (win) {
     if (vueDetected) {
       win.postMessage({
         devtoolsEnabled: /* Vue 3.2.14+ */ window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled,
-        vueDetected: true
+        vueDetected: true,
       }, '*')
 
       return
@@ -56,7 +56,7 @@ function detect (win) {
       }
       win.postMessage({
         devtoolsEnabled: Vue.config.devtools,
-        vueDetected: true
+        vueDetected: true,
       }, '*')
     }
   }, 100)

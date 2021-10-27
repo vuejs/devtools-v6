@@ -15,13 +15,13 @@ export default defineComponent({
   props: {
     instance: {
       type: Object as PropType<ComponentTreeNode>,
-      required: true
+      required: true,
     },
 
     depth: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
 
   setup (props, { emit }) {
@@ -42,7 +42,7 @@ export default defineComponent({
       isExpandedUndefined,
       checkIsExpanded,
       toggleExpand: toggle,
-      subscribeToComponentTree
+      subscribeToComponentTree,
     } = useComponent(instance)
 
     subscribeToComponentTree()
@@ -69,7 +69,7 @@ export default defineComponent({
           scrollMode: 'if-needed',
           block: 'center',
           inline: 'nearest',
-          behavior: 'smooth'
+          behavior: 'smooth',
         })
       }
     }
@@ -153,9 +153,9 @@ export default defineComponent({
       highlight,
       unhighlight,
       selectNextSibling,
-      selectPreviousSibling
+      selectPreviousSibling,
     }
-  }
+  },
 })
 </script>
 

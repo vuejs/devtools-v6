@@ -6,7 +6,7 @@ import {
   getPluginDefaultSettings,
   getPluginSettings,
   setPluginSettings,
-  StateEditor
+  StateEditor,
 } from '@vue-devtools/shared-utils'
 import {
   Hooks,
@@ -20,7 +20,7 @@ import {
   EditStatePayload,
   WithId,
   ComponentTreeNode,
-  ComponentDevtoolsOptions
+  ComponentDevtoolsOptions,
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
@@ -56,7 +56,7 @@ export class DevtoolsApi {
     const payload = await this.callHook(Hooks.TRANSFORM_CALL, {
       callName,
       inArgs: args,
-      outArgs: args.slice()
+      outArgs: args.slice(),
     })
     return payload.outArgs
   }
@@ -64,7 +64,7 @@ export class DevtoolsApi {
   async getAppRecordName (app: App, defaultName: string): Promise<string> {
     const payload = await this.callHook(Hooks.GET_APP_RECORD_NAME, {
       app,
-      name: null
+      name: null,
     })
     if (payload.name) {
       return payload.name
@@ -76,14 +76,14 @@ export class DevtoolsApi {
   async getAppRootInstance (app: App) {
     const payload = await this.callHook(Hooks.GET_APP_ROOT_INSTANCE, {
       app,
-      root: null
+      root: null,
     })
     return payload.root
   }
 
   async registerApplication (app: App) {
     await this.callHook(Hooks.REGISTER_APPLICATION, {
-      app
+      app,
     })
   }
 
@@ -92,7 +92,7 @@ export class DevtoolsApi {
       componentInstance: instance,
       componentTreeData: null,
       maxDepth,
-      filter
+      filter,
     })
     return payload.componentTreeData
   }
@@ -102,7 +102,7 @@ export class DevtoolsApi {
       app,
       componentInstance: instance,
       treeNode,
-      filter
+      filter,
     })
     return payload.treeNode
   }
@@ -110,7 +110,7 @@ export class DevtoolsApi {
   async walkComponentParents (instance: ComponentInstance) {
     const payload = await this.callHook(Hooks.WALK_COMPONENT_PARENTS, {
       componentInstance: instance,
-      parentInstances: []
+      parentInstances: [],
     })
     return payload.parentInstances
   }
@@ -119,7 +119,7 @@ export class DevtoolsApi {
     const payload = await this.callHook(Hooks.INSPECT_COMPONENT, {
       app,
       componentInstance: instance,
-      instanceData: null
+      instanceData: null,
     })
     return payload.instanceData
   }
@@ -127,7 +127,7 @@ export class DevtoolsApi {
   async getComponentBounds (instance: ComponentInstance) {
     const payload = await this.callHook(Hooks.GET_COMPONENT_BOUNDS, {
       componentInstance: instance,
-      bounds: null
+      bounds: null,
     })
     return payload.bounds
   }
@@ -135,7 +135,7 @@ export class DevtoolsApi {
   async getComponentName (instance: ComponentInstance) {
     const payload = await this.callHook(Hooks.GET_COMPONENT_NAME, {
       componentInstance: instance,
-      name: null
+      name: null,
     })
     return payload.name
   }
@@ -143,7 +143,7 @@ export class DevtoolsApi {
   async getComponentInstances (app: App) {
     const payload = await this.callHook(Hooks.GET_COMPONENT_INSTANCES, {
       app,
-      componentInstances: []
+      componentInstances: [],
     })
     return payload.componentInstances
   }
@@ -151,7 +151,7 @@ export class DevtoolsApi {
   async getElementComponent (element: HTMLElement | any) {
     const payload = await this.callHook(Hooks.GET_ELEMENT_COMPONENT, {
       element,
-      componentInstance: null
+      componentInstance: null,
     })
     return payload.componentInstance
   }
@@ -159,7 +159,7 @@ export class DevtoolsApi {
   async getComponentRootElements (instance: ComponentInstance) {
     const payload = await this.callHook(Hooks.GET_COMPONENT_ROOT_ELEMENTS, {
       componentInstance: instance,
-      rootElements: []
+      rootElements: [],
     })
     return payload.rootElements
   }
@@ -172,7 +172,7 @@ export class DevtoolsApi {
       path: arrayPath,
       type,
       state,
-      set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state))
+      set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state)),
     })
     return payload.componentInstance
   }
@@ -180,7 +180,7 @@ export class DevtoolsApi {
   async getComponentDevtoolsOptions (instance: ComponentInstance): Promise<ComponentDevtoolsOptions> {
     const payload = await this.callHook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, {
       componentInstance: instance,
-      options: null
+      options: null,
     })
     return payload.options || {}
   }
@@ -190,10 +190,10 @@ export class DevtoolsApi {
   }> {
     const payload = await this.callHook(Hooks.GET_COMPONENT_RENDER_CODE, {
       componentInstance: instance,
-      code: null
+      code: null,
     })
     return {
-      code: payload.code
+      code: payload.code,
     }
   }
 
@@ -203,7 +203,7 @@ export class DevtoolsApi {
       layerId: eventData.layerId,
       app,
       data: eventData.event.data,
-      all: eventData.all
+      all: eventData.all,
     })
     return payload.data
   }
@@ -217,7 +217,7 @@ export class DevtoolsApi {
       inspectorId,
       app,
       filter,
-      rootNodes: []
+      rootNodes: [],
     })
     return payload.rootNodes
   }
@@ -227,7 +227,7 @@ export class DevtoolsApi {
       inspectorId,
       app,
       nodeId,
-      state: null
+      state: null,
     })
     return payload.state
   }
@@ -241,7 +241,7 @@ export class DevtoolsApi {
       path: arrayPath,
       type,
       state,
-      set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state))
+      set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state)),
     })
   }
 }

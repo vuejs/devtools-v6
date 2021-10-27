@@ -7,9 +7,9 @@ export default {
       name: 'Child',
       render () {
         return h('div', 'Child')
-      }
-    }
-  }
+      },
+    },
+  },
 }
 </script>
 

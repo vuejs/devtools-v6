@@ -7,7 +7,7 @@ export default {
 
     const size = reactive({
       width: 10,
-      height: 10
+      height: 10,
     })
 
     const timer = setInterval(() => {
@@ -22,9 +22,9 @@ export default {
 
     return {
       size,
-      animate
+      animate,
     }
-  }
+  },
 }
 </script>
 

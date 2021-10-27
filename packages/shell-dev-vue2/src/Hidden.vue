@@ -1,8 +1,8 @@
 <script>
 export default {
   devtools: {
-    hide: true
-  }
+    hide: true,
+  },
 }
 </script>
 

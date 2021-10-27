@@ -9,7 +9,7 @@ import {
   BridgeSubscriptions,
   isChrome,
   openInEditor,
-  setStorage
+  setStorage,
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
 import { AppRecord, waitForAppSelect, useCurrentApp } from '@front/features/apps'
@@ -36,8 +36,8 @@ export function useComponentRequests () {
       router[replace ? 'replace' : 'push']({
         params: {
           appId: getAppIdFromComponentId(id),
-          componentId: id
-        }
+          componentId: id,
+        },
       })
     } else {
       loadComponent(id)
@@ -46,7 +46,7 @@ export function useComponentRequests () {
 
   return {
     requestComponentTree,
-    selectComponent
+    selectComponent,
   }
 }
 
@@ -55,7 +55,7 @@ export function useComponents () {
   const route = useRoute()
   const {
     requestComponentTree,
-    selectComponent
+    selectComponent,
   } = useComponentRequests()
   const { currentAppId } = useCurrentApp()
 
@@ -70,7 +70,7 @@ export function useComponents () {
       loadComponent(value)
     }
   }, {
-    immediate: true
+    immediate: true,
   })
 
   function subscribeToSelectedData () {
@@ -83,11 +83,11 @@ export function useComponents () {
 
       if (value != null) {
         unsub = subscribe(BridgeSubscriptions.SELECTED_COMPONENT_DATA, {
-          instanceId: value
+          instanceId: value,
         })
       }
     }, {
-      immediate: true
+      immediate: true,
     })
   }
 
@@ -98,7 +98,7 @@ export function useComponents () {
     }
   }, {
     immediate: true,
-    deep: true
+    deep: true,
   })
 
   onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, async ({ id }) => {
@@ -126,7 +126,7 @@ export function useComponents () {
     requestComponentTree,
     selectComponent,
     selectLastComponent,
-    subscribeToSelectedData
+    subscribeToSelectedData,
   }
 }
 
@@ -165,11 +165,11 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
 
       if (value != null) {
         unsub = subscribe(BridgeSubscriptions.COMPONENT_TREE, {
-          instanceId: value
+          instanceId: value,
         })
       }
     }, {
-      immediate: true
+      immediate: true,
     })
   }
 
@@ -184,7 +184,7 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
     toggleExpand,
     isSelected,
     select,
-    subscribeToComponentTree
+    subscribeToComponentTree,
   }
 }
 
@@ -198,11 +198,11 @@ export function useSelectedComponent () {
     ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
       try {
         return searchDeepInObject({
-          [el.key]: el.value
+          [el.key]: el.value,
         }, selectedComponentStateFilter.value)
       } catch (e) {
         return {
-          [el.key]: e
+          [el.key]: e,
         }
       }
     })), 'type')
@@ -231,13 +231,13 @@ export function useSelectedComponent () {
       instanceId: data.value.id,
       dotPath,
       type,
-      ...payload
+      ...payload,
     })
   }
 
   function scrollToComponent () {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, {
-      instanceId: data.value.id
+      instanceId: data.value.id,
     })
   }
 
@@ -250,7 +250,7 @@ export function useSelectedComponent () {
     openFile,
     editState,
     scrollToComponent,
-    selectedComponentId
+    selectedComponentId,
   }
 }
 
@@ -280,7 +280,7 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
 
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
-    filter: treeFilter.value
+    filter: treeFilter.value,
   })
 }
 

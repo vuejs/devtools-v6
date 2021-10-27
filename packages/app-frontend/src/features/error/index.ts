@@ -15,7 +15,7 @@ export function putError (message: string, icon: string = null) {
 
   errors.value.push({
     message,
-    icon
+    icon,
   })
 }
 
@@ -29,6 +29,6 @@ export function useError () {
   return {
     error,
     putError,
-    clearError
+    clearError,
   }
 }

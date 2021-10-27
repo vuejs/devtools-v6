@@ -7,18 +7,18 @@ export default defineComponent({
   props: {
     items: {
       type: Array,
-      required: true
+      required: true,
     },
 
     selectedItem: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
 
     optionIcon: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
 
   setup (props, { emit }) {
@@ -148,9 +148,9 @@ export default defineComponent({
       toggle,
       select,
       orientation,
-      onMouseWheel
+      onMouseWheel,
     }
-  }
+  },
 })
 </script>
 

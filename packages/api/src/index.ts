@@ -23,7 +23,7 @@ export function setupDevtoolsPlugin<TSettings = any> (pluginDescriptor: PluginDe
     list.push({
       pluginDescriptor,
       setupFn,
-      proxy
+      proxy,
     })
 
     if (proxy) setupFn(proxy.proxiedTarget as DevtoolsPluginApi<TSettings>)

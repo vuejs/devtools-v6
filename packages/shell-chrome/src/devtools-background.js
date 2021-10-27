@@ -29,9 +29,9 @@ function createPanelIfHasVue () {
           // panel loaded
           panel.onShown.addListener(onPanelShown)
           panel.onHidden.addListener(onPanelHidden)
-        }
+        },
       )
-    }
+    },
   )
 }
 

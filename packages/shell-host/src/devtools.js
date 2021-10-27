@@ -23,13 +23,13 @@ target.onload = () => {
               console.log('devtools -> backend', data)
             }
             targetWindow.postMessage(data, '*')
-          }
+          },
         }))
       })
     },
     onReload (reloadFn) {
       target.onload = reloadFn
-    }
+    },
   })
 }
 

@@ -8,24 +8,24 @@ import { Layer } from './composable'
 
 export default defineComponent({
   components: {
-    PluginSourceIcon
+    PluginSourceIcon,
   },
 
   props: {
     layer: {
       type: Object as PropType<Layer>,
-      required: true
+      required: true,
     },
 
     hover: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     selected: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   setup (props, { emit }) {
@@ -43,9 +43,9 @@ export default defineComponent({
       select,
       color,
       dimmedColor,
-      boostedColot
+      boostedColot,
     }
-  }
+  },
 })
 </script>
 

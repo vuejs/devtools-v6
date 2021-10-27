@@ -23,7 +23,7 @@ if (isChrome) {
     getBridge()?.send('ERROR', {
       message: e.message,
       stack: e.stack,
-      component: vm.$options.name || (vm.$options as any)._componentTag || 'anonymous'
+      component: vm.$options.name || (vm.$options as any)._componentTag || 'anonymous',
     })
   }
 }
@@ -31,7 +31,7 @@ if (isChrome) {
 // @ts-ignore
 Vue.options.renderError = (h, e) => {
   return h('pre', {
-    class: 'text-white bg-red-500 p-2 rounded text-xs overflow-auto'
+    class: 'text-white bg-red-500 p-2 rounded text-xs overflow-auto',
   }, e.stack)
 }
 
@@ -40,7 +40,7 @@ export function createApp () {
 
   const app = new Vue({
     router,
-    render: h => h(App as any)
+    render: h => h(App as any),
   })
 
   // @TODO [Vue 3] Setup plugins
@@ -63,7 +63,7 @@ export function connectApp (app, shell) {
       destroySharedData()
     } else {
       Object.defineProperty(Vue.prototype, '$shared', {
-        get: () => SharedData
+        get: () => SharedData,
       })
     }
 
@@ -72,7 +72,7 @@ export function connectApp (app, shell) {
     await initSharedData({
       bridge,
       persist: true,
-      Vue
+      Vue,
     })
 
     if (SharedData.logDetected) {

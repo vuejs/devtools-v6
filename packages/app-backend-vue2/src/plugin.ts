@@ -18,7 +18,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
     id: 'org.vuejs.vue2-internal',
     label: 'Vue 2',
     homepage: 'https://vuejs.org/',
-    logo: 'https://vuejs.org/images/icons/favicon-96x96.png'
+    logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
   }, api => {
     const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
@@ -32,7 +32,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         id: ROUTER_INSPECTOR_ID,
         label: 'Routes',
         icon: 'book',
-        treeFilterPlaceholder: 'Search routes'
+        treeFilterPlaceholder: 'Search routes',
       })
 
       api.on.getInspectorTree(payload => {
@@ -46,7 +46,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
           const route = router.matcher.getRoutes().find(r => getPathId(r) === payload.nodeId)
           if (route) {
             payload.state = {
-              options: formatRouteData(route)
+              options: formatRouteData(route),
             }
           }
         }
@@ -57,7 +57,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
       api.addTimelineLayer({
         id: ROUTER_CHANGES_LAYER_ID,
         label: 'Router Navigations',
-        color: 0x40a8c4
+        color: 0x40a8c4,
       })
 
       router.afterEach((to, from) => {
@@ -68,9 +68,9 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
             title: to.path,
             data: {
               from,
-              to
-            }
-          }
+              to,
+            },
+          },
         })
         api.sendInspectorTree(ROUTER_INSPECTOR_ID)
       })
@@ -84,7 +84,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         id: VUEX_INSPECTOR_ID,
         label: 'Vuex',
         icon: 'storage',
-        treeFilterPlaceholder: 'Filter stores...'
+        treeFilterPlaceholder: 'Filter stores...',
       })
 
       api.on.getInspectorTree((payload) => {
@@ -95,7 +95,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
             payload.rootNodes = nodes
           } else {
             payload.rootNodes = [
-              formatStoreForInspectorTree(store._modules.root, '')
+              formatStoreForInspectorTree(store._modules.root, ''),
             ]
           }
         }
@@ -111,7 +111,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
           payload.state = formatStoreForInspectorState(
             module,
             store._makeLocalGettersCache,
-            modulePath
+            modulePath,
           )
         }
       })
@@ -119,13 +119,13 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
       api.addTimelineLayer({
         id: VUEX_MUTATIONS_ID,
         label: 'Vuex Mutations',
-        color: LIME_500
+        color: LIME_500,
       })
 
       api.addTimelineLayer({
         id: VUEX_ACTIONS_ID,
         label: 'Vuex Actions',
-        color: LIME_500
+        color: LIME_500,
       })
 
       hook.on('vuex:mutation', (mutation, state) => {
@@ -144,8 +144,8 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
           event: {
             time: Date.now(),
             title: mutation.type,
-            data
-          }
+            data,
+          },
         })
       })
 
@@ -166,8 +166,8 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
               title: action.type,
               groupId: action._id,
               subtitle: 'start',
-              data
-            }
+              data,
+            },
           })
         },
         after: (action, state) => {
@@ -178,8 +178,8 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
               type: 'duration',
               display: `${duration}ms`,
               tooltip: 'Action duration',
-              value: duration
-            }
+              value: duration,
+            },
           }
           if (action.payload) {
             data.payload = action.payload
@@ -193,10 +193,10 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
               title: action.type,
               groupId: action._id,
               subtitle: 'end',
-              data
-            }
+              data,
+            },
           })
-        }
+        },
       }, { prepend: true })
 
       // Inspect getters on mutations
@@ -206,9 +206,9 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
           if (getterKeys.length) {
             const vm = new Vue({
               data: {
-                $$state: payload.data.state
+                $$state: payload.data.state,
               },
-              computed: store._vm.$options.computed
+              computed: store._vm.$options.computed,
             })
             const originalVm = store._vm
             store._vm = vm
@@ -240,7 +240,7 @@ function formatRouteNode (router, route, parentPath: string, filter: string): Cu
     id: parentPath + route.path,
     label: route.path,
     children: route.children?.map(child => formatRouteNode(router, child, route.path, filter)).filter(Boolean),
-    tags: []
+    tags: [],
   }
 
   if (filter && !node.id.includes(filter) && !node.children?.length) return null
@@ -249,7 +249,7 @@ function formatRouteNode (router, route, parentPath: string, filter: string): Cu
     node.tags.push({
       label: String(route.name),
       textColor: 0,
-      backgroundColor: CYAN_400
+      backgroundColor: CYAN_400,
     })
   }
 
@@ -257,7 +257,7 @@ function formatRouteNode (router, route, parentPath: string, filter: string): Cu
     node.tags.push({
       label: 'alias',
       textColor: 0,
-      backgroundColor: ORANGE_400
+      backgroundColor: ORANGE_400,
     })
   }
 
@@ -266,7 +266,7 @@ function formatRouteNode (router, route, parentPath: string, filter: string): Cu
     node.tags.push({
       label: 'active',
       textColor: WHITE,
-      backgroundColor: BLUE_600
+      backgroundColor: BLUE_600,
     })
   }
 
@@ -276,7 +276,7 @@ function formatRouteNode (router, route, parentPath: string, filter: string): Cu
         'redirect: ' +
         (typeof route.redirect === 'string' ? route.redirect : 'Object'),
       textColor: WHITE,
-      backgroundColor: DARK
+      backgroundColor: DARK,
     })
   }
 
@@ -334,7 +334,7 @@ function getPathId (routeMatcher) {
 const TAG_NAMESPACED = {
   label: 'namespaced',
   textColor: WHITE,
-  backgroundColor: DARK
+  backgroundColor: DARK,
 }
 
 function formatStoreForInspectorTree (module, path): CustomInspectorNode {
@@ -348,9 +348,9 @@ function formatStoreForInspectorTree (module, path): CustomInspectorNode {
     children: Object.keys(module._children).map((moduleName) =>
       formatStoreForInspectorTree(
         module._children[moduleName],
-        path + moduleName + '/'
-      )
-    )
+        path + moduleName + '/',
+      ),
+    ),
   }
 }
 
@@ -359,7 +359,7 @@ function flattenStoreForInspectorTree (result: CustomInspectorNode[], module, fi
     result.push({
       id: path || 'root',
       label: path.endsWith('/') ? path.slice(0, path.length - 1) : path || 'Root',
-      tags: module.namespaced ? [TAG_NAMESPACED] : []
+      tags: module.namespaced ? [TAG_NAMESPACED] : [],
     })
   }
   Object.keys(module._children).forEach(moduleName => {
@@ -378,8 +378,8 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     state: Object.keys(module.state).map((key) => ({
       key,
       editable: true,
-      value: module.state[key]
-    }))
+      value: module.state[key],
+    })),
   }
 
   if (gettersKeys.length) {
@@ -387,7 +387,7 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     storeState.getters = Object.keys(tree).map((key) => ({
       key: key.endsWith('/') ? extractNameFromPath(key) : key,
       editable: false,
-      value: canThrow(() => tree[key])
+      value: canThrow(() => tree[key]),
     }))
   }
 
@@ -408,8 +408,8 @@ function transformPathsToObjectTree (getters) {
               value: {},
               display: p,
               tooltip: 'Module',
-              abstract: true
-            }
+              abstract: true,
+            },
           }
         }
         target = target[p]._custom.value
@@ -432,7 +432,7 @@ function getStoreModule (moduleMap, path) {
       }
       return i === names.length - 1 ? child : child._children
     },
-    path === 'root' ? moduleMap : moduleMap.root._children
+    path === 'root' ? moduleMap : moduleMap.root._children,
   )
 }
 

@@ -6,18 +6,18 @@ export default defineComponent({
   props: {
     pluginId: {
       type: String,
-      required: true
+      required: true,
     },
 
     permission: {
       type: String as PropType<PluginPermission>,
-      required: true
+      required: true,
     },
 
     label: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
@@ -27,13 +27,13 @@ export default defineComponent({
       },
       set (value: boolean) {
         setPluginPermission(props.pluginId, props.permission, value)
-      }
+      },
     })
 
     return {
-      model
+      model,
     }
-  }
+  },
 })
 </script>
 

@@ -2,9 +2,9 @@
 export default {
   data () {
     return {
-      message: 'Hi!'
+      message: 'Hi!',
     }
-  }
+  },
 }
 </script>
 

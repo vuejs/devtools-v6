@@ -39,7 +39,7 @@ export function useBridge () {
   return {
     bridge,
     onBridge,
-    subscribe
+    subscribe,
   }
 }
 

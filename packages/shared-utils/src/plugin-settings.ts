@@ -4,14 +4,14 @@ import { PluginSettingsItem } from '@vue/devtools-api'
 export function getPluginSettings<TSettings extends Record<string, any> = any> (pluginId: string, defaultSettings?: TSettings): TSettings {
   return {
     ...defaultSettings ?? {},
-    ...SharedData.pluginSettings[pluginId] ?? {}
+    ...SharedData.pluginSettings[pluginId] ?? {},
   }
 }
 
 export function setPluginSettings<TSettings extends Record<string, any> = any> (pluginId: string, settings: TSettings) {
   SharedData.pluginSettings = {
     ...SharedData.pluginSettings,
-    [pluginId]: settings
+    [pluginId]: settings,
   }
 }
 

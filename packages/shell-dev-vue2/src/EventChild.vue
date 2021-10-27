@@ -35,13 +35,13 @@ export default {
   methods: {
     emitEvent () {
       const data = {
-        eventName: 'event'
+        eventName: 'event',
       }
       this.$emit('event', data)
     },
     emitEvent1 () {
       const data = {
-        eventName: 'event-1'
+        eventName: 'event-1',
       }
       this.$emit('event-1', data)
     },
@@ -54,9 +54,9 @@ export default {
           object: {
             number: 23,
             boolean: true,
-            array: [1, 2, 3, 4, 5]
-          }
-        }
+            array: [1, 2, 3, 4, 5],
+          },
+        },
       }
       this.$emit('event-2', complexData)
     },
@@ -70,7 +70,7 @@ export default {
     emitAndCommit () {
       this.$emit('event-1', 'foobar')
       this.$store.commit('DECREMENT', 'barfoo')
-    }
-  }
+    },
+  },
 }
 </script>

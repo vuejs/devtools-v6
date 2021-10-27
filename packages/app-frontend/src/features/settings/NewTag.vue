@@ -4,15 +4,15 @@ import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   inject: [
-    'currentSettingsVersion'
+    'currentSettingsVersion',
   ],
 
   props: {
     version: {
       type: Number,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 })
 </script>
 

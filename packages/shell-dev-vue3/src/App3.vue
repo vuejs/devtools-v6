@@ -17,14 +17,14 @@ import Child from './Child.vue'
 export default {
   components: {
     Hello,
-    Child
+    Child,
   },
 
   data () {
     return {
       count: 0,
-      msg: 'Hello'
+      msg: 'Hello',
     }
-  }
+  },
 }
 </script>

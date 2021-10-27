@@ -38,7 +38,7 @@ socket.on('vue-devtools-init', () => {
             console.log('devtools -> backend', data)
           }
           socket.emit('vue-message', data)
-        }
+        },
       }
       const bridge = new Bridge(wall)
 
@@ -46,6 +46,6 @@ socket.on('vue-devtools-init', () => {
     },
     onReload (fn) {
       reload = fn
-    }
+    },
   })
 })

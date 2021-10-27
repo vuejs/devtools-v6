@@ -13,26 +13,26 @@ export default defineComponent({
   props: {
     node: {
       type: Object,
-      required: true
+      required: true,
     },
 
     depth: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
 
   setup (props, { emit }) {
     const {
       currentInspector: inspector,
-      selectNode
+      selectNode,
     } = useCurrentInspector()
 
     const expanded = computed({
       get: () => !!inspector.value.expandedMap[props.node.id],
       set: value => {
         Vue.set(inspector.value.expandedMap, props.node.id, value)
-      }
+      },
     })
 
     // Init expanded
@@ -56,7 +56,7 @@ export default defineComponent({
         selectNode(props.node)
       }
     }, {
-      immediate: true
+      immediate: true,
     })
 
     // Auto scroll
@@ -71,7 +71,7 @@ export default defineComponent({
           scrollMode: 'if-needed',
           block: 'center',
           inline: 'nearest',
-          behavior: 'smooth'
+          behavior: 'smooth',
         })
       }
     }
@@ -149,9 +149,9 @@ export default defineComponent({
       selected,
       toggleEl,
       selectNextSibling,
-      selectPreviousSibling
+      selectPreviousSibling,
     }
-  }
+  },
 })
 </script>
 

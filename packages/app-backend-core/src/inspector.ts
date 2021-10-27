@@ -20,7 +20,7 @@ export async function sendInspectorTree (inspector: CustomInspector, ctx: Backen
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_TREE, {
     appId: inspector.appRecord.id,
     inspectorId: inspector.id,
-    rootNodes
+    rootNodes,
   })
 }
 
@@ -29,14 +29,14 @@ export async function sendInspectorState (inspector: CustomInspector, ctx: Backe
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_STATE, {
     appId: inspector.appRecord.id,
     inspectorId: inspector.id,
-    state: stringify(state)
+    state: stringify(state),
   })
 }
 
 export async function editInspectorState (inspector: CustomInspector, nodeId: string, dotPath: string, type: string, state: any, ctx: BackendContext) {
   await inspector.appRecord.backend.api.editInspectorState(inspector.id, inspector.appRecord.options.app, nodeId, dotPath, type, {
     ...state,
-    value: state.value != null ? parse(state.value, true) : state.value
+    value: state.value != null ? parse(state.value, true) : state.value,
   })
 }
 
@@ -54,12 +54,12 @@ export async function sendCustomInspectors (ctx: BackendContext) {
       noSelectionText: i.noSelectionText,
       actions: i.actions?.map(a => ({
         icon: a.icon,
-        tooltip: a.tooltip
-      }))
+        tooltip: a.tooltip,
+      })),
     })
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_LIST, {
-    inspectors
+    inspectors,
   })
 }
 
@@ -67,6 +67,6 @@ export async function selectInspectorNode (inspector: CustomInspector, nodeId: s
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE, {
     appId: inspector.appRecord.id,
     inspectorId: inspector.id,
-    nodeId
+    nodeId,
   })
 }

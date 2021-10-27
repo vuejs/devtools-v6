@@ -7,29 +7,29 @@ export default defineComponent({
   props: {
     defaultSplit: {
       type: Number,
-      default: 50
+      default: 50,
     },
 
     min: {
       type: Number,
-      default: 20
+      default: 20,
     },
 
     max: {
       type: Number,
-      default: 80
+      default: 80,
     },
 
     draggerOffset: {
       type: String as PropType<'before' | 'center' | 'after'>,
       default: 'center',
-      validator: (value: any) => ['before', 'center', 'after'].includes(value)
+      validator: (value: any) => ['before', 'center', 'after'].includes(value),
     },
 
     saveId: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
 
   setup (props) {
@@ -61,11 +61,11 @@ export default defineComponent({
     })
 
     const leftStyle = computed(() => ({
-      [orientation.value === 'landscape' ? 'width' : 'height']: `${boundSplit.value}%`
+      [orientation.value === 'landscape' ? 'width' : 'height']: `${boundSplit.value}%`,
     }))
 
     const rightStyle = computed(() => ({
-      [orientation.value === 'landscape' ? 'width' : 'height']: `${100 - boundSplit.value}%`
+      [orientation.value === 'landscape' ? 'width' : 'height']: `${100 - boundSplit.value}%`,
     }))
 
     const dragging = ref(false)
@@ -107,9 +107,9 @@ export default defineComponent({
       dragMove,
       dragEnd,
       leftStyle,
-      rightStyle
+      rightStyle,
     }
-  }
+  },
 })
 </script>
 

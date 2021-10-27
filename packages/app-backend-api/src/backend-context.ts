@@ -5,7 +5,7 @@ import {
   TimelineEventOptions,
   WithId,
   ID,
-  TimelineMarkerOptions
+  TimelineMarkerOptions,
 } from '@vue/devtools-api'
 import { AppRecord } from './app-record'
 import { Plugin } from './plugin'
@@ -68,6 +68,6 @@ export function createBackendContext (options: CreateBackendContextOptions): Bac
     timelineEventMap: new Map(),
     perfUniqueGroupId: 0,
     customInspectors: [],
-    timelineMarkers: []
+    timelineMarkers: [],
   }
 }

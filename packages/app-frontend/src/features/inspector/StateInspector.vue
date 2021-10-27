@@ -22,34 +22,34 @@ const keyOrder = {
   refs: 6,
   $attrs: 7,
   attrs: 7,
-  'setup (other)': 8
+  'setup (other)': 8,
 }
 
 export default {
   components: {
-    StateType
+    StateType,
   },
 
   mixins: [
-    Defer()
+    Defer(),
   ],
 
   props: {
     state: {
       type: Object,
-      required: true
+      required: true,
     },
 
     dimAfter: {
       type: Number,
-      default: -1
-    }
+      default: -1,
+    },
   },
 
   data () {
     return {
       expandedState: {},
-      forceCollapse: null
+      forceCollapse: null,
     }
   },
 
@@ -70,13 +70,13 @@ export default {
     highDensity () {
       const pref = this.$shared.displayDensity
       return (pref === 'auto' && this.totalCount > 12) || pref === 'high'
-    }
+    },
   },
 
   watch: {
     state () {
       this.forceCollapse = null
-    }
+    },
   },
 
   methods: {
@@ -100,8 +100,8 @@ export default {
         this.forceCollapse = value ? 'expand' : 'collapse'
         Vue.set(this.expandedState, key, value)
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

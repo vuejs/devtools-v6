@@ -8,7 +8,7 @@ window.addEventListener('message', handshake)
 function sendListening () {
   window.postMessage({
     source: 'vue-devtools-backend-injection',
-    payload: 'listening'
+    payload: 'listening',
   }, '*')
 }
 sendListening()
@@ -34,9 +34,9 @@ function handshake (e) {
         // }
         window.postMessage({
           source: 'vue-devtools-backend',
-          payload: data
+          payload: data,
         }, '*')
-      }
+      },
     })
 
     bridge.on('shutdown', () => {

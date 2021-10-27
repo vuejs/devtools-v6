@@ -3,7 +3,7 @@ import {
   endTime,
   minTime,
   maxTime,
-  cursorTime
+  cursorTime,
 } from './store'
 
 export function useTime () {
@@ -11,12 +11,12 @@ export function useTime () {
     startTime,
     endTime,
     minTime,
-    maxTime
+    maxTime,
   }
 }
 
 export function useCursor () {
   return {
-    cursorTime
+    cursorTime,
   }
 }

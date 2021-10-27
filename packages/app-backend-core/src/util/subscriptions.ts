@@ -18,7 +18,7 @@ export function subscribe (type: string, payload: any) {
   const rawPayload = JSON.stringify(payload)
   getSubs(type).push({
     payload,
-    rawPayload
+    rawPayload,
   })
 }
 
@@ -33,7 +33,7 @@ export function unsubscribe (type: string, payload: any) {
 
 export function isSubscribed (
   type: string,
-  predicate: (sub: Subscription) => boolean = () => true
+  predicate: (sub: Subscription) => boolean = () => true,
 ) {
   return getSubs(type).some(predicate)
 }

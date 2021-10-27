@@ -3,25 +3,25 @@ import DataField from './DataField.vue'
 
 export default {
   components: {
-    DataField
+    DataField,
   },
 
   props: {
     fields: {
       type: [Array, Object],
-      required: true
+      required: true,
     },
 
     forceCollapse: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
 
   data () {
     return {
       limit: 30,
-      fieldErrors: {}
+      fieldErrors: {},
     }
   },
 
@@ -49,13 +49,13 @@ export default {
       } else {
         return Object.keys(this.fields).length
       }
-    }
+    },
   },
 
   watch: {
     fields () {
       this.fieldErrors = {}
-    }
+    },
   },
 
   errorCaptured (err, vm) {
@@ -69,8 +69,8 @@ export default {
 
     showMore () {
       this.limit += 20
-    }
-  }
+    },
+  },
 }
 </script>
 

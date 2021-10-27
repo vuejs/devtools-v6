@@ -5,18 +5,18 @@ const target = {
   chrome: 52,
   firefox: 48,
   safari: 9,
-  ie: 11
+  ie: 11,
 }
 
 module.exports = createConfig({
   entry: {
     devtools: './src/devtools.js',
     backend: './src/backend.js',
-    hook: './src/hook.js'
+    hook: './src/hook.js',
   },
   output: {
     path: path.join(__dirname, '/build'),
     publicPath: '/build/',
-    filename: '[name].js'
-  }
+    filename: '[name].js',
+  },
 }, target)

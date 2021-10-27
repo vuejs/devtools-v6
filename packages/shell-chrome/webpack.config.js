@@ -9,13 +9,13 @@ module.exports = createConfig({
     'devtools-background': './src/devtools-background.js',
     backend: './src/backend.js',
     proxy: './src/proxy.js',
-    detector: './src/detector.js'
+    detector: './src/detector.js',
   },
   output: {
     path: path.join(__dirname, 'build'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
   devtool: process.env.NODE_ENV !== 'production'
     ? 'inline-source-map'
-    : false
+    : false,
 })

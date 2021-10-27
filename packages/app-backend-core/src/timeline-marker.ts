@@ -8,12 +8,12 @@ export async function addTimelineMarker (options: TimelineMarkerOptions, ctx: Ba
   }
   const marker: TimelineMarker = {
     ...options,
-    appRecord: options.all ? null : ctx.currentAppRecord
+    appRecord: options.all ? null : ctx.currentAppRecord,
   }
   ctx.timelineMarkers.push(marker)
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_MARKER, {
     marker: await serializeMarker(marker),
-    appId: ctx.currentAppRecord?.id
+    appId: ctx.currentAppRecord?.id,
   })
 }
 
@@ -25,7 +25,7 @@ export async function sendTimelineMarkers (ctx: BackendContext) {
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LOAD_MARKERS, {
     markers: result,
-    appId: ctx.currentAppRecord.id
+    appId: ctx.currentAppRecord.id,
   })
 }
 
@@ -36,6 +36,6 @@ async function serializeMarker (marker: TimelineMarker) {
     all: marker.all,
     time: marker.time,
     label: marker.label,
-    color: marker.color
+    color: marker.color,
   }
 }

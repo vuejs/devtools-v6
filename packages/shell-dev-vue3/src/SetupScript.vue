@@ -3,7 +3,7 @@ import Child from './Child.vue'
 import { ref, computed, reactive } from 'vue'
 
 const myObj = reactive({
-  foo: 'bar'
+  foo: 'bar',
 })
 
 const count = ref(0)

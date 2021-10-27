@@ -16,6 +16,6 @@ export function hasPluginPermission (pluginId: string, permission: PluginPermiss
 export function setPluginPermission (pluginId: string, permission: PluginPermission, active: boolean) {
   SharedData.pluginPermissions = {
     ...SharedData.pluginPermissions,
-    [`${pluginId}:${permission}`]: active
+    [`${pluginId}:${permission}`]: active,
   }
 }

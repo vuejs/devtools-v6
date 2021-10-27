@@ -10,7 +10,7 @@ import { handleAddPerformanceTag } from './perf'
 export const availableBackends = [
   backendVue1,
   backendVue2,
-  backendVue3
+  backendVue3,
 ]
 
 const enabledBackends: Map<DevtoolsBackendOptions, DevtoolsBackend> = new Map()

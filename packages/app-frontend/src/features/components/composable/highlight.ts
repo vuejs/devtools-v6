@@ -15,6 +15,6 @@ export function useComponentHighlight (id: Ref<string>) {
 
   return {
     highlight,
-    unhighlight
+    unhighlight,
   }
 }

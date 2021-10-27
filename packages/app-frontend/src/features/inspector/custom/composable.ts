@@ -41,7 +41,7 @@ function inspectorFactory (options: InspectorFromBackend): Inspector {
     selectedNode: null,
     stateFilter: '',
     state: null,
-    expandedMap: {}
+    expandedMap: {},
   }
 }
 
@@ -52,7 +52,7 @@ export function useInspectors () {
   const currentAppInspectors = computed(() => inspectors.value.filter(i => i.appId === currentAppId.value))
 
   return {
-    inspectors: currentAppInspectors
+    inspectors: currentAppInspectors,
   }
 }
 
@@ -69,7 +69,7 @@ export function useCurrentInspector () {
       for (const groupKey in currentInspector.value.state) {
         const group = currentInspector.value.state[groupKey]
         const groupFields = group.filter(el => searchDeepInObject({
-          [el.key]: el.value
+          [el.key]: el.value,
         }, currentInspector.value.stateFilter))
         if (groupFields.length) {
           result[groupKey] = groupFields
@@ -109,7 +109,7 @@ export function useCurrentInspector () {
       nodeId: currentInspector.value.selectedNodeId,
       path,
       type,
-      payload
+      payload,
     })
   }
 
@@ -120,7 +120,7 @@ export function useCurrentInspector () {
     refreshInspector,
     refreshTree,
     refreshState,
-    editState
+    editState,
   }
 }
 
@@ -133,7 +133,7 @@ function fetchTree (inspector: Inspector) {
   getBridge().send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_TREE, {
     inspectorId: inspector.id,
     appId: inspector.appId,
-    treeFilter: inspector.treeFilter
+    treeFilter: inspector.treeFilter,
   })
 }
 
@@ -142,7 +142,7 @@ function fetchState (inspector: Inspector) {
   getBridge().send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_STATE, {
     inspectorId: inspector.id,
     appId: inspector.appId,
-    nodeId: inspector.selectedNodeId
+    nodeId: inspector.selectedNodeId,
   })
 }
 

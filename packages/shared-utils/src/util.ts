@@ -6,7 +6,7 @@ import {
   getCustomInstanceDetails,
   getCustomRouterDetails,
   getCustomStoreDetails,
-  isVueInstance
+  isVueInstance,
 } from './backend'
 import SharedData from './shared-data'
 import { isChrome, target } from './env'
@@ -79,7 +79,7 @@ export const SPECIAL_TOKENS = {
   null: null,
   '-Infinity': NEGATIVE_INFINITY,
   Infinity: INFINITY,
-  NaN: NAN
+  NaN: NAN,
 }
 
 export const MAX_STRING_SIZE = 10000
@@ -185,7 +185,7 @@ function replacer (key) {
       return {
         _isArray: true,
         length: l,
-        items: val.slice(0, MAX_ARRAY_SIZE)
+        items: val.slice(0, MAX_ARRAY_SIZE),
       }
     }
     return val
@@ -242,8 +242,8 @@ export function getCustomMapDetails (val) {
   val.forEach(
     (value, key) => list.push({
       key,
-      value
-    })
+      value,
+    }),
   )
   return {
     _custom: {
@@ -252,9 +252,9 @@ export function getCustomMapDetails (val) {
       value: list,
       readOnly: true,
       fields: {
-        abstract: true
-      }
-    }
+        abstract: true,
+      },
+    },
   }
 }
 
@@ -275,8 +275,8 @@ export function getCustomSetDetails (val) {
       type: 'set',
       display: `Set[${list.length}]`,
       value: list,
-      readOnly: true
-    }
+      readOnly: true,
+    },
   }
 }
 
@@ -295,7 +295,7 @@ export function reviveSet (val) {
 function basename (filename, ext) {
   return path.basename(
     filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext
+    ext,
   )
 }
 
@@ -326,10 +326,10 @@ export function getCustomComponentDefinitionDetails (def) {
       tooltip: 'Component definition',
       ...def.__file
         ? {
-            file: def.__file
+            file: def.__file,
           }
-        : {}
-    }
+        : {},
+    },
   }
 }
 
@@ -353,8 +353,8 @@ export function getCustomFunctionDetails (func: Function): CustomState {
     _custom: {
       type: 'function',
       display: `<span>f</span> ${escape(name)}${args}`,
-      _reviveId: reviveCache.cache(func)
-    }
+      _reviveId: reviveCache.cache(func),
+    },
   }
 }
 
@@ -372,17 +372,17 @@ export function getCustomHTMLElementDetails (value: HTMLElement): CustomState {
             action: () => {
               // eslint-disable-next-line no-console
               console.log(value)
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     }
   } catch (e) {
     return {
       _custom: {
         type: 'HTMLElement',
-        display: `<span class="text-blue-500">${String(value)}</span>`
-      }
+        display: `<span class="text-blue-500">${String(value)}</span>`,
+      },
     }
   }
 }
@@ -415,15 +415,15 @@ export function getCustomRefDetails (instance, key, ref) {
           (ref.id ? ` <span class="attr-title">id</span>="${ref.id}"` : '') +
           (ref.className ? ` <span class="attr-title">class</span>="${ref.className}"` : '') + '&gt;',
         uid: instance.__VUE_DEVTOOLS_UID__,
-        type: 'reference'
-      }
+        type: 'reference',
+      },
     }
   }
   return {
     type: '$refs',
     key: key,
     value,
-    editable: false
+    editable: false,
   }
 }
 
@@ -681,7 +681,7 @@ const ESC = {
   '<': '&lt;',
   '>': '&gt;',
   '"': '&quot;',
-  '&': '&amp;'
+  '&': '&amp;',
 }
 
 export function escape (s) {

@@ -20,7 +20,7 @@ export function useCurrentApp () {
 
   return {
     currentAppId,
-    currentApp
+    currentApp,
   }
 }
 
@@ -29,7 +29,7 @@ export function useApps () {
 
   const {
     currentAppId,
-    currentApp
+    currentApp,
   } = useCurrentApp()
 
   function selectApp (id: string) {
@@ -37,8 +37,8 @@ export function useApps () {
       router.push({
         params: {
           appId: id.toString(),
-          componentId: null
-        }
+          componentId: null,
+        },
       })
     }
   }
@@ -47,7 +47,7 @@ export function useApps () {
     apps,
     currentAppId,
     currentApp,
-    selectApp
+    selectApp,
   }
 }
 

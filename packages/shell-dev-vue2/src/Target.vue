@@ -65,12 +65,12 @@ import Functional from './Functional.vue'
 export default {
   components: {
     Other,
-    Functional
+    Functional,
   },
   props: {
     msg: String,
     obj: null,
-    ins: MyClass
+    ins: MyClass,
   },
   data () {
     return {
@@ -80,7 +80,7 @@ export default {
       nan: NaN,
       infinity: Infinity,
       negativeInfinity: -Infinity,
-      over: false
+      over: false,
     }
   },
   computed: {
@@ -88,11 +88,11 @@ export default {
       return {
         a: {
           b: {
-            c: 123
-          }
-        }
+            c: 123,
+          },
+        },
       }
-    }
+    },
   },
   methods: {
     add () {
@@ -100,7 +100,7 @@ export default {
       this.items.push(
         l + 1,
         l + 2,
-        l + 3
+        l + 3,
       )
     },
     rm () {
@@ -108,8 +108,8 @@ export default {
     },
     inspect () {
       this.$inspect()
-    }
-  }
+    },
+  },
 }
 </script>
 

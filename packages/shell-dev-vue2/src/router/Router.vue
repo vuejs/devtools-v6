@@ -83,9 +83,9 @@ export default {
   methods: {
     addRoutes () {
       this.$router.addRoutes([
-        { path: '/new-route', component: RouteOne }
+        { path: '/new-route', component: RouteOne },
       ])
-    }
-  }
+    },
+  },
 }
 </script>

@@ -4,7 +4,7 @@ const orientation = ref('landscape')
 
 export function useOrientation () {
   return {
-    orientation
+    orientation,
   }
 }
 

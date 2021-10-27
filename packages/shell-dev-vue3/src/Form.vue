@@ -19,16 +19,16 @@ import FormSection from './FormSection.vue'
 
 export default {
   components: {
-    FormSection
+    FormSection,
   },
 
   setup () {
     const inputs = reactive({
       foo: '',
-      bar: ''
+      bar: '',
     })
 
     return { inputs }
-  }
+  },
 }
 </script>

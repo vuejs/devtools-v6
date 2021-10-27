@@ -43,7 +43,7 @@ export function usePlugins () {
   const plugins = computed(() => getPlugins(currentAppId.value))
 
   return {
-    plugins
+    plugins,
   }
 }
 
@@ -55,7 +55,7 @@ export function useComponentStateTypePlugin () {
   }
 
   return {
-    getStateTypePlugin
+    getStateTypePlugin,
   }
 }
 

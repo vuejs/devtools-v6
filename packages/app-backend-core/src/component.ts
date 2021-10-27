@@ -24,7 +24,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
       instanceId,
       treeData: null,
-      notFound: true
+      notFound: true,
     })
   } else {
     if (filter) filter = filter.toLowerCase()
@@ -33,7 +33,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     }
     const payload = {
       instanceId,
-      treeData: stringify(await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter))
+      treeData: stringify(await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter)),
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
   }
@@ -69,7 +69,7 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
     const payload = {
       instanceId,
       data: stringify(await appRecord.backend.api.inspectComponent(instance, ctx.currentAppRecord.options.app)),
-      parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__)
+      parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__),
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
     markSelectedInstance(instanceId, ctx)
@@ -84,7 +84,7 @@ export function markSelectedInstance (instanceId: string, ctx: BackendContext) {
 export function sendEmptyComponentData (instanceId: string, ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
     instanceId,
-    data: null
+    data: null,
   })
 }
 

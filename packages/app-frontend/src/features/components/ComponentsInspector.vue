@@ -11,7 +11,7 @@ export default defineComponent({
   components: {
     SplitPane,
     ComponentTreeNode,
-    SelectedComponentPane
+    SelectedComponentPane,
   },
 
   setup () {
@@ -21,7 +21,7 @@ export default defineComponent({
       treeFilter,
       selectLastComponent,
       subscribeToSelectedData,
-      selectedComponentId
+      selectedComponentId,
     } = useComponents()
 
     subscribeToSelectedData()
@@ -38,7 +38,7 @@ export default defineComponent({
     const {
       pickingComponent,
       startPickingComponent,
-      stopPickingComponent
+      stopPickingComponent,
     } = useComponentPick()
 
     onKeyDown(event => {
@@ -76,9 +76,9 @@ export default defineComponent({
       startPickingComponent,
       stopPickingComponent,
       refresh,
-      treeScroller
+      treeScroller,
     }
-  }
+  },
 })
 </script>
 

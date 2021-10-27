@@ -10,7 +10,7 @@ export default defineComponent({
   components: {
     SplitPane,
     PluginListItem,
-    PluginHome
+    PluginHome,
   },
 
   setup () {
@@ -28,9 +28,9 @@ export default defineComponent({
 
     return {
       plugins: filteredPlugins,
-      search
+      search,
     }
-  }
+  },
 })
 </script>
 

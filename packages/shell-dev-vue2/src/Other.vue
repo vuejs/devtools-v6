@@ -14,8 +14,8 @@ const computedPropMixin = {
   computed: {
     computedPropFromMixin () {
       return null
-    }
-  }
+    },
+  },
 }
 
 export default {
@@ -34,17 +34,17 @@ export default {
           e: undefined,
           f: true,
           g: 12345,
-          h: 'I am a really long string mostly just to see how the horizontal scrolling works.'
+          h: 'I am a really long string mostly just to see how the horizontal scrolling works.',
         }
-      }
-    }
+      },
+    },
   },
   mixins: [computedPropMixin],
   inheritAttrs: false,
   provide: {
     foo: 'bar',
     noop: (a, b, c) => {},
-    answer: 42
+    answer: 42,
   },
   props: ['id'],
   data () {
@@ -54,9 +54,9 @@ export default {
     b[0] = b
     return {
       a: a,
-      b: b
+      b: b,
     }
-  }
+  },
 }
 </script>
 

@@ -5,7 +5,7 @@ import {
   NAN,
   isPlainObject,
   escape,
-  specialTokenToString
+  specialTokenToString,
 } from '@utils/util'
 
 const rawTypeRE = /^\[object (\w+)]$/

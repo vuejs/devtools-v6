@@ -8,12 +8,12 @@ module.exports = createConfig({
     backend: require.resolve('@vue-devtools/shell-host/src/backend.js'),
     hook: require.resolve('@vue-devtools/shell-host/src/hook.js'),
     target: './src/index.js',
-    'iframe-app': './src/iframe-app.js'
+    'iframe-app': './src/iframe-app.js',
   },
   output: {
     path: path.join(__dirname, '/build'),
     publicPath: '/target/',
-    filename: '[name].js'
+    filename: '[name].js',
   },
   devServer: {
     onBeforeSetupMiddleware ({ app }) {
@@ -26,8 +26,8 @@ module.exports = createConfig({
           if (req.url.startsWith('/target')) {
             return req.url
           }
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 })

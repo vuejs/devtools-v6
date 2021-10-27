@@ -6,8 +6,8 @@
 export default {
   data () {
     return {
-      someArray: [1, 2]
+      someArray: [1, 2],
     }
-  }
+  },
 }
 </script>

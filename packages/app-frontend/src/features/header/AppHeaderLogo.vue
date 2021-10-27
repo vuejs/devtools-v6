@@ -8,11 +8,11 @@ export default defineComponent({
         // eslint-disable-next-line no-undef
         Headway.init({
           selector: '.changelog-button',
-          account: '7kY9Zy'
+          account: '7kY9Zy',
         })
       }
     })
-  }
+  },
 })
 </script>
 

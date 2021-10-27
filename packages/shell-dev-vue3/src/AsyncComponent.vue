@@ -11,17 +11,17 @@ const BeAsync = defineAsyncComponent(() => new Promise((resolve) => {
       name: 'BeAsync',
       data () {
         return {
-          message: 'I am async!'
+          message: 'I am async!',
         }
       },
-      template: '<div>{{ message }}</div>'
+      template: '<div>{{ message }}</div>',
     })
   }, 2000)
 }))
 
 export default {
   components: {
-    BeAsync
-  }
+    BeAsync,
+  },
 }
 </script>

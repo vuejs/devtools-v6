@@ -14,7 +14,7 @@ export function flatten (items) {
 export function basename (filename, ext) {
   return path.basename(
     filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext
+    ext,
   )
 }
 

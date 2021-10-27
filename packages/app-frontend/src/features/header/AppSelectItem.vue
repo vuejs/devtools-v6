@@ -6,8 +6,8 @@ export default defineComponent({
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
@@ -17,9 +17,9 @@ export default defineComponent({
 
     return {
       latestVersion,
-      hasNewVersion
+      hasNewVersion,
     }
-  }
+  },
 })
 </script>
 

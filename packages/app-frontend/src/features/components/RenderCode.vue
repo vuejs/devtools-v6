@@ -11,24 +11,24 @@ const CodeEditor = () => import(
 
 export default {
   components: {
-    CodeEditor
+    CodeEditor,
   },
 
   props: {
     instanceId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
     const {
       onBridge,
-      bridge
+      bridge,
     } = useBridge()
 
     const result = reactive({
-      code: ''
+      code: '',
     })
 
     let pendingId
@@ -46,9 +46,9 @@ export default {
 
     return {
       result,
-      darkMode
+      darkMode,
     }
-  }
+  },
 }
 </script>
 

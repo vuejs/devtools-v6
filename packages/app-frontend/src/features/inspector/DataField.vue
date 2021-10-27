@@ -5,7 +5,7 @@ import {
   isPlainObject,
   sortByKey,
   openInEditor,
-  copyToClipboard
+  copyToClipboard,
 } from '@utils/util'
 import DataFieldEdit from '@front/mixins/data-field-edit'
 import { formattedValue, valueType, valueDetails } from '@front/util/format'
@@ -25,37 +25,37 @@ export default defineComponent({
   name: 'DataField',
 
   mixins: [
-    DataFieldEdit
+    DataFieldEdit,
   ],
 
   props: {
     field: {
       type: Object,
-      required: true
+      required: true,
     },
     depth: {
       type: Number,
-      required: true
+      required: true,
     },
     path: {
       type: String,
-      required: true
+      required: true,
     },
     forceCollapse: {
       type: String,
-      default: null
+      default: null,
     },
     isStateField: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data () {
     return {
       contextMenuOpen: false,
       limit: 20,
-      expanded: false
+      expanded: false,
     }
   },
 
@@ -133,13 +133,13 @@ export default defineComponent({
         return value.slice(0, this.limit).map((item, i) => ({
           key: i,
           value: item,
-          ...inherit
+          ...inherit,
         }))
       } else if (typeof value === 'object') {
         value = Object.keys(value).map(key => ({
           key,
           value: value[key],
-          ...inherit
+          ...inherit,
         }))
         if (this.valueType !== 'custom') {
           value = sortByKey(value)
@@ -208,7 +208,7 @@ export default defineComponent({
 
     customActions (): { icon: string, tooltip?: string }[] {
       return this.field.value?._custom?.actions ?? []
-    }
+    },
   },
 
   watch: {
@@ -220,8 +220,8 @@ export default defineComponent({
           this.expanded = false
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 
   created () {
@@ -293,19 +293,19 @@ export default defineComponent({
       getBridge().send(BridgeEvents.TO_BACK_LOG, {
         level,
         value: this.field.value,
-        revive: true
+        revive: true,
       })
     },
 
     executeCustomAction (index: number) {
       getBridge().send(BridgeEvents.TO_BACK_CUSTOM_STATE_ACTION, {
         value: this.field.value,
-        actionIndex: index
+        actionIndex: index,
       })
-    }
+    },
   },
 
-  renderError: null
+  renderError: null,
 })
 </script>
 

@@ -21,7 +21,7 @@ export default defineComponent({
     AppHeader,
     AppConnecting,
     AppDisconnected,
-    ErrorOverlay
+    ErrorOverlay,
   },
 
   setup () {
@@ -63,9 +63,9 @@ export default defineComponent({
 
     return {
       isConnected,
-      isInitializing
+      isInitializing,
     }
-  }
+  },
 })
 </script>
 

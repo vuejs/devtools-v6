@@ -6,14 +6,14 @@ export default defineComponent({
   setup () {
     const {
       error,
-      clearError
+      clearError,
     } = useError()
 
     return {
       error,
-      clearError
+      clearError,
     }
-  }
+  },
 })
 </script>
 

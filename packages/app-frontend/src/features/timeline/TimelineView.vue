@@ -7,7 +7,7 @@ import {
   onUnmounted,
   watch,
   watchEffect,
-  defineComponent
+  defineComponent,
 } from '@vue/composition-api'
 import Vue from 'vue'
 import {
@@ -21,7 +21,7 @@ import {
   Layer,
   TimelineEvent,
   useMarkers,
-  TimelineMarker
+  TimelineMarker,
 } from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
@@ -79,7 +79,7 @@ export default defineComponent({
       app = new PIXI.Application({
         resizeTo: wrapper.value,
         antialias: true,
-        autoDensity: true
+        autoDensity: true,
       })
       app.stage.interactive = true
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
@@ -165,7 +165,7 @@ export default defineComponent({
       layers,
       vScroll,
       hoverLayerId,
-      selectedLayer
+      selectedLayer,
     } = useLayers()
 
     let layerContainers: PIXI.Container[] = []
@@ -183,7 +183,7 @@ export default defineComponent({
         layerContainers.push(container)
         layersMap[layer.id] = {
           layer,
-          container
+          container,
         }
       }
     }
@@ -242,12 +242,12 @@ export default defineComponent({
       const layerIds = [
         {
           id: hoverLayerId.value,
-          alpha: 1
+          alpha: 1,
         },
         {
           id: hoverLayerId.value !== selectedLayer.value?.id ? selectedLayer.value?.id : null,
-          alpha: 0.5
-        }
+          alpha: 0.5,
+        },
       ].filter(({ id }) => id != null)
 
       if (layerIds.length) {
@@ -701,7 +701,7 @@ export default defineComponent({
       eventTooltipTitle = new PIXI.Text('', {
         fontSize: 12,
         fill: 0x000000,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
       })
       eventTooltipTitle.x = 4
       eventTooltipTitle.y = 4
@@ -709,7 +709,7 @@ export default defineComponent({
 
       eventTooltipText = new PIXI.Text('', {
         fontSize: 12,
-        fill: 0x000000
+        fill: 0x000000,
       })
       eventTooltipText.alpha = 0.7
       eventTooltipText.x = 4
@@ -813,7 +813,7 @@ export default defineComponent({
           if (!t) {
             t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
               fontSize: 10,
-              fill: darkMode.value ? 0xffffff : 0
+              fill: darkMode.value ? 0xffffff : 0,
             })
             t.y = Math.round(-t.height / 2)
             event.container.addChild(t)
@@ -1048,9 +1048,9 @@ export default defineComponent({
       onMouseWheel,
       onMouseMove,
       onMouseOut,
-      onResize
+      onResize,
     }
-  }
+  },
 })
 </script>
 

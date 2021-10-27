@@ -82,7 +82,7 @@ export const backend = defineBackend({
           component.appContext.app,
           component.uid,
           component.parent ? component.parent.uid : undefined,
-          component
+          component,
         ]
       }
     })
@@ -92,5 +92,5 @@ export const backend = defineBackend({
     api.stateEditor.setRefValue = (ref, value) => {
       ref.value = value
     }
-  }
+  },
 })

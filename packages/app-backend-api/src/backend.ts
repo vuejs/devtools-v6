@@ -28,7 +28,7 @@ export interface DevtoolsBackend {
 export function createBackend (options: DevtoolsBackendOptions, ctx: BackendContext): DevtoolsBackend {
   const backend: DevtoolsBackend = {
     options,
-    api: null
+    api: null,
   }
   backend.api = new DevtoolsApi(backend, ctx)
   options.setup(backend.api)
