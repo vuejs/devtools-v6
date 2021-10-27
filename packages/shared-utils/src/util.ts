@@ -8,7 +8,7 @@ import {
   getCustomStoreDetails,
   isVueInstance,
 } from './backend'
-import SharedData from './shared-data'
+import { SharedData } from './shared-data'
 import { isChrome, target } from './env'
 
 function cached (fn) {

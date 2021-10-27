@@ -1,7 +1,6 @@
 import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { App, ComponentInstance } from '@vue/devtools-api'
-import { BridgeSubscriptions } from '@vue-devtools/shared-utils'
+import { BridgeSubscriptions, SharedData } from '@vue-devtools/shared-utils'
 import { addTimelineEvent } from './timeline'
 import { getAppRecord } from './app'
 import { getComponentId, sendComponentTreeData } from './component'

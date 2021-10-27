@@ -1,6 +1,5 @@
-import { camelize, getComponentName, getCustomRefDetails, StateEditor } from '@vue-devtools/shared-utils'
+import { camelize, getComponentName, getCustomRefDetails, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { functionalVnodeMap, instanceMap } from './tree'
 
 /**

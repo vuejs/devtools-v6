@@ -1,6 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { ID, ScreenshotOverlayRenderContext } from '@vue/devtools-api'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { SharedData } from '@vue-devtools/shared-utils'
 import { JobQueue } from './util/queue'
 import { builtinLayers } from './timeline-builtins'
 

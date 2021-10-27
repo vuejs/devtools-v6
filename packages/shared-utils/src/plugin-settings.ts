@@ -1,4 +1,4 @@
-import SharedData from './shared-data'
+import { SharedData } from './shared-data'
 import { PluginSettingsItem } from '@vue/devtools-api'
 
 export function getPluginSettings<TSettings extends Record<string, any> = any> (pluginId: string, defaultSettings?: TSettings): TSettings {

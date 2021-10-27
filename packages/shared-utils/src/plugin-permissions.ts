@@ -1,4 +1,4 @@
-import SharedData from './shared-data'
+import { SharedData } from './shared-data'
 
 export enum PluginPermission {
   ENABLED = 'enabled',

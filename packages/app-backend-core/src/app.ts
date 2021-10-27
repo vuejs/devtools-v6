@@ -5,8 +5,7 @@ import {
   BackendContext,
   DevtoolsBackend,
 } from '@vue-devtools/app-backend-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { App } from '@vue/devtools-api'
 import slug from 'speakingurl'
 import { JobQueue } from './util/queue'

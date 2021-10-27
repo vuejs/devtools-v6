@@ -226,4 +226,4 @@ Object.keys(internalSharedData).forEach(key => {
   })
 })
 
-export default proxy
+export const SharedData = proxy

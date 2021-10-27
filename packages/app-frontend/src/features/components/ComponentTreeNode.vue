@@ -2,8 +2,7 @@
 import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from '@vue/composition-api'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import { getComponentDisplayName, UNDEFINED } from '@utils/util'
-import SharedData from '@utils/shared-data'
+import { getComponentDisplayName, UNDEFINED, SharedData } from '@vue-devtools/shared-utils'
 import { sortChildren, useComponent, useComponentHighlight } from './composable'
 import { onKeyDown } from '@front/util/keyboard'
 

@@ -5,8 +5,14 @@ import AppDisconnected from './connection/AppDisconnected.vue'
 import ErrorOverlay from './error/ErrorOverlay.vue'
 
 import { onMounted, defineComponent } from '@vue/composition-api'
-import { isChrome, setStorage, getStorage } from '@vue-devtools/shared-utils'
-import SharedData, { watchSharedData, onSharedDataInit } from '@utils/shared-data'
+import {
+  isChrome,
+  setStorage,
+  getStorage,
+  SharedData,
+  watchSharedData,
+  onSharedDataInit,
+} from '@vue-devtools/shared-utils'
 import { darkMode } from '@front/util/theme'
 import { useAppConnection } from './connection'
 

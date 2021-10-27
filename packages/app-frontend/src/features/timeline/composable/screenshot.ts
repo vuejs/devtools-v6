@@ -1,5 +1,4 @@
-import SharedData from '@utils/shared-data'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps } from '@front/features/apps'
 import { useBridge } from '@front/features/bridge'
 import { EventScreenshot, screenshots, TimelineEvent } from './store'

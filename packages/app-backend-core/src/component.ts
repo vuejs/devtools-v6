@@ -1,5 +1,4 @@
-import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { stringify, BridgeEvents, parse, SharedData } from '@vue-devtools/shared-utils'
 import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'

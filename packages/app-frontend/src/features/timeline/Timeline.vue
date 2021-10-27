@@ -9,9 +9,9 @@ import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
 import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from '@vue/composition-api'
+import { SharedData } from '@vue-devtools/shared-utils'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
-import SharedData from '@utils/shared-data'
 import {
   useTime,
   useLayers,

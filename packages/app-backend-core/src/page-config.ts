@@ -1,5 +1,4 @@
-import { target } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { target, SharedData } from '@vue-devtools/shared-utils'
 
 export interface PageConfig {
   openInEditorHost?: string

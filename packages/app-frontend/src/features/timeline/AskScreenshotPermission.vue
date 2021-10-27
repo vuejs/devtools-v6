@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import SharedData from '@utils/shared-data'
+import { SharedData } from '@vue-devtools/shared-utils'
 
 export default defineComponent({
   setup (props, { emit }) {

@@ -10,6 +10,7 @@ import {
   defineComponent,
 } from '@vue/composition-api'
 import Vue from 'vue'
+import { SharedData } from '@vue-devtools/shared-utils'
 import {
   useLayers,
   useTime,
@@ -25,7 +26,6 @@ import {
 } from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
-import SharedData from '@utils/shared-data'
 import { useDarkMode } from '@front/util/theme'
 import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'

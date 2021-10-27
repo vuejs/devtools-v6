@@ -1,8 +1,7 @@
 import App from './features/App.vue'
 
 import Vue from 'vue'
-import { isChrome, initEnv } from '@utils/env'
-import SharedData, { initSharedData, destroySharedData } from '@utils/shared-data'
+import { isChrome, initEnv, SharedData, initSharedData, destroySharedData } from '@vue-devtools/shared-utils'
 import { createRouter } from './router'
 import { getBridge, setBridge } from './features/bridge'
 import { setAppConnected, setAppInitializing } from './features/connection'

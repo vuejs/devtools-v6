@@ -16,8 +16,8 @@ import {
   revive,
   target,
   getPluginSettings,
+  SharedData,
 } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import debounce from 'lodash/debounce'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
