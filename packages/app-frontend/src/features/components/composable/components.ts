@@ -346,7 +346,7 @@ function compareIndexLists (a: number[], b: number[]): number {
 }
 
 export function getAppIdFromComponentId (id: string) {
-  const index = id.indexOf(':', 3)
+  const index = id.indexOf(':')
   const appId = id.substring(0, index)
   return appId
 }

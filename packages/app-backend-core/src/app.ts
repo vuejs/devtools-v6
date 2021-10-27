@@ -50,7 +50,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
   if (rootInstance) {
     recordId++
     const name = await backend.api.getAppRecordName(options.app, recordId.toString())
-    const id = getAppRecordId(options.app, `id:${slug(name)}`)
+    const id = getAppRecordId(options.app, slug(name))
 
     const [el]: HTMLElement[] = await backend.api.getComponentRootElements(rootInstance)
 
@@ -132,7 +132,7 @@ export function getAppRecordId (app, defaultId?: string): string {
     while (appIds.has(`${defaultId}:${count}`)) {
       count++
     }
-    id = `${defaultId}:${count}`
+    id = `${defaultId}_${count}`
   }
 
   appIds.add(id)

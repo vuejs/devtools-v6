@@ -34,6 +34,6 @@ export function getRenderKey (value): string {
  */
 export function getUniqueId (instance): string {
   if (instance.__VUE_DEVTOOLS_UID__ != null) return instance.__VUE_DEVTOOLS_UID__
-  const rootVueId = instance.$root.__VUE_DEVTOOLS_ROOT_UID__
+  const rootVueId = instance.$root.__VUE_DEVTOOLS_APP_RECORD_ID__
   return `${rootVueId}:${instance._uid}`
 }
