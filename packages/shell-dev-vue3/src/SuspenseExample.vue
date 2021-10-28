@@ -11,7 +11,7 @@
 import AsyncSetup from './AsyncSetup.vue'
 export default {
   components: {
-    AsyncSetup
-  }
+    AsyncSetup,
+  },
 }
 </script>

@@ -12,7 +12,7 @@ import {
   LayerFromBackend,
   Layer,
   selectedEvent,
-  inspectedEvent
+  inspectedEvent,
 } from './store'
 import { useRouter } from '@front/util/router'
 
@@ -25,7 +25,7 @@ export function layerFactory (options: LayerFromBackend): Layer {
     groupsMap: {},
     height: 1,
     lastInspectedEvent: null,
-    loaded: false
+    loaded: false,
   }
 }
 
@@ -88,8 +88,8 @@ export function useLayers () {
     router.push({
       query: {
         ...router.currentRoute.query,
-        tabId: 'all'
-      }
+        tabId: 'all',
+      },
     })
   }
 
@@ -100,13 +100,13 @@ export function useLayers () {
       get: () => vScrollPerApp.value[currentAppId.value] || 0,
       set: (value: number) => {
         Vue.set(vScrollPerApp.value, currentAppId.value, value)
-      }
+      },
     }),
     isLayerHidden,
     setLayerHidden,
     hoverLayerId,
     selectedLayer: computed(() => selectedLayer.value),
-    selectLayer
+    selectLayer,
   }
 }
 

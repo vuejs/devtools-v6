@@ -14,7 +14,7 @@ export default defineComponent({
     SplitPane,
     EmptyPane,
     CustomInspectorNode,
-    CustomInspectorSelectedNodePane
+    CustomInspectorSelectedNodePane,
   },
 
   setup () {
@@ -22,7 +22,7 @@ export default defineComponent({
       currentInspector: inspector,
       refreshInspector,
       refreshTree,
-      selectNode
+      selectNode,
     } = useCurrentInspector()
 
     watch(() => inspector.value && inspector.value.treeFilter, () => {
@@ -32,7 +32,7 @@ export default defineComponent({
     watch(inspector, () => {
       refreshInspector()
     }, {
-      immediate: true
+      immediate: true,
     })
 
     // Scroller
@@ -56,14 +56,14 @@ export default defineComponent({
 
     // Custom actions
     const {
-      bridge
+      bridge,
     } = useBridge()
 
     function executeCustomAction (index: number) {
       bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, {
         inspectorId: inspector.value.id,
         appId: inspector.value.appId,
-        actionIndex: index
+        actionIndex: index,
       })
     }
 
@@ -73,9 +73,9 @@ export default defineComponent({
       treeScroller,
       selectNextChild,
       selectPreviousChild,
-      executeCustomAction
+      executeCustomAction,
     }
-  }
+  },
 })
 </script>
 

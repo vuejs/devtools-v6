@@ -6,7 +6,7 @@ const isInitializing = ref(true)
 export function useAppConnection () {
   return {
     isConnected,
-    isInitializing
+    isInitializing,
   }
 }
 

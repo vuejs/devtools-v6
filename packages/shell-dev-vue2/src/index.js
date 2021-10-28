@@ -15,7 +15,7 @@ import Router from './router/Router.vue'
 import Hidden from './Hidden.vue'
 
 window.VUE_DEVTOOLS_CONFIG = {
-  openInEditorHost: '/'
+  openInEditorHost: '/',
 }
 
 const items = []
@@ -27,7 +27,7 @@ const circular = {}
 circular.self = circular
 
 Vue.component('global', {
-  render: h => h('h3', 'Global component')
+  render: h => h('h3', 'Global component'),
 })
 
 const app = new Vue({
@@ -35,14 +35,14 @@ const app = new Vue({
   router,
   components: {
     inline: {
-      render: h => h('h3', 'Inline component definition')
-    }
+      render: h => h('h3', 'Inline component definition'),
+    },
   },
   data: {
     obj: {
       items: items,
-      circular
-    }
+      circular,
+    },
   },
   render (h) {
     return h('div', null, [
@@ -58,9 +58,9 @@ const app = new Vue({
       h(RefTester),
       h(Hidden),
       h('global'),
-      h('inline')
+      h('inline'),
     ])
-  }
+  },
 })
 
 window.addEventListener('load', () => {
@@ -76,7 +76,7 @@ if (ce.attachShadow) {
     name: 'Shadow',
     render (h) {
       return h('h2', 'Inside Shadow DOM!')
-    }
+    },
   }).$mount()
 
   shadowRoot.appendChild(ceVM.$el)

@@ -2,8 +2,7 @@
 import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from '@vue/composition-api'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import { getComponentDisplayName, copyToClipboard, UNDEFINED } from '@utils/util'
-import SharedData from '@utils/shared-data'
+import { getComponentDisplayName, copyToClipboard, UNDEFINED, SharedData } from '@vue-devtools/shared-utils'
 import { sortChildren, useComponent, useComponentHighlight } from './composable'
 import { onKeyDown } from '@front/util/keyboard'
 
@@ -15,13 +14,13 @@ export default defineComponent({
   props: {
     instance: {
       type: Object as PropType<ComponentTreeNode>,
-      required: true
+      required: true,
     },
 
     depth: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
 
   setup (props, { emit }) {
@@ -42,7 +41,7 @@ export default defineComponent({
       isExpandedUndefined,
       checkIsExpanded,
       toggleExpand: toggle,
-      subscribeToComponentTree
+      subscribeToComponentTree,
     } = useComponent(instance)
 
     subscribeToComponentTree()
@@ -69,7 +68,7 @@ export default defineComponent({
           scrollMode: 'if-needed',
           block: 'center',
           inline: 'nearest',
-          behavior: 'smooth'
+          behavior: 'smooth',
         })
       }
     }
@@ -177,7 +176,7 @@ export default defineComponent({
       onContextMenuMouseLeave,
       copyComponentName
     }
-  }
+  },
 })
 </script>
 

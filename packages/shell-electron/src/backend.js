@@ -1,8 +1,7 @@
 import io from 'socket.io-client'
 import { initBackend } from '@back'
-import { Bridge } from '@utils/bridge'
 import { installToast } from '@back/toast'
-import { target } from '@utils/env'
+import { Bridge, target } from '@vue-devtools/shared-utils'
 
 const host = target.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
 const port = target.__VUE_DEVTOOLS_PORT__ !== undefined ? target.__VUE_DEVTOOLS_PORT__ : 8098
@@ -31,7 +30,7 @@ socket.on('connect', () => {
 // Global disconnect handler. Fires in two cases:
 // - after calling above socket.disconnect()
 // - once devtools is closed (that's why we need socket.disconnect() here too, to prevent further polling)
-socket.on('disconnect', (reason) => {
+socket.on('disconnect', () => {
   socket.disconnect()
   disconnectedMessage()
 })
@@ -47,7 +46,7 @@ const bridge = new Bridge({
   },
   send (data) {
     socket.emit('vue-message', data)
-  }
+  },
 })
 
 bridge.on('shutdown', () => {

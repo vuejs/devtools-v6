@@ -11,7 +11,7 @@ export default defineComponent({
   components: {
     StateInspector,
     EmptyPane,
-    RenderCode
+    RenderCode,
   },
 
   setup () {
@@ -32,9 +32,9 @@ export default defineComponent({
       ...selectedComponent,
       showRenderCode,
       inspector,
-      sameApp
+      sameApp,
     }
-  }
+  },
 })
 </script>
 

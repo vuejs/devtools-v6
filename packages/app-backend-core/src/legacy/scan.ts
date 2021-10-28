@@ -1,7 +1,6 @@
 import { isBrowser, target } from '@vue-devtools/shared-utils'
 
 const rootInstances = []
-let rootUID = 0
 
 /**
  * Scan the page for root level Vue instances.
@@ -29,11 +28,6 @@ export function scan () {
         baseVue = baseVue.super
       }
       if (baseVue.config && baseVue.config.devtools) {
-        // give a unique id to root instance so we can
-        // 'namespace' its children
-        if (typeof instance.__VUE_DEVTOOLS_ROOT_UID__ === 'undefined') {
-          instance.__VUE_DEVTOOLS_ROOT_UID__ = ++rootUID
-        }
         rootInstances.push(instance)
       }
 

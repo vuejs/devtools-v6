@@ -3,5 +3,5 @@ import Child from './Child.vue'
 
 new Vue({
   ...Child,
-  name: 'IframeApp'
+  name: 'IframeApp',
 }).$mount('#app')

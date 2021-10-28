@@ -8,7 +8,7 @@ const msg = ref('msg')
 
 <script>
 export default {
-  name: 'IframeApp'
+  name: 'IframeApp',
 }
 </script>
 

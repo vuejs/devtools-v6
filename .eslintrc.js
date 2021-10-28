@@ -1,15 +1,15 @@
 module.exports = {
   root: true,
   env: {
-    browser: true
+    browser: true,
   },
   extends: [
     'plugin:vue/recommended',
     '@vue/standard',
-    '@vue/typescript/recommended'
+    '@vue/typescript/recommended',
   ],
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
   },
   globals: {
     bridge: true,
@@ -17,41 +17,43 @@ module.exports = {
     localStorage: 'off',
     HTMLDocument: true,
     name: 'off',
-    browser: true
+    browser: true,
   },
   rules: {
     'vue/html-closing-bracket-newline': [
       'error',
       {
         singleline: 'never',
-        multiline: 'always'
-      }
+        multiline: 'always',
+      },
     ],
     'no-var': ['error'],
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
         multiline: {
-          delimiter: 'none'
+          delimiter: 'none',
         },
         singleline: {
-          delimiter: 'comma'
-        }
-      }
+          delimiter: 'comma',
+        },
+      },
     ],
     '@typescript-eslint/ban-ts-comment': 'warn',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     camelcase: 'warn',
     'no-prototype-builtins': 'off',
-    'no-use-before-define': 'off'
+    'no-use-before-define': 'off',
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'comma-dangle': ['error', 'always-multiline'],
   },
   ignorePatterns: [
     'node_modules/',
     '/packages/*/lib/',
     'dist/',
     'build/',
-    '/legacy'
+    '/legacy',
   ],
   overrides: [
     {
@@ -60,29 +62,30 @@ module.exports = {
         'sign-firefox.js',
         'packages/build-tools/**',
         'packages/shell-electron/**',
-        '**webpack.config.js'
+        '**webpack.config.js',
       ],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/camelcase': 'off'
-      }
+        '@typescript-eslint/camelcase': 'off',
+      },
     },
     {
       files: ['packages/shell-dev-vue3/**'],
       rules: {
-        'vue/valid-template-root': 'off'
-      }
+        'vue/valid-template-root': 'off',
+      },
     },
     {
       files: [
         'packages/shell-dev-vue2/**',
-        'packages/shell-dev-vue3/**'
+        'packages/shell-dev-vue3/**',
       ],
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
         'vue/require-default-prop': 'off',
-        'vue/require-prop-types': 'off'
-      }
-    }
-  ]
+        'vue/require-prop-types': 'off',
+        'no-console': 'off',
+      },
+    },
+  ],
 }

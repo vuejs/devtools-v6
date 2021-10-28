@@ -92,7 +92,7 @@ export function installHook (target, isIframe = false) {
 
       emit (event, ...args) {
         sendToParent(hook => hook.emit(event, ...args))
-      }
+      },
     }
   } else {
     hook = {
@@ -169,7 +169,7 @@ export function installHook (target, isIframe = false) {
         } else {
           this._buffer.push([event, ...args])
         }
-      }
+      },
     }
 
     hook.once('init', Vue => {
@@ -187,7 +187,7 @@ export function installHook (target, isIframe = false) {
       const appRecord = {
         app,
         version,
-        types
+        types,
       }
       hook.apps.push(appRecord)
       hook.emit('app:add', appRecord)
@@ -210,7 +210,10 @@ export function installHook (target, isIframe = false) {
           if (typeof path === 'string') path = [path]
           hook.storeModules.push({ path, module, options })
           origRegister(path, module, options)
-          if (process.env.NODE_ENV !== 'production') console.log('early register module', path, module, options)
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.log('early register module', path, module, options)
+          }
         }
         origUnregister = store.unregisterModule.bind(store)
         store.unregisterModule = (path) => {
@@ -219,7 +222,10 @@ export function installHook (target, isIframe = false) {
           const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
           if (index !== -1) hook.storeModules.splice(index, 1)
           origUnregister(path)
-          if (process.env.NODE_ENV !== 'production') console.log('early unregister module', path)
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.log('early unregister module', path)
+          }
         }
       }
       hook.flushStoreModules = () => {
@@ -236,7 +242,7 @@ export function installHook (target, isIframe = false) {
   Object.defineProperty(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
     get () {
       return hook
-    }
+    },
   })
 
   // Handle apps initialized before hook injection
@@ -262,7 +268,7 @@ export function installHook (target, isIframe = false) {
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
     getOwnPropertySymbols,
-    getPrototypeOf
+    getPrototypeOf,
   } = Object
   const { hasOwnProperty, propertyIsEnumerable } = Object.prototype
 
@@ -276,7 +282,7 @@ export function installHook (target, isIframe = false) {
    */
   const SUPPORTS = {
     SYMBOL_PROPERTIES: typeof getOwnPropertySymbols === 'function',
-    WEAKSET: typeof WeakSet === 'function'
+    WEAKSET: typeof WeakSet === 'function',
   }
 
   /**
@@ -294,7 +300,7 @@ export function installHook (target, isIframe = false) {
 
     const object = create({
       add: (value) => object._values.push(value),
-      has: (value) => !!~object._values.indexOf(value)
+      has: (value) => !!~object._values.indexOf(value),
     })
 
     object._values = []
@@ -351,7 +357,7 @@ export function installHook (target, isIframe = false) {
     object,
     realm,
     handleCopy,
-    cache
+    cache,
   ) => {
     const clone = getCleanClone(object, realm)
 
@@ -394,7 +400,7 @@ export function installHook (target, isIframe = false) {
     object,
     realm,
     handleCopy,
-    cache
+    cache,
   ) => {
     const clone = getCleanClone(object, realm)
 
@@ -517,7 +523,7 @@ export function installHook (target, isIframe = false) {
      */
     const handleCopy = (
       object,
-      cache
+      cache,
     ) => {
       if (!object || typeof object !== 'object' || cache.has(object)) {
         return object
@@ -566,7 +572,7 @@ export function installHook (target, isIframe = false) {
       if (object instanceof realm.RegExp) {
         clone = new Constructor(
           object.source,
-          object.flags || getRegExpFlags(object)
+          object.flags || getRegExpFlags(object),
         )
 
         clone.lastIndex = object.lastIndex

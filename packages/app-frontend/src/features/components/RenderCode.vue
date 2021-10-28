@@ -1,6 +1,6 @@
 <script>
 import { reactive, watch } from '@vue/composition-api'
-import { BridgeEvents } from '@utils/consts'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
 import { darkMode } from '@front/util/theme'
 
@@ -11,24 +11,24 @@ const CodeEditor = () => import(
 
 export default {
   components: {
-    CodeEditor
+    CodeEditor,
   },
 
   props: {
     instanceId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
     const {
       onBridge,
-      bridge
+      bridge,
     } = useBridge()
 
     const result = reactive({
-      code: ''
+      code: '',
     })
 
     let pendingId
@@ -46,9 +46,9 @@ export default {
 
     return {
       result,
-      darkMode
+      darkMode,
     }
-  }
+  },
 }
 </script>
 

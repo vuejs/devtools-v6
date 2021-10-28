@@ -24,7 +24,7 @@ function processEvent (event, type) {
   const info = {
     key: event.key,
     code: event.code,
-    modifiers: modifiers.join('+')
+    modifiers: modifiers.join('+'),
   }
   let result = true
   activeInstances.forEach(opt => {
@@ -49,16 +49,16 @@ export default function (options) {
     mounted () {
       activeInstances.push({
         vm: this,
-        ...options
+        ...options,
       })
     },
     destroyed () {
       const i = activeInstances.findIndex(
-        o => o.vm === this
+        o => o.vm === this,
       )
       if (i >= 0) {
         activeInstances.splice(i, 1)
       }
-    }
+    },
   })
 }

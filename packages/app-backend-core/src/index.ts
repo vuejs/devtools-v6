@@ -3,7 +3,7 @@ import {
   BackendContext,
   Plugin,
   BuiltinBackendFeature,
-  AppRecord
+  AppRecord,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -15,7 +15,8 @@ import {
   parse,
   revive,
   target,
-  getPluginSettings
+  getPluginSettings,
+  SharedData,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
 import { hook } from './global-hook'
@@ -29,14 +30,14 @@ import {
   sendEmptyComponentData,
   getComponentId,
   editComponentState,
-  getComponentInstance
+  getComponentInstance,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
-import { handleAddPerformanceTag, performanceMarkEnd, performanceMarkStart } from './perf'
+import { performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
 import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
 
@@ -46,7 +47,7 @@ let connected = target.__vdevtools_connected ?? false
 export async function initBackend (bridge: Bridge) {
   await initSharedData({
     bridge,
-    persist: false
+    persist: false,
   })
 
   initOnPageConfig()
@@ -55,7 +56,7 @@ export async function initBackend (bridge: Bridge) {
     // connected = false
     ctx = target.__vdevtools_ctx = createBackendContext({
       bridge,
-      hook
+      hook,
     })
 
     if (hook.Vue) {
@@ -129,7 +130,7 @@ async function connect () {
         sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
       }
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -149,7 +150,7 @@ async function connect () {
       }
 
       if (parentUid != null) {
-        const parentInstances = await ctx.api.walkComponentParents(component)
+        const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
@@ -164,7 +165,7 @@ async function connect () {
         sendSelectedComponentData(appRecord, id, ctx)
       }
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -174,7 +175,7 @@ async function connect () {
     try {
       const appRecord = await getAppRecord(app, ctx)
       if (parentUid != null) {
-        const parentInstances = await ctx.api.walkComponentParents(component)
+        const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
@@ -182,7 +183,7 @@ async function connect () {
               try {
                 sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
               } catch (e) {
-                if (process.env.NODE_ENV !== 'production') {
+                if (SharedData.debugInfo) {
                   console.error(e)
                 }
               }
@@ -197,7 +198,7 @@ async function connect () {
       }
       appRecord.instanceMap.delete(id)
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -213,12 +214,10 @@ async function connect () {
     performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
-  handleAddPerformanceTag(ctx)
-
   // Highlighter
 
   hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
   hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
@@ -229,12 +228,13 @@ async function connect () {
 
   setupTimeline(ctx)
 
-  hook.on(HookEvents.TIMELINE_LAYER_ADDED, (options: TimelineLayerOptions, plugin: Plugin) => {
+  hook.on(HookEvents.TIMELINE_LAYER_ADDED, async (options: TimelineLayerOptions, plugin: Plugin) => {
+    const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
     ctx.timelineLayers.push({
       ...options,
-      app: plugin.descriptor.app,
+      appRecord,
       plugin,
-      events: []
+      events: [],
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
   })
@@ -245,13 +245,14 @@ async function connect () {
 
   // Custom inspectors
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, (options: CustomInspectorOptions, plugin: Plugin) => {
+  hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, async (options: CustomInspectorOptions, plugin: Plugin) => {
+    const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
     ctx.customInspectors.push({
       ...options,
-      app: plugin.descriptor.app,
+      appRecord,
       plugin,
       treeFilter: '',
-      selectedNodeId: null
+      selectedNodeId: null,
     })
     ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
   })
@@ -260,8 +261,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       sendInspectorTree(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -269,8 +270,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -278,8 +279,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       await selectInspectorNode(inspector, nodeId, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -297,7 +298,7 @@ async function connect () {
   // Legacy flush
 
   const handleFlush = debounce(() => {
-    if (ctx.currentAppRecord?.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)) {
+    if (ctx.currentAppRecord?.backend.options.features.includes(BuiltinBackendFeature.FLUSH)) {
       sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
       if (ctx.currentInspectedComponentId) {
         sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
@@ -315,7 +316,7 @@ async function connect () {
     time: Date.now(),
     label: 'Vue Devtools connected',
     color: 0x41B883,
-    all: true
+    all: true,
   }, ctx)
 }
 
@@ -346,10 +347,10 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
     if (id == null) return
     const record = ctx.appRecords.find(r => r.id === id)
-    if (!record) {
-      console.error(`App with id ${id} not found`)
-    } else {
+    if (record) {
       await selectApp(record, ctx)
+    } else if (SharedData.debugInfo) {
+      console.warn(`App with id ${id} not found`)
     }
   })
 
@@ -371,7 +372,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, async ({ instanceId }) => {
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
-      const [el] = await ctx.api.getComponentRootElements(instance)
+      const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         // @ts-ignore
         window.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
@@ -383,17 +384,17 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
-      const [el] = await ctx.api.getComponentRootElements(instance)
+      const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         if (typeof el.scrollIntoView === 'function') {
           el.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
-            inline: 'center'
+            inline: 'center',
           })
         } else {
           // Handle nodes that don't implement scrollIntoView
-          const bounds = await ctx.api.getComponentBounds(instance)
+          const bounds = await ctx.currentAppRecord.backend.api.getComponentBounds(instance)
           const scrollTarget = document.createElement('div')
           scrollTarget.style.position = 'absolute'
           scrollTarget.style.width = `${bounds.width}px`
@@ -404,13 +405,13 @@ function connectBridge () {
           scrollTarget.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
-            inline: 'center'
+            inline: 'center',
           })
           setTimeout(() => {
             document.body.removeChild(scrollTarget)
           }, 2000)
         }
-        highlight(instance, ctx)
+        highlight(instance, ctx.currentAppRecord.backend, ctx)
         setTimeout(() => {
           unHighlight()
         }, 2000)
@@ -421,10 +422,10 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
-      const { code } = await ctx.api.getComponentRenderCode(instance)
+      const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)
       ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_RENDER_CODE, {
         instanceId,
-        code
+        code,
       })
     }
   })
@@ -446,7 +447,7 @@ function connectBridge () {
   // Highlighter
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx)
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
@@ -502,8 +503,8 @@ function connectBridge () {
     if (inspector) {
       inspector.treeFilter = treeFilter
       sendInspectorTree(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -512,8 +513,8 @@ function connectBridge () {
     if (inspector) {
       inspector.selectedNodeId = nodeId
       sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -523,8 +524,8 @@ function connectBridge () {
       await editInspectorState(inspector, nodeId, path, type, payload, ctx)
       inspector.selectedNodeId = nodeId
       await sendInspectorState(inspector, ctx)
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -535,10 +536,12 @@ function connectBridge () {
       try {
         await action.action()
       } catch (e) {
-        console.error(e)
+        if (SharedData.debugInfo) {
+          console.error(e)
+        }
       }
-    } else {
-      console.error(`Inspector ${inspectorId} not found`)
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
@@ -551,6 +554,7 @@ function connectBridge () {
     } else if (payload.revive) {
       value = revive(value)
     }
+    // eslint-disable-next-line no-console
     console[payload.level](value)
   })
 
@@ -563,13 +567,13 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, ({ pluginId, key, newValue, oldValue }) => {
     const settings = getPluginSettings(pluginId)
     ctx.hook.emit(HookEvents.PLUGIN_SETTINGS_SET, pluginId, settings)
-    ctx.api.callHook(Hooks.SET_PLUGIN_SETTINGS, {
+    ctx.currentAppRecord.backend.api.callHook(Hooks.SET_PLUGIN_SETTINGS, {
       app: ctx.currentAppRecord.options.app,
       pluginId,
       key,
       newValue,
       oldValue,
-      settings
+      settings,
     })
   })
 }

@@ -12,9 +12,9 @@ export default {
     const reactiveObject = reactive({
       foo: 'bar',
       hello: {
-        world: 1
+        world: 1,
       },
-      nil: undefined
+      nil: undefined,
     })
 
     function myMethodFromSetup () {
@@ -27,7 +27,7 @@ export default {
       get: () => internalComputed.value,
       set: value => {
         internalComputed.value = value
-      }
+      },
     })
 
     return {
@@ -35,13 +35,13 @@ export default {
       doubleAnswer,
       reactiveObject,
       myMethodFromSetup,
-      writableComputed
+      writableComputed,
     }
   },
 
   data () {
     return {
-      classicAnswer: 42
+      classicAnswer: 42,
     }
   },
 
@@ -56,13 +56,13 @@ export default {
       },
       set (value) {
         this.classicAnswer = value
-      }
-    }
+      },
+    },
   },
 
   mounted () {
     this.$emit('child mounted', 'bar')
-  }
+  },
 }
 </script>
 

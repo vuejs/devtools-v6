@@ -20,5 +20,5 @@ module.exports = {
     const tools = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
     tools.emit('init', Vue)
-  }
+  },
 }

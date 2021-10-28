@@ -10,7 +10,7 @@ import {
   markersAllApps,
   markersPerApp,
   MarkerFromBackend,
-  TimelineMarker
+  TimelineMarker,
 } from './store'
 import { getLayers, fetchLayers, layerFactory } from './layers'
 import { addEvent } from './events'
@@ -102,7 +102,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     for (const marker of markers) {
       const result = {
         ...marker,
-        x: 0
+        x: 0,
       }
       if (marker.all) {
         allList.push(result)
@@ -128,7 +128,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
 
     const result = {
       ...marker,
-      x: 0
+      x: 0,
     }
 
     const index = targetList.findIndex(m => m.id === marker.id)

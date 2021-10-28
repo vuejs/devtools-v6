@@ -1,4 +1,4 @@
-import { get } from '@utils/util'
+import { simpleGet } from '@vue-devtools/shared-utils'
 
 const reg = /\{\{\s*([\w_.-]+)\s*\}\}/g
 
@@ -12,9 +12,9 @@ let replacer: Replacer
 
 export function translate (path: string | string[], values: ValuesMap = {}) {
   values = Object.assign({}, defaultValues, values)
-  let text = get(strings, path)
+  let text = simpleGet(strings, path)
   text = text.replace(reg, (substring, matched) => {
-    const value = get(values, matched)
+    const value = simpleGet(values, matched)
     return typeof value !== 'undefined' ? value : substring
   })
   replacer && (text = replacer(text))
@@ -33,5 +33,5 @@ export default {
     defaultValues = options.defaultValues || {}
     replacer = options.replacer
     Vue.prototype.$t = translate
-  }
+  },
 }

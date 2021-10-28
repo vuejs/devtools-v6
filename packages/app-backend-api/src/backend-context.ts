@@ -1,22 +1,21 @@
 import { Bridge } from '@vue-devtools/shared-utils'
 import {
   TimelineLayerOptions,
-  App,
   CustomInspectorOptions,
   TimelineEventOptions,
   WithId,
   ID,
-  TimelineMarkerOptions
+  TimelineMarkerOptions,
 } from '@vue/devtools-api'
 import { AppRecord } from './app-record'
-import { DevtoolsApi } from './api'
 import { Plugin } from './plugin'
 import { DevtoolsHook } from './global-hook'
+import { DevtoolsBackend } from './backend'
 
 export interface BackendContext {
   bridge: Bridge
   hook: DevtoolsHook
-  api: DevtoolsApi
+  backends: DevtoolsBackend[]
   appRecords: AppRecord[]
   currentTab: string
   currentAppRecord: AppRecord
@@ -32,17 +31,17 @@ export interface BackendContext {
 }
 
 export interface TimelineLayer extends TimelineLayerOptions {
-  app: App
+  appRecord: AppRecord | null
   plugin: Plugin
   events: (TimelineEventOptions & WithId)[]
 }
 
 export interface TimelineMarker extends TimelineMarkerOptions {
-  app: App | null
+  appRecord: AppRecord | null
 }
 
 export interface CustomInspector extends CustomInspectorOptions {
-  app: App
+  appRecord: AppRecord
   plugin: Plugin
   treeFilter: string
   selectedNodeId: string
@@ -54,10 +53,10 @@ export interface CreateBackendContextOptions {
 }
 
 export function createBackendContext (options: CreateBackendContextOptions): BackendContext {
-  const ctx: BackendContext = {
+  return {
     bridge: options.bridge,
     hook: options.hook,
-    api: null,
+    backends: [],
     appRecords: [],
     currentTab: null,
     currentAppRecord: null,
@@ -69,8 +68,6 @@ export function createBackendContext (options: CreateBackendContextOptions): Bac
     timelineEventMap: new Map(),
     perfUniqueGroupId: 0,
     customInspectors: [],
-    timelineMarkers: []
+    timelineMarkers: [],
   }
-  ctx.api = new DevtoolsApi(options.bridge, ctx)
-  return ctx
 }

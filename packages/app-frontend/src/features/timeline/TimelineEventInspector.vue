@@ -10,7 +10,7 @@ import { useInspectedEvent, useSelectedEvent } from './composable'
 export default defineComponent({
   components: {
     StateInspector,
-    EmptyPane
+    EmptyPane,
   },
 
   setup () {
@@ -18,11 +18,11 @@ export default defineComponent({
       inspectedEvent,
       inspectedEventState,
       time,
-      loading
+      loading,
     } = useInspectedEvent()
 
     const {
-      selectedEvent
+      selectedEvent,
     } = useSelectedEvent()
 
     const isSelected = computed(() => selectedEvent.value === inspectedEvent.value)
@@ -41,9 +41,9 @@ export default defineComponent({
       isSelected,
       color,
       dimmedColor,
-      boostedColor
+      boostedColor,
     }
-  }
+  },
 })
 </script>
 

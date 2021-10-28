@@ -1,4 +1,4 @@
-import { isChrome } from '@utils/env'
+import { isChrome } from '@vue-devtools/shared-utils'
 
 let panelShown = !isChrome
 let pendingAction = null

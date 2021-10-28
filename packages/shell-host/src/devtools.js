@@ -1,5 +1,5 @@
 import { initDevTools } from '@front'
-import { Bridge } from '@utils/bridge'
+import { Bridge } from '@vue-devtools/shared-utils'
 
 const target = document.getElementById('target')
 const targetWindow = target.contentWindow
@@ -18,15 +18,18 @@ target.onload = () => {
             targetWindow.parent.addEventListener('message', evt => fn(evt.data))
           },
           send (data) {
-            console.log('devtools -> backend', data)
+            if (process.env.NODE_ENV !== 'production') {
+              // eslint-disable-next-line no-console
+              console.log('devtools -> backend', data)
+            }
             targetWindow.postMessage(data, '*')
-          }
+          },
         }))
       })
     },
     onReload (reloadFn) {
       target.onload = reloadFn
-    }
+    },
   })
 }
 

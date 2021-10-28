@@ -1,11 +1,9 @@
-import { DevtoolsBackend, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
+import { defineBackend } from '@vue-devtools/app-backend-api'
 
-export const backend: DevtoolsBackend = {
+export const backend = defineBackend({
   frameworkVersion: 1,
-  availableFeatures: [
-    BuiltinBackendFeature.COMPONENTS
-  ],
+  features: [],
   setup (api) {
     // @TODO
-  }
-}
+  },
+})

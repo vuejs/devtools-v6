@@ -1,5 +1,4 @@
-import { stringify, BridgeEvents, parse } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { stringify, BridgeEvents, parse, SharedData } from '@vue-devtools/shared-utils'
 import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
@@ -14,7 +13,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
   // So we skip individiual tree updates
   if (
     instanceId !== '_root' &&
-    ctx.currentAppRecord.backend.availableFeatures.includes(BuiltinBackendFeature.FLUSH)
+    ctx.currentAppRecord.backend.options.features.includes(BuiltinBackendFeature.FLUSH)
   ) {
     return
   }
@@ -24,7 +23,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, {
       instanceId,
       treeData: null,
-      notFound: true
+      notFound: true,
     })
   } else {
     if (filter) filter = filter.toLowerCase()
@@ -33,7 +32,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     }
     const payload = {
       instanceId,
-      treeData: stringify(await ctx.api.walkComponentTree(instance, maxDepth, filter))
+      treeData: stringify(await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter)),
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
   }
@@ -41,7 +40,6 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
 
 export async function sendSelectedComponentData (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
   if (!instanceId || appRecord !== ctx.currentAppRecord) return
-  markSelectedInstance(instanceId, ctx)
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     sendEmptyComponentData(instanceId, ctx)
@@ -63,15 +61,17 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
       }
     }
     if (SharedData.debugInfo) {
+      // eslint-disable-next-line no-console
       console.log('[DEBUG] inspect', instance)
     }
-    const parentInstances = await ctx.api.walkComponentParents(instance)
+    const parentInstances = await appRecord.backend.api.walkComponentParents(instance)
     const payload = {
       instanceId,
-      data: stringify(await ctx.api.inspectComponent(instance, ctx.currentAppRecord.options.app)),
-      parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__)
+      data: stringify(await appRecord.backend.api.inspectComponent(instance, ctx.currentAppRecord.options.app)),
+      parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__),
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, payload)
+    markSelectedInstance(instanceId, ctx)
   }
 }
 
@@ -83,7 +83,7 @@ export function markSelectedInstance (instanceId: string, ctx: BackendContext) {
 export function sendEmptyComponentData (instanceId: string, ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
     instanceId,
-    data: null
+    data: null,
   })
 }
 
@@ -94,7 +94,7 @@ export async function editComponentState (instanceId: string, dotPath: string, t
     if ('value' in state && state.value != null) {
       state.value = parse(state.value, true)
     }
-    await ctx.api.editComponentState(instance, dotPath, type, state, ctx.currentAppRecord.options.app)
+    await ctx.currentAppRecord.backend.api.editComponentState(instance, dotPath, type, state, ctx.currentAppRecord.options.app)
     await sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
   }
 }

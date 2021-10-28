@@ -1,7 +1,7 @@
 // this script is called when the VueDevtools panel is activated.
 
 import { initDevTools } from '@front'
-import { Bridge } from '@utils/bridge'
+import { Bridge } from '@vue-devtools/shared-utils'
 
 initDevTools({
 
@@ -16,7 +16,7 @@ initDevTools({
     injectScript(chrome.runtime.getURL('build/backend.js'), () => {
       // 2. connect to background to setup proxy
       const port = chrome.runtime.connect({
-        name: '' + chrome.devtools.inspectedWindow.tabId
+        name: '' + chrome.devtools.inspectedWindow.tabId,
       })
       let disconnected = false
       port.onDisconnect.addListener(() => {
@@ -34,7 +34,7 @@ initDevTools({
             // }
             port.postMessage(data)
           }
-        }
+        },
       })
       // 3. send a proxy API to the panel
       cb(bridge)
@@ -49,7 +49,7 @@ initDevTools({
 
   onReload (reloadFn) {
     chrome.devtools.network.onNavigated.addListener(reloadFn)
-  }
+  },
 })
 
 /**
@@ -71,7 +71,7 @@ function injectScript (scriptName, cb) {
   `
   chrome.devtools.inspectedWindow.eval(src, function (res, err) {
     if (err) {
-      console.log(err)
+      console.error(err)
     }
     cb()
   })

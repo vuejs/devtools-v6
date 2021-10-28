@@ -8,7 +8,7 @@ import StateInspector from '../StateInspector.vue'
 export default defineComponent({
   components: {
     StateInspector,
-    EmptyPane
+    EmptyPane,
   },
 
   setup () {
@@ -16,7 +16,7 @@ export default defineComponent({
       currentInspector: inspector,
       filteredState,
       refreshState,
-      editState
+      editState,
     } = useCurrentInspector()
 
     watch(() => inspector.value?.selectedNodeId, value => {
@@ -36,9 +36,9 @@ export default defineComponent({
       inspector,
       filteredState,
       editState,
-      stateInspector
+      stateInspector,
     }
-  }
+  },
 })
 </script>
 

@@ -1,7 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, get, set } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentInstance, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 
@@ -13,7 +12,7 @@ export function getInstanceDetails (instance: any, ctx: BackendContext): Inspect
     id: getUniqueComponentId(instance, ctx),
     name: getInstanceName(instance),
     file: instance.type?.__file,
-    state: getInstanceState(instance)
+    state: getInstanceState(instance),
   }
 }
 
@@ -26,7 +25,7 @@ function getInstanceState (instance) {
     processAttrs(instance),
     processProvide(instance),
     processInject(instance, mergedType),
-    processRefs(instance)
+    processRefs(instance),
   )
 }
 
@@ -55,14 +54,14 @@ function processProps (instance) {
             required: !!propDefinition.required,
             ...propDefinition.default != null
               ? {
-                  default: propDefinition.default.toString()
+                  default: propDefinition.default.toString(),
                 }
-              : {}
+              : {},
           }
         : {
-            type: 'invalid'
+            type: 'invalid',
           },
-      editable: SharedData.editableProps
+      editable: SharedData.editableProps,
     })
   }
   return propsData
@@ -104,7 +103,7 @@ function processState (instance) {
 
   const data = {
     ...instance.data,
-    ...instance.renderContext
+    ...instance.renderContext,
   }
 
   return Object.keys(data)
@@ -117,7 +116,7 @@ function processState (instance) {
       key,
       type: 'data',
       value: returnError(() => data[key]),
-      editable: true
+      editable: true,
     }))
 }
 
@@ -143,18 +142,18 @@ function processSetupState (instance) {
           ...objectType ? { objectType } : {},
           ...raw ? { raw } : {},
           editable: isState && !info.readonly,
-          type: isOther ? 'setup (other)' : 'setup'
+          type: isOther ? 'setup (other)' : 'setup',
         }
       } else {
         result = {
-          type: 'setup'
+          type: 'setup',
         }
       }
 
       return {
         key,
         value,
-        ...result
+        ...result,
       }
     })
 }
@@ -180,7 +179,7 @@ function getSetupStateInfo (raw: any) {
     ref: isRef(raw),
     computed: isComputed(raw),
     reactive: isReactive(raw),
-    readonly: isReadOnly(raw)
+    readonly: isReadOnly(raw),
   }
 }
 
@@ -207,7 +206,7 @@ function processComputed (instance, mergedType) {
       type,
       key,
       value: returnError(() => instance.proxy[key]),
-      editable: typeof def.set === 'function'
+      editable: typeof def.set === 'function',
     })
   }
 
@@ -219,7 +218,7 @@ function processAttrs (instance) {
     .map(key => ({
       type: 'attrs',
       key,
-      value: returnError(() => instance.attrs[key])
+      value: returnError(() => instance.attrs[key]),
     }))
 }
 
@@ -228,7 +227,7 @@ function processProvide (instance) {
     .map(key => ({
       type: 'provided',
       key,
-      value: returnError(() => instance.provides[key])
+      value: returnError(() => instance.provides[key]),
     }))
 }
 
@@ -238,7 +237,7 @@ function processInject (instance, mergedType) {
   if (Array.isArray(mergedType.inject)) {
     keys = mergedType.inject.map(key => ({
       key,
-      originalKey: key
+      originalKey: key,
     }))
   } else {
     keys = Object.keys(mergedType.inject).map(key => {
@@ -251,14 +250,14 @@ function processInject (instance, mergedType) {
       }
       return {
         key,
-        originalKey
+        originalKey,
       }
     })
   }
   return keys.map(({ key, originalKey }) => ({
     type: 'injected',
     key: originalKey && key !== originalKey ? `${originalKey} ➞ ${key}` : key,
-    value: returnError(() => instance.ctx[key])
+    value: returnError(() => instance.ctx[key]),
   }))
 }
 
@@ -267,11 +266,11 @@ function processRefs (instance) {
     .map(key => ({
       type: 'refs',
       key,
-      value: returnError(() => instance.refs[key])
+      value: returnError(() => instance.refs[key]),
     }))
 }
 
-export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], ctx: BackendContext) {
+export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor, ctx: BackendContext) {
   if (!['data', 'props', 'computed', 'setup'].includes(type)) return
   let target: any
   const targetPath: string[] = path.slice()
@@ -283,7 +282,7 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
     // Setup
     target = componentInstance.devtoolsRawSetupState
 
-    const currentValue = get(componentInstance.devtoolsRawSetupState, path)
+    const currentValue = stateEditor.get(componentInstance.devtoolsRawSetupState, path)
     if (currentValue != null) {
       const info = getSetupStateInfo(currentValue)
       if (info.readonly) return
@@ -293,18 +292,7 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
   }
 
   if (target && targetPath) {
-    set(target, targetPath, 'value' in state ? state.value : undefined, (obj, field, value) => {
-      if (state.remove || state.newKey) {
-        if (Array.isArray(obj)) {
-          obj.splice(field, 1)
-        } else {
-          delete obj[field]
-        }
-      }
-      if (!state.remove) {
-        obj[state.newKey || field] = value
-      }
-    })
+    stateEditor.set(target, targetPath, 'value' in state ? state.value : undefined, stateEditor.createDefaultSetCallback(state))
   }
 }
 
@@ -331,14 +319,14 @@ export function getCustomInstanceDetails (instance) {
       tooltip: 'Component instance',
       value: reduceStateList(state),
       fields: {
-        abstract: true
-      }
-    }
+        abstract: true,
+      },
+    },
   }
 }
 
 function resolveMergedOptions (
-  instance: ComponentInstance
+  instance: ComponentInstance,
 ) {
   const raw = instance.type
   const { mixins, extends: extendsOptions } = raw
@@ -353,7 +341,7 @@ function resolveMergedOptions (
 function mergeOptions (
   to: any,
   from: any,
-  instance: ComponentInstance
+  instance: ComponentInstance,
 ) {
   if (typeof from === 'function') {
     from = from.options
@@ -366,7 +354,7 @@ function mergeOptions (
   extendsOptions && mergeOptions(to, extendsOptions, instance)
   mixins &&
     mixins.forEach((m) =>
-      mergeOptions(to, m, instance)
+      mergeOptions(to, m, instance),
     )
 
   for (const key of ['computed', 'inject']) {

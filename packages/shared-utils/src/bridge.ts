@@ -36,7 +36,7 @@ export class Bridge extends EventEmitter {
         this._send({
           event,
           _chunk: chunk,
-          last: index === lastIndex
+          last: index === lastIndex,
         })
       })
       this._flush()
@@ -46,7 +46,7 @@ export class Bridge extends EventEmitter {
     } else {
       this._batchingQueue.push({
         event,
-        payload
+        payload,
       })
 
       const now = Date.now()

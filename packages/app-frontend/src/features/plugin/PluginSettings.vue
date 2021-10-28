@@ -12,14 +12,14 @@ import { BridgeEvents } from '@vue-devtools/shared-utils/src'
 export default defineComponent({
   components: {
     EmptyPane,
-    PluginSettingsItem
+    PluginSettingsItem,
   },
 
   props: {
     plugin: {
       type: Object as PropType<Plugin>,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
@@ -31,16 +31,16 @@ export default defineComponent({
       const oldValue = cloneDeep(currentValues.value[id])
       setPluginSettings(props.plugin.id, {
         ...currentValues.value,
-        [id]: value
+        [id]: value,
       })
       getBridge().send(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_SETTING_UPDATED, { pluginId: props.plugin.id, key: id, newValue: value, oldValue })
     }
 
     return {
       currentValues,
-      updateValue
+      updateValue,
     }
-  }
+  },
 })
 </script>
 

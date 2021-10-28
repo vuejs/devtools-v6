@@ -3,25 +3,25 @@ import Child from './Child.vue'
 
 export default {
   components: {
-    Child
+    Child,
   },
 
   props: {
     count: {
       type: [Number, String, null],
-      default: 4
-    }
+      default: 4,
+    },
   },
 
   data () {
     return {
-      childRefs: []
+      childRefs: [],
     }
   },
 
   beforeUpdate () {
     this.childRefs = []
-  }
+  },
 }
 </script>
 

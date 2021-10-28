@@ -9,8 +9,8 @@
 import { mapState } from 'vuex'
 export default {
   computed: {
-    ...mapState(['object'])
-  }
+    ...mapState(['object']),
+  },
 }
 </script>
 

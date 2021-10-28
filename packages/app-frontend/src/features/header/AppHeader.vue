@@ -20,7 +20,7 @@ export default defineComponent({
     AppSelect,
     AppHeaderSelect,
     AppMainMenu,
-    PluginSourceIcon
+    PluginSourceIcon,
   },
 
   setup () {
@@ -35,14 +35,14 @@ export default defineComponent({
         icon: 'device_hub',
         label: 'Components',
         targetRoute: { name: 'inspector-components' },
-        matchRoute: route => route.matched.some(m => m.name === 'inspector-components')
-      }
+        matchRoute: route => route.matched.some(m => m.name === 'inspector-components'),
+      },
     ].concat(customInspectors.value.map(i => ({
       icon: i.icon || 'tab',
       label: i.label,
       pluginId: i.pluginId,
       targetRoute: { name: 'custom-inspector', params: { inspectorId: i.id } },
-      matchRoute: route => route.params.inspectorId === i.id
+      matchRoute: route => route.params.inspectorId === i.id,
     }))))
 
     const currentInspectorRoute = computed(() => inspectorRoutes.value.find(r => r.matchRoute(route.value)))
@@ -61,15 +61,15 @@ export default defineComponent({
     watch(currentTab, value => {
       bridge.send(BridgeEvents.TO_BACK_TAB_SWITCH, value)
     }, {
-      immediate: true
+      immediate: true,
     })
 
     return {
       inspectorRoutes,
       currentInspectorRoute,
-      lastInspectorRoute
+      lastInspectorRoute,
     }
-  }
+  },
 })
 </script>
 

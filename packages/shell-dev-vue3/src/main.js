@@ -15,18 +15,18 @@ const router = createRouter({
   routes: [
     {
       path: '/p1',
-      component: import('./router/Page1.vue')
+      component: import('./router/Page1.vue'),
     },
     {
       path: '/p2',
-      component: import('./router/Page2.vue')
-    }
-  ]
+      component: import('./router/Page2.vue'),
+    },
+  ],
 })
 
 const app = createApp(App)
 app.component('global', {
-  render: () => 'I\'m a global component'
+  render: () => 'I\'m a global component',
 })
 app.use(router)
 app.use(store)
@@ -35,13 +35,13 @@ app.mount('#app')
 
 const app2 = createApp({
   name: 'App2',
-  render: () => h('h1', 'App 2')
+  render: () => h('h1', 'App 2'),
 })
 app2.mount('#app2')
 
 const app2bis = createApp({
   name: 'App2',
-  render: () => h('h1', 'App 2 Bis')
+  render: () => h('h1', 'App 2 Bis'),
 })
 app2bis.mount('#app2bis')
 
@@ -49,17 +49,17 @@ createApp(App3).mount('#app3')
 
 createApp({
   render: () => h('button', {
-    onClick: () => app2.unmount()
+    onClick: () => app2.unmount(),
   }, 'Remove app 2'),
   devtools: {
-    hide: true
-  }
+    hide: true,
+  },
 }).mount('#ghost-app')
 
 setTimeout(() => {
   const app = createApp({
     name: 'DelayedApp',
-    render: () => h('h1', 'Delayed app')
+    render: () => h('h1', 'Delayed app'),
   })
   app.use(SimplePlugin)
   app.mount('#delay-app')

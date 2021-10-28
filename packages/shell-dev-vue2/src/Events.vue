@@ -25,17 +25,17 @@ export default {
   components: {
     EventChild,
     EventChild1,
-    EventChildCond
+    EventChildCond,
   },
   data () {
     return {
-      toggleCond: false
+      toggleCond: false,
     }
   },
   methods: {
     log (data) {
       // console.log('Event fired from child component with data', data)
-    }
-  }
+    },
+  },
 }
 </script>

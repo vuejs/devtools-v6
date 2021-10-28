@@ -3,8 +3,7 @@ import AppHeaderSelect from './AppHeaderSelect.vue'
 import AppSelectItem from './AppSelectItem.vue'
 
 import { watch, defineComponent, computed } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps, pendingSelectAppId } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
@@ -14,7 +13,7 @@ import { useVueVersionCheck } from './vue-version-check'
 export default defineComponent({
   components: {
     AppHeaderSelect,
-    AppSelectItem
+    AppSelectItem,
   },
 
   setup () {
@@ -25,7 +24,7 @@ export default defineComponent({
       apps,
       currentAppId,
       currentApp,
-      selectApp
+      selectApp,
     } = useApps()
 
     watch(currentAppId, value => {
@@ -34,7 +33,7 @@ export default defineComponent({
         bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
       }
     }, {
-      immediate: true
+      immediate: true,
     })
 
     let initDefaultAppId = false
@@ -51,13 +50,14 @@ export default defineComponent({
         if (targetId) {
           router.push({
             params: {
-              appId: targetId
-            }
+              appId: targetId,
+              componentId: null,
+            },
           })
         }
       }
     }, {
-      immediate: true
+      immediate: true,
     })
 
     const { orientation } = useOrientation()
@@ -71,9 +71,9 @@ export default defineComponent({
       apps,
       selectApp,
       orientation,
-      hasNewVueVersion
+      hasNewVueVersion,
     }
-  }
+  },
 })
 </script>
 

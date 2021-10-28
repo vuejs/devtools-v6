@@ -27,7 +27,7 @@ const internalSharedData = {
   pluginPermissions: {} as any,
   pluginSettings: {} as any,
   pageConfig: {} as any,
-  debugInfo: false
+  debugInfo: false,
 }
 
 const persisted = [
@@ -49,7 +49,7 @@ const persisted = [
   'pluginSettings',
   'performanceMonitoringEnabled',
   'componentEventsEnabled',
-  'debugInfo'
+  'debugInfo',
 ]
 
 const storageVersion = '6.0.0-alpha.1'
@@ -80,7 +80,10 @@ export function initSharedData (params: SharedDataParams) {
     persist = !!params.persist
 
     if (persist) {
-      if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init in progress...')
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.log('[shared data] Master init in progress...')
+      }
       // Load persisted fields
       persisted.forEach(key => {
         const value = getStorage(`vue-devtools-${storageVersion}:shared-data:${key}`)
@@ -96,21 +99,27 @@ export function initSharedData (params: SharedDataParams) {
         bridge.send('shared-data:load-complete')
       })
       bridge.on('shared-data:init-complete', () => {
-        if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init complete')
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.log('[shared data] Master init complete')
+        }
         clearInterval(initRetryInterval)
         resolve()
       })
 
       bridge.send('shared-data:master-init-waiting')
       // In case backend init is executed after frontend
-      bridge.on('shared-data:slave-init-waiting', () => {
+      bridge.on('shared-data:minion-init-waiting', () => {
         bridge.send('shared-data:master-init-waiting')
       })
 
       initRetryCount = 0
       clearInterval(initRetryInterval)
       initRetryInterval = setInterval(() => {
-        if (process.env.NODE_ENV !== 'production') console.log('[shared data] Master init retrying...')
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.log('[shared data] Master init retrying...')
+        }
         bridge.send('shared-data:master-init-waiting')
         initRetryCount++
         if (initRetryCount > 30) {
@@ -119,22 +128,31 @@ export function initSharedData (params: SharedDataParams) {
         }
       }, 2000)
     } else {
-      if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave init in progress...')
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.log('[shared data] Minion init in progress...')
+      }
       bridge.on('shared-data:master-init-waiting', () => {
-        if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave loading data...')
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.log('[shared data] Minion loading data...')
+        }
         // Load all persisted shared data
         bridge.send('shared-data:load')
         bridge.once('shared-data:load-complete', () => {
-          if (process.env.NODE_ENV !== 'production') console.log('[shared data] Slave init complete')
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.log('[shared data] Minion init complete')
+          }
           bridge.send('shared-data:init-complete')
           resolve()
         })
       })
-      bridge.send('shared-data:slave-init-waiting')
+      bridge.send('shared-data:minion-init-waiting')
     }
 
     data = {
-      ...internalSharedData
+      ...internalSharedData,
     }
 
     if (params.Vue) {
@@ -183,7 +201,7 @@ function setValue (key: string, value: any) {
 function sendValue (key: string, value: any) {
   bridge && bridge.send('shared-data:set', {
     key,
-    value
+    value,
   })
 }
 
@@ -204,8 +222,8 @@ Object.keys(internalSharedData).forEach(key => {
     set: (value) => {
       sendValue(key, value)
       setValue(key, value)
-    }
+    },
   })
 })
 
-export default proxy
+export const SharedData = proxy

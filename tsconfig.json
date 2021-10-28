@@ -2,9 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@back/*": ["packages/app-backend/src/*"],
+      "@back/*": ["packages/app-backend-core/src/*"],
       "@front/*": ["packages/app-frontend/src/*"],
-      "@utils/*": ["packages/shared-utils/src/*"]
     },
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,

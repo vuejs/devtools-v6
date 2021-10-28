@@ -1,5 +1,4 @@
-import SharedData from '@utils/shared-data'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps } from '@front/features/apps'
 import { useBridge } from '@front/features/bridge'
 import { EventScreenshot, screenshots, TimelineEvent } from './store'
@@ -19,8 +18,8 @@ export async function takeScreenshot (event: TimelineEvent) {
       time,
       image: null,
       events: [
-        event
-      ]
+        event,
+      ],
     }
     event.screenshot = screenshot
 
@@ -28,12 +27,12 @@ export async function takeScreenshot (event: TimelineEvent) {
     if (typeof browser !== 'undefined') {
       browser.runtime.sendMessage({
         action: 'vue-take-screenshot',
-        id: screenshot.id
+        id: screenshot.id,
       })
       screenshots.value.push(screenshot)
     } else if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.captureVisibleTab === 'function') {
       chrome.tabs.captureVisibleTab({
-        format: 'png'
+        format: 'png',
       }, dataUrl => {
         screenshot.image = dataUrl
 
@@ -73,14 +72,14 @@ export function useScreenshots () {
       screenshot: screenshot
         ? {
             ...screenshot,
-            events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => event.id)
+            events: screenshot.events.filter(event => event.appId === currentAppId.value).map(event => event.id),
           }
-        : null
+        : null,
     })
   }
 
   return {
     screenshots,
-    showScreenshot
+    showScreenshot,
   }
 }

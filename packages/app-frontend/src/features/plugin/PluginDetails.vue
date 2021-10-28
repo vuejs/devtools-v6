@@ -12,14 +12,14 @@ export default defineComponent({
     EmptyPane,
     SplitPane,
     PluginPermission,
-    PluginSettings
+    PluginSettings,
   },
 
   props: {
     pluginId: {
       type: [String, Number],
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props) {
@@ -27,9 +27,9 @@ export default defineComponent({
     const plugin = computed(() => plugins.value.find(p => p.id === props.pluginId))
 
     return {
-      plugin
+      plugin,
     }
-  }
+  },
 })
 </script>
 

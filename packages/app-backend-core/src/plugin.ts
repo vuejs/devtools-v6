@@ -9,12 +9,12 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   const plugin: Plugin = {
     descriptor: pluginDescriptor,
     setupFn,
-    error: null
+    error: null,
   }
   ctx.currentPlugin = plugin
   try {
-    await getAppRecord(plugin.descriptor.app, ctx)
-    const api = new DevtoolsPluginApiInstance(plugin, ctx)
+    const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
+    const api = new DevtoolsPluginApiInstance(plugin, appRecord, ctx)
     if (pluginQueueItem.proxy) {
       await pluginQueueItem.proxy.setRealTarget(api)
     } else {
@@ -27,13 +27,13 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   ctx.currentPlugin = null
   ctx.plugins.push(plugin)
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, {
-    plugin: await serializePlugin(plugin)
+    plugin: await serializePlugin(plugin),
   })
 
   const targetList = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ = target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ || []
   targetList.push({
     pluginDescriptor,
-    setupFn
+    setupFn,
   })
 }
 
@@ -56,7 +56,7 @@ export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
 
 export async function sendPluginList (ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_LIST, {
-    plugins: await Promise.all(ctx.plugins.map(p => serializePlugin(p)))
+    plugins: await Promise.all(ctx.plugins.map(p => serializePlugin(p))),
   })
 }
 
@@ -69,6 +69,6 @@ export async function serializePlugin (plugin: Plugin) {
     homepage: plugin.descriptor.homepage,
     logo: plugin.descriptor.logo,
     componentStateTypes: plugin.descriptor.componentStateTypes,
-    settingsSchema: plugin.descriptor.settings
+    settingsSchema: plugin.descriptor.settings,
   }
 }

@@ -6,16 +6,16 @@ export default {
       mounted () {
         this.$emit('hi')
       },
-      template: '<div>Inside v-if</div>'
-    }
+      template: '<div>Inside v-if</div>',
+    },
   },
 
   data () {
     return {
       show1: false,
-      show2: true
+      show2: true,
     }
-  }
+  },
 }
 </script>
 

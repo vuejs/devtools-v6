@@ -18,10 +18,10 @@ export default new Vuex.Store({
       number: 0,
       children: [
         {
-          number: 0
-        }
-      ]
-    }
+          number: 0,
+        },
+      ],
+    },
   },
   mutations: {
     TEST_INIT: state => state.inited++,
@@ -42,28 +42,28 @@ export default new Vuex.Store({
     },
     TEST_MAP: state => {
       state.map.set(`mykey_${state.map.size}`, state.map.size)
-    }
+    },
   },
   actions: {
     ASYNC_INCREMENT: ({ commit }) => {
       return wait(100).then(() => {
         commit('INCREMENT', 1)
       })
-    }
+    },
   },
   getters: {
     isPositive: state => state.count >= 0,
     hours: state => state.date.getHours(),
     errorGetter: () => {
       throw new Error('Error from getter')
-    }
+    },
   },
   modules: {
     nested: {
       namespaced: true,
       state () {
         return {
-          foo: 'bar'
+          foo: 'bar',
         }
       },
       getters: {
@@ -71,7 +71,7 @@ export default new Vuex.Store({
         dummy: () => {
           console.log('dummy getter was computed')
           return 'dummy'
-        }
+        },
       },
       mutations: {
         ADD_BAR: (state) => {
@@ -79,20 +79,20 @@ export default new Vuex.Store({
         },
         REMOVE_BAR: (state) => {
           state.foo = state.foo.substr('bar'.length)
-        }
-      }
+        },
+      },
     },
     notNamespaced: {
       state () {
         return {
-          hello: 'world'
+          hello: 'world',
         }
       },
       getters: {
-        hello2: state => state.hello.repeat(2)
-      }
-    }
-  }
+        hello2: state => state.hello.repeat(2),
+      },
+    },
+  },
 })
 
 function wait (ms) {

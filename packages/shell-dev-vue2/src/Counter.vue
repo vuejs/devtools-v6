@@ -128,23 +128,23 @@ import NoProp from './NoProp.vue'
 
 export default {
   components: {
-    NoProp
+    NoProp,
   },
 
   created () {
     // simulate firebase binding
     this.$firebaseRefs = {
-      hello: 'world'
+      hello: 'world',
     }
 
     this.$store.registerModule('instant', {
       namespaced: true,
       state: () => ({
-        hey: 'hi'
+        hey: 'hi',
       }),
       getters: {
-        ho: state => state.hey + ' ho'
-      }
+        ho: state => state.hey + ' ho',
+      },
     })
     console.log('registered instant')
 
@@ -156,21 +156,21 @@ export default {
     test () { return 1 },
 
     ...mapState({
-      count: state => state.count
+      count: state => state.count,
     }),
 
     ...mapState('nested', [
-      'foo'
+      'foo',
     ]),
 
     ...mapGetters('nested', [
-      'twoFoos'
-    ])
+      'twoFoos',
+    ]),
   },
   watch: {
     count (value) {
       console.log('%ccount new value', 'font-weight: bold;', value)
-    }
+    },
   },
   methods: {
     increment () {
@@ -204,7 +204,7 @@ export default {
 
     ...mapMutations('nested', {
       addBar: 'ADD_BAR',
-      removeBar: 'REMOVE_BAR'
+      removeBar: 'REMOVE_BAR',
     }),
 
     addDynamicModule () {
@@ -236,7 +236,7 @@ export default {
 
     addWrongModule () {
       this.$store.registerModule(['wrong'], {
-        a: 1, b: 2, c: 3
+        a: 1, b: 2, c: 3,
       })
     },
 
@@ -246,7 +246,7 @@ export default {
 
     removeDeeplyNestedModule () {
       this.$store.unregisterModule('deeplyNested')
-    }
-  }
+    },
+  },
 }
 </script>

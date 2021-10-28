@@ -23,7 +23,7 @@
 <script>
 export default {
   computed: {
-    count () { return 1 }
-  }
+    count () { return 1 },
+  },
 }
 </script>

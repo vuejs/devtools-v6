@@ -7,29 +7,29 @@ export default defineComponent({
   props: {
     event: {
       type: Object as PropType<TimelineEvent>,
-      required: true
+      required: true,
     },
 
     selected: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   setup (props) {
     const time = computed(() => formatTime(props.event.time))
 
     const {
-      inspectedEvent
+      inspectedEvent,
     } = useInspectedEvent()
 
     const isInspected = computed(() => inspectedEvent.value === props.event)
 
     return {
       time,
-      isInspected
+      isInspected,
     }
-  }
+  },
 })
 </script>
 

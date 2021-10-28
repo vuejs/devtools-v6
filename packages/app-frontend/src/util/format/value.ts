@@ -5,8 +5,8 @@ import {
   NAN,
   isPlainObject,
   escape,
-  specialTokenToString
-} from '@utils/util'
+  specialTokenToString,
+} from '@vue-devtools/shared-utils'
 
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native (\w+) (.*?)(<>((.|\s)*))?\]$/

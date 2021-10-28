@@ -39,12 +39,12 @@ export const builtinLayers: TimelineLayerOptions[] = [
       event.renderMeta.textEl = text
 
       return div
-    }
+    },
   },
   {
     id: 'keyboard',
     label: 'Keyboard',
-    color: 0x8151AF
+    color: 0x8151AF,
   },
   {
     id: 'component-event',
@@ -89,7 +89,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
       event.renderMeta.drawn = true
 
       return div
-    }
+    },
   },
   {
     id: 'performance',
@@ -97,6 +97,6 @@ export const builtinLayers: TimelineLayerOptions[] = [
     color: 0x41b86a,
     groupsOnly: true,
     skipScreenshots: true,
-    ignoreNoDurationGroups: true
-  }
+    ignoreNoDurationGroups: true,
+  },
 ]

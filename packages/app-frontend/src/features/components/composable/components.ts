@@ -8,10 +8,11 @@ import {
   searchDeepInObject,
   BridgeSubscriptions,
   isChrome,
-  openInEditor
+  openInEditor,
+  setStorage,
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
-import { AppRecord, waitForAppSelect } from '@front/features/apps'
+import { AppRecord, waitForAppSelect, useCurrentApp } from '@front/features/apps'
 import { useRoute, useRouter } from '@front/util/router'
 
 export const rootInstances = ref<ComponentTreeNode[]>([])
@@ -23,7 +24,7 @@ export const selectedComponentData = ref<InspectedComponentData>(null)
 const selectedComponentStateFilter = ref('')
 export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
 let lastSelectedApp: AppRecord = null
-let lastSelectedComponentId: ComponentTreeNode['id'] = null
+export const lastSelectedComponentId: Record<AppRecord['id'], ComponentTreeNode['id']> = {}
 export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
 export const resetComponentsQueued = ref(false)
 
@@ -34,8 +35,9 @@ export function useComponentRequests () {
     if (selectedComponentId.value !== id) {
       router[replace ? 'replace' : 'push']({
         params: {
-          componentId: id
-        }
+          appId: getAppIdFromComponentId(id),
+          componentId: id,
+        },
       })
     } else {
       loadComponent(id)
@@ -44,7 +46,7 @@ export function useComponentRequests () {
 
   return {
     requestComponentTree,
-    selectComponent
+    selectComponent,
   }
 }
 
@@ -53,18 +55,22 @@ export function useComponents () {
   const route = useRoute()
   const {
     requestComponentTree,
-    selectComponent
+    selectComponent,
   } = useComponentRequests()
+  const { currentAppId } = useCurrentApp()
 
   watch(treeFilter, () => {
     requestComponentTree()
   })
 
-  watch(() => route.value.params.componentId, value => {
-    selectedComponentId.value = value
-    loadComponent(value)
+  watch(() => route.value.params.componentId, () => {
+    const value = route.value.params.componentId
+    if (value && getAppIdFromComponentId(value) === currentAppId.value) {
+      selectedComponentId.value = value
+      loadComponent(value)
+    }
   }, {
-    immediate: true
+    immediate: true,
   })
 
   function subscribeToSelectedData () {
@@ -77,11 +83,11 @@ export function useComponents () {
 
       if (value != null) {
         unsub = subscribe(BridgeSubscriptions.SELECTED_COMPONENT_DATA, {
-          instanceId: value
+          instanceId: value,
         })
       }
     }, {
-      immediate: true
+      immediate: true,
     })
   }
 
@@ -92,7 +98,7 @@ export function useComponents () {
     }
   }, {
     immediate: true,
-    deep: true
+    deep: true,
   })
 
   onBridge(BridgeEvents.TO_FRONT_APP_SELECTED, async ({ id }) => {
@@ -107,8 +113,9 @@ export function useComponents () {
 
   // Re-select last selected component when switching back to inspector component tab
   function selectLastComponent () {
-    if (lastSelectedComponentId) {
-      selectComponent(lastSelectedComponentId, true)
+    const id = lastSelectedComponentId[currentAppId.value]
+    if (id) {
+      selectComponent(id, true)
     }
   }
 
@@ -119,7 +126,7 @@ export function useComponents () {
     requestComponentTree,
     selectComponent,
     selectLastComponent,
-    subscribeToSelectedData
+    subscribeToSelectedData,
   }
 }
 
@@ -158,11 +165,11 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
 
       if (value != null) {
         unsub = subscribe(BridgeSubscriptions.COMPONENT_TREE, {
-          instanceId: value
+          instanceId: value,
         })
       }
     }, {
-      immediate: true
+      immediate: true,
     })
   }
 
@@ -177,7 +184,7 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
     toggleExpand,
     isSelected,
     select,
-    subscribeToComponentTree
+    subscribeToComponentTree,
   }
 }
 
@@ -191,11 +198,11 @@ export function useSelectedComponent () {
     ? groupBy(sortByKey(selectedComponentData.value.state.filter(el => {
       try {
         return searchDeepInObject({
-          [el.key]: el.value
+          [el.key]: el.value,
         }, selectedComponentStateFilter.value)
       } catch (e) {
         return {
-          [el.key]: e
+          [el.key]: e,
         }
       }
     })), 'type')
@@ -224,13 +231,13 @@ export function useSelectedComponent () {
       instanceId: data.value.id,
       dotPath,
       type,
-      ...payload
+      ...payload,
     })
   }
 
   function scrollToComponent () {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, {
-      instanceId: data.value.id
+      instanceId: data.value.id,
     })
   }
 
@@ -243,7 +250,7 @@ export function useSelectedComponent () {
     openFile,
     editState,
     scrollToComponent,
-    selectedComponentId
+    selectedComponentId,
   }
 }
 
@@ -270,9 +277,10 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
     resetComponentsQueued.value = true
   }
   await waitForAppSelect()
+
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
-    filter: treeFilter.value
+    filter: treeFilter.value,
   })
 }
 
@@ -309,7 +317,8 @@ export function addToComponentsMap (instance: ComponentTreeNode) {
 
 export async function loadComponent (id: ComponentTreeNode['id']) {
   if (!id || selectedComponentPendingId.value === id) return
-  lastSelectedComponentId = id
+  lastSelectedComponentId[getAppIdFromComponentId(id)] = id
+  setStorage('lastSelectedComponentId', lastSelectedComponentId)
   selectedComponentPendingId.value = id
   await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, id)
@@ -334,4 +343,10 @@ function compareIndexLists (a: number[], b: number[]): number {
   } else {
     return a[0] - b[0]
   }
+}
+
+export function getAppIdFromComponentId (id: string) {
+  const index = id.indexOf(':')
+  const appId = id.substring(0, index)
+  return appId
 }

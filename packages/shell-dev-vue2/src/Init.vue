@@ -10,11 +10,11 @@ import { mapState } from 'vuex'
 export default {
   computed: {
     ...mapState({
-      inited: state => state.inited
-    })
+      inited: state => state.inited,
+    }),
   },
   created () {
     this.$store.commit('TEST_INIT')
-  }
+  },
 }
 </script>

@@ -1,6 +1,5 @@
-import { camelize, getComponentName, getCustomRefDetails, has, set } from '@vue-devtools/shared-utils'
+import { camelize, getComponentName, getCustomRefDetails, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
 import { functionalVnodeMap, instanceMap } from './tree'
 
 /**
@@ -14,7 +13,7 @@ export function getInstanceDetails (instance): InspectedComponentData {
 
     const fakeInstance = {
       $options: vnode.fnOptions,
-      ...(vnode.devtoolsMeta?.renderContext.props)
+      ...(vnode.devtoolsMeta?.renderContext.props),
     }
 
     if (!fakeInstance.$options.props && vnode.devtoolsMeta?.renderContext.props) {
@@ -29,7 +28,7 @@ export function getInstanceDetails (instance): InspectedComponentData {
       name: getComponentName(vnode.fnOptions),
       file: instance.type ? instance.type.__file : vnode.fnOptions.__file || null,
       state: getFunctionalInstanceState(fakeInstance),
-      functional: true
+      functional: true,
     }
 
     return data
@@ -39,7 +38,7 @@ export function getInstanceDetails (instance): InspectedComponentData {
     id: instance.__VUE_DEVTOOLS_UID__,
     name: getInstanceName(instance),
     state: getInstanceState(instance),
-    file: null
+    file: null,
   }
 
   let i
@@ -60,7 +59,7 @@ function getInstanceState (instance): ComponentState[] {
     processVuexGetters(instance),
     processFirebaseBindings(instance),
     processObservables(instance),
-    processAttrs(instance)
+    processAttrs(instance),
   )
 }
 
@@ -78,9 +77,9 @@ export function getCustomInstanceDetails (instance) {
       tooltip: 'Component instance',
       value: reduceStateList(state),
       fields: {
-        abstract: true
-      }
-    }
+        abstract: true,
+      },
+    },
   }
 }
 
@@ -125,12 +124,12 @@ function processProps (instance): ComponentState[] {
       meta: prop
         ? {
             type: prop.type ? getPropType(prop.type) : 'any',
-            required: !!prop.required
+            required: !!prop.required,
           }
         : {
-            type: 'invalid'
+            type: 'invalid',
           },
-      editable: SharedData.editableProps
+      editable: SharedData.editableProps,
     })
   }
   return propsData
@@ -141,7 +140,7 @@ function processAttrs (instance): ComponentState[] {
     return {
       type: '$attrs',
       key,
-      value
+      value,
     }
   })
 }
@@ -183,7 +182,7 @@ function processState (instance): ComponentState[] {
       key,
       type: 'data',
       value: instance._data[key],
-      editable: true
+      editable: true,
     }))
 }
 
@@ -218,13 +217,13 @@ function processComputed (instance): ComponentState[] {
       computedProp = {
         type,
         key,
-        value: instance[key]
+        value: instance[key],
       }
     } catch (e) {
       computedProp = {
         type,
         key,
-        value: e
+        value: e,
       }
     }
 
@@ -245,7 +244,7 @@ function processInjected (instance): ComponentState[] {
       return {
         key,
         type: 'injected',
-        value: instance[key]
+        value: instance[key],
       }
     })
   } else {
@@ -273,9 +272,9 @@ function processRouteContext (instance): ComponentState[] {
           _custom: {
             type: 'router',
             abstract: true,
-            value
-          }
-        }
+            value,
+          },
+        },
       }]
     }
   } catch (e) {
@@ -296,7 +295,7 @@ function processVuexGetters (instance): ComponentState[] {
       return {
         type: 'vuex getters',
         key,
-        value: instance[key]
+        value: instance[key],
       }
     })
   } else {
@@ -314,7 +313,7 @@ function processFirebaseBindings (instance): ComponentState[] {
       return {
         type: 'firebase bindings',
         key,
-        value: instance[key]
+        value: instance[key],
       }
     })
   } else {
@@ -332,7 +331,7 @@ function processObservables (instance): ComponentState[] {
       return {
         type: 'observables',
         key,
-        value: instance[key]
+        value: instance[key],
       }
     })
   } else {
@@ -349,13 +348,10 @@ export function findInstanceOrVnode (id) {
   return instanceMap.get(id)
 }
 
-export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE]) {
+export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor) {
   if (!['data', 'props', 'computed', 'setup'].includes(type)) return
-  const data = has(componentInstance._props, path, !!state.newKey)
+  const data = stateEditor.has(componentInstance._props, path, !!state.newKey)
     ? componentInstance._props
     : componentInstance._data
-  set(data, path, state.value, (obj, field, value) => {
-    if (state.remove || state.newKey) componentInstance.$delete(obj, field)
-    if (!state.remove) componentInstance.$set(obj, state.newKey || field, value)
-  })
+  stateEditor.set(data, path, state.value, stateEditor.createDefaultSetCallback(state))
 }

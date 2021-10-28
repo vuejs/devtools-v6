@@ -1,11 +1,12 @@
 import { isBrowser, BridgeEvents } from '@vue-devtools/shared-utils'
-import { BackendContext } from '@vue-devtools/app-backend-api'
+import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
 import { highlight, unHighlight } from './highlighter'
 import { ComponentInstance } from '@vue/devtools-api'
 
 export default class ComponentPicker {
   ctx: BackendContext
   selectedInstance: ComponentInstance
+  selectedBackend: DevtoolsBackend
 
   constructor (ctx: BackendContext) {
     this.ctx = ctx
@@ -50,13 +51,26 @@ export default class ComponentPicker {
 
     const el = e.target
     if (el) {
-      this.selectedInstance = await this.ctx.api.getElementComponent(el)
+      await this.selectElementComponent(el)
     }
 
     unHighlight()
     if (this.selectedInstance) {
-      highlight(this.selectedInstance, this.ctx)
+      highlight(this.selectedInstance, this.selectedBackend, this.ctx)
     }
+  }
+
+  async selectElementComponent (el) {
+    for (const backend of this.ctx.backends) {
+      const instance = await backend.api.getElementComponent(el)
+      if (instance) {
+        this.selectedInstance = instance
+        this.selectedBackend = backend
+        return
+      }
+    }
+    this.selectedInstance = null
+    this.selectedBackend = null
   }
 
   /**
@@ -65,8 +79,8 @@ export default class ComponentPicker {
   async elementClicked (e: MouseEvent) {
     this.cancelEvent(e)
 
-    if (this.selectedInstance) {
-      const parentInstances = await this.ctx.api.walkComponentParents(this.selectedInstance)
+    if (this.selectedInstance && this.selectedBackend) {
+      const parentInstances = await this.selectedBackend.api.walkComponentParents(this.selectedInstance)
       this.ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_PICK, { id: this.selectedInstance.__VUE_DEVTOOLS_UID__, parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__) })
     } else {
       this.ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_PICK_CANCELED, null)

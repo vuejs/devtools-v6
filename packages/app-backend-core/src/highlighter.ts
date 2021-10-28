@@ -1,6 +1,6 @@
 import { isBrowser } from '@vue-devtools/shared-utils'
-import { BackendContext } from '@vue-devtools/app-backend-api'
-import { ComponentBounds } from '@vue/devtools-api'
+import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
+import { ComponentBounds, ComponentInstance } from '@vue/devtools-api'
 import { JobQueue } from './util/queue'
 
 let overlay: HTMLDivElement
@@ -34,16 +34,16 @@ function createOverlay () {
 // This prevents "sticky" highlights that are not removed because highlight is async
 const jobQueue = new JobQueue()
 
-export async function highlight (instance, ctx: BackendContext) {
+export async function highlight (instance: ComponentInstance, backend: DevtoolsBackend, ctx: BackendContext) {
   await jobQueue.queue(async () => {
     if (!instance) return
 
-    const bounds = await ctx.api.getComponentBounds(instance)
+    const bounds = await backend.api.getComponentBounds(instance)
     if (bounds) {
       createOverlay()
 
       // Name
-      const name = (await ctx.api.getComponentName(instance)) || 'Anonymous'
+      const name = (await backend.api.getComponentName(instance)) || 'Anonymous'
       const pre = document.createElement('span')
       pre.style.opacity = '0.6'
       pre.innerText = '<'
@@ -71,7 +71,7 @@ export async function highlight (instance, ctx: BackendContext) {
       await showOverlay(bounds, [pre, text, post, size])
     }
 
-    startUpdateTimer(ctx)
+    startUpdateTimer(backend, ctx)
   })
 }
 
@@ -105,7 +105,7 @@ function positionOverlay ({ width = 0, height = 0, top = 0, left = 0 }) {
   overlay.style.top = Math.round(top) + 'px'
 }
 
-function positionOverlayContent ({ wifth = 0, height = 0, top = 0, left = 0 }) {
+function positionOverlayContent ({ height = 0, top = 0, left = 0 }) {
   // Content position (prevents overflow)
   const contentWidth = overlayContent.offsetWidth
   const contentHeight = overlayContent.offsetHeight
@@ -128,9 +128,9 @@ function positionOverlayContent ({ wifth = 0, height = 0, top = 0, left = 0 }) {
   overlayContent.style.top = ~~contentTop + 'px'
 }
 
-async function updateOverlay (ctx: BackendContext) {
+async function updateOverlay (backend: DevtoolsBackend, ctx: BackendContext) {
   if (currentInstance) {
-    const bounds = await ctx.api.getComponentBounds(currentInstance)
+    const bounds = await backend.api.getComponentBounds(currentInstance)
     if (bounds) {
       const sizeEl = overlayContent.children.item(3)
       const widthEl = sizeEl.childNodes[0] as unknown as Text
@@ -146,11 +146,11 @@ async function updateOverlay (ctx: BackendContext) {
 
 let updateTimer
 
-function startUpdateTimer (ctx: BackendContext) {
+function startUpdateTimer (backend: DevtoolsBackend, ctx: BackendContext) {
   stopUpdateTimer()
   updateTimer = setInterval(() => {
     jobQueue.queue(async () => {
-      await updateOverlay(ctx)
+      await updateOverlay(backend, ctx)
     })
   }, 1000 / 30) // 30fps
 }

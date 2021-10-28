@@ -1,6 +1,6 @@
 import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { classify } from '@vue-devtools/shared-utils'
-import { ComponentTreeNode } from '@vue/devtools-api'
+import { ComponentTreeNode, ComponentInstance } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
@@ -19,8 +19,8 @@ const functionalIds = new Map()
 // Some instances may be both on a component and on a child abstract/functional component
 const captureIds = new Map()
 
-export async function walkTree (instance, pFilter: string, ctx: BackendContext): Promise<ComponentTreeNode[]> {
-  initCtx(ctx)
+export async function walkTree (instance, pFilter: string, api: DevtoolsApi, ctx: BackendContext): Promise<ComponentTreeNode[]> {
+  initCtx(api, ctx)
   filter = pFilter
   functionalIds.clear()
   captureIds.clear()
@@ -28,8 +28,8 @@ export async function walkTree (instance, pFilter: string, ctx: BackendContext):
   return result
 }
 
-export function getComponentParents (instance, ctx: BackendContext) {
-  initCtx(ctx)
+export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendContext) {
+  initCtx(api, ctx)
   const captureIds = new Map()
 
   const captureId = vm => {
@@ -49,9 +49,9 @@ export function getComponentParents (instance, ctx: BackendContext) {
   return parents
 }
 
-function initCtx (ctx: BackendContext) {
+function initCtx (_api: DevtoolsApi, ctx: BackendContext) {
   appRecord = ctx.currentAppRecord
-  api = ctx.api
+  api = _api
   if (!appRecord.meta.instanceMap) {
     appRecord.meta.instanceMap = new Map()
   }
@@ -181,7 +181,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
           ? captureChild(child)
           : child.componentInstance
             ? capture(child.componentInstance)
-            : undefined
+            : undefined,
       )
       // router-view has both fnContext and componentInstance on vnode.
       : instance.componentInstance ? [capture(instance.componentInstance)] : [])
@@ -196,21 +196,21 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
         {
           label: 'functional',
           textColor: 0x555555,
-          backgroundColor: 0xeeeeee
-        }
+          backgroundColor: 0xeeeeee,
+        },
       ],
       name: getInstanceName(instance),
       renderKey: getRenderKey(instance.key),
       children,
       hasChildren: !!children.length,
       inactive: false,
-      isFragment: false // TODO: Check what is it for.
+      isFragment: false, // TODO: Check what is it for.
     }
     return api.visitComponentTree(
       instance,
       treeNode,
       filter,
-      appRecord?.options?.app
+      appRecord?.options?.app,
     )
   }
   // instance._uid is not reliable in devtools as there
@@ -242,13 +242,13 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
     children,
     hasChildren: !!children.length,
     tags: [],
-    meta: {}
+    meta: {},
   }
 
   if (instance._vnode && instance._vnode.children) {
     const vnodeChildren = await Promise.all(flatten(instance._vnode.children.map(captureChild)))
     ret.children = ret.children.concat(
-      flatten<any>(vnodeChildren).filter(Boolean)
+      flatten<any>(vnodeChildren).filter(Boolean),
     )
     ret.hasChildren = !!ret.children.length
   }
@@ -291,14 +291,14 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
     ret.tags.push({
       label: `router-view${ret.meta.matchedRouteSegment ? `: ${ret.meta.matchedRouteSegment}` : ''}`,
       textColor: 0x000000,
-      backgroundColor: 0xff8344
+      backgroundColor: 0xff8344,
     })
   }
   return api.visitComponentTree(
     instance,
     ret,
     filter,
-    appRecord?.options?.app
+    appRecord?.options?.app,
   )
 }
 
@@ -333,6 +333,6 @@ function markFunctional (id, vnode) {
   appRecord.instanceMap.set(id, {
     __VUE_DEVTOOLS_UID__: id,
     __VUE_DEVTOOLS_FUNCTIONAL_LEGACY__: true,
-    vnode
-  })
+    vnode,
+  } as unknown as ComponentInstance)
 }

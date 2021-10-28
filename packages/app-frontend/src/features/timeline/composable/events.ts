@@ -14,7 +14,7 @@ import {
   inspectedEventPendingId,
   TimelineEvent,
   Layer,
-  selectedLayer
+  selectedLayer,
 } from './store'
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
@@ -57,7 +57,7 @@ export function addEvent (appId: string, event: TimelineEvent, layer: Layer) {
         firstEvent: event,
         lastEvent: event,
         y: 0,
-        duration: 0
+        duration: 0,
       }
       layer.groups.push(group)
     }
@@ -102,7 +102,7 @@ export function addEvent (appId: string, event: TimelineEvent, layer: Layer) {
 export function useSelectedEvent () {
   return {
     selectedEvent: computed(() => selectedEvent.value),
-    selectedGroupEvents: computed(() => selectedEvent.value?.group?.events ?? [])
+    selectedGroupEvents: computed(() => selectedEvent.value?.group?.events ?? []),
   }
 }
 
@@ -113,14 +113,14 @@ export function useInspectedEvent () {
       event.layer.lastInspectedEvent = event
     }
   }, {
-    immediate: true
+    immediate: true,
   })
 
   return {
     inspectedEvent,
     inspectedEventState: computed(() => inspectedEventData.value),
     time: computed(() => formatTime(inspectedEvent.value.time, 'ms')),
-    loading: computed(() => inspectedEventPendingId.value != null)
+    loading: computed(() => inspectedEventPendingId.value != null),
   }
 }
 

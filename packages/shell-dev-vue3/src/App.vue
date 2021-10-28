@@ -50,14 +50,14 @@ export default {
     SetupTSScriptProps,
     DomOrder,
     inline: {
-      render: () => h('h3', 'Inline component definition')
-    }
+      render: () => h('h3', 'Inline component definition'),
+    },
   },
 
   data () {
     return {
       count: 0,
-      text: 'Meow'
+      text: 'Meow',
     }
   },
 
@@ -66,8 +66,8 @@ export default {
       const app = createApp(Child)
       app.use(SimplePlugin)
       app.mount('#nested-app')
-    }
-  }
+    },
+  },
 }
 </script>
 

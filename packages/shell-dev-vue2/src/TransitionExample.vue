@@ -41,15 +41,15 @@ export default {
     TestComponent: {
       render (h) {
         return h('div', {}, this.$slots.default)
-      }
-    }
+      },
+    },
   },
   data () {
     return {
       show: true,
-      count: 5
+      count: 5,
     }
-  }
+  },
 }
 </script>
 

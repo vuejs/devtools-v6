@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import SharedData from '@utils/shared-data'
+import { SharedData } from '@vue-devtools/shared-utils'
 
 export default defineComponent({
   setup (props, { emit }) {
@@ -10,8 +10,8 @@ export default defineComponent({
         origins: [
           'http://*/*',
           'https://*/*',
-          'file:///*'
-        ]
+          'file:///*',
+        ],
       }, granted => {
         if (granted) {
           SharedData.timelineScreenshots = true
@@ -30,9 +30,9 @@ export default defineComponent({
 
     return {
       requestPermission,
-      cancel
+      cancel,
     }
-  }
+  },
 })
 </script>
 

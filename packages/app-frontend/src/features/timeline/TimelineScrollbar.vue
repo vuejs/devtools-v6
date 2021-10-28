@@ -5,23 +5,23 @@ export default defineComponent({
   props: {
     start: {
       type: Number,
-      required: true
+      required: true,
     },
 
     end: {
       type: Number,
-      required: true
+      required: true,
     },
 
     min: {
       type: Number,
-      required: true
+      required: true,
     },
 
     max: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup (props, { emit }) {
@@ -144,9 +144,9 @@ export default defineComponent({
       onMainBarMouseDown,
       moving,
       onStartHandleMouseDown,
-      onEndHandleMouseDown
+      onEndHandleMouseDown,
     }
-  }
+  },
 })
 </script>
 

@@ -1,8 +1,8 @@
 import {
   UNDEFINED,
   SPECIAL_TOKENS,
-  parse
-} from '@utils/util'
+  parse,
+} from '@vue-devtools/shared-utils'
 
 let currentEditedField = null
 
@@ -23,23 +23,23 @@ function numberQuickEditMod (event) {
 export default {
   inject: {
     InspectorInjection: {
-      default: null
-    }
+      default: null,
+    },
   },
 
   props: {
     editable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     removable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     renamable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data () {
@@ -48,14 +48,14 @@ export default {
       editedValue: null,
       editedKey: null,
       addingValue: false,
-      newField: null
+      newField: null,
     }
   },
 
   computed: {
     cssClass () {
       return {
-        editing: this.editing
+        editing: this.editing,
       }
     },
 
@@ -115,8 +115,8 @@ export default {
           return [
             {
               icon: value ? 'check_box' : 'check_box_outline_blank',
-              newValue: !value
-            }
+              newValue: !value,
+            },
           ]
         } else if (type === 'number') {
           return [
@@ -124,19 +124,19 @@ export default {
               icon: 'remove',
               class: 'big',
               title: this.quickEditNumberTooltip('-'),
-              newValue: event => value - numberQuickEditMod(event)
+              newValue: event => value - numberQuickEditMod(event),
             },
             {
               icon: 'add',
               class: 'big',
               title: this.quickEditNumberTooltip('+'),
-              newValue: event => value + numberQuickEditMod(event)
-            }
+              newValue: event => value + numberQuickEditMod(event),
+            },
           ]
         }
       }
       return null
-    }
+    },
   },
 
   methods: {
@@ -236,8 +236,8 @@ export default {
 
     quickEditNumberTooltip (operator) {
       return this.$t('DataField.quickEdit.number.tooltip', {
-        operator
+        operator,
       })
-    }
-  }
+    },
+  },
 }

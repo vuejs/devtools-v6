@@ -4,7 +4,7 @@
 // backend and the Vue devtools panel.
 
 const port = chrome.runtime.connect({
-  name: 'content-script'
+  name: 'content-script',
 })
 
 port.onMessage.addListener(sendMessageToBackend)
@@ -16,7 +16,7 @@ sendMessageToBackend('init')
 function sendMessageToBackend (payload) {
   window.postMessage({
     source: 'vue-devtools-proxy',
-    payload: payload
+    payload: payload,
   }, '*')
 }
 

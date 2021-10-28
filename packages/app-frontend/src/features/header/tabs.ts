@@ -12,6 +12,6 @@ export function useTabs () {
   })
 
   return {
-    currentTab
+    currentTab,
   }
 }

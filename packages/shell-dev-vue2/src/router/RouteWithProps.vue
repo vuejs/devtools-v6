@@ -9,12 +9,12 @@ export default {
   props: {
     username: {
       type: String,
-      default: 'ms'
+      default: 'ms',
     },
     id: {
       type: Number,
-      default: 33
-    }
-  }
+      default: 33,
+    },
+  },
 }
 </script>

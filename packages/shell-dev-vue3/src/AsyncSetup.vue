@@ -20,10 +20,10 @@ export default {
         const message = ref('Async setup')
 
         resolve({
-          message
+          message,
         })
       }, 2000)
     })
-  }
+  },
 }
 </script>

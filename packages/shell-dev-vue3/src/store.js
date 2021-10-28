@@ -4,54 +4,54 @@ const store = createStore({
   state () {
     return {
       rootState: 'root',
-      answer: 42
+      answer: 42,
     }
   },
   getters: {
-    answer: (state) => state.answer
+    answer: (state) => state.answer,
   },
   mutations: {
     increment (state) {
       state.answer++
-    }
+    },
   },
   modules: {
     nested: {
       state () {
         return {
-          foo: 'bar'
+          foo: 'bar',
         }
       },
       getters: {
-        twoFoo: state => state.foo.repeat(2)
-      }
+        twoFoo: state => state.foo.repeat(2),
+      },
     },
     namespacedModule: {
       namespaced: true,
       state () {
         return {
-          count: 0
+          count: 0,
         }
       },
       getters: {
         doubleCount: state => state.count * 2,
-        tripleCount: state => state.count * 3
+        tripleCount: state => state.count * 3,
       },
       modules: {
         animals: {
           namespaced: true,
           state () {
             return {
-              cat: 'Meow'
+              cat: 'Meow',
             }
           },
           getters: {
-            dog: () => 'Waf'
-          }
-        }
-      }
-    }
-  }
+            dog: () => 'Waf',
+          },
+        },
+      },
+    },
+  },
 })
 
 export default store

@@ -9,9 +9,9 @@ export default {
     Object.keys(refs).forEach(key => {
       const get = refs[key]
       Object.defineProperty(wrapper, key, {
-        get
+        get,
       })
     })
     Vue.prototype.$globalRefs = wrapper
-  }
+  },
 }

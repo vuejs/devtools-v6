@@ -6,9 +6,9 @@ import {
   getCustomInstanceDetails,
   getCustomRouterDetails,
   getCustomStoreDetails,
-  isVueInstance
+  isVueInstance,
 } from './backend'
-import SharedData from './shared-data'
+import { SharedData } from './shared-data'
 import { isChrome, target } from './env'
 
 function cached (fn) {
@@ -79,7 +79,7 @@ export const SPECIAL_TOKENS = {
   null: null,
   '-Infinity': NEGATIVE_INFINITY,
   Infinity: INFINITY,
-  NaN: NAN
+  NaN: NAN,
 }
 
 export const MAX_STRING_SIZE = 10000
@@ -185,7 +185,7 @@ function replacer (key) {
       return {
         _isArray: true,
         length: l,
-        items: val.slice(0, MAX_ARRAY_SIZE)
+        items: val.slice(0, MAX_ARRAY_SIZE),
       }
     }
     return val
@@ -242,8 +242,8 @@ export function getCustomMapDetails (val) {
   val.forEach(
     (value, key) => list.push({
       key,
-      value
-    })
+      value,
+    }),
   )
   return {
     _custom: {
@@ -252,9 +252,9 @@ export function getCustomMapDetails (val) {
       value: list,
       readOnly: true,
       fields: {
-        abstract: true
-      }
-    }
+        abstract: true,
+      },
+    },
   }
 }
 
@@ -275,8 +275,8 @@ export function getCustomSetDetails (val) {
       type: 'set',
       display: `Set[${list.length}]`,
       value: list,
-      readOnly: true
-    }
+      readOnly: true,
+    },
   }
 }
 
@@ -295,7 +295,7 @@ export function reviveSet (val) {
 function basename (filename, ext) {
   return path.basename(
     filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext
+    ext,
   )
 }
 
@@ -326,10 +326,10 @@ export function getCustomComponentDefinitionDetails (def) {
       tooltip: 'Component definition',
       ...def.__file
         ? {
-            file: def.__file
+            file: def.__file,
           }
-        : {}
-    }
+        : {},
+    },
   }
 }
 
@@ -353,26 +353,36 @@ export function getCustomFunctionDetails (func: Function): CustomState {
     _custom: {
       type: 'function',
       display: `<span>f</span> ${escape(name)}${args}`,
-      _reviveId: reviveCache.cache(func)
-    }
+      _reviveId: reviveCache.cache(func),
+    },
   }
 }
 
 export function getCustomHTMLElementDetails (value: HTMLElement): CustomState {
-  return {
-    _custom: {
-      type: 'HTMLElement',
-      display: `<span class="opacity-30">&lt;</span><span class="text-blue-500">${value.tagName.toLowerCase()}</span><span class="opacity-30">&gt;</span>`,
-      value: namedNodeMapToObject(value.attributes),
-      actions: [
-        {
-          icon: 'input',
-          tooltip: 'Log element to console',
-          action: () => {
-            console.log(value)
-          }
-        }
-      ]
+  try {
+    return {
+      _custom: {
+        type: 'HTMLElement',
+        display: `<span class="opacity-30">&lt;</span><span class="text-blue-500">${value.tagName.toLowerCase()}</span><span class="opacity-30">&gt;</span>`,
+        value: namedNodeMapToObject(value.attributes),
+        actions: [
+          {
+            icon: 'input',
+            tooltip: 'Log element to console',
+            action: () => {
+              // eslint-disable-next-line no-console
+              console.log(value)
+            },
+          },
+        ],
+      },
+    }
+  } catch (e) {
+    return {
+      _custom: {
+        type: 'HTMLElement',
+        display: `<span class="text-blue-500">${String(value)}</span>`,
+      },
     }
   }
 }
@@ -405,15 +415,15 @@ export function getCustomRefDetails (instance, key, ref) {
           (ref.id ? ` <span class="attr-title">id</span>="${ref.id}"` : '') +
           (ref.className ? ` <span class="attr-title">class</span>="${ref.className}"` : '') + '&gt;',
         uid: instance.__VUE_DEVTOOLS_UID__,
-        type: 'reference'
-      }
+        type: 'reference',
+      },
     }
   }
   return {
     type: '$refs',
     key: key,
     value,
-    editable: false
+    editable: false,
   }
 }
 
@@ -626,49 +636,15 @@ export function sortByKey (state) {
   })
 }
 
-export function set (object, path, value, cb = null) {
-  const sections = Array.isArray(path) ? path : path.split('.')
-  while (sections.length > 1) {
-    object = object[sections.shift()]
-    // Vue 3 ref
-    if (object?.__v_isRef) {
-      object = object.value
-    }
-  }
-  const field = sections[0]
-  if (cb) {
-    cb(object, field, value)
-  } else {
-    object[field] = value
-  }
-}
-
-export function get (object, path) {
+export function simpleGet (object, path) {
   const sections = Array.isArray(path) ? path : path.split('.')
   for (let i = 0; i < sections.length; i++) {
     object = object[sections[i]]
-    // Vue 3 ref
-    if (object?.__v_isRef) {
-      object = object.value
-    }
     if (!object) {
       return undefined
     }
   }
   return object
-}
-
-export function has (object, path, parent = false) {
-  if (typeof object === 'undefined') {
-    return false
-  }
-
-  const sections = Array.isArray(path) ? path.slice() : path.split('.')
-  const size = !parent ? 1 : 2
-  while (object && sections.length > size) {
-    object = object[sections.shift()]
-  }
-  return object != null && Object.prototype.hasOwnProperty.call(object, sections[0])
 }
 
 export function focusInput (el) {
@@ -690,7 +666,7 @@ export function openInEditor (file) {
       } else {
         console.log('%c' + msg, 'color:red')
       }
-      console.log('Check the setup of your project, see https://github.com/vuejs/vue-devtools/blob/master/docs/open-in-editor.md')
+      console.log('Check the setup of your project, see https://devtools.vuejs.org/guide/open-in-editor.html')
     }
   })`
   if (isChrome) {
@@ -705,7 +681,7 @@ const ESC = {
   '<': '&lt;',
   '>': '&gt;',
   '"': '&quot;',
-  '&': '&amp;'
+  '&': '&amp;',
 }
 
 export function escape (s) {

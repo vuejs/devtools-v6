@@ -60,7 +60,7 @@ function createRect () {
     left: 0,
     right: 0,
     get width () { return rect.right - rect.left },
-    get height () { return rect.bottom - rect.top }
+    get height () { return rect.bottom - rect.top },
   }
   return rect
 }

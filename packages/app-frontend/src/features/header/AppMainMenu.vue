@@ -6,8 +6,8 @@ export default defineComponent({
   props: {
     lastInspectorRoute: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
 
   setup (props) {
@@ -25,9 +25,9 @@ export default defineComponent({
 
     return {
       groupValue,
-      targetInspectorRoute
+      targetInspectorRoute,
     }
-  }
+  },
 })
 </script>
 

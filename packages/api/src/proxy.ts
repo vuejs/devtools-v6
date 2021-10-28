@@ -56,7 +56,7 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
           // noop
         }
         currentSettings = value
-      }
+      },
     }
 
     hook.on(HOOK_PLUGIN_SETTINGS_SET, (pluginId, value) => {
@@ -73,11 +73,11 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
           return (...args) => {
             this.onQueue.push({
               method: prop,
-              args
+              args,
             })
           }
         }
-      }
+      },
     })
 
     this.proxiedTarget = new Proxy({} as TTarget, {
@@ -91,7 +91,7 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
             this.targetQueue.push({
               method: prop,
               args,
-              resolve: () => { /* noop */ }
+              resolve: () => { /* noop */ },
             })
             return this.fallbacks[prop](...args)
           }
@@ -101,12 +101,12 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
               this.targetQueue.push({
                 method: prop,
                 args,
-                resolve
+                resolve,
               })
             })
           }
         }
-      }
+      },
     })
   }
 

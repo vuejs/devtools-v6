@@ -2,12 +2,12 @@ import { defineComponent } from '@vue/composition-api'
 import debounce from 'lodash/debounce'
 
 export default function ({
-  indexOffset = 0
+  indexOffset = 0,
 } = {}) {
   // @vue/component
   return defineComponent({
     watch: {
-      inspectedIndex: 'refreshScrollToInspected'
+      inspectedIndex: 'refreshScrollToInspected',
     },
 
     mounted () {
@@ -44,9 +44,9 @@ export default function ({
           scroller.scrollTop = top + height - parentHeight
         }
       } as (this: any, index: number) => Promise<void>, 200, {
-        leading: true
-      })
-    }
+        leading: true,
+      }),
+    },
   })
 }
 

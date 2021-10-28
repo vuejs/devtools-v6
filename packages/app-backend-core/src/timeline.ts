@@ -1,6 +1,5 @@
-import { BackendContext } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, HookEvents, stringify } from '@vue-devtools/shared-utils'
-import SharedData from '@vue-devtools/shared-utils/lib/shared-data'
+import { BackendContext, AppRecord } from '@vue-devtools/app-backend-api'
+import { BridgeEvents, HookEvents, stringify, SharedData } from '@vue-devtools/shared-utils'
 import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
@@ -10,13 +9,13 @@ export function setupTimeline (ctx: BackendContext) {
   setupBuiltinLayers(ctx)
 }
 
-export function addBuiltinLayers (app: App, ctx: BackendContext) {
+export function addBuiltinLayers (appRecord: AppRecord, ctx: BackendContext) {
   for (const layerDef of builtinLayers) {
     ctx.timelineLayers.push({
       ...layerDef,
-      app,
+      appRecord,
       plugin: null,
-      events: []
+      events: [],
     })
   }
 }
@@ -32,14 +31,14 @@ function setupBuiltinLayers (ctx: BackendContext) {
           data: {
             type: eventType,
             x: event.clientX,
-            y: event.clientY
+            y: event.clientY,
           },
-          title: eventType
-        }
+          title: eventType,
+        },
       }, null, ctx)
     }, {
       capture: true,
-      passive: true
+      passive: true,
     })
   })
 
@@ -56,14 +55,14 @@ function setupBuiltinLayers (ctx: BackendContext) {
             ctrlKey: event.ctrlKey,
             shiftKey: event.shiftKey,
             altKey: event.altKey,
-            metaKey: event.metaKey
+            metaKey: event.metaKey,
           },
-          title: event.key
-        }
+          title: event.key,
+        },
       }, null, ctx)
     }, {
       capture: true,
-      passive: true
+      passive: true,
     })
   })
 
@@ -73,7 +72,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
 
       const appRecord = await getAppRecord(app, ctx)
       const componentId = `${appRecord.id}:${instance.uid}`
-      const componentDisplay = (await ctx.api.getComponentName(instance)) || '<i>Unknown Component</i>'
+      const componentDisplay = (await appRecord.backend.api.getComponentName(instance)) || '<i>Unknown Component</i>'
 
       await addTimelineEvent({
         layerId: 'component-event',
@@ -83,22 +82,22 @@ function setupBuiltinLayers (ctx: BackendContext) {
             component: {
               _custom: {
                 type: 'component-definition',
-                display: componentDisplay
-              }
+                display: componentDisplay,
+              },
             },
             event,
-            params
+            params,
           },
           title: event,
           subtitle: `by ${componentDisplay}`,
           meta: {
             componentId,
-            bounds: await ctx.api.getComponentBounds(instance)
-          }
-        }
+            bounds: await appRecord.backend.api.getComponentBounds(instance),
+          },
+        },
       }, app, ctx)
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
@@ -113,20 +112,20 @@ export async function sendTimelineLayers (ctx: BackendContext) {
         id: layer.id,
         label: layer.label,
         color: layer.color,
-        appId: layer.app ? (await getAppRecord(layer.app, ctx))?.id : null,
+        appId: layer.appRecord?.id,
         pluginId: layer.plugin?.descriptor.id,
         groupsOnly: layer.groupsOnly,
         skipScreenshots: layer.skipScreenshots,
-        ignoreNoDurationGroups: layer.ignoreNoDurationGroups
+        ignoreNoDurationGroups: layer.ignoreNoDurationGroups,
       })
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (SharedData.debugInfo) {
         console.error(e)
       }
     }
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LIST, {
-    layers
+    layers,
   })
 }
 
@@ -139,20 +138,20 @@ export async function addTimelineEvent (options: TimelineEventOptions, app: App,
   const eventData: TimelineEventOptions & WithId = {
     id,
     ...options,
-    all: isAllApps
+    all: isAllApps,
   }
   ctx.timelineEventMap.set(eventData.id, eventData)
 
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT, {
     appId: eventData.all ? 'all' : appId,
     layerId: eventData.layerId,
-    event: mapTimelineEvent(eventData)
+    event: mapTimelineEvent(eventData),
   })
 
-  const layer = ctx.timelineLayers.find(l => (isAllApps || l.app === app) && l.id === options.layerId)
+  const layer = ctx.timelineLayers.find(l => (isAllApps || l.appRecord?.options.app === app) && l.id === options.layerId)
   if (layer) {
     layer.events.push(eventData)
-  } else {
+  } else if (SharedData.debugInfo) {
     console.warn(`Timeline layer ${options.layerId} not found`)
   }
 }
@@ -164,7 +163,7 @@ function mapTimelineEvent (eventData: TimelineEventOptions & WithId) {
     logType: eventData.event.logType,
     groupId: eventData.event.groupId,
     title: eventData.event.title,
-    subtitle: eventData.event.subtitle
+    subtitle: eventData.event.subtitle,
   }
 }
 
@@ -173,26 +172,28 @@ export async function clearTimeline (ctx: BackendContext) {
   for (const layer of ctx.timelineLayers) {
     layer.events = []
   }
-  await ctx.api.clearTimeline()
+  for (const backend of ctx.backends) {
+    await backend.api.clearTimeline()
+  }
 }
 
 export async function sendTimelineEventData (id: ID, ctx: BackendContext) {
   let data = null
   const eventData = ctx.timelineEventMap.get(id)
   if (eventData) {
-    data = await ctx.api.inspectTimelineEvent(eventData, ctx.currentAppRecord.options.app)
+    data = await ctx.currentAppRecord.backend.api.inspectTimelineEvent(eventData, ctx.currentAppRecord.options.app)
     data = stringify(data)
   } else if (SharedData.debugInfo) {
     console.warn(`Event ${id} not found`, ctx.timelineEventMap.keys())
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_EVENT_DATA, {
     eventId: id,
-    data
+    data,
   })
 }
 
 export function removeLayersForApp (app: App, ctx: BackendContext) {
-  const layers = ctx.timelineLayers.filter(l => l.app === app)
+  const layers = ctx.timelineLayers.filter(l => l.appRecord?.options.app === app)
   for (const layer of layers) {
     const index = ctx.timelineLayers.indexOf(layer)
     if (index !== -1) ctx.timelineLayers.splice(index, 1)
@@ -205,11 +206,11 @@ export function removeLayersForApp (app: App, ctx: BackendContext) {
 export function sendTimelineLayerEvents (appId: string, layerId: string, ctx: BackendContext) {
   const app = ctx.appRecords.find(ar => ar.id === appId)?.options.app
   if (!app) return
-  const layer = ctx.timelineLayers.find(l => l.app === app && l.id === layerId)
+  const layer = ctx.timelineLayers.find(l => l.appRecord?.options.app === app && l.id === layerId)
   if (!layer) return
   ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_LOAD_EVENTS, {
     appId,
     layerId,
-    events: layer.events.map(e => mapTimelineEvent(e))
+    events: layer.events.map(e => mapTimelineEvent(e)),
   })
 }

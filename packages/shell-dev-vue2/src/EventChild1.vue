@@ -14,7 +14,7 @@ export default {
   methods: {
     emitLogEvent () {
       this.$emit('log')
-    }
-  }
+    },
+  },
 }
 </script>

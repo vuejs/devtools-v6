@@ -1,19 +1,21 @@
 import { isBeingDestroyed, getUniqueComponentId, getInstanceName, getRenderKey, isFragment } from './util'
 import { ComponentFilter } from './filter'
-import { BackendContext } from '@vue-devtools/app-backend-api'
+import { BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
 
 export class ComponentWalker {
   ctx: BackendContext
+  api: DevtoolsApi
   maxDepth: number
   componentFilter: ComponentFilter
   // Dedupe instances
   // Some instances may be both on a component and on a child abstract/functional component
   captureIds: Map<string, undefined>
 
-  constructor (maxDepth: number, filter: string, ctx: BackendContext) {
+  constructor (maxDepth: number, filter: string, api: DevtoolsApi, ctx: BackendContext) {
     this.ctx = ctx
+    this.api = api
     this.maxDepth = maxDepth
     this.componentFilter = new ComponentFilter(filter)
   }
@@ -142,7 +144,7 @@ export class ComponentWalker {
       hasChildren: !!children.length,
       children: [],
       isFragment: isFragment(instance),
-      tags: []
+      tags: [],
     }
 
     const isKeepAliveChild = parents.some(parent => parent.type.__isKeepAlive)
@@ -189,11 +191,11 @@ export class ComponentWalker {
         label: 's',
         backgroundColor: 0x7d7dd7,
         textColor: 0xffffff,
-        tooltip: 'Suspense'
+        tooltip: 'Suspense',
       })
     }
 
-    return this.ctx.api.visitComponentTree(instance, treeNode, this.componentFilter.filter, this.ctx.currentAppRecord.options.app)
+    return this.api.visitComponentTree(instance, treeNode, this.componentFilter.filter, this.ctx.currentAppRecord.options.app)
   }
 
   /**

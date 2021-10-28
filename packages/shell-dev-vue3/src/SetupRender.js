@@ -5,11 +5,11 @@ export default defineComponent({
 
   setup () {
     const state = reactive({
-      name: 'Foo bar'
+      name: 'Foo bar',
     })
 
     return () => {
       return h('h1', state.name)
     }
-  }
+  },
 })

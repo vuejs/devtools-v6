@@ -14,14 +14,14 @@ function createWindow () {
     icon: path.join(__dirname, 'icons/128.png'),
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
-    }
+      contextIsolation: false,
+    },
   })
 
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'app.html'),
     protocol: 'file:',
-    slashes: true
+    slashes: true,
   }))
 
   mainWindow.on('closed', () => {

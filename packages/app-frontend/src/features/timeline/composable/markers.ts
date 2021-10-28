@@ -11,11 +11,11 @@ export function useMarkers () {
   watch(currentAppId, () => {
     loadMarkers()
   }, {
-    immediate: true
+    immediate: true,
   })
 
   return {
-    currentAppMarkers
+    currentAppMarkers,
   }
 }
 

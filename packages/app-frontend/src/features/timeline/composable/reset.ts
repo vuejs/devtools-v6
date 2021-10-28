@@ -16,7 +16,7 @@ import {
   endTime,
   minTime,
   maxTime,
-  selectedLayer
+  selectedLayer,
 } from './store'
 import { fetchLayers } from './layers'
 

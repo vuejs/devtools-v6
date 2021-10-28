@@ -37,6 +37,6 @@ export function useComponentPick () {
   return {
     pickingComponent,
     startPickingComponent,
-    stopPickingComponent
+    stopPickingComponent,
   }
 }

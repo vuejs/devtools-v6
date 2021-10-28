@@ -16,30 +16,30 @@ export default {
             renamed: 'injectedData',
             missing: {
               from: 'missingInjected',
-              default: () => ({ answer: 42 })
-            }
+              default: () => ({ answer: 42 }),
+            },
           },
-          template: '<div>nested inject: {{ renamed }} missing: {{ missing }}</div>'
-        }
+          template: '<div>nested inject: {{ renamed }} missing: {{ missing }}</div>',
+        },
       },
       inject: ['injectedData'],
       setup () {
         return {
-          comingFromSetup: inject('fromSetup')
+          comingFromSetup: inject('fromSetup'),
         }
       },
-      template: '<div>injected: {{ injectedData }} | {{ comingFromSetup }}<NestedInject /></div>'
-    }
+      template: '<div>injected: {{ injectedData }} | {{ comingFromSetup }}<NestedInject /></div>',
+    },
   },
 
   provide () {
     return {
-      injectedData: 'bar'
+      injectedData: 'bar',
     }
   },
 
   setup () {
     provide('fromSetup', 'Setup!!')
-  }
+  },
 }
 </script>

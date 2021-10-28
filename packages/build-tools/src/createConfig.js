@@ -18,12 +18,11 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       alias: {
         '@front': '@vue-devtools/app-frontend/src',
         '@back': '@vue-devtools/app-backend-core/lib',
-        '@utils': '@vue-devtools/shared-utils/lib'
       },
       // symlinks: false,
       fallback: {
-        path: require.resolve('path-browserify')
-      }
+        path: require.resolve('path-browserify'),
+      },
     },
     module: {
       rules: [
@@ -37,41 +36,41 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
             transforms: {
               modules: false,
               asyncAwait: false,
-              forOf: false
-            }
-          }
+              forOf: false,
+            },
+          },
         },
         {
           test: /\.ts$/,
           loader: 'esbuild-loader',
           options: {
             loader: 'ts',
-            target: 'es2015'
-          }
+            target: 'es2015',
+          },
         },
         {
           test: /\.vue$/,
           loader: 'vue-loader',
           options: {
             compilerOptions: {
-              preserveWhitespace: false
+              preserveWhitespace: false,
             },
             transpileOptions: {
               target,
               objectAssign: 'Object.assign',
               transforms: {
-                modules: false
-              }
-            }
-          }
+                modules: false,
+              },
+            },
+          },
         },
         {
           test: /\.(css|postcss|pcss)$/,
           use: [
             'vue-style-loader',
             'css-loader',
-            'postcss-loader'
-          ]
+            'postcss-loader',
+          ],
         },
         {
           test: /\.styl(us)?$/,
@@ -84,20 +83,20 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
               loader: 'style-resources-loader',
               options: {
                 patterns: [
-                  require.resolve('@vue-devtools/app-frontend/src/assets/style/imports.styl')
-                ]
-              }
-            }
-          ]
+                  require.resolve('@vue-devtools/app-frontend/src/assets/style/imports.styl'),
+                ],
+              },
+            },
+          ],
         },
         {
           test: /\.(png|woff2|svg|ttf)$/,
-          type: 'asset/inline'
-        }
-      ]
+          type: 'asset/inline',
+        },
+      ],
     },
     performance: {
-      hints: false
+      hints: false,
     },
     plugins: [
       new VueLoaderPlugin(),
@@ -105,30 +104,30 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       new webpack.DefinePlugin({
         'process.env.RELEASE_CHANNEL': JSON.stringify(process.env.RELEASE_CHANNEL || 'stable'),
         __VUE_OPTIONS_API__: true,
-        __VUE_PROD_DEVTOOLS__: true
+        __VUE_PROD_DEVTOOLS__: true,
       }),
       new ForkTsCheckerWebpackPlugin({
         typescript: {
           configFile: path.resolve(__dirname, '../../../tsconfig.json'),
           extensions: {
-            vue: true
-          }
-        }
+            vue: true,
+          },
+        },
       }),
       new ESLintPlugin({
-        threads: true
+        threads: true,
       }),
       new MonacoEditorPlugin({
         // https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-        languages: ['javascript']
-      })
+        languages: ['javascript'],
+      }),
     ],
     devtool: 'eval-source-map',
     devServer: {
-      port: process.env.PORT
+      port: process.env.PORT,
     },
     stats: {
-      colors: true
+      colors: true,
     },
     // cache: {
     //   type: 'filesystem',
@@ -136,16 +135,16 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
     //   name: `${workspace}-${mode}`
     // },
     snapshot: {
-      managedPaths: []
-    }
+      managedPaths: [],
+    },
   }
 
   if (process.env.NODE_ENV === 'production') {
     const TerserPlugin = require('terser-webpack-plugin')
     baseConfig.plugins.push(
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': '"production"'
-      })
+        'process.env.NODE_ENV': '"production"',
+      }),
     )
     baseConfig.optimization = {
       minimizer: [
@@ -181,15 +180,15 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
               // required features to drop conditional branches
               conditionals: true,
               dead_code: true,
-              evaluate: true
+              evaluate: true,
             },
             mangle: {
-              safari10: true
-            }
+              safari10: true,
+            },
           },
-          parallel: true
-        })
-      ]
+          parallel: true,
+        }),
+      ],
     }
   }
 
@@ -198,8 +197,8 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       rules: {
         test: 'match',
         loader: 'replace',
-        options: 'merge'
-      }
-    }
+        options: 'merge',
+      },
+    },
   })(baseConfig, config)
 }

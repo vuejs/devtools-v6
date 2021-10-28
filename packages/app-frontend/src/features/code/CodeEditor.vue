@@ -13,34 +13,34 @@ export default {
   name: 'MonacoEditor',
 
   model: {
-    event: 'change'
+    event: 'change',
   },
 
   props: {
     original: {
       type: String,
-      default: null
+      default: null,
     },
     value: {
       type: String,
-      required: true
+      required: true,
     },
     theme: {
       type: String,
-      default: 'vs'
+      default: 'vs',
     },
     language: {
       type: String,
-      default: null
+      default: null,
     },
     options: {
       type: Object,
-      default: null
+      default: null,
     },
     diffEditor: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   watch: {
@@ -51,7 +51,7 @@ export default {
           const editor = this.getModifiedEditor()
           editor.updateOptions(options)
         }
-      }
+      },
     },
 
     value (newValue) {
@@ -83,7 +83,7 @@ export default {
       if (this.editor) {
         this.monaco.editor.setTheme(newVal)
       }
-    }
+    },
   },
 
   mounted () {
@@ -105,24 +105,24 @@ export default {
         {
           value: this.value,
           theme: this.theme,
-          language: this.language
+          language: this.language,
         },
-        this.options
+        this.options,
       )
 
       if (this.diffEditor) {
         this.editor = monaco.editor.createDiffEditor(this.$el, options)
         const originalModel = monaco.editor.createModel(
           this.original,
-          this.language
+          this.language,
         )
         const modifiedModel = monaco.editor.createModel(
           this.value,
-          this.language
+          this.language,
         )
         this.editor.setModel({
           original: originalModel,
-          modified: modifiedModel
+          modified: modifiedModel,
         })
       } else {
         this.editor = monaco.editor.create(this.$el, options)
@@ -159,8 +159,8 @@ export default {
 
     focus () {
       this.editor.focus()
-    }
-  }
+    },
+  },
 }
 </script>
 
