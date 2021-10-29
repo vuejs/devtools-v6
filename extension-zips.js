@@ -65,8 +65,8 @@ function bytesToSize (bytes) {
         process.exit(1)
       })
 
-      const bar = new ProgressBar(`${fileName} @ :tSize [:bar] :current/:total :percent +:cFile @ :cSize`, {
-        width: 20,
+      const bar = new ProgressBar(`${fileName} @ :tSize [:bar] :current/:total :percent +:cFile@:cSize`, {
+        width: 18,
         incomplete: ' ',
         total: status.total,
       })
@@ -76,8 +76,8 @@ function bytesToSize (bytes) {
         if (!entry.stats.isDirectory()) {
           const n = entry.name
           status.written++
-          status.cFile = n.length > 16
-            ? '...' + n.slice(n.length - 16)
+          status.cFile = n.length > 14
+            ? '...' + n.slice(n.length - 11)
             : n
           status.cSize = bytesToSize(entry.stats.size)
           status.tBytes += entry.stats.size
