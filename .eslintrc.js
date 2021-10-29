@@ -60,6 +60,7 @@ module.exports = {
       files: [
         'release.js',
         'sign-firefox.js',
+        'extension-zips.js',
         'packages/build-tools/**',
         'packages/shell-electron/**',
         '**webpack.config.js',

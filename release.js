@@ -4,14 +4,18 @@ const semver = require('semver')
 const pkg = require('./package.json')
 const manifest = require('./packages/shell-chrome/manifest.json')
 
+const IS_CI = !!(process.env.CIRCLECI || process.env.GITHUB_ACTIONS)
+
 const curVersion = pkg.version
 
 ;(async () => {
-  const { newVersion } = await inquirer.prompt([{
-    type: 'input',
-    name: 'newVersion',
-    message: `Please provide a version (current: ${curVersion}):`,
-  }])
+  const { newVersion } = IS_CI
+    ? { newVersion: curVersion }
+    : await inquirer.prompt([{
+      type: 'input',
+      name: 'newVersion',
+      message: `Please provide a version (current: ${curVersion}):`,
+    }])
 
   if (!semver.valid(newVersion)) {
     console.error(`Invalid version: ${newVersion}`)
@@ -23,11 +27,13 @@ const curVersion = pkg.version
     process.exit(1)
   }
 
-  const { yes } = await inquirer.prompt([{
-    name: 'yes',
-    message: `Release ${newVersion}?`,
-    type: 'confirm',
-  }])
+  const { yes } = IS_CI
+    ? { yes: true }
+    : await inquirer.prompt([{
+      name: 'yes',
+      message: `Release ${newVersion}?`,
+      type: 'confirm',
+    }])
 
   if (yes) {
     const isBeta = newVersion.includes('beta')
