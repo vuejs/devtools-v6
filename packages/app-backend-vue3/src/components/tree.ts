@@ -78,18 +78,19 @@ export class ComponentWalker {
   /**
    * Get children from a component instance.
    */
-  private getInternalInstanceChildren (subTree) {
+  private getInternalInstanceChildren (subTree, suspense = null) {
     const list = []
     if (subTree.component) {
-      list.push(subTree.component)
+      !suspense ? list.push(subTree.component) : list.push({ ...subTree.component, suspense })
     } else if (subTree.suspense) {
-      list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch))
+      const suspenseKey = !subTree.suspense.isInFallback ? 'default' : 'fallback'
+      list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch, { ...subTree.suspense, suspenseKey }))
     } else if (Array.isArray(subTree.children)) {
       subTree.children.forEach(childSubTree => {
         if (childSubTree.component) {
-          list.push(childSubTree.component)
+          !suspense ? list.push(childSubTree.component) : list.push({ ...childSubTree.component, suspense })
         } else {
-          list.push(...this.getInternalInstanceChildren(childSubTree))
+          list.push(...this.getInternalInstanceChildren(childSubTree, suspense))
         }
       })
     }
@@ -159,9 +160,10 @@ export class ComponentWalker {
     // keep-alive
     if (instance.type.__isKeepAlive && instance.__v_cache) {
       const cachedComponents = Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
-      for (const child of cachedComponents) {
-        if (!children.includes(child)) {
-          const node = await this.capture({ ...child, isDeactivated: true }, null, depth + 1)
+      const childrenIds = children.map(child => child.__VUE_DEVTOOLS_UID__)
+      for (const cachedChild of cachedComponents) {
+        if (!childrenIds.includes(cachedChild.__VUE_DEVTOOLS_UID__)) {
+          const node = await this.capture({ ...cachedChild, isDeactivated: true }, null, depth + 1)
           if (node) {
             treeNode.children.push(node)
           }
@@ -193,6 +195,15 @@ export class ComponentWalker {
         textColor: 0xffffff,
         tooltip: 'Suspense',
       })
+      if (instance.suspense.suspenseKey) {
+        treeNode.tags.push({
+          label: instance.suspense.suspenseKey,
+          backgroundColor: 0xe492e4,
+          textColor: 0xffffff,
+        })
+        // update instanceMap
+        this.mark(instance, true)
+      }
     }
 
     return this.api.visitComponentTree(instance, treeNode, this.componentFilter.filter, this.ctx.currentAppRecord.options.app)
@@ -203,9 +214,9 @@ export class ComponentWalker {
    *
    * @param {Vue} instance
    */
-  private mark (instance) {
+  private mark (instance, force = false) {
     const instanceMap = this.ctx.currentAppRecord.instanceMap
-    if (!instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
+    if (force || !instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
       instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
     }
   }
