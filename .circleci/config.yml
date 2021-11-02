@@ -17,7 +17,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v3-dependencies-
 
-      - run: lerna bootstrap --npm-client yarn -- --pure-lockfile
+      - run: yarn run ci:install
 
       - save_cache:
           paths:
