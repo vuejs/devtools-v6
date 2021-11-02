@@ -42,7 +42,7 @@ export default defineComponent({
     } = useComponentPick()
 
     onKeyDown(event => {
-      if (event.key === 'f' && event.ctrlKey) {
+      if (event.key === 'f' && event.altKey) {
         treeFilterInput.value.focus()
         return false
       }
@@ -90,6 +90,10 @@ export default defineComponent({
       <template #left>
         <div class="flex flex-col h-full">
           <VueInput
+            v-tooltip="{
+              content: $t('ComponentTree.filter.tooltip'),
+              html: true
+            }"
             ref="treeFilterInput"
             v-model="treeFilter"
             icon-left="search"
