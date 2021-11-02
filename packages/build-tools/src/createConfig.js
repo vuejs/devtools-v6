@@ -186,7 +186,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
               safari10: true,
             },
           },
-          parallel: true,
+          parallel: false,
         }),
       ],
     }

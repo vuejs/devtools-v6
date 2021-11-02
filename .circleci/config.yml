@@ -17,7 +17,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v3-dependencies-
 
-      - run: yarn run ci:install
+      - run: yarn install --pure-lockfile
 
       - save_cache:
           paths:
