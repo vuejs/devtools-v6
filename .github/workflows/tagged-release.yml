@@ -4,12 +4,6 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
-    inputs:
-      retention_days:
-        description: "Retention duration (in days)"
-        required: true
-        default: "1"
 
 jobs:
   build:
@@ -45,4 +39,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/release/devtools-*
+            dist/devtools-*
