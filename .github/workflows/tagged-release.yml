@@ -46,8 +46,3 @@ jobs:
         with:
           files: |
             build/release/devtools-*
-      - name: Upload built artifact
-        uses: actions/upload-artifact@v2
-        with:
-          path: build/release/devtools-*
-          retention-days: ${{ inputs.retention_days }}
