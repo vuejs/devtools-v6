@@ -82,9 +82,13 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
 
     await backend.api.registerApplication(options.app)
 
-    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
-      appRecord: mapAppRecord(record),
-    })
+    const isAppHidden = !!(await record.backend.api.getComponentDevtoolsOptions(record.rootInstance)).hide
+
+    if (!isAppHidden) {
+      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
+        appRecord: mapAppRecord(record),
+      })
+    }
 
     if (appRecordPromises.has(options.app)) {
       for (const r of appRecordPromises.get(options.app)) {
@@ -93,7 +97,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
     }
 
     // Auto select first app
-    if (ctx.currentAppRecord == null && !(await record.backend.api.getComponentDevtoolsOptions(record.rootInstance)).hide) {
+    if (ctx.currentAppRecord == null && !isAppHidden) {
       await selectApp(record, ctx)
     }
   } else {
