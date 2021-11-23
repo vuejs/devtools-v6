@@ -71,7 +71,7 @@ export default defineComponent({
         }"
         icon-left="search"
         placeholder="Filter state..."
-        class="search flex-1 flat"
+        class="search flex-1 flat min-w-0"
       />
 
       <VueButton
