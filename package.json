@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "6.0.0-beta.19",
+  "version": "6.0.0-beta.20",
   "description": "devtools for Vue.js!",
   "private": true,
   "workspaces": [
@@ -74,6 +74,7 @@
     "webpack-dev-server": "^4.0.0-beta.0"
   },
   "resolutions": {
+    "@vue/composition-api": "1.3.3",
     "cypress": "=3.4.1",
     "webpack-dev-server": "=4.0.0-rc.0"
   },

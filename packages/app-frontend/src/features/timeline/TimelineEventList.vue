@@ -4,7 +4,6 @@ import TimelineEventListItem from './TimelineEventListItem.vue'
 
 import { computed, ref, watch, defineComponent } from '@vue/composition-api'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
-import Defer from '@front/mixins/defer'
 import { useRoute, useRouter } from '@front/util/router'
 import { onKeyDown } from '@front/util/keyboard'
 import { useInspectedEvent, useSelectedEvent, selectEvent, useLayers } from './composable'
@@ -18,10 +17,6 @@ export default defineComponent({
     TimelineEventListItem,
     EmptyPane,
   },
-
-  mixins: [
-    Defer(),
-  ],
 
   setup () {
     const route = useRoute()

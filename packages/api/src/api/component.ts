@@ -1,9 +1,7 @@
 import { InspectorNodeTag } from './api'
 import { ID } from './util'
 
-export type ComponentInstance = Record<string, any> & {
-  __component: true // for type checking
-} // @TODO
+export type ComponentInstance = any // @TODO
 
 export interface ComponentTreeNode {
   uid: ID
