@@ -7,7 +7,6 @@ import { defineComponent, ref, watch, computed } from '@vue/composition-api'
 import { onKeyDown } from '@front/util/keyboard'
 import { useSelectedComponent } from './composable'
 
-// @ts-ignore
 export default defineComponent({
   components: {
     StateInspector,
@@ -28,7 +27,7 @@ export default defineComponent({
     })
 
     const stateFilterInput = ref()
-  
+
     onKeyDown(event => {
       if (event.key === 'd' && event.altKey) {
         stateFilterInput.value.focus()
@@ -64,12 +63,12 @@ export default defineComponent({
       </div>
 
       <VueInput
+        ref="stateFilterInput"
+        v-model="stateFilter"
         v-tooltip="{
           content: $t('StateInspector.filter.tooltip'),
           html: true
         }"
-        ref="stateFilterInput"
-        v-model="stateFilter"
         icon-left="search"
         placeholder="Filter state..."
         class="search flex-1 flat"
