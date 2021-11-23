@@ -275,7 +275,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   ret.consoleId = consoleId > -1 ? '$vm' + consoleId : null
 
   // check router view
-  const isRouterView2 = instance.$vnode && instance.$vnode.data && instance.$vnode.data.routerView
+  const isRouterView2 = instance.$vnode?.data?.routerView
   if (instance._routerView || isRouterView2) {
     ret.isRouterView = true
     if (!instance._inactive && instance.$route) {
