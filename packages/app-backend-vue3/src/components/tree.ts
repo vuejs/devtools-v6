@@ -83,7 +83,7 @@ export class ComponentWalker {
     if (subTree.component) {
       !suspense ? list.push(subTree.component) : list.push({ ...subTree.component, suspense })
     } else if (subTree.suspense) {
-      const suspenseKey = !subTree.suspense.isInFallback ? 'default' : 'fallback'
+      const suspenseKey = !subTree.suspense.isInFallback ? 'suspense default' : 'suspense fallback'
       list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch, { ...subTree.suspense, suspenseKey }))
     } else if (Array.isArray(subTree.children)) {
       subTree.children.forEach(childSubTree => {
@@ -188,22 +188,14 @@ export class ComponentWalker {
       treeNode.domOrder = [-1]
     }
 
-    if (instance.suspense) {
+    if (instance.suspense?.suspenseKey) {
       treeNode.tags.push({
-        label: 's',
-        backgroundColor: 0x7d7dd7,
+        label: instance.suspense.suspenseKey,
+        backgroundColor: 0xe492e4,
         textColor: 0xffffff,
-        tooltip: 'Suspense',
       })
-      if (instance.suspense.suspenseKey) {
-        treeNode.tags.push({
-          label: instance.suspense.suspenseKey,
-          backgroundColor: 0xe492e4,
-          textColor: 0xffffff,
-        })
-        // update instanceMap
-        this.mark(instance, true)
-      }
+      // update instanceMap
+      this.mark(instance, true)
     }
 
     return this.api.visitComponentTree(instance, treeNode, this.componentFilter.filter, this.ctx.currentAppRecord.options.app)
