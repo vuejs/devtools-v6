@@ -2,9 +2,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@back/*": ["packages/app-backend-core/src/*"],
-      "@front/*": ["packages/app-frontend/src/*"],
+      "@back/*": [
+        "packages/app-backend-core/src/*"
+      ],
+      "@front/*": [
+        "packages/app-frontend/src/*"
+      ],
     },
+    "outDir": "lib",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
