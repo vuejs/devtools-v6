@@ -101,7 +101,7 @@ export default defineComponent({
       } else if (this.fieldOptions.abstract) {
         return ''
       } else {
-        let result = formattedValue(value)
+        let result = `<span class="value-formatted-ouput">${formattedValue(value)}</span>`
         if (this.field.objectType) {
           result += ` <span class="text-gray-500">(${this.field.objectType})</span>`
         }
@@ -681,8 +681,9 @@ export default defineComponent({
     color #999
   &.literal
     color $vividBlue
-  &.raw-boolean
+  &.raw-boolean >>> .value-formatted-ouput
     width 36px
+    display inline-block
   &.native.Error
     background $red
     color $white !important
