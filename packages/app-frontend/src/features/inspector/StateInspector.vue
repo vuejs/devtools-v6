@@ -2,7 +2,7 @@
 import StateType from './StateType.vue'
 
 import Vue from 'vue'
-import Defer from '@front/mixins/defer'
+import { useDefer } from '@front/util/defer'
 
 const keyOrder = {
   props: 1,
@@ -30,10 +30,6 @@ export default {
     StateType,
   },
 
-  mixins: [
-    Defer(),
-  ],
-
   props: {
     state: {
       type: Object,
@@ -44,6 +40,14 @@ export default {
       type: Number,
       default: -1,
     },
+  },
+
+  setup () {
+    const { defer } = useDefer()
+
+    return {
+      defer,
+    }
   },
 
   data () {
