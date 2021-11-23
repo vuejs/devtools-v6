@@ -26,6 +26,9 @@ export default {
     dataType: {
       tooltip: '[[{{keys.ctrl}}]] + <<mouse>>: Collapse All<br>[[{{keys.shift}}]] + <<mouse>>: Expand All',
     },
+    filter: {
+      tooltip: '[[{{keys.alt}}]] + [[D]] Filter state by name',
+    },
   },
   DataField: {
     edit: {
@@ -54,7 +57,7 @@ export default {
       tooltip: '[[S]] Select component in the page',
     },
     filter: {
-      tooltip: '[[{{keys.ctrl}}]] + [[F]] Filter components by name',
+      tooltip: '[[{{keys.alt}}]] + [[F]] Filter components by name',
     },
   },
   ComponentInstance: {

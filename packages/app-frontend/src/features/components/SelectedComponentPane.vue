@@ -4,6 +4,7 @@ import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import RenderCode from './RenderCode.vue'
 
 import { defineComponent, ref, watch, computed } from '@vue/composition-api'
+import { onKeyDown } from '@front/util/keyboard'
 import { useSelectedComponent } from './composable'
 
 // @ts-ignore
@@ -26,12 +27,22 @@ export default defineComponent({
       }
     })
 
+    const stateFilterInput = ref()
+  
+    onKeyDown(event => {
+      if (event.key === 'd' && event.altKey) {
+        stateFilterInput.value.focus()
+        return false
+      }
+    })
+
     const sameApp = computed(() => selectedComponent.data.value?.id.split(':')[0] === selectedComponentId.value?.split(':')[0])
 
     return {
       ...selectedComponent,
       showRenderCode,
       inspector,
+      stateFilterInput,
       sameApp,
     }
   },
@@ -53,6 +64,11 @@ export default defineComponent({
       </div>
 
       <VueInput
+        v-tooltip="{
+          content: $t('StateInspector.filter.tooltip'),
+          html: true
+        }"
+        ref="stateFilterInput"
         v-model="stateFilter"
         icon-left="search"
         placeholder="Filter state..."
