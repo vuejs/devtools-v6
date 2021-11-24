@@ -51,7 +51,7 @@ export default defineComponent({
                 },
                 send (data) {
                   if (process.env.NODE_ENV !== 'production') {
-                    console.log('devtools -> backend', data)
+                    console.log('%cdevtools -> backend', 'color:#888;', data)
                   }
                   iframe.value.contentWindow.postMessage(data, '*')
                 },

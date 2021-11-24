@@ -35,7 +35,7 @@ socket.on('vue-devtools-init', () => {
         send (data) {
           if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console
-            console.log('devtools -> backend', data)
+            console.log('%cdevtools -> backend', 'color:#888;', data)
           }
           socket.emit('vue-message', data)
         },

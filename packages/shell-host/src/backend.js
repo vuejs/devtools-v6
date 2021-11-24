@@ -7,8 +7,7 @@ const bridge = new Bridge({
   },
   send (data) {
     if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log('backend -> devtools', data)
+      console.log('%cbackend -> devtools', 'color:#888;', data)
     }
     window.parent.postMessage(data, '*')
   },

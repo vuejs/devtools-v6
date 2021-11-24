@@ -56,7 +56,7 @@ function doublePipe (id, one, two) {
     }
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('devtools -> backend', message)
+      console.log('%cdevtools -> backend', 'color:#888;', message)
     }
     two.postMessage(message)
   }
@@ -68,7 +68,7 @@ function doublePipe (id, one, two) {
     }
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('backend -> devtools', message)
+      console.log('%cbackend -> devtools', 'color:#888;', message)
     }
     one.postMessage(message)
   }
