@@ -461,7 +461,7 @@ export default defineComponent({
 
     function clearEvents () {
       for (const e of events) {
-        e.g.destroy()
+        e.g?.destroy()
         e.g = null
 
         if (e.groupT) {
@@ -475,7 +475,7 @@ export default defineComponent({
           e.groupG = null
         }
 
-        e.container.destroy()
+        e.container?.destroy()
         e.container = null
       }
       events = []
@@ -1024,7 +1024,6 @@ export default defineComponent({
 
     function onResize () {
       app.view.style.opacity = '0'
-      app.queueResize()
       queueEventsUpdate()
       drawLayerBackgroundEffects()
       drawTimeCursor()
