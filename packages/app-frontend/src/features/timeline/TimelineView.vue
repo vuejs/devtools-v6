@@ -340,75 +340,81 @@ export default defineComponent({
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
-      const offset = event.layer.groupsOnly ? 0 : 12
+      // Skip if the event is not visible
+      // or if the group graphics is not visible
+      if ((event.time >= startTime.value && event.time <= endTime.value) ||
+        (event.group?.firstEvent === event && event.group.lastEvent.time >= startTime.value && event.group.lastEvent.time <= endTime.value)) {
+        // Collision offset for non-flamecharts
+        const offset = event.layer.groupsOnly ? 0 : 12
 
-      let y = 0
-      if (event.group && event !== event.group.firstEvent) {
-        // If the event is inside a group, just use the group position
-        y = event.group.y
-      } else {
-        const firstEvent = event.group ? event.group.firstEvent : event
-        const lastEvent = event.group ? event.group.lastEvent : event
-        const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
-        // Check for 'collision' with other event groups
-        const l = event.layer.groups.length
-        let checkAgain = true
-        while (checkAgain) {
-          checkAgain = false
-          for (let i = 0; i < l; i++) {
-            const otherGroup = event.layer.groups[i]
-            if (
-              // Different group
-              (
-                !event.group ||
-                event.group !== otherGroup
-              ) &&
-              // Same row
-              otherGroup.y === y &&
-              (
-                // Horizontal intersection (first event)
+        let y = 0
+        if (event.group && event !== event.group.firstEvent) {
+          // If the event is inside a group, just use the group position
+          y = event.group.y
+        } else {
+          const firstEvent = event.group ? event.group.firstEvent : event
+          const lastEvent = event.group ? event.group.lastEvent : event
+          const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
+          // Check for 'collision' with other event groups
+          const l = event.layer.groups.length
+          let checkAgain = true
+          while (checkAgain) {
+            checkAgain = false
+            for (let i = 0; i < l; i++) {
+              const otherGroup = event.layer.groups[i]
+              if (
+                // Different group
                 (
-                  getTimePosition(firstEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset &&
-                  getTimePosition(firstEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset + lastOffset
-                ) ||
-                // Horizontal intersection (last event)
+                  !event.group ||
+                  event.group !== otherGroup
+                ) &&
+                // Same row
+                otherGroup.y === y &&
                 (
-                  getTimePosition(lastEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset - lastOffset &&
-                  getTimePosition(lastEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset
+                  // Horizontal intersection (first event)
+                  (
+                    getTimePosition(firstEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset &&
+                    getTimePosition(firstEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset + lastOffset
+                  ) ||
+                  // Horizontal intersection (last event)
+                  (
+                    getTimePosition(lastEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset - lastOffset &&
+                    getTimePosition(lastEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset
+                  )
                 )
-              )
-            ) {
-              // Collision!
-              if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
-                // Invert positions because current group has higher priority
-                queueEventPositionUpdate(otherGroup.firstEvent)
-              } else {
-                // Offset the current group/event
-                y++
-                // We need to check all the layers again since we moved the event
-                checkAgain = true
-                break
+              ) {
+                // Collision!
+                if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
+                  // Invert positions because current group has higher priority
+                  queueEventPositionUpdate(otherGroup.firstEvent)
+                } else {
+                  // Offset the current group/event
+                  y++
+                  // We need to check all the layers again since we moved the event
+                  checkAgain = true
+                  break
+                }
               }
             }
           }
-        }
 
-        // If the event is the first in a group, update group position
-        if (event.group) {
-          event.group.y = y
-        }
+          // If the event is the first in a group, update group position
+          if (event.group) {
+            event.group.y = y
+          }
 
-        // Might update the layer's height as well
-        if (y + 1 > event.layer.height) {
-          const oldLayerHeight = event.layer.height
-          const newLayerHeight = event.layer.height = y + 1
-          if (oldLayerHeight !== newLayerHeight) {
-            updateLayerPositions()
-            drawLayerBackgroundEffects()
+          // Might update the layer's height as well
+          if (y + 1 > event.layer.height) {
+            const oldLayerHeight = event.layer.height
+            const newLayerHeight = event.layer.height = y + 1
+            if (oldLayerHeight !== newLayerHeight) {
+              updateLayerPositions()
+              drawLayerBackgroundEffects()
+            }
           }
         }
+        event.container.y = (y + 1) * LAYER_SIZE
       }
-      event.container.y = (y + 1) * LAYER_SIZE
 
       // Next
       updateEventPositionQueue.delete(event)
