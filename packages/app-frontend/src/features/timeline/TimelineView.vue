@@ -82,6 +82,7 @@ export default defineComponent({
         resizeTo: wrapper.value,
         antialias: true,
         autoDensity: true,
+        resolution: window.devicePixelRatio,
       })
       app.stage.interactive = true
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
