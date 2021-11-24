@@ -30,6 +30,8 @@ import { useDarkMode } from '@front/util/theme'
 import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 
+PIXI.settings.ROUND_PIXELS = true
+
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
 const MIN_CAMERA_SIZE = 10
