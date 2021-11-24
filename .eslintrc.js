@@ -88,5 +88,16 @@ module.exports = {
         'no-console': 'off',
       },
     },
+    {
+      files: [
+        'packages/shell-host/**',
+      ],
+      globals: {
+        localStorage: false,
+      },
+      rules: {
+        'no-console': 'off',
+      },
+    },
   ],
 }

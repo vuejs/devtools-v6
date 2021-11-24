@@ -6,10 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/svg" href="/favicon.svg"/>
     <style>
-      #target {
-        flex: 1;
-        border: none;
-      }
       #container {
         display: flex;
         height: 400px;
@@ -27,11 +23,14 @@
         margin: 0;
         padding: 0;
       }
+      .not-vue {
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <iframe id="target" name="target" src="about:blank"></iframe>
-    <div>Not Vue</div>
+    <div id="iframe-target"></div>
+    <div class="not-vue">Not Vue</div>
     <div id="container">
       <div id="app"></div>
     </div>
