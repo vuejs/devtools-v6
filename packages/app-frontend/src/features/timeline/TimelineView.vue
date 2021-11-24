@@ -418,9 +418,13 @@ export default defineComponent({
 
     function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
       // Container
-      const eventContainer = new PIXI.Container()
-      event.container = eventContainer
-      layerContainer.addChild(eventContainer)
+      let eventContainer: PIXI.Container
+
+      if (!event.layer.groupsOnly || (event.group?.firstEvent === event)) {
+        eventContainer = new PIXI.Container()
+        event.container = eventContainer
+        layerContainer.addChild(eventContainer)
+      }
 
       // Group graphics
       if (event.group) {
@@ -437,9 +441,11 @@ export default defineComponent({
       }
 
       // Graphics
-      const g = new PIXI.Graphics()
-      event.g = g
-      eventContainer.addChild(g)
+      if (eventContainer) {
+        const g = new PIXI.Graphics()
+        event.g = g
+        eventContainer.addChild(g)
+      }
 
       events.push(event)
 
@@ -579,7 +585,7 @@ export default defineComponent({
     })
 
     function drawEvent (selected: boolean, event: TimelineEvent) {
-      if (event) {
+      if (event?.container) {
         let color = event.layer.color
         if (event.logType === 'error') {
           color = 0xE53E3E
