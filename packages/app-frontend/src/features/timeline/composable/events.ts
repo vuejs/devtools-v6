@@ -34,7 +34,18 @@ export function onEventAdd (cb: AddEventCb) {
   addEventCbs.push(cb)
 }
 
-export function addEvent (appId: string, event: TimelineEvent, layer: Layer) {
+export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Layer) {
+  // Non-reactive content
+  const event = {} as TimelineEvent
+  for (const key in eventOptions) {
+    Object.defineProperty(event, key, {
+      value: eventOptions[key],
+      writable: true,
+      enumerable: true,
+      configurable: false,
+    })
+  }
+
   if (layer.eventsMap[event.id]) return
 
   if (timelineIsEmpty.value) {

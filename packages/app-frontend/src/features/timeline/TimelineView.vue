@@ -29,6 +29,8 @@ import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
 import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
+import { Queue } from '@front/util/queue'
+import { nonReactive } from '@front/util/reactivity'
 
 PIXI.settings.ROUND_PIXELS = true
 
@@ -46,8 +48,15 @@ export default defineComponent({
     const { startTime, endTime, minTime, maxTime } = useTime()
     const { darkMode } = useDarkMode()
 
+    // Optimize for read in loops
+    const nonReactiveTime = {
+      startTime: nonReactive(startTime),
+      endTime: nonReactive(endTime),
+      minTime: nonReactive(minTime),
+    }
+
     function getTimePosition (time: number) {
-      return (time - minTime.value) / (endTime.value - startTime.value) * app.view.width
+      return (time - nonReactiveTime.minTime.value) / (nonReactiveTime.endTime.value - nonReactiveTime.startTime.value) * app.view.width
     }
 
     // Reset
@@ -303,11 +312,10 @@ export default defineComponent({
 
     let events: TimelineEvent[] = []
 
-    const updateEventPositionQueue = new Set<TimelineEvent>()
-    let currentEventPositionUpdate: TimelineEvent = null
-    let updateEventPositionQueued = false
+    const updateEventPositionQueue = new Queue<TimelineEvent>()
+    let eventPositionUpdateInProgress = false
 
-    function queueEventPositionUpdate (...events: TimelineEvent[]) {
+    function queueEventPositionUpdate (events: TimelineEvent[], force = false) {
       for (const e of events) {
         if (!e.container) continue
         const ignored = isEventIgnored(e)
@@ -315,22 +323,22 @@ export default defineComponent({
         if (ignored) continue
         // Update horizontal position immediately
         e.container.x = Math.round(getTimePosition(e.time))
+        if (!force && e.layer.groupsOnly) continue
         // Queue vertical position compute
         updateEventPositionQueue.add(e)
       }
-      if (!updateEventPositionQueued) {
-        updateEventPositionQueued = true
+      if (!eventPositionUpdateInProgress) {
+        eventPositionUpdateInProgress = true
         Vue.nextTick(() => {
           nextEventPositionUpdate()
-          updateEventPositionQueued = false
+          eventPositionUpdateInProgress = false
         })
       }
     }
 
     function nextEventPositionUpdate () {
-      if (currentEventPositionUpdate) return
-      const event = currentEventPositionUpdate = updateEventPositionQueue.values().next().value
-      if (event) {
+      let event: TimelineEvent
+      while ((event = updateEventPositionQueue.shift())) {
         computeEventVerticalPosition(event)
       }
     }
@@ -340,53 +348,73 @@ export default defineComponent({
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
-      // Skip if the event is not visible
-      // or if the group graphics is not visible
-      if ((event.time >= startTime.value && event.time <= endTime.value) ||
-        (event.group?.firstEvent === event && event.group.lastEvent.time >= startTime.value && event.group.lastEvent.time <= endTime.value)) {
+      let y = 0
+      if (event.group && event !== event.group.firstEvent) {
+        // If the event is inside a group, just use the group position
+        y = event.group.y
+      } else {
+        const firstEvent = event.group ? event.group.firstEvent : event
+        const lastEvent = event.group ? event.group.lastEvent : event
+
         // Collision offset for non-flamecharts
         const offset = event.layer.groupsOnly ? 0 : 12
+        // For flamechart allow 1-pixel overlap at the end of a group
+        const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
+        // Flamechart uses time instead of pixel position
+        const getPos = event.layer.groupsOnly ? (time: number) => time : getTimePosition
 
-        let y = 0
-        if (event.group && event !== event.group.firstEvent) {
-          // If the event is inside a group, just use the group position
-          y = event.group.y
-        } else {
-          const firstEvent = event.group ? event.group.firstEvent : event
-          const lastEvent = event.group ? event.group.lastEvent : event
-          const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
-          // Check for 'collision' with other event groups
-          const l = event.layer.groups.length
-          let checkAgain = true
-          while (checkAgain) {
-            checkAgain = false
-            for (let i = 0; i < l; i++) {
-              const otherGroup = event.layer.groups[i]
-              if (
-                // Different group
-                (
-                  !event.group ||
-                  event.group !== otherGroup
-                ) &&
-                // Same row
-                otherGroup.y === y &&
-                (
-                  // Horizontal intersection (first event)
+        const firstPos = getPos(firstEvent.time)
+        const lastPos = event.group ? getPos(lastEvent.time) : firstPos
+
+        // Check for 'collision' with other event groups
+        const l = event.layer.groups.length
+        let checkAgain = true
+        while (checkAgain) {
+          checkAgain = false
+          for (let i = 0; i < l; i++) {
+            const otherGroup = event.layer.groups[i]
+
+            if (
+              // Different group
+              (
+                !event.group ||
+                event.group !== otherGroup
+              ) &&
+              // Same row
+              otherGroup.y === y
+            ) {
+              // // eslint-disable-next-line no-console
+              // if (event.layer.groupsOnly) console.log('checking collision with', otherGroup.firstEvent.id, otherGroup.firstEvent.title)
+
+              const otherGroupFirstPos = getPos(otherGroup.firstEvent.time)
+              const otherGroupLastPos = getPos(otherGroup.lastEvent.time)
+
+              // First position is inside other group
+              const firstEventIntersection = (
+                firstPos >= otherGroupFirstPos - offset &&
+                firstPos <= otherGroupLastPos + offset + lastOffset
+              )
+
+              if (firstEventIntersection || (
+                // Additional checks if group
+                event.group && (
                   (
-                    getTimePosition(firstEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset &&
-                    getTimePosition(firstEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset + lastOffset
-                  ) ||
-                  // Horizontal intersection (last event)
-                  (
-                    getTimePosition(lastEvent.time) >= getTimePosition(otherGroup.firstEvent.time) - offset - lastOffset &&
-                    getTimePosition(lastEvent.time) <= getTimePosition(otherGroup.lastEvent.time) + offset
+                    // Last position is inside other group
+                    lastPos >= otherGroupFirstPos - offset - lastOffset &&
+                    lastPos <= otherGroupLastPos + offset
+                  ) || (
+                    // Other group is inside current group
+                    firstPos < otherGroupFirstPos - offset &&
+                    lastPos > otherGroupLastPos + offset
                   )
                 )
-              ) {
+              )) {
                 // Collision!
                 if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
                   // Invert positions because current group has higher priority
-                  queueEventPositionUpdate(otherGroup.firstEvent)
+                  if (!updateEventPositionQueue.has(otherGroup.firstEvent)) {
+                    queueEventPositionUpdate([otherGroup.firstEvent], event.layer.groupsOnly)
+                  }
                 } else {
                   // Offset the current group/event
                   y++
@@ -397,29 +425,24 @@ export default defineComponent({
               }
             }
           }
+        }
 
-          // If the event is the first in a group, update group position
-          if (event.group) {
-            event.group.y = y
-          }
+        // If the event is the first in a group, update group position
+        if (event.group) {
+          event.group.y = y
+        }
 
-          // Might update the layer's height as well
-          if (y + 1 > event.layer.height) {
-            const oldLayerHeight = event.layer.height
-            const newLayerHeight = event.layer.height = y + 1
-            if (oldLayerHeight !== newLayerHeight) {
-              updateLayerPositions()
-              drawLayerBackgroundEffects()
-            }
+        // Might update the layer's height as well
+        if (y + 1 > event.layer.height) {
+          const oldLayerHeight = event.layer.height
+          const newLayerHeight = event.layer.height = y + 1
+          if (oldLayerHeight !== newLayerHeight) {
+            updateLayerPositions()
+            drawLayerBackgroundEffects()
           }
         }
-        event.container.y = (y + 1) * LAYER_SIZE
       }
-
-      // Next
-      updateEventPositionQueue.delete(event)
-      currentEventPositionUpdate = null
-      nextEventPositionUpdate()
+      event.container.y = (y + 1) * LAYER_SIZE
     }
 
     function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
@@ -456,7 +479,11 @@ export default defineComponent({
       events.push(event)
 
       refreshEventGraphics(event)
-      queueEventPositionUpdate(event)
+      if (event.container) {
+        queueEventPositionUpdate([event], true)
+      } else {
+        queueEventPositionUpdate([event.group.firstEvent], true)
+      }
 
       return event
     }
@@ -527,10 +554,12 @@ export default defineComponent({
 
     function updateEvents () {
       for (const layer of layers.value) {
-        layer.height = 1
+        if (!layer.groupsOnly) {
+          layer.height = 1
+        }
       }
       updateLayerPositions()
-      queueEventPositionUpdate(...events)
+      queueEventPositionUpdate(events)
       for (const event of events) {
         if (event.groupG) {
           drawEventGroup(event)
@@ -826,7 +855,7 @@ export default defineComponent({
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
           if (!t) {
-            t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
+            t = event.groupT = new PIXI.Text(`${event.id} ${event.title} ${event.subtitle}`, {
               fontSize: 10,
               fill: darkMode.value ? 0xffffff : 0,
             })

@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep'
 import Vue from 'vue'
 import { Bridge, BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { getApps } from '@front/features/apps'
@@ -33,7 +32,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
         return
       }
 
-      addEvent(appId, cloneDeep(event), layer)
+      addEvent(appId, event, layer)
     }
   })
 
@@ -53,7 +52,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
           const pendingKey = `${appId}:${layer.id}`
           if (pendingEvents[pendingKey] && pendingEvents[pendingKey].length) {
             for (const event of pendingEvents[pendingKey]) {
-              addEvent(appId, cloneDeep(event), getLayers(appId).find(l => l.id === layer.id))
+              addEvent(appId, event, getLayers(appId).find(l => l.id === layer.id))
             }
             pendingEvents[pendingKey] = []
           }
@@ -91,7 +90,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     }
 
     for (const event of events) {
-      addEvent(appId, cloneDeep(event), layer)
+      addEvent(appId, event, layer)
     }
   })
 
