@@ -148,10 +148,8 @@ export class ComponentWalker {
       tags: [],
     }
 
-    const isKeepAliveChild = parents.some(parent => parent.type.__isKeepAlive)
-
     // capture children
-    if (isKeepAliveChild || depth < this.maxDepth) {
+    if (depth < this.maxDepth || instance.type.__isKeepAlive || parents.some(parent => parent.type.__isKeepAlive)) {
       treeNode.children = await Promise.all(children
         .map((child, index, list) => this.capture(child, list, depth + 1))
         .filter(Boolean))
