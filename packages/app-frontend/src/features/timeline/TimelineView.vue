@@ -489,6 +489,7 @@ export default defineComponent({
           const groupG = new PIXI.Graphics()
           event.groupG = groupG
           eventContainer.addChild(groupG)
+          event.group.oldSize = null
           drawEventGroup(event)
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
