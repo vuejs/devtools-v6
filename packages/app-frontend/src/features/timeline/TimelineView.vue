@@ -313,32 +313,80 @@ export default defineComponent({
     let events: TimelineEvent[] = []
 
     const updateEventPositionQueue = new Queue<TimelineEvent>()
+    const updateEventVerticalPositionQueue = new Queue<TimelineEvent>()
     let eventPositionUpdateInProgress = false
+    let eventVerticalPositionUpdateInProgress = false
 
     function queueEventPositionUpdate (events: TimelineEvent[], force = false) {
-      for (const e of events) {
-        if (!e.container) continue
-        const ignored = isEventIgnored(e)
-        e.container.visible = !ignored
-        if (ignored) continue
-        // Update horizontal position immediately
-        e.container.x = Math.round(getTimePosition(e.time))
-        if (!force && e.layer.groupsOnly) continue
-        // Queue vertical position compute
-        updateEventPositionQueue.add(e)
+      for (const event of events) {
+        if (!event.container) continue
+
+        event.forcePositionUpdate = force
+
+        updateEventPositionQueue.add(event)
       }
+
+      // If not running an update, start one
       if (!eventPositionUpdateInProgress) {
         eventPositionUpdateInProgress = true
         Vue.nextTick(() => {
-          nextEventPositionUpdate()
+          runEventPositionUpdate()
           eventPositionUpdateInProgress = false
         })
       }
     }
 
-    function nextEventPositionUpdate () {
+    function runEventPositionUpdate () {
       let event: TimelineEvent
       while ((event = updateEventPositionQueue.shift())) {
+        // Ignored
+        const ignored = isEventIgnored(event)
+        event.container.visible = !ignored
+        if (ignored) continue
+
+        /*
+        // Ignore events that are theorically not visible
+        const eventInViewport = e.time >= nonReactiveTime.startTime.value && e.time <= nonReactiveTime.endTime.value
+        const eventGroupInViewport = !e.group || e.group.firstEvent !== e || (
+          (getTimePosition(e.group.lastEvent.time) - getTimePosition(e.time)) > 1 && (
+            // First event in viewport
+            eventInViewport ||
+            // Last event in viewport
+            (e.group.lastEvent.time >= nonReactiveTime.startTime.value && e.group.lastEvent.time <= nonReactiveTime.endTime.value) ||
+            // Group in viewport (bigger than viewport)
+            (e.time < nonReactiveTime.startTime.value && e.group.lastEvent.time > nonReactiveTime.endTime.value)
+          )
+        )
+        const notVisible = !eventInViewport && !eventGroupInViewport
+        e.container.visible = !notVisible
+        if (!force && notVisible) continue
+        // eslint-disable-next-line no-console
+        console.log('update')
+        */
+
+        // Update horizontal position immediately
+        event.container.x = getTimePosition(event.time)
+
+        // Ignore additional updates to flamechart
+        if (!event.forcePositionUpdate && event.layer.groupsOnly) continue
+
+        // Queue vertical position compute
+        updateEventVerticalPositionQueue.add(event)
+      }
+
+      // If not running an update, start one
+      if (!eventVerticalPositionUpdateInProgress) {
+        eventVerticalPositionUpdateInProgress = true
+        Vue.nextTick(() => {
+          runEventVerticalPositionUpdate()
+          eventVerticalPositionUpdateInProgress = false
+        })
+      }
+    }
+
+    function runEventVerticalPositionUpdate () {
+      let event: TimelineEvent
+      while ((event = updateEventVerticalPositionQueue.shift())) {
         computeEventVerticalPosition(event)
       }
     }
@@ -412,7 +460,7 @@ export default defineComponent({
                 // Collision!
                 if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
                   // Invert positions because current group has higher priority
-                  if (!updateEventPositionQueue.has(otherGroup.firstEvent)) {
+                  if (!updateEventVerticalPositionQueue.has(otherGroup.firstEvent)) {
                     queueEventPositionUpdate([otherGroup.firstEvent], event.layer.groupsOnly)
                   }
                 } else {
