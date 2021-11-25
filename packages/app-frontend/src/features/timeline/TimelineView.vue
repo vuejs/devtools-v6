@@ -344,26 +344,6 @@ export default defineComponent({
         event.container.visible = !ignored
         if (ignored) continue
 
-        /*
-        // Ignore events that are theorically not visible
-        const eventInViewport = e.time >= nonReactiveTime.startTime.value && e.time <= nonReactiveTime.endTime.value
-        const eventGroupInViewport = !e.group || e.group.firstEvent !== e || (
-          (getTimePosition(e.group.lastEvent.time) - getTimePosition(e.time)) > 1 && (
-            // First event in viewport
-            eventInViewport ||
-            // Last event in viewport
-            (e.group.lastEvent.time >= nonReactiveTime.startTime.value && e.group.lastEvent.time <= nonReactiveTime.endTime.value) ||
-            // Group in viewport (bigger than viewport)
-            (e.time < nonReactiveTime.startTime.value && e.group.lastEvent.time > nonReactiveTime.endTime.value)
-          )
-        )
-        const notVisible = !eventInViewport && !eventGroupInViewport
-        e.container.visible = !notVisible
-        if (!force && notVisible) continue
-        // eslint-disable-next-line no-console
-        console.log('update')
-        */
-
         // Update horizontal position immediately
         event.container.x = getTimePosition(event.time)
 
