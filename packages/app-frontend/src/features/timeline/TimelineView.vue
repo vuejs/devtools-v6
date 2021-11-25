@@ -879,24 +879,26 @@ export default defineComponent({
 
         /** @type {PIXI.Graphics} */
         const g = event.groupG
-        g.clear()
         const size = getTimePosition(event.group.lastEvent.time) - getTimePosition(event.group.firstEvent.time)
-        if (event.layer.groupsOnly) {
-          if (drawAsSelected) {
-            g.lineStyle(2, boostColor(event.layer.color, darkMode.value))
-            g.beginFill(dimColor(event.layer.color, darkMode.value, 30))
+        if (size !== event.group.oldSize) {
+          g.clear()
+          if (event.layer.groupsOnly) {
+            if (drawAsSelected) {
+              g.lineStyle(2, boostColor(event.layer.color, darkMode.value))
+              g.beginFill(dimColor(event.layer.color, darkMode.value, 30))
+            } else {
+              g.beginFill(event.layer.color, 0.5)
+            }
           } else {
-            g.beginFill(event.layer.color, 0.5)
+            g.lineStyle(1, dimColor(event.layer.color, darkMode.value))
+            g.beginFill(dimColor(event.layer.color, darkMode.value, 25))
           }
-        } else {
-          g.lineStyle(1, dimColor(event.layer.color, darkMode.value))
-          g.beginFill(dimColor(event.layer.color, darkMode.value, 25))
-        }
-        if (event.layer.groupsOnly) {
-          g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
-        } else {
-          // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)
-          g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
+          if (event.layer.groupsOnly) {
+            g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
+          } else {
+            // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)
+            g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
+          }
         }
 
         // Title
@@ -917,15 +919,19 @@ export default defineComponent({
           }
 
           const mask = t.mask as PIXI.Graphics
-          mask.clear()
-          mask.beginFill(0)
-          mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
+          if (size !== event.group.oldSize) {
+            mask.clear()
+            mask.beginFill(0)
+            mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
+          }
         } else if (event.groupT) {
           const mask = event.groupT.mask as PIXI.Graphics
           mask?.destroy()
           event.groupT.destroy()
           event.groupT = null
         }
+
+        event.group.oldSize = size
       }
     }
 

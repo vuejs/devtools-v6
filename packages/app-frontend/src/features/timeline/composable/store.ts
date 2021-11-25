@@ -18,6 +18,7 @@ export interface EventGroup {
   lastEvent: TimelineEvent
   duration: number
   y: number
+  oldSize?: number
 }
 
 export interface EventScreenshot {
@@ -36,6 +37,7 @@ export interface TimelineEvent extends TimelineEventFromBackend {
   g: PIXI.Graphics
   groupG: PIXI.Graphics
   groupT: PIXI.Text
+  forcePositionUpdate?: boolean
 }
 
 export interface LayerFromBackend {
