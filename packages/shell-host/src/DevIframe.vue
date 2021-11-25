@@ -116,6 +116,7 @@ export default defineComponent({
       ref="iframe"
       name="target"
       class="flex-1 border-none"
+      data-vue-devtools-ignore
       :src="src"
       @load="onLoad"
     />

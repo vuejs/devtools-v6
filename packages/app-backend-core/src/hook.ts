@@ -35,7 +35,7 @@ export function installHook (target, isIframe = false) {
 
   let iframeChecks = 0
   function injectToIframes () {
-    const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe')
+    const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe:not([data-vue-devtools-ignore])')
     for (const iframe of iframes) {
       injectIframeHook(iframe)
     }
