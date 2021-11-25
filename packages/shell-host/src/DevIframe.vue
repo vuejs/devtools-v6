@@ -95,6 +95,8 @@ export default defineComponent({
       src.value = 'target.html'
     }
 
+    const includeCode = `&lt;script src="${location.origin}/target/hook.js"&gt;&lt;/script&gt;`
+
     return {
       src,
       url,
@@ -104,6 +106,7 @@ export default defineComponent({
       onLoad,
       reset,
       error,
+      includeCode,
     }
   },
 })
@@ -149,6 +152,34 @@ export default defineComponent({
         class="icon-button flat"
         @click="reset()"
       />
+
+      <VueDropdown
+        :offset="[0, 0]"
+      >
+        <template #trigger>
+          <VueButton
+            v-tooltip="'Help'"
+            icon-left="help"
+            class="icon-button flat"
+          />
+        </template>
+
+        <div class="p-8">
+          <p>
+            You need to <a
+              href="https://stackoverflow.com/questions/3102819/disable-same-origin-policy-in-chrome"
+              target="_blank"
+              class="text-green-500"
+            >disable Chrome web security</a> to allow manipulating an iframe on a different origin.
+          </p>
+          <pre class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm">google-chrome --disable-web-security --user-data-dir="temp-chrome-data"</pre>
+          <p>If the devtools have trouble connecting to the webpage, please put this snippet in the target app HTML before the main scripts:</p>
+          <pre
+            class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm"
+            v-html="includeCode"
+          />
+        </div>
+      </VueDropdown>
     </div>
 
     <VueModal
@@ -156,12 +187,13 @@ export default defineComponent({
       title="Error"
       @close="error = false"
     >
-      <div class="p-8">
+      <div class="p-6">
         Please <a
           href="https://stackoverflow.com/questions/3102819/disable-same-origin-policy-in-chrome"
           target="_blank"
           class="text-green-500"
         >disable Chrome web security</a> to allow manipulating an iframe on a different origin.
+        <pre class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm">google-chrome --disable-web-security --user-data-dir="temp-chrome-data"</pre>
       </div>
     </VueModal>
   </div>
