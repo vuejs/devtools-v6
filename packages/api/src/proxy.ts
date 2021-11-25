@@ -59,11 +59,13 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
       },
     }
 
-    hook?.on(HOOK_PLUGIN_SETTINGS_SET, (pluginId, value) => {
-      if (pluginId === this.plugin.id) {
-        this.fallbacks.setSettings(value)
-      }
-    })
+    if (hook) {
+      hook.on(HOOK_PLUGIN_SETTINGS_SET, (pluginId, value) => {
+        if (pluginId === this.plugin.id) {
+          this.fallbacks.setSettings(value)
+        }
+      })
+    }
 
     this.proxiedOn = new Proxy({} as Hookable<Context>, {
       get: (_target, prop: string) => {
