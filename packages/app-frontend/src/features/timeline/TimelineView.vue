@@ -855,7 +855,7 @@ export default defineComponent({
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
           if (!t) {
-            t = event.groupT = new PIXI.Text(`${event.id} ${event.title} ${event.subtitle}`, {
+            t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
               fontSize: 10,
               fill: darkMode.value ? 0xffffff : 0,
             })
