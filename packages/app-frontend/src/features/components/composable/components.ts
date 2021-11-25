@@ -326,6 +326,11 @@ export async function loadComponent (id: ComponentTreeNode['id']) {
 
 export function sortChildren (children: ComponentTreeNode[]) {
   return children.slice().sort((a, b) => {
+    if (a.inactive && !b.inactive) {
+      return 1
+    } else if (!a.inactive && b.inactive) {
+      return -1
+    }
     const order = compareIndexLists(a.domOrder ?? [], b.domOrder ?? [])
     if (order === 0) {
       return a.id.localeCompare(b.id)
