@@ -23,6 +23,7 @@ import {
   TimelineEvent,
   useMarkers,
   TimelineMarker,
+  getGroupsAroundPosition,
 } from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
@@ -395,12 +396,13 @@ export default defineComponent({
         const lastPos = event.group ? getPos(lastEvent.time) : firstPos
 
         // Check for 'collision' with other event groups
-        const l = event.layer.groups.length
+        const otherGroups = event.layer.groupsOnly ? getGroupsAroundPosition(event.layer, firstEvent.time, lastEvent.time) : event.layer.groups
+        const l = otherGroups.length
         let checkAgain = true
         while (checkAgain) {
           checkAgain = false
           for (let i = 0; i < l; i++) {
-            const otherGroup = event.layer.groups[i]
+            const otherGroup = otherGroups[i]
 
             if (
               // Different group
@@ -886,7 +888,7 @@ export default defineComponent({
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
           if (!t) {
-            t = event.groupT = new PIXI.Text(`${event.title} ${event.subtitle}`, {
+            t = event.groupT = new PIXI.Text(`${SharedData.debugInfo ? `${event.id} ` : ''}${event.title} ${event.subtitle}`, {
               fontSize: 10,
               fill: darkMode.value ? 0xffffff : 0,
             })

@@ -13,6 +13,7 @@ import {
   Layer,
   selectedEvent,
   inspectedEvent,
+  EventGroup,
 } from './store'
 import { useRouter } from '@front/util/router'
 
@@ -26,6 +27,7 @@ export function layerFactory (options: LayerFromBackend): Layer {
     height: 1,
     lastInspectedEvent: null,
     loaded: false,
+    groupPositionCache: {},
   }
 }
 
@@ -113,4 +115,34 @@ export function useLayers () {
 export async function fetchLayers () {
   await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, {})
+}
+
+export function getGroupsAroundPosition (layer: Layer, startPosition: number, endPosition: number): EventGroup[] {
+  const result: EventGroup[] = []
+  let key = Math.round(startPosition / 100)
+  const endKey = Math.round(endPosition / 100)
+  while (key <= endKey) {
+    const groups = layer.groupPositionCache[key]
+    if (groups) {
+      result.push(...groups)
+    }
+    key++
+  }
+  return result
+}
+
+export function addGroupAroundPosition (layer: Layer, group: EventGroup, newPosition: number) {
+  let key = Math.round(group.lastEvent.time / 100)
+  const endKey = Math.round(newPosition / 100)
+
+  while (key <= endKey) {
+    let list = layer.groupPositionCache[key]
+    if (!list) {
+      list = layer.groupPositionCache[key] = []
+    }
+    if (!list.includes(group)) {
+      list.push(group)
+    }
+    key++
+  }
 }

@@ -18,6 +18,7 @@ import {
 } from './store'
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
+import { addGroupAroundPosition } from './layers'
 
 const AUTOSCROLL_DURATION = 10000
 
@@ -71,6 +72,9 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
         duration: 0,
       }
       layer.groups.push(group)
+    }
+    if (layer.groupsOnly) {
+      addGroupAroundPosition(layer, group, event.time)
     }
     group.events.push(event)
     group.lastEvent = event
