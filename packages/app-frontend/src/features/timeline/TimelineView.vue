@@ -1171,6 +1171,8 @@ export default defineComponent({
 
     function onResize () {
       app.view.style.opacity = '0'
+      // @ts-expect-error PIXI type is missing queueResize
+      app.queueResize()
       queueEventsUpdate()
       drawLayerBackgroundEffects()
       drawTimeCursor()
