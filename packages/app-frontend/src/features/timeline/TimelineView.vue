@@ -413,9 +413,6 @@ export default defineComponent({
               // Same row
               otherGroup.y === y
             ) {
-              // // eslint-disable-next-line no-console
-              // if (event.layer.groupsOnly) console.log('checking collision with', otherGroup.firstEvent.id, otherGroup.firstEvent.title)
-
               const otherGroupFirstPos = getPos(otherGroup.firstEvent.time)
               const otherGroupLastPos = getPos(otherGroup.lastEvent.time)
 
