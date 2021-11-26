@@ -12,6 +12,7 @@ export interface ComponentTreeNode {
   isFragment: boolean
   hasChildren: boolean
   children: ComponentTreeNode[]
+  cache?: ComponentTreeNode[]
   domOrder?: number[]
   consoleId?: string
   isRouterView?: boolean

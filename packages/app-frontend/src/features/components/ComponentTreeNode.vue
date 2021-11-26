@@ -31,7 +31,9 @@ export default defineComponent({
     const componentHasKey = computed(() => (props.instance.renderKey === 0 || !!props.instance.renderKey) && props.instance.renderKey !== UNDEFINED)
 
     const sortedChildren = computed<ComponentTreeNode[]>(() => props.instance.children
-      ? sortChildren(props.instance.children)
+      ? props.instance.cache
+        ? sortChildren([...props.instance.children, ...props.instance.cache])
+        : sortChildren(props.instance.children)
       : [])
 
     const {
@@ -265,7 +267,7 @@ export default defineComponent({
       <ComponentTreeNode
         v-for="(child, index) in sortedChildren"
         :key="child.id"
-        :instance="child"
+        :instance="instance.inactive ? { ...child, inactive: instance.inactive } : child"
         :depth="depth + 1"
         @select-next-sibling="selectNextSibling(index)"
         @select-previous-sibling="selectPreviousSibling(index)"

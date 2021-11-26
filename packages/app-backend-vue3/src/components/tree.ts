@@ -132,16 +132,12 @@ export class ComponentWalker {
     const children = this.getInternalInstanceChildren(instance.subTree)
       .filter(child => !isBeingDestroyed(child))
 
-    const parents = this.getComponentParents(instance) || []
-
-    const inactive = !!instance.isDeactivated || parents.some(parent => parent.isDeactivated)
-
     const treeNode: ComponentTreeNode = {
       uid: instance.uid,
       id,
       name,
       renderKey: getRenderKey(instance.vnode ? instance.vnode.key : null),
-      inactive,
+      inactive: !!instance.isDeactivated,
       hasChildren: !!children.length,
       children: [],
       isFragment: isFragment(instance),
@@ -149,21 +145,22 @@ export class ComponentWalker {
     }
 
     // capture children
-    if (depth < this.maxDepth || instance.type.__isKeepAlive || parents.some(parent => parent.type.__isKeepAlive)) {
+    if (depth < this.maxDepth || instance.isCached) {
       treeNode.children = await Promise.all(children
-        .map((child, index, list) => this.capture(child, list, depth + 1))
+        .map((child, index, list) => this.capture({ ...child, isCached: !!instance.isCached }, list, depth + 1))
         .filter(Boolean))
     }
 
     // keep-alive
     if (instance.type.__isKeepAlive && instance.__v_cache) {
+      treeNode.cache = []
       const cachedComponents = Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
       const childrenIds = children.map(child => child.__VUE_DEVTOOLS_UID__)
       for (const cachedChild of cachedComponents) {
         if (!childrenIds.includes(cachedChild.__VUE_DEVTOOLS_UID__)) {
-          const node = await this.capture({ ...cachedChild, isDeactivated: true }, null, depth + 1)
+          const node = await this.capture({ ...cachedChild, isCached: true }, null, depth + 1)
           if (node) {
-            treeNode.children.push(node)
+            treeNode.cache.push(node)
           }
         }
       }
