@@ -640,6 +640,7 @@ export default defineComponent({
 
     onMounted(() => {
       app.stage.addListener('click', event => {
+        if (cameraDragging) return
         const choice = getEventAtPosition(event.data.global.x, event.data.global.y)
         if (choice) {
           selectEvent(choice)
@@ -1097,6 +1098,60 @@ export default defineComponent({
 
     onMounted(() => {
       updateVScroll()
+    })
+
+    // Camera dragging
+
+    let cameraDragging = false
+    let startDragX: number
+    let startDragY: number
+    let startDragTime: number
+    let startDragScrollTop: number
+
+    onMounted(() => {
+      const layersScroller = document.querySelector('[data-scroller="layers"]')
+
+      const onMouseMove = (event) => {
+        const { x, y } = event.data.global
+        if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
+          cameraDragging = true
+        }
+
+        if (cameraDragging) {
+          const deltaX = startDragX - x
+          const deltaY = startDragY - y
+
+          // Horizontal
+          const size = endTime.value - startTime.value
+          const viewWidth = wrapper.value.offsetWidth
+          const delta = deltaX / viewWidth * size
+          let start = startTime.value = startDragTime + delta
+          if (start < minTime.value) {
+            start = minTime.value
+          } else if (start + size >= maxTime.value) {
+            start = maxTime.value - size
+          }
+          startTime.value = start
+          endTime.value = start + size
+
+          // Vertical
+          layersScroller.scrollTop = startDragScrollTop + deltaY
+        }
+      }
+
+      app.stage.addListener('mousedown', (event) => {
+        const { x, y } = event.data.global
+        startDragX = x
+        startDragY = y
+        startDragTime = startTime.value
+        startDragScrollTop = layersScroller.scrollTop
+        app.stage.addListener('mousemove', onMouseMove)
+      })
+
+      window.addEventListener('mouseup', () => {
+        cameraDragging = false
+        app.stage.removeListener('mousemove', onMouseMove)
+      })
     })
 
     // Resize
