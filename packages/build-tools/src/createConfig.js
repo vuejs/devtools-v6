@@ -29,16 +29,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
         {
           test: /\.js$/,
           exclude: /node_modules|vue\/dist|vuex\/dist/,
-          loader: 'buble-loader',
-          options: {
-            target,
-            objectAssign: 'Object.assign',
-            transforms: {
-              modules: false,
-              asyncAwait: false,
-              forOf: false,
-            },
-          },
+          loader: 'babel-loader',
         },
         {
           test: /\.ts$/,

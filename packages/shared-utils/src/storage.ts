@@ -7,7 +7,7 @@ const useStorage = typeof target.chrome !== 'undefined' && typeof target.chrome.
 
 let storageData = null
 
-export function initStorage () {
+export function initStorage (): Promise<void> {
   return new Promise((resolve) => {
     if (useStorage) {
       target.chrome.storage.local.get(null, result => {

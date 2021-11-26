@@ -20,6 +20,7 @@
       "webpack-env",
     ],
     "allowJs": true,
+    "target": "ES2019",
     // Strict
     "noImplicitAny": false,
     "noImplicitThis": true,

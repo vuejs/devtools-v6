@@ -73,7 +73,7 @@ export interface SharedDataParams {
 
 const initCbs = []
 
-export function initSharedData (params: SharedDataParams) {
+export function initSharedData (params: SharedDataParams): Promise<void> {
   return new Promise((resolve) => {
     // Mandatory params
     bridge = params.bridge
