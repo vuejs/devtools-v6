@@ -19,6 +19,7 @@ import {
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
 import { addGroupAroundPosition } from './layers'
+import { EventGroup } from '.'
 
 const AUTOSCROLL_DURATION = 10000
 
@@ -42,7 +43,6 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     Object.defineProperty(event, key, {
       value: eventOptions[key],
       writable: true,
-      enumerable: true,
       configurable: false,
     })
   }
@@ -64,13 +64,21 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     let group = layer.groupsMap[event.groupId]
     if (!group) {
       group = layer.groupsMap[event.groupId] = {
-        id: event.groupId,
         events: [],
         firstEvent: event,
         lastEvent: event,
-        y: 0,
         duration: 0,
+      } as EventGroup
+      const descriptor = {
+        writable: true,
+        configurable: false,
       }
+      Object.defineProperties(group, {
+        id: { value: event.groupId, ...descriptor },
+        y: { value: 0, ...descriptor },
+        oldSize: { value: null, ...descriptor },
+        oldSelected: { value: null, ...descriptor },
+      })
       layer.groups.push(group)
     }
     if (layer.groupsOnly) {

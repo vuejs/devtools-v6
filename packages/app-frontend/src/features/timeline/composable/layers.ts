@@ -18,17 +18,28 @@ import {
 import { useRouter } from '@front/util/router'
 
 export function layerFactory (options: LayerFromBackend): Layer {
-  return {
+  const result = {} as Layer
+  const nonReactiveOptions = {
     ...options,
-    events: [],
     eventsMap: {},
-    groups: [],
     groupsMap: {},
+    groupPositionCache: {},
+  }
+  for (const key in nonReactiveOptions) {
+    Object.defineProperty(result, key, {
+      value: nonReactiveOptions[key],
+      writable: true,
+      configurable: false,
+    })
+  }
+  Object.assign(result, {
+    events: [],
+    groups: [],
     height: 1,
     lastInspectedEvent: null,
     loaded: false,
-    groupPositionCache: {},
-  }
+  })
+  return result
 }
 
 export function getLayers (appId: string) {

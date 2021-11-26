@@ -478,7 +478,11 @@ export default defineComponent({
 
       if (!event.layer.groupsOnly || (event.group?.firstEvent === event)) {
         eventContainer = new PIXI.Container()
-        event.container = eventContainer
+        Object.defineProperty(event, 'container', {
+          value: eventContainer,
+          writable: true,
+          configurable: false,
+        })
         layerContainer.addChild(eventContainer)
       }
 
@@ -486,9 +490,14 @@ export default defineComponent({
       if (event.group) {
         if (event.group.firstEvent === event) {
           const groupG = new PIXI.Graphics()
-          event.groupG = groupG
+          Object.defineProperty(event, 'groupG', {
+            value: groupG,
+            writable: true,
+            configurable: false,
+          })
           eventContainer.addChild(groupG)
           event.group.oldSize = null
+          event.group.oldSelected = null
           drawEventGroup(event)
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
@@ -500,7 +509,11 @@ export default defineComponent({
       // Graphics
       if (eventContainer) {
         const g = new PIXI.Graphics()
-        event.g = g
+        Object.defineProperty(event, 'g', {
+          value: g,
+          writable: true,
+          configurable: false,
+        })
         eventContainer.addChild(g)
       }
 
