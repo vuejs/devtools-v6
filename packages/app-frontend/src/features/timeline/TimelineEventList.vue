@@ -110,7 +110,7 @@ export default defineComponent({
     }, { immediate: true })
 
     watch(tabId, () => {
-      scrollToInspectedEvent()
+      checkScrollToInspectedEvent()
     }, { immediate: true })
 
     function scrollToInspectedEvent () {
