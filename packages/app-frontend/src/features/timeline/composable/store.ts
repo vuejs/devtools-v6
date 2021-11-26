@@ -19,6 +19,7 @@ export interface EventGroup {
   duration: number
   y: number
   oldSize?: number
+  oldSelected?: boolean
 }
 
 export interface EventScreenshot {

@@ -860,7 +860,7 @@ export default defineComponent({
         /** @type {PIXI.Graphics} */
         const g = event.groupG
         const size = getTimePosition(event.group.lastEvent.time) - getTimePosition(event.group.firstEvent.time)
-        if (size !== event.group.oldSize) {
+        if (size !== event.group.oldSize || drawAsSelected !== event.group.oldSelected) {
           g.clear()
           if (event.layer.groupsOnly) {
             if (drawAsSelected) {
@@ -912,6 +912,7 @@ export default defineComponent({
         }
 
         event.group.oldSize = size
+        event.group.oldSelected = drawAsSelected
       }
     }
 
