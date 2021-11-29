@@ -114,32 +114,41 @@ export default defineComponent({
         app.view.style.opacity = '1'
       })
 
-      mainRenderTexture = PIXI.RenderTexture.create({
-        width: app.view.width,
-        height: app.view.height,
-        resolution: window.devicePixelRatio,
-      })
-      const mainRenderSprite = new PIXI.Sprite(mainRenderTexture)
-      app.stage.addChild(mainRenderSprite)
-
-      mainRenderContainer = new PIXI.Container()
-
       verticalScrollingContainer = new PIXI.Container()
-      mainRenderContainer.addChild(verticalScrollingContainer)
 
       horizontalScrollingContainer = new PIXI.Container()
       verticalScrollingContainer.addChild(horizontalScrollingContainer)
+
+      if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
+        mainRenderTexture = PIXI.RenderTexture.create({
+          width: app.view.width,
+          height: app.view.height,
+          resolution: window.devicePixelRatio,
+        })
+        mainRenderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.LOW
+        const mainRenderSprite = new PIXI.Sprite(mainRenderTexture)
+        app.stage.addChild(mainRenderSprite)
+
+        mainRenderContainer = new PIXI.Container()
+        mainRenderContainer.addChild(verticalScrollingContainer)
+      } else {
+        app.stage.addChild(verticalScrollingContainer)
+      }
     })
 
     let drawScheduled = false
 
     function draw () {
-      if (!drawScheduled) {
+      if (!drawScheduled && app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
         drawScheduled = true
         Vue.nextTick(() => {
           app.renderer.render(mainRenderContainer, {
             renderTexture: mainRenderTexture,
           })
+          if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
+            const renderer = app.renderer as PIXI.Renderer
+            renderer.framebuffer.blit()
+          }
           drawScheduled = false
         })
       }
@@ -1218,7 +1227,7 @@ export default defineComponent({
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
-      mainRenderTexture.resize(app.view.width, app.view.height)
+      mainRenderTexture?.resize(app.view.width, app.view.height)
       queueEventsUpdate()
       drawLayerBackgroundEffects()
       drawTimeCursor()
