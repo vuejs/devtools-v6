@@ -1227,12 +1227,14 @@ export default defineComponent({
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
-      mainRenderTexture?.resize(app.view.width, app.view.height)
-      queueEventsUpdate()
-      drawLayerBackgroundEffects()
-      drawTimeCursor()
-      drawTimeGrid()
-      draw()
+      requestAnimationFrame(() => {
+        mainRenderTexture?.resize(app.view.width, app.view.height)
+        queueEventsUpdate()
+        drawLayerBackgroundEffects()
+        drawTimeCursor()
+        drawTimeGrid()
+        draw()
+      })
     }
 
     // Events
