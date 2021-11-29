@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -34,7 +36,16 @@ jobs:
       - name: Build the extension
         run: yarn run build && node release.js && yarn run test && yarn run zip
 
-      - name: Release
+      - name: Create Release for Tag
+        id: release_tag
+        uses: Akryum/release-tag@conventional
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          preset: angular
+
+      - name: Upload artifacts
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
