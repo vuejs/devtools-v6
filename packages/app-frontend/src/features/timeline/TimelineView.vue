@@ -34,6 +34,12 @@ import { Queue } from '@front/util/queue'
 import { nonReactive } from '@front/util/reactivity'
 
 PIXI.settings.ROUND_PIXELS = true
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+
+PIXI.BitmapFont.from('Roboto Mono', {
+  fontFamily: 'Roboto Mono',
+  fontSize: 9,
+})
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
@@ -495,6 +501,16 @@ export default defineComponent({
             writable: true,
             configurable: false,
           })
+          Object.defineProperty(event, 'groupT', {
+            value: null,
+            writable: true,
+            configurable: false,
+          })
+          Object.defineProperty(event, 'groupText', {
+            value: null,
+            writable: true,
+            configurable: false,
+          })
           eventContainer.addChild(groupG)
           event.group.oldSize = null
           event.group.oldSelected = null
@@ -898,29 +914,21 @@ export default defineComponent({
         // Title
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
+          let text = event.groupText
           if (!t) {
-            t = event.groupT = new PIXI.Text(`${SharedData.debugInfo ? `${event.id} ` : ''}${event.title} ${event.subtitle}`, {
-              fontSize: 10,
-              fill: darkMode.value ? 0xffffff : 0,
+            text = `${SharedData.debugInfo ? `${event.id} ` : ''}${event.title} ${event.subtitle}`
+            t = event.groupT = new PIXI.BitmapText('', {
+              fontName: 'Roboto Mono',
+              tint: darkMode.value ? 0xffffff : 0,
             })
+            t.x = 1
             t.y = Math.round(-t.height / 2)
+            t.dirty = false
+            event.groupText = text
             event.container.addChild(t)
-
-            // Mask
-            const mask = new PIXI.Graphics()
-            event.container.addChild(mask)
-            t.mask = mask
           }
-
-          const mask = t.mask as PIXI.Graphics
-          if (size !== event.group.oldSize) {
-            mask.clear()
-            mask.beginFill(0)
-            mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
-          }
+          t.text = text.slice(0, Math.floor((size - 1) / 6))
         } else if (event.groupT) {
-          const mask = event.groupT.mask as PIXI.Graphics
-          mask?.destroy()
           event.groupT.destroy()
           event.groupT = null
         }

@@ -37,7 +37,8 @@ export interface TimelineEvent extends TimelineEventFromBackend {
   container: PIXI.Container
   g: PIXI.Graphics
   groupG: PIXI.Graphics
-  groupT: PIXI.Text
+  groupT: PIXI.BitmapText
+  groupText: string
   forcePositionUpdate?: boolean
 }
 
