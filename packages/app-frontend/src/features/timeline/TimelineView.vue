@@ -90,6 +90,9 @@ export default defineComponent({
 
     let app: PIXI.Application
 
+    let mainRenderTexture: PIXI.RenderTexture
+    let mainRenderContainer: PIXI.Container
+
     let verticalScrollingContainer: PIXI.Container
     let horizontalScrollingContainer: PIXI.Container
 
@@ -109,12 +112,36 @@ export default defineComponent({
         app.view.style.opacity = '1'
       })
 
+      mainRenderTexture = PIXI.RenderTexture.create({
+        width: app.view.width,
+        height: app.view.height,
+        resolution: window.devicePixelRatio,
+      })
+      const mainRenderSprite = new PIXI.Sprite(mainRenderTexture)
+      app.stage.addChild(mainRenderSprite)
+
+      mainRenderContainer = new PIXI.Container()
+
       verticalScrollingContainer = new PIXI.Container()
-      app.stage.addChild(verticalScrollingContainer)
+      mainRenderContainer.addChild(verticalScrollingContainer)
 
       horizontalScrollingContainer = new PIXI.Container()
       verticalScrollingContainer.addChild(horizontalScrollingContainer)
     })
+
+    let drawScheduled = false
+
+    function draw () {
+      if (!drawScheduled) {
+        drawScheduled = true
+        Vue.nextTick(() => {
+          app.renderer.render(mainRenderContainer, {
+            renderTexture: mainRenderTexture,
+          })
+          drawScheduled = false
+        })
+      }
+    }
 
     onUnmounted(() => {
       app.destroy()
@@ -276,6 +303,7 @@ export default defineComponent({
       } else {
         layerHoverEffect.visible = false
       }
+      draw()
     }
 
     function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
@@ -376,6 +404,7 @@ export default defineComponent({
       while ((event = updateEventVerticalPositionQueue.shift())) {
         computeEventVerticalPosition(event)
       }
+      draw()
     }
 
     function isEventIgnored (event: TimelineEvent) {
@@ -622,6 +651,7 @@ export default defineComponent({
           drawEventGroup(event)
         }
       }
+      draw()
     }
 
     watch(startTime, () => queueEventsUpdate())
@@ -834,12 +864,8 @@ export default defineComponent({
             text.push(`Group: ${event.group.duration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
           }
 
-          if (hoverEvent?.container && hoverEvent !== event) {
-            hoverEvent.container.alpha = 1
-          }
-          hoverEvent = event
-          if (hoverEvent?.container) {
-            hoverEvent.container.alpha = 0.5
+          if (event?.container) {
+            event.container.alpha = 0.5
           }
         } else {
           // Marker tooltip
@@ -850,6 +876,13 @@ export default defineComponent({
             text.push('(marker)')
           }
         }
+        if (event !== hoverEvent) {
+          if (hoverEvent?.container) {
+            hoverEvent.container.alpha = 1
+          }
+          draw()
+        }
+        hoverEvent = event
 
         if (text.length) {
           // Draw tooltip
@@ -1035,6 +1068,7 @@ export default defineComponent({
       drawLayerBackgroundEffects()
       drawTimeGrid()
       drawMarkers()
+      draw()
     }
 
     watch(startTime, () => queueCameraUpdate())
@@ -1110,6 +1144,7 @@ export default defineComponent({
     function updateVScroll () {
       if (verticalScrollingContainer) {
         verticalScrollingContainer.y = -vScroll.value
+        draw()
       }
     }
 
@@ -1181,10 +1216,12 @@ export default defineComponent({
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
+      mainRenderTexture.resize(app.view.width, app.view.height)
       queueEventsUpdate()
       drawLayerBackgroundEffects()
       drawTimeCursor()
       drawTimeGrid()
+      draw()
     }
 
     // Events
