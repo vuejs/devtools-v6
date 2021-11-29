@@ -17,6 +17,8 @@ export const backend = defineBackend({
     api.on.getAppRecordName(payload => {
       if (payload.app.name) {
         payload.name = payload.app.name
+      } else if (payload.app.$options.name) {
+        payload.name = payload.app.$options.name
       }
     })
 
