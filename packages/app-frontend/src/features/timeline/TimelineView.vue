@@ -39,6 +39,8 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 PIXI.BitmapFont.from('Roboto Mono', {
   fontFamily: 'Roboto Mono',
   fontSize: 9,
+}, {
+  resolution: window.devicePixelRatio,
 })
 
 const LAYER_SIZE = 16
