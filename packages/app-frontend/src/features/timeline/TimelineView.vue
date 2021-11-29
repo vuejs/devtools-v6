@@ -63,7 +63,7 @@ export default defineComponent({
     }
 
     function getTimePosition (time: number) {
-      return (time - nonReactiveTime.minTime.value) / (nonReactiveTime.endTime.value - nonReactiveTime.startTime.value) * app.view.width
+      return (time - nonReactiveTime.minTime.value) / (nonReactiveTime.endTime.value - nonReactiveTime.startTime.value) * app.view.width / window.devicePixelRatio
     }
 
     // Reset
@@ -1087,7 +1087,7 @@ export default defineComponent({
         // Firefox doesn't block the event https://bugzilla.mozilla.org/show_bug.cgi?id=1632465
         event.preventDefault()
 
-        const centerRatio = event.offsetX / viewWidth
+        const centerRatio = event.offsetX / viewWidth / window.devicePixelRatio
         const center = size * centerRatio + startTime.value
 
         let newSize = size + event.deltaY / viewWidth * size * 2
@@ -1174,8 +1174,8 @@ export default defineComponent({
         }
 
         if (cameraDragging) {
-          const deltaX = startDragX - x
-          const deltaY = startDragY - y
+          const deltaX = (startDragX - x) / window.devicePixelRatio
+          const deltaY = (startDragY - y) / window.devicePixelRatio
 
           // Horizontal
           const size = endTime.value - startTime.value
