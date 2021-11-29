@@ -1094,7 +1094,7 @@ export default defineComponent({
       const size = endTime.value - startTime.value
       const viewWidth = wrapper.value.offsetWidth
 
-      if (event.ctrlKey || event.metaKey) {
+      if (!event.shiftKey && !event.altKey) {
         // Zoom
         // Firefox doesn't block the event https://bugzilla.mozilla.org/show_bug.cgi?id=1632465
         event.preventDefault()
