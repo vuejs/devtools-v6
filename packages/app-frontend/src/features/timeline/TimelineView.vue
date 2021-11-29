@@ -47,6 +47,11 @@ const LAYER_SIZE = 16
 const GROUP_SIZE = 6
 const MIN_CAMERA_SIZE = 10
 
+const propConfig = {
+  writable: true,
+  configurable: false,
+}
+
 installUnsafeEval(PIXI)
 
 export default defineComponent({
@@ -57,15 +62,16 @@ export default defineComponent({
     const { startTime, endTime, minTime, maxTime } = useTime()
     const { darkMode } = useDarkMode()
 
-    // Optimize for read in loops
-    const nonReactiveTime = {
+    // Optimize for read in loops and hot code
+    const nonReactiveState = {
       startTime: nonReactive(startTime),
       endTime: nonReactive(endTime),
       minTime: nonReactive(minTime),
+      darkMode: nonReactive(darkMode),
     }
 
     function getTimePosition (time: number) {
-      return (time - nonReactiveTime.minTime.value) / (nonReactiveTime.endTime.value - nonReactiveTime.startTime.value) * app.view.width / window.devicePixelRatio
+      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width / window.devicePixelRatio
     }
 
     // Reset
@@ -159,7 +165,7 @@ export default defineComponent({
     })
 
     function updateBackground () {
-      if (darkMode.value) {
+      if (nonReactiveState.darkMode.value) {
         app && (app.renderer.backgroundColor = 0x0b1015)
       } else {
         app && (app.renderer.backgroundColor = 0xffffff)
@@ -355,6 +361,7 @@ export default defineComponent({
     // Events
 
     const { selectedEvent } = useSelectedEvent()
+    const nonReactiveSelectedEvent = nonReactive(selectedEvent)
 
     let events: TimelineEvent[] = []
 
@@ -418,8 +425,15 @@ export default defineComponent({
       draw()
     }
 
+    let isEventIgnoredCache: Record<TimelineEvent['id'], boolean> = {}
+
     function isEventIgnored (event: TimelineEvent) {
-      return event.layer.ignoreNoDurationGroups && event.group && event.group.duration <= 0
+      let result = isEventIgnoredCache[event.id]
+      if (result == null) {
+        result = event.layer.ignoreNoDurationGroups && event.group?.nonReactiveDuration <= 0
+        isEventIgnoredCache[event.id] = result
+      }
+      return result
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
@@ -434,7 +448,7 @@ export default defineComponent({
         // Collision offset for non-flamecharts
         const offset = event.layer.groupsOnly ? 0 : 12
         // For flamechart allow 1-pixel overlap at the end of a group
-        const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
+        const lastOffset = event.layer.groupsOnly && event.group?.nonReactiveDuration > 0 ? -1 : 0
         // Flamechart uses time instead of pixel position
         const getPos = event.layer.groupsOnly ? (time: number) => time : getTimePosition
 
@@ -483,7 +497,7 @@ export default defineComponent({
                 )
               )) {
                 // Collision!
-                if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
+                if (event.group && event.group.nonReactiveDuration > otherGroup.nonReactiveDuration && firstEvent.time <= otherGroup.firstEvent.time) {
                   // Invert positions because current group has higher priority
                   if (!updateEventVerticalPositionQueue.has(otherGroup.firstEvent)) {
                     queueEventPositionUpdate([otherGroup.firstEvent], event.layer.groupsOnly)
@@ -524,11 +538,7 @@ export default defineComponent({
 
       if (!event.layer.groupsOnly || (event.group?.firstEvent === event)) {
         eventContainer = new PIXI.Container()
-        Object.defineProperty(event, 'container', {
-          value: eventContainer,
-          writable: true,
-          configurable: false,
-        })
+        Object.defineProperty(event, 'container', { value: eventContainer, ...propConfig })
         layerContainer.addChild(eventContainer)
       }
 
@@ -536,20 +546,10 @@ export default defineComponent({
       if (event.group) {
         if (event.group.firstEvent === event) {
           const groupG = new PIXI.Graphics()
-          Object.defineProperty(event, 'groupG', {
-            value: groupG,
-            writable: true,
-            configurable: false,
-          })
-          Object.defineProperty(event, 'groupT', {
-            value: null,
-            writable: true,
-            configurable: false,
-          })
-          Object.defineProperty(event, 'groupText', {
-            value: null,
-            writable: true,
-            configurable: false,
+          Object.defineProperties(event, {
+            groupG: { value: groupG, ...propConfig },
+            groupT: { value: null, ...propConfig },
+            groupText: { value: null, ...propConfig },
           })
           eventContainer.addChild(groupG)
           event.group.oldSize = null
@@ -565,11 +565,7 @@ export default defineComponent({
       // Graphics
       if (eventContainer) {
         const g = new PIXI.Graphics()
-        Object.defineProperty(event, 'g', {
-          value: g,
-          writable: true,
-          configurable: false,
-        })
+        Object.defineProperty(event, 'g', { value: g, ...propConfig })
         eventContainer.addChild(g)
       }
 
@@ -618,6 +614,7 @@ export default defineComponent({
         e.container = null
       }
       events = []
+      isEventIgnoredCache = {}
     }
 
     function resetEvents () {
@@ -736,8 +733,8 @@ export default defineComponent({
             if (selected) {
               // Border-only style
               size--
-              g.lineStyle(2, boostColor(color, darkMode.value))
-              g.beginFill(dimColor(color, darkMode.value))
+              g.lineStyle(2, boostColor(color, nonReactiveState.darkMode.value))
+              g.beginFill(dimColor(color, nonReactiveState.darkMode.value))
               if (!event.group || event.group.firstEvent !== event) {
                 event.container.zIndex = 999999999
               }
@@ -759,7 +756,7 @@ export default defineComponent({
     const drawUnselectedEvent = drawEvent.bind(null, false)
 
     function refreshEventGraphics (event: TimelineEvent) {
-      if (selectedEvent.value === event) {
+      if (nonReactiveSelectedEvent.value === event) {
         drawSelectedEvent(event)
       } else {
         drawUnselectedEvent(event)
@@ -775,8 +772,8 @@ export default defineComponent({
 
     function selectPreviousEvent () {
       let index
-      if (selectedEvent.value) {
-        index = events.indexOf(selectedEvent.value)
+      if (nonReactiveSelectedEvent.value) {
+        index = events.indexOf(nonReactiveSelectedEvent.value)
       } else {
         index = events.length
       }
@@ -797,8 +794,8 @@ export default defineComponent({
 
     function selectNextEvent () {
       let index
-      if (selectedEvent.value) {
-        index = events.indexOf(selectedEvent.value)
+      if (nonReactiveSelectedEvent.value) {
+        index = events.indexOf(nonReactiveSelectedEvent.value)
       } else {
         index = -1
       }
@@ -862,38 +859,40 @@ export default defineComponent({
       app.stage.addListener('mousemove', mouseEvent => {
         const text: string[] = []
 
-        // Event tooltip
-        const event = getEventAtPosition(mouseEvent.data.global.x, mouseEvent.data.global.y)
-        if (event) {
-          text.push(event.title ?? 'Event')
-          if (event.subtitle) {
-            text.push(event.subtitle)
-          }
-          text.push(formatTime(event.time, 'ms'))
+        if (!cameraDragging) {
+          // Event tooltip
+          const event = getEventAtPosition(mouseEvent.data.global.x, mouseEvent.data.global.y)
+          if (event) {
+            text.push(event.title ?? 'Event')
+            if (event.subtitle) {
+              text.push(event.subtitle)
+            }
+            text.push(formatTime(event.time, 'ms'))
 
-          if (event.group) {
-            text.push(`Group: ${event.group.duration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
-          }
+            if (event.group) {
+              text.push(`Group: ${event.group.nonReactiveDuration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
+            }
 
-          if (event?.container) {
-            event.container.alpha = 0.5
+            if (event?.container) {
+              event.container.alpha = 0.5
+            }
+          } else {
+            // Marker tooltip
+            const marker = getMarkerAtPosition(mouseEvent.data.global.x)
+            if (marker) {
+              text.push(marker.label)
+              text.push(formatTime(marker.time, 'ms'))
+              text.push('(marker)')
+            }
           }
-        } else {
-          // Marker tooltip
-          const marker = getMarkerAtPosition(mouseEvent.data.global.x)
-          if (marker) {
-            text.push(marker.label)
-            text.push(formatTime(marker.time, 'ms'))
-            text.push('(marker)')
+          if (event !== hoverEvent) {
+            if (hoverEvent?.container) {
+              hoverEvent.container.alpha = 1
+            }
+            draw()
           }
+          hoverEvent = event
         }
-        if (event !== hoverEvent) {
-          if (hoverEvent?.container) {
-            hoverEvent.container.alpha = 1
-          }
-          draw()
-        }
-        hoverEvent = event
 
         if (text.length) {
           // Draw tooltip
@@ -929,7 +928,7 @@ export default defineComponent({
 
     function drawEventGroup (event: TimelineEvent) {
       if (event.groupG) {
-        const drawAsSelected = event === selectedEvent.value && event.layer.groupsOnly
+        const drawAsSelected = event === nonReactiveSelectedEvent.value && event.layer.groupsOnly
 
         /** @type {PIXI.Graphics} */
         const g = event.groupG
@@ -938,14 +937,14 @@ export default defineComponent({
           g.clear()
           if (event.layer.groupsOnly) {
             if (drawAsSelected) {
-              g.lineStyle(2, boostColor(event.layer.color, darkMode.value))
-              g.beginFill(dimColor(event.layer.color, darkMode.value, 30))
+              g.lineStyle(2, boostColor(event.layer.color, nonReactiveState.darkMode.value))
+              g.beginFill(dimColor(event.layer.color, nonReactiveState.darkMode.value, 30))
             } else {
               g.beginFill(event.layer.color, 0.5)
             }
           } else {
-            g.lineStyle(1, dimColor(event.layer.color, darkMode.value))
-            g.beginFill(dimColor(event.layer.color, darkMode.value, 25))
+            g.lineStyle(1, dimColor(event.layer.color, nonReactiveState.darkMode.value))
+            g.beginFill(dimColor(event.layer.color, nonReactiveState.darkMode.value, 25))
           }
           if (event.layer.groupsOnly) {
             g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
@@ -959,16 +958,18 @@ export default defineComponent({
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
           let text = event.groupText
-          if (!t) {
+          if (!text) {
             text = `${SharedData.debugInfo ? `${event.id} ` : ''}${event.title} ${event.subtitle}`
+            event.groupText = text
+          }
+          if (!t) {
             t = event.groupT = new PIXI.BitmapText('', {
               fontName: 'Roboto Mono',
-              tint: darkMode.value ? 0xffffff : 0,
+              tint: nonReactiveState.darkMode.value ? 0xffffff : 0,
             })
             t.x = 1
             t.y = Math.round(-t.height / 2)
             t.dirty = false
-            event.groupText = text
             event.container.addChild(t)
           }
           t.text = text.slice(0, Math.floor((size - 1) / 6))

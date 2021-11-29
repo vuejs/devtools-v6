@@ -37,14 +37,15 @@ export function onEventAdd (cb: AddEventCb) {
 }
 
 export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Layer) {
+  const descriptor = {
+    writable: true,
+    configurable: false,
+  }
+
   // Non-reactive content
   const event = {} as TimelineEvent
   for (const key in eventOptions) {
-    Object.defineProperty(event, key, {
-      value: eventOptions[key],
-      writable: true,
-      configurable: false,
-    })
+    Object.defineProperty(event, key, { value: eventOptions[key], ...descriptor })
   }
 
   if (layer.eventsMap[event.id]) return
@@ -54,8 +55,10 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     resetTime()
   }
 
-  event.layer = layer
-  event.appId = appId
+  Object.defineProperties(event, {
+    layer: { value: layer, ...descriptor },
+    appId: { value: appId, ...descriptor },
+  })
   layer.events.push(event)
   layer.eventsMap[event.id] = event
 
@@ -65,17 +68,14 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     if (!group) {
       group = layer.groupsMap[event.groupId] = {
         events: [],
-        firstEvent: event,
-        lastEvent: event,
         duration: 0,
       } as EventGroup
-      const descriptor = {
-        writable: true,
-        configurable: false,
-      }
       Object.defineProperties(group, {
         id: { value: event.groupId, ...descriptor },
         y: { value: 0, ...descriptor },
+        firstEvent: { value: event, ...descriptor },
+        lastEvent: { value: event, ...descriptor },
+        nonReactiveDuration: { value: 0, ...descriptor },
         oldSize: { value: null, ...descriptor },
         oldSelected: { value: null, ...descriptor },
       })
@@ -86,7 +86,7 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     }
     group.events.push(event)
     group.lastEvent = event
-    group.duration = event.time - group.firstEvent.time
+    group.duration = group.nonReactiveDuration = event.time - group.firstEvent.time
     event.group = group
   }
 

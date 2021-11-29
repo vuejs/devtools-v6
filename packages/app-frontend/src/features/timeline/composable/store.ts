@@ -17,6 +17,7 @@ export interface EventGroup {
   firstEvent: TimelineEvent
   lastEvent: TimelineEvent
   duration: number
+  nonReactiveDuration: number
   y: number
   oldSize?: number
   oldSelected?: boolean
