@@ -336,7 +336,7 @@ export default defineComponent({
           dragger-offset="after"
         >
           <template #left>
-            <div class="h-full flex flex-col">
+            <div class="h-full flex flex-col select-none">
               <div class="flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
                 <VueButton
                   icon-left="arrow_left"
