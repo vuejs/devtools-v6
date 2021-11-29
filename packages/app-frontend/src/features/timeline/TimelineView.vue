@@ -1102,7 +1102,7 @@ export default defineComponent({
         const centerRatio = event.offsetX / viewWidth / window.devicePixelRatio
         const center = size * centerRatio + startTime.value
 
-        let newSize = size + event.deltaY / viewWidth * size * 2
+        let newSize = size + event.deltaY / viewWidth * size * 4
         if (newSize < MIN_CAMERA_SIZE) {
           newSize = MIN_CAMERA_SIZE
         }
