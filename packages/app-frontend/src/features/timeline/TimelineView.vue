@@ -55,7 +55,6 @@ const propConfig = {
 // Micro tasks (higher = later)
 const taskPriority = {
   normal: 0,
-  resize: 1,
   addEventUpdate: 2,
   updateEvents: 3,
   runPositionUpdate: 4,
@@ -152,8 +151,9 @@ export default defineComponent({
       wrapper.value.appendChild(app.view)
 
       // Prevent flash of white in dark mode
+      // Init & on resize
       app.view.style.opacity = '0'
-      app.renderer.once('postrender', () => {
+      app.renderer.on('postrender', () => {
         app.view.style.opacity = '1'
       })
 
@@ -1313,17 +1313,16 @@ export default defineComponent({
     // Resize
 
     function onResize () {
+      // Prevent flashing (will be set back to 1 in postrender event listener)
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
-      nextTick(() => {
-        mainRenderTexture?.resize(app.view.width, app.view.height)
-        queueEventsUpdate()
-        drawLayerBackgroundEffects()
-        drawTimeCursor()
-        drawTimeGrid()
-        draw()
-      }, taskPriority.resize)
+      mainRenderTexture?.resize(app.view.width, app.view.height)
+      queueEventsUpdate()
+      drawLayerBackgroundEffects()
+      drawTimeCursor()
+      drawTimeGrid()
+      draw()
     }
 
     // Events
