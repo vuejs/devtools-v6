@@ -102,23 +102,12 @@ export default defineComponent({
       microTasks.push([task, priority])
     }
 
-    // Get pixel position for giver time
-
-    let timePositionCache: Record<number, number> = {}
+    /**
+     * Get pixel position for giver time
+     */
     function getTimePosition (time: number) {
-      let result = timePositionCache[time]
-      if (result == null) {
-        result = (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width / window.devicePixelRatio
-        timePositionCache[time] = result
-      }
-      return result
+      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width / window.devicePixelRatio
     }
-    function resetTimePositionCache () {
-      timePositionCache = {}
-    }
-    watch(minTime, resetTimePositionCache)
-    watch(endTime, resetTimePositionCache)
-    watch(startTime, resetTimePositionCache)
 
     // Reset
 
@@ -1329,7 +1318,6 @@ export default defineComponent({
       app.queueResize()
       nextTick(() => {
         mainRenderTexture?.resize(app.view.width, app.view.height)
-        resetTimePositionCache()
         queueEventsUpdate()
         drawLayerBackgroundEffects()
         drawTimeCursor()
