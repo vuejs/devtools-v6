@@ -251,7 +251,7 @@ export default defineComponent({
           interactionDrawScheduled = false
           draw()
         }
-      }, 300)
+      }, 500)
     }
 
     watch(startTime, blockInteractionDraw)
@@ -415,6 +415,8 @@ export default defineComponent({
       } else {
         layerHoverEffect.visible = false
       }
+
+      interactionDraw()
     }
 
     function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
