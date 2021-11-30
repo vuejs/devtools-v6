@@ -7,6 +7,8 @@ export function nonReactive<T> (ref: Ref<T>) {
 
   watch(ref, value => {
     holder.value = value
+  }, {
+    flush: 'sync',
   })
 
   return holder

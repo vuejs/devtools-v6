@@ -81,9 +81,7 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
       })
       layer.groups.push(group)
     }
-    if (layer.groupsOnly) {
-      addGroupAroundPosition(layer, group, event.time)
-    }
+    addGroupAroundPosition(layer, group, event.time)
     group.events.push(event)
     group.lastEvent = event
     group.duration = group.nonReactiveDuration = event.time - group.firstEvent.time

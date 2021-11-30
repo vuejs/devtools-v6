@@ -9,7 +9,6 @@ import {
   watchEffect,
   defineComponent,
 } from '@vue/composition-api'
-import Vue from 'vue'
 import { SharedData } from '@vue-devtools/shared-utils'
 import {
   useLayers,
@@ -32,6 +31,7 @@ import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 import { Queue } from '@front/util/queue'
 import { nonReactive } from '@front/util/reactivity'
+import Vue from 'vue'
 
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
@@ -52,6 +52,18 @@ const propConfig = {
   configurable: false,
 }
 
+// Micro tasks (higher = later)
+const taskPriority = {
+  normal: 0,
+  resize: 1,
+  addEventUpdate: 2,
+  updateEvents: 3,
+  runPositionUpdate: 4,
+  runVerticalPositionUpdate: 5,
+  updateCamera: 9,
+  render: 10,
+}
+
 installUnsafeEval(PIXI)
 
 export default defineComponent({
@@ -70,9 +82,43 @@ export default defineComponent({
       darkMode: nonReactive(darkMode),
     }
 
-    function getTimePosition (time: number) {
-      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width / window.devicePixelRatio
+    // Micro tasks
+
+    const microTasks: ([() => void, number])[] = []
+    function runMicroTasks () {
+      if (!microTasks.length) return
+      const tasks = microTasks.slice().sort((a, b) => a[1] - b[1])
+      microTasks.length = 0
+      for (const [task] of tasks) {
+        task()
+      }
     }
+
+    /**
+     * Use the PIXI app ticker to schedule micro tasks
+     * @param priority Higher priority tasks will be executed last
+     */
+    function nextTick (task: () => void, priority: number = taskPriority.normal) {
+      microTasks.push([task, priority])
+    }
+
+    // Get pixel position for giver time
+
+    let timePositionCache: Record<number, number> = {}
+    function getTimePosition (time: number) {
+      let result = timePositionCache[time]
+      if (result == null) {
+        result = (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width / window.devicePixelRatio
+        timePositionCache[time] = result
+      }
+      return result
+    }
+    function resetTimePositionCache () {
+      timePositionCache = {}
+    }
+    watch(minTime, resetTimePositionCache)
+    watch(endTime, resetTimePositionCache)
+    watch(startTime, resetTimePositionCache)
 
     // Reset
 
@@ -115,9 +161,16 @@ export default defineComponent({
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       updateBackground()
       wrapper.value.appendChild(app.view)
+
+      // Prevent flash of white in dark mode
       app.view.style.opacity = '0'
-      app.renderer.on('postrender', () => {
+      app.renderer.once('postrender', () => {
         app.view.style.opacity = '1'
+      })
+
+      // Micro tasks
+      app.ticker.add(() => {
+        runMicroTasks()
       })
 
       verticalScrollingContainer = new PIXI.Container()
@@ -125,6 +178,7 @@ export default defineComponent({
       horizontalScrollingContainer = new PIXI.Container()
       verticalScrollingContainer.addChild(horizontalScrollingContainer)
 
+      // Manual painting
       if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
         mainRenderTexture = PIXI.RenderTexture.create({
           width: app.view.width,
@@ -142,27 +196,68 @@ export default defineComponent({
       }
     })
 
+    onUnmounted(() => {
+      app.destroy()
+    })
+
+    // Manual painting (draw)
+
     let drawScheduled = false
 
     function draw () {
       if (!drawScheduled && app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
         drawScheduled = true
-        Vue.nextTick(() => {
+        nextTick(() => {
           app.renderer.render(mainRenderContainer, {
             renderTexture: mainRenderTexture,
           })
-          if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
-            const renderer = app.renderer as PIXI.Renderer
-            renderer.framebuffer.blit()
-          }
+          const renderer = app.renderer as PIXI.Renderer
+          renderer.framebuffer.blit()
           drawScheduled = false
-        })
+        }, taskPriority.render)
       }
     }
 
-    onUnmounted(() => {
-      app.destroy()
-    })
+    // Interaction draw
+
+    let interactionDrawBlocked = false
+    let interactionDrawBlockedTimeout
+    let interactionDrawScheduled = false
+
+    /**
+     * Queue a repaint when the user interacts without scrolling
+     * This prevents flashing when the user is scrolling at the same time
+     */
+    async function interactionDraw () {
+      await Vue.nextTick()
+      if (!interactionDrawBlocked) {
+        interactionDrawScheduled = false
+        draw()
+      } else {
+        interactionDrawScheduled = true
+      }
+    }
+
+    /**
+     * Block interaction drawing for a short time
+     * after scrolling to prevent flashing
+     */
+    function blockInteractionDraw () {
+      interactionDrawBlocked = true
+      clearTimeout(interactionDrawBlockedTimeout)
+      interactionDrawBlockedTimeout = setTimeout(() => {
+        interactionDrawBlocked = false
+        if (interactionDrawScheduled) {
+          interactionDrawScheduled = false
+          draw()
+        }
+      }, 300)
+    }
+
+    watch(startTime, blockInteractionDraw)
+    watch(endTime, blockInteractionDraw)
+
+    // App background
 
     function updateBackground () {
       if (nonReactiveState.darkMode.value) {
@@ -320,7 +415,6 @@ export default defineComponent({
       } else {
         layerHoverEffect.visible = false
       }
-      draw()
     }
 
     function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
@@ -368,13 +462,12 @@ export default defineComponent({
     const updateEventPositionQueue = new Queue<TimelineEvent>()
     const updateEventVerticalPositionQueue = new Queue<TimelineEvent>()
     let eventPositionUpdateInProgress = false
-    let eventVerticalPositionUpdateInProgress = false
 
     function queueEventPositionUpdate (events: TimelineEvent[], force = false) {
       for (const event of events) {
         if (!event.container) continue
 
-        event.forcePositionUpdate = force
+        if (force) event.forcePositionUpdate = true
 
         updateEventPositionQueue.add(event)
       }
@@ -382,10 +475,10 @@ export default defineComponent({
       // If not running an update, start one
       if (!eventPositionUpdateInProgress) {
         eventPositionUpdateInProgress = true
-        Vue.nextTick(() => {
+        nextTick(() => {
           runEventPositionUpdate()
           eventPositionUpdateInProgress = false
-        })
+        }, taskPriority.runPositionUpdate)
       }
     }
 
@@ -401,28 +494,17 @@ export default defineComponent({
         event.container.x = getTimePosition(event.time)
 
         // Ignore additional updates to flamechart
-        if (!event.forcePositionUpdate && event.layer.groupsOnly) continue
+        const force = event.forcePositionUpdate
+        event.forcePositionUpdate = false
+        if (!force && event.layer.groupsOnly) continue
 
         // Queue vertical position compute
         updateEventVerticalPositionQueue.add(event)
       }
 
-      // If not running an update, start one
-      if (!eventVerticalPositionUpdateInProgress) {
-        eventVerticalPositionUpdateInProgress = true
-        Vue.nextTick(() => {
-          runEventVerticalPositionUpdate()
-          eventVerticalPositionUpdateInProgress = false
-        })
-      }
-    }
-
-    function runEventVerticalPositionUpdate () {
-      let event: TimelineEvent
       while ((event = updateEventVerticalPositionQueue.shift())) {
         computeEventVerticalPosition(event)
       }
-      draw()
     }
 
     let isEventIgnoredCache: Record<TimelineEvent['id'], boolean> = {}
@@ -532,6 +614,8 @@ export default defineComponent({
       event.container.y = (y + 1) * LAYER_SIZE
     }
 
+    let addEventUpdateQueued = false
+
     function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
       // Container
       let eventContainer: PIXI.Container
@@ -558,7 +642,13 @@ export default defineComponent({
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
           // We need to check for collisions again
-          Vue.nextTick(() => queueEventsUpdate())
+          if (!addEventUpdateQueued) {
+            addEventUpdateQueued = true
+            nextTick(() => {
+              queueEventsUpdate()
+              addEventUpdateQueued = false
+            }, taskPriority.addEventUpdate)
+          }
         }
       }
 
@@ -600,7 +690,6 @@ export default defineComponent({
         e.g = null
 
         if (e.groupT) {
-          (e.groupT.mask as PIXI.Graphics).destroy()
           e.groupT.destroy()
           e.groupT = null
         }
@@ -640,10 +729,10 @@ export default defineComponent({
     function queueEventsUpdate () {
       if (eventsUpdateQueued) return
       eventsUpdateQueued = true
-      Vue.nextTick(() => {
+      nextTick(() => {
         updateEvents()
         eventsUpdateQueued = false
-      })
+      }, taskPriority.updateEvents)
     }
 
     function updateEvents () {
@@ -654,9 +743,10 @@ export default defineComponent({
       }
       updateLayerPositions()
       queueEventPositionUpdate(events)
-      for (const event of events) {
-        if (event.groupG) {
-          drawEventGroup(event)
+      for (const layer of layers.value) {
+        const groups = getGroupsAroundPosition(layer, nonReactiveState.startTime.value, nonReactiveState.endTime.value)
+        for (const group of groups) {
+          drawEventGroup(group.firstEvent)
         }
       }
       draw()
@@ -889,7 +979,7 @@ export default defineComponent({
             if (hoverEvent?.container) {
               hoverEvent.container.alpha = 1
             }
-            draw()
+            interactionDraw()
           }
           hoverEvent = event
         }
@@ -1069,10 +1159,10 @@ export default defineComponent({
     function queueCameraUpdate () {
       if (cameraUpdateQueued) return
       cameraUpdateQueued = true
-      Vue.nextTick(() => {
+      nextTick(() => {
         updateCamera()
         cameraUpdateQueued = false
-      })
+      }, taskPriority.updateCamera)
     }
 
     function updateCamera () {
@@ -1080,7 +1170,6 @@ export default defineComponent({
       drawLayerBackgroundEffects()
       drawTimeGrid()
       drawMarkers()
-      draw()
     }
 
     watch(startTime, () => queueCameraUpdate())
@@ -1092,13 +1181,9 @@ export default defineComponent({
 
     function onMouseWheel (event: WheelEvent) {
       const size = endTime.value - startTime.value
-      const viewWidth = wrapper.value.offsetWidth
+      const viewWidth = app.view.width
 
       if (!event.shiftKey && !event.altKey) {
-        // Zoom
-        // Firefox doesn't block the event https://bugzilla.mozilla.org/show_bug.cgi?id=1632465
-        event.preventDefault()
-
         const centerRatio = event.offsetX / viewWidth / window.devicePixelRatio
         const center = size * centerRatio + startTime.value
 
@@ -1176,36 +1261,10 @@ export default defineComponent({
     let startDragTime: number
     let startDragScrollTop: number
 
+    let layersScroller: HTMLElement
+
     onMounted(() => {
-      const layersScroller = document.querySelector('[data-scroller="layers"]')
-
-      const onMouseMove = (event) => {
-        const { x, y } = event.data.global
-        if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
-          cameraDragging = true
-        }
-
-        if (cameraDragging) {
-          const deltaX = (startDragX - x) / window.devicePixelRatio
-          const deltaY = (startDragY - y) / window.devicePixelRatio
-
-          // Horizontal
-          const size = endTime.value - startTime.value
-          const viewWidth = wrapper.value.offsetWidth
-          const delta = deltaX / viewWidth * size
-          let start = startTime.value = startDragTime + delta
-          if (start < minTime.value) {
-            start = minTime.value
-          } else if (start + size >= maxTime.value) {
-            start = maxTime.value - size
-          }
-          startTime.value = start
-          endTime.value = start + size
-
-          // Vertical
-          layersScroller.scrollTop = startDragScrollTop + deltaY
-        }
-      }
+      layersScroller = document.querySelector('[data-scroller="layers"]')
 
       app.stage.addListener('mousedown', (event) => {
         const { x, y } = event.data.global
@@ -1213,13 +1272,51 @@ export default defineComponent({
         startDragY = y
         startDragTime = startTime.value
         startDragScrollTop = layersScroller.scrollTop
-        app.stage.addListener('mousemove', onMouseMove)
+        app.stage.addListener('mousemove', onCameraDraggingMouseMove)
       })
+    })
 
-      window.addEventListener('mouseup', () => {
-        cameraDragging = false
-        app.stage.removeListener('mousemove', onMouseMove)
-      })
+    function onCameraDraggingMouseMove (event) {
+      const { x, y } = event.data.global
+      if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
+        cameraDragging = true
+        window.addEventListener('mouseup', onCameraDraggingMouseUp)
+      }
+
+      if (cameraDragging) {
+        const deltaX = (startDragX - x) / window.devicePixelRatio
+        const deltaY = (startDragY - y) / window.devicePixelRatio
+
+        // Horizontal
+        const size = endTime.value - startTime.value
+        const viewWidth = wrapper.value.offsetWidth
+        const delta = deltaX / viewWidth * size
+        let start = startTime.value = startDragTime + delta
+        if (start < minTime.value) {
+          start = minTime.value
+        } else if (start + size >= maxTime.value) {
+          start = maxTime.value - size
+        }
+        startTime.value = start
+        endTime.value = start + size
+
+        // Vertical
+        layersScroller.scrollTop = startDragScrollTop + deltaY
+      }
+    }
+
+    function onCameraDraggingMouseUp () {
+      cameraDragging = false
+      removeOnCameraDraggingEvents()
+    }
+
+    function removeOnCameraDraggingEvents () {
+      app.stage?.removeListener('mousemove', onCameraDraggingMouseMove)
+      window.removeEventListener('mouseup', onCameraDraggingMouseUp)
+    }
+
+    onUnmounted(() => {
+      removeOnCameraDraggingEvents()
     })
 
     // Resize
@@ -1228,14 +1325,15 @@ export default defineComponent({
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
-      requestAnimationFrame(() => {
+      nextTick(() => {
         mainRenderTexture?.resize(app.view.width, app.view.height)
+        resetTimePositionCache()
         queueEventsUpdate()
         drawLayerBackgroundEffects()
         drawTimeCursor()
         drawTimeGrid()
         draw()
-      })
+      }, taskPriority.resize)
     }
 
     // Events
