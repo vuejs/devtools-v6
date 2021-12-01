@@ -283,6 +283,7 @@ export default defineComponent({
       endTime,
       minTime,
       maxTime,
+      cursorTime,
       layers,
       vScroll,
       layersEl,
@@ -399,6 +400,12 @@ export default defineComponent({
                   />
                   <span>
                     {{ formattedCursorTime }}
+                    <span
+                      v-if="$shared.debugInfo"
+                      class="opacity-50"
+                    >
+                      ({{ cursorTime }})
+                    </span>
                   </span>
                 </div>
               </div>
