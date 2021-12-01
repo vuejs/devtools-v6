@@ -178,8 +178,8 @@ export default defineComponent({
       // Manual painting
       if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
         mainRenderTexture = PIXI.RenderTexture.create({
-          width: app.view.width,
-          height: app.view.height,
+          width: app.view.width / window.devicePixelRatio,
+          height: app.view.height / window.devicePixelRatio,
           resolution: window.devicePixelRatio,
         })
         mainRenderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.LOW
@@ -1332,7 +1332,7 @@ export default defineComponent({
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
-      mainRenderTexture?.resize(app.view.width, app.view.height)
+      mainRenderTexture?.resize(app.view.width / window.devicePixelRatio, app.view.height / window.devicePixelRatio)
       queueEventsUpdate()
       drawLayerBackgroundEffects()
       drawTimeCursor()
