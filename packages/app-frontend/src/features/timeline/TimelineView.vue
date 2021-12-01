@@ -11,7 +11,7 @@ import {
   watchEffect,
   defineComponent,
 } from '@vue/composition-api'
-import { SharedData } from '@vue-devtools/shared-utils'
+import { SharedData, isMac } from '@vue-devtools/shared-utils'
 import {
   useLayers,
   useTime,
@@ -1185,6 +1185,8 @@ export default defineComponent({
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
 
+    let isShifPressed: boolean
+
     onMounted(() => {
       queueCameraUpdate()
       // @ts-ignore
@@ -1192,10 +1194,12 @@ export default defineComponent({
     })
 
     function onMouseWheel (event: FederatedWheelEvent) {
+      event.preventDefault()
+
       const size = endTime.value - startTime.value
       const viewWidth = getAppWidth()
 
-      if (!event.ctrlKey && !event.altKey) {
+      if (!event.ctrlKey && !event.altKey && !event.nativeEvent.shiftKey) {
         const centerRatio = event.globalX / viewWidth
         const center = size * centerRatio + startTime.value
 
@@ -1217,9 +1221,12 @@ export default defineComponent({
       } else {
         let deltaX = event.deltaX
 
-        if (deltaX === 0 && event.shiftKey && event.deltaY !== 0) {
+        if (deltaX === 0 && event.nativeEvent.shiftKey && event.deltaY !== 0) {
           // Horitonzal scroll with vertical mouse wheel and shift key
           deltaX = event.deltaY
+        }
+        if (event.altKey) {
+          deltaX = 0
         }
 
         if (deltaX !== 0) {
@@ -1237,7 +1244,7 @@ export default defineComponent({
           // Vertical scroll
           const layersScroller = document.querySelector('[data-scroller="layers"]')
           if (layersScroller) {
-            const speed = SharedData.menuStepScrolling ? 1 : LAYER_SIZE * 4
+            const speed = isMac ? Math.abs(event.deltaY) : LAYER_SIZE * 4
             if (event.deltaY < 0) {
               layersScroller.scrollTop -= speed
             } else {
