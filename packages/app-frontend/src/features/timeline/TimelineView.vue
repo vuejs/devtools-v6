@@ -430,15 +430,15 @@ export default defineComponent({
       drawLayerBackgroundEffects()
     })
 
-    function updateLayerHover (event: MouseEvent) {
-      let { offsetY } = event
-      offsetY -= verticalScrollingContainer.y
-      if (offsetY >= 0) {
+    function updateLayerHover (event: FederatedPointerEvent) {
+      let { globalY } = event
+      globalY -= verticalScrollingContainer.y
+      if (globalY >= 0) {
         let y = 0
         // Find the hovering layer depending on each layer's height
         for (const layer of layers.value) {
           y += (layer.height + 1) * LAYER_SIZE
-          if (offsetY <= y) {
+          if (globalY <= y) {
             hoverLayerId.value = layer.id
             return
           }
@@ -1095,11 +1095,11 @@ export default defineComponent({
       timeCursor.lineTo(0.5, app.view.height)
     }
 
-    function updateCursorPosition (event: MouseEvent) {
-      const { offsetX } = event
-      timeCursor.x = offsetX
+    function updateCursorPosition (event: FederatedPointerEvent) {
+      const { globalX } = event
+      timeCursor.x = globalX
       timeCursor.visible = true
-      cursorTime.value = offsetX / app.view.width * (endTime.value - startTime.value) + startTime.value
+      cursorTime.value = globalX / app.view.width * (endTime.value - startTime.value) + startTime.value
     }
 
     function clearCursor () {
@@ -1342,7 +1342,7 @@ export default defineComponent({
 
     // Misc. mouse events
 
-    function onMouseMove (event: MouseEvent) {
+    function onMouseMove (event: FederatedPointerEvent) {
       updateLayerHover(event)
       updateCursorPosition(event)
     }
@@ -1352,10 +1352,15 @@ export default defineComponent({
       clearCursor()
     }
 
+    onMounted(() => {
+      // @ts-ignore
+      app.stage.addEventListener('pointermove', onMouseMove)
+      // @ts-ignore
+      app.stage.addEventListener('pointerout', onMouseOut)
+    })
+
     return {
       wrapper,
-      onMouseMove,
-      onMouseOut,
       onResize,
     }
   },
@@ -1367,8 +1372,6 @@ export default defineComponent({
     ref="wrapper"
     class="relative overflow-hidden"
     data-id="timeline-view-wrapper"
-    @mousemove="onMouseMove"
-    @mouseout="onMouseOut"
   >
     <resize-observer @notify="onResize" />
   </div>
