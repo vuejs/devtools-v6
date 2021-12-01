@@ -109,7 +109,7 @@ export default defineComponent({
      * Get pixel position for giver time
      */
     function getTimePosition (time: number) {
-      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width
+      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * getAppWidth()
     }
 
     // Reset
@@ -178,8 +178,8 @@ export default defineComponent({
       // Manual painting
       if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
         mainRenderTexture = PIXI.RenderTexture.create({
-          width: app.view.width / window.devicePixelRatio,
-          height: app.view.height / window.devicePixelRatio,
+          width: getAppWidth(),
+          height: getAppHeight(),
           resolution: window.devicePixelRatio,
         })
         mainRenderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.LOW
@@ -196,6 +196,14 @@ export default defineComponent({
     onUnmounted(() => {
       app.destroy()
     })
+
+    function getAppWidth () {
+      return app.view.width / window.devicePixelRatio
+    }
+
+    function getAppHeight () {
+      return app.view.height / window.devicePixelRatio
+    }
 
     // Manual painting (draw)
 
@@ -287,7 +295,7 @@ export default defineComponent({
         const x = getTimePosition(marker.time)
         marker.x = x
         markerContainer.moveTo(x, 0)
-        markerContainer.lineTo(x, app.view.height)
+        markerContainer.lineTo(x, getAppHeight())
       }
       markerContainer.x = horizontalScrollingContainer.x
     }
@@ -419,7 +427,7 @@ export default defineComponent({
     function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
       const { layer } = layersMap[layerId]
       layerHoverEffect.beginFill(layer.color, alpha)
-      layerHoverEffect.drawRect(0, getLayerY(layer), app.view.width, (layer.height + 1) * LAYER_SIZE)
+      layerHoverEffect.drawRect(0, getLayerY(layer), getAppWidth(), (layer.height + 1) * LAYER_SIZE)
     }
 
     watch(hoverLayerId, () => {
@@ -1092,14 +1100,14 @@ export default defineComponent({
       timeCursor.clear()
       timeCursor.lineStyle(1, 0x888888, 0.2)
       timeCursor.moveTo(0.5, 0)
-      timeCursor.lineTo(0.5, app.view.height)
+      timeCursor.lineTo(0.5, getAppHeight())
     }
 
     function updateCursorPosition (event: FederatedPointerEvent) {
       const { globalX } = event
       timeCursor.x = globalX
       timeCursor.visible = true
-      cursorTime.value = globalX / app.view.width * (endTime.value - startTime.value) + startTime.value
+      cursorTime.value = globalX / getAppWidth() * (endTime.value - startTime.value) + startTime.value
     }
 
     function clearCursor () {
@@ -1122,7 +1130,7 @@ export default defineComponent({
       if (!timeGrid.visible || !app.view.width) return
 
       const size = endTime.value - startTime.value
-      const ratio = size / app.view.width
+      const ratio = size / getAppWidth()
       let timeInterval = 10
       let width = timeInterval / ratio
 
@@ -1141,9 +1149,9 @@ export default defineComponent({
 
       timeGrid.clear()
       timeGrid.lineStyle(1, 0x888888, 0.075)
-      for (let x = -offset; x < app.view.width; x += width) {
+      for (let x = -offset; x < getAppWidth(); x += width) {
         timeGrid.moveTo(x + 0.5, 0)
-        timeGrid.lineTo(x + 0.5, app.view.height)
+        timeGrid.lineTo(x + 0.5, getAppHeight())
       }
     }
 
@@ -1168,7 +1176,7 @@ export default defineComponent({
     }
 
     function updateCamera () {
-      horizontalScrollingContainer.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
+      horizontalScrollingContainer.x = -getTimePosition(nonReactiveState.startTime.value)
       drawLayerBackgroundEffects()
       drawTimeGrid()
       drawMarkers()
@@ -1185,7 +1193,7 @@ export default defineComponent({
 
     function onMouseWheel (event: FederatedWheelEvent) {
       const size = endTime.value - startTime.value
-      const viewWidth = app.view.width
+      const viewWidth = getAppWidth()
 
       if (!event.ctrlKey && !event.altKey) {
         const centerRatio = event.globalX / viewWidth
@@ -1295,7 +1303,7 @@ export default defineComponent({
 
         // Horizontal
         const size = endTime.value - startTime.value
-        const viewWidth = app.view.width
+        const viewWidth = getAppWidth()
         const delta = deltaX / viewWidth * size
         let start = startTime.value = startDragTime + delta
         if (start < minTime.value) {
@@ -1333,12 +1341,12 @@ export default defineComponent({
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
       setTimeout(() => {
-      mainRenderTexture?.resize(app.view.width / window.devicePixelRatio, app.view.height / window.devicePixelRatio)
-      queueEventsUpdate()
-      drawLayerBackgroundEffects()
-      drawTimeCursor()
-      drawTimeGrid()
-      draw()
+        mainRenderTexture?.resize(getAppWidth(), getAppHeight())
+        queueEventsUpdate()
+        drawLayerBackgroundEffects()
+        drawTimeCursor()
+        drawTimeGrid()
+        draw()
       }, 100)
     }
 
