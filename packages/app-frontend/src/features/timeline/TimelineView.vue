@@ -1332,12 +1332,14 @@ export default defineComponent({
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
+      setTimeout(() => {
       mainRenderTexture?.resize(app.view.width / window.devicePixelRatio, app.view.height / window.devicePixelRatio)
       queueEventsUpdate()
       drawLayerBackgroundEffects()
       drawTimeCursor()
       drawTimeGrid()
       draw()
+      }, 100)
     }
 
     // Misc. mouse events
