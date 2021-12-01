@@ -109,7 +109,7 @@ export default defineComponent({
      * Get pixel position for giver time
      */
     function getTimePosition (time: number) {
-      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width / window.devicePixelRatio
+      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * app.view.width
     }
 
     // Reset
