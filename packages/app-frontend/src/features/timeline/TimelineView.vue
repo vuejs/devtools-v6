@@ -1290,12 +1290,12 @@ export default defineComponent({
       }
 
       if (cameraDragging) {
-        const deltaX = (startDragX - x) / window.devicePixelRatio
-        const deltaY = (startDragY - y) / window.devicePixelRatio
+        const deltaX = (startDragX - x)
+        const deltaY = (startDragY - y)
 
         // Horizontal
         const size = endTime.value - startTime.value
-        const viewWidth = wrapper.value.offsetWidth
+        const viewWidth = app.view.width
         const delta = deltaX / viewWidth * size
         let start = startTime.value = startDragTime + delta
         if (start < minTime.value) {
