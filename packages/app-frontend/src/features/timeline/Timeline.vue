@@ -83,12 +83,24 @@ export default defineComponent({
       selectedEvent,
     } = useSelectedEvent()
 
-    // Scroll to selected event
+    // Auto scroll to selected event
     watch(selectedEvent, event => {
       if (!event) return
 
       const size = endTime.value - startTime.value
-      if (event.time < startTime.value || event.time > endTime.value) {
+
+      let isEventInViewPort: boolean
+      if (event.layer.groupsOnly) {
+        isEventInViewPort = (
+          (event.group.firstEvent.time >= startTime.value && event.group.firstEvent.time <= endTime.value) ||
+          (event.group.lastEvent.time >= startTime.value && event.group.lastEvent.time <= endTime.value) ||
+          (event.group.firstEvent.time <= startTime.value && event.group.lastEvent.time >= endTime.value)
+        )
+      } else {
+        isEventInViewPort = event.time >= startTime.value && event.time <= endTime.value
+      }
+
+      if (!isEventInViewPort) {
         startTime.value = event.time - size / 2
         if (startTime.value < minTime.value) {
           startTime.value = minTime.value
