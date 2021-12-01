@@ -1,6 +1,8 @@
 <script lang="ts">
 import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
+import { EventSystem, FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
+import { Renderer } from '@pixi/core'
 import {
   ref,
   onMounted,
@@ -42,6 +44,8 @@ PIXI.BitmapFont.from('Roboto Mono', {
 }, {
   resolution: window.devicePixelRatio,
 })
+
+delete Renderer.__plugins.interaction
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
@@ -145,6 +149,10 @@ export default defineComponent({
         autoDensity: true,
         resolution: window.devicePixelRatio,
       })
+      if (!('events' in app.renderer)) {
+        // @ts-ignore
+        app.renderer.addSystem(EventSystem, 'events')
+      }
       app.stage.interactive = true
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       updateBackground()
@@ -787,11 +795,13 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      app.stage.addListener('click', event => {
+      // @ts-ignore
+      app.stage.addEventListener('click', (event: FederatedPointerEvent) => {
         if (cameraDragging) return
-        const choice = getEventAtPosition(event.data.global.x, event.data.global.y)
+        const choice = getEventAtPosition(event.globalX, event.globalY)
         if (choice) {
           selectEvent(choice)
+          draw()
         }
       })
     })
@@ -937,12 +947,13 @@ export default defineComponent({
       eventTooltipText.y = eventTooltipTitle.height + 4
       eventTooltip.addChild(eventTooltipText)
 
-      app.stage.addListener('mousemove', mouseEvent => {
+      // @ts-ignore
+      app.stage.addEventListener('pointermove', (mouseEvent: FederatedPointerEvent) => {
         const text: string[] = []
 
         if (!cameraDragging) {
           // Event tooltip
-          const event = getEventAtPosition(mouseEvent.data.global.x, mouseEvent.data.global.y)
+          const event = getEventAtPosition(mouseEvent.globalX, mouseEvent.globalY)
           if (event) {
             text.push(event.title ?? 'Event')
             if (event.subtitle) {
@@ -959,7 +970,7 @@ export default defineComponent({
             }
           } else {
             // Marker tooltip
-            const marker = getMarkerAtPosition(mouseEvent.data.global.x)
+            const marker = getMarkerAtPosition(mouseEvent.globalX)
             if (marker) {
               text.push(marker.label)
               text.push(formatTime(marker.time, 'ms'))
@@ -987,13 +998,13 @@ export default defineComponent({
           const height = eventTooltipTitle.height + (text.length > 1 ? eventTooltipText.height : 0) + 8
           eventTooltipGraphics.drawRoundedRect(0, 0, width, height, 4)
 
-          eventTooltip.x = mouseEvent.data.global.x + 12
+          eventTooltip.x = mouseEvent.globalX + 12
           if (eventTooltip.x + eventTooltip.width > app.renderer.width) {
-            eventTooltip.x = mouseEvent.data.global.x - eventTooltip.width - 12
+            eventTooltip.x = mouseEvent.globalX - eventTooltip.width - 12
           }
-          eventTooltip.y = mouseEvent.data.global.y + 12
+          eventTooltip.y = mouseEvent.globalY + 12
           if (eventTooltip.y + eventTooltip.height > app.renderer.height) {
-            eventTooltip.y = mouseEvent.data.global.y - eventTooltip.height - 12
+            eventTooltip.y = mouseEvent.globalY - eventTooltip.height - 12
           }
           eventTooltip.visible = true
         } else {
@@ -1168,14 +1179,16 @@ export default defineComponent({
 
     onMounted(() => {
       queueCameraUpdate()
+      // @ts-ignore
+      app.stage.addEventListener('wheel', onMouseWheel)
     })
 
-    function onMouseWheel (event: WheelEvent) {
+    function onMouseWheel (event: FederatedWheelEvent) {
       const size = endTime.value - startTime.value
       const viewWidth = app.view.width
 
-      if (!event.shiftKey && !event.altKey) {
-        const centerRatio = event.offsetX / viewWidth / window.devicePixelRatio
+      if (!event.ctrlKey && !event.altKey) {
+        const centerRatio = event.globalX / viewWidth
         const center = size * centerRatio + startTime.value
 
         let newSize = size + event.deltaY / viewWidth * size * 4
@@ -1257,21 +1270,23 @@ export default defineComponent({
     onMounted(() => {
       layersScroller = document.querySelector('[data-scroller="layers"]')
 
-      app.stage.addListener('mousedown', (event) => {
-        const { x, y } = event.data.global
-        startDragX = x
-        startDragY = y
+      // @ts-ignore
+      app.stage.addEventListener('pointerdown', (event: FederatedPointerEvent) => {
+        startDragX = event.globalX
+        startDragY = event.globalY
         startDragTime = startTime.value
         startDragScrollTop = layersScroller.scrollTop
-        app.stage.addListener('mousemove', onCameraDraggingMouseMove)
+        // @ts-ignore
+        app.stage.addEventListener('pointermove', onCameraDraggingMouseMove)
+        window.addEventListener('mouseup', onCameraDraggingMouseUp)
       })
     })
 
-    function onCameraDraggingMouseMove (event) {
-      const { x, y } = event.data.global
+    function onCameraDraggingMouseMove (event: FederatedPointerEvent) {
+      const x = event.globalX
+      const y = event.globalY
       if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
         cameraDragging = true
-        window.addEventListener('mouseup', onCameraDraggingMouseUp)
       }
 
       if (cameraDragging) {
@@ -1302,7 +1317,7 @@ export default defineComponent({
     }
 
     function removeOnCameraDraggingEvents () {
-      app.stage?.removeListener('mousemove', onCameraDraggingMouseMove)
+      app.stage?.removeListener('pointermove', onCameraDraggingMouseMove)
       window.removeEventListener('mouseup', onCameraDraggingMouseUp)
     }
 
@@ -1325,7 +1340,7 @@ export default defineComponent({
       draw()
     }
 
-    // Events
+    // Misc. mouse events
 
     function onMouseMove (event: MouseEvent) {
       updateLayerHover(event)
@@ -1339,7 +1354,6 @@ export default defineComponent({
 
     return {
       wrapper,
-      onMouseWheel,
       onMouseMove,
       onMouseOut,
       onResize,
@@ -1353,7 +1367,6 @@ export default defineComponent({
     ref="wrapper"
     class="relative overflow-hidden"
     data-id="timeline-view-wrapper"
-    @wheel="onMouseWheel"
     @mousemove="onMouseMove"
     @mouseout="onMouseOut"
   >
