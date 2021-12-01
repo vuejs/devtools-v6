@@ -404,7 +404,7 @@ export default defineComponent({
                       v-if="$shared.debugInfo"
                       class="opacity-50"
                     >
-                      ({{ cursorTime }})
+                      ({{ Math.floor(startTime) }}<span class="opacity-50">|</span>{{ Math.floor(cursorTime) }}<span class="opacity-50">|</span>{{ Math.floor(endTime) }})
                     </span>
                   </span>
                 </div>
