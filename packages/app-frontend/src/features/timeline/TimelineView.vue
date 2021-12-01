@@ -1389,6 +1389,7 @@ export default defineComponent({
     ref="wrapper"
     class="relative overflow-hidden"
     data-id="timeline-view-wrapper"
+    @contextmenu.prevent
   >
     <resize-observer @notify="onResize" />
   </div>
