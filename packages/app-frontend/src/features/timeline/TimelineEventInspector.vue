@@ -101,9 +101,9 @@ export default defineComponent({
 
     <div
       v-if="$shared.debugInfo"
-      class="opacity-50"
+      class="opacity-50 text-2xs px-2 text-center border-b border-gray-200 dark:border-gray-800"
     >
-      {{ inspectedEvent.time }}
+      Time: {{ inspectedEvent.time }}
     </div>
 
     <VueLoadingBar
