@@ -315,6 +315,7 @@ function mark (instance) {
     appRecord.instanceMap.set(refId, instance)
     instance.$on('hook:beforeDestroy', function () {
       instanceMap.delete(refId)
+      appRecord.instanceMap.delete(refId)
     })
   }
 }
