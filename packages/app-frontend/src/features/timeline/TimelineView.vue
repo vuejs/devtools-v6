@@ -38,13 +38,6 @@ import Vue from 'vue'
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 
-PIXI.BitmapFont.from('Roboto Mono', {
-  fontFamily: 'Roboto Mono',
-  fontSize: 9,
-}, {
-  resolution: window.devicePixelRatio,
-})
-
 delete Renderer.__plugins.interaction
 
 const LAYER_SIZE = 16
@@ -1064,8 +1057,7 @@ export default defineComponent({
           }
           if (!t) {
             t = event.groupT = new PIXI.BitmapText('', {
-              fontName: 'Roboto Mono',
-              tint: nonReactiveState.darkMode.value ? 0xffffff : 0,
+              fontName: nonReactiveState.darkMode.value ? 'roboto-white' : 'roboto-black',
             })
             t.x = 1
             t.y = Math.round(-t.height / 2)

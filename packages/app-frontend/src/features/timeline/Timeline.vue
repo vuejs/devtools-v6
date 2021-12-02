@@ -12,6 +12,7 @@ import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from '@
 import { SharedData } from '@vue-devtools/shared-utils'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
+import { useFonts } from '@front/util/fonts'
 import {
   useTime,
   useLayers,
@@ -278,7 +279,12 @@ export default defineComponent({
       stopMove()
     })
 
+    // Fonts
+
+    const { loaded: fontsLoaded } = useFonts()
+
     return {
+      fontsLoaded,
       startTime,
       endTime,
       minTime,
@@ -386,6 +392,7 @@ export default defineComponent({
                 />
               </div>
               <TimelineView
+                v-if="fontsLoaded"
                 class="h-full"
               />
 
