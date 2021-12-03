@@ -14,7 +14,7 @@ export function nonReactive<T> (ref: Ref<T>) {
   return holder
 }
 
-export function addNonReactiveProperties (target: any, props: any) {
+export function addNonReactiveProperties<T = any> (target: T, props: Partial<T>) {
   for (const key in props) {
     Object.defineProperty(target, key, {
       value: props[key],
