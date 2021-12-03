@@ -153,7 +153,7 @@ async function connect () {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
-          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+          if (appRecord.instanceMap.has(parentId)) {
             requestAnimationFrame(() => {
               sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
             })
@@ -178,7 +178,7 @@ async function connect () {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
-          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+          if (appRecord.instanceMap.has(parentId)) {
             requestAnimationFrame(async () => {
               try {
                 sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
