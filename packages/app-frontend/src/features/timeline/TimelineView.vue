@@ -32,7 +32,7 @@ import { useDarkMode } from '@front/util/theme'
 import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 import { Queue } from '@front/util/queue'
-import { nonReactive } from '@front/util/reactivity'
+import { addNonReactiveProperties, nonReactive } from '@front/util/reactivity'
 import Vue from 'vue'
 
 PIXI.settings.ROUND_PIXELS = true
@@ -43,11 +43,6 @@ delete Renderer.__plugins.interaction
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
 const MIN_CAMERA_SIZE = 10
-
-const propConfig = {
-  writable: true,
-  configurable: false,
-}
 
 // Micro tasks (higher = later)
 const taskPriority = {
@@ -622,7 +617,9 @@ export default defineComponent({
 
       if (!event.layer.groupsOnly || (event.group?.firstEvent === event)) {
         eventContainer = new PIXI.Container()
-        Object.defineProperty(event, 'container', { value: eventContainer, ...propConfig })
+        addNonReactiveProperties(event, {
+          container: eventContainer,
+        })
         layerContainer.addChild(eventContainer)
       }
 
@@ -630,10 +627,10 @@ export default defineComponent({
       if (event.group) {
         if (event.group.firstEvent === event) {
           const groupG = new PIXI.Graphics()
-          Object.defineProperties(event, {
-            groupG: { value: groupG, ...propConfig },
-            groupT: { value: null, ...propConfig },
-            groupText: { value: null, ...propConfig },
+          addNonReactiveProperties(event, {
+            groupG,
+            groupT: null,
+            groupText: null,
           })
           eventContainer.addChild(groupG)
           event.group.oldSize = null
@@ -655,7 +652,9 @@ export default defineComponent({
       // Graphics
       if (eventContainer) {
         const g = new PIXI.Graphics()
-        Object.defineProperty(event, 'g', { value: g, ...propConfig })
+        addNonReactiveProperties(event, {
+          g,
+        })
         eventContainer.addChild(g)
       }
 

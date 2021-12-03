@@ -20,6 +20,7 @@ import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
 import { addGroupAroundPosition } from './layers'
 import { EventGroup } from '.'
+import { addNonReactiveProperties } from '@front/util/reactivity'
 
 const AUTOSCROLL_DURATION = 10000
 
@@ -37,16 +38,9 @@ export function onEventAdd (cb: AddEventCb) {
 }
 
 export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Layer) {
-  const descriptor = {
-    writable: true,
-    configurable: false,
-  }
-
   // Non-reactive content
   const event = {} as TimelineEvent
-  for (const key in eventOptions) {
-    Object.defineProperty(event, key, { value: eventOptions[key], ...descriptor })
-  }
+  addNonReactiveProperties(event, eventOptions)
 
   if (layer.eventsMap[event.id]) return
 
@@ -55,9 +49,9 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     resetTime()
   }
 
-  Object.defineProperties(event, {
-    layer: { value: layer, ...descriptor },
-    appId: { value: appId, ...descriptor },
+  addNonReactiveProperties(event, {
+    layer,
+    appId,
   })
   layer.events.push(event)
   layer.eventsMap[event.id] = event
@@ -70,14 +64,14 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
         events: [],
         duration: 0,
       } as EventGroup
-      Object.defineProperties(group, {
-        id: { value: event.groupId, ...descriptor },
-        y: { value: 0, ...descriptor },
-        firstEvent: { value: event, ...descriptor },
-        lastEvent: { value: event, ...descriptor },
-        nonReactiveDuration: { value: 0, ...descriptor },
-        oldSize: { value: null, ...descriptor },
-        oldSelected: { value: null, ...descriptor },
+      addNonReactiveProperties(group, {
+        id: event.groupId,
+        y: 0,
+        firstEvent: event,
+        lastEvent: event,
+        nonReactiveDuration: 0,
+        oldSize: null,
+        oldSelected: null,
       })
       layer.groups.push(group)
     }

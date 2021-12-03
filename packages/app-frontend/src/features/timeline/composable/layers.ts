@@ -16,22 +16,16 @@ import {
   EventGroup,
 } from './store'
 import { useRouter } from '@front/util/router'
+import { addNonReactiveProperties } from '@front/util/reactivity'
 
 export function layerFactory (options: LayerFromBackend): Layer {
   const result = {} as Layer
-  const nonReactiveOptions = {
+  addNonReactiveProperties(result, {
     ...options,
     eventsMap: {},
     groupsMap: {},
     groupPositionCache: {},
-  }
-  for (const key in nonReactiveOptions) {
-    Object.defineProperty(result, key, {
-      value: nonReactiveOptions[key],
-      writable: true,
-      configurable: false,
-    })
-  }
+  })
   Object.assign(result, {
     events: [],
     groups: [],
