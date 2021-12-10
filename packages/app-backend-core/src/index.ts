@@ -144,6 +144,11 @@ async function connect () {
         if (component.__VUE_DEVTOOLS_UID__ == null) {
           component.__VUE_DEVTOOLS_UID__ = id
         }
+        appRecord.instanceMap.forEach((c, instanceId) => {
+          if (c.isDeactivated && c.type.name === component.type.name && instanceId !== id) {
+            appRecord.instanceMap.delete(instanceId)
+          }
+        })
         if (!appRecord.instanceMap.has(id)) {
           appRecord.instanceMap.set(id, component)
         }

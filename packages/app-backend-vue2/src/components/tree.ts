@@ -34,9 +34,10 @@ export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendCon
 
   const captureId = vm => {
     const id = getUniqueId(vm)
+    const name = getInstanceName(vm)
     if (captureIds.has(id)) return
     captureIds.set(id, undefined)
-    mark(vm)
+    mark(vm, name)
   }
 
   const parents = []
@@ -225,12 +226,12 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
     captureIds.set(instance.__VUE_DEVTOOLS_UID__, undefined)
   }
 
-  mark(instance)
   const name = getInstanceName(instance)
+  mark(instance, name)
 
   const children = (await Promise.all((await getInternalInstanceChildren(instance))
     .filter(child => !isBeingDestroyed(child))
-    .map(capture))).filter(Boolean)
+    .map(capture))).filter(Boolean).filter(r => instanceMap.has(r.id))
 
   const ret: ComponentTreeNode = {
     uid: instance._uid,
@@ -308,11 +309,18 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
  * @param {Vue} instance
  */
 
-function mark (instance) {
+function mark (instance, name) {
   const refId = instance.__VUE_DEVTOOLS_UID__
   if (!instanceMap.has(refId)) {
     instanceMap.set(refId, instance)
     appRecord.instanceMap.set(refId, instance)
+    instanceMap.forEach((instance, id) => {
+      if (instance._inactive && getInstanceName(instance) === name && id !== refId) {
+        instanceMap.delete(id)
+        appRecord.instanceMap.delete(id)
+        return false
+      }
+    })
     instance.$on('hook:beforeDestroy', function () {
       instanceMap.delete(refId)
       appRecord.instanceMap.delete(refId)
