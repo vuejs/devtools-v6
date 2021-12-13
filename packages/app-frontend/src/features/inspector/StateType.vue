@@ -65,7 +65,7 @@ export default defineComponent({
 
     const isExpanded = computed(() => {
       const value = props.expandedState[props.dataType]
-      return typeof value === 'undefined' || value
+      return !!value
     })
 
     return {
