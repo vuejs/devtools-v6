@@ -36,6 +36,11 @@ export default {
       required: true,
     },
 
+    componentId: {
+      type: String,
+      required: false,
+    },
+
     dimAfter: {
       type: Number,
       default: -1,
@@ -52,6 +57,7 @@ export default {
 
   data () {
     return {
+      componentExpandedCache: {},
       expandedState: {},
       forceCollapse: null,
     }
@@ -78,12 +84,23 @@ export default {
   },
 
   watch: {
+    componentId () {
+      this.getExpandedState()
+    },
+
     state () {
       this.forceCollapse = null
     },
   },
 
   methods: {
+    getExpandedState () {
+      if (this.componentId && !this.componentExpandedCache[this.componentId]) {
+        this.componentExpandedCache[this.componentId] = {}
+      }
+      this.expandedState = this.componentExpandedCache[this.componentId]
+    },
+
     toggle (dataType, currentExpanded, event = null) {
       if (event) {
         if (event.ctrlKey || event.metaKey) {
@@ -105,6 +122,10 @@ export default {
         Vue.set(this.expandedState, key, value)
       })
     },
+  },
+
+  mounted() {
+    this.getExpandedState()
   },
 }
 </script>
