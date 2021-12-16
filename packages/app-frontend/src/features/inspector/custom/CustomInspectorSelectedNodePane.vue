@@ -63,6 +63,7 @@ export default defineComponent({
     <StateInspector
       v-if="inspector.state"
       ref="stateInspector"
+      :component-id="inspector.id"
       :state="filteredState"
       class="flex-1 overflow-y-auto"
       @edit-state="editState"

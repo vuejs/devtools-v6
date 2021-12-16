@@ -86,9 +86,6 @@ export default {
   watch: {
     componentId () {
       this.getExpandedState()
-    },
-
-    state () {
       this.forceCollapse = null
     },
   },
@@ -104,6 +101,9 @@ export default {
           this.componentExpandedCache[this.componentId] = {}
         }
         this.expandedState = this.componentExpandedCache[this.componentId]
+      } else {
+        this.setExpandToAll(true)
+        this.$emit('expand-all')
       }
     },
 
@@ -119,6 +119,7 @@ export default {
           return
         }
       }
+      this.forceCollapse = null
       Vue.set(this.expandedState, dataType, !currentExpanded)
     },
 
