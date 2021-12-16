@@ -117,7 +117,7 @@ export default defineComponent({
     <StateInspector
       ref="inspector"
       :state="state"
-      :componentId="selectedComponentId"
+      :component-id="selectedComponentId"
       class="flex-1 overflow-y-auto"
       :class="{
         'grayscale': data && data.id !== selectedComponentId

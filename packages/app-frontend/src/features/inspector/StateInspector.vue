@@ -93,12 +93,18 @@ export default {
     },
   },
 
+  mounted () {
+    this.getExpandedState()
+  },
+
   methods: {
     getExpandedState () {
-      if (this.componentId && !this.componentExpandedCache[this.componentId]) {
-        this.componentExpandedCache[this.componentId] = {}
+      if (this.componentId) {
+        if (!this.componentExpandedCache[this.componentId]) {
+          this.componentExpandedCache[this.componentId] = {}
+        }
+        this.expandedState = this.componentExpandedCache[this.componentId]
       }
-      this.expandedState = this.componentExpandedCache[this.componentId]
     },
 
     toggle (dataType, currentExpanded, event = null) {
@@ -122,10 +128,6 @@ export default {
         Vue.set(this.expandedState, key, value)
       })
     },
-  },
-
-  mounted() {
-    this.getExpandedState()
   },
 }
 </script>
