@@ -285,6 +285,10 @@ export default defineComponent({
       }, 4000)
     },
 
+    onUpdateShown (value) {
+      this.contextMenuOpen = value
+    },
+
     showMoreSubfields () {
       this.limit += 20
     },
@@ -487,7 +491,8 @@ export default defineComponent({
 
           <!-- Context menu -->
           <VueDropdown
-            :open.sync="contextMenuOpen"
+            :shown="contextMenuOpen"
+            @update:shown="onUpdateShown"
           >
             <VueButton
               slot="trigger"

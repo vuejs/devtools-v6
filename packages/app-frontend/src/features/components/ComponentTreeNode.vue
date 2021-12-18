@@ -154,6 +154,10 @@ export default defineComponent({
       }, 4000)
     }
 
+    function onUpdateShown (value) {
+      contextMenuOpen.value = value
+    }
+
     function copyComponentName () {
       copyToClipboard(displayName.value)
     }
@@ -174,7 +178,8 @@ export default defineComponent({
       contextMenuOpen,
       onContextMenuMouseEnter,
       onContextMenuMouseLeave,
-      copyComponentName
+      onUpdateShown,
+      copyComponentName,
     }
   },
 })
@@ -284,8 +289,9 @@ export default defineComponent({
 
       <!-- Context menu -->
       <VueDropdown
-        :open.sync="contextMenuOpen"
         v-if="selected"
+        :shown="contextMenuOpen"
+        @update:shown="onUpdateShown"
       >
         <VueButton
           slot="trigger"
@@ -293,11 +299,11 @@ export default defineComponent({
           class="icon-button flat"
         />
 
-          <div
-            class="context-menu-dropdown"
-            @mouseenter="onContextMenuMouseEnter()"
-            @mouseleave="onContextMenuMouseLeave()"
-          >
+        <div
+          class="context-menu-dropdown"
+          @mouseenter="onContextMenuMouseEnter()"
+          @mouseleave="onContextMenuMouseLeave()"
+        >
           <VueDropdownButton
             icon-left="flip_to_front"
             @click="copyComponentName()"
