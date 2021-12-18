@@ -624,7 +624,7 @@ export default defineComponent({
         visibility visible
     .icon-button
       user-select none
-      width 20px
+      width 16px
       height @width
     .icon-button >>> .vue-ui-icon,
     .small-icon

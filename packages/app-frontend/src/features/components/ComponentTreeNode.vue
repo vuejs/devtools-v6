@@ -288,30 +288,32 @@ export default defineComponent({
       </span>
 
       <!-- Context menu -->
-      <VueDropdown
-        v-if="selected"
-        :shown="contextMenuOpen"
-        @update:shown="onUpdateShown"
-      >
-        <VueButton
-          slot="trigger"
-          icon-left="more_vert"
-          class="icon-button flat"
-        />
-
-        <div
-          class="context-menu-dropdown"
-          @mouseenter="onContextMenuMouseEnter()"
-          @mouseleave="onContextMenuMouseLeave()"
+      <span class="actions">
+        <VueDropdown
+          v-if="selected"
+          :shown="contextMenuOpen"
+          @update:shown="onUpdateShown"
         >
-          <VueDropdownButton
-            icon-left="flip_to_front"
-            @click="copyComponentName()"
+          <VueButton
+            slot="trigger"
+            icon-left="more_vert"
+            class="icon-button flat"
+          />
+
+          <div
+            class="context-menu-dropdown"
+            @mouseenter="onContextMenuMouseEnter()"
+            @mouseleave="onContextMenuMouseLeave()"
           >
-            {{ $t('DataField.contextMenu.copyComponentName') }}
-          </VueDropdownButton>
-        </div>
-      </VueDropdown>
+            <VueDropdownButton
+              icon-left="flip_to_front"
+              @click="copyComponentName()"
+            >
+              {{ $t('DataField.contextMenu.copyComponentName') }}
+            </VueDropdownButton>
+          </div>
+        </VueDropdown>
+      </span>
     </div>
 
     <div v-if="expanded && instance.children">
@@ -336,8 +338,18 @@ export default defineComponent({
   line-height 10px
   border-radius 3px
 
-.icon-button
-  height 16px
-  width 16px
-  margin-left 10px
+.actions
+  display inline-flex
+  align-items center
+  position relative
+  top -3px
+  left 5px
+  > *
+  .icon-button
+    user-select none
+    width 16px
+    height @width
+    >>> .vue-ui-icon
+      width 16px
+      height @width
 </style>
