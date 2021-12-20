@@ -19,10 +19,12 @@ import {
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
 import { addGroupAroundPosition } from './layers'
-import { EventGroup } from '.'
+import { currentSession, EventGroup } from '.'
 import { addNonReactiveProperties } from '@front/util/reactivity'
+import { createSessionFromCurrentState, getSessionAtTime, loadSession } from './session'
 
 const AUTOSCROLL_DURATION = 10000
+const CREATE_SESSION_DELAY = 10000
 
 type AddEventCb = (event: TimelineEvent) => void
 
@@ -82,8 +84,10 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
     event.group = group
   }
 
+  const session = getSessionAtTime(event.time)
+
   // Min time
-  if (minTime.value > event.time) {
+  if (!session && minTime.value > event.time) {
     const stick = minTime.value === startTime.value
     minTime.value = event.time - 100
     if (stick) {
@@ -94,23 +98,33 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
   // Update scrollbar
   const scrollTime = event.time + 100
   if (scrollTime > maxTime.value) {
-    if (endTime.value === maxTime.value) {
-      if (startTime.value !== minTime.value) {
-        // Autoscroll
-        startTime.value = scrollTime - (endTime.value - startTime.value)
-      } else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
-        // Autoscroll
-        startTime.value = scrollTime - AUTOSCROLL_DURATION
+    const stick = endTime.value === maxTime.value
+
+    if (!session) {
+      if (scrollTime > endTime.value + CREATE_SESSION_DELAY) {
+        createSessionFromCurrentState()
       }
-      endTime.value = scrollTime
+
+      if (stick) {
+        if (startTime.value !== minTime.value) {
+          // Autoscroll
+          startTime.value = scrollTime - (endTime.value - startTime.value)
+        } else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
+          // Autoscroll
+          startTime.value = scrollTime - AUTOSCROLL_DURATION
+        }
+        endTime.value = scrollTime
+      }
+      maxTime.value = scrollTime
     }
-    maxTime.value = scrollTime
   }
 
   takeScreenshot(event)
 
-  for (const cb of addEventCbs) {
-    cb(event)
+  if (session === currentSession.value) {
+    for (const cb of addEventCbs) {
+      cb(event)
+    }
   }
 }
 

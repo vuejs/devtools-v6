@@ -78,6 +78,27 @@ export interface TimelineMarker extends MarkerFromBackend {
   x: number
 }
 
+export interface TimelineSession {
+  id: string
+  date: Date
+  duration: number
+  imported: boolean
+  state: TimelineSessionState
+}
+
+export interface TimelineSessionState {
+  startTime: number
+  endTime: number
+  minTime: number
+  maxTime: number
+  layersPerApp: Record<string, Layer[]>
+  screenshots: EventScreenshot[]
+  markersAllApps: TimelineMarker[]
+  markersPerApp: Record<string, TimelineMarker[]>
+  selectedEvent: TimelineEvent
+  selectedLayer: Layer
+}
+
 export const startTime = ref(0)
 export const endTime = ref(0)
 export const minTime = ref(0)
@@ -103,3 +124,7 @@ export const screenshots: Ref<EventScreenshot[]> = ref([])
 
 export const markersAllApps: Ref<TimelineMarker[]> = ref([])
 export const markersPerApp: Ref<{[appId: string]: TimelineMarker[]}> = ref({})
+
+export const sessions: Ref<TimelineSession[]> = ref([])
+export const currentSession: Ref<TimelineSession> = ref(null)
+export const currentSessionIndex: Ref<number> = ref(null)
