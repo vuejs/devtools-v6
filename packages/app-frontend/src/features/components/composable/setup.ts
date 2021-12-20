@@ -2,7 +2,6 @@ import { Bridge, BridgeEvents, parse, getStorage } from '@vue-devtools/shared-ut
 import { putError } from '@front/features/error'
 import {
   selectedComponentPendingId,
-  expandedMap,
   resetComponentsQueued,
   resetComponents,
   componentsMap,
@@ -22,7 +21,6 @@ import {
 
 export function setupComponentsBridgeEvents (bridge: Bridge) {
   selectedComponentPendingId.value = null
-  expandedMap.value = {}
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_TREE, ({ instanceId, treeData, notFound }) => {
     requestedComponentTree.delete(instanceId)
