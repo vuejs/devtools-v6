@@ -59,8 +59,8 @@ function decode (list, reviver) {
 }
 
 export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
-  const type = typeof data
   const replacedData = replacer ? replacer.call({ '': data }, '', data) : data
+  const type = typeof replacedData
   const newSpace = lastSpace + space
   // @ts-ignore
   if (replacedData === null || replacedData === undefined) {
@@ -84,7 +84,7 @@ export function stringifyWithReplacer (data: any, replacer: (this: any, key: str
         result += `${isArray ? '' : `${keyString}:`}${valueString}${index < list.length - 1 ? ',' : ''}`
       }
     })
-    result += `${space ? ' '.repeat(lastSpace) : ''}${isArray ? ']' : '}'}`
+    result += `${' '.repeat(lastSpace)}${isArray ? ']' : '}'}`
     return result
   } else {
     return replacedData.toString()
