@@ -175,6 +175,12 @@ export function stringify (data) {
   return stringifyCircularAutoChunks(data, replacer)
 }
 
+export function stringifyClipboard (data) {
+  // Create a fresh cache for each serialization
+  encodeCache.clear()
+  return stringifyCircularAutoChunks(data, replacer, 2, true)
+}
+
 function replacer (key) {
   // @ts-ignore
   const val = this[key]
@@ -695,7 +701,7 @@ function escapeChar (a) {
 export function copyToClipboard (state) {
   if (typeof document === 'undefined') return
   const dummyTextArea = document.createElement('textarea')
-  dummyTextArea.textContent = stringify(state)
+  dummyTextArea.textContent = stringifyClipboard(state)
   document.body.appendChild(dummyTextArea)
   dummyTextArea.select()
   document.execCommand('copy')

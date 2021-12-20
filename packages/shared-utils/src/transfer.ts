@@ -58,13 +58,50 @@ function decode (list, reviver) {
   }
 }
 
-export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
+export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
+  const type = typeof data
+  const replacedData = replacer ? replacer.call({ '': data }, '', data) : data
+  const newSpace = lastSpace + space
+  // @ts-ignore
+  if (replacedData === null || replacedData === undefined) {
+    return String(replacedData)
+  } else if (type === 'object') {
+    let result
+    const isArray = Array.isArray(replacedData)
+    const objKeys = Object.keys(replacedData)
+    if (objKeys.length === 0) {
+      return isArray ? '[]' : '{}'
+    }
+    result = `${isArray ? '[' : '{'}${space ? '\n' : ''}`
+    objKeys.forEach((key, index, list) => {
+      const replacedKey = replacer ? replacer.call({ '': key }, '', key) : key
+      const replacedValue = replacer ? replacer.call(replacedData, key, replacedData[key]) : replacedData[key]
+      const keyString = stringifyWithReplacer(replacedKey, replacer)
+      const valueString = stringifyWithReplacer(replacedValue, replacer, space, newSpace)
+      if (space) {
+        result += `${' '.repeat(newSpace)}${isArray ? '' : `${keyString}: `}${valueString}${index < list.length - 1 ? ',' : ''}\n`
+      } else {
+        result += `${isArray ? '' : `${keyString}:`}${valueString}${index < list.length - 1 ? ',' : ''}`
+      }
+    })
+    result += `${space ? ' '.repeat(lastSpace) : ''}${isArray ? ']' : '}'}`
+    return result
+  } else {
+    return replacedData.toString()
+  }
+}
+
+export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, notJSON = false) {
   let result
   try {
-    result = arguments.length === 1
-      ? JSON.stringify(data)
+    if (!notJSON) {
+      result = arguments.length === 1
+        ? JSON.stringify(data)
       // @ts-ignore
-      : JSON.stringify(data, replacer, space)
+        : JSON.stringify(data, replacer, space)
+    } else {
+      result = stringifyWithReplacer(data, replacer, space)
+    }
   } catch (e) {
     result = stringifyStrictCircularAutoChunks(data, replacer, space)
   }
