@@ -174,7 +174,7 @@ export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppR
         console.log('Timed out waiting for app record', app)
       }
       reject(new Error(`Timed out getting app record for app`))
-    }, 2000)
+    }, 60000)
   })
 }
 
