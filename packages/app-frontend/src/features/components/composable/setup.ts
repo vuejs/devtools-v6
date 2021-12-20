@@ -2,16 +2,12 @@ import { Bridge, BridgeEvents, parse, getStorage } from '@vue-devtools/shared-ut
 import { putError } from '@front/features/error'
 import {
   selectedComponentPendingId,
-  resetComponentsQueued,
-  resetComponents,
-  componentsMap,
-  restoreChildrenFromComponentsMap,
-  updateComponentsMapData,
-  addToComponentsMap,
+  ensureComponentsMapData,
   rootInstances,
   selectedComponentId,
   selectedComponentData,
   loadComponent,
+  isComponentOpen,
   setComponentOpen,
   requestComponentTree,
   requestedComponentTree,
@@ -27,11 +23,6 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
 
     const isRoot = instanceId.endsWith('root')
 
-    // Reset
-    if (resetComponentsQueued.value) {
-      resetComponents()
-    }
-
     // Not supported
     if (!treeData) {
       if (isRoot && !notFound) {
@@ -42,16 +33,12 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
 
     // Handle tree data
     const data = parse(treeData)
-    const instance = componentsMap.value[instanceId]
-    if (instance) {
-      for (const item of data) {
-        restoreChildrenFromComponentsMap(item)
-        const component = updateComponentsMapData(item)
-        addToComponentsMap(component)
+    if (isRoot) {
+      rootInstances.value = data.map(i => ensureComponentsMapData(i))
+    } else {
+      for (const child of data) {
+        ensureComponentsMapData(child)
       }
-    } else if (Array.isArray(data)) {
-      rootInstances.value = data
-      data.forEach(i => addToComponentsMap(i))
     }
 
     // Try to load selected component again
@@ -72,8 +59,10 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
       parentIds.reverse().forEach(id => {
         // Ignore root
         if (id.endsWith('root')) return
-        setComponentOpen(id, true)
-        requestComponentTree(id)
+        if (!isComponentOpen(id)) {
+          setComponentOpen(id, true)
+          requestComponentTree(id)
+        }
       })
     }
   })
