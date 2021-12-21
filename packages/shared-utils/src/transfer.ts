@@ -58,49 +58,69 @@ function decode (list, reviver) {
   }
 }
 
+function serializeArray (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
+  const objKeys = Object.keys(data)
+  if (objKeys.length === 0) {
+    return '[]'
+  }
+  let result = '['
+  const newSpace = lastSpace + space
+  objKeys.forEach(key => {
+    const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace)
+    result += space
+      ? `\n${' '.repeat(newSpace)}${valueString},`
+      : `${valueString},`
+  })
+  result = result.substr(0, result.length - 1)
+  result += space ? `\n${' '.repeat(lastSpace)}]` : ']'
+  return result
+}
+
+function serializeObject (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
+  const objKeys = Object.keys(data)
+  if (objKeys.length === 0) {
+    return '{}'
+  }
+  let result = '{'
+  const newSpace = lastSpace + space
+  objKeys.forEach(key => {
+    const keyString = stringifyWithReplacer(key, replacer)
+    const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace)
+    result += space
+      ? `\n${' '.repeat(newSpace)}${keyString}: ${valueString},`
+      : `${keyString}: ${valueString},`
+  })
+  result = result.substr(0, result.length - 1)
+  result += space ? `\n${' '.repeat(lastSpace)}}` : '}'
+  return result
+}
+
 export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
   const replacedData = replacer ? replacer.call({ '': data }, '', data) : data
-  const type = typeof replacedData
-  const newSpace = lastSpace + space
-  // @ts-ignore
   if (replacedData === null || replacedData === undefined) {
     return String(replacedData)
-  } else if (type === 'object') {
-    let result
-    const isArray = Array.isArray(replacedData)
-    const objKeys = Object.keys(replacedData)
-    if (objKeys.length === 0) {
-      return isArray ? '[]' : '{}'
-    }
-    result = `${isArray ? '[' : '{'}${space ? '\n' : ''}`
-    objKeys.forEach((key, index, list) => {
-      const replacedKey = replacer ? replacer.call({ '': key }, '', key) : key
-      const replacedValue = replacer ? replacer.call(replacedData, key, replacedData[key]) : replacedData[key]
-      const keyString = stringifyWithReplacer(replacedKey, replacer)
-      const valueString = stringifyWithReplacer(replacedValue, replacer, space, newSpace)
-      if (space) {
-        result += `${' '.repeat(newSpace)}${isArray ? '' : `${keyString}: `}${valueString}${index < list.length - 1 ? ',' : ''}\n`
-      } else {
-        result += `${isArray ? '' : `${keyString}:`}${valueString}${index < list.length - 1 ? ',' : ''}`
-      }
-    })
-    result += `${' '.repeat(lastSpace)}${isArray ? ']' : '}'}`
-    return result
+  } else if (typeof replacedData === 'object') {
+    return Array.isArray(replacedData)
+      ? serializeArray(replacedData, replacer, space, lastSpace)
+      : serializeObject(replacedData, replacer, space, lastSpace)
   } else {
     return replacedData.toString()
   }
 }
 
-export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, notJSON = false) {
+export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, toJSON = true) {
   let result
   try {
-    if (!notJSON) {
+    if (toJSON) {
       result = arguments.length === 1
         ? JSON.stringify(data)
-      // @ts-ignore
+        // @ts-ignore
         : JSON.stringify(data, replacer, space)
     } else {
-      result = stringifyWithReplacer(data, replacer, space)
+      result = arguments.length === 1
+        ? stringifyWithReplacer(data)
+        // @ts-ignore
+        : stringifyWithReplacer(data, replacer, space)
     }
   } catch (e) {
     result = stringifyStrictCircularAutoChunks(data, replacer, space)

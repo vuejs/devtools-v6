@@ -169,16 +169,10 @@ class ReviveCache {
 
 const reviveCache = new ReviveCache(1000)
 
-export function stringify (data) {
+export function stringify (data, space = null, toJSON = true) {
   // Create a fresh cache for each serialization
   encodeCache.clear()
-  return stringifyCircularAutoChunks(data, replacer)
-}
-
-export function stringifyClipboard (data) {
-  // Create a fresh cache for each serialization
-  encodeCache.clear()
-  return stringifyCircularAutoChunks(data, replacer, 2, true)
+  return stringifyCircularAutoChunks(data, replacer, space, toJSON)
 }
 
 function replacer (key) {
@@ -701,7 +695,7 @@ function escapeChar (a) {
 export function copyToClipboard (state) {
   if (typeof document === 'undefined') return
   const dummyTextArea = document.createElement('textarea')
-  dummyTextArea.textContent = stringifyClipboard(state)
+  dummyTextArea.textContent = stringify(state, 2, false)
   document.body.appendChild(dummyTextArea)
   dummyTextArea.select()
   document.execCommand('copy')
