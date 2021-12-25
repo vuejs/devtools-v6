@@ -47,6 +47,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-console': ['error', { allow: ['warn', 'error'] }],
     'comma-dangle': ['error', 'always-multiline'],
+    quotes: ['error', 'single', { allowTemplateLiterals: true }],
   },
   ignorePatterns: [
     'node_modules/',

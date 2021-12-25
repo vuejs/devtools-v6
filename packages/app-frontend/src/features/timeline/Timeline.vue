@@ -12,6 +12,7 @@ import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from '@
 import { SharedData } from '@vue-devtools/shared-utils'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
+import { useFonts } from '@front/util/fonts'
 import {
   useTime,
   useLayers,
@@ -83,12 +84,24 @@ export default defineComponent({
       selectedEvent,
     } = useSelectedEvent()
 
-    // Scroll to selected event
+    // Auto scroll to selected event
     watch(selectedEvent, event => {
       if (!event) return
 
       const size = endTime.value - startTime.value
-      if (event.time < startTime.value || event.time > endTime.value) {
+
+      let isEventInViewPort: boolean
+      if (event.layer.groupsOnly) {
+        isEventInViewPort = (
+          (event.group.firstEvent.time >= startTime.value && event.group.firstEvent.time <= endTime.value) ||
+          (event.group.lastEvent.time >= startTime.value && event.group.lastEvent.time <= endTime.value) ||
+          (event.group.firstEvent.time <= startTime.value && event.group.lastEvent.time >= endTime.value)
+        )
+      } else {
+        isEventInViewPort = event.time >= startTime.value && event.time <= endTime.value
+      }
+
+      if (!isEventInViewPort) {
         startTime.value = event.time - size / 2
         if (startTime.value < minTime.value) {
           startTime.value = minTime.value
@@ -266,11 +279,17 @@ export default defineComponent({
       stopMove()
     })
 
+    // Fonts
+
+    const { loaded: fontsLoaded } = useFonts()
+
     return {
+      fontsLoaded,
       startTime,
       endTime,
       minTime,
       maxTime,
+      cursorTime,
       layers,
       vScroll,
       layersEl,
@@ -336,7 +355,7 @@ export default defineComponent({
           dragger-offset="after"
         >
           <template #left>
-            <div class="h-full flex flex-col">
+            <div class="h-full flex flex-col select-none">
               <div class="flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
                 <VueButton
                   icon-left="arrow_left"
@@ -373,6 +392,7 @@ export default defineComponent({
                 />
               </div>
               <TimelineView
+                v-if="fontsLoaded"
                 class="h-full"
               />
 
@@ -387,6 +407,12 @@ export default defineComponent({
                   />
                   <span>
                     {{ formattedCursorTime }}
+                    <span
+                      v-if="$shared.debugInfo"
+                      class="opacity-50"
+                    >
+                      ({{ Math.floor(startTime) }}<span class="opacity-50">|</span>{{ Math.floor(cursorTime) }}<span class="opacity-50">|</span>{{ Math.floor(endTime) }})
+                    </span>
                   </span>
                 </div>
               </div>

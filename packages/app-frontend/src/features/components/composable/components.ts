@@ -1,4 +1,4 @@
-import { ref, computed, watch, Ref } from '@vue/composition-api'
+import { ref, computed, watch, Ref, onMounted } from '@vue/composition-api'
 import { ComponentTreeNode, EditStatePayload, InspectedComponentData } from '@vue/devtools-api'
 import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
@@ -26,7 +26,6 @@ export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
 let lastSelectedApp: AppRecord = null
 export const lastSelectedComponentId: Record<AppRecord['id'], ComponentTreeNode['id']> = {}
 export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
-export const resetComponentsQueued = ref(false)
 
 export function useComponentRequests () {
   const router = useRouter()
@@ -134,17 +133,13 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   const { selectComponent, requestComponentTree } = useComponentRequests()
   const { subscribe } = useBridge()
 
-  function checkIsExpanded (id) {
-    return !!expandedMap.value[id]
-  }
-
-  const isExpanded = computed(() => checkIsExpanded(instance.value.id))
+  const isExpanded = computed(() => isComponentOpen(instance.value.id))
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
-  function toggleExpand (load = true) {
+  function toggleExpand () {
     if (!instance.value.hasChildren) return
     setComponentOpen(instance.value.id, !isExpanded.value)
-    if (load) {
+    if (isComponentOpen(instance.value.id)) {
       requestComponentTree(instance.value.id)
     }
   }
@@ -173,14 +168,16 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
     })
   }
 
-  if (isExpanded.value) {
-    requestComponentTree(instance.value.id)
-  }
+  onMounted(() => {
+    if (isExpanded.value) {
+      requestComponentTree(instance.value.id)
+    }
+  })
 
   return {
     isExpanded,
     isExpandedUndefined,
-    checkIsExpanded,
+    isComponentOpen,
     toggleExpand,
     isSelected,
     select,
@@ -190,6 +187,10 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
 
 export function setComponentOpen (id: ComponentTreeNode['id'], isOpen: boolean) {
   Vue.set(expandedMap.value, id, isOpen)
+}
+
+export function isComponentOpen (id) {
+  return !!expandedMap.value[id]
 }
 
 export function useSelectedComponent () {
@@ -255,7 +256,6 @@ export function useSelectedComponent () {
 }
 
 export function resetComponents () {
-  resetComponentsQueued.value = false
   rootInstances.value = []
   componentsMap.value = {}
   componentsParent = {}
@@ -273,9 +273,6 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
   }
   requestedComponentTree.add(instanceId)
 
-  if (instanceId === '_root') {
-    resetComponentsQueued.value = true
-  }
   await waitForAppSelect()
 
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
@@ -284,35 +281,45 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
   })
 }
 
-export function restoreChildrenFromComponentsMap (data: ComponentTreeNode) {
-  const instance = componentsMap.value[data.id]
-  if (instance && data.hasChildren) {
-    if (!data.children.length && instance.children.length) {
-      data.children = instance.children
-    } else {
-      for (const child of data.children) {
-        restoreChildrenFromComponentsMap(child)
-      }
-    }
-  }
-}
-
-export function updateComponentsMapData (data: ComponentTreeNode) {
-  const component = componentsMap.value[data.id]
-  for (const key in data) {
-    Vue.set(component, key, data[key])
+export function ensureComponentsMapData (data: ComponentTreeNode) {
+  let component = componentsMap.value[data.id]
+  if (!component) {
+    component = addToComponentsMap(data)
+  } else {
+    component = updateComponentsMapData(data)
   }
   return component
 }
 
-export function addToComponentsMap (instance: ComponentTreeNode) {
-  componentsMap.value[instance.id] = instance
-  if (instance.children) {
-    instance.children.forEach(c => {
-      componentsParent[c.id] = instance.id
-      addToComponentsMap(c)
-    })
+function ensureComponentsMapChildren (id: string, children: ComponentTreeNode[]) {
+  const result = children.map(child => ensureComponentsMapData(child))
+  for (const child of children) {
+    componentsParent[child.id] = id
   }
+  return result
+}
+
+function updateComponentsMapData (data: ComponentTreeNode) {
+  const component = componentsMap.value[data.id]
+  for (const key in data) {
+    if (key === 'children') {
+      if (!data.hasChildren || data.children.length) {
+        const children = ensureComponentsMapChildren(component.id, data.children)
+        Vue.set(component, key, children)
+      }
+    } else {
+      Vue.set(component, key, data[key])
+    }
+  }
+  return component
+}
+
+function addToComponentsMap (data: ComponentTreeNode) {
+  if (!data.hasChildren || data.children.length) {
+    data.children = ensureComponentsMapChildren(data.id, data.children)
+  }
+  componentsMap.value[data.id] = data
+  return data
 }
 
 export async function loadComponent (id: ComponentTreeNode['id']) {

@@ -99,6 +99,13 @@ export default defineComponent({
       </span>
     </div>
 
+    <div
+      v-if="$shared.debugInfo"
+      class="opacity-50 text-2xs px-2 text-center border-b border-gray-200 dark:border-gray-800"
+    >
+      Time: {{ inspectedEvent.time }}
+    </div>
+
     <VueLoadingBar
       v-if="loading"
       unknown

@@ -16,22 +16,16 @@ import {
   EventGroup,
 } from './store'
 import { useRouter } from '@front/util/router'
+import { addNonReactiveProperties } from '@front/util/reactivity'
 
 export function layerFactory (options: LayerFromBackend): Layer {
   const result = {} as Layer
-  const nonReactiveOptions = {
+  addNonReactiveProperties(result, {
     ...options,
     eventsMap: {},
     groupsMap: {},
     groupPositionCache: {},
-  }
-  for (const key in nonReactiveOptions) {
-    Object.defineProperty(result, key, {
-      value: nonReactiveOptions[key],
-      writable: true,
-      configurable: false,
-    })
-  }
+  })
   Object.assign(result, {
     events: [],
     groups: [],
@@ -129,17 +123,19 @@ export async function fetchLayers () {
 }
 
 export function getGroupsAroundPosition (layer: Layer, startPosition: number, endPosition: number): EventGroup[] {
-  const result: EventGroup[] = []
+  const result = new Set<EventGroup>()
   let key = Math.round(startPosition / 100)
   const endKey = Math.round(endPosition / 100)
   while (key <= endKey) {
     const groups = layer.groupPositionCache[key]
     if (groups) {
-      result.push(...groups)
+      for (const group of groups) {
+        result.add(group)
+      }
     }
     key++
   }
-  return result
+  return Array.from(result)
 }
 
 export function addGroupAroundPosition (layer: Layer, group: EventGroup, newPosition: number) {

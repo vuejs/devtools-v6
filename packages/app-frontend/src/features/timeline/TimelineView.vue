@@ -1,6 +1,8 @@
 <script lang="ts">
 import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
+import { EventSystem, FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
+import { Renderer } from '@pixi/core'
 import {
   ref,
   onMounted,
@@ -9,8 +11,7 @@ import {
   watchEffect,
   defineComponent,
 } from '@vue/composition-api'
-import Vue from 'vue'
-import { SharedData } from '@vue-devtools/shared-utils'
+import { SharedData, isMac } from '@vue-devtools/shared-utils'
 import {
   useLayers,
   useTime,
@@ -31,13 +32,28 @@ import { useDarkMode } from '@front/util/theme'
 import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 import { Queue } from '@front/util/queue'
-import { nonReactive } from '@front/util/reactivity'
+import { addNonReactiveProperties, nonReactive } from '@front/util/reactivity'
+import Vue from 'vue'
 
 PIXI.settings.ROUND_PIXELS = true
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+
+delete Renderer.__plugins.interaction
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
 const MIN_CAMERA_SIZE = 10
+
+// Micro tasks (higher = later)
+const taskPriority = {
+  normal: 0,
+  addEventUpdate: 2,
+  updateEvents: 3,
+  runPositionUpdate: 4,
+  runVerticalPositionUpdate: 5,
+  updateCamera: 9,
+  render: 10,
+}
 
 installUnsafeEval(PIXI)
 
@@ -49,15 +65,39 @@ export default defineComponent({
     const { startTime, endTime, minTime, maxTime } = useTime()
     const { darkMode } = useDarkMode()
 
-    // Optimize for read in loops
-    const nonReactiveTime = {
+    // Optimize for read in loops and hot code
+    const nonReactiveState = {
       startTime: nonReactive(startTime),
       endTime: nonReactive(endTime),
       minTime: nonReactive(minTime),
+      darkMode: nonReactive(darkMode),
     }
 
+    // Micro tasks
+
+    const microTasks: ([() => void, number])[] = []
+    function runMicroTasks () {
+      if (!microTasks.length) return
+      const tasks = microTasks.slice().sort((a, b) => a[1] - b[1])
+      microTasks.length = 0
+      for (const [task] of tasks) {
+        task()
+      }
+    }
+
+    /**
+     * Use the PIXI app ticker to schedule micro tasks
+     * @param priority Higher priority tasks will be executed last
+     */
+    function nextTick (task: () => void, priority: number = taskPriority.normal) {
+      microTasks.push([task, priority])
+    }
+
+    /**
+     * Get pixel position for giver time
+     */
     function getTimePosition (time: number) {
-      return (time - nonReactiveTime.minTime.value) / (nonReactiveTime.endTime.value - nonReactiveTime.startTime.value) * app.view.width
+      return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * getAppWidth()
     }
 
     // Reset
@@ -84,6 +124,9 @@ export default defineComponent({
 
     let app: PIXI.Application
 
+    let mainRenderTexture: PIXI.RenderTexture
+    let mainRenderContainer: PIXI.Container
+
     let verticalScrollingContainer: PIXI.Container
     let horizontalScrollingContainer: PIXI.Container
 
@@ -94,28 +137,123 @@ export default defineComponent({
         autoDensity: true,
         resolution: window.devicePixelRatio,
       })
+      if (!('events' in app.renderer)) {
+        // @ts-ignore
+        app.renderer.addSystem(EventSystem, 'events')
+      }
       app.stage.interactive = true
       app.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000)
       updateBackground()
       wrapper.value.appendChild(app.view)
+
+      // Prevent flash of white in dark mode
+      // Init & on resize
       app.view.style.opacity = '0'
       app.renderer.on('postrender', () => {
         app.view.style.opacity = '1'
       })
 
+      // Micro tasks
+      app.ticker.add(() => {
+        runMicroTasks()
+      })
+
       verticalScrollingContainer = new PIXI.Container()
-      app.stage.addChild(verticalScrollingContainer)
 
       horizontalScrollingContainer = new PIXI.Container()
       verticalScrollingContainer.addChild(horizontalScrollingContainer)
+
+      // Manual painting
+      if (app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
+        mainRenderTexture = PIXI.RenderTexture.create({
+          width: getAppWidth(),
+          height: getAppHeight(),
+          resolution: window.devicePixelRatio,
+        })
+        mainRenderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.LOW
+        const mainRenderSprite = new PIXI.Sprite(mainRenderTexture)
+        app.stage.addChild(mainRenderSprite)
+
+        mainRenderContainer = new PIXI.Container()
+        mainRenderContainer.addChild(verticalScrollingContainer)
+      } else {
+        app.stage.addChild(verticalScrollingContainer)
+      }
     })
 
     onUnmounted(() => {
       app.destroy()
     })
 
+    function getAppWidth () {
+      return app.view.width / window.devicePixelRatio
+    }
+
+    function getAppHeight () {
+      return app.view.height / window.devicePixelRatio
+    }
+
+    // Manual painting (draw)
+
+    let drawScheduled = false
+
+    function draw () {
+      if (!drawScheduled && app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
+        drawScheduled = true
+        nextTick(() => {
+          app.renderer.render(mainRenderContainer, {
+            renderTexture: mainRenderTexture,
+          })
+          const renderer = app.renderer as PIXI.Renderer
+          renderer.framebuffer.blit()
+          drawScheduled = false
+        }, taskPriority.render)
+      }
+    }
+
+    // Interaction draw
+
+    let interactionDrawBlocked = false
+    let interactionDrawBlockedTimeout
+    let interactionDrawScheduled = false
+
+    /**
+     * Queue a repaint when the user interacts without scrolling
+     * This prevents flashing when the user is scrolling at the same time
+     */
+    async function interactionDraw () {
+      await Vue.nextTick()
+      if (!interactionDrawBlocked) {
+        interactionDrawScheduled = false
+        draw()
+      } else {
+        interactionDrawScheduled = true
+      }
+    }
+
+    /**
+     * Block interaction drawing for a short time
+     * after scrolling to prevent flashing
+     */
+    function blockInteractionDraw () {
+      interactionDrawBlocked = true
+      clearTimeout(interactionDrawBlockedTimeout)
+      interactionDrawBlockedTimeout = setTimeout(() => {
+        interactionDrawBlocked = false
+        if (interactionDrawScheduled) {
+          interactionDrawScheduled = false
+          draw()
+        }
+      }, 500)
+    }
+
+    watch(startTime, blockInteractionDraw)
+    watch(endTime, blockInteractionDraw)
+
+    // App background
+
     function updateBackground () {
-      if (darkMode.value) {
+      if (nonReactiveState.darkMode.value) {
         app && (app.renderer.backgroundColor = 0x0b1015)
       } else {
         app && (app.renderer.backgroundColor = 0xffffff)
@@ -145,7 +283,7 @@ export default defineComponent({
         const x = getTimePosition(marker.time)
         marker.x = x
         markerContainer.moveTo(x, 0)
-        markerContainer.lineTo(x, app.view.height)
+        markerContainer.lineTo(x, getAppHeight())
       }
       markerContainer.x = horizontalScrollingContainer.x
     }
@@ -270,12 +408,14 @@ export default defineComponent({
       } else {
         layerHoverEffect.visible = false
       }
+
+      interactionDraw()
     }
 
     function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
       const { layer } = layersMap[layerId]
       layerHoverEffect.beginFill(layer.color, alpha)
-      layerHoverEffect.drawRect(0, getLayerY(layer), app.view.width, (layer.height + 1) * LAYER_SIZE)
+      layerHoverEffect.drawRect(0, getLayerY(layer), getAppWidth(), (layer.height + 1) * LAYER_SIZE)
     }
 
     watch(hoverLayerId, () => {
@@ -286,15 +426,15 @@ export default defineComponent({
       drawLayerBackgroundEffects()
     })
 
-    function updateLayerHover (event: MouseEvent) {
-      let { offsetY } = event
-      offsetY -= verticalScrollingContainer.y
-      if (offsetY >= 0) {
+    function updateLayerHover (event: FederatedPointerEvent) {
+      let { globalY } = event
+      globalY -= verticalScrollingContainer.y
+      if (globalY >= 0) {
         let y = 0
         // Find the hovering layer depending on each layer's height
         for (const layer of layers.value) {
           y += (layer.height + 1) * LAYER_SIZE
-          if (offsetY <= y) {
+          if (globalY <= y) {
             hoverLayerId.value = layer.id
             return
           }
@@ -310,19 +450,19 @@ export default defineComponent({
     // Events
 
     const { selectedEvent } = useSelectedEvent()
+    const nonReactiveSelectedEvent = nonReactive(selectedEvent)
 
     let events: TimelineEvent[] = []
 
     const updateEventPositionQueue = new Queue<TimelineEvent>()
     const updateEventVerticalPositionQueue = new Queue<TimelineEvent>()
     let eventPositionUpdateInProgress = false
-    let eventVerticalPositionUpdateInProgress = false
 
     function queueEventPositionUpdate (events: TimelineEvent[], force = false) {
       for (const event of events) {
         if (!event.container) continue
 
-        event.forcePositionUpdate = force
+        if (force) event.forcePositionUpdate = true
 
         updateEventPositionQueue.add(event)
       }
@@ -330,10 +470,10 @@ export default defineComponent({
       // If not running an update, start one
       if (!eventPositionUpdateInProgress) {
         eventPositionUpdateInProgress = true
-        Vue.nextTick(() => {
+        nextTick(() => {
           runEventPositionUpdate()
           eventPositionUpdateInProgress = false
-        })
+        }, taskPriority.runPositionUpdate)
       }
     }
 
@@ -349,31 +489,28 @@ export default defineComponent({
         event.container.x = getTimePosition(event.time)
 
         // Ignore additional updates to flamechart
-        if (!event.forcePositionUpdate && event.layer.groupsOnly) continue
+        const force = event.forcePositionUpdate
+        event.forcePositionUpdate = false
+        if (!force && event.layer.groupsOnly) continue
 
         // Queue vertical position compute
         updateEventVerticalPositionQueue.add(event)
       }
 
-      // If not running an update, start one
-      if (!eventVerticalPositionUpdateInProgress) {
-        eventVerticalPositionUpdateInProgress = true
-        Vue.nextTick(() => {
-          runEventVerticalPositionUpdate()
-          eventVerticalPositionUpdateInProgress = false
-        })
-      }
-    }
-
-    function runEventVerticalPositionUpdate () {
-      let event: TimelineEvent
       while ((event = updateEventVerticalPositionQueue.shift())) {
         computeEventVerticalPosition(event)
       }
     }
 
+    let isEventIgnoredCache: Record<TimelineEvent['id'], boolean> = {}
+
     function isEventIgnored (event: TimelineEvent) {
-      return event.layer.ignoreNoDurationGroups && event.group && event.group.duration <= 0
+      let result = isEventIgnoredCache[event.id]
+      if (result == null) {
+        result = event.layer.ignoreNoDurationGroups && event.group?.nonReactiveDuration <= 0
+        isEventIgnoredCache[event.id] = result
+      }
+      return result
     }
 
     function computeEventVerticalPosition (event: TimelineEvent) {
@@ -388,7 +525,7 @@ export default defineComponent({
         // Collision offset for non-flamecharts
         const offset = event.layer.groupsOnly ? 0 : 12
         // For flamechart allow 1-pixel overlap at the end of a group
-        const lastOffset = event.layer.groupsOnly && event.group?.duration > 0 ? -1 : 0
+        const lastOffset = event.layer.groupsOnly && event.group?.nonReactiveDuration > 0 ? -1 : 0
         // Flamechart uses time instead of pixel position
         const getPos = event.layer.groupsOnly ? (time: number) => time : getTimePosition
 
@@ -437,7 +574,7 @@ export default defineComponent({
                 )
               )) {
                 // Collision!
-                if (event.group && event.group.duration > otherGroup.duration && firstEvent.time <= otherGroup.firstEvent.time) {
+                if (event.group && event.group.nonReactiveDuration > otherGroup.nonReactiveDuration && firstEvent.time <= otherGroup.firstEvent.time) {
                   // Invert positions because current group has higher priority
                   if (!updateEventVerticalPositionQueue.has(otherGroup.firstEvent)) {
                     queueEventPositionUpdate([otherGroup.firstEvent], event.layer.groupsOnly)
@@ -472,16 +609,16 @@ export default defineComponent({
       event.container.y = (y + 1) * LAYER_SIZE
     }
 
+    let addEventUpdateQueued = false
+
     function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
       // Container
       let eventContainer: PIXI.Container
 
       if (!event.layer.groupsOnly || (event.group?.firstEvent === event)) {
         eventContainer = new PIXI.Container()
-        Object.defineProperty(event, 'container', {
-          value: eventContainer,
-          writable: true,
-          configurable: false,
+        addNonReactiveProperties(event, {
+          container: eventContainer,
         })
         layerContainer.addChild(eventContainer)
       }
@@ -490,10 +627,10 @@ export default defineComponent({
       if (event.group) {
         if (event.group.firstEvent === event) {
           const groupG = new PIXI.Graphics()
-          Object.defineProperty(event, 'groupG', {
-            value: groupG,
-            writable: true,
-            configurable: false,
+          addNonReactiveProperties(event, {
+            groupG,
+            groupT: null,
+            groupText: null,
           })
           eventContainer.addChild(groupG)
           event.group.oldSize = null
@@ -502,17 +639,21 @@ export default defineComponent({
         } else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
           // We need to check for collisions again
-          Vue.nextTick(() => queueEventsUpdate())
+          if (!addEventUpdateQueued) {
+            addEventUpdateQueued = true
+            nextTick(() => {
+              queueEventsUpdate()
+              addEventUpdateQueued = false
+            }, taskPriority.addEventUpdate)
+          }
         }
       }
 
       // Graphics
       if (eventContainer) {
         const g = new PIXI.Graphics()
-        Object.defineProperty(event, 'g', {
-          value: g,
-          writable: true,
-          configurable: false,
+        addNonReactiveProperties(event, {
+          g,
         })
         eventContainer.addChild(g)
       }
@@ -548,7 +689,6 @@ export default defineComponent({
         e.g = null
 
         if (e.groupT) {
-          (e.groupT.mask as PIXI.Graphics).destroy()
           e.groupT.destroy()
           e.groupT = null
         }
@@ -562,6 +702,7 @@ export default defineComponent({
         e.container = null
       }
       events = []
+      isEventIgnoredCache = {}
     }
 
     function resetEvents () {
@@ -587,10 +728,10 @@ export default defineComponent({
     function queueEventsUpdate () {
       if (eventsUpdateQueued) return
       eventsUpdateQueued = true
-      Vue.nextTick(() => {
+      nextTick(() => {
         updateEvents()
         eventsUpdateQueued = false
-      })
+      }, taskPriority.updateEvents)
     }
 
     function updateEvents () {
@@ -601,11 +742,13 @@ export default defineComponent({
       }
       updateLayerPositions()
       queueEventPositionUpdate(events)
-      for (const event of events) {
-        if (event.groupG) {
-          drawEventGroup(event)
+      for (const layer of layers.value) {
+        const groups = getGroupsAroundPosition(layer, nonReactiveState.startTime.value, nonReactiveState.endTime.value)
+        for (const group of groups) {
+          drawEventGroup(group.firstEvent)
         }
       }
+      draw()
     }
 
     watch(startTime, () => queueEventsUpdate())
@@ -652,11 +795,13 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      app.stage.addListener('click', event => {
+      // @ts-ignore
+      app.stage.addEventListener('click', (event: FederatedPointerEvent) => {
         if (cameraDragging) return
-        const choice = getEventAtPosition(event.data.global.x, event.data.global.y)
+        const choice = getEventAtPosition(event.globalX, event.globalY)
         if (choice) {
           selectEvent(choice)
+          draw()
         }
       })
     })
@@ -679,8 +824,8 @@ export default defineComponent({
             if (selected) {
               // Border-only style
               size--
-              g.lineStyle(2, boostColor(color, darkMode.value))
-              g.beginFill(dimColor(color, darkMode.value))
+              g.lineStyle(2, boostColor(color, nonReactiveState.darkMode.value))
+              g.beginFill(dimColor(color, nonReactiveState.darkMode.value))
               if (!event.group || event.group.firstEvent !== event) {
                 event.container.zIndex = 999999999
               }
@@ -702,7 +847,7 @@ export default defineComponent({
     const drawUnselectedEvent = drawEvent.bind(null, false)
 
     function refreshEventGraphics (event: TimelineEvent) {
-      if (selectedEvent.value === event) {
+      if (nonReactiveSelectedEvent.value === event) {
         drawSelectedEvent(event)
       } else {
         drawUnselectedEvent(event)
@@ -718,8 +863,8 @@ export default defineComponent({
 
     function selectPreviousEvent () {
       let index
-      if (selectedEvent.value) {
-        index = events.indexOf(selectedEvent.value)
+      if (nonReactiveSelectedEvent.value) {
+        index = events.indexOf(nonReactiveSelectedEvent.value)
       } else {
         index = events.length
       }
@@ -740,8 +885,8 @@ export default defineComponent({
 
     function selectNextEvent () {
       let index
-      if (selectedEvent.value) {
-        index = events.indexOf(selectedEvent.value)
+      if (nonReactiveSelectedEvent.value) {
+        index = events.indexOf(nonReactiveSelectedEvent.value)
       } else {
         index = -1
       }
@@ -802,37 +947,43 @@ export default defineComponent({
       eventTooltipText.y = eventTooltipTitle.height + 4
       eventTooltip.addChild(eventTooltipText)
 
-      app.stage.addListener('mousemove', mouseEvent => {
+      // @ts-ignore
+      app.stage.addEventListener('pointermove', (mouseEvent: FederatedPointerEvent) => {
         const text: string[] = []
 
-        // Event tooltip
-        const event = getEventAtPosition(mouseEvent.data.global.x, mouseEvent.data.global.y)
-        if (event) {
-          text.push(event.title ?? 'Event')
-          if (event.subtitle) {
-            text.push(event.subtitle)
-          }
-          text.push(formatTime(event.time, 'ms'))
+        if (!cameraDragging) {
+          // Event tooltip
+          const event = getEventAtPosition(mouseEvent.globalX, mouseEvent.globalY)
+          if (event) {
+            text.push(event.title ?? 'Event')
+            if (event.subtitle) {
+              text.push(event.subtitle)
+            }
+            text.push(formatTime(event.time, 'ms'))
 
-          if (event.group) {
-            text.push(`Group: ${event.group.duration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
-          }
+            if (event.group) {
+              text.push(`Group: ${event.group.nonReactiveDuration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
+            }
 
-          if (hoverEvent?.container && hoverEvent !== event) {
-            hoverEvent.container.alpha = 1
+            if (event?.container) {
+              event.container.alpha = 0.5
+            }
+          } else {
+            // Marker tooltip
+            const marker = getMarkerAtPosition(mouseEvent.globalX)
+            if (marker) {
+              text.push(marker.label)
+              text.push(formatTime(marker.time, 'ms'))
+              text.push('(marker)')
+            }
+          }
+          if (event !== hoverEvent) {
+            if (hoverEvent?.container) {
+              hoverEvent.container.alpha = 1
+            }
+            interactionDraw()
           }
           hoverEvent = event
-          if (hoverEvent?.container) {
-            hoverEvent.container.alpha = 0.5
-          }
-        } else {
-          // Marker tooltip
-          const marker = getMarkerAtPosition(mouseEvent.data.global.x)
-          if (marker) {
-            text.push(marker.label)
-            text.push(formatTime(marker.time, 'ms'))
-            text.push('(marker)')
-          }
         }
 
         if (text.length) {
@@ -847,13 +998,13 @@ export default defineComponent({
           const height = eventTooltipTitle.height + (text.length > 1 ? eventTooltipText.height : 0) + 8
           eventTooltipGraphics.drawRoundedRect(0, 0, width, height, 4)
 
-          eventTooltip.x = mouseEvent.data.global.x + 12
+          eventTooltip.x = mouseEvent.globalX + 12
           if (eventTooltip.x + eventTooltip.width > app.renderer.width) {
-            eventTooltip.x = mouseEvent.data.global.x - eventTooltip.width - 12
+            eventTooltip.x = mouseEvent.globalX - eventTooltip.width - 12
           }
-          eventTooltip.y = mouseEvent.data.global.y + 12
+          eventTooltip.y = mouseEvent.globalY + 12
           if (eventTooltip.y + eventTooltip.height > app.renderer.height) {
-            eventTooltip.y = mouseEvent.data.global.y - eventTooltip.height - 12
+            eventTooltip.y = mouseEvent.globalY - eventTooltip.height - 12
           }
           eventTooltip.visible = true
         } else {
@@ -869,7 +1020,7 @@ export default defineComponent({
 
     function drawEventGroup (event: TimelineEvent) {
       if (event.groupG) {
-        const drawAsSelected = event === selectedEvent.value && event.layer.groupsOnly
+        const drawAsSelected = event === nonReactiveSelectedEvent.value && event.layer.groupsOnly
 
         /** @type {PIXI.Graphics} */
         const g = event.groupG
@@ -878,14 +1029,14 @@ export default defineComponent({
           g.clear()
           if (event.layer.groupsOnly) {
             if (drawAsSelected) {
-              g.lineStyle(2, boostColor(event.layer.color, darkMode.value))
-              g.beginFill(dimColor(event.layer.color, darkMode.value, 30))
+              g.lineStyle(2, boostColor(event.layer.color, nonReactiveState.darkMode.value))
+              g.beginFill(dimColor(event.layer.color, nonReactiveState.darkMode.value, 30))
             } else {
               g.beginFill(event.layer.color, 0.5)
             }
           } else {
-            g.lineStyle(1, dimColor(event.layer.color, darkMode.value))
-            g.beginFill(dimColor(event.layer.color, darkMode.value, 25))
+            g.lineStyle(1, dimColor(event.layer.color, nonReactiveState.darkMode.value))
+            g.beginFill(dimColor(event.layer.color, nonReactiveState.darkMode.value, 25))
           }
           if (event.layer.groupsOnly) {
             g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
@@ -898,29 +1049,22 @@ export default defineComponent({
         // Title
         if (event.layer.groupsOnly && event.title && size > 32) {
           let t = event.groupT
+          let text = event.groupText
+          if (!text) {
+            text = `${SharedData.debugInfo ? `${event.id} ` : ''}${event.title} ${event.subtitle}`
+            event.groupText = text
+          }
           if (!t) {
-            t = event.groupT = new PIXI.Text(`${SharedData.debugInfo ? `${event.id} ` : ''}${event.title} ${event.subtitle}`, {
-              fontSize: 10,
-              fill: darkMode.value ? 0xffffff : 0,
+            t = event.groupT = new PIXI.BitmapText('', {
+              fontName: nonReactiveState.darkMode.value ? 'roboto-white' : 'roboto-black',
             })
+            t.x = 1
             t.y = Math.round(-t.height / 2)
+            t.dirty = false
             event.container.addChild(t)
-
-            // Mask
-            const mask = new PIXI.Graphics()
-            event.container.addChild(mask)
-            t.mask = mask
           }
-
-          const mask = t.mask as PIXI.Graphics
-          if (size !== event.group.oldSize) {
-            mask.clear()
-            mask.beginFill(0)
-            mask.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
-          }
+          t.text = text.slice(0, Math.floor((size - 1) / 6))
         } else if (event.groupT) {
-          const mask = event.groupT.mask as PIXI.Graphics
-          mask?.destroy()
           event.groupT.destroy()
           event.groupT = null
         }
@@ -947,14 +1091,14 @@ export default defineComponent({
       timeCursor.clear()
       timeCursor.lineStyle(1, 0x888888, 0.2)
       timeCursor.moveTo(0.5, 0)
-      timeCursor.lineTo(0.5, app.view.height)
+      timeCursor.lineTo(0.5, getAppHeight())
     }
 
-    function updateCursorPosition (event: MouseEvent) {
-      const { offsetX } = event
-      timeCursor.x = offsetX
+    function updateCursorPosition (event: FederatedPointerEvent) {
+      const { globalX } = event
+      timeCursor.x = globalX
       timeCursor.visible = true
-      cursorTime.value = offsetX / app.view.width * (endTime.value - startTime.value) + startTime.value
+      cursorTime.value = globalX / getAppWidth() * (endTime.value - startTime.value) + startTime.value
     }
 
     function clearCursor () {
@@ -977,7 +1121,7 @@ export default defineComponent({
       if (!timeGrid.visible || !app.view.width) return
 
       const size = endTime.value - startTime.value
-      const ratio = size / app.view.width
+      const ratio = size / getAppWidth()
       let timeInterval = 10
       let width = timeInterval / ratio
 
@@ -996,9 +1140,9 @@ export default defineComponent({
 
       timeGrid.clear()
       timeGrid.lineStyle(1, 0x888888, 0.075)
-      for (let x = -offset; x < app.view.width; x += width) {
+      for (let x = -offset; x < getAppWidth(); x += width) {
         timeGrid.moveTo(x + 0.5, 0)
-        timeGrid.lineTo(x + 0.5, app.view.height)
+        timeGrid.lineTo(x + 0.5, getAppHeight())
       }
     }
 
@@ -1016,14 +1160,14 @@ export default defineComponent({
     function queueCameraUpdate () {
       if (cameraUpdateQueued) return
       cameraUpdateQueued = true
-      Vue.nextTick(() => {
+      nextTick(() => {
         updateCamera()
         cameraUpdateQueued = false
-      })
+      }, taskPriority.updateCamera)
     }
 
     function updateCamera () {
-      horizontalScrollingContainer.x = -(startTime.value - minTime.value) / (endTime.value - startTime.value) * app.view.width
+      horizontalScrollingContainer.x = -getTimePosition(nonReactiveState.startTime.value)
       drawLayerBackgroundEffects()
       drawTimeGrid()
       drawMarkers()
@@ -1032,23 +1176,25 @@ export default defineComponent({
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
 
+    let isShifPressed: boolean
+
     onMounted(() => {
       queueCameraUpdate()
+      // @ts-ignore
+      app.stage.addEventListener('wheel', onMouseWheel)
     })
 
-    function onMouseWheel (event: WheelEvent) {
+    function onMouseWheel (event: FederatedWheelEvent) {
+      event.preventDefault()
+
       const size = endTime.value - startTime.value
-      const viewWidth = wrapper.value.offsetWidth
+      const viewWidth = getAppWidth()
 
-      if (event.ctrlKey || event.metaKey) {
-        // Zoom
-        // Firefox doesn't block the event https://bugzilla.mozilla.org/show_bug.cgi?id=1632465
-        event.preventDefault()
-
-        const centerRatio = event.offsetX / viewWidth
+      if (!event.ctrlKey && !event.altKey && !event.nativeEvent.shiftKey) {
+        const centerRatio = event.globalX / viewWidth
         const center = size * centerRatio + startTime.value
 
-        let newSize = size + event.deltaY / viewWidth * size * 2
+        let newSize = size + event.deltaY / viewWidth * size * 4
         if (newSize < MIN_CAMERA_SIZE) {
           newSize = MIN_CAMERA_SIZE
         }
@@ -1066,9 +1212,12 @@ export default defineComponent({
       } else {
         let deltaX = event.deltaX
 
-        if (deltaX === 0 && event.shiftKey && event.deltaY !== 0) {
+        if (deltaX === 0 && event.nativeEvent.shiftKey && event.deltaY !== 0) {
           // Horitonzal scroll with vertical mouse wheel and shift key
           deltaX = event.deltaY
+        }
+        if (event.altKey) {
+          deltaX = 0
         }
 
         if (deltaX !== 0) {
@@ -1086,7 +1235,7 @@ export default defineComponent({
           // Vertical scroll
           const layersScroller = document.querySelector('[data-scroller="layers"]')
           if (layersScroller) {
-            const speed = SharedData.menuStepScrolling ? 1 : LAYER_SIZE * 4
+            const speed = isMac ? Math.abs(event.deltaY) : LAYER_SIZE * 4
             if (event.deltaY < 0) {
               layersScroller.scrollTop -= speed
             } else {
@@ -1102,6 +1251,7 @@ export default defineComponent({
     function updateVScroll () {
       if (verticalScrollingContainer) {
         verticalScrollingContainer.y = -vScroll.value
+        draw()
       }
     }
 
@@ -1121,67 +1271,86 @@ export default defineComponent({
     let startDragTime: number
     let startDragScrollTop: number
 
+    let layersScroller: HTMLElement
+
     onMounted(() => {
-      const layersScroller = document.querySelector('[data-scroller="layers"]')
+      layersScroller = document.querySelector('[data-scroller="layers"]')
 
-      const onMouseMove = (event) => {
-        const { x, y } = event.data.global
-        if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
-          cameraDragging = true
-        }
-
-        if (cameraDragging) {
-          const deltaX = startDragX - x
-          const deltaY = startDragY - y
-
-          // Horizontal
-          const size = endTime.value - startTime.value
-          const viewWidth = wrapper.value.offsetWidth
-          const delta = deltaX / viewWidth * size
-          let start = startTime.value = startDragTime + delta
-          if (start < minTime.value) {
-            start = minTime.value
-          } else if (start + size >= maxTime.value) {
-            start = maxTime.value - size
-          }
-          startTime.value = start
-          endTime.value = start + size
-
-          // Vertical
-          layersScroller.scrollTop = startDragScrollTop + deltaY
-        }
-      }
-
-      app.stage.addListener('mousedown', (event) => {
-        const { x, y } = event.data.global
-        startDragX = x
-        startDragY = y
+      // @ts-ignore
+      app.stage.addEventListener('pointerdown', (event: FederatedPointerEvent) => {
+        startDragX = event.globalX
+        startDragY = event.globalY
         startDragTime = startTime.value
         startDragScrollTop = layersScroller.scrollTop
-        app.stage.addListener('mousemove', onMouseMove)
+        // @ts-ignore
+        app.stage.addEventListener('pointermove', onCameraDraggingMouseMove)
+        window.addEventListener('mouseup', onCameraDraggingMouseUp)
       })
+    })
 
-      window.addEventListener('mouseup', () => {
-        cameraDragging = false
-        app.stage.removeListener('mousemove', onMouseMove)
-      })
+    function onCameraDraggingMouseMove (event: FederatedPointerEvent) {
+      const x = event.globalX
+      const y = event.globalY
+      if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
+        cameraDragging = true
+      }
+
+      if (cameraDragging) {
+        const deltaX = (startDragX - x)
+        const deltaY = (startDragY - y)
+
+        // Horizontal
+        const size = endTime.value - startTime.value
+        const viewWidth = getAppWidth()
+        const delta = deltaX / viewWidth * size
+        let start = startTime.value = startDragTime + delta
+        if (start < minTime.value) {
+          start = minTime.value
+        } else if (start + size >= maxTime.value) {
+          start = maxTime.value - size
+        }
+        startTime.value = start
+        endTime.value = start + size
+
+        // Vertical
+        layersScroller.scrollTop = startDragScrollTop + deltaY
+      }
+    }
+
+    function onCameraDraggingMouseUp () {
+      cameraDragging = false
+      removeOnCameraDraggingEvents()
+    }
+
+    function removeOnCameraDraggingEvents () {
+      app.stage?.removeListener('pointermove', onCameraDraggingMouseMove)
+      window.removeEventListener('mouseup', onCameraDraggingMouseUp)
+    }
+
+    onUnmounted(() => {
+      removeOnCameraDraggingEvents()
     })
 
     // Resize
 
     function onResize () {
+      // Prevent flashing (will be set back to 1 in postrender event listener)
       app.view.style.opacity = '0'
       // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
-      queueEventsUpdate()
-      drawLayerBackgroundEffects()
-      drawTimeCursor()
-      drawTimeGrid()
+      setTimeout(() => {
+        mainRenderTexture?.resize(getAppWidth(), getAppHeight())
+        queueEventsUpdate()
+        drawLayerBackgroundEffects()
+        drawTimeCursor()
+        drawTimeGrid()
+        draw()
+      }, 100)
     }
 
-    // Events
+    // Misc. mouse events
 
-    function onMouseMove (event: MouseEvent) {
+    function onMouseMove (event: FederatedPointerEvent) {
       updateLayerHover(event)
       updateCursorPosition(event)
     }
@@ -1191,11 +1360,15 @@ export default defineComponent({
       clearCursor()
     }
 
+    onMounted(() => {
+      // @ts-ignore
+      app.stage.addEventListener('pointermove', onMouseMove)
+      // @ts-ignore
+      app.stage.addEventListener('pointerout', onMouseOut)
+    })
+
     return {
       wrapper,
-      onMouseWheel,
-      onMouseMove,
-      onMouseOut,
       onResize,
     }
   },
@@ -1207,9 +1380,7 @@ export default defineComponent({
     ref="wrapper"
     class="relative overflow-hidden"
     data-id="timeline-view-wrapper"
-    @wheel="onMouseWheel"
-    @mousemove="onMouseMove"
-    @mouseout="onMouseOut"
+    @contextmenu.prevent
   >
     <resize-observer @notify="onResize" />
   </div>

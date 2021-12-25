@@ -39,7 +39,7 @@ export default defineComponent({
       select,
       isExpanded: expanded,
       isExpandedUndefined,
-      checkIsExpanded,
+      isComponentOpen,
       toggleExpand: toggle,
       subscribeToComponentTree,
     } = useComponent(instance)
@@ -50,7 +50,7 @@ export default defineComponent({
 
     onMounted(() => {
       if (isExpandedUndefined.value && props.depth < DEFAULT_EXPAND_DEPTH) {
-        toggle(false)
+        toggle()
       }
     })
 
@@ -129,7 +129,7 @@ export default defineComponent({
       } else {
         let child = sortedChildren.value[index - 1]
         while (child) {
-          if (child.children.length && checkIsExpanded(child.id)) {
+          if (child.children.length && isComponentOpen(child.id)) {
             const children = sortChildren(child.children)
             child = children[children.length - 1]
           } else {

@@ -17,6 +17,7 @@ export interface EventGroup {
   firstEvent: TimelineEvent
   lastEvent: TimelineEvent
   duration: number
+  nonReactiveDuration: number
   y: number
   oldSize?: number
   oldSelected?: boolean
@@ -37,7 +38,8 @@ export interface TimelineEvent extends TimelineEventFromBackend {
   container: PIXI.Container
   g: PIXI.Graphics
   groupG: PIXI.Graphics
-  groupT: PIXI.Text
+  groupT: PIXI.BitmapText
+  groupText: string
   forcePositionUpdate?: boolean
 }
 

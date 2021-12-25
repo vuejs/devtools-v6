@@ -157,11 +157,14 @@ async function connect () {
       if (parentUid != null) {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
-          const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
-          if (appRecord.instanceMap.has(parentId)) {
-            requestAnimationFrame(() => {
-              sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
-            })
+          // Check two parents level to update `hasChildren
+          for (let i = 0; i < 2 && i < parentInstances.length; i++) {
+            const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
+            if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+              requestAnimationFrame(() => {
+                sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
+              })
+            }
           }
         }
       }
@@ -183,7 +186,7 @@ async function connect () {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
-          if (appRecord.instanceMap.has(parentId)) {
+          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
             requestAnimationFrame(async () => {
               try {
                 sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
@@ -364,6 +367,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
     ctx.currentAppRecord.componentFilter = filter
     sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx)
+    subscribe(BridgeSubscriptions.COMPONENT_TREE, { instanceId })
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {

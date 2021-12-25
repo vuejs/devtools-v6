@@ -48,6 +48,10 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
 async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBackend, ctx: BackendContext) {
   const rootInstance = await backend.api.getAppRootInstance(options.app)
   if (rootInstance) {
+    if ((await backend.api.getComponentDevtoolsOptions(rootInstance)).hide) {
+      return
+    }
+
     recordId++
     const name = await backend.api.getAppRecordName(options.app, recordId.toString())
     const id = getAppRecordId(options.app, slug(name))
@@ -66,6 +70,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
       iframe: document !== el.ownerDocument ? el.ownerDocument.location.pathname : null,
       meta: options.meta ?? {},
     }
+
     options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
     const rootId = `${record.id}:root`
     record.instanceMap.set(rootId, record.rootInstance)
@@ -82,13 +87,9 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
 
     await backend.api.registerApplication(options.app)
 
-    const isAppHidden = !!(await record.backend.api.getComponentDevtoolsOptions(record.rootInstance)).hide
-
-    if (!isAppHidden) {
-      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
-        appRecord: mapAppRecord(record),
-      })
-    }
+    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_ADD, {
+      appRecord: mapAppRecord(record),
+    })
 
     if (appRecordPromises.has(options.app)) {
       for (const r of appRecordPromises.get(options.app)) {
@@ -97,7 +98,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
     }
 
     // Auto select first app
-    if (ctx.currentAppRecord == null && !isAppHidden) {
+    if (ctx.currentAppRecord == null) {
       await selectApp(record, ctx)
     }
   } else {
@@ -151,22 +152,29 @@ export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppR
     return record
   }
   return new Promise((resolve, reject) => {
-    let timedOut = false
-    const timer = setTimeout(() => {
-      timedOut = true
-      reject(new Error(`Timed out getting app record for app ${app}`))
-    }, 2000)
     let resolvers = appRecordPromises.get(app)
+    let timedOut = false
     if (!resolvers) {
       resolvers = []
       appRecordPromises.set(app, resolvers)
     }
-    resolvers.push((record) => {
+    const fn = (record) => {
       if (!timedOut) {
         clearTimeout(timer)
         resolve(record)
       }
-    })
+    }
+    resolvers.push(fn)
+    const timer = setTimeout(() => {
+      timedOut = true
+      const index = resolvers.indexOf(fn)
+      if (index !== -1) resolvers.splice(index, 1)
+      if (SharedData.debugInfo) {
+        // eslint-disable-next-line no-console
+        console.log('Timed out waiting for app record', app)
+      }
+      reject(new Error(`Timed out getting app record for app`))
+    }, 60000)
   })
 }
 
@@ -178,9 +186,7 @@ export async function sendApps (ctx: BackendContext) {
   const appRecords = []
 
   for (const appRecord of ctx.appRecords) {
-    if (!(await appRecord.backend.api.getComponentDevtoolsOptions(appRecord.rootInstance)).hide) {
-      appRecords.push(appRecord)
-    }
+    appRecords.push(appRecord)
   }
 
   ctx.bridge.send(BridgeEvents.TO_FRONT_APP_LIST, {

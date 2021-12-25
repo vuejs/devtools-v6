@@ -30,9 +30,10 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     if (maxDepth == null) {
       maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
     }
+    const data = await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter)
     const payload = {
       instanceId,
-      treeData: stringify(await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter)),
+      treeData: stringify(data),
     }
     ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_TREE, payload)
   }
@@ -101,6 +102,7 @@ export async function editComponentState (instanceId: string, dotPath: string, t
 
 export async function getComponentId (app: App, uid: number, instance: ComponentInstance, ctx: BackendContext) {
   try {
+    if (instance.__VUE_DEVTOOLS_UID__) return instance.__VUE_DEVTOOLS_UID__
     const appRecord = await getAppRecord(app, ctx)
     if (!appRecord) return null
     const isRoot = appRecord.rootInstance === instance

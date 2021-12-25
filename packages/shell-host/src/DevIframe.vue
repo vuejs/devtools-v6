@@ -60,12 +60,11 @@ export default defineComponent({
           },
           onReload (reloadFn) {
             loadListener = reloadFn
-            iframe.value.addEventListener('load', reloadFn)
           },
         })
 
         iframe.value.contentWindow.addEventListener('unload', () => {
-          if (loadListener) iframe.value.removeEventListener('load', loadListener)
+          if (loadListener) loadListener()
           loading.value = true
         })
       } catch (e) {

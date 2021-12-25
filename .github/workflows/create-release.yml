@@ -1,0 +1,73 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           fetch-depth: 0
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: 14.x
+
+#       - name: Set up lerna yarn cache
+#         uses: actions/cache@v2
+#         with:
+#           path: |
+#             node_modules
+#             */*/node_modules
+#             ~/.cache/yarn
+#             ~/.cache/Cypress
+#           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+#       - name: Install yarn dependencies
+#         if: steps.cache.outputs.cache-hit != 'true'
+#         run: yarn install --pure-lockfile
+
+#       - name: Build the extension
+#         run: yarn run build && node release.js && yarn run test && yarn run zip
+
+#       - name: Create Release for Tag
+#         id: release_tag
+#         uses: Akryum/release-tag@conventional
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           tag_name: ${{ github.ref }}
+#           preset: angular
+
+#       - name: Upload artifacts
+#         uses: softprops/action-gh-release@v1
+#         if: startsWith(github.ref, 'refs/tags/')
+#         with:
+#           files: |
+#             dist/devtools-*
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0 # Fetch all tags
+
+      - name: Create Release for Tag
+        id: release_tag
+        uses: Akryum/release-tag@conventional
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          preset: angular # Use conventional-changelog preset
+

@@ -27,7 +27,6 @@ export default defineComponent({
     subscribeToSelectedData()
 
     onMounted(() => {
-      requestComponentTree(null)
       selectLastComponent()
     })
 
@@ -90,12 +89,12 @@ export default defineComponent({
       <template #left>
         <div class="flex flex-col h-full">
           <VueInput
+            ref="treeFilterInput"
+            v-model="treeFilter"
             v-tooltip="{
               content: $t('ComponentTree.filter.tooltip'),
               html: true
             }"
-            ref="treeFilterInput"
-            v-model="treeFilter"
             icon-left="search"
             placeholder="Find components..."
             select-all
