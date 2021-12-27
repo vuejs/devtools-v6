@@ -109,7 +109,7 @@ export function stringifyWithReplacer (data: any, replacer: (this: any, key: str
     return Array.isArray(replacedData)
       ? serializeArray(replacedData, replacer, space, lastSpace)
       : serializeObject(replacedData, replacer, space, lastSpace)
-  } else if (typeof replacedData === 'string' && needQuote) {
+  } else if (type === 'string' && needQuote) {
     return '"' + replacedData + '"'
   } else {
     return replacedData.toString()
