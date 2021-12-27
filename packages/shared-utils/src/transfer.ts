@@ -66,7 +66,7 @@ function serializeArray (data: any, replacer: (this: any, key: string, value: an
   let result = '['
   const newSpace = lastSpace + space
   objKeys.forEach(key => {
-    const value = stringifyWithReplacer(data[key], replacer, space, newSpace)
+    const value = stringifyWithReplacer(data[key], replacer, space, newSpace, true)
     const valueString = value !== undefined ? value : 'null'
     result += space
       ? `\n${' '.repeat(newSpace)}${valueString},`
@@ -86,11 +86,11 @@ function serializeObject (data: any, replacer: (this: any, key: string, value: a
   const newSpace = lastSpace + space
   objKeys.forEach(key => {
     const keyString = stringifyWithReplacer(key, replacer)
-    const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace)
+    const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace, true)
     if (keyString !== undefined && valueString !== undefined) {
       result += space
-      ? `\n${' '.repeat(newSpace)}${keyString}: ${valueString},`
-      : `${keyString}:${valueString},`
+        ? `\n${' '.repeat(newSpace)}${keyString}: ${valueString},`
+        : `${keyString}:${valueString},`
     }
   })
   result = result.substring(0, result.length - 1)
@@ -98,17 +98,19 @@ function serializeObject (data: any, replacer: (this: any, key: string, value: a
   return result
 }
 
-export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
+export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null, needQuote = false) {
   const replacedData = replacer ? replacer.call({ '': data }, '', data) : data
   const type = typeof replacedData
   if (type === 'symbol' || type === 'function' || type === 'undefined') {
     return undefined
-  } else if (replacedData === null || type === 'number' && isNaN(replacedData)) {
+  } else if (replacedData === null || (type === 'number' && isNaN(replacedData))) {
     return 'null'
   } else if (type === 'object') {
     return Array.isArray(replacedData)
       ? serializeArray(replacedData, replacer, space, lastSpace)
       : serializeObject(replacedData, replacer, space, lastSpace)
+  } else if (typeof replacedData === 'string' && needQuote) {
+    return '"' + replacedData + '"'
   } else {
     return replacedData.toString()
   }
