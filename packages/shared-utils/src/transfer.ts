@@ -66,12 +66,13 @@ function serializeArray (data: any, replacer: (this: any, key: string, value: an
   let result = '['
   const newSpace = lastSpace + space
   objKeys.forEach(key => {
-    const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace)
+    const value = stringifyWithReplacer(data[key], replacer, space, newSpace)
+    const valueString = value !== undefined ? value : 'null'
     result += space
       ? `\n${' '.repeat(newSpace)}${valueString},`
       : `${valueString},`
   })
-  result = result.substr(0, result.length - 1)
+  result = result.substring(0, result.length - 1)
   result += space ? `\n${' '.repeat(lastSpace)}]` : ']'
   return result
 }
@@ -86,20 +87,25 @@ function serializeObject (data: any, replacer: (this: any, key: string, value: a
   objKeys.forEach(key => {
     const keyString = stringifyWithReplacer(key, replacer)
     const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace)
-    result += space
+    if (keyString !== undefined && valueString !== undefined) {
+      result += space
       ? `\n${' '.repeat(newSpace)}${keyString}: ${valueString},`
-      : `${keyString}: ${valueString},`
+      : `${keyString}:${valueString},`
+    }
   })
-  result = result.substr(0, result.length - 1)
+  result = result.substring(0, result.length - 1)
   result += space ? `\n${' '.repeat(lastSpace)}}` : '}'
   return result
 }
 
 export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
   const replacedData = replacer ? replacer.call({ '': data }, '', data) : data
-  if (replacedData === null || replacedData === undefined) {
-    return String(replacedData)
-  } else if (typeof replacedData === 'object') {
+  const type = typeof replacedData
+  if (type === 'symbol' || type === 'function' || type === 'undefined') {
+    return undefined
+  } else if (replacedData === null || type === 'number' && isNaN(replacedData)) {
+    return 'null'
+  } else if (type === 'object') {
     return Array.isArray(replacedData)
       ? serializeArray(replacedData, replacer, space, lastSpace)
       : serializeObject(replacedData, replacer, space, lastSpace)
