@@ -33,6 +33,9 @@ export function useBridge () {
 
     for (const sub of subs) {
       bridge.send(BridgeEvents.TO_BACK_UNSUBSCRIBE, sub)
+      if (sub.parentId) {
+        bridge.send(BridgeEvents.TO_BACK_SUBSCRIBE, { type: sub.type, instanceId: sub.parentId })
+      }
     }
   })
 

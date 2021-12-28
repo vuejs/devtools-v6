@@ -161,6 +161,7 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
       if (value != null) {
         unsub = subscribe(BridgeSubscriptions.COMPONENT_TREE, {
           instanceId: value,
+          parentId: instance.value.parentId
         })
       }
     }, {

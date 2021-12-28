@@ -144,6 +144,7 @@ export class ComponentWalker {
       inactive,
       hasChildren: !!children.length,
       children: [],
+      parentId: instance.parent ? getUniqueComponentId(instance.parent, this.ctx) : null,
       isFragment: isFragment(instance),
       tags: [],
     }
