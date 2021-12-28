@@ -59,32 +59,26 @@ function decode (list, reviver) {
 }
 
 function serializeArray (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
-  const objKeys = Object.keys(data)
-  if (objKeys.length === 0) {
-    return '[]'
-  }
   let result = '['
-  const newSpace = lastSpace + space
-  objKeys.forEach(key => {
+  const newSpace: number = lastSpace + space
+  Object.keys(data).forEach(key => {
     const value = stringifyWithReplacer(data[key], replacer, space, newSpace, true)
     const valueString = value !== undefined ? value : 'null'
     result += space
       ? `\n${' '.repeat(newSpace)}${valueString},`
       : `${valueString},`
   })
-  result = result.substring(0, result.length - 1)
+  if (result.length > 1) {
+    result = result.substring(0, result.length - 1)
+  }
   result += space ? `\n${' '.repeat(lastSpace)}]` : ']'
   return result
 }
 
 function serializeObject (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null) {
-  const objKeys = Object.keys(data)
-  if (objKeys.length === 0) {
-    return '{}'
-  }
   let result = '{'
-  const newSpace = lastSpace + space
-  objKeys.forEach(key => {
+  const newSpace: number = lastSpace + space
+  Object.keys(data).forEach(key => {
     const keyString = stringifyWithReplacer(key, replacer)
     const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace, true)
     if (keyString !== undefined && valueString !== undefined) {
@@ -93,7 +87,9 @@ function serializeObject (data: any, replacer: (this: any, key: string, value: a
         : `${keyString}:${valueString},`
     }
   })
-  result = result.substring(0, result.length - 1)
+  if (result.length > 1) {
+    result = result.substring(0, result.length - 1)
+  }
   result += space ? `\n${' '.repeat(lastSpace)}}` : '}'
   return result
 }
