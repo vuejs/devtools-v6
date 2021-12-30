@@ -223,10 +223,10 @@ function processAttrs (instance) {
 }
 
 function processProvide (instance) {
-  return Object.keys(instance.provides)
+  return Reflect.ownKeys(instance.provides)
     .map(key => ({
       type: 'provided',
-      key,
+      key: key.toString(),
       value: returnError(() => instance.provides[key]),
     }))
 }
@@ -234,19 +234,21 @@ function processProvide (instance) {
 function processInject (instance, mergedType) {
   if (!mergedType?.inject) return []
   let keys = []
+  let defaultValue
   if (Array.isArray(mergedType.inject)) {
     keys = mergedType.inject.map(key => ({
       key,
       originalKey: key,
     }))
   } else {
-    keys = Object.keys(mergedType.inject).map(key => {
+    keys = Reflect.ownKeys(mergedType.inject).map(key => {
       const value = mergedType.inject[key]
       let originalKey
-      if (typeof value === 'string') {
+      if (typeof value === 'string' || typeof value === 'symbol') {
         originalKey = value
       } else {
         originalKey = value.from
+        defaultValue = value.default
       }
       return {
         key,
@@ -256,8 +258,8 @@ function processInject (instance, mergedType) {
   }
   return keys.map(({ key, originalKey }) => ({
     type: 'injected',
-    key: originalKey && key !== originalKey ? `${originalKey} ➞ ${key}` : key,
-    value: returnError(() => instance.ctx[key]),
+    key: originalKey && key !== originalKey ? `${originalKey.toString()} ➞ ${key.toString()}` : key.toString(),
+    value: returnError(() => instance.ctx[key] || instance.provides[originalKey] || defaultValue),
   }))
 }
 
