@@ -49,8 +49,12 @@ export class ComponentWalker {
     if (this.componentFilter.isQualified(instance) && !instance.type.devtools?.hide) {
       return [await this.capture(instance, null, depth)]
     } else if (instance.subTree) {
+      let list = this.getInternalInstanceChildren(instance.subTree)
+      if (instance.type.__isKeepAlive && instance.__v_cache) {
+        list = this.getDeactivatedChildren(list, instance.__v_cache)
+      }
       // TODO functional components
-      return this.findQualifiedChildrenFromList(this.getInternalInstanceChildren(instance.subTree), depth)
+      return this.findQualifiedChildrenFromList(list, depth)
     } else {
       return []
     }
@@ -97,6 +101,20 @@ export class ComponentWalker {
     return list.filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
   }
 
+  /**
+   * Get deactivated children from keepalive component.
+   */
+  private getDeactivatedChildren (children, cache) {
+    const cachedComponents = Array.from(cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
+    const childrenIds = children.map(child => child.__VUE_DEVTOOLS_UID__)
+    for (const cachedChild of cachedComponents) {
+      if (!childrenIds.includes(cachedChild.__VUE_DEVTOOLS_UID__)) {
+        children = [...children, { ...cachedChild, isDeactivated: true }]
+      }
+    }
+    return children
+  }
+
   private captureId (instance): string {
     if (!instance) return null
 
@@ -129,8 +147,12 @@ export class ComponentWalker {
 
     const name = getInstanceName(instance)
 
-    const children = this.getInternalInstanceChildren(instance.subTree)
+    let children = this.getInternalInstanceChildren(instance.subTree)
       .filter(child => !isBeingDestroyed(child))
+    // keep-alive
+    if (instance.type.__isKeepAlive && instance.__v_cache) {
+      children = this.getDeactivatedChildren(children, instance.__v_cache)
+    }
 
     const parents = this.getComponentParents(instance) || []
 
@@ -153,20 +175,6 @@ export class ComponentWalker {
       treeNode.children = await Promise.all(children
         .map((child, index, list) => this.capture(child, list, depth + 1))
         .filter(Boolean))
-    }
-
-    // keep-alive
-    if (instance.type.__isKeepAlive && instance.__v_cache) {
-      const cachedComponents = Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
-      const childrenIds = children.map(child => child.__VUE_DEVTOOLS_UID__)
-      for (const cachedChild of cachedComponents) {
-        if (!childrenIds.includes(cachedChild.__VUE_DEVTOOLS_UID__)) {
-          const node = await this.capture({ ...cachedChild, isDeactivated: true }, null, depth + 1)
-          if (node) {
-            treeNode.children.push(node)
-          }
-        }
-      }
     }
 
     // ensure correct ordering
