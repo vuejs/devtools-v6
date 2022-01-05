@@ -64,7 +64,7 @@ export default defineComponent({
 
       <VueInput
         ref="stateFilterInput"
-        v-model="stateFilter"
+        v-model.trim="stateFilter"
         v-tooltip="{
           content: $t('StateInspector.filter.tooltip'),
           html: true

@@ -90,7 +90,7 @@ export default defineComponent({
         <div class="flex flex-col h-full">
           <VueInput
             ref="treeFilterInput"
-            v-model="treeFilter"
+            v-model.trim="treeFilter"
             v-tooltip="{
               content: $t('ComponentTree.filter.tooltip'),
               html: true
