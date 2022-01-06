@@ -61,14 +61,14 @@ export async function initBackend (bridge: Bridge) {
 
     if (hook.Vue) {
       connect()
-      _legacy_getAndRegisterApps(hook.Vue, ctx)
-    } else {
-      hook.once(HookEvents.INIT, (Vue) => {
-        _legacy_getAndRegisterApps(Vue, ctx)
-      })
+      _legacy_getAndRegisterApps(ctx)
     }
+    hook.on(HookEvents.INIT, () => {
+      _legacy_getAndRegisterApps(ctx)
+    })
 
     hook.on(HookEvents.APP_ADD, async app => {
+      await _legacy_getAndRegisterApps(ctx)
       await registerApp(app, ctx)
 
       // Will init connect
