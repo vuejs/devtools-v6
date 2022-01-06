@@ -63,7 +63,7 @@ export function scan () {
     }
 
     // Scan for Vue instances in the customTarget elements
-    const { customVue2ScanSelector } = getPageConfig() as { customVue2ScanSelector: string }
+    const { customVue2ScanSelector } = getPageConfig()
     const customTargets = customVue2ScanSelector ? document.querySelectorAll(customVue2ScanSelector) : []
     for (const customTarget of customTargets) {
       try {
