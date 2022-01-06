@@ -62,7 +62,7 @@ function serializeArray (data: any, replacer: (this: any, key: string, value: an
   let result = '['
   const newSpace: number = lastSpace + space
   Object.keys(data).forEach(key => {
-    const value = stringifyWithReplacer(data[key], replacer, space, newSpace, true)
+    const value = stringifyRawData(data[key], false, replacer, space, newSpace, true)
     const valueString = value !== undefined ? value : 'null'
     result += space
       ? `\n${' '.repeat(newSpace)}${valueString},`
@@ -70,8 +70,10 @@ function serializeArray (data: any, replacer: (this: any, key: string, value: an
   })
   if (result.length > 1) {
     result = result.substring(0, result.length - 1)
+    result += space ? `\n${' '.repeat(lastSpace)}]` : ']'
+  } else {
+    result += ']'
   }
-  result += space ? `\n${' '.repeat(lastSpace)}]` : ']'
   return result
 }
 
@@ -79,8 +81,8 @@ function serializeObject (data: any, replacer: (this: any, key: string, value: a
   let result = '{'
   const newSpace: number = lastSpace + space
   Object.keys(data).forEach(key => {
-    const keyString = stringifyWithReplacer(key, replacer)
-    const valueString = stringifyWithReplacer(data[key], replacer, space, newSpace, true)
+    const keyString = stringifyRawData(key, false, replacer)
+    const valueString = stringifyRawData(data[key], false, replacer, space, newSpace, true)
     if (keyString !== undefined && valueString !== undefined) {
       result += space
         ? `\n${' '.repeat(newSpace)}${keyString}: ${valueString},`
@@ -89,43 +91,41 @@ function serializeObject (data: any, replacer: (this: any, key: string, value: a
   })
   if (result.length > 1) {
     result = result.substring(0, result.length - 1)
+    result += space ? `\n${' '.repeat(lastSpace)}}` : '}'
+  } else {
+    result += '}'
   }
-  result += space ? `\n${' '.repeat(lastSpace)}}` : '}'
   return result
 }
 
-export function stringifyWithReplacer (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null, needQuote = false) {
-  const replacedData = replacer ? replacer.call({ '': data }, '', data) : data
-  const type = typeof replacedData
-  if (type === 'symbol' || type === 'function' || type === 'undefined') {
-    return undefined
-  } else if (replacedData === null || (type === 'number' && isNaN(replacedData))) {
-    return 'null'
-  } else if (type === 'object') {
-    return Array.isArray(replacedData)
-      ? serializeArray(replacedData, replacer, space, lastSpace)
-      : serializeObject(replacedData, replacer, space, lastSpace)
-  } else if (type === 'string' && needQuote) {
-    return '"' + replacedData + '"'
+export function stringifyRawData (data: any, toJSON: boolean, replacer: (this: any, key: string, value: any) => any = null, space: number = null, lastSpace: number = null, needQuote = false) {
+  if (toJSON) {
+    return JSON.stringify(data, replacer, space)
+  }
+  if (replacer) {
+    data = replacer.call({ '': data }, '', data)
+  }
+  const proto = Object.prototype.toString.call(data)
+  if (data && typeof data.toJSON === 'function') {
+    return data.toJSON()
+  } else if (proto === '[object Array]') {
+    return serializeArray(data, replacer, space, lastSpace)
+  } else if (proto === '[object Object]') {
+    return serializeObject(data, replacer, space, lastSpace)
+  } else if (typeof data === 'string') {
+    return needQuote ? '"' + data + '"' : data
   } else {
-    return replacedData.toString()
+    return JSON.stringify(data)
   }
 }
 
 export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null, toJSON = true) {
   let result
   try {
-    if (toJSON) {
-      result = arguments.length === 1
-        ? JSON.stringify(data)
-        // @ts-ignore
-        : JSON.stringify(data, replacer, space)
-    } else {
-      result = arguments.length === 1
-        ? stringifyWithReplacer(data)
-        // @ts-ignore
-        : stringifyWithReplacer(data, replacer, space)
-    }
+    result = arguments.length === 1
+      ? stringifyRawData(data, toJSON)
+      // @ts-ignore
+      : stringifyRawData(data, toJSON, replacer, space)
   } catch (e) {
     result = stringifyStrictCircularAutoChunks(data, replacer, space)
   }
