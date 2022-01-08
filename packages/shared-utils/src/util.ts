@@ -21,7 +21,11 @@ function cached (fn) {
 
 const classifyRE = /(?:^|[-_/])(\w)/g
 export const classify = cached((str) => {
-  return str && str.replace(classifyRE, toUpper)
+  // fix: str.replace may causes '"replace" is not a function' exception.
+  // This bug may causes the UI 'Component Filter' to not work properly
+  // e.g. The type of 'str' is Number.
+  // So need cover 'str' to String.
+  return str && ('' + str).replace(classifyRE, toUpper)
 })
 
 const camelizeRE = /-(\w)/g
