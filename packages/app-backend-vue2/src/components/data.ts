@@ -1,6 +1,7 @@
 import { camelize, getComponentName, getCustomRefDetails, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { functionalVnodeMap, instanceMap } from './tree'
+import 'core-js/modules/es.object.entries'
 
 /**
  * Get the detailed information of an inspected instance.
