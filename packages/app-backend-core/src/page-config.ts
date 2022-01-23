@@ -3,6 +3,7 @@ import { target, SharedData } from '@vue-devtools/shared-utils'
 export interface PageConfig {
   openInEditorHost?: string
   defaultSelectedAppId?: string
+  customVue2ScanSelector?: string
 }
 
 let config: PageConfig = {}

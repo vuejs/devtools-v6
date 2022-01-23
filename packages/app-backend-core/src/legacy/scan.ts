@@ -1,4 +1,5 @@
 import { isBrowser, target } from '@vue-devtools/shared-utils'
+import { getPageConfig } from '../page-config'
 
 const rootInstances = []
 
@@ -56,6 +57,17 @@ export function scan () {
     for (const iframe of iframes) {
       try {
         walkDocument(iframe.contentDocument)
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    // Scan for Vue instances in the customTarget elements
+    const { customVue2ScanSelector } = getPageConfig()
+    const customTargets = customVue2ScanSelector ? document.querySelectorAll(customVue2ScanSelector) : []
+    for (const customTarget of customTargets) {
+      try {
+        walkDocument(customTarget)
       } catch (e) {
         // Ignore
       }

@@ -26,7 +26,7 @@ export async function registerApp (options: AppRecordOptions, ctx: BackendContex
 
 async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
   // Dedupe
-  if (ctx.appRecords.find(a => a.options === options)) {
+  if (ctx.appRecords.find(a => a.options.app === options.app)) {
     return
   }
 
@@ -194,15 +194,25 @@ export async function sendApps (ctx: BackendContext) {
   })
 }
 
+function removeAppRecord (appRecord: AppRecord, ctx: BackendContext) {
+  try {
+    appIds.delete(appRecord.id)
+    const index = ctx.appRecords.indexOf(appRecord)
+    if (index !== -1) ctx.appRecords.splice(index, 1)
+    removeLayersForApp(appRecord.options.app, ctx)
+    ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
+  } catch (e) {
+    if (SharedData.debugInfo) {
+      console.error(e)
+    }
+  }
+}
+
 export async function removeApp (app: App, ctx: BackendContext) {
   try {
     const appRecord = await getAppRecord(app, ctx)
     if (appRecord) {
-      appIds.delete(appRecord.id)
-      const index = ctx.appRecords.indexOf(appRecord)
-      if (index !== -1) ctx.appRecords.splice(index, 1)
-      removeLayersForApp(app, ctx)
-      ctx.bridge.send(BridgeEvents.TO_FRONT_APP_REMOVE, { id: appRecord.id })
+      removeAppRecord(appRecord, ctx)
     }
   } catch (e) {
     if (SharedData.debugInfo) {
@@ -212,9 +222,17 @@ export async function removeApp (app: App, ctx: BackendContext) {
 }
 
 // eslint-disable-next-line camelcase
-export async function _legacy_getAndRegisterApps (Vue: any, ctx: BackendContext) {
+export async function _legacy_getAndRegisterApps (ctx: BackendContext) {
+  // Remove apps that are legacy
+  ctx.appRecords.forEach(appRecord => {
+    if (appRecord.meta.Vue) {
+      removeAppRecord(appRecord, ctx)
+    }
+  })
+
   const apps = scan()
   apps.forEach(app => {
+    const Vue = app.constructor
     registerApp({
       app,
       types: {},
