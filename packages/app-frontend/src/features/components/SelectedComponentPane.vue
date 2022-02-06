@@ -4,6 +4,7 @@ import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import RenderCode from './RenderCode.vue'
 
 import { defineComponent, ref, watch, computed } from '@vue/composition-api'
+import { getComponentDisplayName, SharedData } from '@vue-devtools/shared-utils'
 import { onKeyDown } from '@front/util/keyboard'
 import { useSelectedComponent } from './composable'
 
@@ -16,8 +17,11 @@ export default defineComponent({
 
   setup () {
     const selectedComponent = useSelectedComponent()
+    const displayName = computed(() => getComponentDisplayName(selectedComponent.data.value?.name ?? '', SharedData.componentNameStyle))
+
     const showRenderCode = ref(false)
 
+    // Auto scroll
     const { selectedComponentId } = selectedComponent
     const inspector = ref()
     watch(selectedComponentId, () => {
@@ -26,8 +30,8 @@ export default defineComponent({
       }
     })
 
+    // State filter
     const stateFilterInput = ref()
-
     onKeyDown(event => {
       if (event.key === 'd' && event.altKey) {
         stateFilterInput.value.focus()
@@ -39,6 +43,7 @@ export default defineComponent({
 
     return {
       ...selectedComponent,
+      displayName,
       showRenderCode,
       inspector,
       stateFilterInput,
@@ -57,7 +62,7 @@ export default defineComponent({
       <div class="flex items-baseline">
         <span class="text-gray-500">&lt;</span>
         <span class="text-green-500">
-          {{ data.name }}
+          {{ displayName }}
         </span>
         <span class="text-gray-500">&gt;</span>
       </div>
