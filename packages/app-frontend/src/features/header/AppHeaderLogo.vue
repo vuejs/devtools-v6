@@ -19,7 +19,7 @@ export default defineComponent({
 <template>
   <div class="relative">
     <VueButton
-      href="https://headwayapp.co/vue-js-devtools-changelog"
+      href="https://github.com/vuejs/devtools/releases"
       target="_blank"
       class="flat logo-button"
     >
