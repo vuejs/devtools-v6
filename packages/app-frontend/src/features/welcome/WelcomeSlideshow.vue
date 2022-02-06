@@ -49,11 +49,11 @@ export default defineComponent({
           </p>
 
           <p>
-            Its new architecture allow better support of different versions of Vue and also integration of third-party libraries (more on that later!).
+            Its new architecture allows better support of different versions of Vue, as well as integration of third-party libraries (more on that later!).
           </p>
 
           <p>
-            It's packed with changes big and small so here is an overview of what's new!
+            It's packed with changes big and small, so here is an overview of what's new!
           </p>
         </template>
 
@@ -101,7 +101,7 @@ export default defineComponent({
 
         <template v-if="step === 5">
           <p>
-            Vue plugins and libraries can now integrate with the devtools via its <a
+            Any Vue plugin and library can now integrate with the devtools via its <a
               href="https://devtools.vuejs.org/plugin/plugins-guide.html"
               target="_blank"
             >Plugin API</a>.
@@ -121,7 +121,7 @@ export default defineComponent({
           <h2>The Timeline</h2>
 
           <p>
-            Here you can see the events coming from your application in real time. It includes mouse and keyboard events, component events, performance flamecharts...
+            Here you can see the events coming from your application in real-time. It includes mouse and keyboard events, component events, performance flamecharts...
           </p>
 
           <img
@@ -132,7 +132,7 @@ export default defineComponent({
 
         <template v-if="step === 7">
           <p>
-            You can zoom and pan the timeline, and click on events to see more information.
+            You can zoom and pan the timeline, or click on events to see more information.
           </p>
 
           <img
@@ -146,7 +146,7 @@ export default defineComponent({
             Using the <a
               href="https://devtools.vuejs.org/plugin/plugins-guide.html"
               target="_blank"
-            >Devtools Plugin API</a>, third-party libraries can also add layers and events in the Timline.
+            >Devtools Plugin API</a>, third-party libraries can also add layers and events to the Timeline.
           </p>
 
           <img
@@ -157,7 +157,7 @@ export default defineComponent({
 
         <template v-if="step === 9">
           <p>
-            On the left side of the top-bar, you can find a new App Selector. The devtools are now scoped to a specific selected app and can even inspect apps inside iframes!
+            On the left side of the top bar, you can find a new App Selector. The devtools are now scoped to a specific selected app and can even inspect apps inside iframes!
           </p>
 
           <img
@@ -183,7 +183,7 @@ export default defineComponent({
           </p>
 
           <p>
-            In case something doesn't work in your project, you can use the <a
+            In case something doesn't work with your project, you can use the <a
               href="https://devtools.vuejs.org/guide/installation.html#legacy"
               target="_blank"
             >Legacy version</a> and <a
