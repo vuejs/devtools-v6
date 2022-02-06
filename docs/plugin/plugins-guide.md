@@ -23,6 +23,11 @@ Using the API, you can show information to the user and improve the app debuggin
 
 ![Vue Devtools Architectue](../assets/vue-devtools-architecture.png)
 
+## Examples
+
+- [Vue 3 plugin](https://github.com/Akryum/vue3-devtools-plugin-example)
+- [Vue 2 plugin](https://github.com/Akryum/vue2-devtools-plugin-example)
+
 ## Setup
 
 In your package, install `@vue/devtools-api` as a dependency:
@@ -146,172 +151,7 @@ yarn add -D rollup rollup-plugin-vue @rollup/plugin-commonjs @rollup/plugin-node
 
 Create a `rollup.config.js` file next to the `package.json` file:
 
-```js
-import vuePlugin from 'rollup-plugin-vue'
-import replace from '@rollup/plugin-replace'
-import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import pascalcase from 'pascalcase'
-
-const pkg = require('./package.json')
-const name = pkg.name
-
-function getAuthors (pkg) {
-  const { contributors, author } = pkg
-
-  const authors = new Set()
-  if (contributors && contributors) {
-    contributors.forEach((contributor) => {
-      authors.add(contributor.name)
-    })
-  }
-  if (author) authors.add(author.name)
-
-  return Array.from(authors).join(', ')
-}
-
-const banner = `/*!
-  * ${pkg.name} v${pkg.version}
-  * (c) ${new Date().getFullYear()} ${getAuthors(pkg)}
-  * @license MIT
-  */`
-
-const outputConfigs = {
-  // each file name has the format: `dist/${name}.${format}.js`
-  // format being a key of this object
-  'esm-bundler': {
-    file: pkg.module,
-    format: 'es'
-  },
-  cjs: {
-    file: pkg.main,
-    format: 'cjs'
-  },
-  global: {
-    file: pkg.unpkg,
-    format: 'iife'
-  },
-  esm: {
-    file: pkg.module.replace('bundler', 'browser'),
-    format: 'es'
-  }
-}
-
-const allFormats = Object.keys(outputConfigs)
-const packageFormats = allFormats
-const packageConfigs = packageFormats.map((format) =>
-  createConfig(format, outputConfigs[format])
-)
-
-// only add the production ready if we are bundling the options
-packageFormats.forEach((format) => {
-  if (format === 'cjs') {
-    packageConfigs.push(createProductionConfig(format))
-  } else if (format === 'global') {
-    packageConfigs.push(createMinifiedConfig(format))
-  }
-})
-
-export default packageConfigs
-
-function createConfig (format, output, plugins = []) {
-  if (!output) {
-    console.log(`invalid format: "${format}"`)
-    process.exit(1)
-  }
-
-  output.sourcemap = !!process.env.SOURCE_MAP
-  output.banner = banner
-  output.externalLiveBindings = false
-  output.globals = { vue: 'Vue', '@vue/composition-api': 'vueCompositionApi' }
-
-  const isProductionBuild = /\.prod\.js$/.test(output.file)
-  const isGlobalBuild = format === 'global'
-  const isRawESMBuild = format === 'esm'
-  const isNodeBuild = format === 'cjs'
-  const isBundlerESMBuild = /esm-bundler/.test(format)
-
-  if (isGlobalBuild) output.name = pascalcase(pkg.name)
-
-  const external = ['vue', '@vue/composition-api']
-  if (!isGlobalBuild) {
-    external.push('@vue/devtools-api')
-  }
-
-  const nodePlugins = [resolve(), commonjs()]
-
-  return {
-    input: 'src/index.ts',
-    // Global and Browser ESM builds inlines everything so that they can be
-    // used alone.
-    external,
-    plugins: [
-      vuePlugin(),
-      createReplacePlugin(
-        isProductionBuild,
-        isBundlerESMBuild
-      ),
-      ...nodePlugins,
-      ...plugins
-    ],
-    output
-  }
-}
-
-function createReplacePlugin (
-  isProduction,
-  isBundlerESMBuild
-) {
-  const replacements = {
-    'process.env.NODE_ENV': isBundlerESMBuild
-      ? // preserve to be handled by bundlers
-      'process.env.NODE_ENV'
-      : // hard coded dev/prod builds
-      JSON.stringify(isProduction ? 'production' : 'development'),
-    __VUE_PROD_DEVTOOLS__: isBundlerESMBuild
-      ? '__VUE_PROD_DEVTOOLS__'
-      : 'false'
-  }
-  // allow inline overrides like
-  // __RUNTIME_COMPILE__=true yarn build
-  Object.keys(replacements).forEach((key) => {
-    if (key in process.env) {
-      replacements[key] = process.env[key]
-    }
-  })
-  return replace({
-    preventAssignment: true,
-    values: replacements
-  })
-}
-
-function createProductionConfig (format) {
-  return createConfig(format, {
-    file: `dist/${name}.${format}.prod.js`,
-    format: outputConfigs[format].format
-  })
-}
-
-function createMinifiedConfig (format) {
-  const { terser } = require('rollup-plugin-terser')
-  return createConfig(
-    format,
-    {
-      file: `dist/${name}.${format}.prod.js`,
-      format: outputConfigs[format].format
-    },
-    [
-      terser({
-        module: /^esm/.test(format),
-        compress: {
-          ecma: 2015,
-          pure_getters: true
-        }
-      })
-    ]
-  )
-}
-```
+[See example](https://gist.github.com/Akryum/b200b92689c6d7e3bb3871da906be01e)
 
 #### Rollup package
 
@@ -365,198 +205,7 @@ yarn add -D rollup-plugin-typescript2
 
 Modify the Rollup config to compile the TS files:
 
-```js{1,3,32-33,92-110,126}
-import path from 'path'
-import vuePlugin from 'rollup-plugin-vue'
-import ts from 'rollup-plugin-typescript2'
-import replace from '@rollup/plugin-replace'
-import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import pascalcase from 'pascalcase'
-
-const pkg = require('./package.json')
-const name = pkg.name
-
-function getAuthors (pkg) {
-  const { contributors, author } = pkg
-
-  const authors = new Set()
-  if (contributors && contributors) {
-    contributors.forEach((contributor) => {
-      authors.add(contributor.name)
-    })
-  }
-  if (author) authors.add(author.name)
-
-  return Array.from(authors).join(', ')
-}
-
-const banner = `/*!
-  * ${pkg.name} v${pkg.version}
-  * (c) ${new Date().getFullYear()} ${getAuthors(pkg)}
-  * @license MIT
-  */`
-
-// ensure TS checks only once for each build
-let hasTSChecked = false
-
-const outputConfigs = {
-  // each file name has the format: `dist/${name}.${format}.js`
-  // format being a key of this object
-  'esm-bundler': {
-    file: pkg.module,
-    format: 'es'
-  },
-  cjs: {
-    file: pkg.main,
-    format: 'cjs'
-  },
-  global: {
-    file: pkg.unpkg,
-    format: 'iife'
-  },
-  esm: {
-    file: pkg.module.replace('bundler', 'browser'),
-    format: 'es'
-  }
-}
-
-const allFormats = Object.keys(outputConfigs)
-const packageFormats = allFormats
-const packageConfigs = packageFormats.map((format) =>
-  createConfig(format, outputConfigs[format])
-)
-
-// only add the production ready if we are bundling the options
-packageFormats.forEach((format) => {
-  if (format === 'cjs') {
-    packageConfigs.push(createProductionConfig(format))
-  } else if (format === 'global') {
-    packageConfigs.push(createMinifiedConfig(format))
-  }
-})
-
-export default packageConfigs
-
-function createConfig (format, output, plugins = []) {
-  if (!output) {
-    console.log(`invalid format: "${format}"`)
-    process.exit(1)
-  }
-
-  output.sourcemap = !!process.env.SOURCE_MAP
-  output.banner = banner
-  output.externalLiveBindings = false
-  output.globals = { vue: 'Vue', '@vue/composition-api': 'vueCompositionApi' }
-
-  const isProductionBuild = /\.prod\.js$/.test(output.file)
-  const isGlobalBuild = format === 'global'
-  const isRawESMBuild = format === 'esm'
-  const isNodeBuild = format === 'cjs'
-  const isBundlerESMBuild = /esm-bundler/.test(format)
-
-  if (isGlobalBuild) output.name = pascalcase(pkg.name)
-
-  const shouldEmitDeclarations = !hasTSChecked
-
-  const tsPlugin = ts({
-    check: !hasTSChecked,
-    tsconfig: path.resolve(__dirname, 'tsconfig.json'),
-    cacheRoot: path.resolve(__dirname, 'node_modules/.rts2_cache'),
-    tsconfigOverride: {
-      compilerOptions: {
-        sourceMap: output.sourcemap,
-        declaration: shouldEmitDeclarations,
-        declarationMap: shouldEmitDeclarations
-      },
-      exclude: ['__tests__', 'test-dts']
-    }
-  })
-  // we only need to check TS and generate declarations once for each build.
-  // it also seems to run into weird issues when checking multiple times
-  // during a single build.
-  hasTSChecked = true
-
-  const external = ['vue', '@vue/composition-api']
-  if (!isGlobalBuild) {
-    external.push('@vue/devtools-api')
-  }
-
-  const nodePlugins = [resolve(), commonjs()]
-
-  return {
-    input: 'src/index.ts',
-    // Global and Browser ESM builds inlines everything so that they can be
-    // used alone.
-    external,
-    plugins: [
-      vuePlugin(),
-      tsPlugin,
-      createReplacePlugin(
-        isProductionBuild,
-        isBundlerESMBuild
-      ),
-      ...nodePlugins,
-      ...plugins
-    ],
-    output
-  }
-}
-
-function createReplacePlugin (
-  isProduction,
-  isBundlerESMBuild
-) {
-  const replacements = {
-    'process.env.NODE_ENV': isBundlerESMBuild
-      ? // preserve to be handled by bundlers
-      'process.env.NODE_ENV'
-      : // hard coded dev/prod builds
-      JSON.stringify(isProduction ? 'production' : 'development'),
-    __VUE_PROD_DEVTOOLS__: isBundlerESMBuild
-      ? '__VUE_PROD_DEVTOOLS__'
-      : 'false'
-  }
-  // allow inline overrides like
-  // __RUNTIME_COMPILE__=true yarn build
-  Object.keys(replacements).forEach((key) => {
-    if (key in process.env) {
-      replacements[key] = process.env[key]
-    }
-  })
-  return replace({
-    preventAssignment: true,
-    values: replacements
-  })
-}
-
-function createProductionConfig (format) {
-  return createConfig(format, {
-    file: `dist/${name}.${format}.prod.js`,
-    format: outputConfigs[format].format
-  })
-}
-
-function createMinifiedConfig (format) {
-  const { terser } = require('rollup-plugin-terser')
-  return createConfig(
-    format,
-    {
-      file: `dist/${name}.${format}.prod.js`,
-      format: outputConfigs[format].format
-    },
-    [
-      terser({
-        module: /^esm/.test(format),
-        compress: {
-          ecma: 2015,
-          pure_getters: true
-        }
-      })
-    ]
-  )
-}
-```
+[See example](https://gist.github.com/Akryum/cb0a396904169bd55ddf964e3b20452a)
 
 And add the `types` field to your `package.json` file:
 
@@ -770,6 +419,41 @@ export default {
     setupDevtools(app)
   }
 }
+```
+
+### Vue 2
+
+In a Vue 2 app, you need to pass the root component instance as the `app` parameter:
+
+```js
+import { setupDevtools } from './devtools'
+
+export default {
+  install (Vue) {
+    Vue.mixin({
+      beforeCreate () {
+        if (this.$options.myPlugin) {
+          setupDevtools(this)
+        }
+      }
+    })
+  }
+}
+```
+
+In the user's app:
+
+```js
+import Vue from 'vue'
+import App from './App.vue'
+import DevtoolsPlugin from './DevtoolsPlugin'
+
+Vue.use(DevtoolsPlugin)
+
+new Vue({
+  render: h => h(App),
+  myPlugin: true,
+}).$mount('#app')
 ```
 
 ### Plugin settings
