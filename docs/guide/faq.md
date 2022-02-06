@@ -46,9 +46,4 @@ This feature needs some setup in your project to work correctly. See [here](./op
 
 ## Something is broken in the new devtools
 
-If something is very broken, please submit a new issue! In the mean time, you can install the legacy version of the devtools:
-
-- [Chrome](https://chrome.google.com/webstore/detail/iaajmlceplecbljialhhkmedjlpdblhp/)
-- [Firefox](https://github.com/vuejs/vue-devtools/releases/download/v5.3.3/vuejs_devtools-5.3.4-fx.xpi)
-
-Make sure you disable any other versions of the Vue devtools.
+See [installing the previous version](./installation.md#legacy) for more information.

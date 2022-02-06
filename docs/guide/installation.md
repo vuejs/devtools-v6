@@ -3,7 +3,7 @@
 The Vue.js devtools allows you to inspect and debug your applications.
 
 ::: tip
-If you want to install the previous version of the devtools, see [here](./faq.md#something-is-broken-in-the-new-devtools).
+If you want to install the previous version of the devtools, see [here](#legacy).
 :::
 
 ## Chrome
@@ -130,3 +130,14 @@ if (process.env.NODE_ENV === 'development') {
 **port** - is an optional argument that tells your application on what port devtools middleware server is running. If you use proxy server, you might want to set it to `null` so the port won't be added to connection URL.
 
 [More details](https://github.com/vuejs/vue-devtools/tree/dev/packages/shell-electron#vue-remote-devtools)
+
+## Legacy
+
+If something is broken with the new devtools, please [submit a new issue](https://new-issue.vuejs.org/?repo=vuejs/devtools)!
+
+Meanwhile, you can install the legacy version (v5) of the devtools:
+
+- [Chrome](https://chrome.google.com/webstore/detail/iaajmlceplecbljialhhkmedjlpdblhp/)
+- [Firefox](https://github.com/vuejs/vue-devtools/releases/download/v5.3.3/vuejs_devtools-5.3.4-fx.xpi)
+
+Make sure you disable any other versions of the Vue devtools. Only one version should be enabled at a time.
