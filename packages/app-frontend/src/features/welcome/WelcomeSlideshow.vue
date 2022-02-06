@@ -184,7 +184,7 @@ export default defineComponent({
 
           <p>
             In case something doesn't work in your project, you can use the <a
-              href="https://devtools.vuejs.org/guide/faq.html#something-is-broken-in-the-new-devtools"
+              href="https://devtools.vuejs.org/guide/installation.html#legacy"
               target="_blank"
             >Legacy version</a> and <a
               href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
