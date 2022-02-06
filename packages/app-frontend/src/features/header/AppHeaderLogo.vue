@@ -1,21 +1,3 @@
-<script lang="ts">
-import { onMounted, defineComponent } from '@vue/composition-api'
-
-export default defineComponent({
-  setup () {
-    onMounted(() => {
-      if (typeof Headway !== 'undefined') {
-        // eslint-disable-next-line no-undef
-        Headway.init({
-          selector: '.changelog-button',
-          account: '7kY9Zy',
-        })
-      }
-    })
-  },
-})
-</script>
-
 <template>
   <div class="relative">
     <VueButton
