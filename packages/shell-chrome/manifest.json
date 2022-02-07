@@ -32,7 +32,6 @@
   },
   "permissions": [
     "<all_urls>",
-    "contextMenus",
     "storage"
   ],
   "content_scripts": [
