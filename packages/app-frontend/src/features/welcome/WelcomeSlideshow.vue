@@ -65,11 +65,11 @@ export default defineComponent({
           >
 
           <p>
-            You might notice that the navigation is different. The devtools now has to main tabs:
+            You might notice that the navigation is different. The devtools now has two main tabs:
           </p>
 
           <ul>
-            <li>the <b>Inspector</b> to display debuging information in a structured way (for example inspecting a component),</li>
+            <li>the <b>Inspector</b> to display debugging information in a structured way (for example inspecting a component),</li>
             <li>the <b>Timeline</b> to track different kinds of data over time such as events.</li>
           </ul>
         </template>
@@ -89,7 +89,7 @@ export default defineComponent({
 
         <template v-if="step === 4">
           <p>
-            To acess settings, use the new "3 dots" menu in the top right corner.
+            To access settings, use the new "3 dots" menu in the top right corner.
           </p>
 
           <img
@@ -179,7 +179,7 @@ export default defineComponent({
           </h2>
 
           <p>
-            We hope you will enjoy the new Vue devtools.
+            We hope that you will enjoy the new Vue devtools.
           </p>
 
           <p>
