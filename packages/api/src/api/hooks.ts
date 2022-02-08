@@ -135,7 +135,7 @@ export type HookPayloads = {
     path: string[]
     type: string
     state: EditStatePayload
-    set: (object: any, path: string | (string[]), value: any, cb?: (object: any, field: string, value: any) => void) => void
+    set: (object: any, path?: string | (string[]), value?: any, cb?: (object: any, field: string, value: any) => void) => void
   }
   [Hooks.SET_PLUGIN_SETTINGS]: {
     app: App
