@@ -117,6 +117,8 @@
 
     <pre>{{ $store.state.deeplyNested }}</pre>
 
+    <pre>{{ $store.state.nested.nestedNested }}</pre>
+
     <NoProp />
   </div>
 </template>

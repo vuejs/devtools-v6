@@ -116,6 +116,21 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         }
       })
 
+      api.on.editInspectorState((payload) => {
+        if (payload.inspectorId === VUEX_INSPECTOR_ID) {
+          let path = payload.path
+          if (payload.nodeId !== 'root') {
+            path = [
+              ...payload.nodeId.substring(0, payload.nodeId.length - 1).split('/'),
+              ...path,
+            ]
+          }
+          store._committing = true
+          payload.set(store._vm.$data.$$state, path)
+          store._committing = false
+        }
+      })
+
       api.addTimelineLayer({
         id: VUEX_MUTATIONS_ID,
         label: 'Vuex Mutations',

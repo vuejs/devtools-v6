@@ -81,6 +81,15 @@ export default new Vuex.Store({
           state.foo = state.foo.substring('bar'.length)
         },
       },
+      modules: {
+        nestedNested: {
+          state () {
+            return {
+              answer: 42,
+            }
+          },
+        },
+      },
     },
     notNamespaced: {
       state () {
