@@ -78,7 +78,7 @@ export default new Vuex.Store({
           state.foo += 'bar'
         },
         REMOVE_BAR: (state) => {
-          state.foo = state.foo.substr('bar'.length)
+          state.foo = state.foo.substring('bar'.length)
         },
       },
     },

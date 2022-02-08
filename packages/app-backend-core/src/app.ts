@@ -31,7 +31,7 @@ async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
   }
 
   // Find correct backend
-  const baseFrameworkVersion = parseInt(options.version.substr(0, options.version.indexOf('.')))
+  const baseFrameworkVersion = parseInt(options.version.substring(0, options.version.indexOf('.')))
   for (let i = 0; i < availableBackends.length; i++) {
     const backendOptions = availableBackends[i]
     if (backendOptions.frameworkVersion === baseFrameworkVersion) {

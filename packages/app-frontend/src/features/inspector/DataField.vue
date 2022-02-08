@@ -161,7 +161,7 @@ export default defineComponent({
       } else if (type === 'custom') {
         return this.field.value._custom.tooltip
       } else if (type.indexOf('native ') === 0) {
-        return type.substr('native '.length)
+        return type.substring('native '.length)
       } else {
         return null
       }

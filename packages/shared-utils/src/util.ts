@@ -195,7 +195,7 @@ function replacer (key) {
     return val
   } else if (typeof val === 'string') {
     if (val.length > MAX_STRING_SIZE) {
-      return val.substr(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
+      return val.substring(0, MAX_STRING_SIZE) + `... (${(val.length)} total length)`
     } else {
       return val
     }
@@ -350,7 +350,7 @@ export function getCustomFunctionDetails (func: Function): CustomState {
   // Trim any excess whitespace from the argument string
   const match = matches && matches[0]
   const args = typeof match === 'string'
-    ? `(${match.substr(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})`
+    ? `(${match.substring(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})`
     : '(?)'
   const name = typeof func.name === 'string' ? func.name : ''
   return {
