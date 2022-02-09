@@ -6,6 +6,8 @@ import { createApp, connectApp } from './app'
 import { setAppConnected } from './features/connection'
 import { getBridge } from './features/bridge'
 
+export { setAppConnected } from './features/connection'
+
 /**
  * Create the main devtools app. Expects to be called with a shell interface
  * which implements a connect method.

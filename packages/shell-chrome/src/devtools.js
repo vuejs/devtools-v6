@@ -1,6 +1,6 @@
 // this script is called when the VueDevtools panel is activated.
 
-import { initDevTools } from '@front'
+import { initDevTools, setAppConnected } from '@front'
 import { Bridge } from '@vue-devtools/shared-utils'
 
 initDevTools({
@@ -21,6 +21,7 @@ initDevTools({
       let disconnected = false
       port.onDisconnect.addListener(() => {
         disconnected = true
+        setAppConnected(false)
       })
 
       const bridge = new Bridge({
