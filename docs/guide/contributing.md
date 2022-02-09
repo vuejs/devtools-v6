@@ -17,7 +17,8 @@ This is useful when you want to build the extension with the source repo to get 
 3. then run `yarn run build:watch` & `yarn run dev:chrome` in parallel
 4. Open the Chrome extension page (currently under `Menu` > `More Tools` > `Extensions`)
 5. Check "developer mode" on the top-right corner
-6. Click the "load unpacked" button on the left, and choose the folder: `vue-devtools/packages/shell-chrome/`
+6. Click the "load unpacked" button on the left, and choose the folder: `vue-devtools/packages/shell-chrome/` (it will have an orange disk icon)
+7. Make sure you disable all other versions of the extension
 
 ## Testing as Firefox addon
 
