@@ -159,7 +159,7 @@ export default defineComponent({
         </VueDropdownButton>
 
         <VueDropdownButton
-          href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
+          href="https://new-issue.vuejs.org/?repo=vuejs/devtools"
           target="_blank"
           icon-left="bug_report"
           icon-right="open_in_new"
