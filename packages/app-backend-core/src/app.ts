@@ -222,6 +222,16 @@ export async function removeApp (app: App, ctx: BackendContext) {
 }
 
 // eslint-disable-next-line camelcase
+function _legacy_getVueFromApp (app) {
+  if (app.constructor.name === 'VueComponent') {
+    // When Vue.extend is used the component is an instance of VueComponent instead of Vue.
+    // VueComponent has a property super which points to the original Vue constructor
+    return app.constructor.super
+  }
+  return app.constructor
+}
+
+// eslint-disable-next-line camelcase
 export async function _legacy_getAndRegisterApps (ctx: BackendContext) {
   // Remove apps that are legacy
   ctx.appRecords.forEach(appRecord => {
@@ -232,7 +242,7 @@ export async function _legacy_getAndRegisterApps (ctx: BackendContext) {
 
   const apps = scan()
   apps.forEach(app => {
-    const Vue = app.constructor
+    const Vue = _legacy_getVueFromApp(app)
     registerApp({
       app,
       types: {},
