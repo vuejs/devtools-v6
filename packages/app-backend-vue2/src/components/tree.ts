@@ -36,7 +36,11 @@ export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendCon
     const id = getUniqueId(vm)
     if (captureIds.has(id)) return
     captureIds.set(id, undefined)
-    mark(vm)
+    if (vm.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
+      markFunctional(id, vm.vnode)
+    } else {
+      mark(vm)
+    }
   }
 
   const parents = []
