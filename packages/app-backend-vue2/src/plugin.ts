@@ -164,7 +164,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         })
       })
 
-      store.subscribeAction({
+      store.subscribeAction?.({
         before: (action, state) => {
           const data: any = {}
           if (action.payload) {
