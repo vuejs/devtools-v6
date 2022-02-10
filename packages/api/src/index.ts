@@ -2,7 +2,7 @@ import { getTarget, getDevtoolsGlobalHook, isProxyAvailable } from './env'
 import { HOOK_SETUP } from './const'
 import { DevtoolsPluginApi } from './api'
 import { ApiProxy } from './proxy'
-import { PluginDescriptor, ExtractSettingsTypes } from './plugin'
+import { PluginDescriptor, ExtractSettingsTypes, PluginSettingsItem } from './plugin'
 
 export * from './api'
 export * from './plugin'
@@ -31,8 +31,7 @@ export type SetupFunction<TSettings = any> = (api: DevtoolsPluginApi<TSettings>)
 
 export function setupDevtoolsPlugin<
   TDescriptor extends Exact<TDescriptor, PluginDescriptor>,
-  // @ts-expect-error Type '"settings"' cannot be used to index type 'TDescriptor'.ts(2536)
-  TSettings = ExtractSettingsTypes<TDescriptor['settings']>,
+  TSettings = ExtractSettingsTypes<TDescriptor extends { settings : infer S } ? S extends Record<string, PluginSettingsItem> ? S : Record<string, PluginSettingsItem> : Record<string, PluginSettingsItem>>,
 > (pluginDescriptor: Narrow<TDescriptor>, setupFn: SetupFunction<TSettings>) {
   const descriptor = pluginDescriptor as unknown as PluginDescriptor
   const target = getTarget()
