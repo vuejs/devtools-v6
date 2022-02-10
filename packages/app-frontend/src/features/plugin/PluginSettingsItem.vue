@@ -51,7 +51,13 @@ export default defineComponent({
       class="flex-1 select-none text-sm py-1.5"
       @click="onLabelClick()"
     >
-      {{ schema.label }}
+      <div>{{ schema.label }}</div>
+      <div
+        v-if="schema.description"
+        class="opacity-75 text-xs"
+      >
+        {{ schema.description }}
+      </div>
     </div>
     <div class="w-1/2">
       <VueSwitch

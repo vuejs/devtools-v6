@@ -20,6 +20,7 @@ export interface PluginDescriptor {
 
 export type PluginSettingsItem = {
   label: string
+  description?: string
 } & ({
   type: 'boolean'
   defaultValue: boolean

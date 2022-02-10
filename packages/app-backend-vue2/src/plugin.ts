@@ -21,7 +21,8 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
     logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
     settings: {
       legacyActions: {
-        label: 'Legacy Actions (enable with Vuex < 3.1.0)',
+        label: 'Legacy Actions',
+        description: 'Enable this for Vuex < 3.1.0',
         type: 'boolean',
         defaultValue: false,
       },
