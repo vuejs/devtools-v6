@@ -21,13 +21,20 @@ type Narrow<A> = Cast<A,
 | ({ [K in keyof A]: Narrow<A[K]> })
 >
 
+// Prevent properties not in PluginDescriptor
+// We need this because of the `extends` in the generic TDescriptor
+type Exact<C, T> = {
+  [K in keyof C]: K extends keyof T ? T[K] : never
+}
+
 export type SetupFunction<TSettings = any> = (api: DevtoolsPluginApi<TSettings>) => void
 
 export function setupDevtoolsPlugin<
-  TDescriptor extends PluginDescriptor = PluginDescriptor,
+  TDescriptor extends Exact<TDescriptor, PluginDescriptor>,
+  // @ts-expect-error Type '"settings"' cannot be used to index type 'TDescriptor'.ts(2536)
   TSettings = ExtractSettingsTypes<TDescriptor['settings']>,
 > (pluginDescriptor: Narrow<TDescriptor>, setupFn: SetupFunction<TSettings>) {
-  const descriptor = pluginDescriptor as TDescriptor
+  const descriptor = pluginDescriptor as unknown as PluginDescriptor
   const target = getTarget()
   const hook = getDevtoolsGlobalHook()
   const enableProxy = isProxyAvailable && descriptor.enableEarlyProxy
