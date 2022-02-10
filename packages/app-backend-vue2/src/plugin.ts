@@ -19,6 +19,13 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
     label: 'Vue 2',
     homepage: 'https://vuejs.org/',
     logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
+    settings: {
+      legacyActions: {
+        label: 'Legacy Actions (enable with Vuex < 3.1.0)',
+        type: 'boolean',
+        defaultValue: false,
+      },
+    },
   }, api => {
     const hook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
@@ -164,55 +171,75 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         })
       })
 
-      store.subscribeAction?.({
-        before: (action, state) => {
-          const data: any = {}
-          if (action.payload) {
-            data.payload = action.payload
-          }
-          action._id = actionId++
-          action._time = Date.now()
-          data.state = state
+      function legacySingleActionSub (action, state) {
+        const data: any = {}
+        if (action.payload) {
+          data.payload = action.payload
+        }
 
-          api.addTimelineEvent({
-            layerId: VUEX_ACTIONS_ID,
-            event: {
-              time: action._time,
-              title: action.type,
-              groupId: action._id,
-              subtitle: 'start',
-              data,
-            },
-          })
-        },
-        after: (action, state) => {
-          const data: any = {}
-          const duration = Date.now() - action._time
-          data.duration = {
-            _custom: {
-              type: 'duration',
-              display: `${duration}ms`,
-              tooltip: 'Action duration',
-              value: duration,
-            },
-          }
-          if (action.payload) {
-            data.payload = action.payload
-          }
-          data.state = state
+        data.state = state
 
-          api.addTimelineEvent({
-            layerId: VUEX_ACTIONS_ID,
-            event: {
-              time: Date.now(),
-              title: action.type,
-              groupId: action._id,
-              subtitle: 'end',
-              data,
+        api.addTimelineEvent({
+          layerId: VUEX_ACTIONS_ID,
+          event: {
+            time: Date.now(),
+            title: action.type,
+            data,
+          },
+        })
+      }
+
+      store.subscribeAction?.(api.getSettings().legacyActions
+        ? legacySingleActionSub
+        : {
+            before: (action, state) => {
+              const data: any = {}
+              if (action.payload) {
+                data.payload = action.payload
+              }
+              action._id = actionId++
+              action._time = Date.now()
+              data.state = state
+
+              api.addTimelineEvent({
+                layerId: VUEX_ACTIONS_ID,
+                event: {
+                  time: action._time,
+                  title: action.type,
+                  groupId: action._id,
+                  subtitle: 'start',
+                  data,
+                },
+              })
             },
-          })
-        },
-      }, { prepend: true })
+            after: (action, state) => {
+              const data: any = {}
+              const duration = Date.now() - action._time
+              data.duration = {
+                _custom: {
+                  type: 'duration',
+                  display: `${duration}ms`,
+                  tooltip: 'Action duration',
+                  value: duration,
+                },
+              }
+              if (action.payload) {
+                data.payload = action.payload
+              }
+              data.state = state
+
+              api.addTimelineEvent({
+                layerId: VUEX_ACTIONS_ID,
+                event: {
+                  time: Date.now(),
+                  title: action.type,
+                  groupId: action._id,
+                  subtitle: 'end',
+                  data,
+                },
+              })
+            },
+          }, { prepend: true })
 
       // Inspect getters on mutations
       api.on.inspectTimelineEvent(payload => {
