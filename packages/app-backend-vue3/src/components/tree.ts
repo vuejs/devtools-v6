@@ -145,7 +145,15 @@ export class ComponentWalker {
       hasChildren: !!children.length,
       children: [],
       isFragment: isFragment(instance),
-      tags: [],
+      tags: typeof instance.type !== 'function'
+        ? []
+        : [
+            {
+              label: 'functional',
+              textColor: 0x555555,
+              backgroundColor: 0xeeeeee,
+            },
+          ],
     }
 
     // capture children

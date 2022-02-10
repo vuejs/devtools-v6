@@ -13,6 +13,7 @@ import Ghost from './Ghost.vue'
 import Other from './Other.vue'
 import SetupRender from './SetupRender.js'
 import Form from './Form.vue'
+import Functional from './Functional.vue'
 import Heavy from './Heavy.vue'
 import Mixins from './Mixins.vue'
 import Animation from './Animation.vue'
@@ -42,6 +43,7 @@ export default {
     Other,
     SetupRender,
     Form,
+    Functional,
     Heavy,
     Mixins,
     Animation,
@@ -104,6 +106,7 @@ export default {
   <Other />
   <SetupRender />
   <Form />
+  <Functional msg="I am functional" />
   <Mixins />
   <SetupScript />
   <SetupDataLike />
