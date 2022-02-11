@@ -415,8 +415,6 @@ function extractNameFromPath (path: string) {
 }
 
 function formatStoreForInspectorState (module, getters, path): CustomInspectorState {
-  getters = !module.namespaced || path === 'root' ? module.context.getters : getters[path]
-  const gettersKeys = Object.keys(getters)
   const storeState: CustomInspectorState = {
     state: Object.keys(module.context.state).map((key) => ({
       key,
@@ -425,8 +423,26 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     })),
   }
 
+  getters = !module.namespaced || path === 'root' ? module.context.getters : getters[path]
+  let gettersKeys = Object.keys(getters)
+  const shouldPickGetters = !module.namespaced && path !== 'root'
+  if (shouldPickGetters) {
+    // Only pick the getters defined in the non-namespaced module
+    const definedGettersKeys = Object.keys(module._rawModule.getters ?? {})
+    gettersKeys = gettersKeys.filter(key => definedGettersKeys.includes(key))
+  }
   if (gettersKeys.length) {
-    const tree = transformPathsToObjectTree(getters)
+    let moduleGetters: Record<string, any>
+    if (shouldPickGetters) {
+      // Only pick the getters defined in the non-namespaced module
+      moduleGetters = {}
+      for (const key of gettersKeys) {
+        moduleGetters[key] = getters[key]
+      }
+    } else {
+      moduleGetters = getters
+    }
+    const tree = transformPathsToObjectTree(moduleGetters)
     storeState.getters = Object.keys(tree).map((key) => ({
       key: key.endsWith('/') ? extractNameFromPath(key) : key,
       editable: false,

@@ -88,6 +88,9 @@ export default new Vuex.Store({
               answer: 42,
             }
           },
+          getters: {
+            doubleAnswer: state => state.answer * 2,
+          },
         },
       },
     },
