@@ -1,4 +1,5 @@
 import { getComponentName } from '@vue-devtools/shared-utils'
+import { AppRecord } from '@vue-devtools/app-backend-api'
 
 export function isBeingDestroyed (instance) {
   return instance._isBeingDestroyed
@@ -32,8 +33,14 @@ export function getRenderKey (value): string {
 /**
  * Returns a devtools unique id for instance.
  */
-export function getUniqueId (instance): string {
+export function getUniqueId (instance, appRecord?: AppRecord): string {
   if (instance.__VUE_DEVTOOLS_UID__ != null) return instance.__VUE_DEVTOOLS_UID__
-  const rootVueId = instance.$root.__VUE_DEVTOOLS_APP_RECORD_ID__
+  let rootVueId = instance.$root.__VUE_DEVTOOLS_APP_RECORD_ID__
+  if (!rootVueId && appRecord) {
+    rootVueId = appRecord.id
+  }
+  if (!rootVueId) {
+    console.error('No app record id found for instance', instance)
+  }
   return `${rootVueId}:${instance._uid}`
 }

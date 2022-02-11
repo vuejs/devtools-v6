@@ -223,7 +223,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   // instance._uid is not reliable in devtools as there
   // may be 2 roots with same _uid which causes unexpected
   // behaviour
-  instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
+  instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance, appRecord)
 
   // Dedupe
   if (captureIds.has(instance.__VUE_DEVTOOLS_UID__)) {
