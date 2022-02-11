@@ -127,7 +127,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
       api.on.editInspectorState((payload) => {
         if (payload.inspectorId === VUEX_INSPECTOR_ID) {
           let path = payload.path
-          if (payload.nodeId !== 'root') {
+          if (payload.nodeId !== VUEX_ROOT_PATH) {
             path = [
               ...payload.nodeId.substring(0, payload.nodeId.length - 1).split('/'),
               ...path,
@@ -380,9 +380,11 @@ const TAG_NAMESPACED = {
   backgroundColor: DARK,
 }
 
+const VUEX_ROOT_PATH = '__vdt_root'
+
 function formatStoreForInspectorTree (module, path): CustomInspectorNode {
   return {
-    id: path || 'root',
+    id: path || VUEX_ROOT_PATH,
     // all modules end with a `/`, we want the last segment only
     // cart/ -> cart
     // nested/cart/ -> cart
@@ -400,7 +402,7 @@ function formatStoreForInspectorTree (module, path): CustomInspectorNode {
 function flattenStoreForInspectorTree (result: CustomInspectorNode[], module, filter: string, path: string) {
   if (path.includes(filter)) {
     result.push({
-      id: path || 'root',
+      id: path || VUEX_ROOT_PATH,
       label: path.endsWith('/') ? path.slice(0, path.length - 1) : path || 'Root',
       tags: module.namespaced ? [TAG_NAMESPACED] : [],
     })
@@ -411,7 +413,7 @@ function flattenStoreForInspectorTree (result: CustomInspectorNode[], module, fi
 }
 
 function extractNameFromPath (path: string) {
-  return path && path !== 'root' ? path.split('/').slice(-2, -1)[0] : 'Root'
+  return path && path !== VUEX_ROOT_PATH ? path.split('/').slice(-2, -1)[0] : 'Root'
 }
 
 function formatStoreForInspectorState (module, getters, path): CustomInspectorState {
@@ -423,9 +425,9 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     })),
   }
 
-  getters = !module.namespaced || path === 'root' ? module.context.getters : getters[path]
+  getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[path]
   let gettersKeys = Object.keys(getters)
-  const shouldPickGetters = !module.namespaced && path !== 'root'
+  const shouldPickGetters = !module.namespaced && path !== VUEX_ROOT_PATH
   if (shouldPickGetters) {
     // Only pick the getters defined in the non-namespaced module
     const definedGettersKeys = Object.keys(module._rawModule.getters ?? {})
@@ -485,13 +487,13 @@ function getStoreModule (moduleMap, path) {
   const names = path.split('/').filter((n) => n)
   return names.reduce(
     (module, moduleName, i) => {
-      const child = module[moduleName]
+      const child = module[moduleName === VUEX_ROOT_PATH ? 'root' : moduleName]
       if (!child) {
         throw new Error(`Missing module "${moduleName}" for path "${path}".`)
       }
       return i === names.length - 1 ? child : child._children
     },
-    path === 'root' ? moduleMap : moduleMap.root._children,
+    path === VUEX_ROOT_PATH ? moduleMap : moduleMap.root._children,
   )
 }
 
