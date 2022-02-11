@@ -353,6 +353,8 @@ export default defineComponent({
           :default-split="50"
           :max="85"
           dragger-offset="after"
+          collapsable-left
+          collapsable-right
         >
           <template #left>
             <div class="h-full flex flex-col select-none">

@@ -1,4 +1,5 @@
 import { Ref, watch } from '@vue/composition-api'
+import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 
 export function nonReactive<T> (ref: Ref<T>) {
   const holder = {
@@ -23,4 +24,15 @@ export function addNonReactiveProperties<T = any> (target: T, props: Partial<T>)
       configurable: false,
     })
   }
+}
+
+export function useSavedRef<T> (ref: Ref<T>, storageKey: string) {
+  const savedValue = getStorage(storageKey)
+  if (savedValue != null) {
+    ref.value = savedValue
+  }
+
+  watch(ref, value => {
+    setStorage(storageKey, value)
+  })
 }
