@@ -390,7 +390,7 @@ const VUEX_MODULE_PATH_SEPARATOR_REG = /\[vdt\]/g
 
 function formatStoreForInspectorTree (module, moduleName: string, path: string): CustomInspectorNode {
   return {
-    id: path ?? VUEX_ROOT_PATH,
+    id: path || VUEX_ROOT_PATH,
     // all modules end with a `/`, we want the last segment only
     // cart/ -> cart
     // nested/cart/ -> cart
