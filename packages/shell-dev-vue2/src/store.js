@@ -104,6 +104,16 @@ export default new Vuex.Store({
         hello2: state => state.hello.repeat(2),
       },
     },
+    'use/in/name': {
+      state () {
+        return {
+          meow: 'MEOW',
+        }
+      },
+      getters: {
+        meow2: state => state.meow.repeat(2),
+      },
+    },
   },
 })
 

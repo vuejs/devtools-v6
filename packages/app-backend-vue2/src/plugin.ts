@@ -103,7 +103,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
             payload.rootNodes = nodes
           } else {
             payload.rootNodes = [
-              formatStoreForInspectorTree(store._modules.root, ''),
+              formatStoreForInspectorTree(store._modules.root, 'Root', ''),
             ]
           }
         }
@@ -381,19 +381,22 @@ const TAG_NAMESPACED = {
 }
 
 const VUEX_ROOT_PATH = '__vdt_root'
+const VUEX_MODULE_PATH_SEPARATOR = '[vdt]'
+const VUEX_MODULE_PATH_SEPARATOR_REG = /\[vdt\]/g
 
-function formatStoreForInspectorTree (module, path): CustomInspectorNode {
+function formatStoreForInspectorTree (module, moduleName: string, path: string): CustomInspectorNode {
   return {
-    id: path || VUEX_ROOT_PATH,
+    id: path ?? VUEX_ROOT_PATH,
     // all modules end with a `/`, we want the last segment only
     // cart/ -> cart
     // nested/cart/ -> cart
-    label: extractNameFromPath(path),
+    label: moduleName,
     tags: module.namespaced ? [TAG_NAMESPACED] : [],
-    children: Object.keys(module._children).map((moduleName) =>
+    children: Object.keys(module._children).map((key) =>
       formatStoreForInspectorTree(
-        module._children[moduleName],
-        path + moduleName + '/',
+        module._children[key],
+        key,
+        `${path}${key}${VUEX_MODULE_PATH_SEPARATOR}`,
       ),
     ),
   }
@@ -403,17 +406,17 @@ function flattenStoreForInspectorTree (result: CustomInspectorNode[], module, fi
   if (path.includes(filter)) {
     result.push({
       id: path || VUEX_ROOT_PATH,
-      label: path.endsWith('/') ? path.slice(0, path.length - 1) : path || 'Root',
+      label: path.endsWith(VUEX_MODULE_PATH_SEPARATOR) ? path.slice(0, path.length - 1) : path || 'Root',
       tags: module.namespaced ? [TAG_NAMESPACED] : [],
     })
   }
   Object.keys(module._children).forEach(moduleName => {
-    flattenStoreForInspectorTree(result, module._children[moduleName], filter, path + moduleName + '/')
+    flattenStoreForInspectorTree(result, module._children[moduleName], filter, path + moduleName + VUEX_MODULE_PATH_SEPARATOR)
   })
 }
 
 function extractNameFromPath (path: string) {
-  return path && path !== VUEX_ROOT_PATH ? path.split('/').slice(-2, -1)[0] : 'Root'
+  return path && path !== VUEX_ROOT_PATH ? path.split(VUEX_MODULE_PATH_SEPARATOR).slice(-2, -1)[0] : 'Root'
 }
 
 function formatStoreForInspectorState (module, getters, path): CustomInspectorState {
@@ -425,7 +428,8 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     })),
   }
 
-  getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[path]
+  const pathWithSlashes = path.replace(VUEX_MODULE_PATH_SEPARATOR_REG, '/')
+  getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[pathWithSlashes]
   let gettersKeys = Object.keys(getters)
   const shouldPickGetters = !module.namespaced && path !== VUEX_ROOT_PATH
   if (shouldPickGetters) {
@@ -484,7 +488,7 @@ function transformPathsToObjectTree (getters) {
 }
 
 function getStoreModule (moduleMap, path) {
-  const names = path.split('/').filter((n) => n)
+  const names = path.split(VUEX_MODULE_PATH_SEPARATOR).filter((n) => n)
   return names.reduce(
     (module, moduleName, i) => {
       const child = module[moduleName === VUEX_ROOT_PATH ? 'root' : moduleName]
