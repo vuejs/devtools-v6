@@ -418,10 +418,10 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
   getters = !module.namespaced || path === 'root' ? module.context.getters : getters[path]
   const gettersKeys = Object.keys(getters)
   const storeState: CustomInspectorState = {
-    state: Object.keys(module.state).map((key) => ({
+    state: Object.keys(module.context.state).map((key) => ({
       key,
       editable: true,
-      value: module.state[key],
+      value: module.context.state[key],
     })),
   }
 
