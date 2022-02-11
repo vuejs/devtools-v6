@@ -139,7 +139,7 @@ export function getAppRecordId (app, defaultId?: string): string {
 
   if (defaultId && appIds.has(id)) {
     let count = 1
-    while (appIds.has(`${defaultId}:${count}`)) {
+    while (appIds.has(`${defaultId}_${count}`)) {
       count++
     }
     id = `${defaultId}_${count}`
