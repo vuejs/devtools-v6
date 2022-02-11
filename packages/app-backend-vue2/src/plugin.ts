@@ -45,7 +45,11 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
 
       api.on.getInspectorTree(payload => {
         if (payload.inspectorId === ROUTER_INSPECTOR_ID) {
-          payload.rootNodes = router.options.routes.map(route => formatRouteNode(router, route, '', payload.filter)).filter(Boolean)
+          if (router.options.routes) {
+            payload.rootNodes = router.options.routes.map(route => formatRouteNode(router, route, '', payload.filter)).filter(Boolean)
+          } else {
+            console.warn(`[Vue Devtools] No routes found in router`, router.options)
+          }
         }
       })
 
@@ -392,7 +396,7 @@ function formatStoreForInspectorTree (module, moduleName: string, path: string):
     // nested/cart/ -> cart
     label: moduleName,
     tags: module.namespaced ? [TAG_NAMESPACED] : [],
-    children: Object.keys(module._children).map((key) =>
+    children: Object.keys(module._children ?? {}).map((key) =>
       formatStoreForInspectorTree(
         module._children[key],
         key,
@@ -421,7 +425,7 @@ function extractNameFromPath (path: string) {
 
 function formatStoreForInspectorState (module, getters, path): CustomInspectorState {
   const storeState: CustomInspectorState = {
-    state: Object.keys(module.context.state).map((key) => ({
+    state: Object.keys(module.context.state ?? {}).map((key) => ({
       key,
       editable: true,
       value: module.context.state[key],
