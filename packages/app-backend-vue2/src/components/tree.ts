@@ -56,6 +56,9 @@ export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendCon
 function initCtx (_api: DevtoolsApi, ctx: BackendContext) {
   appRecord = ctx.currentAppRecord
   api = _api
+  if (!appRecord.meta) {
+    appRecord.meta = {}
+  }
   if (!appRecord.meta.instanceMap) {
     appRecord.meta.instanceMap = new Map()
   }
