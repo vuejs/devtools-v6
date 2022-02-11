@@ -59,12 +59,15 @@ export async function initBackend (bridge: Bridge) {
       hook,
     })
 
+    SharedData.legacyApps = false
     if (hook.Vue) {
       connect()
-      _legacy_getAndRegisterApps(ctx)
+      _legacy_getAndRegisterApps(ctx, true)
+      SharedData.legacyApps = true
     }
     hook.on(HookEvents.INIT, () => {
-      _legacy_getAndRegisterApps(ctx)
+      _legacy_getAndRegisterApps(ctx, true)
+      SharedData.legacyApps = true
     })
 
     hook.on(HookEvents.APP_ADD, async app => {
@@ -353,6 +356,12 @@ function connectBridge () {
       await selectApp(record, ctx)
     } else if (SharedData.debugInfo) {
       console.warn(`App with id ${id} not found`)
+    }
+  })
+
+  ctx.bridge.on(BridgeEvents.TO_BACK_SCAN_LEGACY_APPS, () => {
+    if (hook.Vue) {
+      _legacy_getAndRegisterApps(ctx)
     }
   })
 

@@ -85,6 +85,10 @@ export function waitForAppSelect (): Promise<void> {
   }
 }
 
+export function scanLegacyApps () {
+  getBridge().send(BridgeEvents.TO_BACK_SCAN_LEGACY_APPS, {})
+}
+
 export function setupAppsBridgeEvents (bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_APP_ADD, ({ appRecord }) => {
     addApp(appRecord)

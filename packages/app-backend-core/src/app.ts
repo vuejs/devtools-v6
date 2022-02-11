@@ -226,20 +226,25 @@ export async function removeApp (app: App, ctx: BackendContext) {
   }
 }
 
+let scanTimeout: any
+
 // eslint-disable-next-line camelcase
-export function _legacy_getAndRegisterApps (ctx: BackendContext) {
+export function _legacy_getAndRegisterApps (ctx: BackendContext, clear = false) {
   setTimeout(() => {
-    // Remove apps that are legacy
-    ctx.appRecords.forEach(appRecord => {
-      if (appRecord.meta.Vue) {
-        removeAppRecord(appRecord, ctx)
-      }
-    })
+    if (clear) {
+      // Remove apps that are legacy
+      ctx.appRecords.forEach(appRecord => {
+        if (appRecord.meta.Vue) {
+          removeAppRecord(appRecord, ctx)
+        }
+      })
+    }
 
     const apps = scan()
 
+    clearTimeout(scanTimeout)
     if (!apps.length) {
-      setTimeout(() => _legacy_getAndRegisterApps(ctx), 1000)
+      scanTimeout = setTimeout(() => _legacy_getAndRegisterApps(ctx), 1000)
     }
 
     apps.forEach(app => {

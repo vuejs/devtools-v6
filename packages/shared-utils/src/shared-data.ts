@@ -27,6 +27,7 @@ const internalSharedData = {
   pluginPermissions: {} as any,
   pluginSettings: {} as any,
   pageConfig: {} as any,
+  legacyApps: false,
   debugInfo: false,
 }
 
