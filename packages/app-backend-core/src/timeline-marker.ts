@@ -18,6 +18,7 @@ export async function addTimelineMarker (options: TimelineMarkerOptions, ctx: Ba
 }
 
 export async function sendTimelineMarkers (ctx: BackendContext) {
+  if (!ctx.currentAppRecord) return
   const markers = ctx.timelineMarkers.filter(marker => marker.all || marker.appRecord === ctx.currentAppRecord)
   const result = []
   for (const marker of markers) {

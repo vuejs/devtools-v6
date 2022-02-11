@@ -227,24 +227,31 @@ export async function removeApp (app: App, ctx: BackendContext) {
 }
 
 // eslint-disable-next-line camelcase
-export async function _legacy_getAndRegisterApps (ctx: BackendContext) {
-  // Remove apps that are legacy
-  ctx.appRecords.forEach(appRecord => {
-    if (appRecord.meta.Vue) {
-      removeAppRecord(appRecord, ctx)
-    }
-  })
+export function _legacy_getAndRegisterApps (ctx: BackendContext) {
+  setTimeout(() => {
+    // Remove apps that are legacy
+    ctx.appRecords.forEach(appRecord => {
+      if (appRecord.meta.Vue) {
+        removeAppRecord(appRecord, ctx)
+      }
+    })
 
-  const apps = scan()
-  apps.forEach(app => {
-    const Vue = hook.Vue
-    registerApp({
-      app,
-      types: {},
-      version: Vue?.version,
-      meta: {
-        Vue,
-      },
-    }, ctx)
-  })
+    const apps = scan()
+
+    if (!apps.length) {
+      setTimeout(() => _legacy_getAndRegisterApps(ctx), 1000)
+    }
+
+    apps.forEach(app => {
+      const Vue = hook.Vue
+      registerApp({
+        app,
+        types: {},
+        version: Vue?.version,
+        meta: {
+          Vue,
+        },
+      }, ctx)
+    })
+  }, 0)
 }
