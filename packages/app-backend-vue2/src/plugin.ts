@@ -447,7 +447,7 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
       // Only pick the getters defined in the non-namespaced module
       moduleGetters = {}
       for (const key of gettersKeys) {
-        moduleGetters[key] = getters[key]
+        moduleGetters[key] = canThrow(() => getters[key])
       }
     } else {
       moduleGetters = getters

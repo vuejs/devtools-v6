@@ -90,6 +90,9 @@ export default new Vuex.Store({
           },
           getters: {
             doubleAnswer: state => state.answer * 2,
+            errorGetter: () => {
+              throw new Error('Error from getter')
+            },
           },
         },
       },
