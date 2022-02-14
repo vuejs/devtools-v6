@@ -18,7 +18,7 @@ interface Screenshot {
 }
 
 export async function showScreenshot (screenshot: Screenshot, ctx: BackendContext) {
-  await jobQueue.queue(async () => {
+  await jobQueue.queue('showScreenshot', async () => {
     if (screenshot) {
       if (!container) {
         createElements()

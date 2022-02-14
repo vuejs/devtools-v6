@@ -38,7 +38,9 @@ export async function takeScreenshot (event: TimelineEvent) {
 
         if (!dataUrl) {
           event.screenshot = lastScreenshot
-          lastScreenshot.events.push(event)
+          if (lastScreenshot) {
+            lastScreenshot.events.push(event)
+          }
         } else {
           screenshots.value.push(screenshot)
         }
@@ -46,7 +48,9 @@ export async function takeScreenshot (event: TimelineEvent) {
     }
   } else {
     event.screenshot = lastScreenshot
-    lastScreenshot.events.push(event)
+    if (lastScreenshot) {
+      lastScreenshot.events.push(event)
+    }
   }
 }
 

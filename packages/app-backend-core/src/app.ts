@@ -22,7 +22,7 @@ type AppRecordResolver = (record: AppRecord) => void | Promise<void>
 const appRecordPromises = new Map<App, AppRecordResolver[]>()
 
 export async function registerApp (options: AppRecordOptions, ctx: BackendContext) {
-  return jobs.queue(() => registerAppJob(options, ctx))
+  return jobs.queue('regiserApp', () => registerAppJob(options, ctx))
 }
 
 async function registerAppJob (options: AppRecordOptions, ctx: BackendContext) {
@@ -184,7 +184,7 @@ export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppR
 }
 
 export function waitForAppsRegistration () {
-  return jobs.queue(async () => { /* NOOP */ })
+  return jobs.queue('waitForAppsRegistrationNoop', async () => { /* NOOP */ })
 }
 
 export async function sendApps (ctx: BackendContext) {
@@ -231,32 +231,37 @@ let scanTimeout: any
 // eslint-disable-next-line camelcase
 export function _legacy_getAndRegisterApps (ctx: BackendContext, clear = false) {
   setTimeout(() => {
-    if (clear) {
-      // Remove apps that are legacy
-      ctx.appRecords.forEach(appRecord => {
-        if (appRecord.meta.Vue) {
-          removeAppRecord(appRecord, ctx)
-        }
+    try {
+      if (clear) {
+        // Remove apps that are legacy
+        ctx.appRecords.forEach(appRecord => {
+          if (appRecord.meta.Vue) {
+            removeAppRecord(appRecord, ctx)
+          }
+        })
+      }
+
+      const apps = scan()
+
+      clearTimeout(scanTimeout)
+      if (!apps.length) {
+        scanTimeout = setTimeout(() => _legacy_getAndRegisterApps(ctx), 1000)
+      }
+
+      apps.forEach(app => {
+        const Vue = hook.Vue
+        registerApp({
+          app,
+          types: {},
+          version: Vue?.version,
+          meta: {
+            Vue,
+          },
+        }, ctx)
       })
+    } catch (e) {
+      console.error(`Error scanning for legacy apps:`)
+      console.error(e)
     }
-
-    const apps = scan()
-
-    clearTimeout(scanTimeout)
-    if (!apps.length) {
-      scanTimeout = setTimeout(() => _legacy_getAndRegisterApps(ctx), 1000)
-    }
-
-    apps.forEach(app => {
-      const Vue = hook.Vue
-      registerApp({
-        app,
-        types: {},
-        version: Vue?.version,
-        meta: {
-          Vue,
-        },
-      }, ctx)
-    })
   }, 0)
 }

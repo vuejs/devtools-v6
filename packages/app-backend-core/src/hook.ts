@@ -131,7 +131,7 @@ export function installHook (target, isIframe = false) {
       once (event, fn) {
         const on = (...args) => {
           this.off(event, on)
-          fn.apply(this, args)
+          return fn.apply(this, args)
         }
         this.on(event, on)
       },
@@ -164,7 +164,18 @@ export function installHook (target, isIframe = false) {
         if (cbs) {
           cbs = cbs.slice()
           for (let i = 0, l = cbs.length; i < l; i++) {
-            cbs[i].apply(this, args)
+            try {
+              const result = cbs[i].apply(this, args)
+              if (typeof result?.catch === 'function') {
+                result.catch(e => {
+                  console.error(`[Hook] Error in async event handler for ${event} with args:`, args)
+                  console.error(e)
+                })
+              }
+            } catch (e) {
+              console.error(`[Hook] Error in event handler for ${event} with args:`, args)
+              console.error(e)
+            }
           }
         } else {
           this._buffer.push([event, ...args])
