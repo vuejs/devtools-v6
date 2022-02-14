@@ -133,7 +133,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
           let path = payload.path
           if (payload.nodeId !== VUEX_ROOT_PATH) {
             path = [
-              ...payload.nodeId.substring(0, payload.nodeId.length - 1).split('/'),
+              ...payload.nodeId.split(VUEX_MODULE_PATH_SEPARATOR).slice(0, -1),
               ...path,
             ]
           }
