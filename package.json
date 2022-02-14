@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "6.0.9",
+  "version": "6.0.10",
   "description": "devtools for Vue.js!",
   "private": true,
   "workspaces": [
