@@ -2,7 +2,7 @@
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import AppHeaderLogo from './AppHeaderLogo.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
-import AppSelect from './AppSelect.vue'
+import AppSelect from '../apps/AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
 import AppMainMenu from './AppMainMenu.vue'
 

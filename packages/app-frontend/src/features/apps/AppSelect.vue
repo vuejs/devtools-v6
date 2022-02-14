@@ -1,5 +1,5 @@
 <script lang="ts">
-import AppHeaderSelect from './AppHeaderSelect.vue'
+import AppHeaderSelect from '../header/AppHeaderSelect.vue'
 import AppSelectItem from './AppSelectItem.vue'
 
 import { watch, defineComponent, computed } from '@vue/composition-api'
