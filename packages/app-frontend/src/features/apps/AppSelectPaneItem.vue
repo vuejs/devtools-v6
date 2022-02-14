@@ -48,13 +48,13 @@ export default defineComponent({
         <span>{{ app.version }}</span>
         <span
           v-if="hasNewVersion"
-          class="ml-2 text-sm text-green-500 flex items-center space-x-0.5"
+          v-tooltip="`${latestVersion} is available`"
+          class="ml-2 text-sm text-green-500"
         >
           <VueIcon
             icon="new_releases"
             class="w-5 h-5"
           />
-          <span>{{ latestVersion }}</span>
         </span>
       </span>
 
