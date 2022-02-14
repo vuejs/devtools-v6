@@ -1,6 +1,7 @@
 node_modules
 .DS_Store
 build
+/dist/*
 *.zip
 *.xpi
 tests_output
