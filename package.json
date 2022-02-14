@@ -20,7 +20,7 @@
     "release": "npm run test && node release.js && npm run build && npm run zip && npm run pub",
     "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox",
     "pub": "npm run pub:electron && npm run pub:api",
-    "pub:electron": "cd packages/shell-electron && npm publish --tag beta",
+    "pub:electron": "cd packages/shell-electron && npm publish",
     "pub:api": "cd packages/api && npm publish",
     "test": "npm run lint && npm run test:types:front",
     "test:types:front": "tsc --noEmit",
