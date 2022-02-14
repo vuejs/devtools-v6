@@ -13,6 +13,7 @@ import { useBridge } from '@front/features/bridge'
 import { useInspectors } from '@front/features/inspector/custom/composable'
 import { useTabs } from './tabs'
 import { showAppsSelector } from './header'
+import { useOrientation } from '../layout/orientation'
 
 export default defineComponent({
   components: {
@@ -65,11 +66,16 @@ export default defineComponent({
       immediate: true,
     })
 
+    // Orientation
+
+    const { orientation } = useOrientation()
+
     return {
       inspectorRoutes,
       currentInspectorRoute,
       lastInspectorRoute,
       showAppsSelector,
+      orientation,
     }
   },
 })
@@ -95,22 +101,50 @@ export default defineComponent({
     <template v-if="currentInspectorRoute">
       <img src="~@front/assets/breadcrumb-separator.svg">
 
-      <AppHeaderSelect
-        :items="inspectorRoutes"
-        :selected-item="currentInspectorRoute"
-        @select="route => $router.push(route.targetRoute)"
-      >
-        <template #default="{ item }">
-          <div class="flex items-center space-x-2">
-            <span class="flex-1">{{ item.label }}</span>
-            <PluginSourceIcon
-              v-if="item.pluginId"
-              :plugin-id="item.pluginId"
-              class="flex-none"
-            />
-          </div>
-        </template>
-      </AppHeaderSelect>
+      <template v-if="orientation === 'portrait' || inspectorRoutes.length * 200 > $responsive.width - 420">
+        <AppHeaderSelect
+          :items="inspectorRoutes"
+          :selected-item="currentInspectorRoute"
+          @select="route => $router.push(route.targetRoute)"
+        >
+          <template #default="{ item }">
+            <div class="flex items-center space-x-2">
+              <span class="flex-1">{{ item.label }}</span>
+              <PluginSourceIcon
+                v-if="item.pluginId"
+                :plugin-id="item.pluginId"
+                class="flex-none"
+              />
+            </div>
+          </template>
+        </AppHeaderSelect>
+      </template>
+
+      <template v-else>
+        <VueGroup
+          :value="currentInspectorRoute"
+          class="primary"
+          indicator
+          @update="route => $router.push(route.targetRoute)"
+        >
+          <VueGroupButton
+            v-for="item of inspectorRoutes"
+            :key="item.id"
+            :value="item"
+            :icon-left="item.icon"
+            class="flat"
+          >
+            <div class="flex items-center space-x-2">
+              <span class="flex-1">{{ item.label }}</span>
+              <PluginSourceIcon
+                v-if="item.pluginId"
+                :plugin-id="item.pluginId"
+                class="flex-none"
+              />
+            </div>
+          </VueGroupButton>
+        </VueGroup>
+      </template>
     </template>
 
     <div class="flex-1" />
