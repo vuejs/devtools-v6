@@ -12,6 +12,7 @@ import { useRoute } from '@front/util/router'
 import { useBridge } from '@front/features/bridge'
 import { useInspectors } from '@front/features/inspector/custom/composable'
 import { useTabs } from './tabs'
+import { showAppsSelector } from './header'
 
 export default defineComponent({
   components: {
@@ -68,6 +69,7 @@ export default defineComponent({
       inspectorRoutes,
       currentInspectorRoute,
       lastInspectorRoute,
+      showAppsSelector,
     }
   },
 })
@@ -79,12 +81,15 @@ export default defineComponent({
 
     <AppHistoryNav />
 
-    <AppSelect />
+    <template v-if="showAppsSelector">
+      <AppSelect />
 
-    <img src="~@front/assets/breadcrumb-separator.svg">
+      <img src="~@front/assets/breadcrumb-separator.svg">
+    </template>
 
     <AppMainMenu
       :last-inspector-route="lastInspectorRoute"
+      :label-shown="!showAppsSelector"
     />
 
     <template v-if="currentInspectorRoute">

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, defineComponent, PropType } from '@vue/composition-api'
+import { ref, computed, defineComponent, PropType, watch } from '@vue/composition-api'
 import { useOrientation } from './orientation'
 import { useSavedRef } from '@front/util/reactivity'
 
@@ -42,7 +42,7 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup (props, { emit }) {
     const { orientation } = useOrientation()
 
     const split = ref(props.defaultSplit)
@@ -58,6 +58,18 @@ export default defineComponent({
         useSavedRef(rightCollapsed, `split-pane-collapsed-right-${props.saveId}`)
       }
     }
+
+    watch(leftCollapsed, value => {
+      emit('left-collapsed', value)
+    }, {
+      immediate: true,
+    })
+
+    watch(rightCollapsed, value => {
+      emit('right-collapsed', value)
+    }, {
+      immediate: true,
+    })
 
     const boundSplit = computed(() => {
       if (split.value < props.min) {

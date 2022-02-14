@@ -4,6 +4,8 @@ import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
 import ErrorOverlay from './error/ErrorOverlay.vue'
 import WelcomeSlideshow from './welcome/WelcomeSlideshow.vue'
+import SplitPane from './layout/SplitPane.vue'
+import AppSelectPane from './apps/AppSelectPane.vue'
 
 import { onMounted, defineComponent, ref, watch } from '@vue/composition-api'
 import {
@@ -16,6 +18,7 @@ import {
 } from '@vue-devtools/shared-utils'
 import { darkMode } from '@front/util/theme'
 import { useAppConnection } from './connection'
+import { showAppsSelector } from './header/header'
 
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 
@@ -31,6 +34,8 @@ export default defineComponent({
     AppDisconnected,
     ErrorOverlay,
     WelcomeSlideshow,
+    SplitPane,
+    AppSelectPane,
   },
 
   setup () {
@@ -79,6 +84,7 @@ export default defineComponent({
       isConnected,
       isInitializing,
       welcomeHidden,
+      showAppsSelector,
     }
   },
 })
@@ -104,7 +110,24 @@ export default defineComponent({
     <template v-else>
       <AppHeader class="flex-none relative z-10 border-b border-gray-200 dark:border-gray-800" />
 
-      <router-view class="flex-1 overflow-auto" />
+      <SplitPane
+        save-id="app-select-pane"
+        :default-split="12"
+        :min="5"
+        :max="40"
+        collapsable-left
+        class="flex-1 overflow-hidden"
+        @left-collapsed="showAppsSelector = $event"
+      >
+        <template #left>
+          <AppSelectPane
+            class="h-full"
+          />
+        </template>
+        <template #right>
+          <router-view class="h-full overflow-auto" />
+        </template>
+      </SplitPane>
     </template>
 
     <portal-target name="root" />
