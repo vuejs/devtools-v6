@@ -1,5 +1,5 @@
 import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
-import { classify } from '@vue-devtools/shared-utils'
+import { classify, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode, ComponentInstance } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
@@ -120,8 +120,9 @@ function getInternalInstanceChildren (instance): any[] {
  * Check if an instance is qualified.
  */
 function isQualified (instance): boolean {
-  const name = classify(getInstanceName(instance)).toLowerCase()
-  return name.indexOf(filter) > -1
+  const name = getInstanceName(instance)
+  return classify(name).toLowerCase().indexOf(filter) > -1 ||
+    kebabize(name).toLowerCase().indexOf(filter) > -1
 }
 
 function flatten<T> (items: any[]): T[] {

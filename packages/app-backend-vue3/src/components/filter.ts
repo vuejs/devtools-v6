@@ -1,4 +1,4 @@
-import { classify } from '@vue-devtools/shared-utils'
+import { classify, kebabize } from '@vue-devtools/shared-utils'
 import { getInstanceName } from './util'
 
 export class ComponentFilter {
@@ -15,7 +15,8 @@ export class ComponentFilter {
    * @return {Boolean}
    */
   isQualified (instance) {
-    const name = classify(getInstanceName(instance)).toLowerCase()
-    return name.indexOf(this.filter) > -1
+    const name = getInstanceName(instance)
+    return classify(name).toLowerCase().indexOf(this.filter) > -1 ||
+      kebabize(name).toLowerCase().indexOf(this.filter) > -1
   }
 }
