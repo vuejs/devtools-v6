@@ -284,7 +284,7 @@ const DARK = 0x666666
 
 function formatRouteNode (router, route, parentPath: string, filter: string): CustomInspectorNode {
   const node: CustomInspectorNode = {
-    id: parentPath + route.path,
+    id: route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`,
     label: route.path,
     children: route.children?.map(child => formatRouteNode(router, child, route.path, filter)).filter(Boolean),
     tags: [],
@@ -308,8 +308,7 @@ function formatRouteNode (router, route, parentPath: string, filter: string): Cu
     })
   }
 
-  const currentPath = router.currentRoute.matched.reduce((p, m) => p + m.path, '')
-  if (node.id === currentPath) {
+  if (node.id === router.currentRoute.path) {
     node.tags.push({
       label: 'active',
       textColor: WHITE,
