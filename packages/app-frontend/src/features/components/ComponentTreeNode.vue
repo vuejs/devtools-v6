@@ -140,6 +140,14 @@ export default defineComponent({
       }
     }
 
+    function switchToggle (event) {
+      if (event.altKey) {
+        toggle(true, !expanded.value)
+      } else {
+        toggle()
+      }
+    }
+
     return {
       toggleEl,
       sortedChildren,
@@ -148,7 +156,7 @@ export default defineComponent({
       selected,
       select,
       expanded,
-      toggle,
+      switchToggle,
       highlight,
       unhighlight,
       selectNextSibling,
@@ -180,7 +188,7 @@ export default defineComponent({
         :class="{
           'invisible': !instance.hasChildren
         }"
-        @click.stop="toggle()"
+        @click.stop="switchToggle"
       >
         <span
           :class="{

@@ -136,11 +136,18 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   const isExpanded = computed(() => isComponentOpen(instance.value.id))
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
-  function toggleExpand () {
-    if (!instance.value.hasChildren) return
-    setComponentOpen(instance.value.id, !isExpanded.value)
-    if (isComponentOpen(instance.value.id)) {
-      requestComponentTree(instance.value.id)
+  function toggleExpand (recursively = false, value?, child?) {
+    const treeNode = child || instance.value
+    if (!treeNode.hasChildren) return
+    const isOpen = value === undefined ? !isExpanded.value : value
+    setComponentOpen(treeNode.id, isOpen)
+    if (isComponentOpen(treeNode.id)) {
+      requestComponentTree(treeNode.id)
+    }
+    if (recursively) {
+      treeNode.children.forEach(child => {
+        toggleExpand(recursively, value, child)
+      })
     }
   }
 
