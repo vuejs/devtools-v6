@@ -1,5 +1,23 @@
 # Contributing
 
+## Monorepo
+
+|Package|Description|
+|-------|-----------|
+[api](https://github.com/vuejs/devtools/tree/main/packages/api) | The public devtools API that can be installed in Vue plugins |
+[app-backend-api](https://github.com/vuejs/devtools/tree/main/packages/app-backend-api) | Abstract API to link the Public API, the core and Vue handlers |
+[app-backend-core](https://github.com/vuejs/devtools/tree/main/packages/app-backend-core) | The main logic injected in the page to interact with Vue apps |
+[app-backend-vue1](https://github.com/vuejs/devtools/tree/main/packages/app-backend-vue1) | Decoupled handlers to support Vue 1 (soon) |
+[app-backend-vue2](https://github.com/vuejs/devtools/tree/main/packages/app-backend-vue2) | Decoupled handlers to support Vue 2 |
+[app-backend-vue3](https://github.com/vuejs/devtools/tree/main/packages/app-backend-vue3) | Decoupled handlers to support Vue 3 |
+[app-frontend](https://github.com/vuejs/devtools/tree/main/packages/app-frontend) | Vue app displayed in the browser devtools pane |
+[shell-chrome](https://github.com/vuejs/devtools/tree/main/packages/shell-chrome) | Chrome/Firefox extension |
+[shell-electron](https://github.com/vuejs/devtools/tree/main/packages/shell-electron) | Electron standalone app |
+[shell-host](https://github.com/vuejs/devtools/tree/main/packages/shell-host) | Development environment |
+[shell-dev-vue2](https://github.com/vuejs/devtools/tree/main/packages/shell-dev-vue2) | Demo app for development (Vue 2) |
+[shell-dev-vue3](https://github.com/vuejs/devtools/tree/main/packages/shell-dev-vue3) | Demo app for development (Vue 3) |
+
+
 ## Development
 
 1. Clone this repo
