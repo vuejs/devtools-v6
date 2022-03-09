@@ -15,8 +15,9 @@
   "scripts": {
     "start": "node bin.js",
     "dev": "webpack --watch",
+    "dev-node": "webpack --watch --config webpack.node.config.js",
     "build": "rm -rf ./build && cross-env NODE_ENV=production webpack",
-    "prepublishOnly": "npm run build"
+    "build-node": "rm -rf ./build && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
   },
   "author": "",
   "license": "MIT",
@@ -28,14 +29,17 @@
     "electron": "^12.0.6",
     "express": "^4.17.1",
     "ip": "^1.1.5",
-    "socket.io": "^2.0.4"
+    "socket.io": "^4.0.0",
+    "socket.io-client": "^4.4.1"
   },
   "devDependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",
     "@vue-devtools/app-frontend": "^0.0.0",
     "@vue-devtools/build-tools": "^0.0.0",
     "@vue-devtools/shared-utils": "^0.0.0",
+    "isomorphic-ws": "^4.0.1",
     "webpack": "^5.35.1",
-    "webpack-cli": "^4.6.0"
+    "webpack-cli": "^4.6.0",
+    "ws": "^8.5.0"
   }
 }
