@@ -21,7 +21,6 @@ export async function performanceMarkStart (
     const groupId = ctx.perfUniqueGroupId++
     const groupKey = `${uid}-${type}`
     appRecord.perfGroupIds.set(groupKey, { groupId, time })
-    console.log(time)
     await addTimelineEvent({
       layerId: 'performance',
       event: {

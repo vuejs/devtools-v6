@@ -298,7 +298,6 @@ function _retryRequestComponentTree (instanceId: ComponentTreeNode['id']) {
     requestComponentTreeRetryDelay = 500
     return
   }
-  console.log(_retryRequestComponentTree)
   _sendTreeRequest(instanceId)
   _queueRetryTree(instanceId)
 }
