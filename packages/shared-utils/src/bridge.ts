@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import { raf } from './raf'
 
 const BATCH_DURATION = 100
 
@@ -118,6 +119,6 @@ export class Bridge extends EventEmitter {
       }
     }
     this._sending = false
-    requestAnimationFrame(() => this._nextSend())
+    raf(() => this._nextSend())
   }
 }
