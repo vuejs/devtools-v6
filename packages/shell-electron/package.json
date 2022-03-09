@@ -14,10 +14,11 @@
   "types": "types/index.d.ts",
   "scripts": {
     "start": "node bin.js",
-    "dev": "webpack --watch",
-    "dev-node": "webpack --watch --config webpack.node.config.js",
-    "build": "rm -rf ./build && cross-env NODE_ENV=production webpack",
-    "build-node": "rm -rf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
+    "dev:client": "webpack --watch",
+    "dev:node": "webpack --watch --config webpack.node.config.js",
+    "build": "npm run build:client && npm run build:node",
+    "build:client": "rm -rf ./build && cross-env NODE_ENV=production webpack",
+    "build:node": "rm -rf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
   },
   "author": "",
   "license": "MIT",
