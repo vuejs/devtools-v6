@@ -17,7 +17,7 @@
     "dev": "webpack --watch",
     "dev-node": "webpack --watch --config webpack.node.config.js",
     "build": "rm -rf ./build && cross-env NODE_ENV=production webpack",
-    "build-node": "rm -rf ./build && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
+    "build-node": "rm -rf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
   },
   "author": "",
   "license": "MIT",
