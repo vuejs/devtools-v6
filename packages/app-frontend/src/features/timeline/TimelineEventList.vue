@@ -100,7 +100,7 @@ export default defineComponent({
 
     function onScroll () {
       const scrollerEl = scroller.value.$el
-      isAtScrollBottom.value = scrollerEl.scrollTop + scrollerEl.clientHeight >= scrollerEl.scrollHeight - 100
+      isAtScrollBottom.value = scrollerEl.scrollTop + scrollerEl.clientHeight >= scrollerEl.scrollHeight - 400
     }
 
     watch(scroller, value => {
@@ -151,8 +151,10 @@ export default defineComponent({
     function scrollToBottom () {
       if (!scroller.value) return
 
-      const scrollerEl = scroller.value.$el
-      scrollerEl.scrollTop = scrollerEl.scrollHeight
+      requestAnimationFrame(() => {
+        const scrollerEl = scroller.value.$el
+        scrollerEl.scrollTop = scrollerEl.scrollHeight
+      })
     }
 
     // Important: Watch this after the scroll to inspect event watchers
@@ -241,7 +243,7 @@ export default defineComponent({
       :items="filteredEvents"
       :item-size="itemHeight"
       class="flex-1"
-      @scroll.native="onScroll()"
+      @scroll.native.passive="onScroll()"
     >
       <template #default="{ item: event }">
         <TimelineEventListItem
