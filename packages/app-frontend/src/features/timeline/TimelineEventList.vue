@@ -197,10 +197,11 @@ export default defineComponent({
       filter,
       filteredEvents,
       itemHeight,
-      inspectedEvent,
+      isAtScrollBottom,
       inspectEvent,
       selectEvent,
       onScroll,
+      scrollToBottom,
     }
   },
 })
@@ -209,7 +210,7 @@ export default defineComponent({
 <template>
   <div
     v-if="selectedEvent && selectedLayer"
-    class="h-full flex flex-col"
+    class="h-full flex flex-col relative"
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
       <VueGroup
@@ -254,6 +255,14 @@ export default defineComponent({
         />
       </template>
     </RecycleScroller>
+
+    <VueButton
+      v-if="!isAtScrollBottom"
+      v-tooltip="'Scroll to bottom'"
+      icon-left="keyboard_arrow_down"
+      class="icon-button absolute bottom-1 right-4 rounded-full shadow-md"
+      @click="scrollToBottom()"
+    />
   </div>
 
   <EmptyPane
