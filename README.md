@@ -4,7 +4,7 @@
 
 [Documentation](https://devtools.vuejs.org/)
 
-### Monorepo
+## Monorepo
 
 |Package|Description|
 |-------|-----------|
@@ -21,7 +21,11 @@
 [shell-dev-vue2](./packages/shell-dev-vue2) | Demo app for development (Vue 2) |
 [shell-dev-vue3](./packages/shell-dev-vue3) | Demo app for development (Vue 3) |
 
-### License
+## Contributing
+
+See the [Contributing guide](https://devtools.vuejs.org/guide/contributing.html).
+
+## License
 
 [MIT](http://opensource.org/licenses/MIT)
 
