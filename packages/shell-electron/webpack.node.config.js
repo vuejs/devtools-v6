@@ -10,6 +10,11 @@ const target = {
 
 module.exports = createConfig({
   target: 'node',
+  externals: {
+    // from https://socket.io/docs/v4/client-with-bundlers/
+    bufferutil: 'bufferutil',
+    'utf-8-validate': 'utf-8-validate',
+  },
   entry: {
     devtools: './src/devtools.js',
     backend: './src/backend.js',
