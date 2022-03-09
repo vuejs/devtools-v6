@@ -552,7 +552,7 @@ export function installHook (target, isIframe = false) {
       }
 
       // DOM objects
-      if (object instanceof HTMLElement) {
+      if (typeof HTMLElement !== 'undefined' && object instanceof HTMLElement) {
         return object.cloneNode(false)
       }
 

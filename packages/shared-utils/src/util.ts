@@ -233,7 +233,7 @@ function replacer (key) {
       return encodeCache.cache(val, () => getCustomComponentDefinitionDetails(val))
     } else if (val.constructor && val.constructor.name === 'VNode') {
       return `[native VNode <${val.tag}>]`
-    } else if (val instanceof HTMLElement) {
+    } else if (typeof HTMLElement !== 'undefined' && val instanceof HTMLElement) {
       return encodeCache.cache(val, () => getCustomHTMLElementDetails(val))
     }
     const customDetails = getCustomObjectDetails(val, proto)
