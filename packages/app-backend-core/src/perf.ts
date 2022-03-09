@@ -127,14 +127,14 @@ export function handleAddPerformanceTag (backend: DevtoolsBackend, ctx: BackendC
       let tooltip = '<div class="grid grid-cols-2 gap-2 font-mono text-xs">'
       for (const type in measures) {
         const d = measures[type]
-        tooltip += `<div>${type}</div><div class="text-right text-black rounded px-1 ${d > 30 ? 'bg-red-400' : d > 10 ? 'bg-yellow-400' : 'bg-green-400'}">${d} ms</div>`
+        tooltip += `<div>${type}</div><div class="text-right text-black rounded px-1 ${d > 30 ? 'bg-red-400' : d > 10 ? 'bg-yellow-400' : 'bg-green-400'}">${Math.round(d * 1000) / 1000} ms</div>`
       }
       tooltip += '</div>'
 
       payload.treeNode.tags.push({
         backgroundColor: duration > 30 ? 0xF87171 : 0xFBBF24,
         textColor: 0x000000,
-        label: `${duration} ms`,
+        label: `${Math.round(duration * 1000) / 1000} ms`,
         tooltip,
       })
     }
