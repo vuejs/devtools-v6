@@ -20,6 +20,7 @@ import {
   SharedData,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
+import throttle from 'lodash/throttle'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
@@ -110,7 +111,7 @@ async function connect () {
 
   // Components
 
-  hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
+  hook.on(HookEvents.COMPONENT_UPDATED, throttle(async (app, uid, parentUid, component) => {
     try {
       let id: string
       let appRecord: AppRecord
@@ -136,7 +137,7 @@ async function connect () {
         console.error(e)
       }
     }
-  })
+  }, 1000 / 10))
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
