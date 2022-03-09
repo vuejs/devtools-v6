@@ -474,7 +474,7 @@ export function revive (val) {
     return Symbol.for(string)
   } else if (specialTypeRE.test(val)) {
     const [, type, string,, details] = specialTypeRE.exec(val)
-    const result = new window[type](string)
+    const result = new target[type](string)
     if (type === 'Error' && details) {
       result.stack = details
     }

@@ -1,4 +1,5 @@
 // this script is injected into every page.
+import { isBrowser, target } from '@vue-devtools/shared-utils'
 
 /**
  * Install the hook on window, which is an event emitter.
@@ -36,6 +37,8 @@ export function installHook (target, isIframe = false) {
 
   let iframeChecks = 0
   function injectToIframes () {
+    if (!isBrowser) return
+
     const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe:not([data-vue-devtools-ignore])')
     for (const iframe of iframes) {
       injectIframeHook(iframe)

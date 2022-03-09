@@ -17,6 +17,7 @@ import {
   target,
   getPluginSettings,
   SharedData,
+  isBrowser,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
 import throttle from 'lodash/throttle'
@@ -449,13 +450,14 @@ function connectBridge () {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         // @ts-ignore
-        window.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
+        target.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
         ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, null)
       }
     }
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
+    if (!isBrowser) return
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
@@ -494,6 +496,7 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
+    if (!isBrowser) return
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)
