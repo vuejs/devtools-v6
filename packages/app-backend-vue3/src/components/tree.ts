@@ -50,7 +50,10 @@ export class ComponentWalker {
       return [await this.capture(instance, null, depth)]
     } else if (instance.subTree) {
       // TODO functional components
-      return this.findQualifiedChildrenFromList(this.getInternalInstanceChildren(instance.subTree), depth)
+      const list = this.isKeepAlive(instance)
+        ? this.getKeepAliveCachedInstances(instance)
+        : this.getInternalInstanceChildren(instance.subTree)
+      return this.findQualifiedChildrenFromList(list, depth)
     } else {
       return []
     }
@@ -164,8 +167,8 @@ export class ComponentWalker {
     }
 
     // keep-alive
-    if (instance.type.__isKeepAlive && instance.__v_cache) {
-      const cachedComponents = Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
+    if (this.isKeepAlive(instance)) {
+      const cachedComponents = this.getKeepAliveCachedInstances(instance)
       const childrenIds = children.map(child => child.__VUE_DEVTOOLS_UID__)
       for (const cachedChild of cachedComponents) {
         if (!childrenIds.includes(cachedChild.__VUE_DEVTOOLS_UID__)) {
@@ -217,5 +220,13 @@ export class ComponentWalker {
     if (force || !instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
       instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
     }
+  }
+
+  private isKeepAlive (instance) {
+    return instance.type.__isKeepAlive && instance.__v_cache
+  }
+
+  private getKeepAliveCachedInstances (instance) {
+    return Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
   }
 }

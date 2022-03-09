@@ -31,6 +31,7 @@ import {
   getComponentId,
   editComponentState,
   getComponentInstance,
+  refreshComponentTreeSearch,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
@@ -167,6 +168,8 @@ async function connect () {
       if (ctx.currentInspectedComponentId === id) {
         sendSelectedComponentData(appRecord, id, ctx)
       }
+
+      await refreshComponentTreeSearch(ctx)
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -200,6 +203,8 @@ async function connect () {
         sendEmptyComponentData(id, ctx)
       }
       appRecord.instanceMap.delete(id)
+
+      await refreshComponentTreeSearch(ctx)
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
