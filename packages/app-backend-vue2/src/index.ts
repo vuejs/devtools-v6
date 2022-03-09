@@ -97,6 +97,7 @@ export const backend = defineBackend({
 // @TODO refactor
 function injectToUtils () {
   backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
+  backendInjections.getCustomObjectDetails = () => undefined
   backendInjections.instanceMap = instanceMap
   backendInjections.isVueInstance = val => val._isVue
 }
