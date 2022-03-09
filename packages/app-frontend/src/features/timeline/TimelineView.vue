@@ -1350,7 +1350,20 @@ export default defineComponent({
 
     // Misc. mouse events
 
+    let mouseIn = false
+
     function onMouseMove (event: FederatedPointerEvent) {
+      if (event.global.x < 0 ||
+        event.global.y < 0 ||
+        event.global.x > app.screen.width ||
+        event.global.y > app.screen.height) {
+        if (mouseIn) {
+          mouseIn = false
+          onMouseOut()
+        }
+        return
+      }
+      mouseIn = true
       updateLayerHover(event)
       updateCursorPosition(event)
     }
@@ -1363,13 +1376,12 @@ export default defineComponent({
     onMounted(() => {
       // @ts-ignore
       app.stage.addEventListener('pointermove', onMouseMove)
-      // @ts-ignore
-      app.stage.addEventListener('pointerout', onMouseOut)
     })
 
     return {
       wrapper,
       onResize,
+      onMouseOut,
     }
   },
 })
@@ -1381,6 +1393,7 @@ export default defineComponent({
     class="relative overflow-hidden"
     data-id="timeline-view-wrapper"
     @contextmenu.prevent
+    @mouseout="onMouseOut"
   >
     <resize-observer @notify="onResize" />
   </div>
