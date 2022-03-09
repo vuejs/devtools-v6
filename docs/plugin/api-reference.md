@@ -500,6 +500,14 @@ api.selectInspectorNode('test-inspector', 'some-node-id')
 
 ## Timeline
 
+### now
+
+Returns the current time with the maximum available precision.
+
+```js
+api.now()
+```
+
 ### addTimelineLayer
 
 Register a new timeline layer with this method. The options are:
@@ -539,7 +547,7 @@ Example:
 api.addTimelineEvent({
   layerId: 'test-layer',
   event: {
-    time: Date.now(),
+    time: api.now(),
     data: {
       info: 'window.keyup',
       key: event.key

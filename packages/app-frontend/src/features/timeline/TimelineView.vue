@@ -42,7 +42,7 @@ delete Renderer.__plugins.interaction
 
 const LAYER_SIZE = 16
 const GROUP_SIZE = 6
-const MIN_CAMERA_SIZE = 10
+const MIN_CAMERA_SIZE = 0.001
 
 // Micro tasks (higher = later)
 const taskPriority = {
@@ -959,10 +959,10 @@ export default defineComponent({
             if (event.subtitle) {
               text.push(event.subtitle)
             }
-            text.push(formatTime(event.time, 'ms'))
+            text.push(formatTime(event.time / 1000, 'ms'))
 
             if (event.group) {
-              text.push(`Group: ${event.group.nonReactiveDuration}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
+              text.push(`Group: ${event.group.nonReactiveDuration / 1000}ms (${event.group.events.length} event${event.group.events.length > 1 ? 's' : ''})`)
             }
 
             if (event?.container) {
@@ -973,7 +973,7 @@ export default defineComponent({
             const marker = getMarkerAtPosition(mouseEvent.globalX)
             if (marker) {
               text.push(marker.label)
-              text.push(formatTime(marker.time, 'ms'))
+              text.push(formatTime(marker.time / 1000, 'ms'))
               text.push('(marker)')
             }
           }

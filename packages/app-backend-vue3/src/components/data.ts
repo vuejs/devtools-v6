@@ -1,6 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, StateEditor, SharedData, formattedValue } from '@vue-devtools/shared-utils'
+import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 

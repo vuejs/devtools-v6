@@ -124,8 +124,8 @@ export async function fetchLayers () {
 
 export function getGroupsAroundPosition (layer: Layer, startPosition: number, endPosition: number): EventGroup[] {
   const result = new Set<EventGroup>()
-  let key = Math.round(startPosition / 100)
-  const endKey = Math.round(endPosition / 100)
+  let key = Math.round(startPosition / 100_000)
+  const endKey = Math.round(endPosition / 100_000)
   while (key <= endKey) {
     const groups = layer.groupPositionCache[key]
     if (groups) {
@@ -139,8 +139,8 @@ export function getGroupsAroundPosition (layer: Layer, startPosition: number, en
 }
 
 export function addGroupAroundPosition (layer: Layer, group: EventGroup, newPosition: number) {
-  let key = Math.round(group.lastEvent.time / 100)
-  const endKey = Math.round(newPosition / 100)
+  let key = Math.round(group.lastEvent.time / 100_000)
+  const endKey = Math.round(newPosition / 100_000)
 
   while (key <= endKey) {
     let list = layer.groupPositionCache[key]

@@ -35,7 +35,7 @@ async function serializeMarker (marker: TimelineMarker) {
     id: marker.id,
     appId: marker.appRecord?.id,
     all: marker.all,
-    time: marker.time,
+    time: Math.round(marker.time * 1000),
     label: marker.label,
     color: marker.color,
   }

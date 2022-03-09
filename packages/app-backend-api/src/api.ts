@@ -27,6 +27,7 @@ import { BackendContext } from './backend-context'
 import { Plugin } from './plugin'
 import { DevtoolsBackend } from './backend'
 import { AppRecord } from './app-record'
+import { now } from './time.js'
 
 const pluginOn: DevtoolsHookable[] = []
 
@@ -244,6 +245,10 @@ export class DevtoolsApi {
       set: (object, path = arrayPath, value = state.value, cb?) => this.stateEditor.set(object, path, value, cb || this.stateEditor.createDefaultSetCallback(state)),
     })
   }
+
+  now () {
+    return now()
+  }
 }
 
 export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPluginApi<TSettings> {
@@ -352,6 +357,10 @@ export class DevtoolsPluginApiInstance<TSettings = any> implements DevtoolsPlugi
 
   setSettings (value: TSettings, pluginId?: string) {
     setPluginSettings(pluginId ?? this.plugin.descriptor.id, value)
+  }
+
+  now () {
+    return now()
   }
 
   private get enabled () {

@@ -4,6 +4,7 @@ import {
   Plugin,
   BuiltinBackendFeature,
   AppRecord,
+  now,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -332,7 +333,7 @@ async function connect () {
   try {
     await addTimelineMarker({
       id: 'vue-devtools-init-backend',
-      time: Date.now(),
+      time: now(),
       label: 'Vue Devtools connected',
       color: 0x41B883,
       all: true,
