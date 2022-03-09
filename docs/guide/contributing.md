@@ -52,7 +52,7 @@ Thank you for your code contribution! Before opening a PR, please make sure to r
 
 <!-- @TODO - Make sure tests pass!-->
 
-- Commit messages must follow the [commit message convention](./.github/commit-convention.md) so that changelogs can be automatically generated.
+- Commit messages must follow the [commit message convention](https://github.com/vuejs/devtools/blob/main/.github/commit-convention.md) so that changelogs can be automatically generated.
 
 ## Running tests
 
