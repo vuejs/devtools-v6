@@ -33,7 +33,7 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
 
         // App scope
         if (!this.plugin.descriptor.disableAppScope &&
-          this.ctx.currentAppRecord.options.app !== this.plugin.descriptor.app) return
+          this.ctx.currentAppRecord?.options.app !== this.plugin.descriptor.app) return
 
         // Plugin scope
         if (!this.plugin.descriptor.disablePluginScope &&
@@ -57,7 +57,7 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
         try {
           await handler(payload, ctx)
         } catch (e) {
-          console.error(`An error occurred in hook ${eventType}${plugin ? ` registered by plugin ${plugin.descriptor.id}` : ''}`)
+          console.error(`An error occurred in hook '${eventType}'${plugin ? ` registered by plugin '${plugin.descriptor.id}'` : ''} with payload:`, payload)
           console.error(e)
         }
       }

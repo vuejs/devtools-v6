@@ -35,7 +35,7 @@ function createOverlay () {
 const jobQueue = new JobQueue()
 
 export async function highlight (instance: ComponentInstance, backend: DevtoolsBackend, ctx: BackendContext) {
-  await jobQueue.queue(async () => {
+  await jobQueue.queue('highlight', async () => {
     if (!instance) return
 
     const bounds = await backend.api.getComponentBounds(instance)
@@ -76,7 +76,7 @@ export async function highlight (instance: ComponentInstance, backend: DevtoolsB
 }
 
 export async function unHighlight () {
-  await jobQueue.queue(async () => {
+  await jobQueue.queue('unHighlight', async () => {
     overlay?.parentNode?.removeChild(overlay)
     overlayContent?.parentNode?.removeChild(overlayContent)
     currentInstance = null
@@ -149,7 +149,7 @@ let updateTimer
 function startUpdateTimer (backend: DevtoolsBackend, ctx: BackendContext) {
   stopUpdateTimer()
   updateTimer = setInterval(() => {
-    jobQueue.queue(async () => {
+    jobQueue.queue('updateOverlay', async () => {
       await updateOverlay(backend, ctx)
     })
   }, 1000 / 30) // 30fps

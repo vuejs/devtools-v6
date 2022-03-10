@@ -151,7 +151,7 @@ export default {
       api.addTimelineEvent({
         layerId: 'test-layer',
         event: {
-          time: Date.now(),
+          time: api.now(),
           title: 'Early event',
           data: {},
         },
@@ -310,7 +310,7 @@ export default {
       devtoolsApi && devtoolsApi.addTimelineEvent({
         layerId: 'test-layer',
         event: {
-          time: Date.now(),
+          time: devtoolsApi.now(),
           data: {
             info: 'window.mouseup',
             x: event.clientX,
@@ -325,7 +325,7 @@ export default {
       devtoolsApi && devtoolsApi.addTimelineEvent({
         layerId: 'test-layer',
         event: {
-          time: Date.now(),
+          time: devtoolsApi.now(),
           data: {
             info: 'window.keyup',
             key: event.key,

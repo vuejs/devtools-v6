@@ -34,7 +34,7 @@ export default defineComponent({
           <img
             src="~@front/assets/devtools-logo.svg"
             alt="Devtools logo"
-            class="logo max-h-[160px]"
+            class="logo max-h-[100px]"
           >
           <h1 class="text-green-500 text-2xl text-center mt-8">
             Welcome to the Vue devtools!
@@ -187,7 +187,7 @@ export default defineComponent({
               href="https://devtools.vuejs.org/guide/installation.html#legacy"
               target="_blank"
             >Legacy version</a> and <a
-              href="https://new-issue.vuejs.org/?repo=vuejs/vue-devtools"
+              href="https://new-issue.vuejs.org/?repo=vuejs/devtools"
               target="_blank"
             >report an issue</a>.
           </p>

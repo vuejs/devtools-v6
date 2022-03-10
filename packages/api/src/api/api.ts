@@ -19,6 +19,7 @@ export interface DevtoolsPluginApi<TSettings> {
   highlightElement (instance: ComponentInstance): void
   unhighlightElement (): void
   getSettings (pluginId?: string): TSettings
+  now (): number
   /**
    * @private Not implemented yet
    */

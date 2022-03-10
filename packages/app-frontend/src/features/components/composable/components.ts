@@ -275,6 +275,8 @@ export function resetComponents () {
 
 export const requestedComponentTree = new Set()
 
+let requestComponentTreeRetryDelay = 500
+
 export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null, recursively = false) {
   if (!instanceId) {
     instanceId = '_root'
@@ -287,11 +289,30 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
 
   await waitForAppSelect()
 
+  _sendTreeRequest(instanceId, recursively)
+  _queueRetryTree(instanceId, recursively)
+}
+
+function _sendTreeRequest (instanceId: ComponentTreeNode['id'], recursively = false) {
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
     filter: treeFilter.value,
     recursively,
   })
+}
+
+function _queueRetryTree (instanceId: ComponentTreeNode['id'], recursively = false) {
+  setTimeout(() => _retryRequestComponentTree(instanceId, recursively), requestComponentTreeRetryDelay)
+  requestComponentTreeRetryDelay *= 1.5
+}
+
+function _retryRequestComponentTree (instanceId: ComponentTreeNode['id'], recursively = false) {
+  if (rootInstances.value.length) {
+    requestComponentTreeRetryDelay = 500
+    return
+  }
+  _sendTreeRequest(instanceId, recursively)
+  _queueRetryTree(instanceId, recursively)
 }
 
 export function ensureComponentsMapData (data: ComponentTreeNode) {

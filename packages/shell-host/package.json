@@ -6,7 +6,7 @@
     "dev": "cross-env TAILWIND_MODE=watch webpack serve"
   },
   "dependencies": {
-    "@vue/composition-api": "^1.1.3",
+    "@vue/composition-api": "^1.4.6",
     "@vue/ui": "^0.12.5",
     "@vue-devtools/app-backend-core": "^0.0.0",
     "@vue-devtools/app-frontend": "^0.0.0",

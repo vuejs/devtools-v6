@@ -4,6 +4,7 @@ import {
   Plugin,
   BuiltinBackendFeature,
   AppRecord,
+  now,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -19,6 +20,7 @@ import {
   SharedData,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
+import throttle from 'lodash/throttle'
 import { hook } from './global-hook'
 import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
@@ -31,6 +33,7 @@ import {
   getComponentId,
   editComponentState,
   getComponentInstance,
+  refreshComponentTreeSearch,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
@@ -59,20 +62,20 @@ export async function initBackend (bridge: Bridge) {
       hook,
     })
 
+    SharedData.legacyApps = false
     if (hook.Vue) {
       connect()
-      _legacy_getAndRegisterApps(ctx)
+      _legacy_getAndRegisterApps(ctx, true)
+      SharedData.legacyApps = true
     }
     hook.on(HookEvents.INIT, () => {
-      _legacy_getAndRegisterApps(ctx)
+      _legacy_getAndRegisterApps(ctx, true)
+      SharedData.legacyApps = true
     })
 
     hook.on(HookEvents.APP_ADD, async app => {
-      await _legacy_getAndRegisterApps(ctx)
       await registerApp(app, ctx)
-
-      // Will init connect
-      hook.emit(HookEvents.INIT)
+      connect()
     })
 
     // Add apps that already sent init
@@ -102,13 +105,13 @@ async function connect () {
 
   // Apps
 
-  hook.on(HookEvents.APP_UNMOUNT, app => {
-    removeApp(app, ctx)
+  hook.on(HookEvents.APP_UNMOUNT, async app => {
+    await removeApp(app, ctx)
   })
 
   // Components
 
-  hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
+  hook.on(HookEvents.COMPONENT_UPDATED, throttle(async (app, uid, parentUid, component) => {
     try {
       let id: string
       let appRecord: AppRecord
@@ -134,7 +137,7 @@ async function connect () {
         console.error(e)
       }
     }
-  })
+  }, 1000 / 10))
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
@@ -167,6 +170,8 @@ async function connect () {
       if (ctx.currentInspectedComponentId === id) {
         sendSelectedComponentData(appRecord, id, ctx)
       }
+
+      await refreshComponentTreeSearch(ctx)
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -200,6 +205,8 @@ async function connect () {
         sendEmptyComponentData(id, ctx)
       }
       appRecord.instanceMap.delete(id)
+
+      await refreshComponentTreeSearch(ctx)
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -209,22 +216,22 @@ async function connect () {
 
   // Component perf
 
-  hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {
-    performanceMarkStart(app, uid, vm, type, time, ctx)
+  hook.on(HookEvents.PERFORMANCE_START, async (app, uid, vm, type, time) => {
+    await performanceMarkStart(app, uid, vm, type, time, ctx)
   })
 
-  hook.on(HookEvents.PERFORMANCE_END, (app, uid, vm, type, time) => {
-    performanceMarkEnd(app, uid, vm, type, time, ctx)
+  hook.on(HookEvents.PERFORMANCE_END, async (app, uid, vm, type, time) => {
+    await performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
   // Highlighter
 
-  hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
+  hook.on(HookEvents.COMPONENT_HIGHLIGHT, async instanceId => {
+    await highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
-  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
-    unHighlight()
+  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, async () => {
+    await unHighlight()
   })
 
   // Timeline
@@ -260,19 +267,19 @@ async function connect () {
     ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, (inspectorId: string, plugin: Plugin) => {
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, async (inspectorId: string, plugin: Plugin) => {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
-      sendInspectorTree(inspector, ctx)
+      await sendInspectorTree(inspector, ctx)
     } else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
 
-  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, (inspectorId: string, plugin: Plugin) => {
+  hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_STATE, async (inspectorId: string, plugin: Plugin) => {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
-      sendInspectorState(inspector, ctx)
+      await sendInspectorState(inspector, ctx)
     } else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
@@ -289,8 +296,18 @@ async function connect () {
 
   // Plugins
 
-  addPreviouslyRegisteredPlugins(ctx)
-  addQueuedPlugins(ctx)
+  try {
+    await addPreviouslyRegisteredPlugins(ctx)
+  } catch (e) {
+    console.error(`Error adding previously registered plugins:`)
+    console.error(e)
+  }
+  try {
+    await addQueuedPlugins(ctx)
+  } catch (e) {
+    console.error(`Error adding queued plugins:`)
+    console.error(e)
+  }
 
   hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, async (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
     await addPlugin({ pluginDescriptor, setupFn }, ctx)
@@ -300,11 +317,11 @@ async function connect () {
 
   // Legacy flush
 
-  const handleFlush = debounce(() => {
+  const handleFlush = debounce(async () => {
     if (ctx.currentAppRecord?.backend.options.features.includes(BuiltinBackendFeature.FLUSH)) {
-      sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
+      await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
       if (ctx.currentInspectedComponentId) {
-        sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
+        await sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
       }
     }
   }, 500)
@@ -314,13 +331,18 @@ async function connect () {
 
   // Connect done
 
-  addTimelineMarker({
-    id: 'vue-devtools-init-backend',
-    time: Date.now(),
-    label: 'Vue Devtools connected',
-    color: 0x41B883,
-    all: true,
-  }, ctx)
+  try {
+    await addTimelineMarker({
+      id: 'vue-devtools-init-backend',
+      time: now(),
+      label: 'Vue Devtools connected',
+      color: 0x41B883,
+      all: true,
+    }, ctx)
+  } catch (e) {
+    console.error(`Error while adding devtools connected timeline marker:`)
+    console.error(e)
+  }
 }
 
 function connectBridge () {
@@ -343,8 +365,8 @@ function connectBridge () {
 
   // Apps
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_APP_LIST, () => {
-    sendApps(ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_APP_LIST, async () => {
+    await sendApps(ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
@@ -357,20 +379,26 @@ function connectBridge () {
     }
   })
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_SCAN_LEGACY_APPS, () => {
+    if (hook.Vue) {
+      _legacy_getAndRegisterApps(ctx)
+    }
+  })
+
   // Components
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter, recursively }) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, async ({ instanceId, filter, recursively }) => {
     ctx.currentAppRecord.componentFilter = filter
-    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx, recursively)
     subscribe(BridgeSubscriptions.COMPONENT_TREE, { instanceId })
+    await sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx, recursively)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, (instanceId) => {
-    sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, async (instanceId) => {
+    await sendSelectedComponentData(ctx.currentAppRecord, instanceId, ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, ({ instanceId, dotPath, type, value, newKey, remove }) => {
-    editComponentState(instanceId, dotPath, type, { value, newKey, remove }, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, async ({ instanceId, dotPath, type, value, newKey, remove }) => {
+    await editComponentState(instanceId, dotPath, type, { value, newKey, remove }, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_INSPECT_DOM, async ({ instanceId }) => {
@@ -450,12 +478,12 @@ function connectBridge () {
 
   // Highlighter
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, instanceId => {
-    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, async instanceId => {
+    await highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, () => {
-    unHighlight()
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT, async () => {
+    await unHighlight()
   })
 
   // Component picker
@@ -472,12 +500,12 @@ function connectBridge () {
 
   // Timeline
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, () => {
-    sendTimelineLayers(ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, async () => {
+    await sendTimelineLayers(ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, ({ screenshot }) => {
-    showScreenshot(screenshot, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, async ({ screenshot }) => {
+    await showScreenshot(screenshot, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_CLEAR, async () => {
@@ -488,8 +516,8 @@ function connectBridge () {
     await sendTimelineEventData(id, ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LOAD_EVENTS, ({ appId, layerId }) => {
-    sendTimelineLayerEvents(appId, layerId, ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LAYER_LOAD_EVENTS, async ({ appId, layerId }) => {
+    await sendTimelineLayerEvents(appId, layerId, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_TIMELINE_LOAD_MARKERS, async () => {
@@ -498,8 +526,8 @@ function connectBridge () {
 
   // Custom inspectors
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_LIST, () => {
-    sendCustomInspectors(ctx)
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_LIST, async () => {
+    await sendCustomInspectors(ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_TREE, async ({ inspectorId, appId, treeFilter }) => {

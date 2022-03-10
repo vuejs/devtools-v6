@@ -18,6 +18,7 @@ export async function addTimelineMarker (options: TimelineMarkerOptions, ctx: Ba
 }
 
 export async function sendTimelineMarkers (ctx: BackendContext) {
+  if (!ctx.currentAppRecord) return
   const markers = ctx.timelineMarkers.filter(marker => marker.all || marker.appRecord === ctx.currentAppRecord)
   const result = []
   for (const marker of markers) {
@@ -34,7 +35,7 @@ async function serializeMarker (marker: TimelineMarker) {
     id: marker.id,
     appId: marker.appRecord?.id,
     all: marker.all,
-    time: marker.time,
+    time: Math.round(marker.time * 1000),
     label: marker.label,
     color: marker.color,
   }

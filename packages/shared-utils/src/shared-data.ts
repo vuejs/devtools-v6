@@ -27,8 +27,11 @@ const internalSharedData = {
   pluginPermissions: {} as any,
   pluginSettings: {} as any,
   pageConfig: {} as any,
+  legacyApps: false,
   debugInfo: false,
 }
+
+type TSharedData = typeof internalSharedData
 
 const persisted = [
   'componentNameStyle',
@@ -181,7 +184,7 @@ export function destroySharedData () {
   watchers = {}
 }
 
-let watchers = {}
+let watchers: Partial<Record<keyof TSharedData, ((value: any, oldValue: any) => unknown)[]>> = {}
 
 function setValue (key: string, value: any) {
   // Storage
@@ -205,7 +208,9 @@ function sendValue (key: string, value: any) {
   })
 }
 
-export function watchSharedData (prop, handler) {
+export function watchSharedData <
+  TKey extends keyof TSharedData,
+> (prop: TKey, handler: (value: TSharedData[TKey], oldValue: TSharedData[TKey]) => unknown) {
   const list = watchers[prop] || (watchers[prop] = [])
   list.push(handler)
   return () => {

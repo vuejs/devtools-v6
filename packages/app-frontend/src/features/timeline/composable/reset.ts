@@ -52,10 +52,10 @@ export function resetTimeline (sync = true) {
 }
 
 export function resetTime () {
-  const now = Date.now()
-  startTime.value = now - 1000
+  const now = 0
+  startTime.value = now - 1_000_000
   endTime.value = now
-  minTime.value = now - 1000
+  minTime.value = now - 1_000_000
   maxTime.value = now
 }
 

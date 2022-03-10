@@ -159,7 +159,7 @@ export default defineComponent({
   <div class="min-w-max">
     <div
       ref="toggleEl"
-      class="font-mono cursor-pointer relative z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm selectable-item"
+      class="font-mono cursor-pointer relative z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm select-none selectable-item"
       :class="{
         selected
       }"
@@ -167,6 +167,7 @@ export default defineComponent({
         paddingLeft: depth * 15 + 4 + 'px'
       }"
       @click="select()"
+      @dblclick="toggle()"
     >
       <!-- arrow wrapper for better hit box -->
       <span

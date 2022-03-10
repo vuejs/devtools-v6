@@ -15,7 +15,12 @@ export default {
         world: 1,
       },
       nil: undefined,
+      nestedRef: ref('meow'),
+      nestedComputed: computed(() => answer.value * 4),
+      map: new Map(),
     })
+
+    reactiveObject.map.set('foo', ref('bar'))
 
     function myMethodFromSetup () {
       console.log('foobar')
@@ -68,7 +73,7 @@ export default {
 
 <template>
   <div>
-    Child: {{ answer }} x2: {{ doubleAnswer }}
+    Child: {{ answer }} x2: {{ doubleAnswer }} x4: {{ reactiveObject.nestedComputed }}
     <button @click="answer *= 2">
       double it
     </button>

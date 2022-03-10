@@ -1,7 +1,8 @@
 import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
-import { classify } from '@vue-devtools/shared-utils'
+import { classify, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode, ComponentInstance } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
+import { applyPerfHooks } from './perf.js'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
 export let instanceMap: Map<any, any>
@@ -38,7 +39,11 @@ export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendCon
     const id = getUniqueId(vm)
     if (captureIds.has(id)) return
     captureIds.set(id, undefined)
-    mark(vm)
+    if (vm.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
+      markFunctional(id, vm.vnode)
+    } else {
+      mark(vm)
+    }
   }
 
   const parents = []
@@ -54,6 +59,9 @@ export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendCon
 function initCtx (_api: DevtoolsApi, ctx: BackendContext) {
   appRecord = ctx.currentAppRecord
   api = _api
+  if (!appRecord.meta) {
+    appRecord.meta = {}
+  }
   if (!appRecord.meta.instanceMap) {
     appRecord.meta.instanceMap = new Map()
   }
@@ -115,8 +123,9 @@ function getInternalInstanceChildren (instance): any[] {
  * Check if an instance is qualified.
  */
 function isQualified (instance): boolean {
-  const name = classify(getInstanceName(instance)).toLowerCase()
-  return name.indexOf(filter) > -1
+  const name = getInstanceName(instance)
+  return classify(name).toLowerCase().indexOf(filter) > -1 ||
+    kebabize(name).toLowerCase().indexOf(filter) > -1
 }
 
 function flatten<T> (items: any[]): T[] {
@@ -219,7 +228,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
   // instance._uid is not reliable in devtools as there
   // may be 2 roots with same _uid which causes unexpected
   // behaviour
-  instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance)
+  instance.__VUE_DEVTOOLS_UID__ = getUniqueId(instance, appRecord)
 
   // Dedupe
   if (captureIds.has(instance.__VUE_DEVTOOLS_UID__)) {
@@ -320,6 +329,7 @@ function mark (instance) {
     instance.$on('hook:beforeDestroy', function () {
       instanceMap.delete(refId)
     })
+    applyPerfHooks(api, instance, appRecord.options.app)
   }
 }
 

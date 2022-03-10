@@ -28,6 +28,7 @@ export enum BridgeEvents {
   TO_FRONT_APP_REMOVE = 'f:app:remove',
   TO_BACK_APP_SELECT = 'b:app:select',
   TO_FRONT_APP_SELECTED = 'f:app:selected',
+  TO_BACK_SCAN_LEGACY_APPS = 'b:app:scan-legacy',
 
   // Components
   TO_BACK_COMPONENT_TREE = 'b:component:tree',

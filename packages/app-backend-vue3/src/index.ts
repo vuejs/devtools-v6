@@ -1,6 +1,6 @@
 import { defineBackend } from '@vue-devtools/app-backend-api'
 import { ComponentWalker } from './components/tree'
-import { editState, getInstanceDetails, getCustomInstanceDetails } from './components/data'
+import { editState, getInstanceDetails, getCustomInstanceDetails, getCustomObjectDetails } from './components/data'
 import { getInstanceName, getComponentInstances } from './components/util'
 import { getComponentInstanceFromElement, getInstanceOrVnodeRect, getRootElementsFromComponentInstance } from './components/el'
 import { backendInjections, HookEvents } from '@vue-devtools/shared-utils'
@@ -38,6 +38,7 @@ export const backend = defineBackend({
     api.on.inspectComponent((payload, ctx) => {
       // @TODO refactor
       backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
+      backendInjections.getCustomObjectDetails = getCustomObjectDetails
       backendInjections.instanceMap = ctx.currentAppRecord.instanceMap
       backendInjections.isVueInstance = val => val._ && Object.keys(val._).includes('vnode')
       payload.instanceData = getInstanceDetails(payload.componentInstance, ctx)

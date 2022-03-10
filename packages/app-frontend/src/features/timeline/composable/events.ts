@@ -22,7 +22,7 @@ import { addGroupAroundPosition } from './layers'
 import { EventGroup } from '.'
 import { addNonReactiveProperties } from '@front/util/reactivity'
 
-const AUTOSCROLL_DURATION = 10000
+const AUTOSCROLL_DURATION = 10_000_000
 
 type AddEventCb = (event: TimelineEvent) => void
 
@@ -85,14 +85,14 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
   // Min time
   if (minTime.value > event.time) {
     const stick = minTime.value === startTime.value
-    minTime.value = event.time - 100
+    minTime.value = event.time - 100_000
     if (stick) {
       startTime.value = minTime.value
     }
   }
 
   // Update scrollbar
-  const scrollTime = event.time + 100
+  const scrollTime = event.time + 100_000
   if (scrollTime > maxTime.value) {
     if (endTime.value === maxTime.value) {
       if (startTime.value !== minTime.value) {
@@ -134,7 +134,7 @@ export function useInspectedEvent () {
   return {
     inspectedEvent,
     inspectedEventState: computed(() => inspectedEventData.value),
-    time: computed(() => formatTime(inspectedEvent.value.time, 'ms')),
+    time: computed(() => formatTime(inspectedEvent.value.time / 1000, 'ms')),
     loading: computed(() => inspectedEventPendingId.value != null),
   }
 }

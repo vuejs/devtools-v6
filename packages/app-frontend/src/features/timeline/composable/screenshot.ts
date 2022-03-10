@@ -8,7 +8,7 @@ let nextScreenshotId = 0
 export async function takeScreenshot (event: TimelineEvent) {
   if (!SharedData.timelineScreenshots || event.layer.skipScreenshots) return
 
-  const time = Math.round(event.time / 100) * 100
+  const time = Math.round(event.time / 100_000) * 100_000
 
   const lastScreenshot = screenshots.value[screenshots.value.length - 1]
 
@@ -38,7 +38,9 @@ export async function takeScreenshot (event: TimelineEvent) {
 
         if (!dataUrl) {
           event.screenshot = lastScreenshot
-          lastScreenshot.events.push(event)
+          if (lastScreenshot) {
+            lastScreenshot.events.push(event)
+          }
         } else {
           screenshots.value.push(screenshot)
         }
@@ -46,7 +48,9 @@ export async function takeScreenshot (event: TimelineEvent) {
     }
   } else {
     event.screenshot = lastScreenshot
-    lastScreenshot.events.push(event)
+    if (lastScreenshot) {
+      lastScreenshot.events.push(event)
+    }
   }
 }
 

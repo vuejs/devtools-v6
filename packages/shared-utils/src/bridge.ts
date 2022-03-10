@@ -29,6 +29,18 @@ export class Bridge extends EventEmitter {
     this._time = null
   }
 
+  on (event: string | symbol, listener: (...args: any[]) => void): this {
+    const wrappedListener = async (...args) => {
+      try {
+        await listener(...args)
+      } catch (e) {
+        console.error(`[Bridge] Error in listener for event ${event.toString()} with args:`, args)
+        console.error(e)
+      }
+    }
+    return super.on(event, wrappedListener)
+  }
+
   send (event: string, payload?: any) {
     if (Array.isArray(payload)) {
       const lastIndex = payload.length - 1

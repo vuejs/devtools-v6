@@ -197,6 +197,8 @@ export default defineComponent({
         @mouseleave="queueClose()"
         @wheel="onMouseWheel"
       >
+        <slot name="before" />
+
         <VueDropdownButton
           v-for="(item, index) of items"
           :key="index"

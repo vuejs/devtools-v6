@@ -118,7 +118,7 @@ export default defineComponent({
 
     const { cursorTime } = useCursor()
 
-    const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value, 'ms') : null)
+    const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value / 1000, 'ms') : null)
 
     // Screenshots
 
@@ -353,6 +353,8 @@ export default defineComponent({
           :default-split="50"
           :max="85"
           dragger-offset="after"
+          collapsable-left
+          collapsable-right
         >
           <template #left>
             <div class="h-full flex flex-col select-none">

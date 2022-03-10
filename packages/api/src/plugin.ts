@@ -20,6 +20,7 @@ export interface PluginDescriptor {
 
 export type PluginSettingsItem = {
   label: string
+  description?: string
 } & ({
   type: 'boolean'
   defaultValue: boolean
@@ -32,3 +33,19 @@ export type PluginSettingsItem = {
   type: 'text'
   defaultValue: string
 })
+
+type InferSettingsType<
+  T extends PluginSettingsItem
+> = [T] extends [{ type: 'boolean' }]
+  ? boolean
+  : [T] extends [{ type: 'choice' }]
+  ? T['options'][number]['value']
+  : [T] extends [{ type: 'text' }]
+  ? string
+  : unknown
+
+export type ExtractSettingsTypes<
+  O extends Record<string, PluginSettingsItem>
+> = {
+  [K in keyof O]: InferSettingsType<O[K]>
+}

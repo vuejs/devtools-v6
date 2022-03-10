@@ -88,6 +88,12 @@ export default new Vuex.Store({
               answer: 42,
             }
           },
+          getters: {
+            doubleAnswer: state => state.answer * 2,
+            errorGetter: () => {
+              throw new Error('Error from getter')
+            },
+          },
         },
       },
     },
@@ -99,6 +105,16 @@ export default new Vuex.Store({
       },
       getters: {
         hello2: state => state.hello.repeat(2),
+      },
+    },
+    'use/in/name': {
+      state () {
+        return {
+          meow: 'MEOW',
+        }
+      },
+      getters: {
+        meow2: state => state.meow.repeat(2),
       },
     },
   },

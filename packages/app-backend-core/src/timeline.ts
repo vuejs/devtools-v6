@@ -1,4 +1,4 @@
-import { BackendContext, AppRecord } from '@vue-devtools/app-backend-api'
+import { BackendContext, AppRecord, now } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, HookEvents, stringify, SharedData } from '@vue-devtools/shared-utils'
 import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
 import { hook } from './global-hook'
@@ -27,7 +27,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
       await addTimelineEvent({
         layerId: 'mouse',
         event: {
-          time: Date.now(),
+          time: now(),
           data: {
             type: eventType,
             x: event.clientX,
@@ -48,7 +48,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
       await addTimelineEvent({
         layerId: 'keyboard',
         event: {
-          time: Date.now(),
+          time: now(),
           data: {
             type: eventType,
             key: event.key,
@@ -77,7 +77,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
       await addTimelineEvent({
         layerId: 'component-event',
         event: {
-          time: Date.now(),
+          time: now(),
           data: {
             component: {
               _custom: {
@@ -159,7 +159,7 @@ export async function addTimelineEvent (options: TimelineEventOptions, app: App,
 function mapTimelineEvent (eventData: TimelineEventOptions & WithId) {
   return {
     id: eventData.id,
-    time: eventData.event.time,
+    time: Math.round(eventData.event.time * 1000),
     logType: eventData.event.logType,
     groupId: eventData.event.groupId,
     title: eventData.event.title,

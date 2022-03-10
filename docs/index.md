@@ -13,4 +13,8 @@ footer: MIT Licensed | Copyright © 2014-present Evan You, Guillaume Chau
 
 [💚️ Become a Sponsor](https://github.com/sponsors/Akryum)
 
-[![sponsors logos](https://guillaume-chau.info/sponsors.png)](https://guillaume-chau.info/sponsors)
+<p align="center">
+  <a href="https://guillaume-chau.info/sponsors/" target="_blank">
+    <img src='https://akryum.netlify.app/sponsors.svg'/>
+  </a>
+</p>

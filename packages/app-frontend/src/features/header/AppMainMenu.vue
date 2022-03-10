@@ -8,6 +8,11 @@ export default defineComponent({
       type: Object,
       default: null,
     },
+
+    labelShown: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   setup (props) {
@@ -41,15 +46,29 @@ export default defineComponent({
       v-tooltip="'Inspector'"
       :to="targetInspectorRoute"
       value="inspector"
-      class="icon-button flat"
+      class="flat"
+      :class="{
+        'icon-button': !labelShown,
+      }"
       icon-left="explore"
-    />
+    >
+      <template v-if="labelShown">
+        Inspector
+      </template>
+    </VueGroupButton>
     <VueGroupButton
       v-tooltip="'Timeline'"
       :to="{ name: 'timeline' }"
       value="timeline"
-      class="icon-button flat"
+      class="flat"
+      :class="{
+        'icon-button': !labelShown,
+      }"
       icon-left="line_style"
-    />
+    >
+      <template v-if="labelShown">
+        Timeline
+      </template>
+    </VueGroupButton>
   </VueGroup>
 </template>

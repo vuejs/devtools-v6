@@ -9,6 +9,7 @@
  * @param {Window|global} target
  */
 export function installHook (target, isIframe = false) {
+  const devtoolsVersion = '6.0'
   let listeners = {}
 
   function injectIframeHook (iframe) {
@@ -49,7 +50,12 @@ export function installHook (target, isIframe = false) {
     }
   }, 1000)
 
-  if (Object.prototype.hasOwnProperty.call(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__')) return
+  if (Object.prototype.hasOwnProperty.call(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__')) {
+    if (target.__VUE_DEVTOOLS_GLOBAL_HOOK__.devtoolsVersion !== devtoolsVersion) {
+      console.error(`Another version of Vue Devtools seems to be installed. Please enable only one version at a time.`)
+    }
+    return
+  }
 
   let hook
 
@@ -68,6 +74,7 @@ export function installHook (target, isIframe = false) {
     }
 
     hook = {
+      devtoolsVersion,
       // eslint-disable-next-line accessor-pairs
       set Vue (value) {
         sendToParent(hook => { hook.Vue = value })
@@ -96,6 +103,7 @@ export function installHook (target, isIframe = false) {
     }
   } else {
     hook = {
+      devtoolsVersion,
       Vue: null,
       enabled: undefined,
       _buffer: [],
@@ -131,7 +139,7 @@ export function installHook (target, isIframe = false) {
       once (event, fn) {
         const on = (...args) => {
           this.off(event, on)
-          fn.apply(this, args)
+          return fn.apply(this, args)
         }
         this.on(event, on)
       },
@@ -164,7 +172,18 @@ export function installHook (target, isIframe = false) {
         if (cbs) {
           cbs = cbs.slice()
           for (let i = 0, l = cbs.length; i < l; i++) {
-            cbs[i].apply(this, args)
+            try {
+              const result = cbs[i].apply(this, args)
+              if (typeof result?.catch === 'function') {
+                result.catch(e => {
+                  console.error(`[Hook] Error in async event handler for ${event} with args:`, args)
+                  console.error(e)
+                })
+              }
+            } catch (e) {
+              console.error(`[Hook] Error in event handler for ${event} with args:`, args)
+              console.error(e)
+            }
           }
         } else {
           this._buffer.push([event, ...args])

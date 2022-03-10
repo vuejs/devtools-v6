@@ -1,7 +1,7 @@
 <script lang="ts">
-import { ref, computed, watch, defineComponent, PropType } from '@vue/composition-api'
-import { getStorage, setStorage } from '@vue-devtools/shared-utils'
+import { ref, computed, defineComponent, PropType, watch } from '@vue/composition-api'
 import { useOrientation } from './orientation'
+import { useSavedRef } from '@front/util/reactivity'
 
 export default defineComponent({
   props: {
@@ -30,25 +30,46 @@ export default defineComponent({
       type: String,
       default: null,
     },
+
+    collapsableLeft: {
+      type: Boolean,
+      default: false,
+    },
+
+    collapsableRight: {
+      type: Boolean,
+      default: false,
+    },
   },
 
-  setup (props) {
+  setup (props, { emit }) {
     const { orientation } = useOrientation()
 
     const split = ref(props.defaultSplit)
+    const leftCollapsed = ref(false)
+    const rightCollapsed = ref(false)
 
     if (props.saveId) {
-      const storageKey = `split-pane-${props.saveId}`
-
-      const savedValue = getStorage(storageKey)
-      if (savedValue != null && typeof savedValue === 'number') {
-        split.value = savedValue
+      useSavedRef(split, `split-pane-${props.saveId}`)
+      if (props.collapsableLeft) {
+        useSavedRef(leftCollapsed, `split-pane-collapsed-left-${props.saveId}`)
       }
-
-      watch(split, value => {
-        setStorage(storageKey, value)
-      })
+      if (props.collapsableRight) {
+        useSavedRef(rightCollapsed, `split-pane-collapsed-right-${props.saveId}`)
+      }
     }
+
+    watch(leftCollapsed, value => {
+      emit('left-collapsed', value)
+    }, {
+      immediate: true,
+    })
+
+    watch(rightCollapsed, value => {
+      emit('right-collapsed', value)
+    }, {
+      immediate: true,
+    })
 
     const boundSplit = computed(() => {
       if (split.value < props.min) {
@@ -61,11 +82,11 @@ export default defineComponent({
     })
 
     const leftStyle = computed(() => ({
-      [orientation.value === 'landscape' ? 'width' : 'height']: `${boundSplit.value}%`,
+      [orientation.value === 'landscape' ? 'width' : 'height']: `${leftCollapsed.value ? 0 : rightCollapsed.value ? 100 : boundSplit.value}%`,
     }))
 
     const rightStyle = computed(() => ({
-      [orientation.value === 'landscape' ? 'width' : 'height']: `${100 - boundSplit.value}%`,
+      [orientation.value === 'landscape' ? 'width' : 'height']: `${rightCollapsed.value ? 0 : leftCollapsed.value ? 100 : 100 - boundSplit.value}%`,
     }))
 
     const dragging = ref(false)
@@ -99,6 +120,24 @@ export default defineComponent({
       dragging.value = false
     }
 
+    // Collapsing
+
+    function collapseLeft () {
+      if (rightCollapsed.value) {
+        rightCollapsed.value = false
+      } else {
+        leftCollapsed.value = true
+      }
+    }
+
+    function collapseRight () {
+      if (leftCollapsed.value) {
+        leftCollapsed.value = false
+      } else {
+        rightCollapsed.value = true
+      }
+    }
+
     return {
       el,
       dragging,
@@ -108,6 +147,10 @@ export default defineComponent({
       dragEnd,
       leftStyle,
       rightStyle,
+      leftCollapsed,
+      rightCollapsed,
+      collapseLeft,
+      collapseRight,
     }
   },
 })
@@ -131,13 +174,17 @@ export default defineComponent({
       class="relative top-0 left-0"
       :class="{
         'pointer-events-none': dragging,
-        'border-r border-gray-200 dark:border-gray-800': orientation === 'landscape'
+        'border-r border-gray-200 dark:border-gray-800': orientation === 'landscape' && !leftCollapsed && !rightCollapsed,
       }"
       :style="leftStyle"
     >
-      <slot name="left" />
+      <slot
+        v-if="!leftCollapsed"
+        name="left"
+      />
 
       <div
+        v-if="!leftCollapsed && !rightCollapsed"
         class="dragger absolute z-100 hover:bg-green-500 hover:bg-opacity-25 transition-colors duration-150 delay-150"
         :class="{
           'top-0 bottom-0 cursor-ew-resize': orientation === 'landscape',
@@ -146,6 +193,21 @@ export default defineComponent({
         }"
         @mousedown.prevent="dragStart"
       />
+
+      <div
+        v-if="(collapsableLeft && !leftCollapsed) || rightCollapsed"
+        class="collapse-btn absolute z-[101] flex items-center pointer-events-none"
+        :class="{
+          'top-0 bottom-0 right-0': orientation === 'landscape',
+          'left-0 right-0 bottom-0 flex-col': orientation === 'portrait',
+        }"
+      >
+        <VueButton
+          :icon-left="orientation === 'landscape' ? 'arrow_left': 'arrow_drop_up'"
+          class="block icon-button flat pointer-events-auto opacity-40 hover:opacity-100"
+          @click="collapseLeft()"
+        />
+      </div>
     </div>
     <div
       class="relative bottom-0 right-0"
@@ -155,7 +217,25 @@ export default defineComponent({
       }"
       :style="rightStyle"
     >
-      <slot name="right" />
+      <div
+        v-if="(collapsableRight && !rightCollapsed) || leftCollapsed"
+        class="collapse-btn absolute z-[101] flex items-center pointer-events-none"
+        :class="{
+          'top-0 bottom-0 left-0': orientation === 'landscape',
+          'left-0 right-0 top-0 flex-col': orientation === 'portrait',
+        }"
+      >
+        <VueButton
+          :icon-left="orientation === 'landscape' ? 'arrow_right': 'arrow_drop_down'"
+          class="block icon-button flat pointer-events-auto opacity-40 hover:opacity-100"
+          @click="collapseRight()"
+        />
+      </div>
+
+      <slot
+        v-if="!rightCollapsed"
+        name="right"
+      />
     </div>
   </div>
 </template>
@@ -197,6 +277,16 @@ export default defineComponent({
 
     .portrait & {
       bottom: -10px;
+    }
+  }
+}
+
+.collapse-btn {
+  .icon-button {
+    @apply w-2.5 h-6 rounded-sm !important;
+
+    .portrait & {
+      @apply w-6 h-2.5 !important;
     }
   }
 }

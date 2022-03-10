@@ -1,6 +1,7 @@
 import { onMounted, onUnmounted } from '@vue/composition-api'
 
 type KeyboardHandler = (event: KeyboardEvent) => boolean | void | Promise<boolean | void>
+
 function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler) {
   function handler (event: KeyboardEvent) {
     if (event.target instanceof HTMLElement && (
@@ -11,7 +12,7 @@ function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler) {
     }
 
     const result = cb(event)
-    if (!result) {
+    if (result === false) {
       event.preventDefault()
     }
   }

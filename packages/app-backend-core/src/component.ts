@@ -125,3 +125,8 @@ export function getComponentInstance (appRecord: AppRecord, instanceId: string, 
   }
   return instance
 }
+
+export async function refreshComponentTreeSearch (ctx: BackendContext) {
+  if (!ctx.currentAppRecord.componentFilter) return
+  await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
+}

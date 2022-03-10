@@ -1,10 +1,10 @@
 <script lang="ts">
-import AppHeaderSelect from './AppHeaderSelect.vue'
+import AppHeaderSelect from '../header/AppHeaderSelect.vue'
 import AppSelectItem from './AppSelectItem.vue'
 
 import { watch, defineComponent, computed } from '@vue/composition-api'
 import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
-import { useApps, pendingSelectAppId } from '@front/features/apps'
+import { useApps, pendingSelectAppId, scanLegacyApps } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
 import { useRouter } from '@front/util/router'
 import { useBridge } from '../bridge'
@@ -72,6 +72,7 @@ export default defineComponent({
       selectApp,
       orientation,
       hasNewVueVersion,
+      scanLegacyApps,
     }
   },
 })
@@ -118,6 +119,17 @@ export default defineComponent({
       <AppSelectItem
         :app="item"
       />
+    </template>
+
+    <template #before>
+      <VueButton
+        v-if="$shared.legacyApps"
+        class="flat m-1"
+        icon-left="cached"
+        @click="scanLegacyApps()"
+      >
+        Scan apps
+      </VueButton>
     </template>
   </AppHeaderSelect>
 </template>

@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "6.0.2",
+  "version": "6.0.13",
   "description": "devtools for Vue.js!",
   "private": true,
   "workspaces": [
@@ -11,6 +11,7 @@
     "dev:vue3": "concurrently \"cd packages/shell-dev-vue3 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:chrome": "cd packages/shell-chrome && webpack --watch",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch",
+    "dev:electron": "cd packages/shell-electron && npm run dev",
     "build": "lerna run build",
     "build:watch": "lerna run build --scope @vue-devtools/app-backend* --scope @vue-devtools/shared-* --scope @vue/devtools-api && lerna run build:watch --stream --no-sort --concurrency 99",
     "lint": "eslint --ext .js,.ts,.vue .",
@@ -20,7 +21,7 @@
     "release": "npm run test && node release.js && npm run build && npm run zip && npm run pub",
     "release:beta": "cross-env RELEASE_CHANNEL=beta npm run release && npm run sign:firefox",
     "pub": "npm run pub:electron && npm run pub:api",
-    "pub:electron": "cd packages/shell-electron && npm publish --tag beta",
+    "pub:electron": "cd packages/shell-electron && npm publish",
     "pub:api": "cd packages/api && npm publish",
     "test": "npm run lint && npm run test:types:front",
     "test:types:front": "tsc --noEmit",

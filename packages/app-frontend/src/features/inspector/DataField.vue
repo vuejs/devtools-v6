@@ -96,14 +96,15 @@ export default defineComponent({
 
     formattedValue (): string {
       const value = this.field.value
-      if (this.field.objectType === 'Reactive') {
+      const objectType = value?._custom?.objectType || this.field.objectType
+      if (objectType === 'Reactive') {
         return 'Reactive'
       } else if (this.fieldOptions.abstract) {
         return ''
       } else {
         let result = `<span class="value-formatted-ouput">${formattedValue(value)}</span>`
-        if (this.field.objectType) {
-          result += ` <span class="text-gray-500">(${this.field.objectType})</span>`
+        if (objectType) {
+          result += ` <span class="text-gray-500">(${objectType})</span>`
         }
         return result
       }
