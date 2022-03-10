@@ -85,7 +85,7 @@ export default defineComponent({
         icon-left="search"
         placeholder="Find apps..."
         select-all
-        class="search flat flex-1"
+        class="search flat flex-1 min-w-0"
       />
 
       <VueButton

@@ -1,6 +1,6 @@
 {
   "name": "@vue/devtools-api",
-  "version": "6.0.12",
+  "version": "6.0.13",
   "description": "Interact with the Vue devtools from the page",
   "main": "lib/cjs/index.js",
   "browser": "lib/esm/index.js",

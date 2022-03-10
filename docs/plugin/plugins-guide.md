@@ -1012,7 +1012,7 @@ window.addEventListener('click', event => {
   api.addTimelineEvent({
     layerId: timelineLayerId,
     event: {
-      time: Date.now(),
+      time: api.now(),
       data: {
         mouseX: event.clientX,
         mouseY: event.clientY
@@ -1046,7 +1046,7 @@ const groupId = 'group-1'
 devtoolsApi.addTimelineEvent({
   layerId: timelineLayerId,
   event: {
-    time: Date.now(),
+    time: api.now(),
     data: {
       label: 'group test'
     },
@@ -1058,7 +1058,7 @@ devtoolsApi.addTimelineEvent({
 devtoolsApi.addTimelineEvent({
   layerId: timelineLayerId,
   event: {
-    time: Date.now() + 10,
+    time: api.now() + 10,
     data: {
       label: 'group test (event 2)',
     },
@@ -1070,7 +1070,7 @@ devtoolsApi.addTimelineEvent({
 devtoolsApi.addTimelineEvent({
   layerId: timelineLayerId,
   event: {
-    time: Date.now() + 20,
+    time: api.now() + 20,
     data: {
       label: 'group test (event 3)',
     },
@@ -1182,7 +1182,7 @@ export function setupDevtools (app, data) {
       devtoolsApi.addTimelineEvent({
         layerId: timelineLayerId,
         event: {
-          time: Date.now(),
+          time: api.now(),
           data: {
             label
           },
@@ -1196,7 +1196,7 @@ export function setupDevtools (app, data) {
         devtoolsApi.addTimelineEvent({
           layerId: timelineLayerId,
           event: {
-            time: Date.now(),
+            time: api.now(),
             data: {
               label,
               done: true

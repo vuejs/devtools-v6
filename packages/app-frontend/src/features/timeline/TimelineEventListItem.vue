@@ -17,7 +17,7 @@ export default defineComponent({
   },
 
   setup (props) {
-    const time = computed(() => formatTime(props.event.time))
+    const time = computed(() => formatTime(props.event.time / 1000))
 
     const {
       inspectedEvent,

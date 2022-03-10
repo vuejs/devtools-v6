@@ -76,7 +76,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         api.addTimelineEvent({
           layerId: ROUTER_CHANGES_LAYER_ID,
           event: {
-            time: Date.now(),
+            time: api.now(),
             title: to.path,
             data: {
               from,
@@ -169,7 +169,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         api.addTimelineEvent({
           layerId: VUEX_MUTATIONS_ID,
           event: {
-            time: Date.now(),
+            time: api.now(),
             title: mutation.type,
             data,
           },
@@ -187,7 +187,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         api.addTimelineEvent({
           layerId: VUEX_ACTIONS_ID,
           event: {
-            time: Date.now(),
+            time: api.now(),
             title: action.type,
             data,
           },
@@ -203,7 +203,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
                 data.payload = action.payload
               }
               action._id = actionId++
-              action._time = Date.now()
+              action._time = api.now()
               data.state = state
 
               api.addTimelineEvent({
@@ -219,7 +219,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
             },
             after: (action, state) => {
               const data: any = {}
-              const duration = Date.now() - action._time
+              const duration = api.now() - action._time
               data.duration = {
                 _custom: {
                   type: 'duration',
@@ -236,7 +236,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
               api.addTimelineEvent({
                 layerId: VUEX_ACTIONS_ID,
                 event: {
-                  time: Date.now(),
+                  time: api.now(),
                   title: action.type,
                   groupId: action._id,
                   subtitle: 'end',

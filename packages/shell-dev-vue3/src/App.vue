@@ -60,6 +60,7 @@ export default {
     return {
       count: 0,
       text: 'Meow',
+      time: 0,
     }
   },
 
@@ -68,6 +69,17 @@ export default {
       const app = createApp(Child)
       app.use(SimplePlugin)
       app.mount('#nested-app')
+    },
+
+    startTimer () {
+      this.stopTimer()
+      this.timer = setInterval(() => {
+        this.time++
+      }, 1)
+    },
+
+    stopTimer () {
+      clearInterval(this.timer)
     },
   },
 }
@@ -82,6 +94,16 @@ export default {
     </button>
     <input v-model="text">
     <span>{{ text }}</span>
+  </div>
+
+  <div>
+    <button @click="startTimer">
+      Start timer
+    </button>
+    <button @click="stopTimer">
+      Stop timer
+    </button>
+    <span>{{ time }}</span>
   </div>
 
   <div>

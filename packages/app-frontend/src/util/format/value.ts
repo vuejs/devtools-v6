@@ -11,7 +11,7 @@ import {
 const rawTypeRE = /^\[object (\w+)]$/
 const specialTypeRE = /^\[native (\w+) (.*?)(<>((.|\s)*))?\]$/
 
-export function valueType (value) {
+export function valueType (value, raw = true) {
   const type = typeof value
   if (value == null || value === UNDEFINED) {
     return 'null'
@@ -23,8 +23,12 @@ export function valueType (value) {
     value === NAN
   ) {
     return 'literal'
-  } else if (value && value._custom) {
-    return 'custom'
+  } else if (value?._custom) {
+    if ((raw || value._custom.display != null)) {
+      return 'custom'
+    } else {
+      return valueType(value._custom.value)
+    }
   } else if (type === 'string') {
     const typeMatch = specialTypeRE.exec(value)
     if (typeMatch) {
@@ -33,7 +37,7 @@ export function valueType (value) {
     } else {
       return 'string'
     }
-  } else if (Array.isArray(value) || (value && value._isArray)) {
+  } else if (Array.isArray(value) || (value?._isArray)) {
     return 'array'
   } else if (isPlainObject(value)) {
     return 'plain-object'
@@ -44,7 +48,10 @@ export function valueType (value) {
 
 export function formattedValue (value, quotes = true) {
   let result
-  const type = valueType(value)
+  const type = valueType(value, false)
+  if (type !== 'custom' && value?._custom) {
+    value = value._custom.value
+  }
   if ((result = specialTokenToString(value))) {
     return result
   } else if (type === 'custom') {

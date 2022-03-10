@@ -2,6 +2,7 @@ import { AppRecord, BackendContext, DevtoolsApi } from '@vue-devtools/app-backen
 import { classify, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode, ComponentInstance } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
+import { applyPerfHooks } from './perf.js'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
 export let instanceMap: Map<any, any>
@@ -324,6 +325,7 @@ function mark (instance) {
     instance.$on('hook:beforeDestroy', function () {
       instanceMap.delete(refId)
     })
+    applyPerfHooks(api, instance, appRecord.options.app)
   }
 }
 

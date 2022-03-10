@@ -100,7 +100,7 @@ export default defineComponent({
 
     function onScroll () {
       const scrollerEl = scroller.value.$el
-      isAtScrollBottom.value = scrollerEl.scrollTop + scrollerEl.clientHeight >= scrollerEl.scrollHeight - 100
+      isAtScrollBottom.value = scrollerEl.scrollTop + scrollerEl.clientHeight >= scrollerEl.scrollHeight - 400
     }
 
     watch(scroller, value => {
@@ -151,8 +151,10 @@ export default defineComponent({
     function scrollToBottom () {
       if (!scroller.value) return
 
-      const scrollerEl = scroller.value.$el
-      scrollerEl.scrollTop = scrollerEl.scrollHeight
+      requestAnimationFrame(() => {
+        const scrollerEl = scroller.value.$el
+        scrollerEl.scrollTop = scrollerEl.scrollHeight
+      })
     }
 
     // Important: Watch this after the scroll to inspect event watchers
@@ -195,10 +197,11 @@ export default defineComponent({
       filter,
       filteredEvents,
       itemHeight,
-      inspectedEvent,
+      isAtScrollBottom,
       inspectEvent,
       selectEvent,
       onScroll,
+      scrollToBottom,
     }
   },
 })
@@ -207,7 +210,7 @@ export default defineComponent({
 <template>
   <div
     v-if="selectedEvent && selectedLayer"
-    class="h-full flex flex-col"
+    class="h-full flex flex-col relative"
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
       <VueGroup
@@ -241,7 +244,7 @@ export default defineComponent({
       :items="filteredEvents"
       :item-size="itemHeight"
       class="flex-1"
-      @scroll.native="onScroll()"
+      @scroll.native.passive="onScroll()"
     >
       <template #default="{ item: event }">
         <TimelineEventListItem
@@ -252,6 +255,14 @@ export default defineComponent({
         />
       </template>
     </RecycleScroller>
+
+    <VueButton
+      v-if="!isAtScrollBottom"
+      v-tooltip="'Scroll to bottom'"
+      icon-left="keyboard_arrow_down"
+      class="icon-button absolute bottom-1 right-4 rounded-full shadow-md"
+      @click="scrollToBottom()"
+    />
   </div>
 
   <EmptyPane

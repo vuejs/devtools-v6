@@ -58,6 +58,7 @@ export interface ComponentCustomState extends ComponentStateBase {
 export type CustomState = {
   _custom: {
     type: ComponentBuiltinCustomStateTypes | string
+    objectType?: string
     display?: string
     tooltip?: string
     value?: any

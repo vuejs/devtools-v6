@@ -3,6 +3,7 @@ import { backendInjections, getComponentName } from '@vue-devtools/shared-utils'
 import { ComponentInstance } from '@vue/devtools-api'
 import { editState, getCustomInstanceDetails, getInstanceDetails } from './components/data'
 import { getInstanceOrVnodeRect, findRelatedComponent, getRootElementsFromComponentInstance } from './components/el'
+import { initPerf } from './components/perf.js'
 import { getComponentParents, instanceMap, walkTree } from './components/tree'
 import { getInstanceName } from './components/util'
 import { wrapVueForEvents } from './events'
@@ -91,12 +92,16 @@ export const backend = defineBackend({
 
     // Plugin
     setupPlugin(api, app, Vue)
+
+    // Perf
+    initPerf(api, app, Vue)
   },
 })
 
 // @TODO refactor
 function injectToUtils () {
   backendInjections.getCustomInstanceDetails = getCustomInstanceDetails
+  backendInjections.getCustomObjectDetails = () => undefined
   backendInjections.instanceMap = instanceMap
   backendInjections.isVueInstance = val => val._isVue
 }

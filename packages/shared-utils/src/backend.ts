@@ -2,6 +2,7 @@ export const backendInjections = {
   instanceMap: new Map(),
   isVueInstance: (() => false) as ((value: any) => boolean),
   getCustomInstanceDetails: (() => ({})) as ((instance: any) => any),
+  getCustomObjectDetails: (() => undefined) as (value: any, proto: string) => any,
 }
 
 export function getInstanceMap () {
@@ -10,6 +11,10 @@ export function getInstanceMap () {
 
 export function getCustomInstanceDetails (instance) {
   return backendInjections.getCustomInstanceDetails(instance)
+}
+
+export function getCustomObjectDetails (value, proto: string) {
+  return backendInjections.getCustomObjectDetails(value, proto)
 }
 
 export function isVueInstance (value) {

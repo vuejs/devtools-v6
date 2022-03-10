@@ -1,6 +1,6 @@
 {
   "name": "vue-devtools",
-  "version": "6.0.12",
+  "version": "6.0.13",
   "description": "devtools for Vue.js!",
   "private": true,
   "workspaces": [
@@ -11,6 +11,7 @@
     "dev:vue3": "concurrently \"cd packages/shell-dev-vue3 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:chrome": "cd packages/shell-chrome && webpack --watch",
     "dev:chrome:prod": "cd packages/shell-chrome && cross-env NODE_ENV=production webpack --watch",
+    "dev:electron": "cd packages/shell-electron && npm run dev",
     "build": "lerna run build",
     "build:watch": "lerna run build --scope @vue-devtools/app-backend* --scope @vue-devtools/shared-* --scope @vue/devtools-api && lerna run build:watch --stream --no-sort --concurrency 99",
     "lint": "eslint --ext .js,.ts,.vue .",

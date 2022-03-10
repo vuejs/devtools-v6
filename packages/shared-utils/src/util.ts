@@ -7,6 +7,7 @@ import {
   getCustomRouterDetails,
   getCustomStoreDetails,
   isVueInstance,
+  getCustomObjectDetails,
 } from './backend'
 import { SharedData } from './shared-data'
 import { isChrome, target } from './env'
@@ -235,6 +236,8 @@ function replacer (key) {
     } else if (val instanceof HTMLElement) {
       return encodeCache.cache(val, () => getCustomHTMLElementDetails(val))
     }
+    const customDetails = getCustomObjectDetails(val, proto)
+    if (customDetails != null) return customDetails
   } else if (Number.isNaN(val)) {
     return NAN
   }

@@ -1,7 +1,7 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
 import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
-import { ComponentInstance, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
+import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 
 /**
@@ -124,7 +124,7 @@ function processSetupState (instance) {
   const raw = instance.devtoolsRawSetupState || {}
   return Object.keys(instance.setupState)
     .map(key => {
-      const value = returnError(() => instance.setupState[key])
+      const value = returnError(() => toRaw(instance.setupState[key]))
 
       const rawData = raw[key]
 
@@ -174,12 +174,39 @@ function isReadOnly (raw: any): boolean {
   return !!raw.__v_isReadonly
 }
 
+function toRaw (value: any) {
+  if (value?.__v_raw) {
+    return value.__v_raw
+  }
+  return value
+}
+
 function getSetupStateInfo (raw: any) {
   return {
     ref: isRef(raw),
     computed: isComputed(raw),
     reactive: isReactive(raw),
     readonly: isReadOnly(raw),
+  }
+}
+
+export function getCustomObjectDetails (object: any, proto: string): CustomState | undefined {
+  const info = getSetupStateInfo(object)
+
+  const isState = info.ref || info.computed || info.reactive
+  if (isState) {
+    const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
+    const value = toRaw(info.reactive ? object : object._value)
+    const raw = object.effect?.raw?.toString() || object.effect?.fn?.toString()
+    return {
+      _custom: {
+        type: objectType.toLowerCase(),
+        objectType,
+        readOnly: true,
+        value,
+        ...raw ? { tooltip: `<span class="font-mono">${raw}</span>` } : {},
+      },
+    }
   }
 }
 

@@ -118,7 +118,7 @@ export default defineComponent({
 
     const { cursorTime } = useCursor()
 
-    const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value, 'ms') : null)
+    const formattedCursorTime = computed(() => cursorTime.value ? formatTime(cursorTime.value / 1000, 'ms') : null)
 
     // Screenshots
 
