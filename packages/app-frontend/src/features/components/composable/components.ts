@@ -181,8 +181,7 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   onMounted(() => {
     if (instance.value.autoOpen) {
       toggleExpand(true, true)
-    }
-    if (isExpanded.value) {
+    } else if (isExpanded.value) {
       requestComponentTree(instance.value.id)
     }
   })
