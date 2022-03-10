@@ -87,12 +87,13 @@ export class DevtoolsApi {
     })
   }
 
-  async walkComponentTree (instance: ComponentInstance, maxDepth = -1, filter: string = null) {
+  async walkComponentTree (instance: ComponentInstance, maxDepth = -1, filter: string = null, recursively = false) {
     const payload = await this.callHook(Hooks.WALK_COMPONENT_TREE, {
       componentInstance: instance,
       componentTreeData: null,
       maxDepth,
       filter,
+      recursively,
     })
     return payload.componentTreeData
   }

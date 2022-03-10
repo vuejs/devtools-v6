@@ -359,9 +359,9 @@ function connectBridge () {
 
   // Components
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter }) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, ({ instanceId, filter, recursively }) => {
     ctx.currentAppRecord.componentFilter = filter
-    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx)
+    sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx, recursively)
     subscribe(BridgeSubscriptions.COMPONENT_TREE, { instanceId })
   })
 

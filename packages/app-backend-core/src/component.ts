@@ -6,7 +6,7 @@ import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
 const MAX_$VM = 10
 const $vmQueue = []
 
-export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, ctx: BackendContext) {
+export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, ctx: BackendContext, recursively = false) {
   if (!instanceId || appRecord !== ctx.currentAppRecord) return
 
   // Flush will send all components in the tree
@@ -30,7 +30,7 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
     if (maxDepth == null) {
       maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
     }
-    const data = await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter)
+    const data = await appRecord.backend.api.walkComponentTree(instance, maxDepth, filter, recursively)
     const payload = {
       instanceId,
       treeData: stringify(data),

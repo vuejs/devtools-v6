@@ -142,7 +142,10 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
     const isOpen = value === undefined ? !isExpanded.value : value
     setComponentOpen(treeNode.id, isOpen)
     if (isComponentOpen(treeNode.id)) {
-      requestComponentTree(treeNode.id)
+      requestComponentTree(treeNode.id, recursively)
+    } else {
+      // stop expanding all treenode
+      treeNode.autoOpen = false
     }
     if (recursively) {
       treeNode.children.forEach(child => {
@@ -176,6 +179,9 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   }
 
   onMounted(() => {
+    if (instance.value.autoOpen) {
+      toggleExpand(true, true)
+    }
     if (isExpanded.value) {
       requestComponentTree(instance.value.id)
     }
@@ -270,7 +276,7 @@ export function resetComponents () {
 
 export const requestedComponentTree = new Set()
 
-export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
+export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null, recursively = false) {
   if (!instanceId) {
     instanceId = '_root'
   }
@@ -285,6 +291,7 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
     filter: treeFilter.value,
+    recursively,
   })
 }
 

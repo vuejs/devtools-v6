@@ -56,6 +56,7 @@ export type HookPayloads = {
     componentTreeData: ComponentTreeNode[]
     maxDepth: number
     filter: string
+    recursively: boolean
   }
   [Hooks.VISIT_COMPONENT_TREE]: {
     app: App

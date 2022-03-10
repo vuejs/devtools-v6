@@ -17,6 +17,7 @@ export interface ComponentTreeNode {
   isRouterView?: boolean
   macthedRouteSegment?: string
   tags: InspectorNodeTag[]
+  autoOpen: boolean
   meta?: any
 }
 
