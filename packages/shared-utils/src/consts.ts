@@ -120,4 +120,12 @@ export enum HookEvents {
    * @deprecated
    */
   FLUSH = 'flush',
+  /**
+   * @deprecated
+   */
+  TRACK_UPDATE = '_track-update',
+  /**
+   * @deprecated
+   */
+  FLASH_UPDATE = '_flash-update',
 }

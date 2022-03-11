@@ -1,7 +1,5 @@
 import { DevtoolsApi } from '@vue-devtools/app-backend-api'
-import { SharedData } from '@vue-devtools/shared-utils'
-import { sendComponentUpdateTracking } from '@vue-devtools/app-backend-core/lib/component'
-import { flashComponent } from '@vue-devtools/app-backend-core/lib/flash'
+import { HookEvents, SharedData } from '@vue-devtools/shared-utils'
 import throttle from 'lodash/throttle'
 import { getUniqueId } from './util.js'
 
@@ -25,16 +23,16 @@ export function applyTrackingUpdateHook (api: DevtoolsApi, vm) {
 
   const handler = throttle(async function (this: any) {
     if (SharedData.trackUpdates) {
-      sendComponentUpdateTracking(getUniqueId(this), api.ctx)
+      api.ctx.hook.emit(HookEvents.TRACK_UPDATE, getUniqueId(this), api.ctx)
 
       const parents = await api.walkComponentParents(this)
       for (const parent of parents) {
-        sendComponentUpdateTracking(getUniqueId(parent), api.ctx)
+        api.ctx.hook.emit(HookEvents.TRACK_UPDATE, getUniqueId(parent), api.ctx)
       }
     }
 
     if (SharedData.flashUpdates) {
-      flashComponent(this, api.backend)
+      api.ctx.hook.emit(HookEvents.FLASH_UPDATE, this, api.backend)
     }
   }, 100)
   for (const hook of COMPONENT_HOOKS) {

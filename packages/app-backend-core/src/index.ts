@@ -235,6 +235,14 @@ async function connect () {
     }
   })
 
+  hook.on(HookEvents.TRACK_UPDATE, (id, ctx) => {
+    sendComponentUpdateTracking(id, ctx)
+  })
+
+  hook.on(HookEvents.FLASH_UPDATE, (instance, backend) => {
+    flashComponent(instance, backend)
+  })
+
   // Component perf
 
   hook.on(HookEvents.PERFORMANCE_START, async (app, uid, vm, type, time) => {
