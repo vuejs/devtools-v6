@@ -4,7 +4,6 @@ import {
   Plugin,
   BuiltinBackendFeature,
   AppRecord,
-  now,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -36,7 +35,7 @@ import {
   refreshComponentTreeSearch,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks, now } from '@vue/devtools-api'
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
