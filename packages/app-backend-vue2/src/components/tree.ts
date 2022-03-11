@@ -34,7 +34,7 @@ export function getComponentParents (instance, api: DevtoolsApi, ctx: BackendCon
   const captureIds = new Map()
 
   const captureId = vm => {
-    const id = getUniqueId(vm)
+    const id = vm.__VUE_DEVTOOLS_UID__ = getUniqueId(vm)
     if (captureIds.has(id)) return
     captureIds.set(id, undefined)
     if (vm.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
