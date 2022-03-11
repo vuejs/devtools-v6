@@ -3,6 +3,7 @@ import { classify, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentTreeNode, ComponentInstance } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
 import { applyPerfHooks } from './perf.js'
+import { applyTrackingUpdateHook } from './update-tracking.js'
 import { getInstanceName, getRenderKey, getUniqueId, isBeingDestroyed } from './util'
 
 export let instanceMap: Map<any, any>
@@ -326,6 +327,7 @@ function mark (instance) {
       instanceMap.delete(refId)
     })
     applyPerfHooks(api, instance, appRecord.options.app)
+    applyTrackingUpdateHook(api, instance)
   }
 }
 

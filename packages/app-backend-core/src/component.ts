@@ -131,10 +131,8 @@ export async function refreshComponentTreeSearch (ctx: BackendContext) {
   await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
 }
 
-export async function sendComponentUpdateTracking (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
+export async function sendComponentUpdateTracking (instanceId: string, ctx: BackendContext) {
   if (!instanceId) return
-  const instance = getComponentInstance(appRecord, instanceId, ctx)
-  if (!instance) return
   const payload = {
     instanceId,
     time: Date.now(), // Use normal date

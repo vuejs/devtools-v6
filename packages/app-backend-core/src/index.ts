@@ -134,7 +134,7 @@ async function connect () {
       }
 
       if (SharedData.trackUpdates) {
-        sendComponentUpdateTracking(appRecord, id, ctx)
+        sendComponentUpdateTracking(id, ctx)
       }
     } catch (e) {
       if (SharedData.debugInfo) {
@@ -169,7 +169,7 @@ async function connect () {
             }
 
             if (SharedData.trackUpdates) {
-              sendComponentUpdateTracking(appRecord, parentId, ctx)
+              sendComponentUpdateTracking(parentId, ctx)
             }
           }
         }
@@ -180,7 +180,7 @@ async function connect () {
       }
 
       if (SharedData.trackUpdates) {
-        sendComponentUpdateTracking(appRecord, id, ctx)
+        sendComponentUpdateTracking(id, ctx)
       }
 
       await refreshComponentTreeSearch(ctx)
