@@ -33,6 +33,7 @@ import {
   editComponentState,
   getComponentInstance,
   refreshComponentTreeSearch,
+  sendComponentUpdateTracking,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
 import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks, now } from '@vue/devtools-api'
@@ -131,6 +132,10 @@ async function connect () {
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
         sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
       }
+
+      if (SharedData.trackUpdates) {
+        sendComponentUpdateTracking(appRecord, id, ctx)
+      }
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -155,12 +160,16 @@ async function connect () {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           // Check two parents level to update `hasChildren
-          for (let i = 0; i < 2 && i < parentInstances.length; i++) {
+          for (let i = 0; i < parentInstances.length; i++) {
             const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
-            if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+            if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
               requestAnimationFrame(() => {
                 sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
               })
+            }
+
+            if (SharedData.trackUpdates) {
+              sendComponentUpdateTracking(appRecord, parentId, ctx)
             }
           }
         }
@@ -168,6 +177,10 @@ async function connect () {
 
       if (ctx.currentInspectedComponentId === id) {
         sendSelectedComponentData(appRecord, id, ctx)
+      }
+
+      if (SharedData.trackUpdates) {
+        sendComponentUpdateTracking(appRecord, id, ctx)
       }
 
       await refreshComponentTreeSearch(ctx)

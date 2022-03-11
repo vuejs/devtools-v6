@@ -62,6 +62,17 @@ export default defineComponent({})
       </VueFormField>
 
       <VueFormField
+        title="Update tracking"
+      >
+        <VueSwitch v-model="$shared.trackUpdates">
+          Enable
+        </VueSwitch>
+        <template #subtitle>
+          Turn off if your app is slowed down
+        </template>
+      </VueFormField>
+
+      <VueFormField
         title="Debugging info"
       >
         <VueSwitch v-model="$shared.debugInfo">

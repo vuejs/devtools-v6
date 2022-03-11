@@ -51,6 +51,7 @@ export enum BridgeEvents {
   TO_FRONT_COMPONENT_INSPECT_DOM = 'f:component:inspect-dom',
   TO_BACK_COMPONENT_RENDER_CODE = 'b:component:render-code',
   TO_FRONT_COMPONENT_RENDER_CODE = 'f:component:render-code',
+  TO_FRONT_COMPONENT_UPDATED = 'f:component:updated',
 
   // Timeline
   TO_FRONT_TIMELINE_EVENT = 'f:timeline:event',

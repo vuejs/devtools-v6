@@ -13,6 +13,7 @@ import {
   requestedComponentTree,
   getAppIdFromComponentId,
   lastSelectedComponentId,
+  addUpdateTrackingEvent,
 } from './components'
 
 export function setupComponentsBridgeEvents (bridge: Bridge) {
@@ -69,6 +70,10 @@ export function setupComponentsBridgeEvents (bridge: Bridge) {
 
   bridge.on(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, () => {
     chrome.devtools.inspectedWindow.eval('inspect(window.__VUE_DEVTOOLS_INSPECT_TARGET__)')
+  })
+
+  bridge.on(BridgeEvents.TO_FRONT_COMPONENT_UPDATED, ({ instanceId, time }) => {
+    addUpdateTrackingEvent(instanceId, time)
   })
 
   // Persistance

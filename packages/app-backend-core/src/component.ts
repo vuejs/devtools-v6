@@ -1,7 +1,7 @@
 import { stringify, BridgeEvents, parse, SharedData } from '@vue-devtools/shared-utils'
 import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
-import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
+import { App, ComponentInstance, EditStatePayload, now } from '@vue/devtools-api'
 
 const MAX_$VM = 10
 const $vmQueue = []
@@ -129,4 +129,15 @@ export function getComponentInstance (appRecord: AppRecord, instanceId: string, 
 export async function refreshComponentTreeSearch (ctx: BackendContext) {
   if (!ctx.currentAppRecord.componentFilter) return
   await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
+}
+
+export async function sendComponentUpdateTracking (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
+  if (!instanceId) return
+  const instance = getComponentInstance(appRecord, instanceId, ctx)
+  if (!instance) return
+  const payload = {
+    instanceId,
+    time: Date.now(), // Use normal date
+  }
+  ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_UPDATED, payload)
 }
