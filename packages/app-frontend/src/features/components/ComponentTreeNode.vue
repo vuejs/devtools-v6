@@ -206,7 +206,12 @@ export default defineComponent({
 
       <!-- Component tag -->
       <span class="content">
-        <span class="angle-bracket text-gray-400 dark:text-gray-600">&lt;</span>
+        <span
+          class="angle-bracket"
+          :class="[
+            selected ? 'text-white/60' : 'text-gray-400 dark:text-gray-600',
+          ]"
+        >&lt;</span>
 
         <span class="item-name text-green-500">{{ displayName }}</span>
 
@@ -225,7 +230,12 @@ export default defineComponent({
           > key</span>=<span>{{ instance.renderKey }}</span>
         </span>
 
-        <span class="angle-bracket text-gray-400 dark:text-gray-600">&gt;</span>
+        <span
+          class="angle-bracket"
+          :class="[
+            selected ? 'text-white/60' : 'text-gray-400 dark:text-gray-600',
+          ]"
+        >&gt;</span>
       </span>
 
       <span class="flex items-center space-x-2 ml-2 h-full">
