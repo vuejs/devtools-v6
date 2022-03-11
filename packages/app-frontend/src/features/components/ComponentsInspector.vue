@@ -155,6 +155,19 @@ export default defineComponent({
         </div>
       </div>
 
+      <div class="space-y-1 px-3 py-2 text-sm">
+        <VueSwitch v-model="$shared.flashUpdates">
+          Highlight updates
+        </VueSwitch>
+        <div class="flex items-center space-x-1 text-xs opacity-50">
+          <VueIcon
+            icon="warning"
+            class="w-4 h-4 flex-none"
+          />
+          <span>Don't enable if you are sensible to flashing</span>
+        </div>
+      </div>
+
       <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
     </portal>
 

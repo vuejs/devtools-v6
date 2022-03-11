@@ -43,6 +43,7 @@ import { showScreenshot } from './timeline-screenshot'
 import { performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
 import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
+import { flashComponent } from './flash.js'
 
 let ctx: BackendContext = target.__vdevtools_ctx ?? null
 let connected = target.__vdevtools_connected ?? false
@@ -136,6 +137,10 @@ async function connect () {
       if (SharedData.trackUpdates) {
         sendComponentUpdateTracking(id, ctx)
       }
+
+      if (SharedData.flashUpdates) {
+        flashComponent(component, appRecord.backend)
+      }
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -181,6 +186,10 @@ async function connect () {
 
       if (SharedData.trackUpdates) {
         sendComponentUpdateTracking(id, ctx)
+      }
+
+      if (SharedData.flashUpdates) {
+        flashComponent(component, appRecord.backend)
       }
 
       await refreshComponentTreeSearch(ctx)

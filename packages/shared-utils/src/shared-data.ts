@@ -29,6 +29,7 @@ const internalSharedData = {
   pageConfig: {} as any,
   legacyApps: false,
   trackUpdates: true,
+  flashUpdates: false,
   debugInfo: false,
 }
 
@@ -54,6 +55,7 @@ const persisted = [
   'performanceMonitoringEnabled',
   'componentEventsEnabled',
   'trackUpdates',
+  'flashUpdates',
   'debugInfo',
 ]
 
