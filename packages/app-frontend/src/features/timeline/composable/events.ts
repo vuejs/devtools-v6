@@ -1,5 +1,5 @@
 import { onUnmounted, computed, watch } from '@vue/composition-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { formatTime } from '@front/util/format'
 import {
@@ -148,4 +148,5 @@ function loadEvent (id: TimelineEvent['id']) {
 export function selectEvent (event: TimelineEvent) {
   selectedEvent.value = inspectedEvent.value = event
   selectedLayer.value = event.layer
+  setStorage('selected-layer-id', event.layer.id)
 }
