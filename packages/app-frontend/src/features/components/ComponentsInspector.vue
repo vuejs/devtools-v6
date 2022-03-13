@@ -164,7 +164,7 @@ export default defineComponent({
             icon="warning"
             class="w-4 h-4 flex-none"
           />
-          <span>Don't enable if you are sensible to flashing</span>
+          <span>Don't enable if you are sensitive to flashing</span>
         </div>
       </div>
 
