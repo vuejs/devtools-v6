@@ -10,6 +10,7 @@ import {
   watch,
   watchEffect,
   defineComponent,
+  computed,
 } from '@vue/composition-api'
 import { SharedData, isMac } from '@vue-devtools/shared-utils'
 import {
@@ -371,6 +372,8 @@ export default defineComponent({
     watch(() => layers.value.map(l => l.id).join(','), () => {
       resetLayers()
     })
+
+    const totalLayersHeight = computed(() => layers.value.reduce((sum, layer) => sum + layer.height, 0))
 
     // Layer hover
 
@@ -1313,7 +1316,7 @@ export default defineComponent({
         endTime.value = start + size
 
         // Vertical
-        layersScroller.scrollTop = startDragScrollTop + deltaY
+        layersScroller.scrollTop = Math.min(totalLayersHeight.value, startDragScrollTop + deltaY)
       }
     }
 
