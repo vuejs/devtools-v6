@@ -88,7 +88,7 @@ export default defineComponent({
       save-id="components-inspector"
     >
       <template #left>
-        <div class="flex flex-col h-full overflow-hidden">
+        <div class="flex flex-col h-full">
           <VueInput
             ref="treeFilterInput"
             v-model="treeFilter"
