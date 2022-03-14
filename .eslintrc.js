@@ -101,5 +101,19 @@ module.exports = {
         'no-console': 'off',
       },
     },
+    {
+      files: [
+        'packages/app-backend-core/src/hook.ts',
+      ],
+      rules: {
+        'no-restricted-syntax': ['error', {
+          selector: 'ImportDeclaration',
+          message: 'File is injected with a `Function.toString()`, imports will not work',
+        }, {
+          selector: `CallExpression[callee.name='require']`,
+          message: 'File is injected with a `Function.toString()`, require will not work',
+        }],
+      },
+    },
   ],
 }
