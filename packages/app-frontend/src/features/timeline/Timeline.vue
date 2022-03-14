@@ -9,7 +9,7 @@ import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
 import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from '@vue/composition-api'
-import { SharedData } from '@vue-devtools/shared-utils'
+import { getStorage, SharedData } from '@vue-devtools/shared-utils'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
 import { useFonts } from '@front/util/fonts'
@@ -282,6 +282,20 @@ export default defineComponent({
     // Fonts
 
     const { loaded: fontsLoaded } = useFonts()
+
+    // Restore layer selection
+
+    watch(layers, value => {
+      if (!selectedLayer.value && value.length) {
+        const layerId = getStorage('selected-layer-id')
+        if (layerId) {
+          const layer = value.find(layer => layer.id === layerId)
+          if (layer) {
+            selectLayer(layer)
+          }
+        }
+      }
+    })
 
     return {
       fontsLoaded,

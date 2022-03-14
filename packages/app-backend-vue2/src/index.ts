@@ -5,6 +5,7 @@ import { editState, getCustomInstanceDetails, getInstanceDetails } from './compo
 import { getInstanceOrVnodeRect, findRelatedComponent, getRootElementsFromComponentInstance } from './components/el'
 import { initPerf } from './components/perf.js'
 import { getComponentParents, instanceMap, walkTree } from './components/tree'
+import { initUpdateTracking } from './components/update-tracking.js'
 import { getInstanceName } from './components/util'
 import { wrapVueForEvents } from './events'
 import { setupPlugin } from './plugin'
@@ -95,6 +96,8 @@ export const backend = defineBackend({
 
     // Perf
     initPerf(api, app, Vue)
+    // Update tracking
+    initUpdateTracking(api, Vue)
   },
 })
 

@@ -1,6 +1,7 @@
 import { Context, DevtoolsPluginApi, Hookable } from './api'
 import { PluginDescriptor } from './plugin'
 import { HOOK_PLUGIN_SETTINGS_SET } from './const'
+import { now } from './time'
 
 interface QueueItem {
   method: string
@@ -56,6 +57,9 @@ export class ApiProxy<TTarget extends DevtoolsPluginApi<any> = DevtoolsPluginApi
           // noop
         }
         currentSettings = value
+      },
+      now () {
+        return now()
       },
     }
 

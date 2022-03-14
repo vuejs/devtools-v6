@@ -63,7 +63,7 @@ export default defineComponent({
     const displayedEvents = computed(() => {
       switch (tabId.value) {
         case 'group':
-          return selectedGroupEvents.value
+          return selectedGroupEvents.value ?? []
         case 'all':
         default:
           return selectedLayer.value?.events ?? []
@@ -75,11 +75,6 @@ export default defineComponent({
     const filter = ref('')
 
     const filteredEvents = computed(() => {
-      // Prevent crash on the filteredEvents.length watcher
-      if (!selectedEvent.value) {
-        return []
-      }
-
       const rawFilter = filter.value.trim()
       if (rawFilter) {
         const reg = new RegExp(rawFilter, 'i')
@@ -209,12 +204,12 @@ export default defineComponent({
 
 <template>
   <div
-    v-if="selectedEvent && selectedLayer"
+    v-if="selectedLayer && filteredEvents.length"
     class="h-full flex flex-col relative"
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
       <VueGroup
-        v-if="selectedEvent.group"
+        v-if="selectedEvent && selectedEvent.group"
         v-model="tabId"
         indicator
         class="accent extend border-gray-200 dark:border-gray-800 border-b"

@@ -1,6 +1,6 @@
-import { BackendContext, AppRecord, now } from '@vue-devtools/app-backend-api'
+import { BackendContext, AppRecord } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, HookEvents, stringify, SharedData } from '@vue-devtools/shared-utils'
-import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
+import { App, ID, TimelineEventOptions, WithId, now } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
 import { builtinLayers } from './timeline-builtins'

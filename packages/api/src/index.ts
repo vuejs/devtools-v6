@@ -6,6 +6,7 @@ import { PluginDescriptor, ExtractSettingsTypes, PluginSettingsItem } from './pl
 
 export * from './api'
 export * from './plugin'
+export * from './time'
 export { PluginQueueItem } from './env'
 
 // https://github.com/microsoft/TypeScript/issues/30680#issuecomment-752725353

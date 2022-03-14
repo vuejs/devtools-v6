@@ -21,13 +21,13 @@ import {
   WithId,
   ComponentTreeNode,
   ComponentDevtoolsOptions,
+  now,
 } from '@vue/devtools-api'
 import { DevtoolsHookable } from './hooks'
 import { BackendContext } from './backend-context'
 import { Plugin } from './plugin'
 import { DevtoolsBackend } from './backend'
 import { AppRecord } from './app-record'
-import { now } from './time.js'
 
 const pluginOn: DevtoolsHookable[] = []
 

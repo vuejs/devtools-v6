@@ -4,7 +4,6 @@ import {
   Plugin,
   BuiltinBackendFeature,
   AppRecord,
-  now,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -34,15 +33,17 @@ import {
   editComponentState,
   getComponentInstance,
   refreshComponentTreeSearch,
+  sendComponentUpdateTracking,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks, now } from '@vue/devtools-api'
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 import { performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
 import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
+import { flashComponent } from './flash.js'
 
 let ctx: BackendContext = target.__vdevtools_ctx ?? null
 let connected = target.__vdevtools_connected ?? false
@@ -132,6 +133,14 @@ async function connect () {
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
         sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
       }
+
+      if (SharedData.trackUpdates) {
+        sendComponentUpdateTracking(id, ctx)
+      }
+
+      if (SharedData.flashUpdates) {
+        flashComponent(component, appRecord.backend)
+      }
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -156,12 +165,16 @@ async function connect () {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           // Check two parents level to update `hasChildren
-          for (let i = 0; i < 2 && i < parentInstances.length; i++) {
+          for (let i = 0; i < parentInstances.length; i++) {
             const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
-            if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+            if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
               requestAnimationFrame(() => {
                 sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
               })
+            }
+
+            if (SharedData.trackUpdates) {
+              sendComponentUpdateTracking(parentId, ctx)
             }
           }
         }
@@ -169,6 +182,14 @@ async function connect () {
 
       if (ctx.currentInspectedComponentId === id) {
         sendSelectedComponentData(appRecord, id, ctx)
+      }
+
+      if (SharedData.trackUpdates) {
+        sendComponentUpdateTracking(id, ctx)
+      }
+
+      if (SharedData.flashUpdates) {
+        flashComponent(component, appRecord.backend)
       }
 
       await refreshComponentTreeSearch(ctx)
@@ -212,6 +233,14 @@ async function connect () {
         console.error(e)
       }
     }
+  })
+
+  hook.on(HookEvents.TRACK_UPDATE, (id, ctx) => {
+    sendComponentUpdateTracking(id, ctx)
+  })
+
+  hook.on(HookEvents.FLASH_UPDATE, (instance, backend) => {
+    flashComponent(instance, backend)
   })
 
   // Component perf

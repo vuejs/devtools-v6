@@ -259,6 +259,8 @@ export function resetComponents () {
   rootInstances.value = []
   componentsMap.value = {}
   componentsParent = {}
+  updateTrackingEvents.value = {}
+  updateTrackingLimit.value = Date.now() + 5_000
 }
 
 export const requestedComponentTree = new Set()
@@ -382,4 +384,27 @@ export function getAppIdFromComponentId (id: string) {
   const index = id.indexOf(':')
   const appId = id.substring(0, index)
   return appId
+}
+
+export interface ComponentUpdateTrackingEvent {
+  instanceId: string
+  time: number
+  count: number
+}
+
+export const updateTrackingEvents = ref<Record<string, ComponentUpdateTrackingEvent>>({})
+export const updateTrackingLimit = ref(Date.now() + 5_000)
+
+export function addUpdateTrackingEvent (instanceId: string, time: number) {
+  const event = updateTrackingEvents.value[instanceId]
+  if (event) {
+    event.count++
+    event.time = time
+  } else {
+    Vue.set(updateTrackingEvents.value, instanceId, {
+      instanceId,
+      time,
+      count: 1,
+    })
+  }
 }
