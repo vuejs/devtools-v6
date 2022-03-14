@@ -114,6 +114,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_UPDATED, throttle(async (app, uid, parentUid, component) => {
     try {
+      if (!app || !uid || !component) return
       let id: string
       let appRecord: AppRecord
       if (app && uid != null) {
@@ -150,6 +151,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
+      if (!app || !uid || !component) return
       const id = await getComponentId(app, uid, component, ctx)
       const appRecord = await getAppRecord(app, ctx)
       if (component) {
@@ -202,6 +204,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     try {
+      if (!app || !uid || !component) return
       const appRecord = await getAppRecord(app, ctx)
       if (parentUid != null) {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
