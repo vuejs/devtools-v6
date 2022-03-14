@@ -126,20 +126,20 @@ async function connect () {
 
       // Update component inspector
       if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        sendSelectedComponentData(appRecord, id, ctx)
+        await sendSelectedComponentData(appRecord, id, ctx)
       }
 
       // Update tree (tags)
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
+        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
       }
 
       if (SharedData.trackUpdates) {
-        sendComponentUpdateTracking(id, ctx)
+        await sendComponentUpdateTracking(id, ctx)
       }
 
       if (SharedData.flashUpdates) {
-        flashComponent(component, appRecord.backend)
+        await flashComponent(component, appRecord.backend)
       }
     } catch (e) {
       if (SharedData.debugInfo) {
@@ -174,22 +174,22 @@ async function connect () {
             }
 
             if (SharedData.trackUpdates) {
-              sendComponentUpdateTracking(parentId, ctx)
+              await sendComponentUpdateTracking(parentId, ctx)
             }
           }
         }
       }
 
       if (ctx.currentInspectedComponentId === id) {
-        sendSelectedComponentData(appRecord, id, ctx)
+        await sendSelectedComponentData(appRecord, id, ctx)
       }
 
       if (SharedData.trackUpdates) {
-        sendComponentUpdateTracking(id, ctx)
+        await sendComponentUpdateTracking(id, ctx)
       }
 
       if (SharedData.flashUpdates) {
-        flashComponent(component, appRecord.backend)
+        await flashComponent(component, appRecord.backend)
       }
 
       await refreshComponentTreeSearch(ctx)
@@ -223,7 +223,7 @@ async function connect () {
 
       const id = await getComponentId(app, uid, component, ctx)
       if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        sendEmptyComponentData(id, ctx)
+        await sendEmptyComponentData(id, ctx)
       }
       appRecord.instanceMap.delete(id)
 
