@@ -171,7 +171,7 @@ export default defineComponent({
     @mouseleave="dragEnd"
   >
     <div
-      class="relative top-0 left-0"
+      class="relative top-0 left-0 overflow-hidden"
       :class="{
         'pointer-events-none': dragging,
         'border-r border-gray-200 dark:border-gray-800': orientation === 'landscape' && !leftCollapsed && !rightCollapsed,
