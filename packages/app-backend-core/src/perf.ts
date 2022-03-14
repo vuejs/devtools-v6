@@ -62,11 +62,11 @@ export async function performanceMarkStart (
 }
 
 const markEndQueue = new Map<string, {
-  app: App,
-  uid: number,
-  instance: ComponentInstance,
-  type: string,
-  time: number,
+  app: App
+  uid: number
+  instance: ComponentInstance
+  type: string
+  time: number
 }>()
 
 export async function performanceMarkEnd (
