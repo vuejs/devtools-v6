@@ -8,6 +8,9 @@ export function isPerformanceSupported () {
   if (typeof window !== 'undefined' && window.performance) {
     supported = true
     perf = window.performance
+  } else if (typeof global !== 'undefined' && (global as any).perf_hooks?.performance) {
+    supported = true
+    perf = (global as any).perf_hooks.performance
   } else {
     supported = false
   }
