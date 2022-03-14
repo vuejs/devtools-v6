@@ -5,7 +5,7 @@ import {
   BackendContext,
   DevtoolsBackend,
 } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
+import { BridgeEvents, isBrowser, SharedData } from '@vue-devtools/shared-utils'
 import { App } from '@vue/devtools-api'
 import slug from 'speakingurl'
 import { JobQueue } from './util/queue'
@@ -72,7 +72,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
       instanceMap: new Map(),
       rootInstance,
       perfGroupIds: new Map(),
-      iframe: document !== el.ownerDocument ? el.ownerDocument?.location?.pathname : null,
+      iframe: isBrowser && document !== el.ownerDocument ? el.ownerDocument?.location?.pathname : null,
       meta: options.meta ?? {},
     }
 

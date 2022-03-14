@@ -4,7 +4,7 @@ type KeyboardHandler = (event: KeyboardEvent) => boolean | void | Promise<boolea
 
 function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler) {
   function handler (event: KeyboardEvent) {
-    if (event.target instanceof HTMLElement && (
+    if (typeof HTMLElement !== 'undefined' && event.target instanceof HTMLElement && (
       event.target.tagName === 'INPUT' ||
       event.target.tagName === 'TEXTAREA'
     )) {

@@ -1,6 +1,6 @@
 import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
 import { App, ComponentInstance } from '@vue/devtools-api'
-import { BridgeSubscriptions, SharedData } from '@vue-devtools/shared-utils'
+import { BridgeSubscriptions, raf, SharedData } from '@vue-devtools/shared-utils'
 import { addTimelineEvent } from './timeline'
 import { getAppRecord } from './app'
 import { getComponentId, sendComponentTreeData } from './component'
@@ -144,7 +144,7 @@ export async function performanceMarkEnd (
         // Update component tree
         const id = await getComponentId(app, uid, instance, ctx)
         if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-          requestAnimationFrame(() => {
+          raf(() => {
             sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, null, ctx)
           })
         }

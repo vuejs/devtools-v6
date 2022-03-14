@@ -17,6 +17,8 @@ import {
   target,
   getPluginSettings,
   SharedData,
+  isBrowser,
+  raf,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
 import throttle from 'lodash/throttle'
@@ -53,6 +55,8 @@ export async function initBackend (bridge: Bridge) {
     bridge,
     persist: false,
   })
+
+  SharedData.isBrowser = isBrowser
 
   initOnPageConfig()
 
@@ -180,7 +184,7 @@ async function connect () {
           for (let i = 0; i < parentInstances.length; i++) {
             const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
             if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-              requestAnimationFrame(() => {
+              raf(() => {
                 sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
               })
             }
@@ -221,7 +225,7 @@ async function connect () {
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-            requestAnimationFrame(async () => {
+            raf(async () => {
               try {
                 sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
               } catch (e) {
@@ -449,13 +453,14 @@ function connectBridge () {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         // @ts-ignore
-        window.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
+        target.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
         ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, null)
       }
     }
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
+    if (!isBrowser) return
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
@@ -494,6 +499,7 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
+    if (!isBrowser) return
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)

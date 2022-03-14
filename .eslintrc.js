@@ -54,6 +54,7 @@ module.exports = {
     '/packages/*/lib/',
     'dist/',
     'build/',
+    'build-node/',
     '/legacy',
   ],
   overrides: [
