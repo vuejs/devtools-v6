@@ -1,6 +1,7 @@
 import { BackendContext, TimelineMarker } from '@vue-devtools/app-backend-api'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { TimelineMarkerOptions } from '@vue/devtools-api'
+import { isPerformanceSupported, TimelineMarkerOptions } from '@vue/devtools-api'
+import { dateThreshold, perfTimeDiff } from './timeline'
 
 export async function addTimelineMarker (options: TimelineMarkerOptions, ctx: BackendContext) {
   if (!ctx.currentAppRecord) {
@@ -31,11 +32,15 @@ export async function sendTimelineMarkers (ctx: BackendContext) {
 }
 
 async function serializeMarker (marker: TimelineMarker) {
+  let time = marker.time
+  if (isPerformanceSupported() && time < dateThreshold) {
+    time += perfTimeDiff
+  }
   return {
     id: marker.id,
     appId: marker.appRecord?.id,
     all: marker.all,
-    time: Math.round(marker.time * 1000),
+    time: Math.round(time * 1000),
     label: marker.label,
     color: marker.color,
   }
