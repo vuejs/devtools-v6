@@ -204,7 +204,7 @@ export default defineComponent({
 
 <template>
   <div
-    v-if="selectedLayer && filteredEvents.length"
+    v-if="selectedLayer && (filteredEvents.length || filter.length)"
     class="h-full flex flex-col relative"
   >
     <div class="flex-none flex flex-col items-stretch border-gray-200 dark:border-gray-800 border-b">
