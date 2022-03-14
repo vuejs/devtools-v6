@@ -1,7 +1,7 @@
 let supported: boolean
 let perf: Performance
 
-function isSupported () {
+export function isPerformanceSupported () {
   if (supported !== undefined) {
     return supported
   }
@@ -15,5 +15,5 @@ function isSupported () {
 }
 
 export function now () {
-  return isSupported() ? perf.now() : Date.now()
+  return isPerformanceSupported() ? perf.now() : Date.now()
 }

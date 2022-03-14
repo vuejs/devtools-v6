@@ -83,7 +83,7 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
   }
 
   // Min time
-  if (minTime.value > event.time) {
+  if (minTime.value === -1_000_000 || minTime.value > event.time) {
     const stick = minTime.value === startTime.value
     minTime.value = event.time - 100_000
     if (stick) {
