@@ -112,7 +112,25 @@ async function connect () {
 
   // Components
 
-  hook.on(HookEvents.COMPONENT_UPDATED, throttle(async (app, uid, parentUid, component) => {
+  const sendComponentUpdate = throttle(async (appRecord: AppRecord, id: string) => {
+    try {
+      // Update component inspector
+      if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
+        await sendSelectedComponentData(appRecord, id, ctx)
+      }
+
+      // Update tree (tags)
+      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
+        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
+      }
+    } catch (e) {
+      if (SharedData.debugInfo) {
+        console.error(e)
+      }
+    }
+  }, 100)
+
+  hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
     try {
       if (!app || !uid || !component) return
       let id: string
@@ -125,16 +143,6 @@ async function connect () {
         appRecord = ctx.currentAppRecord
       }
 
-      // Update component inspector
-      if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        await sendSelectedComponentData(appRecord, id, ctx)
-      }
-
-      // Update tree (tags)
-      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
-      }
-
       if (SharedData.trackUpdates) {
         await sendComponentUpdateTracking(id, ctx)
       }
@@ -142,12 +150,14 @@ async function connect () {
       if (SharedData.flashUpdates) {
         await flashComponent(component, appRecord.backend)
       }
+
+      await sendComponentUpdate(appRecord, id)
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
       }
     }
-  }, 1000 / 10))
+  })
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
