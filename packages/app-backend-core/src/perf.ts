@@ -35,12 +35,39 @@ export async function performanceMarkStart (
         groupId,
       },
     }, app, ctx)
+
+    if (markEndQueue.has(groupKey)) {
+      const {
+        app,
+        uid,
+        instance,
+        type,
+        time,
+      } = markEndQueue.get(groupKey)
+      markEndQueue.delete(groupKey)
+      await performanceMarkEnd(
+        app,
+        uid,
+        instance,
+        type,
+        time,
+        ctx,
+      )
+    }
   } catch (e) {
     if (SharedData.debugInfo) {
       console.error(e)
     }
   }
 }
+
+const markEndQueue = new Map<string, {
+  app: App,
+  uid: number,
+  instance: ComponentInstance,
+  type: string,
+  time: number,
+}>()
 
 export async function performanceMarkEnd (
   app: App,
@@ -55,7 +82,18 @@ export async function performanceMarkEnd (
     const appRecord = await getAppRecord(app, ctx)
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupKey = `${uid}-${type}`
-    const { groupId, time: startTime } = appRecord.perfGroupIds.get(groupKey)
+    const groupInfo = appRecord.perfGroupIds.get(groupKey)
+    if (!groupInfo) {
+      markEndQueue.set(groupKey, {
+        app,
+        uid,
+        instance,
+        type,
+        time,
+      })
+      return
+    }
+    const { groupId, time: startTime } = groupInfo
     const duration = time - startTime
     await addTimelineEvent({
       layerId: 'performance',
