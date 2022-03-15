@@ -27,7 +27,7 @@ The repository is a monorepo with several nested packages:
 1. Clone this repo
 2. run `yarn install`
 3. then run `yarn run build:watch` and `yarn run dev:vue3` in parallel
-4. A plain shell with a test app will be available at [localhost:8090](http://localhost:8090/).
+4. A plain shell with a test app will be available at `localhost:8090`.
 
 ## Pull Request Guidelines
 

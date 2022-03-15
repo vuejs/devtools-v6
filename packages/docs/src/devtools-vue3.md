@@ -22,4 +22,4 @@ yarn build:watch
 yarn dev:shell-vue3
 ```
 
-Once everything is setup, you should be able to visit http://localhost:8090/
+Once everything is setup, you should be able to visit `http://localhost:8090/`
