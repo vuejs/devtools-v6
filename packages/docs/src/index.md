@@ -3,7 +3,7 @@ home: true
 sidebar: false
 heroImage: /logo.svg
 
-actionText: Get Started
+actionText: Install now
 actionLink: /guide/installation
 
 footer: MIT Licensed | Copyright © 2014-present Evan You, Guillaume Chau

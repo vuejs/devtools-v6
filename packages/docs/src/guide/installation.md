@@ -1,16 +1,37 @@
+<script setup>
+import InstallButtons from '../components/InstallButtons.vue'
+import InstallButton from '../components/InstallButton.vue'
+</script>
+
 # Installation
 
-The Vue.js devtools allows you to inspect and debug your applications.
-
-::: tip
-If you want to install the previous version of the devtools, see [here](#legacy).
+::: tip Previous version
+If you want to install the previous version of the devtools (v5), see [here](#legacy).
 :::
+
+<InstallButtons/>
 
 ## Chrome
 
 Install the extension on the Chrome Web Store:
 
-[Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) / ([beta channel](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg))
+<InstallButton
+  label="Install on Chrome"
+  logo="/logo-chrome.svg"
+  href="https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd"
+  external
+/>
+
+### Beta
+
+To install the beta version of the devtools, remove or disable any existing versions and install the extension from [here](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg).
+
+<InstallButton
+  label="Install Beta version on Chrome"
+  logo="/logo-chrome.svg"
+  href="https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg"
+  external
+/>
 
 ### Settings
 
@@ -30,13 +51,23 @@ If you need to use the devtools in incognito mode or when you open an HTML file 
 
 Install the extension on the Mozilla Addons website:
 
-[Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+<InstallButton
+  label="Install on Firefox"
+  logo="/logo-firefox.svg"
+  href="https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/"
+  external
+/>
 
 ### Beta
 
-To install or update the beta version of the devtools, go to one of repository releases and download the `xpi` file.
+To install or update the beta version of the devtools, remove or disable any existing versions, go to one of repository beta releases and download the `xpi` file.
 
-[Repository releases](https://github.com/vuejs/vue-devtools/releases)
+<InstallButton
+  label="Install Beta version from Repository"
+  logo="/logo-firefox.svg"
+  href="https://github.com/vuejs/vue-devtools/releases"
+  external
+/>
 
 ### Settings
 
@@ -137,7 +168,20 @@ If something is broken with the new devtools, please [submit a new issue](https:
 
 Meanwhile, you can install the legacy version (v5) of the devtools:
 
-- [Chrome](https://chrome.google.com/webstore/detail/iaajmlceplecbljialhhkmedjlpdblhp/)
-- [Firefox](https://github.com/vuejs/vue-devtools/releases/download/v5.3.3/vuejs_devtools-5.3.4-fx.xpi)
+<div class="flex flex-col gap-2">
+  <InstallButton
+    label="Install Legacy version on Chrome"
+    logo="/logo-chrome.svg"
+    href="https://chrome.google.com/webstore/detail/iaajmlceplecbljialhhkmedjlpdblhp"
+    external
+  />
+
+  <InstallButton
+    label="Install Legacy version on Firefox"
+    logo="/logo-firefox.svg"
+    href="https://github.com/vuejs/vue-devtools/releases/download/v5.3.3/vuejs_devtools-5.3.4-fx.xpi"
+    external
+  />
+</div>
 
 Make sure you disable any other versions of the Vue devtools. Only one version should be enabled at a time.
