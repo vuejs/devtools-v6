@@ -33,8 +33,9 @@ function isNumeric (str) {
 }
 
 function installProxy (tabId) {
-  chrome.tabs.executeScript(tabId, {
-    file: '/build/proxy.js',
+  chrome.scripting.executeScript({
+    target: { tabId },
+    files: ['build/proxy.js'],
   }, function (res) {
     if (!res) {
       ports[tabId].devtools.postMessage('proxy-fail')
@@ -95,17 +96,21 @@ chrome.runtime.onMessage.addListener((req, sender) => {
   if (sender.tab && req.vueDetected) {
     const suffix = req.nuxtDetected ? '.nuxt' : ''
 
-    chrome.browserAction.setIcon({
+    chrome.action.setIcon({
       tabId: sender.tab.id,
       path: {
-        16: `icons/16${suffix}.png`,
-        48: `icons/48${suffix}.png`,
-        128: `icons/128${suffix}.png`,
+        16: chrome.runtime.getURL(`icons/16${suffix}.png`),
+        48: chrome.runtime.getURL(`icons/48${suffix}.png`),
+        128: chrome.runtime.getURL(`icons/128${suffix}.png`),
       },
+    }, () => {
+      // noop
     })
-    chrome.browserAction.setPopup({
+    chrome.action.setPopup({
       tabId: sender.tab.id,
-      popup: req.devtoolsEnabled ? `popups/enabled${suffix}.html` : `popups/disabled${suffix}.html`,
+      popup: chrome.runtime.getURL(req.devtoolsEnabled ? `popups/enabled${suffix}.html` : `popups/disabled${suffix}.html`),
+    }, () => {
+      // noop
     })
   }
 
