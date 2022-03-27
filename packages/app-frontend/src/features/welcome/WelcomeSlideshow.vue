@@ -42,7 +42,7 @@ export default defineComponent({
         </template>
 
         <template v-if="step === 1">
-          <h2>Let's have little tour</h2>
+          <h2>Let's take a little tour</h2>
 
           <p>
             The devtools were entirely rewritten with the release of Vue 3.
