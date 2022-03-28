@@ -1,6 +1,6 @@
 import { setStorage, getStorage } from './storage'
 import { Bridge } from './bridge'
-import { isMac } from './env'
+import { isBrowser, isMac } from './env'
 
 // Initial state
 const internalSharedData = {
@@ -28,7 +28,10 @@ const internalSharedData = {
   pluginSettings: {} as any,
   pageConfig: {} as any,
   legacyApps: false,
+  trackUpdates: true,
+  flashUpdates: false,
   debugInfo: false,
+  isBrowser,
 }
 
 type TSharedData = typeof internalSharedData
@@ -52,6 +55,8 @@ const persisted = [
   'pluginSettings',
   'performanceMonitoringEnabled',
   'componentEventsEnabled',
+  'trackUpdates',
+  'flashUpdates',
   'debugInfo',
 ]
 

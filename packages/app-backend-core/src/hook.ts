@@ -36,6 +36,8 @@ export function installHook (target, isIframe = false) {
 
   let iframeChecks = 0
   function injectToIframes () {
+    if (typeof window === 'undefined') return
+
     const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe:not([data-vue-devtools-ignore])')
     for (const iframe of iframes) {
       injectIframeHook(iframe)
@@ -549,7 +551,7 @@ export function installHook (target, isIframe = false) {
       }
 
       // DOM objects
-      if (object instanceof HTMLElement) {
+      if (typeof HTMLElement !== 'undefined' && object instanceof HTMLElement) {
         return object.cloneNode(false)
       }
 

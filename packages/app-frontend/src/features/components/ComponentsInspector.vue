@@ -99,7 +99,7 @@ export default defineComponent({
             icon-left="search"
             placeholder="Find components..."
             select-all
-            class="search flat border-b border-gray-200 dark:border-gray-800"
+            class="search flat border-b border-gray-200 dark:border-gray-800 min-w-0"
           />
 
           <div
@@ -152,6 +152,19 @@ export default defineComponent({
             class="w-4 h-4 flex-none"
           />
           <span>May print warnings in the console</span>
+        </div>
+      </div>
+
+      <div class="space-y-1 px-3 py-2 text-sm">
+        <VueSwitch v-model="$shared.flashUpdates">
+          Highlight updates
+        </VueSwitch>
+        <div class="flex items-center space-x-1 text-xs opacity-50">
+          <VueIcon
+            icon="warning"
+            class="w-4 h-4 flex-none"
+          />
+          <span>Don't enable if you are sensitive to flashing</span>
         </div>
       </div>
 

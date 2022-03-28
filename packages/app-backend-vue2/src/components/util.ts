@@ -40,7 +40,7 @@ export function getUniqueId (instance, appRecord?: AppRecord): string {
     rootVueId = appRecord.id
   }
   if (!rootVueId) {
-    console.error('No app record id found for instance', instance)
+    rootVueId = '_unmounted'
   }
   return `${rootVueId}:${instance._uid}`
 }

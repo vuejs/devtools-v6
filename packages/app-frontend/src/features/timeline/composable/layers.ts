@@ -87,6 +87,7 @@ export function useLayers () {
     let event = selectedLayer.value !== layer ? layer.lastInspectedEvent : null
 
     selectedLayer.value = layer
+    setStorage('selected-layer-id', layer.id)
 
     if (!event) event = layer.events.length ? layer.events[layer.events.length - 1] : null
     inspectedEvent.value = event

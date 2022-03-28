@@ -1,6 +1,6 @@
-import { BackendContext, AppRecord, now } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, HookEvents, stringify, SharedData } from '@vue-devtools/shared-utils'
-import { App, ID, TimelineEventOptions, WithId } from '@vue/devtools-api'
+import { BackendContext, AppRecord } from '@vue-devtools/app-backend-api'
+import { BridgeEvents, HookEvents, stringify, SharedData, isBrowser } from '@vue-devtools/shared-utils'
+import { App, ID, TimelineEventOptions, WithId, now, isPerformanceSupported } from '@vue/devtools-api'
 import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
 import { builtinLayers } from './timeline-builtins'
@@ -21,50 +21,52 @@ export function addBuiltinLayers (appRecord: AppRecord, ctx: BackendContext) {
 }
 
 function setupBuiltinLayers (ctx: BackendContext) {
-  ['mousedown', 'mouseup', 'click', 'dblclick'].forEach(eventType => {
-    // @ts-ignore
-    window.addEventListener(eventType, async (event: MouseEvent) => {
-      await addTimelineEvent({
-        layerId: 'mouse',
-        event: {
-          time: now(),
-          data: {
-            type: eventType,
-            x: event.clientX,
-            y: event.clientY,
+  if (isBrowser) {
+    ['mousedown', 'mouseup', 'click', 'dblclick'].forEach(eventType => {
+      // @ts-ignore
+      window.addEventListener(eventType, async (event: MouseEvent) => {
+        await addTimelineEvent({
+          layerId: 'mouse',
+          event: {
+            time: now(),
+            data: {
+              type: eventType,
+              x: event.clientX,
+              y: event.clientY,
+            },
+            title: eventType,
           },
-          title: eventType,
-        },
-      }, null, ctx)
-    }, {
-      capture: true,
-      passive: true,
+        }, null, ctx)
+      }, {
+        capture: true,
+        passive: true,
+      })
     })
-  })
 
-  ;['keyup', 'keydown', 'keypress'].forEach(eventType => {
-    // @ts-ignore
-    window.addEventListener(eventType, async (event: KeyboardEvent) => {
-      await addTimelineEvent({
-        layerId: 'keyboard',
-        event: {
-          time: now(),
-          data: {
-            type: eventType,
-            key: event.key,
-            ctrlKey: event.ctrlKey,
-            shiftKey: event.shiftKey,
-            altKey: event.altKey,
-            metaKey: event.metaKey,
+    ;['keyup', 'keydown', 'keypress'].forEach(eventType => {
+      // @ts-ignore
+      window.addEventListener(eventType, async (event: KeyboardEvent) => {
+        await addTimelineEvent({
+          layerId: 'keyboard',
+          event: {
+            time: now(),
+            data: {
+              type: eventType,
+              key: event.key,
+              ctrlKey: event.ctrlKey,
+              shiftKey: event.shiftKey,
+              altKey: event.altKey,
+              metaKey: event.metaKey,
+            },
+            title: event.key,
           },
-          title: event.key,
-        },
-      }, null, ctx)
-    }, {
-      capture: true,
-      passive: true,
+        }, null, ctx)
+      }, {
+        capture: true,
+        passive: true,
+      })
     })
-  })
+  }
 
   hook.on(HookEvents.COMPONENT_EMIT, async (app, instance, event, params) => {
     try {
@@ -156,10 +158,18 @@ export async function addTimelineEvent (options: TimelineEventOptions, app: App,
   }
 }
 
+const initialTime = Date.now()
+export const dateThreshold = initialTime - 1_000_000
+export const perfTimeDiff = initialTime - now()
+
 function mapTimelineEvent (eventData: TimelineEventOptions & WithId) {
+  let time = eventData.event.time
+  if (isPerformanceSupported() && time < dateThreshold) {
+    time += perfTimeDiff
+  }
   return {
     id: eventData.id,
-    time: Math.round(eventData.event.time * 1000),
+    time: Math.round(time * 1000),
     logType: eventData.event.logType,
     groupId: eventData.event.groupId,
     title: eventData.event.title,

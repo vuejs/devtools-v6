@@ -1,4 +1,6 @@
-module.exports = {
+import { defineConfig } from 'vitepress'
+
+export default defineConfig({
   title: 'Vue Devtools',
   description: 'Browser devtools extension for debugging Vue.js applications',
 
@@ -61,4 +63,4 @@ module.exports = {
       ],
     },
   },
-}
+})

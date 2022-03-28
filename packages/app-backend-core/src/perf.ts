@@ -1,6 +1,6 @@
 import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
 import { App, ComponentInstance } from '@vue/devtools-api'
-import { BridgeSubscriptions, SharedData } from '@vue-devtools/shared-utils'
+import { BridgeSubscriptions, raf, SharedData } from '@vue-devtools/shared-utils'
 import { addTimelineEvent } from './timeline'
 import { getAppRecord } from './app'
 import { getComponentId, sendComponentTreeData } from './component'
@@ -35,12 +35,39 @@ export async function performanceMarkStart (
         groupId,
       },
     }, app, ctx)
+
+    if (markEndQueue.has(groupKey)) {
+      const {
+        app,
+        uid,
+        instance,
+        type,
+        time,
+      } = markEndQueue.get(groupKey)
+      markEndQueue.delete(groupKey)
+      await performanceMarkEnd(
+        app,
+        uid,
+        instance,
+        type,
+        time,
+        ctx,
+      )
+    }
   } catch (e) {
     if (SharedData.debugInfo) {
       console.error(e)
     }
   }
 }
+
+const markEndQueue = new Map<string, {
+  app: App
+  uid: number
+  instance: ComponentInstance
+  type: string
+  time: number
+}>()
 
 export async function performanceMarkEnd (
   app: App,
@@ -55,7 +82,18 @@ export async function performanceMarkEnd (
     const appRecord = await getAppRecord(app, ctx)
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupKey = `${uid}-${type}`
-    const { groupId, time: startTime } = appRecord.perfGroupIds.get(groupKey)
+    const groupInfo = appRecord.perfGroupIds.get(groupKey)
+    if (!groupInfo) {
+      markEndQueue.set(groupKey, {
+        app,
+        uid,
+        instance,
+        type,
+        time,
+      })
+      return
+    }
+    const { groupId, time: startTime } = groupInfo
     const duration = time - startTime
     await addTimelineEvent({
       layerId: 'performance',
@@ -106,7 +144,7 @@ export async function performanceMarkEnd (
         // Update component tree
         const id = await getComponentId(app, uid, instance, ctx)
         if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-          requestAnimationFrame(() => {
+          raf(() => {
             sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, null, ctx)
           })
         }

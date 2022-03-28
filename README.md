@@ -2,7 +2,7 @@
 
 ![screenshot](./media/screenshot-shadow.png)
 
-[Documentation](https://devtools.vuejs.org/)
+[Documentation](https://devtools.vuejs.org/) | [Install the extension](https://devtools.vuejs.org/guide/installation.html)
 
 ## Monorepo
 

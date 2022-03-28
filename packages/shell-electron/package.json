@@ -1,6 +1,6 @@
 {
   "name": "@vue/devtools",
-  "version": "6.0.13",
+  "version": "6.1.3",
   "description": "StandAlone vue-devtools",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
@@ -14,9 +14,11 @@
   "types": "types/index.d.ts",
   "scripts": {
     "start": "node bin.js",
-    "dev": "webpack --watch",
-    "build": "rm -rf ./build && cross-env NODE_ENV=production webpack",
-    "prepublishOnly": "npm run build"
+    "dev:client": "webpack --watch",
+    "dev:node": "webpack --watch --config webpack.node.config.js",
+    "build": "npm run build:client && npm run build:node",
+    "build:client": "rm -rf ./build && cross-env NODE_ENV=production webpack",
+    "build:node": "rm -rf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
   },
   "author": "",
   "license": "MIT",
@@ -28,7 +30,9 @@
     "electron": "^12.0.6",
     "express": "^4.17.1",
     "ip": "^1.1.5",
-    "socket.io": "^2.0.4"
+    "socket.io": "^4.4.0",
+    "socket.io-client": "^4.4.1",
+    "utf-8-validate": "^5.0.9"
   },
   "devDependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",

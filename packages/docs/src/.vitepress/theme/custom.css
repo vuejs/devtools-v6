@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-bar-title .logo {
+  margin-top: 6px;
+}
+
+.home-hero {
+  figure {
+    .image {
+      max-height: 100px;
+    }
+  }
+}

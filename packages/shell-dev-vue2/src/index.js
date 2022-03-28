@@ -67,6 +67,16 @@ window.addEventListener('load', () => {
   app.$mount('#app')
 })
 
+const app2 = new Vue({
+  render (h) {
+    return h('div', null, [
+      h('h1', 'App 2'),
+      h(Other),
+    ])
+  },
+})
+app2.$mount('#app2')
+
 // custom element instance
 const ce = document.querySelector('#shadow')
 if (ce.attachShadow) {

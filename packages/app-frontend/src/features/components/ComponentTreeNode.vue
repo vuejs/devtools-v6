@@ -3,8 +3,9 @@ import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } fr
 import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED, SharedData } from '@vue-devtools/shared-utils'
-import { sortChildren, useComponent, useComponentHighlight } from './composable'
+import { sortChildren, useComponent, useComponentHighlight, updateTrackingEvents, updateTrackingLimit } from './composable'
 import { onKeyDown } from '@front/util/keyboard'
+import { reactiveNow, useTimeAgo } from '@front/util/time'
 
 const DEFAULT_EXPAND_DEPTH = 2
 
@@ -147,6 +148,13 @@ export default defineComponent({
         toggle()
       }
     }
+    // Update tracking
+
+    const updateTracking = computed(() => updateTrackingEvents.value[props.instance.id])
+    const showUpdateTracking = computed(() => updateTracking.value?.time > updateTrackingLimit.value && updateTracking.value?.time > reactiveNow.value - 20_000)
+    const updateTrackingTime = computed(() => updateTracking.value?.time)
+    const { timeAgo: updateTrackingTimeAgo } = useTimeAgo(updateTrackingTime)
+    const updateTrackingOpacity = computed(() => showUpdateTracking.value ? 1 - (reactiveNow.value - updateTracking.value?.time) / 20_000 : 0)
 
     return {
       toggleEl,
@@ -161,6 +169,10 @@ export default defineComponent({
       unhighlight,
       selectNextSibling,
       selectPreviousSibling,
+      showUpdateTracking,
+      updateTracking,
+      updateTrackingTimeAgo,
+      updateTrackingOpacity,
     }
   },
 })
@@ -201,7 +213,12 @@ export default defineComponent({
 
       <!-- Component tag -->
       <span class="content">
-        <span class="angle-bracket text-gray-400 dark:text-gray-600">&lt;</span>
+        <span
+          class="angle-bracket"
+          :class="[
+            selected ? 'text-white/60' : 'text-gray-400 dark:text-gray-600',
+          ]"
+        >&lt;</span>
 
         <span class="item-name text-green-500">{{ displayName }}</span>
 
@@ -220,7 +237,12 @@ export default defineComponent({
           > key</span>=<span>{{ instance.renderKey }}</span>
         </span>
 
-        <span class="angle-bracket text-gray-400 dark:text-gray-600">&gt;</span>
+        <span
+          class="angle-bracket"
+          :class="[
+            selected ? 'text-white/60' : 'text-gray-400 dark:text-gray-600',
+          ]"
+        >&gt;</span>
       </span>
 
       <span class="flex items-center space-x-2 ml-2 h-full">
@@ -267,6 +289,29 @@ export default defineComponent({
             {{ instance.domOrder }}
           </span>
         </template>
+
+        <VTooltip
+          v-if="showUpdateTracking"
+          class="h-4"
+        >
+          <div class="px-3 -mx-2 h-full flex items-center">
+            <div
+              class="w-1 h-1 rounded-full"
+              :class="[
+                selected ? 'bg-white' : 'bg-green-500',
+              ]"
+              :style="{
+                opacity: updateTrackingOpacity,
+              }"
+            />
+          </div>
+
+          <template #popper>
+            <div>
+              Updated {{ updateTrackingTimeAgo }}
+            </div>
+          </template>
+        </VTooltip>
       </span>
     </div>
 

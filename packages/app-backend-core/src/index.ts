@@ -4,7 +4,6 @@ import {
   Plugin,
   BuiltinBackendFeature,
   AppRecord,
-  now,
 } from '@vue-devtools/app-backend-api'
 import {
   Bridge,
@@ -18,6 +17,8 @@ import {
   target,
   getPluginSettings,
   SharedData,
+  isBrowser,
+  raf,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
 import throttle from 'lodash/throttle'
@@ -34,15 +35,17 @@ import {
   editComponentState,
   getComponentInstance,
   refreshComponentTreeSearch,
+  sendComponentUpdateTracking,
 } from './component'
 import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks } from '@vue/devtools-api'
+import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks, now } from '@vue/devtools-api'
 import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
 import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 import { performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
 import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
+import { flashComponent } from './flash.js'
 
 let ctx: BackendContext = target.__vdevtools_ctx ?? null
 let connected = target.__vdevtools_connected ?? false
@@ -52,6 +55,8 @@ export async function initBackend (bridge: Bridge) {
     bridge,
     persist: false,
   })
+
+  SharedData.isBrowser = isBrowser
 
   initOnPageConfig()
 
@@ -111,8 +116,27 @@ async function connect () {
 
   // Components
 
-  hook.on(HookEvents.COMPONENT_UPDATED, throttle(async (app, uid, parentUid, component) => {
+  const sendComponentUpdate = throttle(async (appRecord: AppRecord, id: string) => {
     try {
+      // Update component inspector
+      if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
+        await sendSelectedComponentData(appRecord, id, ctx)
+      }
+
+      // Update tree (tags)
+      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
+        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
+      }
+    } catch (e) {
+      if (SharedData.debugInfo) {
+        console.error(e)
+      }
+    }
+  }, 100)
+
+  hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
+    try {
+      if (!app || !uid || !component) return
       let id: string
       let appRecord: AppRecord
       if (app && uid != null) {
@@ -123,24 +147,25 @@ async function connect () {
         appRecord = ctx.currentAppRecord
       }
 
-      // Update component inspector
-      if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        sendSelectedComponentData(appRecord, id, ctx)
+      if (SharedData.trackUpdates) {
+        await sendComponentUpdateTracking(id, ctx)
       }
 
-      // Update tree (tags)
-      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
+      if (SharedData.flashUpdates) {
+        await flashComponent(component, appRecord.backend)
       }
+
+      await sendComponentUpdate(appRecord, id)
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
       }
     }
-  }, 1000 / 10))
+  })
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
+      if (!app || !uid || !component) return
       const id = await getComponentId(app, uid, component, ctx)
       const appRecord = await getAppRecord(app, ctx)
       if (component) {
@@ -156,19 +181,31 @@ async function connect () {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           // Check two parents level to update `hasChildren
-          for (let i = 0; i < 2 && i < parentInstances.length; i++) {
+          for (let i = 0; i < parentInstances.length; i++) {
             const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
-            if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-              requestAnimationFrame(() => {
+            if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
+              raf(() => {
                 sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
               })
+            }
+
+            if (SharedData.trackUpdates) {
+              await sendComponentUpdateTracking(parentId, ctx)
             }
           }
         }
       }
 
       if (ctx.currentInspectedComponentId === id) {
-        sendSelectedComponentData(appRecord, id, ctx)
+        await sendSelectedComponentData(appRecord, id, ctx)
+      }
+
+      if (SharedData.trackUpdates) {
+        await sendComponentUpdateTracking(id, ctx)
+      }
+
+      if (SharedData.flashUpdates) {
+        await flashComponent(component, appRecord.backend)
       }
 
       await refreshComponentTreeSearch(ctx)
@@ -181,13 +218,14 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     try {
+      if (!app || !uid || !component) return
       const appRecord = await getAppRecord(app, ctx)
       if (parentUid != null) {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-            requestAnimationFrame(async () => {
+            raf(async () => {
               try {
                 sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
               } catch (e) {
@@ -202,7 +240,7 @@ async function connect () {
 
       const id = await getComponentId(app, uid, component, ctx)
       if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        sendEmptyComponentData(id, ctx)
+        await sendEmptyComponentData(id, ctx)
       }
       appRecord.instanceMap.delete(id)
 
@@ -212,6 +250,14 @@ async function connect () {
         console.error(e)
       }
     }
+  })
+
+  hook.on(HookEvents.TRACK_UPDATE, (id, ctx) => {
+    sendComponentUpdateTracking(id, ctx)
+  })
+
+  hook.on(HookEvents.FLASH_UPDATE, (instance, backend) => {
+    flashComponent(instance, backend)
   })
 
   // Component perf
@@ -407,13 +453,14 @@ function connectBridge () {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
         // @ts-ignore
-        window.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
+        target.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
         ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, null)
       }
     }
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
+    if (!isBrowser) return
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
@@ -452,6 +499,7 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
+    if (!isBrowser) return
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)
