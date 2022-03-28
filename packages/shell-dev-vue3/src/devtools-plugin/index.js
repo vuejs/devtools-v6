@@ -197,6 +197,16 @@ export default {
             },
           },
         ],
+        nodeActions: [
+          {
+            icon: 'help',
+            tooltip: 'Test custom node action',
+            action: (arg1) => {
+              console.log('Node action', arg1)
+              api.selectInspectorNode('test-inspector', 'child')
+            },
+          },
+        ],
       })
 
       api.addInspector({

@@ -96,6 +96,11 @@ export interface CustomInspectorOptions {
     tooltip?: string
     action: () => void | Promise<void>
   }[]
+  nodeActions?: {
+    icon: string
+    tooltip?: string
+    action: (nodeId: string) => void | Promise<void>
+  }[]
 }
 
 export interface CustomInspectorNode {

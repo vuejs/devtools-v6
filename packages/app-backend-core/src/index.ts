@@ -625,6 +625,22 @@ function connectBridge () {
     }
   })
 
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_NODE_ACTION, async ({ inspectorId, appId, actionIndex, nodeId }) => {
+    const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
+    if (inspector) {
+      const action = inspector.nodeActions[actionIndex]
+      try {
+        await action.action(nodeId)
+      } catch (e) {
+        if (SharedData.debugInfo) {
+          console.error(e)
+        }
+      }
+    } else if (SharedData.debugInfo) {
+      console.warn(`Inspector ${inspectorId} not found`)
+    }
+  })
+
   // Misc
 
   ctx.bridge.on(BridgeEvents.TO_BACK_LOG, (payload: { level: string, value: any, serialized?: boolean, revive?: boolean }) => {
