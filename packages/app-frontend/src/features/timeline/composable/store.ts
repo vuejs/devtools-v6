@@ -61,6 +61,7 @@ export interface Layer extends LayerFromBackend {
   groupsMap: Record<EventGroup['id'], EventGroup>
   groupPositionCache: Record<number, EventGroup[]>
   height: number
+  newHeight: number
   lastInspectedEvent: TimelineEvent
   loaded: boolean
 }

@@ -373,7 +373,32 @@ export default defineComponent({
       resetLayers()
     })
 
-    const totalLayersHeight = computed(() => layers.value.reduce((sum, layer) => sum + layer.height, 0))
+    // Stabilize layer height changes
+
+    let applyLayersNewHeightTimer
+
+    function applyLayersNewHeight () {
+      clearTimeout(applyLayersNewHeightTimer)
+      applyLayersNewHeightTimer = setTimeout(() => {
+        updateLayerPositions()
+        drawLayerBackgroundEffects()
+      }, 0)
+    }
+
+    const layerHeightUpdateTimers: Record<string, any> = {}
+
+    function queueLayerHeightUpdate (layer: Layer) {
+      clearTimeout(layerHeightUpdateTimers[layer.id])
+      const apply = () => {
+        layer.height = layer.newHeight
+        applyLayersNewHeight()
+      }
+      if (layer.height < layer.newHeight) {
+        apply()
+      } else {
+        layerHeightUpdateTimers[layer.id] = setTimeout(apply, 500)
+      }
+    }
 
     // Layer hover
 
@@ -600,12 +625,11 @@ export default defineComponent({
         }
 
         // Might update the layer's height as well
-        if (y + 1 > event.layer.height) {
-          const oldLayerHeight = event.layer.height
-          const newLayerHeight = event.layer.height = y + 1
+        if (y + 1 > event.layer.newHeight) {
+          const oldLayerHeight = event.layer.newHeight
+          const newLayerHeight = event.layer.newHeight = y + 1
           if (oldLayerHeight !== newLayerHeight) {
-            updateLayerPositions()
-            drawLayerBackgroundEffects()
+            queueLayerHeightUpdate(event.layer)
           }
         }
       }
@@ -740,7 +764,7 @@ export default defineComponent({
     function updateEvents () {
       for (const layer of layers.value) {
         if (!layer.groupsOnly) {
-          layer.height = 1
+          layer.newHeight = 1
         }
       }
       updateLayerPositions()

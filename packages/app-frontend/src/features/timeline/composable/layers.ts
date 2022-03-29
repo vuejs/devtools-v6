@@ -22,6 +22,7 @@ export function layerFactory (options: LayerFromBackend): Layer {
   const result = {} as Layer
   addNonReactiveProperties(result, {
     ...options,
+    newHeight: 1,
     eventsMap: {},
     groupsMap: {},
     groupPositionCache: {},
