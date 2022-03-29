@@ -431,32 +431,34 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     })),
   }
 
-  const pathWithSlashes = path.replace(VUEX_MODULE_PATH_SEPARATOR_REG, '/')
-  getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[pathWithSlashes]
-  let gettersKeys = Object.keys(getters)
-  const shouldPickGetters = !module.namespaced && path !== VUEX_ROOT_PATH
-  if (shouldPickGetters) {
-    // Only pick the getters defined in the non-namespaced module
-    const definedGettersKeys = Object.keys(module._rawModule.getters ?? {})
-    gettersKeys = gettersKeys.filter(key => definedGettersKeys.includes(key))
-  }
-  if (gettersKeys.length) {
-    let moduleGetters: Record<string, any>
+  if (getters) {
+    const pathWithSlashes = path.replace(VUEX_MODULE_PATH_SEPARATOR_REG, '/')
+    getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[pathWithSlashes]
+    let gettersKeys = Object.keys(getters)
+    const shouldPickGetters = !module.namespaced && path !== VUEX_ROOT_PATH
     if (shouldPickGetters) {
       // Only pick the getters defined in the non-namespaced module
-      moduleGetters = {}
-      for (const key of gettersKeys) {
-        moduleGetters[key] = canThrow(() => getters[key])
-      }
-    } else {
-      moduleGetters = getters
+      const definedGettersKeys = Object.keys(module._rawModule.getters ?? {})
+      gettersKeys = gettersKeys.filter(key => definedGettersKeys.includes(key))
     }
-    const tree = transformPathsToObjectTree(moduleGetters)
-    storeState.getters = Object.keys(tree).map((key) => ({
-      key: key.endsWith('/') ? extractNameFromPath(key) : key,
-      editable: false,
-      value: canThrow(() => tree[key]),
-    }))
+    if (gettersKeys.length) {
+      let moduleGetters: Record<string, any>
+      if (shouldPickGetters) {
+        // Only pick the getters defined in the non-namespaced module
+        moduleGetters = {}
+        for (const key of gettersKeys) {
+          moduleGetters[key] = canThrow(() => getters[key])
+        }
+      } else {
+        moduleGetters = getters
+      }
+      const tree = transformPathsToObjectTree(moduleGetters)
+      storeState.getters = Object.keys(tree).map((key) => ({
+        key: key.endsWith('/') ? extractNameFromPath(key) : key,
+        editable: false,
+        value: canThrow(() => tree[key]),
+      }))
+    }
   }
 
   return storeState
