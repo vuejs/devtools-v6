@@ -609,12 +609,12 @@ function connectBridge () {
     }
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, async ({ inspectorId, appId, actionIndex }) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, async ({ inspectorId, appId, actionIndex, actionType, args }) => {
     const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
-      const action = inspector.actions[actionIndex]
+      const action = inspector[actionType ?? 'actions'][actionIndex]
       try {
-        await action.action()
+        await action.action(...(args ?? []))
       } catch (e) {
         if (SharedData.debugInfo) {
           console.error(e)

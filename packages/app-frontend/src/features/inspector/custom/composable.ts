@@ -17,6 +17,10 @@ export interface InspectorFromBackend {
     icon: string
     tooltip?: string
   }[]
+  nodeActions?: {
+    icon: string
+    tooltip?: string
+  }[]
 }
 
 export interface Inspector extends InspectorFromBackend {
