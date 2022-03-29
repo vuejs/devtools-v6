@@ -1316,7 +1316,7 @@ export default defineComponent({
         endTime.value = start + size
 
         // Vertical
-        layersScroller.scrollTop = Math.min(totalLayersHeight.value, startDragScrollTop + deltaY)
+        layersScroller.scrollTop = startDragScrollTop + deltaY
       }
     }
 
