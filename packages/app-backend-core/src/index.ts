@@ -609,28 +609,12 @@ function connectBridge () {
     }
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, async ({ inspectorId, appId, actionIndex }) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, async ({ inspectorId, appId, actionIndex, actionType, args }) => {
     const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
     if (inspector) {
-      const action = inspector.actions[actionIndex]
+      const action = inspector[actionType ?? 'actions'][actionIndex]
       try {
-        await action.action()
-      } catch (e) {
-        if (SharedData.debugInfo) {
-          console.error(e)
-        }
-      }
-    } else if (SharedData.debugInfo) {
-      console.warn(`Inspector ${inspectorId} not found`)
-    }
-  })
-
-  ctx.bridge.on(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_NODE_ACTION, async ({ inspectorId, appId, actionIndex, nodeId }) => {
-    const inspector = await getInspectorWithAppId(inspectorId, appId, ctx)
-    if (inspector) {
-      const action = inspector.nodeActions[actionIndex]
-      try {
-        await action.action(nodeId)
+        await action.action(...(args ?? []))
       } catch (e) {
         if (SharedData.debugInfo) {
           console.error(e)

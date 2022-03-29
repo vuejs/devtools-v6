@@ -40,11 +40,14 @@ export default defineComponent({
     } = useBridge()
 
     function executeCustomAction (index: number) {
-      bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_NODE_ACTION, {
+      bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, {
         inspectorId: inspector.value.id,
         appId: inspector.value.appId,
         actionIndex: index,
-        nodeId: inspector.value.selectedNodeId,
+        actionType: 'nodeActions',
+        args: [
+          inspector.value.selectedNodeId,
+        ],
       })
     }
 
