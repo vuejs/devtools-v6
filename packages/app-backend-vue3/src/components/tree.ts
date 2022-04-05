@@ -130,6 +130,8 @@ export class ComponentWalker {
    * @return {Object}
    */
   private async capture (instance: any, list: any[], depth: number): Promise<ComponentTreeNode> {
+    if (!instance) return null
+
     const id = this.captureId(instance)
 
     const name = getInstanceName(instance)
