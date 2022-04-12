@@ -45,8 +45,10 @@ module.exports = {
     camelcase: 'warn',
     'no-prototype-builtins': 'off',
     'no-use-before-define': 'off',
-    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'no-console': 'off',
     'comma-dangle': ['error', 'always-multiline'],
+    'space-before-function-paren': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
     quotes: ['error', 'single', { allowTemplateLiterals: true }],
   },
   ignorePatterns: [

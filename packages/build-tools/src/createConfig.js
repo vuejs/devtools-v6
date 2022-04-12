@@ -113,7 +113,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
         languages: ['javascript'],
       }),
     ],
-    devtool: 'eval-source-map',
+    devtool: false,
     devServer: {
       port: process.env.PORT,
     },

@@ -1,0 +1,37 @@
+{
+  "name": "@hippy/hippy-vue-devtools-plugin",
+  "version": "0.0.4",
+  "description": "> support vue devtools in hippy",
+  "author": "chestershen <chestershen@tencent.com>",
+  "homepage": "https://github.com/hippy-contrib/hippy-vue-devtools/tree/main/packages/hippy-vue-devtools-plugin#readme",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "https://github.com/hippy-contrib/hippy-vue-devtools.git",
+  "scripts": {
+    "dev": "rm -rf ./lib && webpack --watch",
+    "build": "rm -rf ./lib && cross-env NODE_ENV=production npx webpack -c ./webpack.config.js && npm run ts",
+    "ts": "tsc -p tsconfig.json -d -outDir lib"
+  },
+  "bugs": {
+    "url": "https://github.com/hippy-contrib/hippy-vue-devtools/issues"
+  },
+  "devDependencies": {
+    "@types/webpack": "^4.41.0",
+    "webpack": "4.46.0"
+  },
+  "peerDependencies": {
+    "webpack": "^4.37.0 || ^5.0.0"
+  },
+  "dependencies": {
+    "schema-utils": "3.1.1"
+  }
+}

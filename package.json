@@ -43,6 +43,7 @@
   },
   "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
+    "@types/webpack": "5.28.0",
     "@tailwindcss/postcss7-compat": "^2.0.4",
     "@types/chrome": "^0.0.139",
     "@types/speakingurl": "^13.0.3",

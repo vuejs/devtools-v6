@@ -5,6 +5,8 @@ import { hook } from './global-hook'
 import { getAppRecord, getAppRecordId } from './app'
 import { builtinLayers } from './timeline-builtins'
 
+const ignoreEvents = ['hippyWebsocketEvents']
+
 export function setupTimeline (ctx: BackendContext) {
   setupBuiltinLayers(ctx)
 }
@@ -132,6 +134,8 @@ export async function sendTimelineLayers (ctx: BackendContext) {
 }
 
 export async function addTimelineEvent (options: TimelineEventOptions, app: App, ctx: BackendContext) {
+  if (ignoreEvents.includes(options.event.title)) return
+
   const appId = app ? getAppRecordId(app) : null
   const isAllApps = options.all || !app || appId == null
 

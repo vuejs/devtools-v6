@@ -57,7 +57,7 @@ export default defineComponent({
 
     // Highlight
 
-    const { highlight, unhighlight } = useComponentHighlight(computed(() => props.instance.id))
+    // const { highlight, unhighlight } = useComponentHighlight(computed(() => props.instance.id))
 
     // Auto scroll
 
@@ -158,8 +158,8 @@ export default defineComponent({
       select,
       expanded,
       toggle,
-      highlight,
-      unhighlight,
+      // highlight,
+      // unhighlight,
       selectNextSibling,
       selectPreviousSibling,
       showUpdateTracking,
@@ -185,8 +185,6 @@ export default defineComponent({
       }"
       @click="select()"
       @dblclick="toggle()"
-      @mouseover="highlight()"
-      @mouseleave="unhighlight()"
     >
       <!-- arrow wrapper for better hit box -->
       <span

@@ -121,7 +121,7 @@ export default defineComponent({
             duration: {
               _custom: {
                 value: inspectedEvent.group.duration,
-                display: `${inspectedEvent.group.duration} ms`
+                display: `${(inspectedEvent.group.duration/1000).toFixed(0)} ms`
               }
             }
           }

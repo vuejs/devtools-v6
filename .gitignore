@@ -14,3 +14,4 @@ yarn-error.log
 /packages/*/lib
 .amo.env.json
 build-node
+temp-chrome-data
