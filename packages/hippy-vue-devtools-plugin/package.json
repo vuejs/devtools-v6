@@ -25,6 +25,8 @@
     "url": "https://github.com/hippy-contrib/hippy-vue-devtools/issues"
   },
   "devDependencies": {
+    "@vue-devtools/app-backend-core": "^0.0.0",
+    "@vue-devtools/shared-utils": "^0.0.0",
     "@types/webpack": "^4.41.0",
     "webpack": "4.46.0"
   },
