@@ -1,4 +1,5 @@
 import { setupDevtoolsPlugin } from '@vue/devtools-api'
+import { reactive, ref } from 'vue'
 
 /** @type {import('@vue/devtools-api').DevtoolsPluginApi} */
 let devtoolsApi
@@ -99,6 +100,19 @@ export default {
                 display: `${time}s`,
                 tooltip: 'Elapsed time',
                 value: time,
+              },
+            },
+          })
+
+          payload.instanceData.state.push({
+            type: 'fail',
+            key: 'state',
+            editable: true,
+            value: {
+              _custom: {
+                type: null,
+                readOnly: false,
+                value: reactive({ n: ref(0) }),
               },
             },
           })
