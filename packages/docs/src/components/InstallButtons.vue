@@ -21,12 +21,12 @@ const buttons: Button[] = [
     href: 'https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/',
     external: true,
   },
-  // {
-  //   label: 'Install on Edge',
-  //   logo: '/logo-edge.png',
-  //   href: '',
-  //   external: true,
-  // },
+  {
+    label: 'Install on Edge',
+    logo: '/logo-edge.png',
+    href: 'https://microsoftedge.microsoft.com/addons/detail/vuejs-devtools/olofadcdnkkjdfgjcmjaadnlehnnihnl',
+    external: true,
+  },
   {
     label: 'Standalone app',
     logo: '/logo-electron.svg',
