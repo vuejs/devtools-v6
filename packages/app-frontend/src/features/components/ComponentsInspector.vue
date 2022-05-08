@@ -4,7 +4,7 @@ import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
 import { onMounted, ref, provide, defineComponent } from '@vue/composition-api'
-import { onKeyDown, onKeyUp } from '@front/util/keyboard'
+import { onKeyDown } from '@front/util/keyboard'
 import { useComponentPick, useComponents, loadComponent } from './composable'
 
 export default defineComponent({
@@ -45,16 +45,17 @@ export default defineComponent({
       if (event.key === 'f' && event.altKey) {
         treeFilterInput.value.focus()
         return false
-      }
-    })
-
-    onKeyUp(event => {
-      if (event.key === 's' && !pickingComponent.value) {
+      } else if (event.key === 's' && event.altKey && !pickingComponent.value) {
         startPickingComponent()
+        return false
       } else if (event.key === 'Escape' && pickingComponent.value) {
         stopPickingComponent()
+        return false
+      } else if (event.key === 'r' && (event.ctrlKey || event.metaKey) && event.altKey) {
+        refresh()
+        return false
       }
-    })
+    }, true)
 
     // Refresh
 
@@ -183,7 +184,10 @@ export default defineComponent({
       />
 
       <VueButton
-        v-tooltip="'Force refresh'"
+        v-tooltip="{
+          content: $t('ComponentTree.refresh.tooltip'),
+          html: true
+        }"
         class="icon-button flat"
         icon-left="refresh"
         @click="refresh()"

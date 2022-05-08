@@ -96,6 +96,7 @@ export default defineComponent({
     :class="{
       'disconnected pointer-events-none': !isInitializing && !isConnected
     }"
+    tabindex="0"
   >
     <AppConnecting
       v-if="isInitializing"

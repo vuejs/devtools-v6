@@ -54,10 +54,13 @@ export default {
   },
   ComponentTree: {
     select: {
-      tooltip: '[[S]] Select component in the page',
+      tooltip: '[[{{keys.alt}}]] + [[S]] Select component in the page',
     },
     filter: {
       tooltip: '[[{{keys.alt}}]] + [[F]] Filter components by name',
+    },
+    refresh: {
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.alt}}]] + [[R]] Force refresh',
     },
   },
   ComponentInstance: {

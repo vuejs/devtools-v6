@@ -37,7 +37,7 @@ export default defineComponent({
         stateFilterInput.value.focus()
         return false
       }
-    })
+    }, true)
 
     const sameApp = computed(() => selectedComponent.data.value?.id.split(':')[0] === selectedComponentId.value?.split(':')[0])
 
