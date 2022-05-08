@@ -17,8 +17,8 @@
     "dev:client": "webpack --watch",
     "dev:node": "webpack --watch --config webpack.node.config.js",
     "build": "npm run build:client && npm run build:node",
-    "build:client": "rm -rf ./build && cross-env NODE_ENV=production webpack",
-    "build:node": "rm -rf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
+    "build:client": "rimraf ./build && cross-env NODE_ENV=production webpack",
+    "build:node": "rimraf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
   },
   "author": "",
   "license": "MIT",
@@ -39,6 +39,7 @@
     "@vue-devtools/app-frontend": "^0.0.0",
     "@vue-devtools/build-tools": "^0.0.0",
     "@vue-devtools/shared-utils": "^0.0.0",
+    "rimraf": "^3.0.2",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0"
   }
