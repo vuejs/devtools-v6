@@ -1,5 +1,5 @@
-import { InspectorNodeTag } from './api'
-import { ID } from './util'
+import type { InspectorNodeTag } from './api.js'
+import type { ID } from './util.js'
 
 export type ComponentInstance = any // @TODO
 

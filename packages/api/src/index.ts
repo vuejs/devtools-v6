@@ -1,13 +1,13 @@
-import { getTarget, getDevtoolsGlobalHook, isProxyAvailable } from './env'
-import { HOOK_SETUP } from './const'
-import { DevtoolsPluginApi } from './api'
-import { ApiProxy } from './proxy'
-import { PluginDescriptor, ExtractSettingsTypes, PluginSettingsItem } from './plugin'
+import { getTarget, getDevtoolsGlobalHook, isProxyAvailable } from './env.js'
+import { HOOK_SETUP } from './const.js'
+import type { DevtoolsPluginApi } from './api/index.js'
+import { ApiProxy } from './proxy.js'
+import type { PluginDescriptor, ExtractSettingsTypes, PluginSettingsItem } from './plugin.js'
 
-export * from './api'
-export * from './plugin'
-export * from './time'
-export { PluginQueueItem } from './env'
+export * from './api/index.js'
+export * from './plugin.js'
+export * from './time.js'
+export { PluginQueueItem } from './env.js'
 
 // https://github.com/microsoft/TypeScript/issues/30680#issuecomment-752725353
 type Cast<A, B> = A extends B ? A : B

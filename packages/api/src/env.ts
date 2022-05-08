@@ -1,5 +1,5 @@
-import { PluginDescriptor, SetupFunction } from '.'
-import { ApiProxy } from './proxy'
+import type { PluginDescriptor, SetupFunction } from './index.js'
+import type { ApiProxy } from './proxy.js'
 
 export interface PluginQueueItem {
   pluginDescriptor: PluginDescriptor
