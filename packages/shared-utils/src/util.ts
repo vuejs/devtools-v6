@@ -353,13 +353,14 @@ export function getCustomFunctionDetails (func: Function): CustomState {
   // Trim any excess whitespace from the argument string
   const match = matches && matches[0]
   const args = typeof match === 'string'
-    ? `(${match.substring(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})`
+    ? match
     : '(?)'
   const name = typeof func.name === 'string' ? func.name : ''
   return {
     _custom: {
       type: 'function',
-      display: `<span>f</span> ${escape(name)}${args}`,
+      display: `<span style="opacity:.5;">function</span> ${escape(name)}${args}`,
+      tooltip: string.trim() ? `<pre>${string}</pre>` : null,
       _reviveId: reviveCache.cache(func),
     },
   }
