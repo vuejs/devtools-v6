@@ -12,6 +12,10 @@ const double = computed(() => count.value * 2)
 
 const answer = 42
 
+const state2 = reactive({
+  n: ref(0),
+})
+
 function onClick () {
   count.value++
 }
@@ -26,4 +30,6 @@ function onClick () {
   </button>
 
   <Child />
+
+  <pre>{{ state2 }}</pre>
 </template>

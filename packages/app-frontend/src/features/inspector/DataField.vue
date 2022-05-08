@@ -68,11 +68,15 @@ export default defineComponent({
       return valueType(this.field.value)
     },
 
+    interpretedValueType (): string {
+      return valueType(this.field.value, false)
+    },
+
     valueDetails (): string {
       return valueDetails(this.field.value)
     },
 
-    rawValueType (): string {
+    nativeValueType (): string {
       return typeof this.field.value
     },
 
@@ -190,7 +194,7 @@ export default defineComponent({
     },
 
     valueClass (): string[] {
-      const cssClass = [this.valueType, `raw-${this.rawValueType}`]
+      const cssClass = [this.valueType, `raw-${this.nativeValueType}`]
       if (this.valueType === 'custom') {
         const value = this.field.value
         value._custom.type && cssClass.push(`type-${value._custom.type}`)

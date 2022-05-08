@@ -108,13 +108,7 @@ export default {
             type: 'fail',
             key: 'state',
             editable: true,
-            value: {
-              _custom: {
-                type: null,
-                readOnly: false,
-                value: reactive({ n: ref(0) }),
-              },
-            },
+            value: reactive({ n: ref(0) }),
           })
 
           return api.getComponentBounds(payload.componentInstance).then(bounds => {
