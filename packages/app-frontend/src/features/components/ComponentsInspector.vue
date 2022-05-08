@@ -59,9 +59,22 @@ export default defineComponent({
 
     // Refresh
 
+    const animateRefresh = ref(false)
+    let animateRefreshTimer
+
     function refresh () {
       requestComponentTree(null)
       loadComponent(selectedComponentId.value)
+
+      // Animation
+      animateRefresh.value = false
+      clearTimeout(animateRefreshTimer)
+      requestAnimationFrame(() => {
+        animateRefresh.value = true
+        animateRefreshTimer = setTimeout(() => {
+          animateRefresh.value = false
+        }, 1000)
+      })
     }
 
     // Scroller
@@ -77,6 +90,7 @@ export default defineComponent({
       startPickingComponent,
       stopPickingComponent,
       refresh,
+      animateRefresh,
       treeScroller,
     }
   },
@@ -189,6 +203,9 @@ export default defineComponent({
           html: true
         }"
         class="icon-button flat"
+        :class="{
+          'animate-icon': animateRefresh,
+        }"
         icon-left="refresh"
         @click="refresh()"
       />
@@ -230,6 +247,18 @@ export default defineComponent({
     .content {
       border: none !important;
     }
+  }
+}
+
+.animate-icon {
+  >>> .vue-ui-icon {
+    animation: refresh 1s ease-out;
+  }
+}
+
+@keyframes refresh {
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>
