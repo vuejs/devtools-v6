@@ -71,7 +71,7 @@ export function installHook (target, isIframe = false) {
           console.warn('[Vue Devtools] No hook in parent window')
         }
       } catch (e) {
-        console.warn('[Vue Devtools] Failed to send message to parend window', e)
+        console.warn('[Vue Devtools] Failed to send message to parent window', e)
       }
     }
 
