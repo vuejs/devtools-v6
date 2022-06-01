@@ -15,7 +15,7 @@ export interface ComponentTreeNode {
   domOrder?: number[]
   consoleId?: string
   isRouterView?: boolean
-  macthedRouteSegment?: string
+  matchedRouteSegment?: string
   tags: InspectorNodeTag[]
   meta?: any
 }
