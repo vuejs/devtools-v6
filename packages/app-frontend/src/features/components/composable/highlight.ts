@@ -2,7 +2,7 @@ import { useBridge } from '@front/features/bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { Ref } from '@vue/composition-api'
 
-function handleThrottle (duration = 200) {
+function createThrottleFn (duration = 200) {
   let timer: ReturnType<typeof setTimeout> | undefined
   let isExecuting = false
 
@@ -32,7 +32,7 @@ function handleThrottle (duration = 200) {
   return exec
 }
 
-const execThrottleFn = handleThrottle()
+const execThrottleFn = createThrottleFn()
 
 export function useComponentHighlight (id: Ref<string>) {
   const { bridge } = useBridge()
