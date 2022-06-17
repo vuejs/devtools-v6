@@ -1071,7 +1071,7 @@
     "@docsearch/css" "3.0.0"
     algoliasearch "^4.0.0"
 
-"@electron/get@^1.0.1":
+"@electron/get@^1.13.0":
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.14.1.tgz#16ba75f02dffb74c23965e72d617adc721d27f40"
   integrity sha512-BrZYyL/6m0ZXz/lDxy/nlVhQz+WF+iPS6qXolEU8atw7h6v1aYkjwJZ63m+bJMBTxDE66X+r2tPS4a/8C82sZw==
@@ -4852,12 +4852,12 @@ electron-to-chromium@^1.4.76:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.84.tgz#2700befbcb49c42c4ee162e137ff392c07658249"
   integrity sha512-b+DdcyOiZtLXHdgEG8lncYJdxbdJWJvclPNMg0eLUDcSOSO876WA/pYjdSblUTd7eJdIs4YdIxHWGazx7UPSJw==
 
-electron@^12.0.6:
-  version "12.2.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-12.2.3.tgz#d426a7861e3c722f92c32153f11f7bbedf65b000"
-  integrity sha512-B27c7eqx1bC5kea6An8oVhk1pShNC4VGqWarHMhD47MDtmg54KepHO5AbAvmKKZK/jWN7NTC7wyCYTDElJNtQA==
+electron@^15.5.5:
+  version "15.5.5"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-15.5.5.tgz#796b7822bfb2b045b504e40657674f2869361681"
+  integrity sha512-cGS1ueek14WLvLJlJbId3fmqJLvkr7VuBI0hHt6gpKaj8m2iv/NMteRg0deLgwlxjEF6ZGGNerUJW6a96rNq/Q==
   dependencies:
-    "@electron/get" "^1.0.1"
+    "@electron/get" "^1.13.0"
     "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
