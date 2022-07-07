@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "build": "rimraf ./build && cross-env NODE_ENV=production webpack --progress",
+    "prepare": "rimraf ./app/'VueDevTools Extension'/Resources/* && cp -r build icons popups devtools-background.html devtools.html manifest.json ./app/'VueDevTools Extension'/Resources/",
     "archive": "cd ./app && xcodebuild -scheme VueDevTools -archivePath ./archive archive",
     "extension": "cd ./app && xcodebuild -exportArchive -archivePath ./archive.xcarchive -exportPath ./extension -exportOptionsPlist ./exportOptions.plist",
-    "safari": "yarn archive && yarn extension"
+    "safari": "yarn prepare && yarn archive && yarn extension"
   },
   "dependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",

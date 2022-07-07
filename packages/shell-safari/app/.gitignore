@@ -21,3 +21,4 @@ xcuserdata/
 !**/*.playground/playground.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 *.xcarchive
 extension
+VueDevTools*Extension/Resources
