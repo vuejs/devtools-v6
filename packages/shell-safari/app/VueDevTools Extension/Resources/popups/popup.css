@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700,700i');
+
+body {
+  font-family: Roboto, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 18px 24px;
+  color: #2c3e50;
+}
+
+body,
+p {
+  margin: 0;
+}
+
+p {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.short-paragraph {
+  min-width: initial;
+  white-space: nowrap;
+}
+
+a {
+  color: #42B983;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.screenshot {
+  position: relative;
+}
+
+.screenshot > img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 100%;
+  margin-right: 24px;
+  box-shadow: 0 0 15px rgb(0 0 0 / 10%);
+}
