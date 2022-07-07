@@ -23,6 +23,8 @@
 		7A88926D2877121300DBC344 /* popups in Resources */ = {isa = PBXBuildFile; fileRef = 7A8892682877121300DBC344 /* popups */; };
 		7A88926E2877121300DBC344 /* devtools.html in Resources */ = {isa = PBXBuildFile; fileRef = 7A8892692877121300DBC344 /* devtools.html */; };
 		7A88926F2877121300DBC344 /* devtools-background.html in Resources */ = {isa = PBXBuildFile; fileRef = 7A88926A2877121300DBC344 /* devtools-background.html */; };
+		7AA1F6E8287723FC008B1612 /* exportOptions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7AA1F6E7287723FC008B1612 /* exportOptions.plist */; };
+		7AA1F6E9287723FC008B1612 /* exportOptions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7AA1F6E7287723FC008B1612 /* exportOptions.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +73,7 @@
 		7A8892682877121300DBC344 /* popups */ = {isa = PBXFileReference; lastKnownFileType = folder; path = popups; sourceTree = "<group>"; };
 		7A8892692877121300DBC344 /* devtools.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = devtools.html; sourceTree = "<group>"; };
 		7A88926A2877121300DBC344 /* devtools-background.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "devtools-background.html"; sourceTree = "<group>"; };
+		7AA1F6E7287723FC008B1612 /* exportOptions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = exportOptions.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +97,7 @@
 		7A8892022877117600DBC344 = {
 			isa = PBXGroup;
 			children = (
+				7AA1F6E7287723FC008B1612 /* exportOptions.plist */,
 				7A88920D2877117600DBC344 /* VueDevTools */,
 				7A8892412877117800DBC344 /* VueDevTools Extension */,
 				7A88920C2877117600DBC344 /* Products */,
@@ -241,6 +245,7 @@
 			files = (
 				7A8892152877117600DBC344 /* Icon.png in Resources */,
 				7A88921E2877117600DBC344 /* Main.storyboard in Resources */,
+				7AA1F6E8287723FC008B1612 /* exportOptions.plist in Resources */,
 				7A8892192877117600DBC344 /* Script.js in Resources */,
 				7A8892132877117600DBC344 /* Main.html in Resources */,
 				7A8892202877117700DBC344 /* Assets.xcassets in Resources */,
@@ -254,6 +259,7 @@
 			files = (
 				7A88926E2877121300DBC344 /* devtools.html in Resources */,
 				7A88926C2877121300DBC344 /* build in Resources */,
+				7AA1F6E9287723FC008B1612 /* exportOptions.plist in Resources */,
 				7A88926F2877121300DBC344 /* devtools-background.html in Resources */,
 				7A88926D2877121300DBC344 /* popups in Resources */,
 				7A88924A2877117800DBC344 /* manifest.json in Resources */,

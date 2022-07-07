@@ -2,7 +2,10 @@
   "name": "@vue-devtools/shell-safari",
   "version": "0.0.0",
   "scripts": {
-    "build": "rimraf ./build && cross-env NODE_ENV=production webpack --progress"
+    "build": "rimraf ./build && cross-env NODE_ENV=production webpack --progress",
+    "archive": "cd ./app && xcodebuild -scheme VueDevTools -archivePath ./archive archive",
+    "extension": "cd ./app && xcodebuild -exportArchive -archivePath ./archive.xcarchive -exportPath ./extension -exportOptionsPlist ./exportOptions.plist",
+    "safari": "yarn archive && yarn extension"
   },
   "dependencies": {
     "@vue-devtools/app-backend-core": "^0.0.0",
