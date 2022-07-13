@@ -190,13 +190,13 @@ function processState (instance): ComponentState[] {
 
 
 function processSetupState (instance) {
-  const state = instance._setupProxy
+  const state = instance._setupProxy || instance
   const raw = instance._setupState
-  if (!raw || !state) {
+  if (!raw) {
     return []
   }
 
-  return Object.keys(state)
+  return Object.keys(raw)
     .filter(key => !key.startsWith('__'))
     .map(key => {
       const value = returnError(() => toRaw(state[key]))
