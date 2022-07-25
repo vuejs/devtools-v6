@@ -18,7 +18,8 @@ export default defineConfig({
     editLinkText: 'Suggest changes to this page',
 
     algolia: {
-      apiKey: '4a61e935b51c9631f1d29e4270efbb72',
+      appId: 'CFRGFZ1IGJ',
+      apiKey: '6c814da38002372317bcbefd73e60bbf',
       indexName: 'devtools-vuejs'
     },
 
