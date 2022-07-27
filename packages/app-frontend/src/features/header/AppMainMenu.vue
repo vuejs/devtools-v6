@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed } from 'vue'
 import { useRoute } from '@front/util/router'
 
 export default defineComponent({

@@ -1,3 +1,3 @@
-import { ref } from '@vue/composition-api'
+import { ref } from 'vue'
 
 export const showAppsSelector = ref(true)

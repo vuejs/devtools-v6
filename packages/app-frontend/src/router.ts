@@ -98,6 +98,7 @@ const STORAGE_ROUTE = 'route'
 
 export function createRouter () {
   const router = new VueRouter({
+    // @ts-expect-error Component type mismatch @TODO: fix this
     routes,
   })
 

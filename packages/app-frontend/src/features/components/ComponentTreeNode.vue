@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from 'vue'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED, SharedData } from '@vue-devtools/shared-utils'

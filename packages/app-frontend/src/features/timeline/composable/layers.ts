@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { computed } from '@vue/composition-api'
+import { computed } from 'vue'
 import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
 import { useApps, waitForAppSelect } from '@front/features/apps'
 import { getBridge } from '@front/features/bridge'

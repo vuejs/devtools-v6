@@ -2,7 +2,7 @@
 import StateFields from './StateFields.vue'
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent } from 'vue'
 import { useComponentStateTypePlugin } from '@front/features/plugin'
 import { useOrientation } from '@front/features/layout/orientation'
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, onUnmounted, defineComponent, computed } from '@vue/composition-api'
+import { ref, onUnmounted, defineComponent, computed } from 'vue'
 
 export default defineComponent({
   props: {

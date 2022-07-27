@@ -4,7 +4,7 @@ import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
 
-import { watch, ref, provide, defineComponent } from '@vue/composition-api'
+import { watch, ref, provide, defineComponent } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
 import { useCurrentInspector } from './composable'

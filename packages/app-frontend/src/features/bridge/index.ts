@@ -1,4 +1,4 @@
-import { onUnmounted } from '@vue/composition-api'
+import { onUnmounted } from 'vue'
 import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 
 let bridge: Bridge

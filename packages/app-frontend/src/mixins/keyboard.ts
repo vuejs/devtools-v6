@@ -1,4 +1,4 @@
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 
 export const LEFT = 'ArrowLeft'
 export const UP = 'ArrowUp'

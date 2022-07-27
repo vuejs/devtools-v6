@@ -3,7 +3,7 @@ import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import RenderCode from './RenderCode.vue'
 
-import { defineComponent, ref, watch, computed } from '@vue/composition-api'
+import { defineComponent, ref, watch, computed } from 'vue'
 import { getComponentDisplayName, SharedData } from '@vue-devtools/shared-utils'
 import { onKeyDown } from '@front/util/keyboard'
 import { useSelectedComponent } from './composable'

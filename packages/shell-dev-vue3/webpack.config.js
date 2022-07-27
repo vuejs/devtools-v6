@@ -19,7 +19,7 @@ module.exports = createConfig({
   },
   resolve: {
     alias: {
-      vue: require.resolve('vue/dist/vue.esm-bundler.js'),
+      vue$: require.resolve('vue/dist/vue.esm-bundler.js'),
     },
     symlinks: false,
   },

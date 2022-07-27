@@ -6,7 +6,7 @@ import AppSelect from '../apps/AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
 import AppMainMenu from './AppMainMenu.vue'
 
-import { computed, ref, watch, defineComponent } from '@vue/composition-api'
+import { computed, ref, watch, defineComponent } from 'vue'
 import type { RawLocation, Route } from 'vue-router'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useRoute } from '@front/util/router'

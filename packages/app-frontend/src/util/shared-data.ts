@@ -1,4 +1,4 @@
-import { onUnmounted } from '@vue/composition-api'
+import { onUnmounted } from 'vue'
 import { watchSharedData } from '@vue-devtools/shared-utils'
 
 export function onSharedDataChange (prop, handler) {

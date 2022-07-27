@@ -1,4 +1,4 @@
-import { getCurrentInstance, computed } from '@vue/composition-api'
+import { getCurrentInstance, computed } from 'vue'
 
 export function useRouter () {
   return getCurrentInstance().proxy.$router

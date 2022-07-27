@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { computed, ref } from '@vue/composition-api'
+import { computed, ref } from 'vue'
 import { PluginDescriptor } from '@vue/devtools-api'
 import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'

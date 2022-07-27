@@ -1,4 +1,4 @@
-import { ref } from '@vue/composition-api'
+import { ref } from 'vue'
 
 const isConnected = ref(false)
 const isInitializing = ref(true)
