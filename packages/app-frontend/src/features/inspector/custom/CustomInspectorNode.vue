@@ -1,6 +1,5 @@
 <script lang="ts">
-import Vue from 'vue'
-import { ref, computed, watch, defineComponent } from 'vue'
+import Vue, { ref, computed, watch, defineComponent } from 'vue'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { onKeyDown } from '@front/util/keyboard'
 import { useCurrentInspector } from './composable'
