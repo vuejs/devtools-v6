@@ -18,7 +18,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
     id: 'org.vuejs.vue2-internal',
     label: 'Vue 2',
     homepage: 'https://vuejs.org/',
-    logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
+    logo: 'https://v2.vuejs.org/images/icons/favicon-96x96.png',
     settings: {
       legacyActions: {
         label: 'Legacy Actions',
