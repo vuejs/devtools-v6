@@ -1,4 +1,4 @@
-import { onUnmounted, computed, watch } from '@vue/composition-api'
+import { onUnmounted, computed, watch } from 'vue'
 import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { formatTime } from '@front/util/format'

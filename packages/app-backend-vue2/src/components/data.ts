@@ -1,5 +1,5 @@
 import { camelize, getComponentName, getCustomRefDetails, StateEditor, SharedData } from '@vue-devtools/shared-utils'
-import { ComponentState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
+import { ComponentState, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { functionalVnodeMap, instanceMap } from './tree'
 import 'core-js/modules/es.object.entries'
 
@@ -53,6 +53,7 @@ export function getInstanceDetails (instance): InspectedComponentData {
 function getInstanceState (instance): ComponentState[] {
   return processProps(instance).concat(
     processState(instance),
+    processSetupState(instance),
     processRefs(instance),
     processComputed(instance),
     processInjected(instance),
@@ -185,6 +186,110 @@ function processState (instance): ComponentState[] {
       value: instance._data[key],
       editable: true,
     }))
+}
+
+function processSetupState (instance) {
+  const state = instance._setupProxy || instance
+  const raw = instance._setupState
+  if (!raw) {
+    return []
+  }
+
+  return Object.keys(raw)
+    .filter(key => !key.startsWith('__'))
+    .map(key => {
+      const value = returnError(() => toRaw(state[key]))
+
+      const rawData = raw[key]
+
+      let result: any
+
+      if (rawData) {
+        const info = getSetupStateInfo(rawData)
+
+        const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
+        const isState = info.ref || info.computed || info.reactive
+        const isOther = typeof value === 'function' || typeof value?.render === 'function'
+        // effect is a Vue 2 Watcher instance
+        const raw = rawData.effect?.expression || rawData.effect?.getter?.toString()
+
+        result = {
+          ...objectType ? { objectType } : {},
+          ...raw ? { raw } : {},
+          editable: isState && !info.readonly,
+          type: isOther ? 'setup (other)' : 'setup',
+        }
+      } else {
+        result = {
+          type: 'setup',
+        }
+      }
+
+      return {
+        key,
+        value,
+        ...result,
+      }
+    })
+}
+
+function returnError (cb: () => any) {
+  try {
+    return cb()
+  } catch (e) {
+    return e
+  }
+}
+
+function isRef (raw: any): boolean {
+  return !!raw.__v_isRef
+}
+
+function isComputed (raw: any): boolean {
+  return isRef(raw) && !!raw.effect
+}
+
+function isReactive (raw: any): boolean {
+  return !!raw.__ob__
+}
+
+function isReadOnly (raw: any): boolean {
+  return !!raw.__v_isReadonly
+}
+
+function toRaw (value: any) {
+  if (value?.__v_raw) {
+    return value.__v_raw
+  }
+  return value
+}
+
+function getSetupStateInfo (raw: any) {
+  return {
+    ref: isRef(raw),
+    computed: isComputed(raw),
+    reactive: isReactive(raw),
+    readonly: isReadOnly(raw),
+  }
+}
+
+export function getCustomObjectDetails (object: any, proto: string): CustomState | undefined {
+  const info = getSetupStateInfo(object)
+
+  const isState = info.ref || info.computed || info.reactive
+  if (isState) {
+    const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
+    const value = toRaw(info.reactive ? object : object._value)
+    const raw = object.effect?.raw?.toString() || object.effect?.fn?.toString()
+    return {
+      _custom: {
+        type: objectType.toLowerCase(),
+        objectType,
+        value,
+        ...raw ? { tooltip: `<span class="font-mono">${raw}</span>` } : {},
+      },
+    }
+  }
 }
 
 /**
@@ -349,10 +454,43 @@ export function findInstanceOrVnode (id) {
   return instanceMap.get(id)
 }
 
-export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor) {
+export function editState (
+  {
+    componentInstance,
+    path,
+    state,
+    type,
+  }: HookPayloads[Hooks.EDIT_COMPONENT_STATE],
+  stateEditor: StateEditor,
+) {
   if (!['data', 'props', 'computed', 'setup'].includes(type)) return
-  const data = stateEditor.has(componentInstance._props, path, !!state.newKey)
-    ? componentInstance._props
-    : componentInstance._data
-  stateEditor.set(data, path, state.value, stateEditor.createDefaultSetCallback(state))
+
+  let target: any
+  const targetPath: string[] = path.slice()
+
+  if (stateEditor.has(componentInstance._props, path, !!state.newKey)) {
+    // props
+    target = componentInstance._props
+  } else if (
+    componentInstance._setupState &&
+    Object.keys(componentInstance._setupState).includes(path[0])
+  ) {
+    // setup
+    target = componentInstance._setupProxy
+
+    const currentValue = stateEditor.get(target, path)
+    if (currentValue != null) {
+      const info = getSetupStateInfo(currentValue)
+      if (info.readonly) return
+    }
+  } else {
+    target = componentInstance._data
+  }
+
+  stateEditor.set(
+    target,
+    targetPath,
+    'value' in state ? state.value : undefined,
+    stateEditor.createDefaultSetCallback(state),
+  )
 }

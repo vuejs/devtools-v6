@@ -1,4 +1,4 @@
-import { computed } from '@vue/composition-api'
+import { computed } from 'vue'
 import { useRoute } from '@front/util/router'
 
 export function useTabs () {

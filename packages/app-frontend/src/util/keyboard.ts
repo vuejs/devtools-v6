@@ -1,12 +1,14 @@
-import { onMounted, onUnmounted } from '@vue/composition-api'
+import { onMounted, onUnmounted } from 'vue'
 
 type KeyboardHandler = (event: KeyboardEvent) => boolean | void | Promise<boolean | void>
 
-function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler) {
+function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler, force: boolean) {
   function handler (event: KeyboardEvent) {
-    if (typeof HTMLElement !== 'undefined' && event.target instanceof HTMLElement && (
-      event.target.tagName === 'INPUT' ||
-      event.target.tagName === 'TEXTAREA'
+    if (!force && (
+      typeof HTMLElement !== 'undefined' && event.target instanceof HTMLElement && (
+        event.target.tagName === 'INPUT' ||
+        event.target.tagName === 'TEXTAREA'
+      )
     )) {
       return
     }
@@ -26,10 +28,10 @@ function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler) {
   })
 }
 
-export function onKeyUp (cb: KeyboardHandler) {
-  handleKeyboard('keyup', cb)
+export function onKeyUp (cb: KeyboardHandler, force = false) {
+  handleKeyboard('keyup', cb, force)
 }
 
-export function onKeyDown (cb: KeyboardHandler) {
-  handleKeyboard('keydown', cb)
+export function onKeyDown (cb: KeyboardHandler, force = false) {
+  handleKeyboard('keydown', cb, force)
 }

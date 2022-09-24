@@ -174,13 +174,18 @@ class ReviveCache {
 
 const reviveCache = new ReviveCache(1000)
 
-export function stringify (data) {
-  // Create a fresh cache for each serialization
-  encodeCache.clear()
-  return stringifyCircularAutoChunks(data, replacer)
+const replacers = {
+  internal: replacerForInternal,
+  user: replaceForUser,
 }
 
-function replacer (key) {
+export function stringify (data, target: keyof typeof replacers = 'internal') {
+  // Create a fresh cache for each serialization
+  encodeCache.clear()
+  return stringifyCircularAutoChunks(data, replacers[target])
+}
+
+function replacerForInternal (key) {
   // @ts-ignore
   const val = this[key]
   const type = typeof val
@@ -240,6 +245,29 @@ function replacer (key) {
     if (customDetails != null) return customDetails
   } else if (Number.isNaN(val)) {
     return NAN
+  }
+  return sanitize(val)
+}
+
+// @TODO revive from backend to have more data to the clipboard
+function replaceForUser (key) {
+  // @ts-ignore
+  let val = this[key]
+  const type = typeof val
+  if (val?._custom && 'value' in val._custom) {
+    val = val._custom.value
+  }
+  if (type !== 'object') {
+    if (val === UNDEFINED) {
+      return undefined
+    } else if (val === INFINITY) {
+      return Infinity
+    } else if (val === NEGATIVE_INFINITY) {
+      return -Infinity
+    } else if (val === NAN) {
+      return NaN
+    }
+    return val
   }
   return sanitize(val)
 }
@@ -353,13 +381,14 @@ export function getCustomFunctionDetails (func: Function): CustomState {
   // Trim any excess whitespace from the argument string
   const match = matches && matches[0]
   const args = typeof match === 'string'
-    ? `(${match.substring(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})`
+    ? match
     : '(?)'
   const name = typeof func.name === 'string' ? func.name : ''
   return {
     _custom: {
       type: 'function',
-      display: `<span>f</span> ${escape(name)}${args}`,
+      display: `<span style="opacity:.5;">function</span> ${escape(name)}${args}`,
+      tooltip: string.trim() ? `<pre>${string}</pre>` : null,
       _reviveId: reviveCache.cache(func),
     },
   }
@@ -700,13 +729,15 @@ function escapeChar (a) {
 }
 
 export function copyToClipboard (state) {
-  if (typeof document === 'undefined') return
-  const dummyTextArea = document.createElement('textarea')
-  dummyTextArea.textContent = stringify(state)
-  document.body.appendChild(dummyTextArea)
-  dummyTextArea.select()
-  document.execCommand('copy')
-  document.body.removeChild(dummyTextArea)
+  let text: string
+
+  if (typeof state !== 'object') {
+    text = String(state)
+  } else {
+    text = stringify(state, 'user')
+  }
+
+  navigator.clipboard.writeText(text)
 }
 
 export function isEmptyObject (obj) {

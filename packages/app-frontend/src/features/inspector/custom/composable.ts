@@ -1,4 +1,4 @@
-import { ref, computed } from '@vue/composition-api'
+import { ref, computed } from 'vue'
 import { useRoute } from '@front/util/router'
 import { useApps } from '@front/features/apps'
 import { BridgeEvents, parse, searchDeepInObject, getStorage, setStorage, Bridge } from '@vue-devtools/shared-utils'
@@ -14,6 +14,10 @@ export interface InspectorFromBackend {
   stateFilterPlaceholder: string
   noSelectionText: string
   actions?: {
+    icon: string
+    tooltip?: string
+  }[]
+  nodeActions?: {
     icon: string
     tooltip?: string
   }[]

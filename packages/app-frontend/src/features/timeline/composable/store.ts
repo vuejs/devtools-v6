@@ -1,4 +1,4 @@
-import { Ref, ref } from '@vue/composition-api'
+import { Ref, ref } from 'vue'
 import { ID } from '@vue/devtools-api'
 import * as PIXI from 'pixi.js-legacy'
 
@@ -61,6 +61,7 @@ export interface Layer extends LayerFromBackend {
   groupsMap: Record<EventGroup['id'], EventGroup>
   groupPositionCache: Record<number, EventGroup[]>
   height: number
+  newHeight: number
   lastInspectedEvent: TimelineEvent
   loaded: boolean
 }

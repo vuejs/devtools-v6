@@ -3,7 +3,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginListItem from './PluginListItem.vue'
 import PluginHome from './PluginHome.vue'
 
-import { defineComponent, ref, computed } from '@vue/composition-api'
+import { defineComponent, ref, computed } from 'vue'
 import { usePlugins } from '.'
 
 export default defineComponent({

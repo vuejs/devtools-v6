@@ -1,4 +1,4 @@
-import { ref, onMounted } from '@vue/composition-api'
+import { ref, onMounted } from 'vue'
 
 export function useDefer (count = 10) {
   const displayPriority = ref(0)

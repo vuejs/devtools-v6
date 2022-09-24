@@ -86,6 +86,29 @@ If you need to use the devtools in incognito mode, you need to change the extens
 ![Firefox Settings 3](../assets/firefox-settings3.png)
 
 
+## Edge
+
+Install the extension on the Edge Store:
+
+<InstallButton
+  label="Install on Edge"
+  logo="/logo-edge.png"
+  href="https://microsoftedge.microsoft.com/addons/detail/vuejs-devtools/olofadcdnkkjdfgjcmjaadnlehnnihnl"
+  external
+/>
+
+### Settings
+
+If you need to use the devtools in InPrivate mode or when you open an HTML file directly, you need to change the extension settings.
+
+1. Go to the extension page:
+
+![Edge settings 1](../assets/edge-settings1.png)
+
+2. Make sure the relevant settings are set:
+
+![Edge settings 2](../assets/edge-settings2.png)
+
 ## Standalone
 
 In case you are using an unsupported browser, or if you have other specific needs (for example your application is in Electron), you can use the standalone application.

@@ -1,4 +1,5 @@
 import { setupDevtoolsPlugin } from '@vue/devtools-api'
+import { reactive, ref } from 'vue'
 
 /** @type {import('@vue/devtools-api').DevtoolsPluginApi} */
 let devtoolsApi
@@ -103,6 +104,13 @@ export default {
             },
           })
 
+          payload.instanceData.state.push({
+            type: 'fail',
+            key: 'state',
+            editable: true,
+            value: reactive({ n: ref(0) }),
+          })
+
           return api.getComponentBounds(payload.componentInstance).then(bounds => {
             payload.instanceData.state.push({
               type: stateType,
@@ -193,6 +201,16 @@ export default {
             tooltip: 'Test custom action',
             action: () => {
               console.log('Meow! 🐱')
+              api.selectInspectorNode('test-inspector', 'child')
+            },
+          },
+        ],
+        nodeActions: [
+          {
+            icon: 'help',
+            tooltip: 'Test custom node action',
+            action: (arg1) => {
+              console.log('Node action', arg1)
               api.selectInspectorNode('test-inspector', 'child')
             },
           },

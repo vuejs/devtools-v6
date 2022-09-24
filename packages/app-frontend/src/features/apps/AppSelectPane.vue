@@ -1,7 +1,7 @@
 <script lang="ts">
 import AppSelectPaneItem from './AppSelectPaneItem.vue'
 
-import { watch, defineComponent, ref, computed } from '@vue/composition-api'
+import { watch, defineComponent, ref, computed } from 'vue'
 import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps, pendingSelectAppId, scanLegacyApps } from '@front/features/apps'
 import { useRouter } from '@front/util/router'

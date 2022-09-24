@@ -84,6 +84,7 @@ export enum BridgeEvents {
   TO_FRONT_CUSTOM_INSPECTOR_STATE = 'f:custom-inspector:state',
   TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE = 'b:custom-inspector:edit-state',
   TO_BACK_CUSTOM_INSPECTOR_ACTION = 'b:custom-inspector:action',
+  TO_BACK_CUSTOM_INSPECTOR_NODE_ACTION = 'b:custom-inspector:node-action',
   TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE = 'f:custom-inspector:select-node',
 
   // Custom state

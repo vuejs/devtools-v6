@@ -6,7 +6,8 @@ import AppSelect from '../apps/AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
 import AppMainMenu from './AppMainMenu.vue'
 
-import { computed, ref, watch, defineComponent } from '@vue/composition-api'
+import { computed, ref, watch, defineComponent } from 'vue'
+import type { RawLocation, Route } from 'vue-router'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useRoute } from '@front/util/router'
 import { useBridge } from '@front/features/bridge'
@@ -14,6 +15,14 @@ import { useInspectors } from '@front/features/inspector/custom/composable'
 import { useTabs } from './tabs'
 import { showAppsSelector } from './header'
 import { useOrientation } from '../layout/orientation'
+
+interface InspectorRoute {
+  icon: string
+  label: string
+  targetRoute: RawLocation
+  matchRoute: (route: Route) => boolean
+  pluginId?: string
+}
 
 export default defineComponent({
   components: {
@@ -32,14 +41,14 @@ export default defineComponent({
 
     const { inspectors: customInspectors } = useInspectors()
 
-    const inspectorRoutes = computed(() => [
+    const inspectorRoutes = computed(() => ([
       {
         icon: 'device_hub',
         label: 'Components',
         targetRoute: { name: 'inspector-components' },
         matchRoute: route => route.matched.some(m => m.name === 'inspector-components'),
       },
-    ].concat(customInspectors.value.map(i => ({
+    ] as InspectorRoute[]).concat(customInspectors.value.map(i => ({
       icon: i.icon || 'tab',
       label: i.label,
       pluginId: i.pluginId,
@@ -95,7 +104,7 @@ export default defineComponent({
 
     <AppMainMenu
       :last-inspector-route="lastInspectorRoute"
-      :label-shown="!showAppsSelector"
+      :label-shown="!showAppsSelector && inspectorRoutes.length * 200 < $responsive.width - 420"
     />
 
     <template v-if="currentInspectorRoute">
@@ -128,8 +137,8 @@ export default defineComponent({
           @update="route => $router.push(route.targetRoute)"
         >
           <VueGroupButton
-            v-for="item of inspectorRoutes"
-            :key="item.id"
+            v-for="(item, index) of inspectorRoutes"
+            :key="index"
             :value="item"
             :icon-left="item.icon"
             class="flat"

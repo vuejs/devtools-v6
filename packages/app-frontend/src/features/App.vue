@@ -7,7 +7,7 @@ import WelcomeSlideshow from './welcome/WelcomeSlideshow.vue'
 import SplitPane from './layout/SplitPane.vue'
 import AppSelectPane from './apps/AppSelectPane.vue'
 
-import { onMounted, defineComponent, ref, watch } from '@vue/composition-api'
+import { onMounted, defineComponent, ref, watch } from 'vue'
 import {
   isChrome,
   setStorage,
@@ -96,6 +96,7 @@ export default defineComponent({
     :class="{
       'disconnected pointer-events-none': !isInitializing && !isConnected
     }"
+    tabindex="0"
   >
     <AppConnecting
       v-if="isInitializing"

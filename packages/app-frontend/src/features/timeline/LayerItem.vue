@@ -1,7 +1,7 @@
 <script lang="ts">
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { defineComponent, PropType, computed } from 'vue'
 import { useDarkMode } from '@front/util/theme'
 import { toStrHex, dimColor, boostColor } from '@front/util/color'
 import { Layer } from './composable'

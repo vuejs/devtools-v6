@@ -3,15 +3,14 @@ import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
 import { EventSystem, FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
 import { Renderer } from '@pixi/core'
-import {
+import Vue, {
   ref,
   onMounted,
   onUnmounted,
   watch,
   watchEffect,
   defineComponent,
-  computed,
-} from '@vue/composition-api'
+} from 'vue'
 import { SharedData, isMac } from '@vue-devtools/shared-utils'
 import {
   useLayers,
@@ -34,7 +33,6 @@ import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 import { Queue } from '@front/util/queue'
 import { addNonReactiveProperties, nonReactive } from '@front/util/reactivity'
-import Vue from 'vue'
 
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
@@ -373,7 +371,32 @@ export default defineComponent({
       resetLayers()
     })
 
-    const totalLayersHeight = computed(() => layers.value.reduce((sum, layer) => sum + layer.height, 0))
+    // Stabilize layer height changes
+
+    let applyLayersNewHeightTimer
+
+    function applyLayersNewHeight () {
+      clearTimeout(applyLayersNewHeightTimer)
+      applyLayersNewHeightTimer = setTimeout(() => {
+        updateLayerPositions()
+        drawLayerBackgroundEffects()
+      }, 0)
+    }
+
+    const layerHeightUpdateTimers: Record<string, any> = {}
+
+    function queueLayerHeightUpdate (layer: Layer) {
+      clearTimeout(layerHeightUpdateTimers[layer.id])
+      const apply = () => {
+        layer.height = layer.newHeight
+        applyLayersNewHeight()
+      }
+      if (layer.height < layer.newHeight) {
+        apply()
+      } else {
+        layerHeightUpdateTimers[layer.id] = setTimeout(apply, 500)
+      }
+    }
 
     // Layer hover
 
@@ -600,12 +623,11 @@ export default defineComponent({
         }
 
         // Might update the layer's height as well
-        if (y + 1 > event.layer.height) {
-          const oldLayerHeight = event.layer.height
-          const newLayerHeight = event.layer.height = y + 1
+        if (y + 1 > event.layer.newHeight) {
+          const oldLayerHeight = event.layer.newHeight
+          const newLayerHeight = event.layer.newHeight = y + 1
           if (oldLayerHeight !== newLayerHeight) {
-            updateLayerPositions()
-            drawLayerBackgroundEffects()
+            queueLayerHeightUpdate(event.layer)
           }
         }
       }
@@ -740,7 +762,7 @@ export default defineComponent({
     function updateEvents () {
       for (const layer of layers.value) {
         if (!layer.groupsOnly) {
-          layer.height = 1
+          layer.newHeight = 1
         }
       }
       updateLayerPositions()
@@ -1316,7 +1338,7 @@ export default defineComponent({
         endTime.value = start + size
 
         // Vertical
-        layersScroller.scrollTop = Math.min(totalLayersHeight.value, startDragScrollTop + deltaY)
+        layersScroller.scrollTop = startDragScrollTop + deltaY
       }
     }
 
@@ -1339,7 +1361,6 @@ export default defineComponent({
     function onResize () {
       // Prevent flashing (will be set back to 1 in postrender event listener)
       app.view.style.opacity = '0'
-      // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
       setTimeout(() => {
         mainRenderTexture?.resize(getAppWidth(), getAppHeight())

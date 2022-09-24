@@ -16,7 +16,7 @@ export function getAppRecord (instance) {
 export function isFragment (instance) {
   const appRecord = getAppRecord(instance)
   if (appRecord) {
-    return appRecord.options.types.Fragment === instance.subTree.type
+    return appRecord.options.types.Fragment === instance.subTree?.type
   }
 }
 

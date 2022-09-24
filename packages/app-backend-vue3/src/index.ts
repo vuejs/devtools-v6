@@ -88,7 +88,7 @@ export const backend = defineBackend({
       }
     })
 
-    api.stateEditor.isRef = value => !!value.__v_isRef
+    api.stateEditor.isRef = value => !!value?.__v_isRef
     api.stateEditor.getRefValue = ref => ref.value
     api.stateEditor.setRefValue = (ref, value) => {
       ref.value = value

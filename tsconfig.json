@@ -21,6 +21,7 @@
     ],
     "allowJs": true,
     "target": "ES2019",
+    "jsx": "preserve",
     // Strict
     "noImplicitAny": false,
     "noImplicitThis": true,

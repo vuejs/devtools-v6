@@ -3,8 +3,8 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
-import { onMounted, ref, provide, defineComponent } from '@vue/composition-api'
-import { onKeyDown, onKeyUp } from '@front/util/keyboard'
+import { onMounted, ref, provide, defineComponent } from 'vue'
+import { onKeyDown } from '@front/util/keyboard'
 import { useComponentPick, useComponents, loadComponent } from './composable'
 
 export default defineComponent({
@@ -45,22 +45,36 @@ export default defineComponent({
       if (event.key === 'f' && event.altKey) {
         treeFilterInput.value.focus()
         return false
-      }
-    })
-
-    onKeyUp(event => {
-      if (event.key === 's' && !pickingComponent.value) {
+      } else if (event.key === 's' && event.altKey && !pickingComponent.value) {
         startPickingComponent()
+        return false
       } else if (event.key === 'Escape' && pickingComponent.value) {
         stopPickingComponent()
+        return false
+      } else if (event.key === 'r' && (event.ctrlKey || event.metaKey) && event.altKey) {
+        refresh()
+        return false
       }
-    })
+    }, true)
 
     // Refresh
+
+    const animateRefresh = ref(false)
+    let animateRefreshTimer
 
     function refresh () {
       requestComponentTree(null)
       loadComponent(selectedComponentId.value)
+
+      // Animation
+      animateRefresh.value = false
+      clearTimeout(animateRefreshTimer)
+      requestAnimationFrame(() => {
+        animateRefresh.value = true
+        animateRefreshTimer = setTimeout(() => {
+          animateRefresh.value = false
+        }, 1000)
+      })
     }
 
     // Scroller
@@ -76,6 +90,7 @@ export default defineComponent({
       startPickingComponent,
       stopPickingComponent,
       refresh,
+      animateRefresh,
       treeScroller,
     }
   },
@@ -183,8 +198,14 @@ export default defineComponent({
       />
 
       <VueButton
-        v-tooltip="'Force refresh'"
+        v-tooltip="{
+          content: $t('ComponentTree.refresh.tooltip'),
+          html: true
+        }"
         class="icon-button flat"
+        :class="{
+          'animate-icon': animateRefresh,
+        }"
         icon-left="refresh"
         @click="refresh()"
       />
@@ -226,6 +247,18 @@ export default defineComponent({
     .content {
       border: none !important;
     }
+  }
+}
+
+.animate-icon {
+  >>> .vue-ui-icon {
+    animation: refresh 1s ease-out;
+  }
+}
+
+@keyframes refresh {
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

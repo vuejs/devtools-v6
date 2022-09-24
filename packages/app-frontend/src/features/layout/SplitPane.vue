@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, defineComponent, PropType, watch } from '@vue/composition-api'
+import { ref, computed, defineComponent, PropType, watch } from 'vue'
 import { useOrientation } from './orientation'
 import { useSavedRef } from '@front/util/reactivity'
 
@@ -171,7 +171,7 @@ export default defineComponent({
     @mouseleave="dragEnd"
   >
     <div
-      class="relative top-0 left-0"
+      class="relative top-0 left-0 overflow-hidden"
       :class="{
         'pointer-events-none': dragging,
         'border-r border-gray-200 dark:border-gray-800': orientation === 'landscape' && !leftCollapsed && !rightCollapsed,

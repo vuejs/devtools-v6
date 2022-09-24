@@ -56,6 +56,10 @@ export async function sendCustomInspectors (ctx: BackendContext) {
         icon: a.icon,
         tooltip: a.tooltip,
       })),
+      nodeActions: i.nodeActions?.map(a => ({
+        icon: a.icon,
+        tooltip: a.tooltip,
+      })),
     })
   }
   ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_LIST, {

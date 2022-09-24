@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from 'vue'
 import { Bridge } from '@vue-devtools/shared-utils'
 import { initDevTools } from '@front'
 import { installHook } from '@back/hook'
@@ -171,7 +171,7 @@ export default defineComponent({
               class="text-green-500"
             >disable Chrome web security</a> to allow manipulating an iframe on a different origin.
           </p>
-          <pre class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm">google-chrome --disable-web-security --user-data-dir="temp-chrome-data"</pre>
+          <pre class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm">google-chrome --disable-web-security --disable-site-isolation-trials --user-data-dir="temp-chrome-data"</pre>
           <p>If the devtools have trouble connecting to the webpage, please put this snippet in the target app HTML before the main scripts:</p>
           <pre
             class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm"
@@ -192,7 +192,7 @@ export default defineComponent({
           target="_blank"
           class="text-green-500"
         >disable Chrome web security</a> to allow manipulating an iframe on a different origin.
-        <pre class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm">google-chrome --disable-web-security --user-data-dir="temp-chrome-data"</pre>
+        <pre class="my-2 p-2 rounded bg-gray-100 dark:bg-gray-900 text-sm">google-chrome --disable-web-security --disable-site-isolation-trials --user-data-dir="temp-chrome-data"</pre>
       </div>
     </VueModal>
   </div>

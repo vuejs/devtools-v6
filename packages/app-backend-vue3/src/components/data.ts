@@ -202,7 +202,6 @@ export function getCustomObjectDetails (object: any, proto: string): CustomState
       _custom: {
         type: objectType.toLowerCase(),
         objectType,
-        readOnly: true,
         value,
         ...raw ? { tooltip: `<span class="font-mono">${raw}</span>` } : {},
       },

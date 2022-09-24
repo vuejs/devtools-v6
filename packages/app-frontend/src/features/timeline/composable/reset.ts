@@ -1,4 +1,4 @@
-import { onUnmounted } from '@vue/composition-api'
+import { onUnmounted } from 'vue'
 import { BridgeEvents, getStorage } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import {

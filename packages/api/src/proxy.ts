@@ -1,7 +1,7 @@
-import { Context, DevtoolsPluginApi, Hookable } from './api'
-import { PluginDescriptor } from './plugin'
-import { HOOK_PLUGIN_SETTINGS_SET } from './const'
-import { now } from './time'
+import type { Context, DevtoolsPluginApi, Hookable } from './api/index.js'
+import type { PluginDescriptor } from './plugin.js'
+import { HOOK_PLUGIN_SETTINGS_SET } from './const.js'
+import { now } from './time.js'
 
 interface QueueItem {
   method: string

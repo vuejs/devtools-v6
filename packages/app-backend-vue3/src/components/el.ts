@@ -50,6 +50,8 @@ export function getInstanceOrVnodeRect (instance) {
     return addIframePosition(getFragmentRect(instance.subTree), getElWindow(el))
   } else if (el.nodeType === 1) {
     return addIframePosition(el.getBoundingClientRect(), getElWindow(el))
+  } else if (instance.subTree.component) {
+    return getInstanceOrVnodeRect(instance.subTree.component)
   }
 }
 
