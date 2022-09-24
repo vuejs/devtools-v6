@@ -29,7 +29,7 @@ export const backend = defineBackend({
     })
 
     api.on.walkComponentTree(async (payload, ctx) => {
-      payload.componentTreeData = await walkTree(payload.componentInstance, payload.filter, api, ctx)
+      payload.componentTreeData = await walkTree(payload.componentInstance, payload.filter, payload.recursively, api, ctx)
     })
 
     api.on.walkComponentParents((payload, ctx) => {

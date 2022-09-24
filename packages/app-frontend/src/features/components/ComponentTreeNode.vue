@@ -141,6 +141,13 @@ export default defineComponent({
       }
     }
 
+    function switchToggle (event: MouseEvent) {
+      if (event.shiftKey) {
+        toggle(true, !expanded.value)
+      } else {
+        toggle()
+      }
+    }
     // Update tracking
 
     const updateTracking = computed(() => updateTrackingEvents.value[props.instance.id])
@@ -157,7 +164,7 @@ export default defineComponent({
       selected,
       select,
       expanded,
-      toggle,
+      switchToggle,
       highlight,
       unhighlight,
       selectNextSibling,
@@ -194,7 +201,7 @@ export default defineComponent({
         :class="{
           'invisible': !instance.hasChildren
         }"
-        @click.stop="toggle()"
+        @click.stop="switchToggle"
       >
         <span
           :class="{

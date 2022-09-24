@@ -8,15 +8,17 @@ export class ComponentWalker {
   ctx: BackendContext
   api: DevtoolsApi
   maxDepth: number
+  recursively: boolean
   componentFilter: ComponentFilter
   // Dedupe instances
   // Some instances may be both on a component and on a child abstract/functional component
   captureIds: Map<string, undefined>
 
-  constructor (maxDepth: number, filter: string, api: DevtoolsApi, ctx: BackendContext) {
+  constructor (maxDepth: number, filter: string, recursively: boolean, api: DevtoolsApi, ctx: BackendContext) {
     this.ctx = ctx
     this.api = api
     this.maxDepth = maxDepth
+    this.recursively = recursively
     this.componentFilter = new ComponentFilter(filter)
   }
 
@@ -161,6 +163,7 @@ export class ComponentWalker {
               backgroundColor: 0xeeeeee,
             },
           ],
+      autoOpen: this.recursively,
     }
 
     // capture children
