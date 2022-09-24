@@ -24,7 +24,7 @@ export default {
   },
   StateInspector: {
     dataType: {
-      tooltip: '[[{{keys.ctrl}}]] + <<mouse>>: Collapse All<br>[[{{keys.shift}}]] + <<mouse>>: Expand All',
+      tooltip: '[[{{keys.shift}}]] + <<mouse>>: Expand/Collapse All',
     },
     filter: {
       tooltip: '[[{{keys.alt}}]] + [[D]] Filter state by name',

@@ -86,14 +86,16 @@ export default {
   methods: {
     toggle (dataType, currentExpanded, event = null) {
       if (event) {
-        if (event.ctrlKey || event.metaKey) {
-          this.setExpandToAll(false)
-          this.$emit('collapse-all')
-          return
-        } else if (event.shiftKey) {
-          this.setExpandToAll(true)
-          this.$emit('expand-all')
-          return
+        if (event.shiftKey) {
+          if (currentExpanded) {
+            this.setExpandToAll(false)
+            this.$emit('collapse-all')
+            return
+          } else {
+            this.setExpandToAll(true)
+            this.$emit('expand-all')
+            return
+          }
         }
       }
       Vue.set(this.expandedState, dataType, !currentExpanded)
