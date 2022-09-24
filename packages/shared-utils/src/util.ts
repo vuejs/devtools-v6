@@ -240,6 +240,10 @@ function replacerForInternal (key) {
       return `[native VNode <${val.tag}>]`
     } else if (typeof HTMLElement !== 'undefined' && val instanceof HTMLElement) {
       return encodeCache.cache(val, () => getCustomHTMLElementDetails(val))
+    } else if (val.constructor?.name === 'Store' && val._wrappedGetters) {
+      return `[object Store]`
+    } else if (val.currentRoute) {
+      return `[object Router]`
     }
     const customDetails = getCustomObjectDetails(val, proto)
     if (customDetails != null) return customDetails
