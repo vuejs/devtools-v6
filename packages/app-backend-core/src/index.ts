@@ -125,7 +125,7 @@ async function connect () {
 
       // Update tree (tags)
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
+        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, false, ctx)
       }
     } catch (e) {
       if (SharedData.debugInfo) {
@@ -185,7 +185,7 @@ async function connect () {
             const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
             if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
               raf(() => {
-                sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
+                sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
               })
             }
 
@@ -227,7 +227,7 @@ async function connect () {
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
             raf(async () => {
               try {
-                sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
+                sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, false, ctx)
               } catch (e) {
                 if (SharedData.debugInfo) {
                   console.error(e)
@@ -365,7 +365,7 @@ async function connect () {
 
   const handleFlush = debounce(async () => {
     if (ctx.currentAppRecord?.backend.options.features.includes(BuiltinBackendFeature.FLUSH)) {
-      await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
+      await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, false, ctx)
       if (ctx.currentInspectedComponentId) {
         await sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
       }
@@ -436,7 +436,7 @@ function connectBridge () {
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, async ({ instanceId, filter, recursively }) => {
     ctx.currentAppRecord.componentFilter = filter
     subscribe(BridgeSubscriptions.COMPONENT_TREE, { instanceId })
-    await sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx, recursively)
+    await sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, recursively, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, async (instanceId) => {
