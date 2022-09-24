@@ -191,7 +191,7 @@ export default defineComponent({
         paddingLeft: depth * 15 + 4 + 'px'
       }"
       @click="select()"
-      @dblclick="toggle()"
+      @dblclick="switchToggle"
       @mouseover="highlight()"
       @mouseleave="unhighlight()"
     >
