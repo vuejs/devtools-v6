@@ -20,8 +20,8 @@
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "tinycolor2": "^1.4.2",
-    "vue": "^2.7.8",
-    "vue-router": "^3.3.4",
+    "vue": "^2.7.10",
+    "vue-router": "^3.6.5",
     "vue-virtual-scroller": "^1.0.10"
   }
 }

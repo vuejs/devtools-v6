@@ -1,3 +1,5 @@
+// @ts-nocheck (Unused file)
+
 import { defineComponent } from 'vue'
 import debounce from 'lodash/debounce'
 
