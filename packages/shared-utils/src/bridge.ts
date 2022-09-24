@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import { raf } from './raf'
 
-const BATCH_DURATION = 200
+const BATCH_DURATION = 100
 
 export class Bridge extends EventEmitter {
   wall: any // @TODO
