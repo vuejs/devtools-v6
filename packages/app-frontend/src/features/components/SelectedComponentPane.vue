@@ -41,6 +41,18 @@ export default defineComponent({
 
     const sameApp = computed(() => selectedComponent.data.value?.id.split(':')[0] === selectedComponentId.value?.split(':')[0])
 
+    // Copy component name
+    const showCopiedName = ref(false)
+    let copiedNameTimeout
+    function copyName () {
+      navigator.clipboard.writeText(displayName.value)
+      showCopiedName.value = true
+      clearTimeout(copiedNameTimeout)
+      copiedNameTimeout = setTimeout(() => {
+        showCopiedName.value = false
+      }, 1000)
+    }
+
     return {
       ...selectedComponent,
       displayName,
@@ -48,6 +60,8 @@ export default defineComponent({
       inspector,
       stateFilterInput,
       sameApp,
+      copyName,
+      showCopiedName,
     }
   },
 })
@@ -59,13 +73,23 @@ export default defineComponent({
     class="h-full flex flex-col relative"
   >
     <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
-      <div class="flex items-baseline">
+      <VTooltip
+        :shown="showCopiedName"
+        :triggers="[]"
+        :delay="0"
+        class="flex items-baseline cursor-pointer"
+        @click.native="copyName()"
+      >
         <span class="text-gray-500">&lt;</span>
         <span class="text-green-500">
           {{ displayName }}
         </span>
         <span class="text-gray-500">&gt;</span>
-      </div>
+
+        <template #popper>
+          Copied!
+        </template>
+      </VTooltip>
 
       <VueInput
         ref="stateFilterInput"
