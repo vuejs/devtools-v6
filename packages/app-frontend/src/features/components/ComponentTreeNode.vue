@@ -95,6 +95,11 @@ export default defineComponent({
               }
               break
             }
+            case ' ':
+            case 'Enter': {
+              toggle()
+              break
+            }
             case 'ArrowDown': {
               if (expanded.value && sortedChildren.value.length) {
                 // Select first child
