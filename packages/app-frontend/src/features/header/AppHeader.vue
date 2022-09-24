@@ -104,7 +104,7 @@ export default defineComponent({
 
     <AppMainMenu
       :last-inspector-route="lastInspectorRoute"
-      :label-shown="!showAppsSelector"
+      :label-shown="!showAppsSelector && inspectorRoutes.length * 200 < $responsive.width - 420"
     />
 
     <template v-if="currentInspectorRoute">
