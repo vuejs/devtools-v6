@@ -141,8 +141,8 @@ export default defineComponent({
       }
     }
 
-    function switchToggle (event) {
-      if (event.altKey) {
+    function switchToggle (event: MouseEvent) {
+      if (event.shiftKey) {
         toggle(true, !expanded.value)
       } else {
         toggle()
