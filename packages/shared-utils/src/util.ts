@@ -701,13 +701,15 @@ function escapeChar (a) {
 }
 
 export function copyToClipboard (state) {
-  if (typeof document === 'undefined') return
-  const dummyTextArea = document.createElement('textarea')
-  dummyTextArea.textContent = stringify(state)
-  document.body.appendChild(dummyTextArea)
-  dummyTextArea.select()
-  document.execCommand('copy')
-  document.body.removeChild(dummyTextArea)
+  let text: string
+
+  if (typeof state !== 'object') {
+    text = String(state)
+  } else {
+    text = stringify(state)
+  }
+
+  navigator.clipboard.writeText(text)
 }
 
 export function isEmptyObject (obj) {
