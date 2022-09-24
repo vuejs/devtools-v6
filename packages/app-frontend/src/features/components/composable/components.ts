@@ -1,6 +1,5 @@
-import { ref, computed, watch, Ref, onMounted } from '@vue/composition-api'
+import Vue, { ref, computed, watch, Ref, onMounted } from 'vue'
 import { ComponentTreeNode, EditStatePayload, InspectedComponentData } from '@vue/devtools-api'
-import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
 import {
   BridgeEvents,

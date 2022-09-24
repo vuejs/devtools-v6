@@ -1,4 +1,4 @@
-import { ref } from '@vue/composition-api'
+import { ref } from 'vue'
 import * as PIXI from 'pixi.js-legacy'
 
 let installedFonts = false

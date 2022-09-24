@@ -1,7 +1,7 @@
 <script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-import { watch, defineComponent, ref } from '@vue/composition-api'
+import { watch, defineComponent, ref } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
 import { useCurrentInspector } from './composable'

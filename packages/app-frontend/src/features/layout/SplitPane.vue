@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, defineComponent, PropType, watch } from '@vue/composition-api'
+import { ref, computed, defineComponent, PropType, watch } from 'vue'
 import { useOrientation } from './orientation'
 import { useSavedRef } from '@front/util/reactivity'
 

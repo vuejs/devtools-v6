@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import { SharedData } from '@vue-devtools/shared-utils'
 
 export default defineComponent({

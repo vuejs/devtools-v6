@@ -2,7 +2,7 @@
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import TimelineEventListItem from './TimelineEventListItem.vue'
 
-import { computed, ref, watch, defineComponent } from '@vue/composition-api'
+import { computed, ref, watch, defineComponent } from 'vue'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 import { useRoute, useRouter } from '@front/util/router'
 import { onKeyDown } from '@front/util/keyboard'

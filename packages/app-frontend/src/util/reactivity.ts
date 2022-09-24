@@ -1,4 +1,4 @@
-import { Ref, watch } from '@vue/composition-api'
+import { Ref, watch } from 'vue'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 
 export function nonReactive<T> (ref: Ref<T>) {

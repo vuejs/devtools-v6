@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted } from '@vue/composition-api'
+import { onMounted, onUnmounted } from 'vue'
 
 type KeyboardHandler = (event: KeyboardEvent) => boolean | void | Promise<boolean | void>
 

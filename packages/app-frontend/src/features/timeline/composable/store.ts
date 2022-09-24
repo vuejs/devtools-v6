@@ -1,4 +1,4 @@
-import { Ref, ref } from '@vue/composition-api'
+import { Ref, ref } from 'vue'
 import { ID } from '@vue/devtools-api'
 import * as PIXI from 'pixi.js-legacy'
 

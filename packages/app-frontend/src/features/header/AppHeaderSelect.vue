@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from '@vue/composition-api'
+import { ref, computed, watch, defineComponent } from 'vue'
 import { SharedData } from '@vue-devtools/shared-utils'
 import { useOrientation } from '@front/features/layout/orientation'
 
