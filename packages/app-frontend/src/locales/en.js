@@ -24,7 +24,7 @@ export default {
   },
   StateInspector: {
     dataType: {
-      tooltip: '[[{{keys.shift}}]] + <<mouse>>: Expand/Collapse All',
+      tooltip: '[[{{keys.shift}}]] + <<mouse>>: Expand/Collapse All<br><div class="max-w-[200px] opacity-70">Using this shortcut will override the default toggled state and save it for next time.</div>',
     },
     filter: {
       tooltip: '[[{{keys.alt}}]] + [[D]] Filter state by name',
