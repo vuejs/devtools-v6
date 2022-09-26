@@ -153,7 +153,7 @@ export function getAppRecordId (app, defaultId?: string): string {
 }
 
 export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppRecord> {
-  const record = ctx.appRecords.find(ar => ar.options.app === app)
+  const record = app.__VUE_DEVTOOLS_APP_RECORD__ ?? ctx.appRecords.find(ar => ar.options.app === app)
   if (record) {
     return record
   }
