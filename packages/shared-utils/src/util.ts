@@ -741,7 +741,14 @@ export function copyToClipboard (state) {
     text = stringify(state, 'user')
   }
 
-  navigator.clipboard.writeText(text)
+  // @TODO navigator.clipboard is buggy in extensions
+  if (typeof document === 'undefined') return
+  const dummyTextArea = document.createElement('textarea')
+  dummyTextArea.textContent = text
+  document.body.appendChild(dummyTextArea)
+  dummyTextArea.select()
+  document.execCommand('copy')
+  document.body.removeChild(dummyTextArea)
 }
 
 export function isEmptyObject (obj) {

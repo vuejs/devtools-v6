@@ -4,7 +4,7 @@ import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import RenderCode from './RenderCode.vue'
 
 import { defineComponent, ref, watch, computed } from 'vue'
-import { getComponentDisplayName, SharedData } from '@vue-devtools/shared-utils'
+import { copyToClipboard, getComponentDisplayName, SharedData } from '@vue-devtools/shared-utils'
 import { onKeyDown } from '@front/util/keyboard'
 import { useSelectedComponent } from './composable'
 
@@ -45,7 +45,7 @@ export default defineComponent({
     const showCopiedName = ref(false)
     let copiedNameTimeout
     function copyName () {
-      navigator.clipboard.writeText(displayName.value)
+      copyToClipboard(displayName.value)
       showCopiedName.value = true
       clearTimeout(copiedNameTimeout)
       copiedNameTimeout = setTimeout(() => {
