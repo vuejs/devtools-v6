@@ -54,6 +54,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
   const rootInstance = await backend.api.getAppRootInstance(options.app)
   if (rootInstance) {
     if ((await backend.api.getComponentDevtoolsOptions(rootInstance)).hide) {
+      options.app._vueDevtools_hidden_ = true
       return
     }
 
@@ -156,6 +157,7 @@ export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppR
   if (record) {
     return record
   }
+  if (app._vueDevtools_hidden_) return null
   return new Promise((resolve, reject) => {
     let resolvers = appRecordPromises.get(app)
     let timedOut = false
