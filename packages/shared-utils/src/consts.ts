@@ -18,6 +18,8 @@ export enum BridgeEvents {
   /** Tab was switched */
   TO_BACK_TAB_SWITCH = 'b:tab:switch',
   TO_BACK_LOG = 'b:log',
+  /** Reconnected after background script is terminated (idle) */
+  TO_FRONT_RECONNECTED = 'f:reconnected',
 
   // Apps
   /** App was registered */

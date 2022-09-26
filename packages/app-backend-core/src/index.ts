@@ -61,7 +61,7 @@ export async function initBackend (bridge: Bridge) {
   initOnPageConfig()
 
   if (!connected) {
-    // connected = false
+    // First connect
     ctx = target.__vdevtools_ctx = createBackendContext({
       bridge,
       hook,
@@ -91,8 +91,10 @@ export async function initBackend (bridge: Bridge) {
       })
     }
   } else {
+    // Reconnect
     ctx.bridge = bridge
     connectBridge()
+    ctx.bridge.send(BridgeEvents.TO_FRONT_RECONNECTED)
   }
 }
 
