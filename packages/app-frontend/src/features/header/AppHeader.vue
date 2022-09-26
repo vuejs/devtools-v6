@@ -4,7 +4,6 @@ import AppHeaderLogo from './AppHeaderLogo.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from '../apps/AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
-import AppMainMenu from './AppMainMenu.vue'
 
 import { computed, ref, watch, defineComponent } from 'vue'
 import type { RawLocation, Route } from 'vue-router'
@@ -16,7 +15,7 @@ import { useTabs } from './tabs'
 import { showAppsSelector } from './header'
 import { useOrientation } from '../layout/orientation'
 
-interface InspectorRoute {
+interface HeaderRoute {
   icon: string
   label: string
   targetRoute: RawLocation
@@ -30,7 +29,6 @@ export default defineComponent({
     AppHistoryNav,
     AppSelect,
     AppHeaderSelect,
-    AppMainMenu,
     PluginSourceIcon,
   },
 
@@ -41,14 +39,20 @@ export default defineComponent({
 
     const { inspectors: customInspectors } = useInspectors()
 
-    const inspectorRoutes = computed(() => ([
+    const headerRoutes = computed(() => ([
       {
         icon: 'device_hub',
         label: 'Components',
         targetRoute: { name: 'inspector-components' },
         matchRoute: route => route.matched.some(m => m.name === 'inspector-components'),
       },
-    ] as InspectorRoute[]).concat(customInspectors.value.map(i => ({
+      {
+        icon: 'line_style',
+        label: 'Timeline',
+        targetRoute: { name: 'timeline' },
+        matchRoute: route => route.matched.some(m => m.name === 'timeline'),
+      },
+    ] as HeaderRoute[]).concat(customInspectors.value.map(i => ({
       icon: i.icon || 'tab',
       label: i.label,
       pluginId: i.pluginId,
@@ -56,12 +60,12 @@ export default defineComponent({
       matchRoute: route => route.params.inspectorId === i.id,
     }))))
 
-    const currentInspectorRoute = computed(() => inspectorRoutes.value.find(r => r.matchRoute(route.value)))
+    const currentHeaderRoute = computed(() => headerRoutes.value.find(r => r.matchRoute(route.value)))
 
-    const lastInspectorRoute = ref(null)
-    watch(currentInspectorRoute, value => {
+    const lastHeaderRoute = ref(null)
+    watch(currentHeaderRoute, value => {
       if (value) {
-        lastInspectorRoute.value = value
+        lastHeaderRoute.value = value
       }
     })
 
@@ -80,9 +84,9 @@ export default defineComponent({
     const { orientation } = useOrientation()
 
     return {
-      inspectorRoutes,
-      currentInspectorRoute,
-      lastInspectorRoute,
+      headerRoutes,
+      currentHeaderRoute,
+      lastHeaderRoute,
       showAppsSelector,
       orientation,
     }
@@ -102,58 +106,49 @@ export default defineComponent({
       <img src="~@front/assets/breadcrumb-separator.svg">
     </template>
 
-    <AppMainMenu
-      :last-inspector-route="lastInspectorRoute"
-      :label-shown="!showAppsSelector && inspectorRoutes.length * 200 < $responsive.width - 420"
-    />
+    <template v-if="orientation === 'portrait' || headerRoutes.length * 200 > $responsive.width - 250">
+      <AppHeaderSelect
+        :items="headerRoutes"
+        :selected-item="currentHeaderRoute"
+        @select="route => $router.push(route.targetRoute)"
+      >
+        <template #default="{ item }">
+          <div class="flex items-center space-x-2">
+            <span class="flex-1">{{ item.label }}</span>
+            <PluginSourceIcon
+              v-if="item.pluginId"
+              :plugin-id="item.pluginId"
+              class="flex-none"
+            />
+          </div>
+        </template>
+      </AppHeaderSelect>
+    </template>
 
-    <template v-if="currentInspectorRoute">
-      <img src="~@front/assets/breadcrumb-separator.svg">
-
-      <template v-if="orientation === 'portrait' || inspectorRoutes.length * 200 > $responsive.width - 420">
-        <AppHeaderSelect
-          :items="inspectorRoutes"
-          :selected-item="currentInspectorRoute"
-          @select="route => $router.push(route.targetRoute)"
+    <template v-else>
+      <VueGroup
+        :value="currentHeaderRoute"
+        class="primary"
+        indicator
+        @update="route => $router.push(route.targetRoute)"
+      >
+        <VueGroupButton
+          v-for="(item, index) of headerRoutes"
+          :key="index"
+          :value="item"
+          :icon-left="item.icon"
+          class="flat"
         >
-          <template #default="{ item }">
-            <div class="flex items-center space-x-2">
-              <span class="flex-1">{{ item.label }}</span>
-              <PluginSourceIcon
-                v-if="item.pluginId"
-                :plugin-id="item.pluginId"
-                class="flex-none"
-              />
-            </div>
-          </template>
-        </AppHeaderSelect>
-      </template>
-
-      <template v-else>
-        <VueGroup
-          :value="currentInspectorRoute"
-          class="primary"
-          indicator
-          @update="route => $router.push(route.targetRoute)"
-        >
-          <VueGroupButton
-            v-for="(item, index) of inspectorRoutes"
-            :key="index"
-            :value="item"
-            :icon-left="item.icon"
-            class="flat"
-          >
-            <div class="flex items-center space-x-2">
-              <span class="flex-1">{{ item.label }}</span>
-              <PluginSourceIcon
-                v-if="item.pluginId"
-                :plugin-id="item.pluginId"
-                class="flex-none"
-              />
-            </div>
-          </VueGroupButton>
-        </VueGroup>
-      </template>
+          <div class="flex items-center space-x-2">
+            <span class="flex-1">{{ item.label }}</span>
+            <PluginSourceIcon
+              v-if="item.pluginId"
+              :plugin-id="item.pluginId"
+              class="flex-none"
+            />
+          </div>
+        </VueGroupButton>
+      </VueGroup>
     </template>
 
     <div class="flex-1" />
