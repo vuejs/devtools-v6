@@ -1,7 +1,7 @@
 {
   "name": "Vue.js devtools",
-  "version": "6.4.1",
-  "version_name": "6.4.1",
+  "version": "6.4.2",
+  "version_name": "6.4.2",
   "description": "Browser DevTools extension for debugging Vue.js applications.",
   "manifest_version": 2,
   "icons": {
