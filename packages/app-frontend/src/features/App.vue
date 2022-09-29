@@ -84,7 +84,7 @@ export default defineComponent({
 
 <template>
   <div
-    class="app w-full h-full flex flex-col relative"
+    class="app w-full h-full flex flex-col relative outline-none"
     :class="{
       'disconnected pointer-events-none': !isInitializing && !isConnected
     }"
