@@ -42,5 +42,17 @@
     "rimraf": "^3.0.2",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0"
-  }
+  },
+  "files": [
+    "build",
+    "build-node",
+    "icons",
+    "types",
+    "app.html",
+    "app.js",
+    "bin.js",
+    "index.js",
+    "README.md",
+    "server.js"
+  ]
 }
