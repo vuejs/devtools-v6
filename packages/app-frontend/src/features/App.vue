@@ -6,7 +6,7 @@ import ErrorOverlay from './error/ErrorOverlay.vue'
 import SplitPane from './layout/SplitPane.vue'
 import AppSelectPane from './apps/AppSelectPane.vue'
 
-import { onMounted, defineComponent, ref, watch } from 'vue'
+import { onMounted, defineComponent } from 'vue'
 import {
   isChrome,
   setStorage,
@@ -22,7 +22,6 @@ import { showAppsSelector } from './header/header'
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 
 const STORAGE_PREVIOUS_SESSION_THEME = 'previous-session-theme'
-const STORAGE_WELCOME_HIDDEN = 'welcome-hidden'
 
 export default defineComponent({
   name: 'App',
