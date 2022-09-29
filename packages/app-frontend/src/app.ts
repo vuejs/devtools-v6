@@ -1,7 +1,7 @@
 import App from './features/App.vue'
 
 import Vue from 'vue'
-import { isChrome, initEnv, SharedData, initSharedData, destroySharedData } from '@vue-devtools/shared-utils'
+import { isChrome, initEnv, SharedData, initSharedData, destroySharedData, BridgeEvents } from '@vue-devtools/shared-utils'
 import { createRouter } from './router'
 import { getBridge, setBridge } from './features/bridge'
 import { setAppConnected, setAppInitializing } from './features/connection'
@@ -67,6 +67,10 @@ export function connectApp (app, shell) {
     }
 
     initEnv(Vue)
+
+    bridge.on(BridgeEvents.TO_FRONT_TITLE, ({ title }: { title: string }) => {
+      document.title = `${title} - Vue devtools`
+    })
 
     await initSharedData({
       bridge,

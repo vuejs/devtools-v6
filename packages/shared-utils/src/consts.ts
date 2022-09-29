@@ -20,6 +20,8 @@ export enum BridgeEvents {
   TO_BACK_LOG = 'b:log',
   /** Reconnected after background script is terminated (idle) */
   TO_FRONT_RECONNECTED = 'f:reconnected',
+  /** Change app title (electron) */
+  TO_FRONT_TITLE = 'f:title',
 
   // Apps
   /** App was registered */
