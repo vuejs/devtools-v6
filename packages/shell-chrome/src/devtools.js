@@ -3,6 +3,10 @@
 import { initDevTools, setAppConnected } from '@front'
 import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 
+let disconnected = false
+let connectCount = 0
+let retryConnectTimer
+
 initDevTools({
 
   /**
@@ -16,15 +20,12 @@ initDevTools({
     injectScript(chrome.runtime.getURL('build/backend.js'), () => {
       // 2. connect to background to setup proxy
       let port
-      let disconnected = false
-      let connectCount = 0
-      let timer
 
       const onMessageHandlers = []
 
       function connect () {
         try {
-          clearTimeout(timer)
+          clearTimeout(retryConnectTimer)
           connectCount++
           port = chrome.runtime.connect({
             name: '' + chrome.devtools.inspectedWindow.tabId,
@@ -35,7 +36,7 @@ initDevTools({
             setAppConnected(false)
 
             // Retry
-            timer = setTimeout(connect, 1000)
+            retryConnectTimer = setTimeout(connect, 1000)
           })
 
           if (connectCount > 1) {
@@ -47,7 +48,7 @@ initDevTools({
           setAppConnected(false)
 
           // Retry
-          timer = setTimeout(connect, 5000)
+          retryConnectTimer = setTimeout(connect, 5000)
         }
       }
       connect()
