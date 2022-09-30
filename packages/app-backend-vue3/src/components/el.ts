@@ -9,6 +9,7 @@ export function getRootElementsFromComponentInstance (instance) {
   if (isFragment(instance)) {
     return getFragmentRootElements(instance.subTree)
   }
+  if (!instance.subTree) return []
   return [instance.subTree.el]
 }
 
