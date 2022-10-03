@@ -66,6 +66,8 @@ for (let i = 0; i < 1000000; i++) {
   veryLongText += `line${i}\n`
 }
 
+const unassignedPropSymbol = Symbol('unassigned')
+
 export default {
   components: {
     TestComponent: {
@@ -82,6 +84,10 @@ export default {
     multiTypeProp: {
       type: [Date, Boolean],
       default: false,
+    },
+
+    symbolProp: {
+      default: unassignedPropSymbol,
     },
   },
 
