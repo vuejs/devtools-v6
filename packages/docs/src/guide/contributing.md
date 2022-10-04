@@ -25,7 +25,7 @@ The repository is a monorepo with several nested packages:
 ## Development
 
 1. Clone this repo
-2. run `yarn install`
+2. run `lerna bootstrap`. Make sure `lerna` has installed globally.
 3. then run `yarn run build:watch` and `yarn run dev:vue3` in parallel
 4. A plain shell with a test app will be available at `localhost:8090`.
 
