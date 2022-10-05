@@ -661,7 +661,8 @@ function connectBridge () {
 
   ctx.bridge.send(BridgeEvents.TO_FRONT_TITLE, { title: document.title })
   // Watch page title
-  if (typeof MutationObserver !== 'undefined') {
+  const titleEl = document.querySelector('title')
+  if (titleEl && typeof MutationObserver !== 'undefined') {
     if (pageTitleObserver) {
       pageTitleObserver.disconnect()
     }
@@ -669,10 +670,7 @@ function connectBridge () {
       const title = mutations[0].target as HTMLTitleElement
       ctx.bridge.send(BridgeEvents.TO_FRONT_TITLE, { title: title.innerText })
     })
-    pageTitleObserver.observe(
-      document.querySelector('title'),
-      { subtree: true, characterData: true, childList: true },
-    )
+    pageTitleObserver.observe(titleEl, { subtree: true, characterData: true, childList: true })
   }
 }
 
