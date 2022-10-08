@@ -202,7 +202,7 @@ export default defineComponent({
         </VueDropdownButton>
 
         <VueDropdownButton
-          href="https://new-issue.vuejs.org/?repo=vuejs/devtools"
+          href="https://github.com/vuejs/devtools/issues/new/choose"
           target="_blank"
           icon-left="bug_report"
           icon-right="open_in_new"

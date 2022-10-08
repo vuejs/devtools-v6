@@ -187,7 +187,7 @@ export default defineComponent({
               href="https://devtools.vuejs.org/guide/installation.html#legacy"
               target="_blank"
             >Legacy version</a> and <a
-              href="https://new-issue.vuejs.org/?repo=vuejs/devtools"
+              href="https://github.com/vuejs/devtools/issues/new/choose"
               target="_blank"
             >report an issue</a>.
           </p>
