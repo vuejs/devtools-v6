@@ -24,10 +24,10 @@ The repository is a monorepo with several nested packages:
 
 ## Development
 
-1. Clone this repo
-2. run `yarn install`
-3. then run `yarn run build:watch` and `yarn run dev:vue3` in parallel
-4. A plain shell with a test app will be available at `localhost:8090`.
+1. Clone [this repo](https://github.com/vuejs/devtools)
+2. Run `yarn install` in the repository root to install dependencies.
+3. Run `yarn run build:watch` (compiles and watch the packages) and then `yarn run dev:vue3` (run the development shell) in two different terminals. Wait for the initial compilation in the first terminal to finish before running the second command.
+4. A plain shell with a test app will be available at `http://localhost:8090`.
 
 ## Pull Request Guidelines
 

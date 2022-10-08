@@ -183,11 +183,11 @@ if (process.env.NODE_ENV === 'development') {
 
 **port** - is an optional argument that tells your application on what port devtools middleware server is running. If you use proxy server, you might want to set it to `null` so the port won't be added to connection URL.
 
-[More details](https://github.com/vuejs/vue-devtools/tree/dev/packages/shell-electron#vue-remote-devtools)
+[More details](https://github.com/vuejs/devtools/tree/main/packages/shell-electron#vue-remote-devtools)
 
 ## Legacy
 
-If something is broken with the new devtools, please [submit a new issue](https://new-issue.vuejs.org/?repo=vuejs/devtools)!
+If something is broken with the new devtools, please [submit a new issue](https://github.com/vuejs/devtools/issues/new/choose)!
 
 Meanwhile, you can install the legacy version (v5) of the devtools:
 
