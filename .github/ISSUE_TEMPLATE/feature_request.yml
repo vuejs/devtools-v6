@@ -1,0 +1,28 @@
+name: "\U0001F680 New feature proposal"
+description: Suggest an idea for this project
+labels: [":sparkles: feature request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+       **Before You Start...**
+
+        This form is only for submitting feature requests. If you have a usage question
+        or are unsure if this is really a bug, make sure to:
+
+        - Read the [docs](https://devtools.vuejs.org/)
+        - Read the [FAQ](https://devtools.vuejs.org/guide/faq.html)
+        - Ask on [GitHub Discussions](https://github.com/vuejs/devtools/discussions)
+        - Ask on [Discord Chat](https://chat.vuejs.org/)
+
+        Also try to search for your issue - another user may have already requested something similar!
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: What problem does this feature solve?
+      description: |
+        Explain your use case, context, and rationale behind this feature request. More importantly, what is the **end user experience** you are trying to build that led to the need for this feature?
+      placeholder: Problem description
+    validations:
+      required: true
