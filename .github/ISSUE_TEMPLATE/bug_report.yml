@@ -44,7 +44,7 @@ body:
   - type: textarea
     id: steps-to-reproduce
     attributes:
-      label: Steps to reproduce
+      label: Steps to reproduce & screenshots
       description: |
         What do we need to do after opening your repro in order to make the bug happen in the devtools? Clear and concise reproduction instructions are important for us to be able to triage your issue in a timely manner. Note that you can upload screenshots and use [Markdown](https://guides.github.com/features/mastering-markdown/) to format lists and code.
       placeholder: Steps to reproduce
@@ -69,6 +69,8 @@ body:
       description: Output of `npx envinfo --system --npmPackages vue --binaries --browsers`
       render: shell
       placeholder: System, Binaries, Browsers
+    validations:
+      required: true
   - type: textarea
     id: additional-comments
     attributes:
