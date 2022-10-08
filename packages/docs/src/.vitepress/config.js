@@ -59,6 +59,10 @@ export default defineConfig({
               text: 'Contributing',
               link: '/guide/contributing',
             },
+            {
+              text: 'Devtools performance',
+              link: '/guide/devtools-perf',
+            },
           ],
         },
       ],
