@@ -12,6 +12,7 @@
   },
   "main": "index.js",
   "types": "types/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "start": "node bin.js",
     "dev:client": "webpack --watch",
