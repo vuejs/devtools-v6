@@ -130,29 +130,34 @@ function processSetupState (instance) {
 
       let result: any
 
+      let isOther = typeof value === 'function' ||
+        typeof value?.render === 'function' ||
+        typeof value?.__asyncLoader === 'function'
+
       if (rawData) {
         const info = getSetupStateInfo(rawData)
 
         const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
         const isState = info.ref || info.computed || info.reactive
-        const isOther = typeof value === 'function' || typeof value?.render === 'function'
         const raw = rawData.effect?.raw?.toString() || rawData.effect?.fn?.toString()
+
+        if (objectType) {
+          isOther = false
+        }
 
         result = {
           ...objectType ? { objectType } : {},
           ...raw ? { raw } : {},
           editable: isState && !info.readonly,
-          type: isOther ? 'setup (other)' : 'setup',
-        }
-      } else {
-        result = {
-          type: 'setup',
         }
       }
+
+      const type = isOther ? 'setup (other)' : 'setup'
 
       return {
         key,
         value,
+        type,
         ...result,
       }
     })
@@ -204,6 +209,15 @@ export function getCustomObjectDetails (object: any, proto: string): CustomState
         objectType,
         value,
         ...raw ? { tooltip: `<span class="font-mono">${raw}</span>` } : {},
+      },
+    }
+  }
+
+  if (typeof object.__asyncLoader === 'function') {
+    return {
+      _custom: {
+        type: 'component-definition',
+        display: 'Async component definition',
       },
     }
   }
