@@ -4,6 +4,60 @@ import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 
+const vueBuiltins = [
+  'nextTick',
+  'defineComponent',
+  'defineAsyncComponent',
+  'defineCustomElement',
+  'ref',
+  'computed',
+  'reactive',
+  'readonly',
+  'watchEffect',
+  'watchPostEffect',
+  'watchSyncEffect',
+  'watch',
+  'isRef',
+  'unref',
+  'toRef',
+  'toRefs',
+  'isProxy',
+  'isReactive',
+  'isReadonly',
+  'shallowRef',
+  'triggerRef',
+  'customRef',
+  'shallowReactive',
+  'shallowReadonly',
+  'toRaw',
+  'markRaw',
+  'effectScope',
+  'getCurrentScope',
+  'onScopeDispose',
+  'onMounted',
+  'onUpdated',
+  'onUnmounted',
+  'onBeforeMount',
+  'onBeforeUpdate',
+  'onBeforeUnmount',
+  'onErrorCaptured',
+  'onRenderTracked',
+  'onRenderTriggered',
+  'onActivated',
+  'onDeactivated',
+  'onServerPrefetch',
+  'provide',
+  'inject',
+  'h',
+  'mergeProps',
+  'cloneVNode',
+  'isVNode',
+  'resolveComponent',
+  'resolveDirective',
+  'withDirectives',
+  'withModifiers',
+]
+
 /**
  * Get the detailed information of an inspected instance.
  */
@@ -123,6 +177,7 @@ function processState (instance) {
 function processSetupState (instance) {
   const raw = instance.devtoolsRawSetupState || {}
   return Object.keys(instance.setupState)
+    .filter(key => !vueBuiltins.includes(key))
     .map(key => {
       const value = returnError(() => toRaw(instance.setupState[key]))
 
