@@ -15,8 +15,12 @@ function encode (data, replacer, list, seen) {
     const keys = Object.keys(data)
     for (i = 0, l = keys.length; i < l; i++) {
       key = keys[i]
-      value = data[key]
-      if (replacer) value = replacer.call(data, key, value)
+      try {
+        value = data[key]
+        if (replacer) value = replacer.call(data, key, value)
+      } catch (e) {
+        value = e
+      }
       stored[key] = encode(value, replacer, list, seen)
     }
   } else if (proto === '[object Array]') {
@@ -24,8 +28,12 @@ function encode (data, replacer, list, seen) {
     seen.set(data, index)
     list.push(stored)
     for (i = 0, l = data.length; i < l; i++) {
-      value = data[i]
-      if (replacer) value = replacer.call(data, i, value)
+      try {
+        value = data[i]
+        if (replacer) value = replacer.call(data, i, value)
+      } catch (e) {
+        value = e
+      }
       stored[i] = encode(value, replacer, list, seen)
     }
   } else {
