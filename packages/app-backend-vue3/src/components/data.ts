@@ -354,7 +354,7 @@ function processInject (instance, mergedType) {
   return keys.map(({ key, originalKey }) => ({
     type: 'injected',
     key: originalKey && key !== originalKey ? `${originalKey.toString()} ➞ ${key.toString()}` : key.toString(),
-    value: returnError(() => instance.ctx[key] || instance.provides[originalKey] || defaultValue),
+    value: returnError(() => instance.ctx.hasOwnProperty(key) ? instance.ctx[key] : instance.provides.hasOwnProperty(originalKey) ? instance.provides[originalKey] : defaultValue),
   }))
 }
 
