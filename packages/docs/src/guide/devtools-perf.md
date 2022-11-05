@@ -26,7 +26,7 @@ Make sure you have run both the `build:watch` and the `dev:vue3` scripts as [exp
 
 In the Chrome window, open the devtools development shell at `http://localhost:8090`.
 
-You can shen change the target URL in the toolbar on top of the devtools:
+You can then change the target URL in the toolbar on top of the devtools:
 
 ![devtools shell screenshot](../assets/dev-shell-url.png)
 
