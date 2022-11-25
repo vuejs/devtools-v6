@@ -30,7 +30,8 @@
     "test:open": "cypress open --config baseUrl=http://localhost:8100",
     "docs:dev": "cd packages/docs && vitepress dev src",
     "docs:build": "cd packages/docs && vitepress build src",
-    "docs:serve": "cd packages/docs && vitepress serve src"
+    "docs:serve": "cd packages/docs && vitepress serve src",
+    "build:safari": "cd packages/app-xcode && node ./build-extension.js"
   },
   "repository": {
     "type": "git",

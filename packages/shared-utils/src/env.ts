@@ -9,6 +9,8 @@ export const isFirefox = isBrowser && navigator.userAgent.indexOf('Firefox') > -
 export const isWindows = isBrowser && navigator.platform.indexOf('Win') === 0
 export const isMac = isBrowser && navigator.platform === 'MacIntel'
 export const isLinux = isBrowser && navigator.platform.indexOf('Linux') === 0
+export const isSafari = isBrowser && navigator.userAgent.match(/safari/i)
+
 export const keys = {
   ctrl: isMac ? '&#8984;' : 'Ctrl',
   shift: 'Shift',
@@ -27,6 +29,7 @@ export function initEnv (Vue) {
     $isWindows: { get: () => isWindows },
     $isMac: { get: () => isMac },
     $isLinux: { get: () => isLinux },
+    $isSafari: { get: () => isSafari },
     $keys: { get: () => keys },
   })
 

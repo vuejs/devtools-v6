@@ -3,6 +3,7 @@ const { createConfig } = require('@vue-devtools/build-tools')
 
 module.exports = createConfig({
   entry: {
+    polyfills: './src/polyfills.js',
     hook: './src/hook.js',
     devtools: './src/devtools.js',
     background: './src/background.js',
