@@ -1,6 +1,8 @@
 <script setup>
 import Child from './Child.vue'
 import { ref, computed, reactive } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 const myObj = reactive({
   foo: 'bar',
@@ -19,6 +21,13 @@ const state2 = reactive({
 function onClick () {
   count.value++
 }
+
+const throws = computed(() => { throw new Error('oops') })
+
+const store = useStore()
+const throwsWithVuex = computed(() => store.getters.throws)
+
+const router = useRouter()
 </script>
 
 <template>

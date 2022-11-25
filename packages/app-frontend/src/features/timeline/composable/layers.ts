@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import { computed } from '@vue/composition-api'
+import { computed, set } from 'vue'
 import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
 import { useApps, waitForAppSelect } from '@front/features/apps'
 import { getBridge } from '@front/features/bridge'
@@ -41,7 +40,7 @@ export function getLayers (appId: string) {
   let layers = layersPerApp.value[appId]
   if (!layers) {
     layers = []
-    Vue.set(layersPerApp.value, appId, layers)
+    set(layersPerApp.value, appId, layers)
     // Read the property again to make it reactive
     layers = layersPerApp.value[appId]
   }
@@ -52,7 +51,7 @@ function getHiddenLayers (appId: string) {
   let layers = hiddenLayersPerApp.value[appId]
   if (!layers) {
     layers = []
-    Vue.set(hiddenLayersPerApp.value, appId, layers)
+    set(hiddenLayersPerApp.value, appId, layers)
     // Read the property again to make it reactive
     layers = hiddenLayersPerApp.value[appId]
   }
@@ -108,7 +107,7 @@ export function useLayers () {
     vScroll: computed({
       get: () => vScrollPerApp.value[currentAppId.value] || 0,
       set: (value: number) => {
-        Vue.set(vScrollPerApp.value, currentAppId.value, value)
+        set(vScrollPerApp.value, currentAppId.value, value)
       },
     }),
     isLayerHidden,

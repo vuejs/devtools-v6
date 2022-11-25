@@ -44,6 +44,7 @@ function handshake (e) {
         window.removeEventListener('message', l)
       })
       listeners = []
+      window.addEventListener('message', handshake)
     })
 
     initBackend(bridge)

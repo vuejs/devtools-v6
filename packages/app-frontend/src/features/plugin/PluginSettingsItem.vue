@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { defineComponent, PropType, computed } from 'vue'
 import { PluginSettingsItem } from '@vue/devtools-api'
 import { Plugin } from '.'
 

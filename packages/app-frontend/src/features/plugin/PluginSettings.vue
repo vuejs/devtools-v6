@@ -2,7 +2,7 @@
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import PluginSettingsItem from './PluginSettingsItem.vue'
 
-import { defineComponent, computed, PropType } from '@vue/composition-api'
+import { defineComponent, computed, PropType } from 'vue'
 import { getPluginSettings, setPluginSettings, getPluginDefaultSettings } from '@vue-devtools/shared-utils'
 import cloneDeep from 'lodash/cloneDeep'
 import { Plugin } from '.'

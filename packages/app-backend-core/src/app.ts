@@ -54,6 +54,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
   const rootInstance = await backend.api.getAppRootInstance(options.app)
   if (rootInstance) {
     if ((await backend.api.getComponentDevtoolsOptions(rootInstance)).hide) {
+      options.app._vueDevtools_hidden_ = true
       return
     }
 
@@ -106,7 +107,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
     if (ctx.currentAppRecord == null) {
       await selectApp(record, ctx)
     }
-  } else {
+  } else if (SharedData.debugInfo) {
     console.warn('[Vue devtools] No root instance found for app, it might have been unmounted', options.app)
   }
 }
@@ -152,10 +153,11 @@ export function getAppRecordId (app, defaultId?: string): string {
 }
 
 export async function getAppRecord (app: any, ctx: BackendContext): Promise<AppRecord> {
-  const record = ctx.appRecords.find(ar => ar.options.app === app)
+  const record = app.__VUE_DEVTOOLS_APP_RECORD__ ?? ctx.appRecords.find(ar => ar.options.app === app)
   if (record) {
     return record
   }
+  if (app._vueDevtools_hidden_) return null
   return new Promise((resolve, reject) => {
     let resolvers = appRecordPromises.get(app)
     let timedOut = false

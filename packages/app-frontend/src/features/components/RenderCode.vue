@@ -1,5 +1,5 @@
 <script>
-import { reactive, watch } from '@vue/composition-api'
+import { reactive, watch } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
 import { darkMode } from '@front/util/theme'

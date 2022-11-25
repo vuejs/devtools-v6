@@ -174,13 +174,18 @@ class ReviveCache {
 
 const reviveCache = new ReviveCache(1000)
 
-export function stringify (data) {
-  // Create a fresh cache for each serialization
-  encodeCache.clear()
-  return stringifyCircularAutoChunks(data, replacer)
+const replacers = {
+  internal: replacerForInternal,
+  user: replaceForUser,
 }
 
-function replacer (key) {
+export function stringify (data, target: keyof typeof replacers = 'internal') {
+  // Create a fresh cache for each serialization
+  encodeCache.clear()
+  return stringifyCircularAutoChunks(data, replacers[target])
+}
+
+function replacerForInternal (key) {
   // @ts-ignore
   const val = this[key]
   const type = typeof val
@@ -235,11 +240,38 @@ function replacer (key) {
       return `[native VNode <${val.tag}>]`
     } else if (typeof HTMLElement !== 'undefined' && val instanceof HTMLElement) {
       return encodeCache.cache(val, () => getCustomHTMLElementDetails(val))
+    } else if (val.constructor?.name === 'Store' && val._wrappedGetters) {
+      return `[object Store]`
+    } else if (val.currentRoute) {
+      return `[object Router]`
     }
     const customDetails = getCustomObjectDetails(val, proto)
     if (customDetails != null) return customDetails
   } else if (Number.isNaN(val)) {
     return NAN
+  }
+  return sanitize(val)
+}
+
+// @TODO revive from backend to have more data to the clipboard
+function replaceForUser (key) {
+  // @ts-ignore
+  let val = this[key]
+  const type = typeof val
+  if (val?._custom && 'value' in val._custom) {
+    val = val._custom.value
+  }
+  if (type !== 'object') {
+    if (val === UNDEFINED) {
+      return undefined
+    } else if (val === INFINITY) {
+      return Infinity
+    } else if (val === NEGATIVE_INFINITY) {
+      return -Infinity
+    } else if (val === NAN) {
+      return NaN
+    }
+    return val
   }
   return sanitize(val)
 }
@@ -701,9 +733,18 @@ function escapeChar (a) {
 }
 
 export function copyToClipboard (state) {
+  let text: string
+
+  if (typeof state !== 'object') {
+    text = String(state)
+  } else {
+    text = stringify(state, 'user')
+  }
+
+  // @TODO navigator.clipboard is buggy in extensions
   if (typeof document === 'undefined') return
   const dummyTextArea = document.createElement('textarea')
-  dummyTextArea.textContent = stringify(state)
+  dummyTextArea.textContent = text
   document.body.appendChild(dummyTextArea)
   dummyTextArea.select()
   document.execCommand('copy')

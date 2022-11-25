@@ -1,6 +1,6 @@
 {
   "name": "@vue/devtools",
-  "version": "6.2.0",
+  "version": "6.4.5",
   "description": "StandAlone vue-devtools",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
@@ -12,6 +12,7 @@
   },
   "main": "index.js",
   "types": "types/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "start": "node bin.js",
     "dev:client": "webpack --watch",
@@ -27,7 +28,7 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.3",
-    "electron": "^12.0.6",
+    "electron": "^21.0.1",
     "express": "^4.17.1",
     "ip": "^1.1.5",
     "socket.io": "^4.4.0",
@@ -42,5 +43,17 @@
     "rimraf": "^3.0.2",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0"
-  }
+  },
+  "files": [
+    "build",
+    "build-node",
+    "icons",
+    "types",
+    "app.html",
+    "app.js",
+    "bin.js",
+    "index.js",
+    "README.md",
+    "server.js"
+  ]
 }

@@ -4,6 +4,60 @@ import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
 import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 
+const vueBuiltins = [
+  'nextTick',
+  'defineComponent',
+  'defineAsyncComponent',
+  'defineCustomElement',
+  'ref',
+  'computed',
+  'reactive',
+  'readonly',
+  'watchEffect',
+  'watchPostEffect',
+  'watchSyncEffect',
+  'watch',
+  'isRef',
+  'unref',
+  'toRef',
+  'toRefs',
+  'isProxy',
+  'isReactive',
+  'isReadonly',
+  'shallowRef',
+  'triggerRef',
+  'customRef',
+  'shallowReactive',
+  'shallowReadonly',
+  'toRaw',
+  'markRaw',
+  'effectScope',
+  'getCurrentScope',
+  'onScopeDispose',
+  'onMounted',
+  'onUpdated',
+  'onUnmounted',
+  'onBeforeMount',
+  'onBeforeUpdate',
+  'onBeforeUnmount',
+  'onErrorCaptured',
+  'onRenderTracked',
+  'onRenderTriggered',
+  'onActivated',
+  'onDeactivated',
+  'onServerPrefetch',
+  'provide',
+  'inject',
+  'h',
+  'mergeProps',
+  'cloneVNode',
+  'isVNode',
+  'resolveComponent',
+  'resolveDirective',
+  'withDirectives',
+  'withModifiers',
+]
+
 /**
  * Get the detailed information of an inspected instance.
  */
@@ -123,6 +177,7 @@ function processState (instance) {
 function processSetupState (instance) {
   const raw = instance.devtoolsRawSetupState || {}
   return Object.keys(instance.setupState)
+    .filter(key => !vueBuiltins.includes(key) && !key.startsWith('use'))
     .map(key => {
       const value = returnError(() => toRaw(instance.setupState[key]))
 
@@ -130,29 +185,34 @@ function processSetupState (instance) {
 
       let result: any
 
+      let isOther = typeof value === 'function' ||
+        typeof value?.render === 'function' ||
+        typeof value?.__asyncLoader === 'function'
+
       if (rawData) {
         const info = getSetupStateInfo(rawData)
 
         const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
         const isState = info.ref || info.computed || info.reactive
-        const isOther = typeof value === 'function' || typeof value?.render === 'function'
         const raw = rawData.effect?.raw?.toString() || rawData.effect?.fn?.toString()
+
+        if (objectType) {
+          isOther = false
+        }
 
         result = {
           ...objectType ? { objectType } : {},
           ...raw ? { raw } : {},
           editable: isState && !info.readonly,
-          type: isOther ? 'setup (other)' : 'setup',
-        }
-      } else {
-        result = {
-          type: 'setup',
         }
       }
+
+      const type = isOther ? 'setup (other)' : 'setup'
 
       return {
         key,
         value,
+        type,
         ...result,
       }
     })
@@ -204,6 +264,15 @@ export function getCustomObjectDetails (object: any, proto: string): CustomState
         objectType,
         value,
         ...raw ? { tooltip: `<span class="font-mono">${raw}</span>` } : {},
+      },
+    }
+  }
+
+  if (typeof object.__asyncLoader === 'function') {
+    return {
+      _custom: {
+        type: 'component-definition',
+        display: 'Async component definition',
       },
     }
   }

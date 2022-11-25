@@ -66,7 +66,7 @@ export function installHook (target, isIframe = false) {
       try {
         const hook = (window.parent as any).__VUE_DEVTOOLS_GLOBAL_HOOK__
         if (hook) {
-          cb(hook)
+          return cb(hook)
         } else {
           console.warn('[Vue Devtools] No hook in parent window')
         }
@@ -101,6 +101,10 @@ export function installHook (target, isIframe = false) {
 
       emit (event, ...args) {
         sendToParent(hook => hook.emit(event, ...args))
+      },
+
+      cleanupBuffer (matchArg) {
+        return sendToParent(hook => hook.cleanupBuffer(matchArg)) ?? false
       },
     }
   } else {
@@ -190,6 +194,22 @@ export function installHook (target, isIframe = false) {
         } else {
           this._buffer.push([event, ...args])
         }
+      },
+
+      /**
+       * Remove buffered events with any argument that is equal to the given value.
+       * @param matchArg Given value to match.
+       */
+      cleanupBuffer (matchArg) {
+        let wasBuffered = false
+        this._buffer = this._buffer.filter(item => {
+          if (item.some(arg => arg === matchArg)) {
+            wasBuffered = true
+            return false
+          }
+          return true
+        })
+        return wasBuffered
       },
     }
 

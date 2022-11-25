@@ -9,6 +9,9 @@ const store = createStore({
   },
   getters: {
     answer: (state) => state.answer,
+    throws: () => {
+      throw new Error('getter error')
+    },
   },
   mutations: {
     increment (state) {

@@ -1,6 +1,5 @@
 import './assets/style/index.styl'
 
-import './composition'
 import { initStorage, Shell } from '@vue-devtools/shared-utils'
 import { createApp, connectApp } from './app'
 import { setAppConnected } from './features/connection'

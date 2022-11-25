@@ -1,16 +1,23 @@
-import { useBridge } from '@front/features/bridge'
+import { getBridge } from '@front/features/bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
+import throttle from 'lodash/throttle'
+
+const throttledSend = throttle((id?: string) => {
+  if (id) {
+    getBridge().send(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, id)
+  } else {
+    getBridge().send(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT)
+  }
+}, 200)
 
 export function useComponentHighlight (id: Ref<string>) {
-  const { bridge } = useBridge()
-
   function highlight () {
-    bridge.send(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, id.value)
+    throttledSend(id.value)
   }
 
   function unhighlight () {
-    bridge.send(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OUT)
+    throttledSend(null)
   }
 
   return {

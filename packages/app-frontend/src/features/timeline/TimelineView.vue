@@ -3,15 +3,14 @@ import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
 import { EventSystem, FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
 import { Renderer } from '@pixi/core'
-import {
+import Vue, {
   ref,
   onMounted,
   onUnmounted,
   watch,
   watchEffect,
   defineComponent,
-  computed,
-} from '@vue/composition-api'
+} from 'vue'
 import { SharedData, isMac } from '@vue-devtools/shared-utils'
 import {
   useLayers,
@@ -34,7 +33,6 @@ import { dimColor, boostColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 import { Queue } from '@front/util/queue'
 import { addNonReactiveProperties, nonReactive } from '@front/util/reactivity'
-import Vue from 'vue'
 
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
@@ -1363,7 +1361,6 @@ export default defineComponent({
     function onResize () {
       // Prevent flashing (will be set back to 1 in postrender event listener)
       app.view.style.opacity = '0'
-      // @ts-expect-error PIXI type is missing queueResize
       app.queueResize()
       setTimeout(() => {
         mainRenderTexture?.resize(getAppWidth(), getAppHeight())

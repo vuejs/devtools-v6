@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from 'vue'
 import { Bridge } from '@vue-devtools/shared-utils'
 import { initDevTools } from '@front'
 import { installHook } from '@back/hook'

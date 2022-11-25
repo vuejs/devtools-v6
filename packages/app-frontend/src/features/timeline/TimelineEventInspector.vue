@@ -2,7 +2,7 @@
 import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent } from 'vue'
 import { useDarkMode } from '@front/util/theme'
 import { toStrHex, dimColor, boostColor } from '@front/util/color'
 import { useInspectedEvent, useSelectedEvent } from './composable'

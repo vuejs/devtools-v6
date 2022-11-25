@@ -1,5 +1,5 @@
 import { useCurrentApp } from '@front/features/apps'
-import { computed, watch } from '@vue/composition-api'
+import { computed, watch } from 'vue'
 import { markersAllApps, markersPerApp } from './store'
 import { getBridge } from '@front/features/bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'

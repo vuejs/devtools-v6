@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent } from 'vue'
 import { useRouter } from '@front/util/router'
 import { usePlugins } from '.'
 
@@ -46,7 +46,10 @@ export default defineComponent({
       @click.stop="go()"
     />
 
-    <template #popper>
+    <template
+      v-if="plugin"
+      #popper
+    >
       <div class="flex space-x-3 items-center">
         <div class="flex items-center justify-center w-8 h-8 bg-gray-700 dark:bg-gray-200 rounded">
           <img

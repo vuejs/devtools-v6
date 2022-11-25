@@ -188,15 +188,14 @@ function processState (instance): ComponentState[] {
     }))
 }
 
-
 function processSetupState (instance) {
-  const state = instance._setupProxy
+  const state = instance._setupProxy || instance
   const raw = instance._setupState
-  if (!raw || !state) {
+  if (!raw) {
     return []
   }
 
-  return Object.keys(state)
+  return Object.keys(raw)
     .filter(key => !key.startsWith('__'))
     .map(key => {
       const value = returnError(() => toRaw(state[key]))
@@ -241,7 +240,6 @@ function returnError (cb: () => any) {
     return e
   }
 }
-
 
 function isRef (raw: any): boolean {
   return !!raw.__v_isRef
@@ -456,14 +454,14 @@ export function findInstanceOrVnode (id) {
   return instanceMap.get(id)
 }
 
-export function editState(
+export function editState (
   {
     componentInstance,
     path,
     state,
-    type
+    type,
   }: HookPayloads[Hooks.EDIT_COMPONENT_STATE],
-  stateEditor: StateEditor
+  stateEditor: StateEditor,
 ) {
   if (!['data', 'props', 'computed', 'setup'].includes(type)) return
 
@@ -493,6 +491,6 @@ export function editState(
     target,
     targetPath,
     'value' in state ? state.value : undefined,
-    stateEditor.createDefaultSetCallback(state)
+    stateEditor.createDefaultSetCallback(state),
   )
 }

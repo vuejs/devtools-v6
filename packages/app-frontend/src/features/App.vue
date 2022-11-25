@@ -3,11 +3,10 @@ import AppHeader from './header/AppHeader.vue'
 import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
 import ErrorOverlay from './error/ErrorOverlay.vue'
-import WelcomeSlideshow from './welcome/WelcomeSlideshow.vue'
 import SplitPane from './layout/SplitPane.vue'
 import AppSelectPane from './apps/AppSelectPane.vue'
 
-import { onMounted, defineComponent, ref, watch } from '@vue/composition-api'
+import { onMounted, defineComponent } from 'vue'
 import {
   isChrome,
   setStorage,
@@ -23,7 +22,6 @@ import { showAppsSelector } from './header/header'
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 
 const STORAGE_PREVIOUS_SESSION_THEME = 'previous-session-theme'
-const STORAGE_WELCOME_HIDDEN = 'welcome-hidden'
 
 export default defineComponent({
   name: 'App',
@@ -33,7 +31,6 @@ export default defineComponent({
     AppConnecting,
     AppDisconnected,
     ErrorOverlay,
-    WelcomeSlideshow,
     SplitPane,
     AppSelectPane,
   },
@@ -75,15 +72,9 @@ export default defineComponent({
       }
     })
 
-    const welcomeHidden = ref<boolean>(getStorage(STORAGE_WELCOME_HIDDEN))
-    watch(welcomeHidden, (value) => {
-      setStorage(STORAGE_WELCOME_HIDDEN, value)
-    })
-
     return {
       isConnected,
       isInitializing,
-      welcomeHidden,
       showAppsSelector,
     }
   },
@@ -92,7 +83,7 @@ export default defineComponent({
 
 <template>
   <div
-    class="app w-full h-full flex flex-col relative"
+    class="app w-full h-full flex flex-col relative outline-none"
     :class="{
       'disconnected pointer-events-none': !isInitializing && !isConnected
     }"
@@ -134,11 +125,5 @@ export default defineComponent({
     <portal-target name="root" />
 
     <ErrorOverlay />
-
-    <WelcomeSlideshow
-      v-if="!welcomeHidden"
-      class="absolute inset-0 z-100"
-      @hide="welcomeHidden = true"
-    />
   </div>
 </template>

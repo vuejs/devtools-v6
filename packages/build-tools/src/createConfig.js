@@ -18,6 +18,7 @@ exports.createConfig = (config, target = { chrome: 52, firefox: 48 }) => {
       alias: {
         '@front': '@vue-devtools/app-frontend/src',
         '@back': '@vue-devtools/app-backend-core/lib',
+        vue$: require.resolve('vue/dist/vue.esm.js'),
       },
       // symlinks: false,
       fallback: {

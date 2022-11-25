@@ -1,6 +1,5 @@
-import { ref, computed, watch, Ref, onMounted } from '@vue/composition-api'
+import Vue, { ref, computed, watch, Ref, onMounted } from 'vue'
 import { ComponentTreeNode, EditStatePayload, InspectedComponentData } from '@vue/devtools-api'
-import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
 import {
   BridgeEvents,
@@ -136,11 +135,21 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   const isExpanded = computed(() => isComponentOpen(instance.value.id))
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
-  function toggleExpand () {
-    if (!instance.value.hasChildren) return
-    setComponentOpen(instance.value.id, !isExpanded.value)
-    if (isComponentOpen(instance.value.id)) {
-      requestComponentTree(instance.value.id)
+  function toggleExpand (recursively = false, value?, child?) {
+    const treeNode = child || instance.value
+    if (!treeNode.hasChildren) return
+    const isOpen = value === undefined ? !isExpanded.value : value
+    setComponentOpen(treeNode.id, isOpen)
+    if (isComponentOpen(treeNode.id)) {
+      requestComponentTree(treeNode.id, recursively)
+    } else {
+      // stop expanding all treenode
+      treeNode.autoOpen = false
+    }
+    if (recursively) {
+      treeNode.children.forEach(child => {
+        toggleExpand(recursively, value, child)
+      })
     }
   }
 
@@ -169,7 +178,9 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   }
 
   onMounted(() => {
-    if (isExpanded.value) {
+    if (instance.value.autoOpen) {
+      toggleExpand(true, true)
+    } else if (isExpanded.value) {
       requestComponentTree(instance.value.id)
     }
   })
@@ -267,7 +278,7 @@ export const requestedComponentTree = new Set()
 
 let requestComponentTreeRetryDelay = 500
 
-export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
+export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null, recursively = false) {
   if (!instanceId) {
     instanceId = '_root'
   }
@@ -279,29 +290,30 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
 
   await waitForAppSelect()
 
-  _sendTreeRequest(instanceId)
-  _queueRetryTree(instanceId)
+  _sendTreeRequest(instanceId, recursively)
+  _queueRetryTree(instanceId, recursively)
 }
 
-function _sendTreeRequest (instanceId: ComponentTreeNode['id']) {
+function _sendTreeRequest (instanceId: ComponentTreeNode['id'], recursively = false) {
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
     filter: treeFilter.value,
+    recursively,
   })
 }
 
-function _queueRetryTree (instanceId: ComponentTreeNode['id']) {
-  setTimeout(() => _retryRequestComponentTree(instanceId), requestComponentTreeRetryDelay)
+function _queueRetryTree (instanceId: ComponentTreeNode['id'], recursively = false) {
+  setTimeout(() => _retryRequestComponentTree(instanceId, recursively), requestComponentTreeRetryDelay)
   requestComponentTreeRetryDelay *= 1.5
 }
 
-function _retryRequestComponentTree (instanceId: ComponentTreeNode['id']) {
+function _retryRequestComponentTree (instanceId: ComponentTreeNode['id'], recursively = false) {
   if (rootInstances.value.length) {
     requestComponentTreeRetryDelay = 500
     return
   }
-  _sendTreeRequest(instanceId)
-  _queueRetryTree(instanceId)
+  _sendTreeRequest(instanceId, recursively)
+  _queueRetryTree(instanceId, recursively)
 }
 
 export function ensureComponentsMapData (data: ComponentTreeNode) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, defineComponent, PropType, watch } from '@vue/composition-api'
+import { ref, computed, defineComponent, PropType, watch } from 'vue'
 import { useOrientation } from './orientation'
 import { useSavedRef } from '@front/util/reactivity'
 
@@ -202,11 +202,20 @@ export default defineComponent({
           'left-0 right-0 bottom-0 flex-col': orientation === 'portrait',
         }"
       >
-        <VueButton
-          :icon-left="orientation === 'landscape' ? 'arrow_left': 'arrow_drop_up'"
-          class="block icon-button flat pointer-events-auto opacity-40 hover:opacity-100"
+        <button
+          v-tooltip="rightCollapsed ? `Expand ${orientation === 'landscape' ? 'Right' : 'Bottom'} pane` : `Collapse ${orientation === 'landscape' ? 'Left' : 'Top'} pane`"
+          class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center w-2.5 h-6 rounded overflow-hidden pointer-events-auto opacity-70 hover:opacity-100"
+          :class="{
+            'rounded-r-none border-r-0': orientation === 'landscape',
+            'rounded-b-none border-b-0': orientation === 'portrait',
+          }"
           @click="collapseLeft()"
-        />
+        >
+          <VueIcon
+            :icon="orientation === 'landscape' ? 'arrow_left': 'arrow_drop_up'"
+            class="flex-none w-5 h-5"
+          />
+        </button>
       </div>
     </div>
     <div
@@ -225,11 +234,20 @@ export default defineComponent({
           'left-0 right-0 top-0 flex-col': orientation === 'portrait',
         }"
       >
-        <VueButton
-          :icon-left="orientation === 'landscape' ? 'arrow_right': 'arrow_drop_down'"
-          class="block icon-button flat pointer-events-auto opacity-40 hover:opacity-100"
+        <button
+          v-tooltip="leftCollapsed ? `Expand ${orientation === 'landscape' ? 'Left' : 'Top'} pane` : `Collapse ${orientation === 'landscape' ? 'Right' : 'Bottom'} pane`"
+          class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center w-2.5 h-6 rounded overflow-hidden pointer-events-auto opacity-70 hover:opacity-100"
+          :class="{
+            'rounded-l-none border-l-0': orientation === 'landscape',
+            'rounded-t-none border-t-0': orientation === 'portrait',
+          }"
           @click="collapseRight()"
-        />
+        >
+          <VueIcon
+            :icon="orientation === 'landscape' ? 'arrow_right': 'arrow_drop_down'"
+            class="flex-none w-5 h-5"
+          />
+        </button>
       </div>
 
       <slot
@@ -282,11 +300,9 @@ export default defineComponent({
 }
 
 .collapse-btn {
-  .icon-button {
-    @apply w-2.5 h-6 rounded-sm !important;
-
+  button {
     .portrait & {
-      @apply w-6 h-2.5 !important;
+      @apply w-6 h-2.5;
     }
   }
 }

@@ -61,7 +61,7 @@ export async function initBackend (bridge: Bridge) {
   initOnPageConfig()
 
   if (!connected) {
-    // connected = false
+    // First connect
     ctx = target.__vdevtools_ctx = createBackendContext({
       bridge,
       hook,
@@ -91,8 +91,10 @@ export async function initBackend (bridge: Bridge) {
       })
     }
   } else {
+    // Reconnect
     ctx.bridge = bridge
     connectBridge()
+    ctx.bridge.send(BridgeEvents.TO_FRONT_RECONNECTED)
   }
 }
 
@@ -125,7 +127,7 @@ async function connect () {
 
       // Update tree (tags)
       if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, ctx)
+        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, false, ctx)
       }
     } catch (e) {
       if (SharedData.debugInfo) {
@@ -136,7 +138,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
     try {
-      if (!app || !uid || !component) return
+      if (!app || (typeof uid !== 'number' && !uid) || !component) return
       let id: string
       let appRecord: AppRecord
       if (app && uid != null) {
@@ -165,7 +167,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
-      if (!app || !uid || !component) return
+      if (!app || (typeof uid !== 'number' && !uid) || !component) return
       const id = await getComponentId(app, uid, component, ctx)
       const appRecord = await getAppRecord(app, ctx)
       if (component) {
@@ -185,7 +187,7 @@ async function connect () {
             const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
             if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
               raf(() => {
-                sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, ctx)
+                sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
               })
             }
 
@@ -218,7 +220,7 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     try {
-      if (!app || !uid || !component) return
+      if (!app || (typeof uid !== 'number' && !uid) || !component) return
       const appRecord = await getAppRecord(app, ctx)
       if (parentUid != null) {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
@@ -227,7 +229,7 @@ async function connect () {
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
             raf(async () => {
               try {
-                sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, ctx)
+                sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, false, ctx)
               } catch (e) {
                 if (SharedData.debugInfo) {
                   console.error(e)
@@ -365,7 +367,7 @@ async function connect () {
 
   const handleFlush = debounce(async () => {
     if (ctx.currentAppRecord?.backend.options.features.includes(BuiltinBackendFeature.FLUSH)) {
-      await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, ctx)
+      await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, false, ctx)
       if (ctx.currentInspectedComponentId) {
         await sendSelectedComponentData(ctx.currentAppRecord, ctx.currentInspectedComponentId, ctx)
       }
@@ -433,10 +435,10 @@ function connectBridge () {
 
   // Components
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, async ({ instanceId, filter }) => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, async ({ instanceId, filter, recursively }) => {
     ctx.currentAppRecord.componentFilter = filter
     subscribe(BridgeSubscriptions.COMPONENT_TREE, { instanceId })
-    await sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, ctx)
+    await sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, recursively, ctx)
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SELECTED_DATA, async (instanceId) => {
@@ -656,4 +658,20 @@ function connectBridge () {
       settings,
     })
   })
+
+  ctx.bridge.send(BridgeEvents.TO_FRONT_TITLE, { title: document.title })
+  // Watch page title
+  const titleEl = document.querySelector('title')
+  if (titleEl && typeof MutationObserver !== 'undefined') {
+    if (pageTitleObserver) {
+      pageTitleObserver.disconnect()
+    }
+    pageTitleObserver = new MutationObserver((mutations) => {
+      const title = mutations[0].target as HTMLTitleElement
+      ctx.bridge.send(BridgeEvents.TO_FRONT_TITLE, { title: title.innerText })
+    })
+    pageTitleObserver.observe(titleEl, { subtree: true, characterData: true, childList: true })
+  }
 }
+
+let pageTitleObserver: MutationObserver

@@ -115,7 +115,7 @@ export default {
 
   <Child question="Life" />
   <NestedMore />
-  <NativeTypes />
+  <NativeTypes ref="nativeTypes" />
   <EventEmit />
   <EventNesting />
   <AsyncComponent />

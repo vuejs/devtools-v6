@@ -6,7 +6,6 @@
     "@pixi/events": "^6.2.0",
     "@pixi/unsafe-eval": "^6.2.0",
     "@vue-devtools/shared-utils": "^0.0.0",
-    "@vue/composition-api": "^1.4.6",
     "@vue/devtools-api": "^6.0.0-beta.9",
     "@vue/ui": "^0.12.5",
     "circular-json-es6": "^2.0.2",
@@ -21,8 +20,8 @@
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "tinycolor2": "^1.4.2",
-    "vue": "^2.6.11",
-    "vue-router": "^3.3.4",
+    "vue": "^2.7.10",
+    "vue-router": "^3.6.5",
     "vue-virtual-scroller": "^1.0.10"
   }
 }
