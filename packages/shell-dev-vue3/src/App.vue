@@ -21,6 +21,7 @@ import SetupScript from './SetupScript.vue'
 import SetupDataLike from './SetupDataLike.vue'
 import SetupTSScriptProps from './SetupTSScriptProps.vue'
 import DomOrder from './DomOrder.vue'
+import IndexComponent from './IndexComponent/index.vue'
 
 import { h, createApp } from 'vue'
 import SimplePlugin from './devtools-plugin/simple'
@@ -51,6 +52,7 @@ export default {
     SetupDataLike,
     SetupTSScriptProps,
     DomOrder,
+    IndexComponent,
     inline: {
       render: () => h('h3', 'Inline component definition'),
     },
@@ -114,6 +116,7 @@ export default {
   </div>
 
   <Child question="Life" />
+  <IndexComponent />
   <NestedMore />
   <NativeTypes ref="nativeTypes" />
   <EventEmit />
