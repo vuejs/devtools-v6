@@ -42,16 +42,16 @@ export default defineComponent({
     } = useComponentPick()
 
     onKeyDown(event => {
-      if (event.key === 'f' && event.altKey) {
+      if (event.code === 'KeyF' && event.altKey) {
         treeFilterInput.value.focus()
         return false
-      } else if (event.key === 's' && event.altKey && !pickingComponent.value) {
+      } else if (event.code === 'KeyS' && event.altKey && !pickingComponent.value) {
         startPickingComponent()
         return false
       } else if (event.key === 'Escape' && pickingComponent.value) {
         stopPickingComponent()
         return false
-      } else if (event.key === 'r' && (event.ctrlKey || event.metaKey) && event.altKey) {
+      } else if (event.code === 'KeyR' && (event.ctrlKey || event.metaKey) && event.altKey) {
         refresh()
         return false
       }
