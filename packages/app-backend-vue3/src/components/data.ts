@@ -177,7 +177,7 @@ function processState (instance) {
 function processSetupState (instance) {
   const raw = instance.devtoolsRawSetupState || {}
   return Object.keys(instance.setupState)
-    .filter(key => !vueBuiltins.includes(key) && !key.startsWith('use'))
+    .filter(key => !vueBuiltins.includes(key) && key.split(/(?=[A-Z])/)[0] !== 'use')
     .map(key => {
       const value = returnError(() => toRaw(instance.setupState[key]))
 
