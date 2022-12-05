@@ -113,6 +113,8 @@ export function installHook (target, isIframe = false) {
       Vue: null,
       enabled: undefined,
       _buffer: [],
+      _bufferMap: new Map(),
+      _bufferToRemove: new Map(),
       store: null,
       initialState: null,
       storeModules: null,
@@ -122,13 +124,15 @@ export function installHook (target, isIframe = false) {
       _replayBuffer (event) {
         const buffer = this._buffer
         this._buffer = []
+        this._bufferMap.clear()
+        this._bufferToRemove.clear()
 
         for (let i = 0, l = buffer.length; i < l; i++) {
-          const allArgs = buffer[i]
+          const allArgs = buffer[i].slice(1)
           allArgs[0] === event
             // eslint-disable-next-line prefer-spread
             ? this.emit.apply(this, allArgs)
-            : this._buffer.push(allArgs)
+            : this._buffer.push(buffer[i])
         }
       },
 
@@ -192,7 +196,16 @@ export function installHook (target, isIframe = false) {
             }
           }
         } else {
-          this._buffer.push([event, ...args])
+          const buffered = [Date.now(), event, ...args]
+          this._buffer.push(buffered)
+
+          for (let i = 2; i < args.length; i++) {
+            if (typeof args[i] === 'object' && args[i]) {
+              // Save by component instance  (3rd, 4th or 5th arg)
+              this._bufferMap.set(args[i], buffered)
+              break
+            }
+          }
         }
       },
 
@@ -201,17 +214,26 @@ export function installHook (target, isIframe = false) {
        * @param matchArg Given value to match.
        */
       cleanupBuffer (matchArg) {
-        let wasBuffered = false
-        this._buffer = this._buffer.filter(item => {
-          if (item.some(arg => arg === matchArg)) {
-            wasBuffered = true
-            return false
-          }
-          return true
-        })
-        return wasBuffered
+        const inBuffer = this._bufferMap.has(matchArg)
+        if (inBuffer) {
+          // Mark event for removal
+          this._bufferToRemove.set(this._bufferMap.get(matchArg), true)
+        }
+        return inBuffer
+      },
+
+      _cleanupBuffer () {
+        const now = Date.now()
+        // Clear buffer events that are older than 10 seconds or marked for removal
+        this._buffer = this._buffer.filter(args => !this._bufferToRemove.has(args) && now - args[0] < 10_000)
+        this._bufferToRemove.clear()
+        this._bufferMap.clear()
       },
     }
+
+    setInterval(() => {
+      hook._cleanupBuffer()
+    }, 10_000)
 
     hook.once('init', Vue => {
       hook.Vue = Vue
