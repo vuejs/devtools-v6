@@ -30,7 +30,9 @@
     "test:open": "cypress open --config baseUrl=http://localhost:8100",
     "docs:dev": "cd packages/docs && vitepress dev src",
     "docs:build": "cd packages/docs && vitepress build src",
-    "docs:serve": "cd packages/docs && vitepress serve src"
+    "docs:serve": "cd packages/docs && vitepress serve src",
+    "clear:safari": "rimraf packages/app-xcode/VueDevTools\\ Extension/Resources/*",
+    "prepare:safari": "npm run clear:safari && rsync -av --exclude={'src','node_modules','webpack.config.js','package.json'} packages/shell-chrome/ packages/app-xcode/VueDevTools\\ Extension/Resources/"
   },
   "repository": {
     "type": "git",

@@ -32,7 +32,8 @@
   },
   "permissions": [
     "<all_urls>",
-    "storage"
+    "storage",
+    "active_tab"
   ],
   "content_scripts": [
     {
