@@ -1,3 +1,6 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "vscode-vfs://github%2B7b2276223a312c22726566223a7b2274797065223a342c226964223a2273686f6f6b227d7d/Sh00k-ThaD3v/devtools/.github/workflows/create-release.yml"
+  }
 }
