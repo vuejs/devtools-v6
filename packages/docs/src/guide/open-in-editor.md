@@ -10,7 +10,7 @@ To able to work, this feature may need some configuration in your project.
 
 Vue CLI 3 supports this feature out-of-the-box when running `vue-cli-service serve`.
 
-## Nuxt.js & Quasar CLI
+## Nuxt & Quasar CLI
 
 Nuxt & Quasar CLI supports this feature out-of-the-box. Make sure to be in debug mode.
 
