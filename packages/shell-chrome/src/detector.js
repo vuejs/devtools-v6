@@ -12,7 +12,7 @@ function detect (win) {
   let detectRemainingTries = 10
 
   function runDetect () {
-    // Method 1: Check Nuxt.js
+    // Method 1: Check Nuxt
     const nuxtDetected = !!(window.__NUXT__ || window.$nuxt)
 
     if (nuxtDetected) {
