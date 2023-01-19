@@ -45,7 +45,7 @@ function saveComponentName (instance, key) {
 }
 
 function getComponentTypeName (options) {
-  const name = options.name || options.__name || options._componentTag || options.__vdevtools_guessedName
+  const name = options.name || options._componentTag || options.__vdevtools_guessedName || options.__name
   if (name) {
     return name
   }
