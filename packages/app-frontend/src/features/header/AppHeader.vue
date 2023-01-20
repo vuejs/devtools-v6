@@ -1,5 +1,4 @@
 <script lang="ts">
-import AppHeaderLogo from './AppHeaderLogo.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from '../apps/AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
@@ -26,7 +25,6 @@ interface HeaderRoute {
 
 export default defineComponent({
   components: {
-    AppHeaderLogo,
     AppHistoryNav,
     AppSelect,
     AppHeaderSelect,
@@ -98,8 +96,6 @@ export default defineComponent({
 
 <template>
   <div class="flex items-center space-x-2 px-2 h-8">
-    <AppHeaderLogo />
-
     <AppHistoryNav />
 
     <template v-if="showAppsSelector">
