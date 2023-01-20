@@ -153,3 +153,10 @@ $arrow-color = rgba(100, 100, 100, 0.5)
 .right-icon-reveal:not(:hover)
   .vue-ui-icon.right
     opacity 0
+
+// @TODO remove when vue-ui style is updated
+
+.vue-ui-group:not(.vertical) > .indicator >.content {
+  margin: 0 12px;
+  width: calc(100% - 24px);
+}
