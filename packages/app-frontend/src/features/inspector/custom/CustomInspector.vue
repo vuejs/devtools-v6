@@ -3,6 +3,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
+import PluginSourceIcon from '../../plugin/PluginSourceIcon.vue'
 
 import { watch, ref, provide, defineComponent } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
@@ -15,6 +16,7 @@ export default defineComponent({
     EmptyPane,
     CustomInspectorNode,
     CustomInspectorSelectedNodePane,
+    PluginSourceIcon,
   },
 
   setup () {
@@ -86,12 +88,18 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <VueInput
-            v-model="inspector.treeFilter"
-            icon-left="search"
-            :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
-            class="search flat border-b border-gray-200 dark:border-gray-800 min-w-0"
-          />
+          <div class="border-b border-gray-200 dark:border-gray-800 flex items-center pr-2">
+            <VueInput
+              v-model="inspector.treeFilter"
+              icon-left="search"
+              :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
+              class="search flat min-w-0 flex-1"
+            />
+
+            <PluginSourceIcon
+              :plugin-id="inspector.pluginId"
+            />
+          </div>
 
           <div
             ref="treeScroller"
