@@ -80,6 +80,7 @@ function getInstanceState (instance) {
     processProvide(instance),
     processInject(instance, mergedType),
     processRefs(instance),
+    processEventListeners(instance),
   )
 }
 
@@ -365,6 +366,31 @@ function processRefs (instance) {
       key,
       value: returnError(() => instance.refs[key]),
     }))
+}
+
+function processEventListeners (instance) {
+  const emitsDefinition = instance.type.emits
+  const declaredEmits = Array.isArray(emitsDefinition) ? emitsDefinition : Object.keys(emitsDefinition ?? {})
+  const keys = Object.keys(instance.vnode.props ?? {})
+  const result = []
+  for (const key of keys) {
+    const [prefix, ...eventNameParts] = key.split(/(?=[A-Z])/)
+    if (prefix === 'on') {
+      const eventName = eventNameParts.join('-').toLowerCase()
+      const isDeclared = declaredEmits.includes(eventName)
+      result.push({
+        type: 'event listeners',
+        key: eventName,
+        value: {
+          _custom: {
+            display: isDeclared ? '✅ Declared' : '⚠️ Not declared',
+            tooltip: !isDeclared ? `The event <code>${eventName}</code> is not declared in the <code>emits</code> option. It will leak into the component's attributes (<code>$attrs</code>).` : null,
+          },
+        },
+      })
+    }
+  }
+  return result
 }
 
 export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor, ctx: BackendContext) {

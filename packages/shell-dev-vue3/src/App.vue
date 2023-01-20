@@ -81,6 +81,14 @@ export default {
     stopTimer () {
       clearInterval(this.timer)
     },
+
+    onFoo (...args) {
+      console.log('on foo', ...args)
+    },
+
+    onBar (...args) {
+      console.log('on bar', ...args)
+    },
   },
 }
 </script>
@@ -116,7 +124,10 @@ export default {
   <Child question="Life" />
   <NestedMore />
   <NativeTypes ref="nativeTypes" />
-  <EventEmit />
+  <EventEmit
+    @foo="onFoo"
+    @bar="onBar"
+  />
   <EventNesting />
   <AsyncComponent />
   <SuspenseExample />

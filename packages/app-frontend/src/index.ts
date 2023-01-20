@@ -1,4 +1,5 @@
 import './assets/style/index.styl'
+import './assets/style/index.postcss'
 
 import { initStorage, Shell } from '@vue-devtools/shared-utils'
 import { createApp, connectApp } from './app'

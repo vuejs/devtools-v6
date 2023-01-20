@@ -23,6 +23,7 @@ const keyOrder = {
   refs: 6,
   $attrs: 7,
   attrs: 7,
+  'event listeners': 7,
   'setup (other)': 8,
 }
 
