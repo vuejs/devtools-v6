@@ -6,7 +6,7 @@ if (isBrowser) {
   require('./build-node/hook.js')
 }
 
-const target = typeof window !== 'undefined'
+const target = isBrowser
   ? window
   : typeof global !== 'undefined'
     ? global
