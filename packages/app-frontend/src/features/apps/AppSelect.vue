@@ -118,6 +118,7 @@ export default defineComponent({
     <template #default="{ item }">
       <AppSelectItem
         :app="item"
+        :selected="currentApp === item"
       />
     </template>
 

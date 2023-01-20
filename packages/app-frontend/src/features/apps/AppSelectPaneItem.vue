@@ -39,7 +39,12 @@ export default defineComponent({
   >
     <div class="flex items-center">
       <span class="truncate flex-1">{{ app.name }}</span>
-      <span class="flex-none flex items-center">
+      <span
+        class="flex-none flex items-center"
+        :class="{
+          'opacity-40': !selected,
+        }"
+      >
         <img
           src="~@front/assets/vue-logo.svg"
           class="w-6 h-6"
