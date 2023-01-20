@@ -10,9 +10,9 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    repo: 'vuejs/vue-devtools',
+    repo: 'vuejs/devtools',
     logo: '/logo-header.svg',
-    docsDir: 'docs',
+    docsDir: 'packages/docs/src',
     docsBranch: 'main',
     editLinks: true,
     editLinkText: 'Suggest changes to this page',
