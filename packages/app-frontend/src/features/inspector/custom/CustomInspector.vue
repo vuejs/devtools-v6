@@ -88,12 +88,12 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="border-b border-gray-200 dark:border-gray-800 flex items-center pr-2">
+          <div class="border-b border-gray-200 dark:border-gray-800 flex items-center pr-2 h-8 box-content">
             <VueInput
               v-model="inspector.treeFilter"
               icon-left="search"
               :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
-              class="search flat min-w-0 flex-1"
+              class="search flat min-w-0 flex-1 mr-2"
             />
 
             <PluginSourceIcon

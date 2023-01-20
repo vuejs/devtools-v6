@@ -95,7 +95,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="flex items-center space-x-2 px-2 h-8">
+  <div class="flex items-center space-x-2 px-2 h-8 box-content">
     <AppHistoryNav />
 
     <template v-if="showAppsSelector">

@@ -52,7 +52,7 @@ export default defineComponent({
     v-if="inspectedEvent && inspectedEventState"
     class="flex flex-col h-full"
   >
-    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-800 p-2 pl-3 text-bluegray-900 dark:text-bluegray-100 space-x-2">
+    <div class="header flex-none flex items-center border-b border-gray-200 dark:border-gray-800 px-2 pl-3 h-8 box-content text-bluegray-900 dark:text-bluegray-100 space-x-2">
       <div
         class="flex-none w-2.5 h-2.5 rounded-full border-2"
         :style="{
@@ -90,10 +90,10 @@ export default defineComponent({
         />
       </span>
 
-      <span class="event-time flex-none flex items-center space-x-0.5 text-2xs font-mono px-2 py-1 rounded-full border border-gray-100 dark:border-gray-900 text-bluegray-700 dark:text-bluegray-300">
+      <span class="event-time flex-none flex items-center space-x-0.5 text-2xs font-mono px-1.5 py-0.5 rounded-full bg-bluegray-100 dark:bg-bluegray-900 text-bluegray-700 dark:text-bluegray-300">
         <VueIcon
           icon="schedule"
-          class="w-3 h-3 opacity-50"
+          class="w-3 h-3 opacity-75"
         />
         <span>{{ time }}</span>
       </span>

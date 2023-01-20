@@ -241,7 +241,7 @@ export default defineComponent({
 .search {
   >>> {
     .input {
-      height: 39px !important;
+      height: 32px !important;
     }
 
     .content {

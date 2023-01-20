@@ -72,7 +72,7 @@ export default defineComponent({
     v-if="data && sameApp"
     class="h-full flex flex-col relative"
   >
-    <div class="px-2 h-10 border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
+    <div class="px-2 h-8 box-content border-b border-gray-200 dark:border-gray-800 flex items-center flex-none">
       <VTooltip
         :shown="showCopiedName"
         :triggers="[]"
