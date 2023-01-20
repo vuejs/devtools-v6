@@ -1,9 +1,10 @@
 <script lang="ts">
-import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import AppHeaderLogo from './AppHeaderLogo.vue'
 import AppHistoryNav from './AppHistoryNav.vue'
 import AppSelect from '../apps/AppSelect.vue'
 import AppHeaderSelect from './AppHeaderSelect.vue'
+import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
+import PluginSourceDescription from '../plugin/PluginSourceDescription.vue'
 
 import { computed, ref, watch, defineComponent } from 'vue'
 import type { RawLocation, Route } from 'vue-router'
@@ -30,6 +31,7 @@ export default defineComponent({
     AppSelect,
     AppHeaderSelect,
     PluginSourceIcon,
+    PluginSourceDescription,
   },
 
   setup () {
@@ -132,22 +134,26 @@ export default defineComponent({
         indicator
         @update="route => $router.push(route.targetRoute)"
       >
-        <VueGroupButton
+        <VTooltip
           v-for="(item, index) of headerRoutes"
           :key="index"
-          :value="item"
-          :icon-left="item.icon"
-          class="flat"
+          :disabled="!item.pluginId"
+          class="leading-none"
         >
-          <div class="flex items-center space-x-2">
-            <span class="flex-1">{{ item.label }}</span>
-            <PluginSourceIcon
-              v-if="item.pluginId"
+          <VueGroupButton
+            :value="item"
+            :icon-left="item.icon"
+            class="flat"
+          >
+            {{ item.label }}
+          </VueGroupButton>
+
+          <template #popper>
+            <PluginSourceDescription
               :plugin-id="item.pluginId"
-              class="flex-none"
             />
-          </div>
-        </VueGroupButton>
+          </template>
+        </VTooltip>
       </VueGroup>
     </template>
 

@@ -1,9 +1,13 @@
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 import { useRouter } from '@front/util/router'
-import { usePlugins } from '.'
+import PluginSourceDescription from './PluginSourceDescription.vue'
 
 export default defineComponent({
+  components: {
+    PluginSourceDescription,
+  },
+
   props: {
     pluginId: {
       type: String,
@@ -12,12 +16,6 @@ export default defineComponent({
   },
 
   setup (props) {
-    const {
-      plugins,
-    } = usePlugins()
-
-    const plugin = computed(() => plugins.value.find(p => p.id === props.pluginId))
-
     const router = useRouter()
     function go () {
       router.push({
@@ -29,7 +27,6 @@ export default defineComponent({
     }
 
     return {
-      plugin,
       go,
     }
   },
@@ -46,40 +43,10 @@ export default defineComponent({
       @click.stop="go()"
     />
 
-    <template
-      v-if="plugin"
-      #popper
-    >
-      <div class="flex space-x-3 items-center">
-        <div class="flex items-center justify-center w-8 h-8 bg-gray-700 dark:bg-gray-200 rounded">
-          <img
-            v-if="plugin.logo"
-            :src="plugin.logo"
-            alt="Plugin logo"
-            class="logo"
-          >
-          <VueIcon
-            v-else
-            icon="extension"
-          />
-        </div>
-        <div>
-          <div>Provided by <b>{{ plugin ? plugin.label : pluginId }}</b></div>
-          <div
-            v-if="plugin"
-            class="opacity-50"
-          >
-            <div>ID: {{ plugin.id }}</div>
-          </div>
-        </div>
-      </div>
+    <template #popper>
+      <PluginSourceDescription
+        :plugin-id="pluginId"
+      />
     </template>
   </VTooltip>
 </template>
-
-<style lang="postcss" scoped>
-.logo {
-  max-width: 24px;
-  max-height: 24px;
-}
-</style>
