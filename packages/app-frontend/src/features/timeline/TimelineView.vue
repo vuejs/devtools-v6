@@ -506,6 +506,8 @@ export default defineComponent({
     function runEventPositionUpdate () {
       let event: TimelineEvent
       while ((event = updateEventPositionQueue.shift())) {
+        if (!event.container) continue
+
         // Ignored
         const ignored = isEventIgnored(event)
         event.container.visible = !ignored
