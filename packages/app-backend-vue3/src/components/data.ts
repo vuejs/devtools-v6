@@ -485,7 +485,7 @@ function mergeOptions (
       if (!to[key]) {
         to[key] = from[key]
       } else {
-        Object.assign(to[key], from[key])
+        to[key] = Object.assign({}, to[key], from[key])
       }
     }
   }
