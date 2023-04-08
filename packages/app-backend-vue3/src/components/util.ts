@@ -36,6 +36,10 @@ export function getInstanceName (instance) {
   for (const key in instance.appContext?.components) {
     if (instance.appContext.components[key] === instance.type) return saveComponentName(instance, key)
   }
+  const fileName = getComponentFileName(instance.type || {})
+  if (fileName) {
+    return fileName
+  }
   return 'Anonymous Component'
 }
 
@@ -45,10 +49,10 @@ function saveComponentName (instance, key) {
 }
 
 function getComponentTypeName (options) {
-  const name = options.name || options._componentTag || options.__vdevtools_guessedName || options.__name
-  if (name) {
-    return name
-  }
+  return options.name || options._componentTag || options.__vdevtools_guessedName || options.__name
+}
+
+function getComponentFileName (options) {
   const file = options.__file // injected by vue-loader
   if (file) {
     return classify(basename(file, '.vue'))
