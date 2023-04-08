@@ -19,4 +19,7 @@ module.exports = createConfig({
     publicPath: '/build/',
     filename: '[name].js',
   },
+  devtool: process.env.NODE_ENV !== 'production'
+    ? 'inline-source-map'
+    : false,
 }, target)
