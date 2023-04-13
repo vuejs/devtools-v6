@@ -1,6 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
+import { camelize, StateEditor, SharedData, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 
@@ -371,13 +371,14 @@ function processRefs (instance) {
 function processEventListeners (instance) {
   const emitsDefinition = instance.type.emits
   const declaredEmits = Array.isArray(emitsDefinition) ? emitsDefinition : Object.keys(emitsDefinition ?? {})
+  const normalizedDeclaredEmits = declaredEmits.map(key => kebabize(key))
   const keys = Object.keys(instance.vnode.props ?? {})
   const result = []
   for (const key of keys) {
     const [prefix, ...eventNameParts] = key.split(/(?=[A-Z])/)
     if (prefix === 'on') {
       const eventName = eventNameParts.join('-').toLowerCase()
-      const isDeclared = declaredEmits.includes(eventName)
+      const isDeclared = normalizedDeclaredEmits.includes(eventName)
       result.push({
         type: 'event listeners',
         key: eventName,
