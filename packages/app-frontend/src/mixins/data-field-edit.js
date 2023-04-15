@@ -72,13 +72,16 @@ export default {
 
     isValueEditable () {
       const type = this.interpretedValueType
+      const customType = this.field.value?._custom?.type
+
       return this.isEditable &&
         (
           type === 'null' ||
           type === 'literal' ||
           type === 'string' ||
           type === 'array' ||
-          type === 'plain-object'
+          type === 'plain-object' ||
+          customType === 'bigint'
         )
     },
 

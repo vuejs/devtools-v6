@@ -510,6 +510,8 @@ export function revive (val) {
       return reviveMap(val)
     } else if (custom.type === 'set') {
       return reviveSet(val)
+    } else if (custom.type === 'bigint') {
+      return BigInt(custom.value)
     } else if (custom._reviveId) {
       return reviveCache.read(custom._reviveId)
     } else {
