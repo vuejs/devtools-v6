@@ -215,6 +215,8 @@ function replacerForInternal (key) {
     return getCustomFunctionDetails(val)
   } else if (type === 'symbol') {
     return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
+  } else if (type === 'bigint') {
+    return getCustomBigIntDetails(val)
   } else if (val !== null && type === 'object') {
     const proto = Object.prototype.toString.call(val)
     if (proto === '[object Map]') {
@@ -327,6 +329,17 @@ export function reviveSet (val) {
     result.add(revive(value))
   }
   return result
+}
+
+export function getCustomBigIntDetails (val) {
+  const stringifiedBigInt = BigInt.prototype.toString.call(val)
+  return {
+    _custom: {
+      type: 'bigint',
+      display: `BigInt(${stringifiedBigInt})`,
+      value: stringifiedBigInt,
+    },
+  }
 }
 
 // Use a custom basename functions instead of the shimed version
