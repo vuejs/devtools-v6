@@ -40,7 +40,7 @@
     <pre>{{ mapDisplay() }}</pre>
 
     <h3>BigInt</h3>
-    <pre>{{ BigInt }}</pre>
+    <pre>{{ bigInt }}</pre>
 
     <p>
       <button @click="testVuexSet()">
@@ -146,7 +146,7 @@ export default {
         b,
         c) {},
       veryLongText,
-      BigInt: BigInt(Number.MAX_SAFE_INTEGER),
+      bigInt: BigInt(Number.MAX_SAFE_INTEGER),
     }
   },
   computed: {
