@@ -39,6 +39,9 @@
     <h3>Map</h3>
     <pre>{{ mapDisplay() }}</pre>
 
+    <h3>BigInt</h3>
+    <pre>{{ bigInt }}</pre>
+
     <p>
       <button @click="testVuexSet()">
         Vuex Set
@@ -143,6 +146,7 @@ export default {
         b,
         c) {},
       veryLongText,
+      bigInt: BigInt(Number.MAX_SAFE_INTEGER),
     }
   },
   computed: {

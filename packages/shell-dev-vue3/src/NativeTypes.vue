@@ -27,6 +27,9 @@
 
     <h3>Map</h3>
     <pre>{{ mapDisplay() }}</pre>
+
+    <h3>BigInt</h3>
+    <pre>{{ bigInt }}</pre>
   </div>
 </template>
 
@@ -122,6 +125,7 @@ export default {
         c) {},
       veryLongText,
       someElement: null,
+      bigInt: BigInt(Number.MAX_SAFE_INTEGER),
     }
   },
 
