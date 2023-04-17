@@ -769,3 +769,23 @@ export function copyToClipboard (state) {
 export function isEmptyObject (obj) {
   return obj === UNDEFINED || !obj || Object.keys(obj).length === 0
 }
+
+/**
+ * chunk an array into smaller chunk of given size.
+ * @see https://stackoverflow.com/a/37826698
+ * @param array
+ * @param size
+ */
+export function chunk (array: unknown[], size: number): unknown[][] {
+  return array.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / size)
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [] // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item)
+
+    return resultArray
+  }, []) as unknown[][]
+}

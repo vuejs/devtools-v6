@@ -1,13 +1,14 @@
 import io from 'socket.io-client'
 import { initBackend } from '@back'
 import { installToast } from '@back/toast'
-import { Bridge, target } from '@vue-devtools/shared-utils'
+import { Bridge, target, chunk } from '@vue-devtools/shared-utils'
 
 const host = target.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
 const port = target.__VUE_DEVTOOLS_PORT__ !== undefined ? target.__VUE_DEVTOOLS_PORT__ : 8098
 const fullHost = port ? host + ':' + port : host
 const createSocket = target.__VUE_DEVTOOLS_SOCKET__ || io
 const socket = createSocket(fullHost)
+const MAX_DATA_CHUNK = 2000
 
 const connectedMessage = () => {
   if (target.__VUE_DEVTOOLS_TOAST__) {
@@ -45,7 +46,11 @@ const bridge = new Bridge({
     socket.on('vue-message', data => fn(data))
   },
   send (data) {
-    socket.emit('vue-message', data)
+    const chunks = chunk(data, MAX_DATA_CHUNK)
+
+    for (const chunk of chunks) {
+      socket.emit('vue-message', chunk)
+    }
   },
 })
 
