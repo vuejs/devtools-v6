@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   env: {
     browser: true,
+    "vue/setup-compiler-macros": true
   },
   extends: [
     'plugin:vue/recommended',
