@@ -121,8 +121,8 @@ async function connect () {
   const sendComponentUpdate = throttle(async (appRecord: AppRecord, id: string) => {
     try {
       // Update component inspector
-      if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        await sendSelectedComponentData(appRecord, id, ctx)
+      if (ctx.currentInspectedComponentId) {
+        await sendSelectedComponentData(appRecord, ctx.currentInspectedComponentId, ctx)
       }
 
       // Update tree (tags)
