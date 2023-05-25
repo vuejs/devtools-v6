@@ -97,15 +97,15 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
       appRecord: mapAppRecord(record),
     })
 
+    // Auto select first app
+    if (ctx.currentAppRecord == null) {
+      await selectApp(record, ctx)
+    }
+
     if (appRecordPromises.has(options.app)) {
       for (const r of appRecordPromises.get(options.app)) {
         await r(record)
       }
-    }
-
-    // Auto select first app
-    if (ctx.currentAppRecord == null) {
-      await selectApp(record, ctx)
     }
   } else if (SharedData.debugInfo) {
     console.warn('[Vue devtools] No root instance found for app, it might have been unmounted', options.app)
