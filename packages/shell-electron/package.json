@@ -54,6 +54,7 @@
     "app.html",
     "app.js",
     "bin.js",
+    "cli.js",
     "index.js",
     "README.md",
     "server.js"
