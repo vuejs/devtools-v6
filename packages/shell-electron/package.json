@@ -8,13 +8,15 @@
     "directory": "packages/shell-electron"
   },
   "bin": {
-    "vue-devtools": "./bin.js"
+    "vue-devtools": "./bin.js",
+    "vue-devtools-cli": "./cli.js"
   },
   "main": "index.js",
   "types": "types/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "start": "node bin.js",
+    "dev": "node cli.js",
     "dev:client": "webpack --watch",
     "dev:node": "webpack --watch --config webpack.node.config.js",
     "build": "npm run build:client && npm run build:node",

@@ -3,7 +3,8 @@ import { initDevTools } from '@front'
 import { Bridge } from '@vue-devtools/shared-utils'
 
 const port = window.process.env.PORT || 8098
-const socket = io('http://localhost:' + port)
+const host = window.process.env.HOST || 'localhost'
+const socket = io(`http://${host}:${port}`)
 const $ = document.querySelector.bind(document)
 const $intro = $('#intro')
 

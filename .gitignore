@@ -10,6 +10,7 @@ TODOs.md
 .idea
 .web-extension-id
 yarn-error.log
+.yarn/*
 
 /packages/*/lib
 .amo.env.json

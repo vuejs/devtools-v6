@@ -20,7 +20,7 @@ npm install --save-dev @vue/devtools
 
 Once you installed the package globally, run:
 ```bash
-vue-devtools
+vue-devtools # or use vue-devtools-cli without electron
 ```
 
 Then add:

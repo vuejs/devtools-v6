@@ -127,7 +127,7 @@ npm install --save-dev @vue/devtools
 
 Once you installed the package globally, run:
 ```bash
-vue-devtools
+vue-devtools # or use vue-devtools-cli without electron
 ```
 
 Then add this code to the `<head>` section of your application HTML file:
