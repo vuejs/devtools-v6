@@ -53,6 +53,10 @@ io.on('connection', function (socket) {
 
 httpServer.listen(port, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`listening on 0.0.0.0:${port}
-open this link http://${localIp}:${port}/app.html when you need remote vue-devtools.`)
+  console.log(`
+
+  vue-devtools listening on 0.0.0.0:${port}
+  open this link http://${localIp}:${port}/app.html when you need remote vue-devtools.
+
+`)
 })
