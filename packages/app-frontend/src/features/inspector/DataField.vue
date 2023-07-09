@@ -369,6 +369,7 @@ export default defineComponent({
           class="edit-input value-input text-black"
           :class="{ error: !valueValid }"
           list="special-tokens"
+          :type="inputType"
           @keydown.esc.capture.stop.prevent="cancelEdit()"
           @keydown.enter="submitEdit()"
         >
