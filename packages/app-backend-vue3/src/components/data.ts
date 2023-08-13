@@ -176,11 +176,16 @@ function processState (instance) {
 }
 
 function processSetupState (instance) {
-  const raw = instance.devtoolsRawSetupState || {}
-  return Object.keys(instance.setupState)
+  const raw = instance.devtoolsRawSetupState
+  const combinedSetupState = (Object.keys(instance.setupState).length
+    ? instance.setupState
+    : instance.exposed
+  ) || {}
+
+  return Object.keys(combinedSetupState)
     .filter(key => !vueBuiltins.includes(key) && key.split(/(?=[A-Z])/)[0] !== 'use')
     .map(key => {
-      const value = returnError(() => toRaw(instance.setupState[key]))
+      const value = returnError(() => toRaw(combinedSetupState[key]))
 
       const rawData = raw[key]
 
