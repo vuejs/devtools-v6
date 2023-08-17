@@ -116,14 +116,14 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
       api.on.getInspectorState((payload) => {
         if (payload.inspectorId === VUEX_INSPECTOR_ID) {
           const modulePath = payload.nodeId
-          const module = getStoreModule(store._modules, modulePath)
+          const { module, getterPath } = getStoreModule(store._modules, modulePath)
           // Access the getters prop to init getters cache (which is lazy)
           // eslint-disable-next-line no-unused-expressions
           module.context.getters
           payload.state = formatStoreForInspectorState(
             module,
             store._makeLocalGettersCache,
-            modulePath,
+            getterPath,
           )
         }
       })
@@ -495,14 +495,22 @@ function transformPathsToObjectTree (getters) {
 function getStoreModule (moduleMap, path) {
   const names = path.split(VUEX_MODULE_PATH_SEPARATOR).filter((n) => n)
   return names.reduce(
-    (module, moduleName, i) => {
+    ({ module, getterPath }, moduleName, i) => {
       const child = module[moduleName === VUEX_ROOT_PATH ? 'root' : moduleName]
       if (!child) {
         throw new Error(`Missing module "${moduleName}" for path "${path}".`)
       }
-      return i === names.length - 1 ? child : child._children
+      return {
+        module: i === names.length - 1 ? child : child._children,
+        getterPath: child._rawModule.namespaced
+          ? getterPath
+          : getterPath.replace(`${moduleName}${VUEX_MODULE_PATH_SEPARATOR}`, ''),
+      }
     },
-    path === VUEX_ROOT_PATH ? moduleMap : moduleMap.root._children,
+    {
+      module: path === VUEX_ROOT_PATH ? moduleMap : moduleMap.root._children,
+      getterPath: path,
+    },
   )
 }
 
