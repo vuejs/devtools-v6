@@ -22,7 +22,7 @@ const internalSharedData = {
   vuexGroupGettersByModule: true,
   showMenuScrollTip: true,
   timelineTimeGrid: true,
-  timelineScreenshots: true,
+  timelineScreenshots: false,
   menuStepScrolling: isMac,
   pluginPermissions: {} as any,
   pluginSettings: {} as any,
