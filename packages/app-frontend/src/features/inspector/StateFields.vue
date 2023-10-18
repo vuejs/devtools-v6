@@ -59,7 +59,7 @@ export default {
   },
 
   errorCaptured (err, vm) {
-    this.$set(this.fieldErrors, vm.field.key, err.message)
+    this.fieldErrors[vm.field.key] = err.message
   },
 
   methods: {
@@ -95,7 +95,7 @@ export default {
 
         <DataField
           v-else
-          :key="field.key"
+          :key="`field-${field.key}`"
           :field="field"
           :depth="0"
           :path="field.key"
@@ -123,7 +123,7 @@ export default {
 
         <DataField
           v-else
-          :key="key"
+          :key="`raw-${key}`"
           :field="{ value, key }"
           :depth="0"
           :path="key.toString()"
