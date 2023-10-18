@@ -16,7 +16,10 @@
     @blur="focused = false"
   >
     <div class="content">
-      <VueIcon v-if="icon" :icon="icon" />
+      <VueIcon
+        v-if="icon"
+        :icon="icon"
+      />
       <span class="slot">
         <slot />
       </span>

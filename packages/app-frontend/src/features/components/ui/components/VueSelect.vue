@@ -10,18 +10,20 @@
     eager-mount
   >
     <template #trigger>
-      <slot name="trigger" :label="displayedLabel"/>
+      <slot
+        name="trigger"
+        :label="displayedLabel"
+      />
     </template>
 
     <VueGroup
       v-model="model"
       class="vertical"
     >
-      <slot/>
+      <slot />
     </VueGroup>
   </VueDropdown>
 </template>
-
 
 <script lang="ts">
 import { computed, defineComponent, provide, ref, ComponentInternalInstance } from 'vue'
@@ -43,7 +45,7 @@ export default defineComponent({
     },
   },
   emits: ['update:modelValue'],
-  setup(props, { emit }) {
+  setup (props, { emit }) {
     const currentChild = ref<ComponentInternalInstance | null>(null)
 
     function setCurrentChild (vm) {
@@ -74,8 +76,8 @@ export default defineComponent({
       model,
       currentChild,
       setCurrentChild,
-      displayedLabel
+      displayedLabel,
     }
-  }
+  },
 })
 </script>

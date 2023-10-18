@@ -10,16 +10,6 @@ import { useDisabledChild, useDisabledParent } from '../composables/useDisabled'
 
 export default defineComponent({
   name: 'VueDisable',
-  props: {
-    stopPropagation: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
   components: {
     PropagateDisable: {
       props: {
@@ -32,6 +22,16 @@ export default defineComponent({
         useDisabledParent(props)
         return () => h('div', { class: 'vue-ui-disable' }, slots)
       },
+    },
+  },
+  props: {
+    stopPropagation: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   setup (props) {

@@ -17,7 +17,9 @@
           :icon-left="iconLeft"
           :icon-right="iconRight"
           :disabled="finalDisabled"
-          >{{ label }}</VueButton>
+        >
+          {{ label }}
+        </VueButton>
       </slot>
     </div>
 
@@ -36,7 +38,10 @@
       </VueDisable>
     </template>
 
-    <resize-observer v-if="forceMinSize" @notify="onResize" />
+    <resize-observer
+      v-if="forceMinSize"
+      @notify="onResize"
+    />
   </VDropdown>
 </template>
 
@@ -54,7 +59,6 @@ import { useDisabledChild } from '../composables/useDisabled'
 
 export default defineComponent({
   name: 'VueDropdown',
-  emits: ['update:modelValue', 'popover-mousedown', 'popover-mouseup'],
   props: {
     autoHide: {
       type: Boolean,
@@ -111,6 +115,7 @@ export default defineComponent({
       default: false,
     },
   },
+  emits: ['update:modelValue', 'popover-mousedown', 'popover-mouseup'],
   setup (props, { emit }) {
     const width = ref(0)
     const popoverContent = ref<HTMLElement | null>(null)

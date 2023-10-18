@@ -13,9 +13,16 @@
     @click="focus()"
   >
     <div class="content">
-      <VueLoadingIndicator v-if="loadingLeft" class="small left" />
+      <VueLoadingIndicator
+        v-if="loadingLeft"
+        class="small left"
+      />
 
-      <VueIcon v-else-if="iconLeft" :icon="iconLeft" class="input-icon left" />
+      <VueIcon
+        v-else-if="iconLeft"
+        :icon="iconLeft"
+        class="input-icon left"
+      />
 
       <slot name="left" />
 
@@ -39,14 +46,21 @@
           class="input suggestion"
           :value="suggestion"
           disabled
-        />
+        >
       </div>
 
       <slot name="right" />
 
-      <VueIcon v-if="iconRight" :icon="iconRight" class="input-icon right" />
+      <VueIcon
+        v-if="iconRight"
+        :icon="iconRight"
+        class="input-icon right"
+      />
 
-      <VueLoadingIndicator v-if="loadingRight" class="small right" />
+      <VueLoadingIndicator
+        v-if="loadingRight"
+        class="small right"
+      />
 
       <!-- Focus animation -->
       <div class="border" />

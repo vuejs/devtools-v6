@@ -1,13 +1,13 @@
 <template>
   <VueGroupButton
     ref="groupButton"
-    class="vue-ui-select-button"
     v-close-popper="true"
+    class="vue-ui-select-button"
     :label="label"
     flat
     @selected="onSelect"
   >
-    <slot/>
+    <slot />
   </VueGroupButton>
 </template>
 

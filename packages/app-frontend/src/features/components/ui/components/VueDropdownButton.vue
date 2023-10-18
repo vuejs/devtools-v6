@@ -1,5 +1,8 @@
 <template>
-  <VueButton v-close-popper="true" class="vue-ui-dropdown-button">
+  <VueButton
+    v-close-popper="true"
+    class="vue-ui-dropdown-button"
+  >
     <slot />
   </VueButton>
 </template>

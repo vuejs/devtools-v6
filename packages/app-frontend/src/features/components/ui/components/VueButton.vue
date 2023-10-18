@@ -22,7 +22,11 @@
         v-if="loadingSecondary"
         class="inline small loading-secondary"
       />
-      <VueIcon v-else-if="iconLeft" :icon="iconLeft" class="button-icon left" />
+      <VueIcon
+        v-else-if="iconLeft"
+        :icon="iconLeft"
+        class="button-icon left"
+      />
 
       <span class="default-slot">
         <slot>
@@ -30,11 +34,18 @@
         </slot>
       </span>
 
-      <div v-if="tag != null" class="tag-wrapper">
+      <div
+        v-if="tag != null"
+        class="tag-wrapper"
+      >
         <div class="tag">{{ tag }}</div>
       </div>
 
-      <VueIcon v-if="iconRight" :icon="iconRight" class="button-icon right" />
+      <VueIcon
+        v-if="iconRight"
+        :icon="iconRight"
+        class="button-icon right"
+      />
     </span>
   </component>
 </template>
