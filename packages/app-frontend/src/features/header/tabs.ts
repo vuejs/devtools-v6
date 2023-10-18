@@ -1,14 +1,14 @@
 import { computed } from 'vue'
-import { useRoute } from '@front/util/router'
+import { useRoute } from 'vue-router'
 
 export function useTabs () {
   const route = useRoute()
   const currentTab = computed<string>(() => {
-    let fromMeta = route.value.meta.tab
+    let fromMeta = route.meta.tab
     if (typeof fromMeta === 'function') {
-      fromMeta = fromMeta(route.value)
+      fromMeta = fromMeta(route)
     }
-    return fromMeta || route.value.name
+    return (fromMeta || route.name) as string
   })
 
   return {

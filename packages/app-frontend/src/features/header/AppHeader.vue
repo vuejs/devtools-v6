@@ -6,9 +6,9 @@ import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 import PluginSourceDescription from '../plugin/PluginSourceDescription.vue'
 
 import { computed, ref, watch, defineComponent } from 'vue'
-import type { RawLocation, Route } from 'vue-router'
+import type { RouteLocationRaw, RouteLocation } from 'vue-router'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
-import { useRoute } from '@front/util/router'
+import { useRoute } from 'vue-router'
 import { useBridge } from '@front/features/bridge'
 import { useInspectors } from '@front/features/inspector/custom/composable'
 import { useTabs } from './tabs'
@@ -18,8 +18,8 @@ import { useOrientation } from '../layout/orientation'
 interface HeaderRoute {
   icon: string
   label: string
-  targetRoute: RawLocation
-  matchRoute: (route: Route) => boolean
+  targetRoute: RouteLocationRaw
+  matchRoute: (route: RouteLocation) => boolean
   pluginId?: string
 }
 
@@ -60,7 +60,7 @@ export default defineComponent({
       matchRoute: route => route.params.inspectorId === i.id,
     }))))
 
-    const currentHeaderRoute = computed(() => headerRoutes.value.find(r => r.matchRoute(route.value)))
+    const currentHeaderRoute = computed(() => headerRoutes.value.find(r => r.matchRoute(route)))
 
     const lastHeaderRoute = ref(null)
     watch(currentHeaderRoute, value => {
@@ -104,7 +104,7 @@ export default defineComponent({
       <img src="~@front/assets/breadcrumb-separator.svg">
     </template>
 
-    <template v-if="orientation === 'portrait' || headerRoutes.length * 200 > $responsive.width - 250">
+    <template v-if="orientation === 'portrait' || headerRoutes.length * 200 > $responsive.width.value - 250">
       <AppHeaderSelect
         :items="headerRoutes"
         :selected-item="currentHeaderRoute"
@@ -125,10 +125,10 @@ export default defineComponent({
 
     <template v-else>
       <VueGroup
-        :value="currentHeaderRoute"
+        :model-value="currentHeaderRoute"
         class="primary"
         indicator
-        @update="route => $router.push(route.targetRoute)"
+        @update:modelValue="(route: HeaderRoute) => route && $router.push(route.targetRoute)"
       >
         <VTooltip
           v-for="(item, index) of headerRoutes"
@@ -156,10 +156,9 @@ export default defineComponent({
     <div class="flex-1" />
 
     <div class="flex items-center">
-      <portal-target
-        name="header-end"
-        class="flex items-center"
-      />
+      <div class="flex items-center">
+        <portal-target name="header-end" />
+      </div>
 
       <VueDropdown
         :offset="[0, 0]"
