@@ -14,6 +14,7 @@ export default defineComponent({
       default: false,
     },
   },
+  emits: ['select'],
 
   setup (props) {
     const { getLatestVersion } = useVueVersionCheck()

@@ -20,9 +20,11 @@ export default defineComponent({
       required: true,
     },
 
-    value: {},
+    value: {
+      required: true,
+    },
   },
-
+  emits: ['update:value'],
   setup (props, { emit }) {
     const model = computed({
       get () {
