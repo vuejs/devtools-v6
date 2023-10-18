@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { ref, computed, watch, defineComponent } from 'vue'
+import { ref, computed, watch, defineComponent } from 'vue'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { onKeyDown } from '@front/util/keyboard'
 import { useCurrentInspector } from './composable'
@@ -30,7 +30,7 @@ export default defineComponent({
     const expanded = computed({
       get: () => !!inspector.value.expandedMap[props.node.id],
       set: value => {
-        Vue.set(inspector.value.expandedMap, props.node.id, value)
+        inspector.value.expandedMap[props.node.id] = value
       },
     })
 
