@@ -39,6 +39,9 @@ module.exports = {
         },
       },
     ],
+    'func-call-spacing': 'off',
+    'vue/component-definition-name-casing': 'off',
+    'vue/multi-word-component-names': 'off',
     '@typescript-eslint/ban-ts-comment': 'warn',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -76,6 +79,14 @@ module.exports = {
       files: ['packages/shell-dev-vue3/**'],
       rules: {
         'vue/valid-template-root': 'off',
+        'vue/one-component-per-file': 'off',
+        'vue/no-v-model-argument': 'off',
+      },
+    },
+    {
+      files: ['packages/app-frontend/**'],
+      rules: {
+        'vue/no-v-model-argument': 'off',
       },
     },
     {
@@ -99,6 +110,7 @@ module.exports = {
       },
       rules: {
         'no-console': 'off',
+        'vue/no-multiple-template-root': 'off',
       },
     },
     {
