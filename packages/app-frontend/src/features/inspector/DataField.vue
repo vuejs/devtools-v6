@@ -324,10 +324,11 @@ export default defineComponent({
       }"
       class="self"
       placement="left"
-      :offset="[0, 24]"
-      @click.native="onClick"
-      @mouseenter.native="onContextMenuMouseEnter"
-      @mouseleave.native="onContextMenuMouseLeave"
+      :distance="0"
+      :skidding="24"
+      @click="onClick"
+      @mouseenter="onContextMenuMouseEnter"
+      @mouseleave="onContextMenuMouseLeave"
     >
       <span
         v-show="isExpandableType"
@@ -492,14 +493,14 @@ export default defineComponent({
 
           <!-- Context menu -->
           <VueDropdown
-            :open.sync="contextMenuOpen"
+            v-model="contextMenuOpen"
           >
-            <VueButton
-              slot="trigger"
-              icon-left="more_vert"
-              class="icon-button flat"
-            />
-
+            <template #trigger>
+              <VueButton
+                icon-left="more_vert"
+                class="icon-button flat"
+              />
+            </template>
             <div
               class="context-menu-dropdown"
               @mouseenter="onContextMenuMouseEnter"

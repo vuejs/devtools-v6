@@ -64,7 +64,7 @@ export default defineComponent({
       applyScroll()
     })
 
-    function onLayersScroll (event: WheelEvent) {
+    function onLayersScroll (event: UIEvent) {
       const target = event.currentTarget as HTMLElement
       if (target.scrollTop !== vScroll.value) {
         vScroll.value = target.scrollTop
@@ -171,8 +171,8 @@ export default defineComponent({
 
     // Zoom
 
-    let zoomTimer
-    let zoomDelayTimer
+    let zoomTimer: ReturnType<typeof setTimeout>
+    let zoomDelayTimer: ReturnType<typeof setTimeout>
 
     function zoom (delta: number) {
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
@@ -229,8 +229,8 @@ export default defineComponent({
 
     // Move buttons
 
-    let moveTimer
-    let moveDelayTimer
+    let moveTimer: ReturnType<typeof setTimeout>
+    let moveDelayTimer: ReturnType<typeof setTimeout>
 
     function move (delta: number) {
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
@@ -352,8 +352,7 @@ export default defineComponent({
               :hover="hoverLayerId === layer.id"
               :selected="selectedLayer === layer"
               class="flex-none"
-              @mouseenter.native="hoverLayerId = layer.id"
-              @mouseleave.native="hoverLayerId = null"
+              @mouseenter="hoverLayerId = layer.id"
               @select="selectLayer(layer)"
               @hide="setLayerHidden(layer, true)"
             />
@@ -376,35 +375,35 @@ export default defineComponent({
                 <VueButton
                   icon-left="arrow_left"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="moveLeft()"
+                  @mousedown="moveLeft()"
                 />
 
                 <TimelineScrollbar
-                  :min.sync="minTime"
-                  :max.sync="maxTime"
-                  :start.sync="startTime"
-                  :end.sync="endTime"
+                  v-model:start="startTime"
+                  v-model:end="endTime"
+                  :min="minTime"
+                  :max="maxTime"
                   class="flex-1"
                 />
 
                 <VueButton
                   icon-left="arrow_right"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="moveRight()"
+                  @mousedown="moveRight()"
                 />
 
                 <VueButton
                   v-tooltip="'Zoom in'"
                   icon-left="add"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="zoomIn()"
+                  @mousedown="zoomIn()"
                 />
 
                 <VueButton
                   v-tooltip="'Zoom out'"
                   icon-left="remove"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="zoomOut()"
+                  @mousedown="zoomOut()"
                 />
               </div>
               <TimelineView
@@ -447,7 +446,7 @@ export default defineComponent({
               </template>
             </SplitPane>
           </template>
-        </splitpane>
+        </SplitPane>
       </template>
     </SplitPane>
 
