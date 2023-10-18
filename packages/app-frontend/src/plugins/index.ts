@@ -1,18 +1,21 @@
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import 'vue-resize/dist/vue-resize.css'
 
-import Vue from 'vue'
-import PortalVue from 'portal-vue'
-import VueUi, { generateHtmlIcon } from '@vue/ui'
+import { App } from 'vue'
+import VueUi, { generateHtmlIcon } from '../features/components/ui'
 import VueVirtualScroller from 'vue-virtual-scroller'
 import { keys } from '@vue-devtools/shared-utils'
+import PortalVue from 'portal-vue'
 import VI18n from './i18n'
 import Responsive from './responsive'
 import GlobalRefs from './global-refs'
+import VueResize from 'vue-resize'
 
-export function setupPlugins () {
-  Vue.use(PortalVue)
-  Vue.use(VueUi)
-  Vue.use(VueVirtualScroller)
+export function setupPlugins (app: App) {
+  app.use(PortalVue)
+  app.use(VueUi)
+  app.use(VueResize)
+  app.use(VueVirtualScroller)
 
   const currentLocale = 'en'
   const locales = require.context('../locales')
@@ -21,15 +24,15 @@ export function setupPlugins () {
     { reg: /<mono>/g, replace: '<span class="mono">' },
     { reg: /<\/(input|mono)>/g, replace: '</span>' },
     { reg: /\[\[(\S+)\]\]/g, replace: '<span class="keyboard">$1</span>' },
-    { reg: /<<(\S+)>>/g, replace: (match, p1) => generateHtmlIcon(p1) },
+    { reg: /<<(\S+)>>/g, replace: (_, p1) => generateHtmlIcon(p1) as string },
   ]
 
-  Vue.use(VI18n, {
+  app.use(VI18n, {
     strings: locales(`./${currentLocale}`).default,
     defaultValues: {
       keys,
     },
-    replacer: text => {
+    replacer: (text: string) => {
       for (const replacer of replacers) {
         // @ts-ignore
         text = text.replace(replacer.reg, replacer.replace)
@@ -38,18 +41,9 @@ export function setupPlugins () {
     },
   })
 
-  Vue.use(Responsive, {
-    computed: {
-      wide () {
-        return this.width >= 1050
-      },
-      tall () {
-        return this.height >= 350
-      },
-    },
-  })
+  app.use(Responsive)
 
-  Vue.use(GlobalRefs, {
+  app.use(GlobalRefs, {
     refs: {
       leftScroll: () => document.querySelector('.left .scroll'),
       leftRecycleList: () => document.querySelector('.left .vue-recycle-scroller'),
