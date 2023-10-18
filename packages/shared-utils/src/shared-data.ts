@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import { setStorage, getStorage } from './storage'
 import { Bridge } from './bridge'
 import { isBrowser, isMac } from './env'
@@ -76,7 +77,6 @@ let initRetryCount = 0
 export interface SharedDataParams {
   bridge: Bridge
   persist: boolean
-  Vue?: any
 }
 
 const initCbs = []
@@ -159,13 +159,7 @@ export function initSharedData (params: SharedDataParams): Promise<void> {
       bridge.send('shared-data:minion-init-waiting')
     }
 
-    data = {
-      ...internalSharedData,
-    }
-
-    if (params.Vue) {
-      data = params.Vue.observable(data)
-    }
+    data = reactive({ ...internalSharedData })
 
     // Update value from other shared data clients
     bridge.on('shared-data:set', ({ key, value }) => {
