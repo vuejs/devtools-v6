@@ -17,7 +17,7 @@ function processEvent (event, type) {
   ) {
     return
   }
-  const modifiers = []
+  const modifiers: string[] = []
   if (event.ctrlKey || event.metaKey) modifiers.push('ctrl')
   if (event.shiftKey) modifiers.push('shift')
   if (event.altKey) modifiers.push('alt')
@@ -52,7 +52,7 @@ export default function (options) {
         ...options,
       })
     },
-    destroyed () {
+    unmounted () {
       const i = activeInstances.findIndex(
         o => o.vm === this,
       )

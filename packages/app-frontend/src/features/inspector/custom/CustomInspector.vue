@@ -44,13 +44,13 @@ export default defineComponent({
 
     // Keyboard
 
-    function selectNextChild (index) {
+    function selectNextChild (index: number) {
       if (index + 1 < inspector.value.rootNodes.length) {
         selectNode(inspector.value.rootNodes[index + 1])
       }
     }
 
-    function selectPreviousChild (index) {
+    function selectPreviousChild (index: number) {
       if (index - 1 >= 0) {
         selectNode(inspector.value.rootNodes[index - 1])
       }
@@ -122,7 +122,7 @@ export default defineComponent({
     </SplitPane>
 
     <portal to="header-end">
-      <template v-if="inspector.actions">
+      <template v-if="inspector?.actions">
         <VueButton
           v-for="(action, index) of inspector.actions"
           :key="index"
