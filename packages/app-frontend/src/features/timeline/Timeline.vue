@@ -468,9 +468,9 @@ export default defineComponent({
             <VueSwitch
               v-for="layer of allLayers"
               :key="layer.id"
-              :value="!isLayerHidden(layer)"
+              :model-value="!isLayerHidden(layer)"
               class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
-              @update="value => setLayerHidden(layer, !value)"
+              @update:modelValue="value => setLayerHidden(layer, !value)"
             >
               <div class="flex items-center space-x-2 max-w-xs">
                 <div
