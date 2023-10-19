@@ -81,7 +81,7 @@ export default defineComponent({})
       </VueFormField>
     </div>
 
-    <portal to="header-end">
+    <Teleport to="#header-end">
       <VueButton
         :to="{
           name: 'plugins'
@@ -91,6 +91,6 @@ export default defineComponent({})
       >
         Plugin settings
       </VueButton>
-    </portal>
+    </Teleport>
   </div>
 </template>

@@ -156,10 +156,10 @@ export default defineComponent({
     <div class="flex-1" />
 
     <div class="flex items-center">
-      <div class="flex items-center">
-        <portal-target name="header-end" />
-      </div>
-
+      <div
+        id="header-end"
+        class="flex items-center"
+      />
       <VueDropdown
         :offset="[0, 0]"
       >

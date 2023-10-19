@@ -450,7 +450,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="header-end">
+    <Teleport to="#header-end">
       <VueDropdown>
         <template #trigger>
           <VueButton
@@ -501,7 +501,7 @@ export default defineComponent({
         icon-left="delete_sweep"
         @click="resetTimeline()"
       />
-    </portal>
+    </Teleport>
 
     <portal to="more-menu">
       <VueSwitch

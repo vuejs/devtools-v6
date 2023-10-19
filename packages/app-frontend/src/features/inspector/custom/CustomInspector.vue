@@ -121,7 +121,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="header-end">
+    <Teleport to="#header-end">
       <template v-if="inspector?.actions">
         <VueButton
           v-for="(action, index) of inspector.actions"
@@ -138,7 +138,7 @@ export default defineComponent({
         icon-left="refresh"
         @click="refreshInspector()"
       />
-    </portal>
+    </Teleport>
   </div>
   <EmptyPane
     v-else

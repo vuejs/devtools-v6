@@ -186,7 +186,7 @@ export default defineComponent({
       <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
     </portal>
 
-    <portal to="header-end">
+    <Teleport to="#header-end">
       <VueButton
         v-tooltip="{
           content: $t('ComponentTree.select.tooltip'),
@@ -209,9 +209,9 @@ export default defineComponent({
         icon-left="refresh"
         @click="refresh()"
       />
-    </portal>
+    </Teleport>
 
-    <portal to="root">
+    <Teleport to="#root">
       <div
         v-if="pickingComponent"
         class="absolute inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75 z-100 flex items-center justify-center"
@@ -233,7 +233,7 @@ export default defineComponent({
           </div>
         </div>
       </div>
-    </portal>
+    </Teleport>
   </div>
 </template>
 
