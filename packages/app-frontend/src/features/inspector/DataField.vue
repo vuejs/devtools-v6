@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, toRaw } from 'vue'
 import {
   BridgeEvents,
   isPlainObject,
@@ -297,14 +297,14 @@ export default defineComponent({
     logToConsole (level = 'log') {
       getBridge().send(BridgeEvents.TO_BACK_LOG, {
         level,
-        value: this.field.value,
+        value: toRaw(this.field.value),
         revive: true,
       })
     },
 
     executeCustomAction (index: number) {
       getBridge().send(BridgeEvents.TO_BACK_CUSTOM_STATE_ACTION, {
-        value: this.field.value,
+        value: toRaw(this.field.value),
         actionIndex: index,
       })
     },
