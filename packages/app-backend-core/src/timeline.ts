@@ -73,6 +73,7 @@ function setupBuiltinLayers (ctx: BackendContext) {
       if (!SharedData.componentEventsEnabled) return
 
       const appRecord = await getAppRecord(app, ctx)
+      if (!appRecord) return
       const componentId = `${appRecord.id}:${instance.uid}`
       const componentDisplay = (await appRecord.backend.api.getComponentName(instance)) || '<i>Unknown Component</i>'
 

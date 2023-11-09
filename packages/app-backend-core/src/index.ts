@@ -250,7 +250,10 @@ async function connect () {
       if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
         await sendEmptyComponentData(id, ctx)
       }
-      appRecord.instanceMap.delete(id)
+
+      if (appRecord) {
+        appRecord.instanceMap.delete(id)
+      }
 
       await refreshComponentTreeSearch(ctx)
     } catch (e) {

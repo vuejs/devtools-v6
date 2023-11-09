@@ -17,6 +17,7 @@ export async function performanceMarkStart (
   try {
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
+    if (!appRecord) return
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupId = ctx.perfUniqueGroupId++
     const groupKey = `${uid}-${type}`
@@ -80,6 +81,7 @@ export async function performanceMarkEnd (
   try {
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
+    if (!appRecord) return
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupKey = `${uid}-${type}`
     const groupInfo = appRecord.perfGroupIds.get(groupKey)
