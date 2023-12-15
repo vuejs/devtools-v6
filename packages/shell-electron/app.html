@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="expires" content="Fri, 18 Jue 2023 17:00:00 GMT" />
   <title>Vue Developer Tools</title>
+  <!-- get env port and local ip -->
+  <script src="/local_ip"></script>
   <style>
     #app,
     #intro {
@@ -41,7 +46,7 @@
     }
 
     #intro .content {
-      width: 395px;
+      width: 500px;
       font-size: 18px;
       line-height: 45px;
       text-align: center;
@@ -64,8 +69,17 @@
       margin-left: 10px;
       border: 1px solid #cacaca;
       border-radius: 2px;
-      text-align: center;
       font-size: 14px;
+    }
+
+    #intro textarea {
+      flex: 1;
+      padding: 0 10px;
+      margin-left: 10px;
+      border: 1px solid #cacaca;
+      border-radius: 2px;
+      font-size: 14px;
+      width: 100%;
     }
   </style>
 </head>
@@ -82,7 +96,7 @@
       </div>
       <div class="content-row">
         <label for="script-byip">Or</label>
-        <input type="text" id="script-byip">
+        <textarea id="script-byip" rows="5" ></textarea>
       </div>
       to the top of the page you want to debug.
     </div>
@@ -90,15 +104,19 @@
   <div id="app">
   </div>
   <script>
-    const port = process.env.PORT || 8098
-    const localIp = require('ip').address();
+    const port = process.env.PORT
+    const localIp = process.env.HOST
     const $ = document.querySelector.bind(document)
 
     const $localhost = $('#script-localhost')
     const $byIp = $('#script-byip')
 
     $localhost.value = '<' + 'script src="http://localhost:' + port + '"><' + '/script>'
-    $byIp.value = '<' + 'script src="http://' + localIp + ':' + port + '"><' + '/script>'
+    $byIp.innerHTML = `&lt;script&gt;
+    window.__VUE_DEVTOOLS_HOST__ = 'http://${localIp}'
+    window.__VUE_DEVTOOLS_PORT__ = ${port}
+&lt;/script&gt;
+&lt;script src="http://${localIp}:${port}" &gt;&lt;/script&gt;`
 
     function selectAll () {
       this.selectionStart = 0

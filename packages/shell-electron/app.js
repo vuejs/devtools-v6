@@ -3,7 +3,6 @@ require('./server')
 
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-const url = require('url')
 
 let mainWindow = null
 
@@ -18,11 +17,7 @@ function createWindow () {
     },
   })
 
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'app.html'),
-    protocol: 'file:',
-    slashes: true,
-  }))
+  mainWindow.loadURL(`http://localhost:${process.env.PORT || 8098}/app.html`)
 
   mainWindow.on('closed', () => {
     mainWindow = null
