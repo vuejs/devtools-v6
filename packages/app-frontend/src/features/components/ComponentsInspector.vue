@@ -42,16 +42,17 @@ export default defineComponent({
     } = useComponentPick()
 
     onKeyDown(event => {
-      if (event.key === 'f' && event.altKey) {
+      // ƒ,ß,® - these are the result keys in Mac with altKey pressed
+      if ((event.key === 'f' || event.key === 'ƒ') && event.altKey) {
         treeFilterInput.value.focus()
         return false
-      } else if (event.key === 's' && event.altKey && !pickingComponent.value) {
+      } else if ((event.key === 's' || event.key === 'ß') && event.altKey && !pickingComponent.value) {
         startPickingComponent()
         return false
       } else if (event.key === 'Escape' && pickingComponent.value) {
         stopPickingComponent()
         return false
-      } else if (event.key === 'r' && (event.ctrlKey || event.metaKey) && event.altKey) {
+      } else if ((event.key === 'r' || event.key === '®') && (event.ctrlKey || event.metaKey) && event.altKey) {
         refresh()
         return false
       }
