@@ -9,6 +9,7 @@ export function getRootElementsFromComponentInstance (instance) {
   if (isFragment(instance)) {
     return getFragmentRootElements(instance.subTree)
   }
+  if (!instance.subTree) return []
   return [instance.subTree.el]
 }
 
@@ -50,6 +51,8 @@ export function getInstanceOrVnodeRect (instance) {
     return addIframePosition(getFragmentRect(instance.subTree), getElWindow(el))
   } else if (el.nodeType === 1) {
     return addIframePosition(el.getBoundingClientRect(), getElWindow(el))
+  } else if (instance.subTree.component) {
+    return getInstanceOrVnodeRect(instance.subTree.component)
   }
 }
 

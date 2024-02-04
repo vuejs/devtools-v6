@@ -174,13 +174,18 @@ class ReviveCache {
 
 const reviveCache = new ReviveCache(1000)
 
-export function stringify (data) {
-  // Create a fresh cache for each serialization
-  encodeCache.clear()
-  return stringifyCircularAutoChunks(data, replacer)
+const replacers = {
+  internal: replacerForInternal,
+  user: replaceForUser,
 }
 
-function replacer (key) {
+export function stringify (data, target: keyof typeof replacers = 'internal') {
+  // Create a fresh cache for each serialization
+  encodeCache.clear()
+  return stringifyCircularAutoChunks(data, replacers[target])
+}
+
+function replacerForInternal (key) {
   // @ts-ignore
   const val = this[key]
   const type = typeof val
@@ -210,6 +215,8 @@ function replacer (key) {
     return getCustomFunctionDetails(val)
   } else if (type === 'symbol') {
     return `[native Symbol ${Symbol.prototype.toString.call(val)}]`
+  } else if (type === 'bigint') {
+    return getCustomBigIntDetails(val)
   } else if (val !== null && type === 'object') {
     const proto = Object.prototype.toString.call(val)
     if (proto === '[object Map]') {
@@ -220,7 +227,7 @@ function replacer (key) {
       // special handling of native type
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
     } else if (proto === '[object Date]') {
-      return `[native Date ${Date.prototype.toString.call(val)}]`
+      return getCustomDateDetails(val)
     } else if (proto === '[object Error]') {
       return `[native Error ${val.message}<>${val.stack}]`
     } else if (val.state && val._vm) {
@@ -235,11 +242,38 @@ function replacer (key) {
       return `[native VNode <${val.tag}>]`
     } else if (typeof HTMLElement !== 'undefined' && val instanceof HTMLElement) {
       return encodeCache.cache(val, () => getCustomHTMLElementDetails(val))
+    } else if (val.constructor?.name === 'Store' && val._wrappedGetters) {
+      return `[object Store]`
+    } else if (val.currentRoute) {
+      return `[object Router]`
     }
     const customDetails = getCustomObjectDetails(val, proto)
     if (customDetails != null) return customDetails
   } else if (Number.isNaN(val)) {
     return NAN
+  }
+  return sanitize(val)
+}
+
+// @TODO revive from backend to have more data to the clipboard
+function replaceForUser (key) {
+  // @ts-ignore
+  let val = this[key]
+  const type = typeof val
+  if (val?._custom && 'value' in val._custom) {
+    val = val._custom.value
+  }
+  if (type !== 'object') {
+    if (val === UNDEFINED) {
+      return undefined
+    } else if (val === INFINITY) {
+      return Infinity
+    } else if (val === NEGATIVE_INFINITY) {
+      return -Infinity
+    } else if (val === NAN) {
+      return NaN
+    }
+    return val
   }
   return sanitize(val)
 }
@@ -297,11 +331,41 @@ export function reviveSet (val) {
   return result
 }
 
+export function getCustomBigIntDetails (val) {
+  const stringifiedBigInt = BigInt.prototype.toString.call(val)
+  return {
+    _custom: {
+      type: 'bigint',
+      display: `BigInt(${stringifiedBigInt})`,
+      value: stringifiedBigInt,
+    },
+  }
+}
+
+export function getCustomDateDetails (val: Date) {
+  const dateCopy = new Date(val.getTime())
+  dateCopy.setMinutes(dateCopy.getMinutes() - dateCopy.getTimezoneOffset())
+
+  const displayedTime = Date.prototype.toString.call(val)
+  return {
+    _custom: {
+      type: 'date',
+      display: displayedTime,
+      value: dateCopy.toISOString().slice(0, -1),
+      skipSerialize: true,
+    },
+  }
+}
+
 // Use a custom basename functions instead of the shimed version
 // because it doesn't work on Windows
-function basename (filename, ext) {
+export function basename (filename, ext) {
+  filename = filename.replace(/\\/g, '/')
+  if (filename.includes(`/index${ext}`)) {
+    filename = filename.replace(`/index${ext}`, ext)
+  }
   return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
+    filename.replace(/^[a-zA-Z]:/, ''),
     ext,
   )
 }
@@ -353,13 +417,14 @@ export function getCustomFunctionDetails (func: Function): CustomState {
   // Trim any excess whitespace from the argument string
   const match = matches && matches[0]
   const args = typeof match === 'string'
-    ? `(${match.substring(1, match.length - 2).split(',').map(a => a.trim()).join(', ')})`
+    ? match
     : '(?)'
   const name = typeof func.name === 'string' ? func.name : ''
   return {
     _custom: {
       type: 'function',
-      display: `<span>f</span> ${escape(name)}${args}`,
+      display: `<span style="opacity:.5;">function</span> ${escape(name)}${args}`,
+      tooltip: string.trim() ? `<pre>${string}</pre>` : null,
       _reviveId: reviveCache.cache(func),
     },
   }
@@ -464,6 +529,10 @@ export function revive (val) {
       return reviveMap(val)
     } else if (custom.type === 'set') {
       return reviveSet(val)
+    } else if (custom.type === 'bigint') {
+      return BigInt(custom.value)
+    } else if (custom.type === 'date') {
+      return new Date(custom.value)
     } else if (custom._reviveId) {
       return reviveCache.read(custom._reviveId)
     } else {
@@ -700,9 +769,18 @@ function escapeChar (a) {
 }
 
 export function copyToClipboard (state) {
+  let text: string
+
+  if (typeof state !== 'object') {
+    text = String(state)
+  } else {
+    text = stringify(state, 'user')
+  }
+
+  // @TODO navigator.clipboard is buggy in extensions
   if (typeof document === 'undefined') return
   const dummyTextArea = document.createElement('textarea')
-  dummyTextArea.textContent = stringify(state)
+  dummyTextArea.textContent = text
   document.body.appendChild(dummyTextArea)
   dummyTextArea.select()
   document.execCommand('copy')
@@ -711,4 +789,24 @@ export function copyToClipboard (state) {
 
 export function isEmptyObject (obj) {
   return obj === UNDEFINED || !obj || Object.keys(obj).length === 0
+}
+
+/**
+ * chunk an array into smaller chunk of given size.
+ * @see https://stackoverflow.com/a/37826698
+ * @param array
+ * @param size
+ */
+export function chunk (array: unknown[], size: number): unknown[][] {
+  return array.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / size)
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [] // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item)
+
+    return resultArray
+  }, []) as unknown[][]
 }

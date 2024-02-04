@@ -3,7 +3,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginListItem from './PluginListItem.vue'
 import PluginHome from './PluginHome.vue'
 
-import { defineComponent, ref, computed } from '@vue/composition-api'
+import { defineComponent, ref, computed } from 'vue'
 import { usePlugins } from '.'
 
 export default defineComponent({
@@ -73,7 +73,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="header-end">
+    <SafeTeleport to="#header-end">
       <VueButton
         :to="{
           name: 'global-settings'
@@ -83,12 +83,12 @@ export default defineComponent({
       >
         Global settings
       </VueButton>
-    </portal>
+    </SafeTeleport>
   </div>
 </template>
 
 <style scoped>
-.vue-ui-icon /deep/ svg {
+.vue-ui-icon :deep(svg) {
   fill: currentColor;
 }
 </style>

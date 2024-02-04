@@ -1,6 +1,5 @@
 <script>
 // Fork of https://github.com/egoist/vue-monaco/
-
 import * as monaco from 'monaco-editor'
 import assign from 'lodash/merge'
 
@@ -11,17 +10,12 @@ monaco.editor.defineTheme('github-dark', require('@front/assets/github-theme/dar
 
 export default {
   name: 'MonacoEditor',
-
-  model: {
-    event: 'change',
-  },
-
   props: {
     original: {
       type: String,
       default: null,
     },
-    value: {
+    modelValue: {
       type: String,
       required: true,
     },
@@ -42,7 +36,7 @@ export default {
       default: false,
     },
   },
-
+  emits: ['update:modelValue'],
   watch: {
     options: {
       deep: true,
@@ -54,7 +48,7 @@ export default {
       },
     },
 
-    value (newValue) {
+    modelValue (newValue) {
       if (this.editor) {
         const editor = this.getModifiedEditor()
         if (newValue !== editor.getValue()) {
@@ -93,7 +87,7 @@ export default {
     })
   },
 
-  beforeDestroy () {
+  beforeUnmount () {
     this.editor && this.editor.dispose()
   },
 
@@ -103,21 +97,22 @@ export default {
 
       const options = assign(
         {
-          value: this.value,
+          value: this.modelValue,
           theme: this.theme,
           language: this.language,
         },
         this.options,
       )
+      const root = this.$refs.root
 
       if (this.diffEditor) {
-        this.editor = monaco.editor.createDiffEditor(this.$el, options)
+        this.editor = monaco.editor.createDiffEditor(root, options)
         const originalModel = monaco.editor.createModel(
           this.original,
           this.language,
         )
         const modifiedModel = monaco.editor.createModel(
-          this.value,
+          this.modelValue,
           this.language,
         )
         this.editor.setModel({
@@ -125,15 +120,15 @@ export default {
           modified: modifiedModel,
         })
       } else {
-        this.editor = monaco.editor.create(this.$el, options)
+        this.editor = monaco.editor.create(root, options)
       }
 
       // @event `change`
       const editor = this.getModifiedEditor()
       editor.onDidChangeModelContent(event => {
         const value = editor.getValue()
-        if (this.value !== value) {
-          this.$emit('change', value, event)
+        if (this.modelValue !== value) {
+          this.$emit('update:modelValue', value, event)
         }
       })
 
@@ -165,5 +160,5 @@ export default {
 </script>
 
 <template>
-  <div />
+  <div ref="root" />
 </template>

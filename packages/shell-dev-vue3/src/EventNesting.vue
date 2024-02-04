@@ -10,6 +10,10 @@ export default {
       default: 0,
     },
   },
+
+  emits: [
+    'notify',
+  ],
 }
 </script>
 

@@ -1,8 +1,7 @@
 <script>
 import StateType from './StateType.vue'
-
-import Vue from 'vue'
 import { useDefer } from '@front/util/defer'
+import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 
 const keyOrder = {
   props: 1,
@@ -22,8 +21,11 @@ const keyOrder = {
   refs: 6,
   $attrs: 7,
   attrs: 7,
+  'event listeners': 7,
   'setup (other)': 8,
 }
+
+const STORAGE_COLLAPSE_ALL = 'state-inspector.collapse-all'
 
 export default {
   components: {
@@ -78,32 +80,33 @@ export default {
   },
 
   watch: {
-    state () {
-      this.forceCollapse = null
+    state: {
+      handler () {
+        this.forceCollapse = null
+        if (getStorage(STORAGE_COLLAPSE_ALL)) {
+          this.setExpandToAll(false)
+        }
+      },
+      immediate: true,
     },
   },
 
   methods: {
     toggle (dataType, currentExpanded, event = null) {
-      if (event) {
-        if (event.ctrlKey || event.metaKey) {
-          this.setExpandToAll(false)
-          this.$emit('collapse-all')
-          return
-        } else if (event.shiftKey) {
-          this.setExpandToAll(true)
-          this.$emit('expand-all')
-          return
-        }
+      if (event?.shiftKey) {
+        this.setExpandToAll(!currentExpanded)
+        return
       }
-      Vue.set(this.expandedState, dataType, !currentExpanded)
+      this.expandedState[dataType] = !currentExpanded
     },
 
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
         this.forceCollapse = value ? 'expand' : 'collapse'
-        Vue.set(this.expandedState, key, value)
+        this.expandedState[key] = value
       })
+      this.$emit(value ? 'expand-all' : 'collapse-all')
+      setStorage(STORAGE_COLLAPSE_ALL, !value)
     },
   },
 }

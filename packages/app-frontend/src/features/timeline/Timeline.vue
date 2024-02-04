@@ -8,7 +8,7 @@ import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
-import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from '@vue/composition-api'
+import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from 'vue'
 import { getStorage, SharedData } from '@vue-devtools/shared-utils'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
@@ -64,7 +64,7 @@ export default defineComponent({
       applyScroll()
     })
 
-    function onLayersScroll (event: WheelEvent) {
+    function onLayersScroll (event: UIEvent) {
       const target = event.currentTarget as HTMLElement
       if (target.scrollTop !== vScroll.value) {
         vScroll.value = target.scrollTop
@@ -171,8 +171,8 @@ export default defineComponent({
 
     // Zoom
 
-    let zoomTimer
-    let zoomDelayTimer
+    let zoomTimer: ReturnType<typeof setTimeout>
+    let zoomDelayTimer: ReturnType<typeof setTimeout>
 
     function zoom (delta: number) {
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
@@ -229,8 +229,8 @@ export default defineComponent({
 
     // Move buttons
 
-    let moveTimer
-    let moveDelayTimer
+    let moveTimer: ReturnType<typeof setTimeout>
+    let moveDelayTimer: ReturnType<typeof setTimeout>
 
     function move (delta: number) {
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
@@ -352,8 +352,7 @@ export default defineComponent({
               :hover="hoverLayerId === layer.id"
               :selected="selectedLayer === layer"
               class="flex-none"
-              @mouseenter.native="hoverLayerId = layer.id"
-              @mouseleave.native="hoverLayerId = null"
+              @mouseenter="hoverLayerId = layer.id"
               @select="selectLayer(layer)"
               @hide="setLayerHidden(layer, true)"
             />
@@ -376,35 +375,35 @@ export default defineComponent({
                 <VueButton
                   icon-left="arrow_left"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="moveLeft()"
+                  @mousedown="moveLeft()"
                 />
 
                 <TimelineScrollbar
-                  :min.sync="minTime"
-                  :max.sync="maxTime"
-                  :start.sync="startTime"
-                  :end.sync="endTime"
+                  v-model:start="startTime"
+                  v-model:end="endTime"
+                  :min="minTime"
+                  :max="maxTime"
                   class="flex-1"
                 />
 
                 <VueButton
                   icon-left="arrow_right"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="moveRight()"
+                  @mousedown="moveRight()"
                 />
 
                 <VueButton
                   v-tooltip="'Zoom in'"
                   icon-left="add"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="zoomIn()"
+                  @mousedown="zoomIn()"
                 />
 
                 <VueButton
                   v-tooltip="'Zoom out'"
                   icon-left="remove"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
-                  @mousedown.native="zoomOut()"
+                  @mousedown="zoomOut()"
                 />
               </div>
               <TimelineView
@@ -447,11 +446,11 @@ export default defineComponent({
               </template>
             </SplitPane>
           </template>
-        </splitpane>
+        </SplitPane>
       </template>
     </SplitPane>
 
-    <portal to="header-end">
+    <SafeTeleport to="#header-end">
       <VueDropdown>
         <template #trigger>
           <VueButton
@@ -469,9 +468,9 @@ export default defineComponent({
             <VueSwitch
               v-for="layer of allLayers"
               :key="layer.id"
-              :value="!isLayerHidden(layer)"
+              :model-value="!isLayerHidden(layer)"
               class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
-              @update="value => setLayerHidden(layer, !value)"
+              @update:modelValue="value => setLayerHidden(layer, !value)"
             >
               <div class="flex items-center space-x-2 max-w-xs">
                 <div
@@ -502,9 +501,9 @@ export default defineComponent({
         icon-left="delete_sweep"
         @click="resetTimeline()"
       />
-    </portal>
+    </SafeTeleport>
 
-    <portal to="more-menu">
+    <SafeTeleport to="#more-menu">
       <VueSwitch
         v-model="$shared.timelineTimeGrid"
         class="w-full px-3 py-1 extend-left"
@@ -521,7 +520,7 @@ export default defineComponent({
       </VueSwitch>
 
       <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
-    </portal>
+    </SafeTeleport>
 
     <AskScreenshotPermission
       v-if="askScreenshotPermission"
@@ -538,7 +537,7 @@ export default defineComponent({
 
 .zoom-btn {
   @apply rounded-none;
-  /deep/ .vue-ui-icon {
+  :deep(.vue-ui-icon) {
     @apply w-3.5 h-3.5 mr-0 left-0 right-0 !important;
   }
 }

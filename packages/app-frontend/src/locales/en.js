@@ -24,7 +24,7 @@ export default {
   },
   StateInspector: {
     dataType: {
-      tooltip: '[[{{keys.ctrl}}]] + <<mouse>>: Collapse All<br>[[{{keys.shift}}]] + <<mouse>>: Expand All',
+      tooltip: '[[{{keys.shift}}]] + <<mouse>>: Expand/Collapse All<br><div class="max-w-[200px] opacity-70">Using this shortcut will override the default toggled state and save it for next time.</div>',
     },
     filter: {
       tooltip: '[[{{keys.alt}}]] + [[D]] Filter state by name',
@@ -54,10 +54,13 @@ export default {
   },
   ComponentTree: {
     select: {
-      tooltip: '[[S]] Select component in the page',
+      tooltip: '[[{{keys.alt}}]] + [[S]] Select component in the page',
     },
     filter: {
       tooltip: '[[{{keys.alt}}]] + [[F]] Filter components by name',
+    },
+    refresh: {
+      tooltip: '[[{{keys.ctrl}}]] + [[{{keys.alt}}]] + [[R]] Force refresh',
     },
   },
   ComponentInstance: {

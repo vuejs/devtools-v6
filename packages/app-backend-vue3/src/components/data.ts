@@ -1,8 +1,62 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
+import { camelize, StateEditor, SharedData, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
+
+const vueBuiltins = [
+  'nextTick',
+  'defineComponent',
+  'defineAsyncComponent',
+  'defineCustomElement',
+  'ref',
+  'computed',
+  'reactive',
+  'readonly',
+  'watchEffect',
+  'watchPostEffect',
+  'watchSyncEffect',
+  'watch',
+  'isRef',
+  'unref',
+  'toRef',
+  'toRefs',
+  'isProxy',
+  'isReactive',
+  'isReadonly',
+  'shallowRef',
+  'triggerRef',
+  'customRef',
+  'shallowReactive',
+  'shallowReadonly',
+  'toRaw',
+  'markRaw',
+  'effectScope',
+  'getCurrentScope',
+  'onScopeDispose',
+  'onMounted',
+  'onUpdated',
+  'onUnmounted',
+  'onBeforeMount',
+  'onBeforeUpdate',
+  'onBeforeUnmount',
+  'onErrorCaptured',
+  'onRenderTracked',
+  'onRenderTriggered',
+  'onActivated',
+  'onDeactivated',
+  'onServerPrefetch',
+  'provide',
+  'inject',
+  'h',
+  'mergeProps',
+  'cloneVNode',
+  'isVNode',
+  'resolveComponent',
+  'resolveDirective',
+  'withDirectives',
+  'withModifiers',
+]
 
 /**
  * Get the detailed information of an inspected instance.
@@ -26,6 +80,7 @@ function getInstanceState (instance) {
     processProvide(instance),
     processInject(instance, mergedType),
     processRefs(instance),
+    processEventListeners(instance),
   )
 }
 
@@ -121,38 +176,50 @@ function processState (instance) {
 }
 
 function processSetupState (instance) {
-  const raw = instance.devtoolsRawSetupState || {}
-  return Object.keys(instance.setupState)
+  const raw = instance.devtoolsRawSetupState
+  const combinedSetupState = (Object.keys(instance.setupState).length
+    ? instance.setupState
+    : instance.exposed
+  ) || {}
+
+  return Object.keys(combinedSetupState)
+    .filter(key => !vueBuiltins.includes(key) && key.split(/(?=[A-Z])/)[0] !== 'use')
     .map(key => {
-      const value = returnError(() => toRaw(instance.setupState[key]))
+      const value = returnError(() => toRaw(combinedSetupState[key]))
 
       const rawData = raw[key]
 
       let result: any
+
+      let isOther = typeof value === 'function' ||
+        typeof value?.render === 'function' ||
+        typeof value?.__asyncLoader === 'function' ||
+        typeof value === 'object' && ('setup' in value || 'props' in value)
 
       if (rawData) {
         const info = getSetupStateInfo(rawData)
 
         const objectType = info.computed ? 'Computed' : info.ref ? 'Ref' : info.reactive ? 'Reactive' : null
         const isState = info.ref || info.computed || info.reactive
-        const isOther = typeof value === 'function' || typeof value?.render === 'function'
         const raw = rawData.effect?.raw?.toString() || rawData.effect?.fn?.toString()
+
+        if (objectType) {
+          isOther = false
+        }
 
         result = {
           ...objectType ? { objectType } : {},
           ...raw ? { raw } : {},
           editable: isState && !info.readonly,
-          type: isOther ? 'setup (other)' : 'setup',
-        }
-      } else {
-        result = {
-          type: 'setup',
         }
       }
+
+      const type = isOther ? 'setup (other)' : 'setup'
 
       return {
         key,
         value,
+        type,
         ...result,
       }
     })
@@ -202,9 +269,17 @@ export function getCustomObjectDetails (object: any, proto: string): CustomState
       _custom: {
         type: objectType.toLowerCase(),
         objectType,
-        readOnly: true,
         value,
         ...raw ? { tooltip: `<span class="font-mono">${raw}</span>` } : {},
+      },
+    }
+  }
+
+  if (typeof object.__asyncLoader === 'function') {
+    return {
+      _custom: {
+        type: 'component-definition',
+        display: 'Async component definition',
       },
     }
   }
@@ -286,7 +361,7 @@ function processInject (instance, mergedType) {
   return keys.map(({ key, originalKey }) => ({
     type: 'injected',
     key: originalKey && key !== originalKey ? `${originalKey.toString()} ➞ ${key.toString()}` : key.toString(),
-    value: returnError(() => instance.ctx[key] || instance.provides[originalKey] || defaultValue),
+    value: returnError(() => instance.ctx.hasOwnProperty(key) ? instance.ctx[key] : instance.provides.hasOwnProperty(originalKey) ? instance.provides[originalKey] : defaultValue),
   }))
 }
 
@@ -297,6 +372,35 @@ function processRefs (instance) {
       key,
       value: returnError(() => instance.refs[key]),
     }))
+}
+
+function processEventListeners (instance) {
+  const emitsDefinition = instance.type.emits
+  const declaredEmits = Array.isArray(emitsDefinition) ? emitsDefinition : Object.keys(emitsDefinition ?? {})
+  const declaredEmitsMap = declaredEmits.reduce((emitsMap, key) => {
+    emitsMap[kebabize(key)] = key
+    return emitsMap
+  }, {})
+  const keys = Object.keys(instance.vnode.props ?? {})
+  const result = []
+  for (const key of keys) {
+    const [prefix, ...eventNameParts] = key.split(/(?=[A-Z])/)
+    if (prefix === 'on') {
+      const eventName = eventNameParts.join('-').toLowerCase()
+      const normalizedEventName = declaredEmitsMap[eventName]
+      result.push({
+        type: 'event listeners',
+        key: normalizedEventName || eventName,
+        value: {
+          _custom: {
+            display: normalizedEventName ? '✅ Declared' : '⚠️ Not declared',
+            tooltip: !normalizedEventName ? `The event <code>${eventName}</code> is not declared in the <code>emits</code> option. It will leak into the component's attributes (<code>$attrs</code>).` : null,
+          },
+        },
+      })
+    }
+  }
+  return result
 }
 
 export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor, ctx: BackendContext) {
@@ -391,7 +495,7 @@ function mergeOptions (
       if (!to[key]) {
         to[key] = from[key]
       } else {
-        Object.assign(to[key], from[key])
+        to[key] = Object.assign(Object.create(null), to[key], from[key])
       }
     }
   }

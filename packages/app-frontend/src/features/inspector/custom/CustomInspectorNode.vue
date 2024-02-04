@@ -1,6 +1,5 @@
 <script lang="ts">
-import Vue from 'vue'
-import { ref, computed, watch, defineComponent } from '@vue/composition-api'
+import { ref, computed, watch, defineComponent } from 'vue'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { onKeyDown } from '@front/util/keyboard'
 import { useCurrentInspector } from './composable'
@@ -31,7 +30,7 @@ export default defineComponent({
     const expanded = computed({
       get: () => !!inspector.value.expandedMap[props.node.id],
       set: value => {
-        Vue.set(inspector.value.expandedMap, props.node.id, value)
+        inspector.value.expandedMap[props.node.id] = value
       },
     })
 
@@ -48,7 +47,7 @@ export default defineComponent({
       selectNode(props.node)
     }
 
-    const selected = computed(() => inspector.value.selectedNodeId === props.node.id)
+    const selected = computed(() => inspector.value?.selectedNodeId === props.node.id)
 
     // Init selection if an id is set but the selection wasn't loaded yet
     watch(() => selected.value && inspector.value.selectedNode !== props.node, value => {

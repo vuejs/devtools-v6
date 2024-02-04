@@ -1,13 +1,13 @@
 <script>
-import { reactive, watch } from '@vue/composition-api'
+import { defineAsyncComponent, reactive, watch } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
 import { darkMode } from '@front/util/theme'
 
-const CodeEditor = () => import(
+const CodeEditor = defineAsyncComponent(() => import(
   /* webpackChunkName: "CodeEditor" */
   '@front/features/code/CodeEditor.vue'
-)
+))
 
 export default {
   components: {

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent } from 'vue'
 import { hasPluginPermission, PluginPermission } from '@vue-devtools/shared-utils'
 
 export default defineComponent({
@@ -49,7 +49,7 @@ export default defineComponent({
 </template>
 
 <style lang="postcss" scoped>
-.vue-ui-icon /deep/ svg {
+.vue-ui-icon :deep(svg) {
   fill: currentColor;
 }
 </style>

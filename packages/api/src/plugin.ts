@@ -1,4 +1,4 @@
-import { App } from './api'
+import type { App } from './api/index.js'
 
 export interface PluginDescriptor {
   id: string

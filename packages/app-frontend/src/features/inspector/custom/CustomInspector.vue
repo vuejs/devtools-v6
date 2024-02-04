@@ -3,8 +3,9 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import CustomInspectorNode from './CustomInspectorNode.vue'
 import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
+import PluginSourceIcon from '../../plugin/PluginSourceIcon.vue'
 
-import { watch, ref, provide, defineComponent } from '@vue/composition-api'
+import { watch, ref, provide, defineComponent } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
 import { useCurrentInspector } from './composable'
@@ -15,6 +16,7 @@ export default defineComponent({
     EmptyPane,
     CustomInspectorNode,
     CustomInspectorSelectedNodePane,
+    PluginSourceIcon,
   },
 
   setup () {
@@ -42,13 +44,13 @@ export default defineComponent({
 
     // Keyboard
 
-    function selectNextChild (index) {
+    function selectNextChild (index: number) {
       if (index + 1 < inspector.value.rootNodes.length) {
         selectNode(inspector.value.rootNodes[index + 1])
       }
     }
 
-    function selectPreviousChild (index) {
+    function selectPreviousChild (index: number) {
       if (index - 1 >= 0) {
         selectNode(inspector.value.rootNodes[index - 1])
       }
@@ -86,12 +88,18 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <VueInput
-            v-model="inspector.treeFilter"
-            icon-left="search"
-            :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
-            class="search flat border-b border-gray-200 dark:border-gray-800 min-w-0"
-          />
+          <div class="border-b border-gray-200 dark:border-gray-800 flex items-center pr-2 h-8 box-content">
+            <VueInput
+              v-model="inspector.treeFilter"
+              icon-left="search"
+              :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
+              class="search flat min-w-0 flex-1 mr-2"
+            />
+
+            <PluginSourceIcon
+              :plugin-id="inspector.pluginId"
+            />
+          </div>
 
           <div
             ref="treeScroller"
@@ -113,8 +121,8 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="header-end">
-      <template v-if="inspector.actions">
+    <SafeTeleport to="#header-end">
+      <template v-if="inspector?.actions">
         <VueButton
           v-for="(action, index) of inspector.actions"
           :key="index"
@@ -130,7 +138,7 @@ export default defineComponent({
         icon-left="refresh"
         @click="refreshInspector()"
       />
-    </portal>
+    </SafeTeleport>
   </div>
   <EmptyPane
     v-else
@@ -149,14 +157,12 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .search {
-  >>> {
-    .input {
-      height: 39px !important;
-    }
+  :deep(.input) {
+    height: 39px !important;
+  }
 
-    .content {
-      border: none !important;
-    }
+  :deep(.content) {
+    border: none !important;
   }
 }
 

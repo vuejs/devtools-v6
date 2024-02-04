@@ -18,7 +18,7 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
     id: 'org.vuejs.vue2-internal',
     label: 'Vue 2',
     homepage: 'https://vuejs.org/',
-    logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
+    logo: 'https://v2.vuejs.org/images/icons/favicon-96x96.png',
     settings: {
       legacyActions: {
         label: 'Legacy Actions',
@@ -116,14 +116,17 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
       api.on.getInspectorState((payload) => {
         if (payload.inspectorId === VUEX_INSPECTOR_ID) {
           const modulePath = payload.nodeId
-          const module = getStoreModule(store._modules, modulePath)
+          const { module, getterPath } = getStoreModule(store._modules, modulePath)
+          if (!module) {
+            return
+          }
           // Access the getters prop to init getters cache (which is lazy)
           // eslint-disable-next-line no-unused-expressions
           module.context.getters
           payload.state = formatStoreForInspectorState(
             module,
             store._makeLocalGettersCache,
-            modulePath,
+            getterPath,
           )
         }
       })
@@ -431,32 +434,34 @@ function formatStoreForInspectorState (module, getters, path): CustomInspectorSt
     })),
   }
 
-  const pathWithSlashes = path.replace(VUEX_MODULE_PATH_SEPARATOR_REG, '/')
-  getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[pathWithSlashes]
-  let gettersKeys = Object.keys(getters)
-  const shouldPickGetters = !module.namespaced && path !== VUEX_ROOT_PATH
-  if (shouldPickGetters) {
-    // Only pick the getters defined in the non-namespaced module
-    const definedGettersKeys = Object.keys(module._rawModule.getters ?? {})
-    gettersKeys = gettersKeys.filter(key => definedGettersKeys.includes(key))
-  }
-  if (gettersKeys.length) {
-    let moduleGetters: Record<string, any>
+  if (getters) {
+    const pathWithSlashes = path.replace(VUEX_MODULE_PATH_SEPARATOR_REG, '/')
+    getters = !module.namespaced || path === VUEX_ROOT_PATH ? module.context.getters : getters[pathWithSlashes]
+    let gettersKeys = Object.keys(getters)
+    const shouldPickGetters = !module.namespaced && path !== VUEX_ROOT_PATH
     if (shouldPickGetters) {
       // Only pick the getters defined in the non-namespaced module
-      moduleGetters = {}
-      for (const key of gettersKeys) {
-        moduleGetters[key] = canThrow(() => getters[key])
-      }
-    } else {
-      moduleGetters = getters
+      const definedGettersKeys = Object.keys(module._rawModule.getters ?? {})
+      gettersKeys = gettersKeys.filter(key => definedGettersKeys.includes(key))
     }
-    const tree = transformPathsToObjectTree(moduleGetters)
-    storeState.getters = Object.keys(tree).map((key) => ({
-      key: key.endsWith('/') ? extractNameFromPath(key) : key,
-      editable: false,
-      value: canThrow(() => tree[key]),
-    }))
+    if (gettersKeys.length) {
+      let moduleGetters: Record<string, any>
+      if (shouldPickGetters) {
+        // Only pick the getters defined in the non-namespaced module
+        moduleGetters = {}
+        for (const key of gettersKeys) {
+          moduleGetters[key] = canThrow(() => getters[key])
+        }
+      } else {
+        moduleGetters = getters
+      }
+      const tree = transformPathsToObjectTree(moduleGetters)
+      storeState.getters = Object.keys(tree).map((key) => ({
+        key: key.endsWith('/') ? extractNameFromPath(key) : key,
+        editable: false,
+        value: canThrow(() => tree[key]),
+      }))
+    }
   }
 
   return storeState
@@ -493,14 +498,20 @@ function transformPathsToObjectTree (getters) {
 function getStoreModule (moduleMap, path) {
   const names = path.split(VUEX_MODULE_PATH_SEPARATOR).filter((n) => n)
   return names.reduce(
-    (module, moduleName, i) => {
+    ({ module, getterPath }, moduleName, i) => {
       const child = module[moduleName === VUEX_ROOT_PATH ? 'root' : moduleName]
-      if (!child) {
-        throw new Error(`Missing module "${moduleName}" for path "${path}".`)
+      if (!child) return null
+      return {
+        module: i === names.length - 1 ? child : child._children,
+        getterPath: child._rawModule.namespaced
+          ? getterPath
+          : getterPath.replace(`${moduleName}${VUEX_MODULE_PATH_SEPARATOR}`, ''),
       }
-      return i === names.length - 1 ? child : child._children
     },
-    path === VUEX_ROOT_PATH ? moduleMap : moduleMap.root._children,
+    {
+      module: path === VUEX_ROOT_PATH ? moduleMap : moduleMap.root._children,
+      getterPath: path,
+    },
   )
 }
 

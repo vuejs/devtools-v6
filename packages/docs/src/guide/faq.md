@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-## How to use the devtools in IE/Edge/Safari or any other browser?
+## How to use the devtools in IE/Safari or any other browser?
 
 In case your browser doesn't have our browser extension available, we made a standalone Vue devtools application.
 [Get it now!](./installation.md#standalone)
@@ -17,14 +17,14 @@ Here are some troubleshooting steps to help you if you don't the Vue devtools in
 - Check if you have the extension [installed](./installation.md).
 - If you are on a live website, there is a good chance it's using a production build of Vue.
   - Use a non-minified, non-`prod` version of Vue on CDN
-  - Set the `__VUE_PROD_DEVTOOLS__` environment variable for Vue 3 when using a bundler like Webpack ([more info](https://github.com/vuejs/vue-next/tree/master/packages/vue#bundler-build-feature-flags)).
+  - Set the `__VUE_PROD_DEVTOOLS__` environment variable for Vue 3 when using a bundler like Webpack ([more info](https://github.com/vuejs/core/tree/main/packages/vue#bundler-build-feature-flags)).
 - Try closing the devtools pane, refreshing the page and opening the devtools pane again.
 - Try restarting the browser or the computer.
 - If you have multiple versions of the Vue devtools installed, it's recommended to disable/remove the others.
 - Try disabling other devtools extensions like React devtools.
 - Look for errors in the browser Console.
 - Update your project dependencies.
-- Even if the Vue logo in the toolbar is gray and says "Vue not detected", open your browser devtools and check if the Vue tab is showing up anyaway.
+- Even if the Vue logo in the toolbar is gray and says "Vue not detected", open your browser devtools and check if the Vue tab is showing up anyway.
 
 ## The data isn't updating in the component inspector
 

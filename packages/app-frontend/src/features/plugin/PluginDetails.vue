@@ -4,7 +4,7 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginPermission from './PluginPermission.vue'
 import PluginSettings from './PluginSettings.vue'
 
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent } from 'vue'
 import { usePlugins } from '.'
 
 export default defineComponent({

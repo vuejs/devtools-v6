@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from '@vue/composition-api'
+import { computed, toRefs, onMounted, ref, watch, defineComponent, PropType } from 'vue'
 import { ComponentTreeNode } from '@vue/devtools-api'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { getComponentDisplayName, UNDEFINED, SharedData } from '@vue-devtools/shared-utils'
@@ -95,6 +95,11 @@ export default defineComponent({
               }
               break
             }
+            case ' ':
+            case 'Enter': {
+              toggle()
+              break
+            }
             case 'ArrowDown': {
               if (expanded.value && sortedChildren.value.length) {
                 // Select first child
@@ -141,6 +146,13 @@ export default defineComponent({
       }
     }
 
+    function switchToggle (event: MouseEvent) {
+      if (event.shiftKey) {
+        toggle(true, !expanded.value)
+      } else {
+        toggle()
+      }
+    }
     // Update tracking
 
     const updateTracking = computed(() => updateTrackingEvents.value[props.instance.id])
@@ -157,7 +169,7 @@ export default defineComponent({
       selected,
       select,
       expanded,
-      toggle,
+      switchToggle,
       highlight,
       unhighlight,
       selectNextSibling,
@@ -184,7 +196,7 @@ export default defineComponent({
         paddingLeft: depth * 15 + 4 + 'px'
       }"
       @click="select()"
-      @dblclick="toggle()"
+      @dblclick="switchToggle"
       @mouseover="highlight()"
       @mouseleave="unhighlight()"
     >
@@ -194,7 +206,7 @@ export default defineComponent({
         :class="{
           'invisible': !instance.hasChildren
         }"
-        @click.stop="toggle()"
+        @click.stop="switchToggle"
       >
         <span
           :class="{

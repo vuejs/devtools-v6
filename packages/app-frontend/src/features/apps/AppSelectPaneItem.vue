@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed } from 'vue'
 import { useVueVersionCheck } from './vue-version-check'
 
 export default defineComponent({
@@ -14,6 +14,7 @@ export default defineComponent({
       default: false,
     },
   },
+  emits: ['select'],
 
   setup (props) {
     const { getLatestVersion } = useVueVersionCheck()
@@ -39,7 +40,12 @@ export default defineComponent({
   >
     <div class="flex items-center">
       <span class="truncate flex-1">{{ app.name }}</span>
-      <span class="flex-none flex items-center">
+      <span
+        class="flex-none flex items-center"
+        :class="{
+          'opacity-40': !selected,
+        }"
+      >
         <img
           src="~@front/assets/vue-logo.svg"
           class="w-6 h-6"
@@ -84,7 +90,7 @@ export default defineComponent({
 .app-button {
   @apply rounded-none text-left h-auto py-1.5;
 
-  > >>> .content {
+  > :deep(.content) {
     @apply min-w-full justify-start;
 
     > .default-slot {

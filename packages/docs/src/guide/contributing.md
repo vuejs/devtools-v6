@@ -24,10 +24,10 @@ The repository is a monorepo with several nested packages:
 
 ## Development
 
-1. Clone this repo
-2. run `yarn install`
-3. then run `yarn run build:watch` and `yarn run dev:vue3` in parallel
-4. A plain shell with a test app will be available at `localhost:8090`.
+1. Clone [this repo](https://github.com/vuejs/devtools)
+2. Run `yarn install` in the repository root to install dependencies.
+3. Run `yarn run build:watch` (compiles and watch the packages) and then `yarn run dev:vue3` (run the development shell) in two different terminals. Wait for the initial compilation in the first terminal to finish before running the second command.
+4. A plain shell with a test app will be available at `http://localhost:8090`.
 
 ## Pull Request Guidelines
 
@@ -64,12 +64,12 @@ Thank you for your code contribution! Before opening a PR, please make sure to r
 This is useful when you want to build the extension with the source repo to get not-yet-released features.
 
 1. Clone this repo
-2. `cd vue-devtools` the newly created folder
+2. `cd devtools` the newly created folder
 3. run `yarn install`
 4. then run `yarn run build:watch` & `yarn run dev:chrome` in parallel
 5. Open the Chrome extension page (currently under `Menu` > `More Tools` > `Extensions`)
 6. Check "developer mode" on the top-right corner
-7. Click the "load unpacked" button on the left, and choose the folder: `vue-devtools/packages/shell-chrome/` (it will have an orange disk icon)
+7. Click the "load unpacked" button on the left, and choose the folder: `devtools/packages/shell-chrome/` (it will have an orange disk icon)
 8. Make sure you disable all other versions of the extension
 
 ## Testing as Firefox addon
@@ -94,6 +94,6 @@ This is useful when you want to build the extension with the source repo to get 
 ## Docs development
 
 1. Clone this repo
-2. `cd vue-devtools` the newly created folder
+2. `cd devtools` the newly created folder
 3. run `yarn install`
 4. run `docs:dev`

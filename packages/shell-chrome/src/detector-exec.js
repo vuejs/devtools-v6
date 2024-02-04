@@ -8,7 +8,10 @@ function sendMessage (message) {
 }
 
 function detect () {
-  setTimeout(() => {
+  let delay = 1000
+  let detectRemainingTries = 10
+
+  function runDetect () {
     // Method 1: Check Nuxt.js
     const nuxtDetected = !!(window.__NUXT__ || window.$nuxt)
 
@@ -58,7 +61,20 @@ function detect () {
         devtoolsEnabled: Vue.config.devtools,
         vueDetected: true,
       }, '*')
+      return
     }
+
+    if (detectRemainingTries > 0) {
+      detectRemainingTries--
+      setTimeout(() => {
+        runDetect()
+      }, delay)
+      delay *= 5
+    }
+  }
+
+  setTimeout(() => {
+    runDetect()
   }, 100)
 }
 

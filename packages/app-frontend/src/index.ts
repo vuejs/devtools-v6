@@ -1,6 +1,6 @@
 import './assets/style/index.styl'
+import './assets/style/index.postcss'
 
-import './composition'
 import { initStorage, Shell } from '@vue-devtools/shared-utils'
 import { createApp, connectApp } from './app'
 import { setAppConnected } from './features/connection'
@@ -15,7 +15,7 @@ export { setAppConnected } from './features/connection'
 export async function initDevTools (shell: Shell) {
   await initStorage()
   const app = createApp()
-  app.$mount('#app')
+  app.mount('#app')
   connectApp(app, shell)
   shell.onReload(() => {
     setAppConnected(false)

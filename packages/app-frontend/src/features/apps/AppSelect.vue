@@ -2,11 +2,11 @@
 import AppHeaderSelect from '../header/AppHeaderSelect.vue'
 import AppSelectItem from './AppSelectItem.vue'
 
-import { watch, defineComponent, computed } from '@vue/composition-api'
+import { watch, defineComponent, computed } from 'vue'
 import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps, pendingSelectAppId, scanLegacyApps } from '@front/features/apps'
 import { useOrientation } from '@front/features/layout/orientation'
-import { useRouter } from '@front/util/router'
+import { useRouter } from 'vue-router'
 import { useBridge } from '../bridge'
 import { useVueVersionCheck } from './vue-version-check'
 
@@ -118,6 +118,7 @@ export default defineComponent({
     <template #default="{ item }">
       <AppSelectItem
         :app="item"
+        :selected="currentApp === item"
       />
     </template>
 

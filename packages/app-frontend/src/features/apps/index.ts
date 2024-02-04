@@ -1,7 +1,7 @@
-import { ref, computed } from '@vue/composition-api'
+import { ref, computed } from 'vue'
 import { BridgeEvents, Bridge } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
-import { useRoute, useRouter } from '@front/util/router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchLayers } from '../timeline/composable'
 
 export interface AppRecord {
@@ -15,7 +15,7 @@ const apps = ref<AppRecord[]>([])
 
 export function useCurrentApp () {
   const route = useRoute()
-  const currentAppId = computed(() => route.value.params.appId)
+  const currentAppId = computed(() => route.params.appId as string)
   const currentApp = computed(() => apps.value.find(a => currentAppId.value === a.id))
 
   return {
@@ -71,7 +71,7 @@ function fetchApps () {
   getBridge().send(BridgeEvents.TO_BACK_APP_LIST, {})
 }
 
-export const pendingSelectAppId = ref<string>(null)
+export const pendingSelectAppId = ref<string | null>(null)
 
 const pendingSelectPromises: (() => void)[] = []
 

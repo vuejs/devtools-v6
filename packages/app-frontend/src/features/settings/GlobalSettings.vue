@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 
 // import NewTag from './NewTag.vue'
 
@@ -81,7 +81,7 @@ export default defineComponent({})
       </VueFormField>
     </div>
 
-    <portal to="header-end">
+    <SafeTeleport to="#header-end">
       <VueButton
         :to="{
           name: 'plugins'
@@ -91,6 +91,6 @@ export default defineComponent({})
       >
         Plugin settings
       </VueButton>
-    </portal>
+    </SafeTeleport>
   </div>
 </template>

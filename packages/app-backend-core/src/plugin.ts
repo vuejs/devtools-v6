@@ -1,6 +1,6 @@
 import { PluginQueueItem } from '@vue/devtools-api'
 import { Plugin, BackendContext, DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
-import { BridgeEvents, target } from '@vue-devtools/shared-utils'
+import { BridgeEvents, SharedData, target } from '@vue-devtools/shared-utils'
 import { getAppRecord, getAppRecordId } from './app'
 
 export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendContext) {
@@ -14,6 +14,7 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   ctx.currentPlugin = plugin
   try {
     const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
+    if (!appRecord) return
     const api = new DevtoolsPluginApiInstance(plugin, appRecord, ctx)
     if (pluginQueueItem.proxy) {
       await pluginQueueItem.proxy.setRealTarget(api)
@@ -22,7 +23,9 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
     }
   } catch (e) {
     plugin.error = e
-    console.error(e)
+    if (SharedData.debugInfo) {
+      console.error(e)
+    }
   }
   ctx.currentPlugin = null
   ctx.plugins.push(plugin)

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from 'vue'
 
 export default defineComponent({
   emits: [
@@ -42,7 +42,7 @@ export default defineComponent({
         </template>
 
         <template v-if="step === 1">
-          <h2>Let's have little tour</h2>
+          <h2>Let's take a little tour</h2>
 
           <p>
             The devtools were entirely rewritten with the release of Vue 3.
@@ -187,7 +187,7 @@ export default defineComponent({
               href="https://devtools.vuejs.org/guide/installation.html#legacy"
               target="_blank"
             >Legacy version</a> and <a
-              href="https://new-issue.vuejs.org/?repo=vuejs/devtools"
+              href="https://github.com/vuejs/devtools/issues/new/choose"
               target="_blank"
             >report an issue</a>.
           </p>

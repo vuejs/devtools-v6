@@ -10,15 +10,16 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    repo: 'vuejs/vue-devtools',
+    repo: 'vuejs/devtools',
     logo: '/logo-header.svg',
-    docsDir: 'docs',
+    docsDir: 'packages/docs/src',
     docsBranch: 'main',
     editLinks: true,
     editLinkText: 'Suggest changes to this page',
 
     algolia: {
-      apiKey: '4a61e935b51c9631f1d29e4270efbb72',
+      appId: 'CFRGFZ1IGJ',
+      apiKey: '6c814da38002372317bcbefd73e60bbf',
       indexName: 'devtools-vuejs'
     },
 
@@ -57,6 +58,10 @@ export default defineConfig({
             {
               text: 'Contributing',
               link: '/guide/contributing',
+            },
+            {
+              text: 'Devtools performance',
+              link: '/guide/devtools-perf',
             },
           ],
         },

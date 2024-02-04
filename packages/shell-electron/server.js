@@ -7,7 +7,11 @@ const { Server } = require('socket.io')
 const port = process.env.PORT || 8098
 
 const httpServer = createServer(app)
-const io = new Server(httpServer, {})
+const io = new Server(httpServer, {
+  cors: {
+    origin: true,
+  },
+})
 
 app.get('/', function (req, res) {
   const hookContent = fs.readFileSync(path.join(__dirname, '/build/hook.js'), 'utf8')

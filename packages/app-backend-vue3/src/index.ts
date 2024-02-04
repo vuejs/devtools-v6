@@ -26,12 +26,12 @@ export const backend = defineBackend({
     })
 
     api.on.walkComponentTree(async (payload, ctx) => {
-      const walker = new ComponentWalker(payload.maxDepth, payload.filter, api, ctx)
+      const walker = new ComponentWalker(payload.maxDepth, payload.filter, payload.recursively, api, ctx)
       payload.componentTreeData = await walker.getComponentTree(payload.componentInstance)
     })
 
     api.on.walkComponentParents((payload, ctx) => {
-      const walker = new ComponentWalker(0, null, api, ctx)
+      const walker = new ComponentWalker(0, null, false, api, ctx)
       payload.parentInstances = walker.getComponentParents(payload.componentInstance)
     })
 
@@ -88,7 +88,7 @@ export const backend = defineBackend({
       }
     })
 
-    api.stateEditor.isRef = value => !!value.__v_isRef
+    api.stateEditor.isRef = value => !!value?.__v_isRef
     api.stateEditor.getRefValue = ref => ref.value
     api.stateEditor.setRefValue = (ref, value) => {
       ref.value = value

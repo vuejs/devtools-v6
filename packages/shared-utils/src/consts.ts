@@ -18,6 +18,10 @@ export enum BridgeEvents {
   /** Tab was switched */
   TO_BACK_TAB_SWITCH = 'b:tab:switch',
   TO_BACK_LOG = 'b:log',
+  /** Reconnected after background script is terminated (idle) */
+  TO_FRONT_RECONNECTED = 'f:reconnected',
+  /** Change app title (electron) */
+  TO_FRONT_TITLE = 'f:title',
 
   // Apps
   /** App was registered */
@@ -84,6 +88,7 @@ export enum BridgeEvents {
   TO_FRONT_CUSTOM_INSPECTOR_STATE = 'f:custom-inspector:state',
   TO_BACK_CUSTOM_INSPECTOR_EDIT_STATE = 'b:custom-inspector:edit-state',
   TO_BACK_CUSTOM_INSPECTOR_ACTION = 'b:custom-inspector:action',
+  TO_BACK_CUSTOM_INSPECTOR_NODE_ACTION = 'b:custom-inspector:node-action',
   TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE = 'f:custom-inspector:select-node',
 
   // Custom state

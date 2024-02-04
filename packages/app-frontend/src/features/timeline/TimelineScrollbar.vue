@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, onUnmounted, defineComponent, computed } from '@vue/composition-api'
+import { ref, onUnmounted, defineComponent, computed } from 'vue'
 
 export default defineComponent({
   props: {
@@ -23,14 +23,14 @@ export default defineComponent({
       required: true,
     },
   },
-
+  emits: ['update:start', 'update:end'],
   setup (props, { emit }) {
     const startRatio = computed(() => (props.start - props.min) / (props.max - props.min))
     const endRatio = computed(() => (props.max - props.end) / (props.max - props.min))
 
     const el = ref(null)
 
-    let mouseStartX, initialValue
+    let mouseStartX: number, initialValue: number
 
     // Main bar
 

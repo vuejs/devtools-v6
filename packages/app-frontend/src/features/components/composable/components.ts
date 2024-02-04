@@ -1,6 +1,5 @@
-import { ref, computed, watch, Ref, onMounted } from '@vue/composition-api'
+import { ref, computed, watch, Ref, onMounted } from 'vue'
 import { ComponentTreeNode, EditStatePayload, InspectedComponentData } from '@vue/devtools-api'
-import Vue from 'vue'
 import groupBy from 'lodash/groupBy'
 import {
   BridgeEvents,
@@ -13,16 +12,16 @@ import {
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
 import { AppRecord, waitForAppSelect, useCurrentApp } from '@front/features/apps'
-import { useRoute, useRouter } from '@front/util/router'
+import { useRoute, useRouter } from 'vue-router'
 
 export const rootInstances = ref<ComponentTreeNode[]>([])
 export const componentsMap = ref<Record<ComponentTreeNode['id'], ComponentTreeNode>>({})
 let componentsParent: Record<ComponentTreeNode['id'], ComponentTreeNode['id']> = {}
 const treeFilter = ref('')
-export const selectedComponentId = ref<ComponentTreeNode['id']>(null)
-export const selectedComponentData = ref<InspectedComponentData>(null)
+export const selectedComponentId = ref<ComponentTreeNode['id'] | null>(null)
+export const selectedComponentData = ref<InspectedComponentData | null>(null)
 const selectedComponentStateFilter = ref('')
-export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
+export const selectedComponentPendingId = ref<ComponentTreeNode['id'] | null>(null)
 let lastSelectedApp: AppRecord = null
 export const lastSelectedComponentId: Record<AppRecord['id'], ComponentTreeNode['id']> = {}
 export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
@@ -62,8 +61,8 @@ export function useComponents () {
     requestComponentTree()
   })
 
-  watch(() => route.value.params.componentId, () => {
-    const value = route.value.params.componentId
+  watch(() => route.params.componentId, () => {
+    const value = route.params.componentId as string
     if (value && getAppIdFromComponentId(value) === currentAppId.value) {
       selectedComponentId.value = value
       loadComponent(value)
@@ -136,11 +135,21 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   const isExpanded = computed(() => isComponentOpen(instance.value.id))
   const isExpandedUndefined = computed(() => expandedMap.value[instance.value.id] == null)
 
-  function toggleExpand () {
-    if (!instance.value.hasChildren) return
-    setComponentOpen(instance.value.id, !isExpanded.value)
-    if (isComponentOpen(instance.value.id)) {
-      requestComponentTree(instance.value.id)
+  function toggleExpand (recursively = false, value?, child?) {
+    const treeNode = child || instance.value
+    if (!treeNode.hasChildren) return
+    const isOpen = value === undefined ? !isExpanded.value : value
+    setComponentOpen(treeNode.id, isOpen)
+    if (isComponentOpen(treeNode.id)) {
+      requestComponentTree(treeNode.id, recursively)
+    } else {
+      // stop expanding all treenode
+      treeNode.autoOpen = false
+    }
+    if (recursively) {
+      treeNode.children.forEach(child => {
+        toggleExpand(recursively, value, child)
+      })
     }
   }
 
@@ -169,7 +178,9 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
   }
 
   onMounted(() => {
-    if (isExpanded.value) {
+    if (instance.value.autoOpen) {
+      toggleExpand(true, true)
+    } else if (isExpanded.value) {
       requestComponentTree(instance.value.id)
     }
   })
@@ -186,10 +197,10 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
 }
 
 export function setComponentOpen (id: ComponentTreeNode['id'], isOpen: boolean) {
-  Vue.set(expandedMap.value, id, isOpen)
+  expandedMap.value[id] = isOpen
 }
 
-export function isComponentOpen (id) {
+export function isComponentOpen (id: ComponentTreeNode['id']) {
   return !!expandedMap.value[id]
 }
 
@@ -229,7 +240,7 @@ export function useSelectedComponent () {
 
   function editState (dotPath: string, payload: EditStatePayload, type?: string) {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, {
-      instanceId: data.value.id,
+      instanceId: data.value?.id,
       dotPath,
       type,
       ...payload,
@@ -238,7 +249,7 @@ export function useSelectedComponent () {
 
   function scrollToComponent () {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, {
-      instanceId: data.value.id,
+      instanceId: data.value?.id,
     })
   }
 
@@ -267,7 +278,7 @@ export const requestedComponentTree = new Set()
 
 let requestComponentTreeRetryDelay = 500
 
-export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null) {
+export async function requestComponentTree (instanceId: ComponentTreeNode['id'] | null = null, recursively = false) {
   if (!instanceId) {
     instanceId = '_root'
   }
@@ -279,29 +290,30 @@ export async function requestComponentTree (instanceId: ComponentTreeNode['id'] 
 
   await waitForAppSelect()
 
-  _sendTreeRequest(instanceId)
-  _queueRetryTree(instanceId)
+  _sendTreeRequest(instanceId, recursively)
+  _queueRetryTree(instanceId, recursively)
 }
 
-function _sendTreeRequest (instanceId: ComponentTreeNode['id']) {
+function _sendTreeRequest (instanceId: ComponentTreeNode['id'], recursively = false) {
   getBridge().send(BridgeEvents.TO_BACK_COMPONENT_TREE, {
     instanceId,
     filter: treeFilter.value,
+    recursively,
   })
 }
 
-function _queueRetryTree (instanceId: ComponentTreeNode['id']) {
-  setTimeout(() => _retryRequestComponentTree(instanceId), requestComponentTreeRetryDelay)
+function _queueRetryTree (instanceId: ComponentTreeNode['id'], recursively = false) {
+  setTimeout(() => _retryRequestComponentTree(instanceId, recursively), requestComponentTreeRetryDelay)
   requestComponentTreeRetryDelay *= 1.5
 }
 
-function _retryRequestComponentTree (instanceId: ComponentTreeNode['id']) {
+function _retryRequestComponentTree (instanceId: ComponentTreeNode['id'], recursively = false) {
   if (rootInstances.value.length) {
     requestComponentTreeRetryDelay = 500
     return
   }
-  _sendTreeRequest(instanceId)
-  _queueRetryTree(instanceId)
+  _sendTreeRequest(instanceId, recursively)
+  _queueRetryTree(instanceId, recursively)
 }
 
 export function ensureComponentsMapData (data: ComponentTreeNode) {
@@ -328,10 +340,10 @@ function updateComponentsMapData (data: ComponentTreeNode) {
     if (key === 'children') {
       if (!data.hasChildren || data.children.length) {
         const children = ensureComponentsMapChildren(component.id, data.children)
-        Vue.set(component, key, children)
+        component[key] = children
       }
     } else {
-      Vue.set(component, key, data[key])
+      component[key] = data[key]
     }
   }
   return component
@@ -401,10 +413,10 @@ export function addUpdateTrackingEvent (instanceId: string, time: number) {
     event.count++
     event.time = time
   } else {
-    Vue.set(updateTrackingEvents.value, instanceId, {
+    updateTrackingEvents.value[instanceId] = {
       instanceId,
       time,
       count: 1,
-    })
+    }
   }
 }

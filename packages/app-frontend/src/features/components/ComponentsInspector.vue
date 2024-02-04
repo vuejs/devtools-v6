@@ -3,8 +3,8 @@ import SplitPane from '@front/features/layout/SplitPane.vue'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
-import { onMounted, ref, provide, defineComponent } from '@vue/composition-api'
-import { onKeyDown, onKeyUp } from '@front/util/keyboard'
+import { onMounted, ref, provide, defineComponent } from 'vue'
+import { onKeyDown } from '@front/util/keyboard'
 import { useComponentPick, useComponents, loadComponent } from './composable'
 
 export default defineComponent({
@@ -42,25 +42,40 @@ export default defineComponent({
     } = useComponentPick()
 
     onKeyDown(event => {
-      if (event.key === 'f' && event.altKey) {
+      // ƒ,ß,® - these are the result keys in Mac with altKey pressed
+      if ((event.key === 'f' || event.key === 'ƒ') && event.altKey) {
         treeFilterInput.value.focus()
         return false
-      }
-    })
-
-    onKeyUp(event => {
-      if (event.key === 's' && !pickingComponent.value) {
+      } else if ((event.key === 's' || event.key === 'ß') && event.altKey && !pickingComponent.value) {
         startPickingComponent()
+        return false
       } else if (event.key === 'Escape' && pickingComponent.value) {
         stopPickingComponent()
+        return false
+      } else if ((event.key === 'r' || event.key === '®') && (event.ctrlKey || event.metaKey) && event.altKey) {
+        refresh()
+        return false
       }
-    })
+    }, true)
 
     // Refresh
+
+    const animateRefresh = ref(false)
+    let animateRefreshTimer
 
     function refresh () {
       requestComponentTree(null)
       loadComponent(selectedComponentId.value)
+
+      // Animation
+      animateRefresh.value = false
+      clearTimeout(animateRefreshTimer)
+      requestAnimationFrame(() => {
+        animateRefresh.value = true
+        animateRefreshTimer = setTimeout(() => {
+          animateRefresh.value = false
+        }, 1000)
+      })
     }
 
     // Scroller
@@ -76,6 +91,7 @@ export default defineComponent({
       startPickingComponent,
       stopPickingComponent,
       refresh,
+      animateRefresh,
       treeScroller,
     }
   },
@@ -120,7 +136,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="more-menu">
+    <SafeTeleport to="#more-menu">
       <div class="space-y-1 px-3 py-2 text-sm">
         <div>Component names:</div>
 
@@ -169,9 +185,9 @@ export default defineComponent({
       </div>
 
       <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
-    </portal>
+    </SafeTeleport>
 
-    <portal to="header-end">
+    <SafeTeleport to="#header-end">
       <VueButton
         v-tooltip="{
           content: $t('ComponentTree.select.tooltip'),
@@ -183,14 +199,20 @@ export default defineComponent({
       />
 
       <VueButton
-        v-tooltip="'Force refresh'"
+        v-tooltip="{
+          content: $t('ComponentTree.refresh.tooltip'),
+          html: true
+        }"
         class="icon-button flat"
+        :class="{
+          'animate-icon': animateRefresh,
+        }"
         icon-left="refresh"
         @click="refresh()"
       />
-    </portal>
+    </SafeTeleport>
 
-    <portal to="root">
+    <SafeTeleport to="#root">
       <div
         v-if="pickingComponent"
         class="absolute inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75 z-100 flex items-center justify-center"
@@ -212,20 +234,30 @@ export default defineComponent({
           </div>
         </div>
       </div>
-    </portal>
+    </SafeTeleport>
   </div>
 </template>
 
 <style lang="postcss" scoped>
 .search {
-  >>> {
-    .input {
-      height: 39px !important;
-    }
+  :deep(.input) {
+    height: 32px !important;
+  }
 
-    .content {
-      border: none !important;
-    }
+  :deep(.content) {
+    border: none !important;
+  }
+}
+
+.animate-icon {
+  :deep(.vue-ui-icon) {
+    animation: refresh 1s ease-out;
+  }
+}
+
+@keyframes refresh {
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

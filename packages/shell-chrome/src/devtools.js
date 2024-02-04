@@ -1,7 +1,11 @@
 // this script is called when the VueDevtools panel is activated.
 
 import { initDevTools, setAppConnected } from '@front'
-import { Bridge } from '@vue-devtools/shared-utils'
+import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
+
+let disconnected = false
+let connectCount = 0
+let retryConnectTimer
 
 initDevTools({
 
@@ -15,18 +19,44 @@ initDevTools({
     // 1. inject backend code into page
     injectScript(chrome.runtime.getURL('build/backend.js'), () => {
       // 2. connect to background to setup proxy
-      const port = chrome.runtime.connect({
-        name: '' + chrome.devtools.inspectedWindow.tabId,
-      })
-      let disconnected = false
-      port.onDisconnect.addListener(() => {
-        disconnected = true
-        setAppConnected(false)
-      })
+      let port
+
+      const onMessageHandlers = []
+
+      function connect () {
+        try {
+          clearTimeout(retryConnectTimer)
+          connectCount++
+          port = chrome.runtime.connect({
+            name: '' + chrome.devtools.inspectedWindow.tabId,
+          })
+          disconnected = false
+          port.onDisconnect.addListener(() => {
+            disconnected = true
+            setAppConnected(false)
+
+            // Retry
+            retryConnectTimer = setTimeout(connect, 1000)
+          })
+
+          if (connectCount > 1) {
+            onMessageHandlers.forEach(fn => port.onMessage.addListener(fn))
+          }
+        } catch (e) {
+          console.error(e)
+          disconnected = true
+          setAppConnected(false)
+
+          // Retry
+          retryConnectTimer = setTimeout(connect, 5000)
+        }
+      }
+      connect()
 
       const bridge = new Bridge({
         listen (fn) {
           port.onMessage.addListener(fn)
+          onMessageHandlers.push(fn)
         },
         send (data) {
           if (!disconnected) {
@@ -37,6 +67,11 @@ initDevTools({
           }
         },
       })
+
+      bridge.on(BridgeEvents.TO_FRONT_RECONNECTED, () => {
+        setAppConnected(true)
+      })
+
       // 3. send a proxy API to the panel
       cb(bridge)
     })

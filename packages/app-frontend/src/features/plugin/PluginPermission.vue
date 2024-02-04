@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { defineComponent, PropType, computed } from 'vue'
 import { hasPluginPermission, PluginPermission, setPluginPermission } from '@vue-devtools/shared-utils'
 
 export default defineComponent({

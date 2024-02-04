@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import { SharedData } from '@vue-devtools/shared-utils'
 
 export default defineComponent({
@@ -47,22 +47,23 @@ export default defineComponent({
       <p>Please note that we will only use this permission to take screenshots of the current tab.</p>
     </div>
 
-    <div
-      slot="footer"
-      class="actions"
-    >
-      <VueButton
-        class="big"
-        @click="cancel()"
+    <template #footer>
+      <div
+        class="actions"
       >
-        Cancel
-      </VueButton>
-      <VueButton
-        class="primary big"
-        @click="requestPermission()"
-      >
-        Request permission
-      </VueButton>
-    </div>
+        <VueButton
+          class="big"
+          @click="cancel()"
+        >
+          Cancel
+        </VueButton>
+        <VueButton
+          class="primary big"
+          @click="requestPermission()"
+        >
+          Request permission
+        </VueButton>
+      </div>
+    </template>
   </VueModal>
 </template>

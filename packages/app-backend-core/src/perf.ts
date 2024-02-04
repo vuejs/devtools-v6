@@ -17,6 +17,7 @@ export async function performanceMarkStart (
   try {
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
+    if (!appRecord) return
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupId = ctx.perfUniqueGroupId++
     const groupKey = `${uid}-${type}`
@@ -80,6 +81,7 @@ export async function performanceMarkEnd (
   try {
     if (!SharedData.performanceMonitoringEnabled) return
     const appRecord = await getAppRecord(app, ctx)
+    if (!appRecord) return
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupKey = `${uid}-${type}`
     const groupInfo = appRecord.perfGroupIds.get(groupKey)
@@ -145,7 +147,7 @@ export async function performanceMarkEnd (
         const id = await getComponentId(app, uid, instance, ctx)
         if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
           raf(() => {
-            sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, null, ctx)
+            sendComponentTreeData(appRecord, id, ctx.currentAppRecord.componentFilter, null, false, ctx)
           })
         }
       }

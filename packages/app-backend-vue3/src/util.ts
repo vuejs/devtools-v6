@@ -9,15 +9,6 @@ export function flatten (items) {
   }, [])
 }
 
-// Use a custom basename functions instead of the shimed version
-// because it doesn't work on Windows
-export function basename (filename, ext) {
-  return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
-    ext,
-  )
-}
-
 export function returnError (cb: () => any) {
   try {
     return cb()

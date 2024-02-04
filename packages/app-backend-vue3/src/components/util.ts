@@ -1,5 +1,4 @@
-import { classify } from '@vue-devtools/shared-utils'
-import { basename } from '../util'
+import { classify, basename } from '@vue-devtools/shared-utils'
 import { ComponentInstance, App } from '@vue/devtools-api'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 
@@ -16,7 +15,7 @@ export function getAppRecord (instance) {
 export function isFragment (instance) {
   const appRecord = getAppRecord(instance)
   if (appRecord) {
-    return appRecord.options.types.Fragment === instance.subTree.type
+    return appRecord.options.types.Fragment === instance.subTree?.type
   }
 }
 
@@ -36,6 +35,10 @@ export function getInstanceName (instance) {
   for (const key in instance.appContext?.components) {
     if (instance.appContext.components[key] === instance.type) return saveComponentName(instance, key)
   }
+  const fileName = getComponentFileName(instance.type || {})
+  if (fileName) {
+    return fileName
+  }
   return 'Anonymous Component'
 }
 
@@ -45,10 +48,10 @@ function saveComponentName (instance, key) {
 }
 
 function getComponentTypeName (options) {
-  const name = options.name || options._componentTag || options.__vdevtools_guessedName
-  if (name) {
-    return name
-  }
+  return options.name || options._componentTag || options.__vdevtools_guessedName || options.__name
+}
+
+function getComponentFileName (options) {
   const file = options.__file // injected by vue-loader
   if (file) {
     return classify(basename(file, '.vue'))

@@ -30,6 +30,10 @@ html, body
 body
   overflow hidden
 
+#app
+  width: 100%
+  height: 100%
+
 button:focus
   outline none
 
@@ -75,7 +79,7 @@ button:focus
 
 // Popover
 
-$arrow-color = $vue-ui-color-dark
+$arrow-color = rgba(100, 100, 100, 0.5)
 
 .arrow
   display inline-block
@@ -138,7 +142,6 @@ $arrow-color = $vue-ui-color-dark
 
 .vue-ui-dark-mode .v-popper__popper.v-popper--theme-tooltip .vue-ui-icon svg
   fill #666
-
 
 .v-popper__popper.v-popper--theme-dropdown .v-popper__inner
   max-height calc(100vh - 32px - 8px - 4px)

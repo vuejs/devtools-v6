@@ -1,4 +1,4 @@
-import { ref, onMounted } from '@vue/composition-api'
+import { ref, onMounted } from 'vue'
 import semver from 'semver'
 
 const packageData = ref<any>(null)

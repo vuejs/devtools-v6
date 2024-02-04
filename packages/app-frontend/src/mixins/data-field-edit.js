@@ -71,23 +71,37 @@ export default {
     },
 
     isValueEditable () {
-      const type = this.valueType
+      const type = this.interpretedValueType
+      const customType = this.customField?.type
+
       return this.isEditable &&
         (
           type === 'null' ||
           type === 'literal' ||
           type === 'string' ||
           type === 'array' ||
-          type === 'plain-object'
+          type === 'plain-object' ||
+          customType === 'bigint' ||
+          customType === 'date'
         )
     },
 
+    customField () {
+      return this.field.value?._custom
+    },
+
+    inputType () {
+      if (this.customField?.type === 'date') return 'datetime-local'
+      return 'text'
+    },
+
     isSubfieldsEditable () {
-      return this.isEditable && (this.valueType === 'array' || this.valueType === 'plain-object')
+      return this.isEditable && (this.interpretedValueType === 'array' || this.interpretedValueType === 'plain-object')
     },
 
     valueValid () {
       try {
+        if (this.customField?.skipSerialize) return true
         parse(this.transformSpecialTokens(this.editedValue, false))
         return true
       } catch (e) {
@@ -145,14 +159,27 @@ export default {
         if (currentEditedField && currentEditedField !== this) {
           currentEditedField.cancelEdit()
         }
-        this.editedValue = this.transformSpecialTokens(JSON.stringify(this.field.value), true)
+        let valueToEdit = this.field.value
+        // Edit custom value (we don't want to edit the whole custom value data object)
+        if (this.valueType === 'custom') {
+          valueToEdit = valueToEdit._custom.value
+        }
+        if (this.customField?.skipSerialize) {
+          this.editedValue = valueToEdit
+        } else {
+          this.editedValue = this.transformSpecialTokens(JSON.stringify(valueToEdit), true)
+        }
+
         this.editedKey = this.field.key
         this.editing = true
         currentEditedField = this
         this.$nextTick(() => {
           const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
-          el.focus()
-          el.setSelectionRange(0, el.value.length)
+          try {
+            el.focus()
+            // Will cause DOMEException on the datetime-local input.
+            el.setSelectionRange(0, el.value.length)
+          } catch {}
         })
       }
     },
@@ -166,7 +193,16 @@ export default {
     submitEdit () {
       if (this.editValid) {
         this.editing = false
-        const value = this.transformSpecialTokens(this.editedValue, false)
+        let value = this.customField.skipSerialize ? this.editedValue : this.transformSpecialTokens(this.editedValue, false)
+        // We need to send the entire custom value data object
+        if (this.valueType === 'custom') {
+          value = JSON.stringify({
+            _custom: {
+              ...this.customField,
+              value: this.customField.skipSerialize ? value : JSON.parse(value), // Input
+            },
+          })
+        }
         const newKey = this.editedKey !== this.field.key ? this.editedKey : undefined
         this.sendEdit({ value, newKey })
         this.$emit('submit-edit')
@@ -212,9 +248,9 @@ export default {
 
     addNewValue () {
       let key
-      if (this.valueType === 'array') {
+      if (this.interpretedValueType === 'array') {
         key = this.field.value.length
-      } else if (this.valueType === 'plain-object') {
+      } else if (this.interpretedValueType === 'plain-object') {
         let i = 1
         while (this.field.value.hasOwnProperty(key = `prop${i}`)) i++
       }

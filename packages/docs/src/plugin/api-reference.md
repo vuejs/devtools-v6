@@ -254,6 +254,10 @@ The options are:
   - `icon`: material icon identifier
   - `tooltip`: button tooltip
   - `action`: function to be executed
+- `nodeActions`: an array of buttons to add to the selected node pane
+  - `icon`: material icon identifier
+  - `tooltip`: button tooltip
+  - `action`: function to be executed
 
 Example:
 
@@ -270,6 +274,13 @@ api.addInspector({
       icon: 'star',
       tooltip: 'Test custom action',
       action: () => console.log('Meow! 🐱')
+    }
+  ],
+  nodeActions: [
+    {
+      icon: 'star',
+      tooltip: 'Test node custom action',
+      action: (nodeId) => console.log('Node action:', nodeId)
     }
   ]
 })
@@ -702,7 +713,7 @@ api.on.inspectComponent(async payload => {
     payload.instanceData.state.push({
       type: stateType,
       key: 'component name',
-      value: name
+      value: componentName
     })
   }
 })

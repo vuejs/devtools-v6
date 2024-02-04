@@ -1,5 +1,7 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import DevIframe from './DevIframe.vue'
+import { setupPlugins } from '@front/plugins'
 
-const app = new Vue(DevIframe)
-app.$mount('#iframe-target')
+const app = createApp(DevIframe)
+setupPlugins(app)
+app.mount('#iframe-target')

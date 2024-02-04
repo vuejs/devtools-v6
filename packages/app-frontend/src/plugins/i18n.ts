@@ -1,4 +1,5 @@
 import { simpleGet } from '@vue-devtools/shared-utils'
+import { Plugin } from 'vue'
 
 const reg = /\{\{\s*([\w_.-]+)\s*\}\}/g
 
@@ -28,10 +29,10 @@ interface Options {
 }
 
 export default {
-  install (Vue, options: Options) {
+  install (app, options: Options) {
     strings = options.strings || {}
     defaultValues = options.defaultValues || {}
     replacer = options.replacer
-    Vue.prototype.$t = translate
+    app.config.globalProperties.$t = translate
   },
-}
+} as Plugin

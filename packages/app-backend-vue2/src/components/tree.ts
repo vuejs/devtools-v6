@@ -15,15 +15,17 @@ let api: DevtoolsApi
 const consoleBoundInstances = Array(5)
 
 let filter = ''
+let recursively = false
 const functionalIds = new Map()
 
 // Dedupe instances
 // Some instances may be both on a component and on a child abstract/functional component
 const captureIds = new Map()
 
-export async function walkTree (instance, pFilter: string, api: DevtoolsApi, ctx: BackendContext): Promise<ComponentTreeNode[]> {
+export async function walkTree (instance, pFilter: string, pRecursively: boolean, api: DevtoolsApi, ctx: BackendContext): Promise<ComponentTreeNode[]> {
   initCtx(api, ctx)
   filter = pFilter
+  recursively = pRecursively
   functionalIds.clear()
   captureIds.clear()
   const result: ComponentTreeNode[] = flatten(await findQualifiedChildren(instance))
@@ -215,6 +217,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
       hasChildren: !!children.length,
       inactive: false,
       isFragment: false, // TODO: Check what is it for.
+      autoOpen: recursively,
     }
     return api.visitComponentTree(
       instance,
@@ -251,6 +254,7 @@ async function capture (instance, index?: number, list?: any[]): Promise<Compone
     isFragment: !!instance._isFragment,
     children,
     hasChildren: !!children.length,
+    autoOpen: recursively,
     tags: [],
     meta: {},
   }

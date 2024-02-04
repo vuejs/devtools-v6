@@ -8,15 +8,17 @@ export class ComponentWalker {
   ctx: BackendContext
   api: DevtoolsApi
   maxDepth: number
+  recursively: boolean
   componentFilter: ComponentFilter
   // Dedupe instances
   // Some instances may be both on a component and on a child abstract/functional component
   captureIds: Map<string, undefined>
 
-  constructor (maxDepth: number, filter: string, api: DevtoolsApi, ctx: BackendContext) {
+  constructor (maxDepth: number, filter: string, recursively: boolean, api: DevtoolsApi, ctx: BackendContext) {
     this.ctx = ctx
     this.api = api
     this.maxDepth = maxDepth
+    this.recursively = recursively
     this.componentFilter = new ComponentFilter(filter)
   }
 
@@ -83,19 +85,21 @@ export class ComponentWalker {
    */
   private getInternalInstanceChildren (subTree, suspense = null) {
     const list = []
-    if (subTree.component) {
-      !suspense ? list.push(subTree.component) : list.push({ ...subTree.component, suspense })
-    } else if (subTree.suspense) {
-      const suspenseKey = !subTree.suspense.isInFallback ? 'suspense default' : 'suspense fallback'
-      list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch, { ...subTree.suspense, suspenseKey }))
-    } else if (Array.isArray(subTree.children)) {
-      subTree.children.forEach(childSubTree => {
-        if (childSubTree.component) {
-          !suspense ? list.push(childSubTree.component) : list.push({ ...childSubTree.component, suspense })
-        } else {
-          list.push(...this.getInternalInstanceChildren(childSubTree, suspense))
-        }
-      })
+    if (subTree) {
+      if (subTree.component) {
+        !suspense ? list.push(subTree.component) : list.push({ ...subTree.component, suspense })
+      } else if (subTree.suspense) {
+        const suspenseKey = !subTree.suspense.isInFallback ? 'suspense default' : 'suspense fallback'
+        list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch, { ...subTree.suspense, suspenseKey }))
+      } else if (Array.isArray(subTree.children)) {
+        subTree.children.forEach(childSubTree => {
+          if (childSubTree.component) {
+            !suspense ? list.push(childSubTree.component) : list.push({ ...childSubTree.component, suspense })
+          } else {
+            list.push(...this.getInternalInstanceChildren(childSubTree, suspense))
+          }
+        })
+      }
     }
     return list.filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
   }
@@ -128,6 +132,8 @@ export class ComponentWalker {
    * @return {Object}
    */
   private async capture (instance: any, list: any[], depth: number): Promise<ComponentTreeNode> {
+    if (!instance) return null
+
     const id = this.captureId(instance)
 
     const name = getInstanceName(instance)
@@ -157,6 +163,7 @@ export class ComponentWalker {
               backgroundColor: 0xeeeeee,
             },
           ],
+      autoOpen: this.recursively,
     }
 
     // capture children

@@ -1,10 +1,10 @@
 <script lang="ts">
 import AppSelectPaneItem from './AppSelectPaneItem.vue'
 
-import { watch, defineComponent, ref, computed } from '@vue/composition-api'
+import { watch, defineComponent, ref, computed } from 'vue'
 import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps, pendingSelectAppId, scanLegacyApps } from '@front/features/apps'
-import { useRouter } from '@front/util/router'
+import { useRouter } from 'vue-router'
 import { useBridge } from '../bridge'
 
 export default defineComponent({
@@ -79,7 +79,7 @@ export default defineComponent({
 
 <template>
   <div class="flex flex-col">
-    <div class="flex-none border-b border-gray-200 dark:border-gray-800 flex items-center space-x-1 h-[40px] pr-1">
+    <div class="flex-none border-b border-gray-200 dark:border-gray-800 flex items-center space-x-1 h-8 pr-1 box-content">
       <VueInput
         v-model="search"
         icon-left="search"
