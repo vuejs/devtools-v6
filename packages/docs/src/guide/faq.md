@@ -24,7 +24,7 @@ Here are some troubleshooting steps to help you if you don't the Vue devtools in
 - Try disabling other devtools extensions like React devtools.
 - Look for errors in the browser Console.
 - Update your project dependencies.
-- Even if the Vue logo in the toolbar is gray and says "Vue not detected", open your browser devtools and check if the Vue tab is showing up anyaway.
+- Even if the Vue logo in the toolbar is gray and says "Vue not detected", open your browser devtools and check if the Vue tab is showing up anyway.
 
 ## The data isn't updating in the component inspector
 
