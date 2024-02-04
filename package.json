@@ -75,7 +75,7 @@
     "svg-inline-loader": "^0.8.2"
   },
   "resolutions": {
-    "cypress": "=3.4.1",
+    "cypress": "=12.10.0",
     "webpack-dev-server": "=4.0.0-rc.0"
   },
   "engines": {
