@@ -144,9 +144,8 @@ export default defineComponent({
     // Auto bottom scroll
 
     function scrollToBottom () {
-      if (!scroller.value) return
-
       requestAnimationFrame(() => {
+        if (!scroller.value) return
         const scrollerEl = scroller.value.$el
         scrollerEl.scrollTop = scrollerEl.scrollHeight
       })

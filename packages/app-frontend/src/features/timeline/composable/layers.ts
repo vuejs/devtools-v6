@@ -66,9 +66,22 @@ export function useLayers () {
     return list.includes(layer.id)
   }
 
+  function resetSelectedStatus () {
+    selectedLayer.value = null
+    inspectedEvent.value = null
+    selectedEvent.value = null
+    hoverLayerId.value = null
+    setStorage('selected-layer-id', '')
+  }
+
   function setLayerHidden (layer: Layer, hidden: boolean) {
     const list = getHiddenLayers(currentAppId.value)
     const index = list.indexOf(layer.id)
+
+    if (selectedLayer.value === layer) {
+      resetSelectedStatus()
+    }
+
     if (hidden && index === -1) {
       list.push(layer.id)
     } else if (!hidden && index !== -1) {
