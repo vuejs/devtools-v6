@@ -101,20 +101,20 @@ export default defineComponent({
         }"
         icon-left="search"
         placeholder="Filter state..."
-        class="search flex-1 flat min-w-0"
+        class="search flex-1 flat !min-w-0"
       />
 
       <VueButton
         v-tooltip="'Scroll to component'"
         icon-left="preview"
-        class="flat icon-button"
+        class="flat icon-button flex-none"
         @click="scrollToComponent()"
       />
 
       <VueButton
         v-tooltip="'Show render code'"
         icon-left="code"
-        class="flat icon-button"
+        class="flat icon-button flex-none"
         @click="showRenderCode = true"
       />
 
@@ -122,7 +122,7 @@ export default defineComponent({
         v-if="$isChrome"
         v-tooltip="'Inspect DOM'"
         icon-left="menu_open"
-        class="flat icon-button"
+        class="flat icon-button flex-none"
         @click="inspectDOM()"
       />
 
@@ -133,7 +133,7 @@ export default defineComponent({
           html: true
         }"
         icon-left="launch"
-        class="flat icon-button"
+        class="flat icon-button flex-none"
         @click="openFile()"
       />
     </div>

@@ -93,7 +93,7 @@ export default defineComponent({
               v-model="inspector.treeFilter"
               icon-left="search"
               :placeholder="inspector.treeFilterPlaceholder || 'Search...'"
-              class="search flat min-w-0 flex-1 mr-2"
+              class="search flat !min-w-0 flex-1 mr-2"
             />
 
             <PluginSourceIcon
