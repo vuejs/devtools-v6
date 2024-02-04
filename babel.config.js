@@ -2,7 +2,8 @@ module.exports = {
   root: true,
   presets: [
     [
-      '@babel/env', {
+      '@babel/env',
+      {
         modules: false,
       },
     ],

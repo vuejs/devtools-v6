@@ -1,3 +1,11 @@
+<script>
+export default {
+  computed: {
+    count() { return 1 },
+  },
+}
+</script>
+
 <template>
   <div id="tester">
     <p
@@ -19,11 +27,3 @@
     </ul>
   </div>
 </template>
-
-<script>
-export default {
-  computed: {
-    count () { return 1 },
-  },
-}
-</script>

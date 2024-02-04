@@ -1,12 +1,20 @@
-import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
-import { App, ComponentInstance } from '@vue/devtools-api'
-import { BridgeSubscriptions, raf, SharedData } from '@vue-devtools/shared-utils'
+import type { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
+import type { App, ComponentInstance } from '@vue/devtools-api'
+import { BridgeSubscriptions, SharedData, raf } from '@vue-devtools/shared-utils'
 import { addTimelineEvent } from './timeline'
 import { getAppRecord } from './app'
 import { getComponentId, sendComponentTreeData } from './component'
 import { isSubscribed } from './util/subscriptions'
 
-export async function performanceMarkStart (
+const markEndQueue = new Map<string, {
+  app: App
+  uid: number
+  instance: ComponentInstance
+  type: string
+  time: number
+}>()
+
+export async function performanceMarkStart(
   app: App,
   uid: number,
   instance: ComponentInstance,
@@ -15,9 +23,13 @@ export async function performanceMarkStart (
   ctx: BackendContext,
 ) {
   try {
-    if (!SharedData.performanceMonitoringEnabled) return
+    if (!SharedData.performanceMonitoringEnabled) {
+      return
+    }
     const appRecord = await getAppRecord(app, ctx)
-    if (!appRecord) return
+    if (!appRecord) {
+      return
+    }
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupId = ctx.perfUniqueGroupId++
     const groupKey = `${uid}-${type}`
@@ -55,22 +67,15 @@ export async function performanceMarkStart (
         ctx,
       )
     }
-  } catch (e) {
+  }
+  catch (e) {
     if (SharedData.debugInfo) {
       console.error(e)
     }
   }
 }
 
-const markEndQueue = new Map<string, {
-  app: App
-  uid: number
-  instance: ComponentInstance
-  type: string
-  time: number
-}>()
-
-export async function performanceMarkEnd (
+export async function performanceMarkEnd(
   app: App,
   uid: number,
   instance: ComponentInstance,
@@ -79,9 +84,13 @@ export async function performanceMarkEnd (
   ctx: BackendContext,
 ) {
   try {
-    if (!SharedData.performanceMonitoringEnabled) return
+    if (!SharedData.performanceMonitoringEnabled) {
+      return
+    }
     const appRecord = await getAppRecord(app, ctx)
-    if (!appRecord) return
+    if (!appRecord) {
+      return
+    }
     const componentName = await appRecord.backend.api.getComponentName(instance)
     const groupKey = `${uid}-${type}`
     const groupInfo = appRecord.perfGroupIds.get(groupKey)
@@ -152,15 +161,16 @@ export async function performanceMarkEnd (
         }
       }
     }
-  } catch (e) {
+  }
+  catch (e) {
     if (SharedData.debugInfo) {
       console.error(e)
     }
   }
 }
 
-export function handleAddPerformanceTag (backend: DevtoolsBackend, ctx: BackendContext) {
-  backend.api.on.visitComponentTree(payload => {
+export function handleAddPerformanceTag(backend: DevtoolsBackend, _ctx: BackendContext) {
+  backend.api.on.visitComponentTree((payload) => {
     if (payload.componentInstance.__VUE_DEVTOOLS_SLOW__) {
       const { duration, measures } = payload.componentInstance.__VUE_DEVTOOLS_SLOW__
 

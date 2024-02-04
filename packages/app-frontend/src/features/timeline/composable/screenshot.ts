@@ -1,12 +1,15 @@
 import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import { useApps } from '@front/features/apps'
 import { useBridge } from '@front/features/bridge'
-import { EventScreenshot, screenshots, TimelineEvent } from './store'
+import type { EventScreenshot, TimelineEvent } from './store'
+import { screenshots } from './store'
 
 let nextScreenshotId = 0
 
-export async function takeScreenshot (event: TimelineEvent) {
-  if (!SharedData.timelineScreenshots || event.layer.skipScreenshots) return
+export async function takeScreenshot(event: TimelineEvent) {
+  if (!SharedData.timelineScreenshots || event.layer.skipScreenshots) {
+    return
+  }
 
   const time = Math.round(event.time / 100_000) * 100_000
 
@@ -30,10 +33,11 @@ export async function takeScreenshot (event: TimelineEvent) {
         id: screenshot.id,
       })
       screenshots.value.push(screenshot)
-    } else if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.captureVisibleTab === 'function') {
+    }
+    else if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.captureVisibleTab === 'function') {
       chrome.tabs.captureVisibleTab({
         format: 'png',
-      }, dataUrl => {
+      }, (dataUrl) => {
         screenshot.image = dataUrl
 
         if (!dataUrl) {
@@ -41,12 +45,14 @@ export async function takeScreenshot (event: TimelineEvent) {
           if (lastScreenshot) {
             lastScreenshot.events.push(event)
           }
-        } else {
+        }
+        else {
           screenshots.value.push(screenshot)
         }
       })
     }
-  } else {
+  }
+  else {
     event.screenshot = lastScreenshot
     if (lastScreenshot) {
       lastScreenshot.events.push(event)
@@ -57,7 +63,7 @@ export async function takeScreenshot (event: TimelineEvent) {
 export const supportsScreenshot = typeof browser !== 'undefined' || (typeof chrome !== 'undefined' && !!chrome.tabs && typeof chrome.tabs.captureVisibleTab === 'function')
 
 if (typeof browser !== 'undefined') {
-  browser.runtime.onMessage.addListener(req => {
+  browser.runtime.onMessage.addListener((req) => {
     if (req.action === 'vue-screenshot-result') {
       const screenshot = screenshots.value.find(s => s.id === req.id)
       if (screenshot) {
@@ -67,11 +73,11 @@ if (typeof browser !== 'undefined') {
   })
 }
 
-export function useScreenshots () {
+export function useScreenshots() {
   const { bridge } = useBridge()
   const { currentAppId } = useApps()
 
-  function showScreenshot (screenshot: EventScreenshot = null) {
+  function showScreenshot(screenshot: EventScreenshot = null) {
     bridge.send(BridgeEvents.TO_BACK_TIMELINE_SHOW_SCREENSHOT, {
       screenshot: screenshot
         ? {

@@ -1,12 +1,12 @@
 import {
-  UNDEFINED,
   SPECIAL_TOKENS,
+  UNDEFINED,
   parse,
 } from '@vue-devtools/shared-utils'
 
 let currentEditedField = null
 
-function numberQuickEditMod (event) {
+function numberQuickEditMod(event) {
   let mod = 1
   if (event.ctrlKey || event.metaKey) {
     mod *= 5
@@ -42,7 +42,7 @@ export default {
     },
   },
 
-  data () {
+  data() {
     return {
       editing: false,
       editedValue: null,
@@ -53,75 +53,82 @@ export default {
   },
 
   computed: {
-    cssClass () {
+    cssClass() {
       return {
         editing: this.editing,
       }
     },
 
-    isEditable () {
-      if (this.InspectorInjection && !this.InspectorInjection.editable) return false
-      return this.editable &&
-        !this.fieldOptions.abstract &&
-        !this.fieldOptions.readOnly &&
-        (
-          typeof this.field.key !== 'string' ||
-          this.field.key.charAt(0) !== '$'
+    isEditable() {
+      if (this.InspectorInjection && !this.InspectorInjection.editable) {
+        return false
+      }
+      return this.editable
+        && !this.fieldOptions.abstract
+        && !this.fieldOptions.readOnly
+        && (
+          typeof this.field.key !== 'string'
+          || this.field.key.charAt(0) !== '$'
         )
     },
 
-    isValueEditable () {
+    isValueEditable() {
       const type = this.interpretedValueType
       const customType = this.customField?.type
 
-      return this.isEditable &&
-        (
-          type === 'null' ||
-          type === 'literal' ||
-          type === 'string' ||
-          type === 'array' ||
-          type === 'plain-object' ||
-          customType === 'bigint' ||
-          customType === 'date'
+      return this.isEditable
+        && (
+          type === 'null'
+            || type === 'literal'
+            || type === 'string'
+            || type === 'array'
+            || type === 'plain-object'
+            || customType === 'bigint'
+            || customType === 'date'
         )
     },
 
-    customField () {
+    customField() {
       return this.field.value?._custom
     },
 
-    inputType () {
-      if (this.customField?.type === 'date') return 'datetime-local'
+    inputType() {
+      if (this.customField?.type === 'date') {
+        return 'datetime-local'
+      }
       return 'text'
     },
 
-    isSubfieldsEditable () {
+    isSubfieldsEditable() {
       return this.isEditable && (this.interpretedValueType === 'array' || this.interpretedValueType === 'plain-object')
     },
 
-    valueValid () {
+    valueValid() {
       try {
-        if (this.customField?.skipSerialize) return true
+        if (this.customField?.skipSerialize) {
+          return true
+        }
         parse(this.transformSpecialTokens(this.editedValue, false))
         return true
-      } catch (e) {
+      }
+      catch (e) {
         return false
       }
     },
 
-    duplicateKey () {
-      return this.parentField && this.parentField.value.hasOwnProperty(this.editedKey)
+    duplicateKey() {
+      return this.parentField && Object.prototype.hasOwnProperty.call(this.parentField.value, this.editedKey)
     },
 
-    keyValid () {
+    keyValid() {
       return this.editedKey && (this.editedKey === this.field.key || !this.duplicateKey)
     },
 
-    editValid () {
+    editValid() {
       return this.valueValid && (!this.renamable || this.keyValid)
     },
 
-    quickEdits () {
+    quickEdits() {
       if (this.isValueEditable) {
         const value = this.field.value
         const type = typeof value
@@ -132,7 +139,8 @@ export default {
               newValue: !value,
             },
           ]
-        } else if (type === 'number') {
+        }
+        else if (type === 'number') {
           return [
             {
               icon: 'remove',
@@ -154,7 +162,7 @@ export default {
   },
 
   methods: {
-    openEdit (focusKey = false) {
+    openEdit(focusKey = false) {
       if (this.isValueEditable) {
         if (currentEditedField && currentEditedField !== this) {
           currentEditedField.cancelEdit()
@@ -166,12 +174,14 @@ export default {
         }
         if (this.customField?.skipSerialize) {
           this.editedValue = valueToEdit
-        } else {
+        }
+        else {
           this.editedValue = this.transformSpecialTokens(JSON.stringify(valueToEdit), true)
         }
 
         this.editedKey = this.field.key
         this.editing = true
+        // eslint-disable-next-line ts/no-this-alias
         currentEditedField = this
         this.$nextTick(() => {
           const el = this.$refs[focusKey && this.renamable ? 'keyInput' : 'editInput']
@@ -179,18 +189,19 @@ export default {
             el.focus()
             // Will cause DOMEException on the datetime-local input.
             el.setSelectionRange(0, el.value.length)
-          } catch {}
+          }
+          catch {}
         })
       }
     },
 
-    cancelEdit () {
+    cancelEdit() {
       this.editing = false
       this.$emit('cancel-edit')
       currentEditedField = null
     },
 
-    submitEdit () {
+    submitEdit() {
       if (this.editValid) {
         this.editing = false
         let value = this.customField.skipSerialize ? this.editedValue : this.transformSpecialTokens(this.editedValue, false)
@@ -209,20 +220,21 @@ export default {
       }
     },
 
-    sendEdit (payload) {
+    sendEdit(payload) {
       this.$emit('edit-state', this.path, payload)
     },
 
-    transformSpecialTokens (str, display) {
+    transformSpecialTokens(str, display) {
       if (str) {
-        Object.keys(SPECIAL_TOKENS).forEach(key => {
+        Object.keys(SPECIAL_TOKENS).forEach((key) => {
           const value = JSON.stringify(SPECIAL_TOKENS[key])
           let search
           let replace
           if (display) {
             search = value
             replace = key
-          } else {
+          }
+          else {
             search = key
             replace = value
           }
@@ -232,27 +244,32 @@ export default {
       return str
     },
 
-    quickEdit (info, event) {
+    quickEdit(info, event) {
       let newValue
       if (typeof info.newValue === 'function') {
         newValue = info.newValue(event)
-      } else {
+      }
+      else {
         newValue = info.newValue
       }
       this.sendEdit({ value: JSON.stringify(newValue) })
     },
 
-    removeField () {
+    removeField() {
       this.sendEdit({ remove: true })
     },
 
-    addNewValue () {
+    addNewValue() {
       let key
       if (this.interpretedValueType === 'array') {
         key = this.field.value.length
-      } else if (this.interpretedValueType === 'plain-object') {
+      }
+      else if (this.interpretedValueType === 'plain-object') {
         let i = 1
-        while (this.field.value.hasOwnProperty(key = `prop${i}`)) i++
+        // eslint-disable-next-line no-cond-assign
+        while (Object.prototype.hasOwnProperty.call(this.field.value, key = `prop${i}`)) {
+          i++
+        }
       }
       this.newField = { key, value: UNDEFINED }
       this.expanded = true
@@ -262,15 +279,15 @@ export default {
       })
     },
 
-    containsEdition () {
+    containsEdition() {
       return currentEditedField && currentEditedField.path.indexOf(this.path) === 0
     },
 
-    cancelCurrentEdition () {
+    cancelCurrentEdition() {
       this.containsEdition() && currentEditedField.cancelEdit()
     },
 
-    quickEditNumberTooltip (operator) {
+    quickEditNumberTooltip(operator) {
       return this.$t('DataField.quickEdit.number.tooltip', {
         operator,
       })

@@ -1,26 +1,26 @@
 import { createStore } from 'vuex'
 
 const store = createStore({
-  state () {
+  state() {
     return {
       rootState: 'root',
       answer: 42,
     }
   },
   getters: {
-    answer: (state) => state.answer,
+    answer: state => state.answer,
     throws: () => {
       throw new Error('getter error')
     },
   },
   mutations: {
-    increment (state) {
+    increment(state) {
       state.answer++
     },
   },
   modules: {
     nested: {
-      state () {
+      state() {
         return {
           foo: 'bar',
         }
@@ -31,7 +31,7 @@ const store = createStore({
     },
     namespacedModule: {
       namespaced: true,
-      state () {
+      state() {
         return {
           count: 0,
         }
@@ -43,7 +43,7 @@ const store = createStore({
       modules: {
         animals: {
           namespaced: true,
-          state () {
+          state() {
             return {
               cat: 'Meow',
             }

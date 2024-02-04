@@ -1,39 +1,42 @@
 <script lang="ts">
 import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
-import { EventSystem, FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
+import type { FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
+import { EventSystem } from '@pixi/events'
 import { Renderer } from '@pixi/core'
 import {
-  ref,
-  onMounted,
-  onUnmounted,
-  watch,
-  watchEffect,
   defineComponent,
   nextTick as nextTickVue,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  watchEffect,
 } from 'vue'
 import { SharedData, isMac } from '@vue-devtools/shared-utils'
-import {
-  useLayers,
-  useTime,
-  useSelectedEvent,
-  selectEvent,
-  onTimelineReset,
-  onEventAdd,
-  useCursor,
-  Layer,
-  TimelineEvent,
-  useMarkers,
-  TimelineMarker,
-  getGroupsAroundPosition,
-} from './composable'
 import { useApps } from '@front/features/apps'
 import { onKeyUp } from '@front/util/keyboard'
 import { useDarkMode } from '@front/util/theme'
-import { dimColor, boostColor } from '@front/util/color'
+import { boostColor, dimColor } from '@front/util/color'
 import { formatTime } from '@front/util/format'
 import { Queue } from '@front/util/queue'
 import { addNonReactiveProperties, nonReactive } from '@front/util/reactivity'
+import {
+  getGroupsAroundPosition,
+  onEventAdd,
+  onTimelineReset,
+  selectEvent,
+  useCursor,
+  useLayers,
+  useMarkers,
+  useSelectedEvent,
+  useTime,
+} from './composable'
+import type {
+  Layer,
+  TimelineEvent,
+  TimelineMarker,
+} from './composable'
 
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
@@ -58,7 +61,7 @@ const taskPriority = {
 installUnsafeEval(PIXI)
 
 export default defineComponent({
-  setup () {
+  setup() {
     const wrapper = ref<HTMLElement>(null)
 
     const { currentAppId } = useApps()
@@ -76,8 +79,10 @@ export default defineComponent({
     // Micro tasks
 
     const microTasks: ([() => void, number])[] = []
-    function runMicroTasks () {
-      if (!microTasks.length) return
+    function runMicroTasks() {
+      if (!microTasks.length) {
+        return
+      }
       const tasks = microTasks.slice().sort((a, b) => a[1] - b[1])
       microTasks.length = 0
       for (const [task] of tasks) {
@@ -87,16 +92,17 @@ export default defineComponent({
 
     /**
      * Use the PIXI app ticker to schedule micro tasks
+     * @param task
      * @param priority Higher priority tasks will be executed last
      */
-    function nextTick (task: () => void, priority: number = taskPriority.normal) {
+    function nextTick(task: () => void, priority: number = taskPriority.normal) {
       microTasks.push([task, priority])
     }
 
     /**
      * Get pixel position for giver time
      */
-    function getTimePosition (time: number) {
+    function getTimePosition(time: number) {
       return (time - nonReactiveState.minTime.value) / (nonReactiveState.endTime.value - nonReactiveState.startTime.value) * getAppWidth()
     }
 
@@ -106,11 +112,11 @@ export default defineComponent({
 
     const resetCbs: ResetCb[] = []
 
-    function onReset (cb: ResetCb) {
+    function onReset(cb: ResetCb) {
       resetCbs.push(cb)
     }
 
-    function reset () {
+    function reset() {
       for (const cb of resetCbs) {
         cb()
       }
@@ -138,7 +144,6 @@ export default defineComponent({
         resolution: window.devicePixelRatio,
       })
       if (!('events' in app.renderer)) {
-        // @ts-ignore
         app.renderer.addSystem(EventSystem, 'events')
       }
       app.stage.interactive = true
@@ -176,7 +181,8 @@ export default defineComponent({
 
         mainRenderContainer = new PIXI.Container()
         mainRenderContainer.addChild(verticalScrollingContainer)
-      } else {
+      }
+      else {
         app.stage.addChild(verticalScrollingContainer)
       }
     })
@@ -185,11 +191,11 @@ export default defineComponent({
       app.destroy()
     })
 
-    function getAppWidth () {
+    function getAppWidth() {
       return app.view.width / window.devicePixelRatio
     }
 
-    function getAppHeight () {
+    function getAppHeight() {
       return app.view.height / window.devicePixelRatio
     }
 
@@ -197,7 +203,7 @@ export default defineComponent({
 
     let drawScheduled = false
 
-    function draw () {
+    function draw() {
       if (!drawScheduled && app.renderer.type === PIXI.RENDERER_TYPE.WEBGL) {
         drawScheduled = true
         nextTick(() => {
@@ -221,12 +227,13 @@ export default defineComponent({
      * Queue a repaint when the user interacts without scrolling
      * This prevents flashing when the user is scrolling at the same time
      */
-    async function interactionDraw () {
+    async function interactionDraw() {
       await nextTickVue()
       if (!interactionDrawBlocked) {
         interactionDrawScheduled = false
         draw()
-      } else {
+      }
+      else {
         interactionDrawScheduled = true
       }
     }
@@ -235,7 +242,7 @@ export default defineComponent({
      * Block interaction drawing for a short time
      * after scrolling to prevent flashing
      */
-    function blockInteractionDraw () {
+    function blockInteractionDraw() {
       interactionDrawBlocked = true
       clearTimeout(interactionDrawBlockedTimeout)
       interactionDrawBlockedTimeout = setTimeout(() => {
@@ -252,11 +259,12 @@ export default defineComponent({
 
     // App background
 
-    function updateBackground () {
+    function updateBackground() {
       if (nonReactiveState.darkMode.value) {
         app && (app.renderer.backgroundColor = 0x262626)
-      } else {
-        app && (app.renderer.backgroundColor = 0xffffff)
+      }
+      else {
+        app && (app.renderer.backgroundColor = 0xFFFFFF)
       }
     }
 
@@ -276,7 +284,7 @@ export default defineComponent({
       drawMarkers()
     })
 
-    function drawMarkers () {
+    function drawMarkers() {
       markerContainer.clear()
       for (const marker of currentAppMarkers.value) {
         markerContainer.lineStyle(1, marker.color, 0.5, 0, true)
@@ -294,7 +302,7 @@ export default defineComponent({
       }
     })
 
-    function getMarkerAtPosition (targetX: number): TimelineMarker | null {
+    function getMarkerAtPosition(targetX: number): TimelineMarker | null {
       let choice: TimelineMarker = null
       let dist: number
 
@@ -322,7 +330,7 @@ export default defineComponent({
     let layerContainers: PIXI.Container[] = []
     let layersMap: Record<Layer['id'], { layer: Layer, container: PIXI.Container }> = {}
 
-    function initLayers () {
+    function initLayers() {
       let y = 0
       for (const layer of layers.value) {
         const container = new PIXI.Container()
@@ -339,7 +347,7 @@ export default defineComponent({
       }
     }
 
-    function updateLayerPositions () {
+    function updateLayerPositions() {
       let y = 0
       for (const layer of layers.value) {
         const payload = layersMap[layer.id]
@@ -354,7 +362,7 @@ export default defineComponent({
       initLayers()
     })
 
-    function resetLayers () {
+    function resetLayers() {
       for (const container of layerContainers) {
         container.destroy()
       }
@@ -376,7 +384,7 @@ export default defineComponent({
 
     let applyLayersNewHeightTimer
 
-    function applyLayersNewHeight () {
+    function applyLayersNewHeight() {
       clearTimeout(applyLayersNewHeightTimer)
       applyLayersNewHeightTimer = setTimeout(() => {
         updateLayerPositions()
@@ -386,7 +394,7 @@ export default defineComponent({
 
     const layerHeightUpdateTimers: Record<string, any> = {}
 
-    function queueLayerHeightUpdate (layer: Layer) {
+    function queueLayerHeightUpdate(layer: Layer) {
       clearTimeout(layerHeightUpdateTimers[layer.id])
       const apply = () => {
         layer.height = layer.newHeight
@@ -394,7 +402,8 @@ export default defineComponent({
       }
       if (layer.height < layer.newHeight) {
         apply()
-      } else {
+      }
+      else {
         layerHeightUpdateTimers[layer.id] = setTimeout(apply, 500)
       }
     }
@@ -410,12 +419,14 @@ export default defineComponent({
       verticalScrollingContainer.addChild(layerHoverEffect)
     })
 
-    function getLayerY (layer: Layer) {
+    function getLayerY(layer: Layer) {
       return layers.value.slice(0, layers.value.indexOf(layer)).reduce((sum, layer) => sum + (layer.height + 1) * LAYER_SIZE, 0)
     }
 
-    function drawLayerBackgroundEffects () {
-      if (!layerHoverEffect) return
+    function drawLayerBackgroundEffects() {
+      if (!layerHoverEffect) {
+        return
+      }
 
       const layerIds = [
         {
@@ -432,15 +443,18 @@ export default defineComponent({
         layerHoverEffect.clear()
         layerIds.forEach(({ id, alpha }) => drawLayerBackground(id, alpha))
         layerHoverEffect.visible = true
-      } else {
+      }
+      else {
         layerHoverEffect.visible = false
       }
 
       interactionDraw()
     }
 
-    function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
-      if (!layersMap[layerId]) return
+    function drawLayerBackground(layerId: Layer['id'], alpha = 1) {
+      if (!layersMap[layerId]) {
+        return
+      }
       const { layer } = layersMap[layerId]
       layerHoverEffect.beginFill(layer.color, alpha)
       layerHoverEffect.drawRect(0, getLayerY(layer), getAppWidth(), (layer.height + 1) * LAYER_SIZE)
@@ -454,7 +468,7 @@ export default defineComponent({
       drawLayerBackgroundEffects()
     })
 
-    function updateLayerHover (event: FederatedPointerEvent) {
+    function updateLayerHover(event: FederatedPointerEvent) {
       let { globalY } = event
       globalY -= verticalScrollingContainer.y
       if (globalY >= 0) {
@@ -471,7 +485,7 @@ export default defineComponent({
       clearLayerHover()
     }
 
-    function clearLayerHover () {
+    function clearLayerHover() {
       hoverLayerId.value = null
     }
 
@@ -486,11 +500,15 @@ export default defineComponent({
     const updateEventVerticalPositionQueue = new Queue<TimelineEvent>()
     let eventPositionUpdateInProgress = false
 
-    function queueEventPositionUpdate (events: TimelineEvent[], force = false) {
+    function queueEventPositionUpdate(events: TimelineEvent[], force = false) {
       for (const event of events) {
-        if (!event.container) continue
+        if (!event.container) {
+          continue
+        }
 
-        if (force) event.forcePositionUpdate = true
+        if (force) {
+          event.forcePositionUpdate = true
+        }
 
         updateEventPositionQueue.add(event)
       }
@@ -505,15 +523,20 @@ export default defineComponent({
       }
     }
 
-    function runEventPositionUpdate () {
+    function runEventPositionUpdate() {
       let event: TimelineEvent
+      // eslint-disable-next-line no-cond-assign
       while ((event = updateEventPositionQueue.shift())) {
-        if (!event.container) continue
+        if (!event.container) {
+          continue
+        }
 
         // Ignored
         const ignored = isEventIgnored(event)
         event.container.visible = !ignored
-        if (ignored) continue
+        if (ignored) {
+          continue
+        }
 
         // Update horizontal position immediately
         event.container.x = getTimePosition(event.time)
@@ -521,12 +544,15 @@ export default defineComponent({
         // Ignore additional updates to flamechart
         const force = event.forcePositionUpdate
         event.forcePositionUpdate = false
-        if (!force && event.layer.groupsOnly) continue
+        if (!force && event.layer.groupsOnly) {
+          continue
+        }
 
         // Queue vertical position compute
         updateEventVerticalPositionQueue.add(event)
       }
 
+      // eslint-disable-next-line no-cond-assign
       while ((event = updateEventVerticalPositionQueue.shift())) {
         computeEventVerticalPosition(event)
       }
@@ -534,7 +560,7 @@ export default defineComponent({
 
     let isEventIgnoredCache: Record<TimelineEvent['id'], boolean> = {}
 
-    function isEventIgnored (event: TimelineEvent) {
+    function isEventIgnored(event: TimelineEvent) {
       let result = isEventIgnoredCache[event.id]
       if (result == null) {
         result = event.layer.ignoreNoDurationGroups && event.group?.nonReactiveDuration <= 0
@@ -543,12 +569,13 @@ export default defineComponent({
       return result
     }
 
-    function computeEventVerticalPosition (event: TimelineEvent) {
+    function computeEventVerticalPosition(event: TimelineEvent) {
       let y = 0
       if (event.group && event !== event.group.firstEvent) {
         // If the event is inside a group, just use the group position
         y = event.group.y
-      } else {
+      }
+      else {
         const firstEvent = event.group ? event.group.firstEvent : event
         const lastEvent = event.group ? event.group.lastEvent : event
 
@@ -574,19 +601,19 @@ export default defineComponent({
             if (
               // Different group
               (
-                !event.group ||
-                event.group !== otherGroup
-              ) &&
+                !event.group
+                || event.group !== otherGroup
+              )
               // Same row
-              otherGroup.y === y
+              && otherGroup.y === y
             ) {
               const otherGroupFirstPos = getPos(otherGroup.firstEvent.time)
               const otherGroupLastPos = getPos(otherGroup.lastEvent.time)
 
               // First position is inside other group
               const firstEventIntersection = (
-                firstPos >= otherGroupFirstPos - offset &&
-                firstPos <= otherGroupLastPos + offset + lastOffset
+                firstPos >= otherGroupFirstPos - offset
+                && firstPos <= otherGroupLastPos + offset + lastOffset
               )
 
               if (firstEventIntersection || (
@@ -594,12 +621,12 @@ export default defineComponent({
                 event.group && (
                   (
                     // Last position is inside other group
-                    lastPos >= otherGroupFirstPos - offset - lastOffset &&
-                    lastPos <= otherGroupLastPos + offset
+                    lastPos >= otherGroupFirstPos - offset - lastOffset
+                    && lastPos <= otherGroupLastPos + offset
                   ) || (
                     // Other group is inside current group
-                    firstPos < otherGroupFirstPos - offset &&
-                    lastPos > otherGroupLastPos + offset
+                    firstPos < otherGroupFirstPos - offset
+                    && lastPos > otherGroupLastPos + offset
                   )
                 )
               )) {
@@ -609,7 +636,8 @@ export default defineComponent({
                   if (!updateEventVerticalPositionQueue.has(otherGroup.firstEvent)) {
                     queueEventPositionUpdate([otherGroup.firstEvent], event.layer.groupsOnly)
                   }
-                } else {
+                }
+                else {
                   // Offset the current group/event
                   y++
                   // We need to check all the layers again since we moved the event
@@ -640,7 +668,7 @@ export default defineComponent({
 
     let addEventUpdateQueued = false
 
-    function addEvent (event: TimelineEvent, layerContainer: PIXI.Container) {
+    function addEvent(event: TimelineEvent, layerContainer: PIXI.Container) {
       // Container
       let eventContainer: PIXI.Container
 
@@ -665,7 +693,8 @@ export default defineComponent({
           event.group.oldSize = null
           event.group.oldSelected = null
           drawEventGroup(event)
-        } else if (event.group.lastEvent === event) {
+        }
+        else if (event.group.lastEvent === event) {
           drawEventGroup(event.group.firstEvent)
           // We need to check for collisions again
           if (!addEventUpdateQueued) {
@@ -692,14 +721,15 @@ export default defineComponent({
       refreshEventGraphics(event)
       if (event.container) {
         queueEventPositionUpdate([event], true)
-      } else {
+      }
+      else {
         queueEventPositionUpdate([event.group.firstEvent], true)
       }
 
       return event
     }
 
-    function initEvents () {
+    function initEvents() {
       for (const k in layersMap) {
         const { layer, container } = layersMap[k]
         for (const event of layer.events) {
@@ -712,7 +742,7 @@ export default defineComponent({
       initEvents()
     })
 
-    function clearEvents () {
+    function clearEvents() {
       for (const e of events) {
         e.g?.destroy()
         e.g = null
@@ -734,7 +764,7 @@ export default defineComponent({
       isEventIgnoredCache = {}
     }
 
-    function resetEvents () {
+    function resetEvents() {
       clearEvents()
       initEvents()
     }
@@ -744,7 +774,9 @@ export default defineComponent({
     })
 
     onEventAdd((event: TimelineEvent) => {
-      if (event.appId !== 'all' && event.appId !== currentAppId.value) return
+      if (event.appId !== 'all' && event.appId !== currentAppId.value) {
+        return
+      }
 
       const layer = layersMap[event.layer.id]
       if (layer) {
@@ -754,8 +786,10 @@ export default defineComponent({
 
     let eventsUpdateQueued = false
 
-    function queueEventsUpdate () {
-      if (eventsUpdateQueued) return
+    function queueEventsUpdate() {
+      if (eventsUpdateQueued) {
+        return
+      }
       eventsUpdateQueued = true
       nextTick(() => {
         updateEvents()
@@ -763,7 +797,7 @@ export default defineComponent({
       }, taskPriority.updateEvents)
     }
 
-    function updateEvents () {
+    function updateEvents() {
       for (const layer of layers.value) {
         if (!layer.groupsOnly) {
           layer.newHeight = 1
@@ -786,7 +820,7 @@ export default defineComponent({
 
     // Event selection
 
-    function getEventAtPosition (targetX: number, targetY: number): TimelineEvent | null {
+    function getEventAtPosition(targetX: number, targetY: number): TimelineEvent | null {
       let choice: TimelineEvent
 
       let y = 0
@@ -795,7 +829,9 @@ export default defineComponent({
         if (targetY - verticalScrollingContainer.y < y) {
           let distance = Number.POSITIVE_INFINITY
           for (const e of layer.events) {
-            if (isEventIgnored(e)) continue
+            if (isEventIgnored(e)) {
+              continue
+            }
 
             if (layer.groupsOnly) {
               // We find the group inside of which the mouse is
@@ -804,8 +840,11 @@ export default defineComponent({
                 choice = e
                 break
               }
-            } else {
-              if (!e.g) continue
+            }
+            else {
+              if (!e.g) {
+                continue
+              }
               // We find the nearest event from the mouse click position
               const globalPosition = e.g.getGlobalPosition()
               const d = Math.abs(globalPosition.x - targetX) + Math.abs(globalPosition.y - targetY)
@@ -824,9 +863,12 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      // @ts-ignore
+      // @ts-expect-error type issue
       app.stage.addEventListener('click', (event: FederatedPointerEvent) => {
-        if (cameraDragging) return
+        // eslint-disable-next-line ts/no-use-before-define
+        if (cameraDragging) {
+          return
+        }
         const choice = getEventAtPosition(event.globalX, event.globalY)
         if (choice) {
           selectEvent(choice)
@@ -835,12 +877,13 @@ export default defineComponent({
       })
     })
 
-    function drawEvent (selected: boolean, event: TimelineEvent) {
+    function drawEvent(selected: boolean, event: TimelineEvent) {
       if (event?.container) {
         let color = event.layer.color
         if (event.logType === 'error') {
           color = 0xE53E3E
-        } else if (event.logType === 'warning') {
+        }
+        else if (event.logType === 'warning') {
           color = 0xECC94B
         }
 
@@ -858,14 +901,16 @@ export default defineComponent({
               if (!event.group || event.group.firstEvent !== event) {
                 event.container.zIndex = 999999999
               }
-            } else {
+            }
+            else {
               g.beginFill(color)
               if (!event.group || event.group.firstEvent !== event) {
                 event.container.zIndex = size
               }
             }
             g.drawCircle(0, 0, size + (selected ? 1 : 0))
-          } else {
+          }
+          else {
             drawEventGroup(event)
           }
         }
@@ -875,10 +920,11 @@ export default defineComponent({
     const drawSelectedEvent = drawEvent.bind(null, true)
     const drawUnselectedEvent = drawEvent.bind(null, false)
 
-    function refreshEventGraphics (event: TimelineEvent) {
+    function refreshEventGraphics(event: TimelineEvent) {
       if (nonReactiveSelectedEvent.value === event) {
         drawSelectedEvent(event)
-      } else {
+      }
+      else {
         drawUnselectedEvent(event)
       }
     }
@@ -890,11 +936,12 @@ export default defineComponent({
 
     // Event selection with keyboard
 
-    function selectPreviousEvent () {
+    function selectPreviousEvent() {
       let index
       if (nonReactiveSelectedEvent.value) {
         index = events.indexOf(nonReactiveSelectedEvent.value)
-      } else {
+      }
+      else {
         index = events.length
       }
 
@@ -912,11 +959,12 @@ export default defineComponent({
       }
     }
 
-    function selectNextEvent () {
+    function selectNextEvent() {
       let index
       if (nonReactiveSelectedEvent.value) {
         index = events.indexOf(nonReactiveSelectedEvent.value)
-      } else {
+      }
+      else {
         index = -1
       }
 
@@ -934,10 +982,11 @@ export default defineComponent({
       }
     }
 
-    onKeyUp(event => {
+    onKeyUp((event) => {
       if (event.key === 'ArrowLeft') {
         selectPreviousEvent()
-      } else if (event.key === 'ArrowRight') {
+      }
+      else if (event.key === 'ArrowRight') {
         selectNextEvent()
       }
     })
@@ -976,10 +1025,11 @@ export default defineComponent({
       eventTooltipText.y = eventTooltipTitle.height + 4
       eventTooltip.addChild(eventTooltipText)
 
-      // @ts-ignore
+      // @ts-expect-error type issue
       app.stage.addEventListener('pointermove', (mouseEvent: FederatedPointerEvent) => {
         const text: string[] = []
 
+        // eslint-disable-next-line ts/no-use-before-define
         if (!cameraDragging) {
           // Event tooltip
           const event = getEventAtPosition(mouseEvent.globalX, mouseEvent.globalY)
@@ -997,7 +1047,8 @@ export default defineComponent({
             if (event?.container) {
               event.container.alpha = 0.5
             }
-          } else {
+          }
+          else {
             // Marker tooltip
             const marker = getMarkerAtPosition(mouseEvent.globalX)
             if (marker) {
@@ -1021,7 +1072,7 @@ export default defineComponent({
           eventTooltipText.text = text.slice(1).join('\n')
 
           eventTooltipGraphics.clear()
-          eventTooltipGraphics.beginFill(0xffffff)
+          eventTooltipGraphics.beginFill(0xFFFFFF)
           eventTooltipGraphics.lineStyle(1, 0x000000, 0.2, 1)
           const width = Math.max(eventTooltipTitle.width, eventTooltipText.width) + 8
           const height = eventTooltipTitle.height + (text.length > 1 ? eventTooltipText.height : 0) + 8
@@ -1036,7 +1087,8 @@ export default defineComponent({
             eventTooltip.y = mouseEvent.globalY - eventTooltip.height - 12
           }
           eventTooltip.visible = true
-        } else {
+        }
+        else {
           if (hoverEvent?.container) {
             hoverEvent.container.alpha = 1
           }
@@ -1047,7 +1099,7 @@ export default defineComponent({
 
     // Event Groups
 
-    function drawEventGroup (event: TimelineEvent) {
+    function drawEventGroup(event: TimelineEvent) {
       if (event.groupG) {
         const drawAsSelected = event === nonReactiveSelectedEvent.value && event.layer.groupsOnly
 
@@ -1060,16 +1112,19 @@ export default defineComponent({
             if (drawAsSelected) {
               g.lineStyle(2, boostColor(event.layer.color, nonReactiveState.darkMode.value))
               g.beginFill(dimColor(event.layer.color, nonReactiveState.darkMode.value, 30))
-            } else {
+            }
+            else {
               g.beginFill(event.layer.color, 0.5)
             }
-          } else {
+          }
+          else {
             g.lineStyle(1, dimColor(event.layer.color, nonReactiveState.darkMode.value))
             g.beginFill(dimColor(event.layer.color, nonReactiveState.darkMode.value, 25))
           }
           if (event.layer.groupsOnly) {
             g.drawRect(0, -LAYER_SIZE / 2, size - 1, LAYER_SIZE - 1)
-          } else {
+          }
+          else {
             // Some adjustements were made on the vertical position and size to snap border pixels to the screen's grid (LoDPI)
             g.drawRoundedRect(-GROUP_SIZE, -GROUP_SIZE + 0.5, size + GROUP_SIZE * 2, GROUP_SIZE * 2 - 1, GROUP_SIZE)
           }
@@ -1093,7 +1148,8 @@ export default defineComponent({
             event.container.addChild(t)
           }
           t.text = text.slice(0, Math.floor((size - 1) / 6))
-        } else if (event.groupT) {
+        }
+        else if (event.groupT) {
           event.groupT.destroy()
           event.groupT = null
         }
@@ -1116,21 +1172,21 @@ export default defineComponent({
       app.stage.addChild(timeCursor)
     })
 
-    function drawTimeCursor () {
+    function drawTimeCursor() {
       timeCursor.clear()
       timeCursor.lineStyle(1, 0x888888, 0.2)
       timeCursor.moveTo(0.5, 0)
       timeCursor.lineTo(0.5, getAppHeight())
     }
 
-    function updateCursorPosition (event: FederatedPointerEvent) {
+    function updateCursorPosition(event: FederatedPointerEvent) {
       const { globalX } = event
       timeCursor.x = globalX
       timeCursor.visible = true
       cursorTime.value = globalX / getAppWidth() * (endTime.value - startTime.value) + startTime.value
     }
 
-    function clearCursor () {
+    function clearCursor() {
       timeCursor.visible = false
       cursorTime.value = null
     }
@@ -1146,8 +1202,10 @@ export default defineComponent({
       app.stage.addChild(timeGrid)
     })
 
-    function drawTimeGrid () {
-      if (!timeGrid.visible || !app.view.width) return
+    function drawTimeGrid() {
+      if (!timeGrid.visible || !app.view.width) {
+        return
+      }
 
       const size = endTime.value - startTime.value
       const ratio = size / getAppWidth()
@@ -1158,7 +1216,8 @@ export default defineComponent({
         // Every ms
         timeInterval = 1
         width = timeInterval / ratio
-      } else {
+      }
+      else {
         while (width < 20) {
           timeInterval *= 10
           width *= 10
@@ -1175,7 +1234,7 @@ export default defineComponent({
       }
     }
 
-    watch(() => SharedData.timelineTimeGrid, value => {
+    watch(() => SharedData.timelineTimeGrid, (value) => {
       timeGrid.visible = value
       if (value) {
         drawTimeGrid()
@@ -1186,8 +1245,10 @@ export default defineComponent({
 
     let cameraUpdateQueued = false
 
-    function queueCameraUpdate () {
-      if (cameraUpdateQueued) return
+    function queueCameraUpdate() {
+      if (cameraUpdateQueued) {
+        return
+      }
       cameraUpdateQueued = true
       nextTick(() => {
         updateCamera()
@@ -1195,7 +1256,7 @@ export default defineComponent({
       }, taskPriority.updateCamera)
     }
 
-    function updateCamera () {
+    function updateCamera() {
       horizontalScrollingContainer.x = -getTimePosition(nonReactiveState.startTime.value)
       drawLayerBackgroundEffects()
       drawTimeGrid()
@@ -1207,11 +1268,11 @@ export default defineComponent({
 
     onMounted(() => {
       queueCameraUpdate()
-      // @ts-ignore
+      // @ts-expect-error type issue
       app.stage.addEventListener('wheel', onMouseWheel)
     })
 
-    function onMouseWheel (event: FederatedWheelEvent) {
+    function onMouseWheel(event: FederatedWheelEvent) {
       event.preventDefault()
 
       const size = endTime.value - startTime.value
@@ -1236,7 +1297,8 @@ export default defineComponent({
         }
         startTime.value = start
         endTime.value = end
-      } else {
+      }
+      else {
         let deltaX = event.deltaX
 
         if (deltaX === 0 && event.nativeEvent.shiftKey && event.deltaY !== 0) {
@@ -1253,19 +1315,22 @@ export default defineComponent({
           let start = startTime.value += delta
           if (start < minTime.value) {
             start = minTime.value
-          } else if (start + size >= maxTime.value) {
+          }
+          else if (start + size >= maxTime.value) {
             start = maxTime.value - size
           }
           startTime.value = start
           endTime.value = start + size
-        } else if (event.deltaY !== 0) {
+        }
+        else if (event.deltaY !== 0) {
           // Vertical scroll
           const layersScroller = document.querySelector('[data-scroller="layers"]')
           if (layersScroller) {
             const speed = isMac ? Math.abs(event.deltaY) : LAYER_SIZE * 4
             if (event.deltaY < 0) {
               layersScroller.scrollTop -= speed
-            } else {
+            }
+            else {
               layersScroller.scrollTop += speed
             }
           }
@@ -1275,7 +1340,7 @@ export default defineComponent({
 
     // Vertical scroll
 
-    function updateVScroll () {
+    function updateVScroll() {
       if (verticalScrollingContainer) {
         verticalScrollingContainer.y = -vScroll.value
         draw()
@@ -1303,19 +1368,19 @@ export default defineComponent({
     onMounted(() => {
       layersScroller = document.querySelector('[data-scroller="layers"]')
 
-      // @ts-ignore
+      // @ts-expect-error type issue
       app.stage.addEventListener('pointerdown', (event: FederatedPointerEvent) => {
         startDragX = event.globalX
         startDragY = event.globalY
         startDragTime = startTime.value
         startDragScrollTop = layersScroller.scrollTop
-        // @ts-ignore
+        // @ts-expect-error type issue
         app.stage.addEventListener('pointermove', onCameraDraggingMouseMove)
         window.addEventListener('mouseup', onCameraDraggingMouseUp)
       })
     })
 
-    function onCameraDraggingMouseMove (event: FederatedPointerEvent) {
+    function onCameraDraggingMouseMove(event: FederatedPointerEvent) {
       const x = event.globalX
       const y = event.globalY
       if (!cameraDragging && (Math.abs(x - startDragX) > 5 || Math.abs(y - startDragY) > 5)) {
@@ -1333,7 +1398,8 @@ export default defineComponent({
         let start = startTime.value = startDragTime + delta
         if (start < minTime.value) {
           start = minTime.value
-        } else if (start + size >= maxTime.value) {
+        }
+        else if (start + size >= maxTime.value) {
           start = maxTime.value - size
         }
         startTime.value = start
@@ -1344,12 +1410,12 @@ export default defineComponent({
       }
     }
 
-    function onCameraDraggingMouseUp () {
+    function onCameraDraggingMouseUp() {
       cameraDragging = false
       removeOnCameraDraggingEvents()
     }
 
-    function removeOnCameraDraggingEvents () {
+    function removeOnCameraDraggingEvents() {
       app.stage?.removeListener('pointermove', onCameraDraggingMouseMove)
       window.removeEventListener('mouseup', onCameraDraggingMouseUp)
     }
@@ -1360,7 +1426,7 @@ export default defineComponent({
 
     // Resize
 
-    function onResize () {
+    function onResize() {
       // Prevent flashing (will be set back to 1 in postrender event listener)
       app.view.style.opacity = '0'
       app.queueResize()
@@ -1378,11 +1444,11 @@ export default defineComponent({
 
     let mouseIn = false
 
-    function onMouseMove (event: FederatedPointerEvent) {
-      if (event.global.x < 0 ||
-        event.global.y < 0 ||
-        event.global.x > app.screen.width ||
-        event.global.y > app.screen.height) {
+    function onMouseMove(event: FederatedPointerEvent) {
+      if (event.global.x < 0
+        || event.global.y < 0
+        || event.global.x > app.screen.width
+        || event.global.y > app.screen.height) {
         if (mouseIn) {
           mouseIn = false
           onMouseOut()
@@ -1394,13 +1460,13 @@ export default defineComponent({
       updateCursorPosition(event)
     }
 
-    function onMouseOut () {
+    function onMouseOut() {
       clearLayerHover()
       clearCursor()
     }
 
     onMounted(() => {
-      // @ts-ignore
+      // @ts-expect-error type issue
       app.stage.addEventListener('pointermove', onMouseMove)
     })
 

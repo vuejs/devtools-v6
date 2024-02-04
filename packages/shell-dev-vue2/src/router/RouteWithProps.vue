@@ -1,9 +1,3 @@
-<template>
-  <div>
-    <p>Hello from route with props: Username: {{ username }}, Id: {{ id }}</p>
-  </div>
-</template>
-
 <script>
 export default {
   props: {
@@ -18,3 +12,9 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div>
+    <p>Hello from route with props: Username: {{ username }}, Id: {{ id }}</p>
+  </div>
+</template>

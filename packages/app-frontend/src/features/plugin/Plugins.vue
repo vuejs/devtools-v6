@@ -1,9 +1,9 @@
 <script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
+import { computed, defineComponent, ref } from 'vue'
 import PluginListItem from './PluginListItem.vue'
 import PluginHome from './PluginHome.vue'
 
-import { defineComponent, ref, computed } from 'vue'
 import { usePlugins } from '.'
 
 export default defineComponent({
@@ -13,7 +13,7 @@ export default defineComponent({
     PluginHome,
   },
 
-  setup () {
+  setup() {
     const { plugins } = usePlugins()
 
     const search = ref('')
@@ -58,7 +58,7 @@ export default defineComponent({
 
             <VueButton
               :to="{
-                name: 'global-settings'
+                name: 'global-settings',
               }"
               icon-left="settings"
               icon-right="arrow_forward"

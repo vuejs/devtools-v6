@@ -1,6 +1,7 @@
-import { Ref, ref } from 'vue'
-import { ID } from '@vue/devtools-api'
-import * as PIXI from 'pixi.js-legacy'
+import type { Ref } from 'vue'
+import { ref } from 'vue'
+import type { ID } from '@vue/devtools-api'
+import type * as PIXI from 'pixi.js-legacy'
 
 export interface TimelineEventFromBackend {
   id: number
@@ -88,9 +89,9 @@ export const timelineIsEmpty = ref(true)
 
 export const cursorTime = ref<number>(null)
 
-export const layersPerApp: Ref<{[appId: string]: Layer[]}> = ref({})
-export const hiddenLayersPerApp: Ref<{[appId: string]: Layer['id'][]}> = ref({})
-export const vScrollPerApp: Ref<{[appId: string]: number}> = ref({})
+export const layersPerApp: Ref<{ [appId: string]: Layer[] }> = ref({})
+export const hiddenLayersPerApp: Ref<{ [appId: string]: Layer['id'][] }> = ref({})
+export const vScrollPerApp: Ref<{ [appId: string]: number }> = ref({})
 
 export const selectedEvent: Ref<TimelineEvent> = ref(null)
 export const selectedLayer: Ref<Layer> = ref(null)
@@ -103,4 +104,4 @@ export const inspectedEventPendingId: Ref<TimelineEvent['id']> = ref(null)
 export const screenshots: Ref<EventScreenshot[]> = ref([])
 
 export const markersAllApps: Ref<TimelineMarker[]> = ref([])
-export const markersPerApp: Ref<{[appId: string]: TimelineMarker[]}> = ref({})
+export const markersPerApp: Ref<{ [appId: string]: TimelineMarker[] }> = ref({})

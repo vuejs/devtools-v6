@@ -1,5 +1,5 @@
 export default class MyClass {
-  constructor () {
+  constructor() {
     this.msg = 'hi'
   }
 }

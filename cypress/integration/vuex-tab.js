@@ -54,13 +54,13 @@ suite('vuex tab', () => {
       .should('not.have.class', 'active')
     cy.get('.recording-vuex-state').should('not.be.visible')
     cy.get('.loading-vuex-state').should('not.be.visible')
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('type:"INCREMENT"')
       expect(el.text()).to.include('count:2')
       expect(el.text()).to.include('Error from getter')
     })
     cy.get('.data-field .key').contains('lastCountPayload').click()
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('a:1')
       expect(el.text()).to.include('b:Object')
     })
@@ -88,7 +88,7 @@ suite('vuex tab', () => {
     cy.get('.recording-vuex-state').should('not.be.visible')
     cy.get('.loading-vuex-state').should('not.be.visible')
     cy.get('.recording-vuex-state').should('not.be.visible')
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('type:"INCREMENT"')
       expect(el.text()).to.include('count:1')
     })
@@ -111,7 +111,7 @@ suite('vuex tab', () => {
     cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
       .should('not.have.class', 'active')
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('count:0')
     })
     cy.get('#target').iframe().then(({ get }) => {
@@ -133,7 +133,7 @@ suite('vuex tab', () => {
     cy.get('.history .entry[data-index="4"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('count:2')
     })
     cy.get('#target').iframe().then(({ get }) => {
@@ -147,7 +147,7 @@ suite('vuex tab', () => {
     cy.get('.history .entry[data-index="0"]')
       .should('have.class', 'inspected')
       .should('have.class', 'active')
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('count:2')
     })
     cy.get('#target').iframe().then(({ get }) => {
@@ -204,9 +204,9 @@ suite('vuex tab', () => {
     cy.wait(500)
     cy.get('.message.invalid-json').should('not.be.visible')
     cy.wait(500)
-    cy.get('.vuex-state-inspector').then(el => {
+    cy.get('.vuex-state-inspector').then((el) => {
       expect(el.text()).to.include('count:42')
-      expect(el.text()).to.include('date:' + new Date('Fri Dec 22 2017 10:12:04 GMT+0100 (CET)'))
+      expect(el.text()).to.include(`date:${new Date('Fri Dec 22 2017 10:12:04 GMT+0100 (CET)')}`)
     })
     cy.get('.import').click()
     cy.get('.import-state').should('not.be.visible')

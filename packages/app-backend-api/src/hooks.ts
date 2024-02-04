@@ -1,7 +1,8 @@
-import { hasPluginPermission, PluginPermission } from '@vue-devtools/shared-utils'
-import { Hooks, HookPayloads, Hookable, HookHandler } from '@vue/devtools-api'
-import { BackendContext } from './backend-context'
-import { Plugin } from './plugin'
+import { PluginPermission, hasPluginPermission } from '@vue-devtools/shared-utils'
+import type { HookHandler, HookPayloads, Hookable } from '@vue/devtools-api'
+import { Hooks } from '@vue/devtools-api'
+import type { BackendContext } from './backend-context'
+import type { Plugin } from './plugin'
 
 type Handler<TPayload> = HookHandler<TPayload, BackendContext>
 
@@ -15,29 +16,29 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
   private ctx: BackendContext
   private plugin: Plugin
 
-  constructor (ctx: BackendContext, plugin: Plugin = null) {
+  constructor(ctx: BackendContext, plugin: Plugin = null) {
     this.ctx = ctx
     this.plugin = plugin
   }
 
-  private hook<T extends Hooks> (eventType: T, handler: Handler<HookPayloads[T]>, pluginPermision: PluginPermission = null) {
+  private hook<T extends Hooks>(eventType: T, handler: Handler<HookPayloads[T]>, pluginPermision: PluginPermission = null) {
     const handlers = (this.handlers[eventType] = this.handlers[eventType] || []) as HookHandlerData<HookPayloads[T]>[]
 
     if (this.plugin) {
       const originalHandler = handler
       handler = (...args) => {
         // Plugin permission
-        if (!hasPluginPermission(this.plugin.descriptor.id, PluginPermission.ENABLED) ||
-          (pluginPermision && !hasPluginPermission(this.plugin.descriptor.id, pluginPermision))
-        ) return
+        if (!hasPluginPermission(this.plugin.descriptor.id, PluginPermission.ENABLED)
+          || (pluginPermision && !hasPluginPermission(this.plugin.descriptor.id, pluginPermision))
+        ) { return }
 
         // App scope
-        if (!this.plugin.descriptor.disableAppScope &&
-          this.ctx.currentAppRecord?.options.app !== this.plugin.descriptor.app) return
+        if (!this.plugin.descriptor.disableAppScope
+          && this.ctx.currentAppRecord?.options.app !== this.plugin.descriptor.app) { return }
 
         // Plugin scope
-        if (!this.plugin.descriptor.disablePluginScope &&
-          (args[0] as any).pluginId != null && (args[0] as any).pluginId !== this.plugin.descriptor.id) return
+        if (!this.plugin.descriptor.disablePluginScope
+          && (args[0] as any).pluginId != null && (args[0] as any).pluginId !== this.plugin.descriptor.id) { return }
 
         return originalHandler(...args)
       }
@@ -49,14 +50,15 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     })
   }
 
-  async callHandlers<T extends Hooks> (eventType: T, payload: HookPayloads[T], ctx: BackendContext) {
+  async callHandlers<T extends Hooks>(eventType: T, payload: HookPayloads[T], ctx: BackendContext) {
     if (this.handlers[eventType]) {
       const handlers = this.handlers[eventType] as HookHandlerData<HookPayloads[T]>[]
       for (let i = 0; i < handlers.length; i++) {
         const { handler, plugin } = handlers[i]
         try {
           await handler(payload, ctx)
-        } catch (e) {
+        }
+        catch (e) {
           console.error(`An error occurred in hook '${eventType}'${plugin ? ` registered by plugin '${plugin.descriptor.id}'` : ''} with payload:`, payload)
           console.error(e)
         }
@@ -65,91 +67,91 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
     return payload
   }
 
-  transformCall (handler: Handler<HookPayloads[Hooks.TRANSFORM_CALL]>) {
+  transformCall(handler: Handler<HookPayloads[Hooks.TRANSFORM_CALL]>) {
     this.hook(Hooks.TRANSFORM_CALL, handler)
   }
 
-  getAppRecordName (handler: Handler<HookPayloads[Hooks.GET_APP_RECORD_NAME]>) {
+  getAppRecordName(handler: Handler<HookPayloads[Hooks.GET_APP_RECORD_NAME]>) {
     this.hook(Hooks.GET_APP_RECORD_NAME, handler)
   }
 
-  getAppRootInstance (handler: Handler<HookPayloads[Hooks.GET_APP_ROOT_INSTANCE]>) {
+  getAppRootInstance(handler: Handler<HookPayloads[Hooks.GET_APP_ROOT_INSTANCE]>) {
     this.hook(Hooks.GET_APP_ROOT_INSTANCE, handler)
   }
 
-  registerApplication (handler: Handler<HookPayloads[Hooks.REGISTER_APPLICATION]>) {
+  registerApplication(handler: Handler<HookPayloads[Hooks.REGISTER_APPLICATION]>) {
     this.hook(Hooks.REGISTER_APPLICATION, handler)
   }
 
-  walkComponentTree (handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_TREE]>) {
+  walkComponentTree(handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_TREE]>) {
     this.hook(Hooks.WALK_COMPONENT_TREE, handler, PluginPermission.COMPONENTS)
   }
 
-  visitComponentTree (handler: Handler<HookPayloads[Hooks.VISIT_COMPONENT_TREE]>) {
+  visitComponentTree(handler: Handler<HookPayloads[Hooks.VISIT_COMPONENT_TREE]>) {
     this.hook(Hooks.VISIT_COMPONENT_TREE, handler, PluginPermission.COMPONENTS)
   }
 
-  walkComponentParents (handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS]>) {
+  walkComponentParents(handler: Handler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS]>) {
     this.hook(Hooks.WALK_COMPONENT_PARENTS, handler, PluginPermission.COMPONENTS)
   }
 
-  inspectComponent (handler: Handler<HookPayloads[Hooks.INSPECT_COMPONENT]>) {
+  inspectComponent(handler: Handler<HookPayloads[Hooks.INSPECT_COMPONENT]>) {
     this.hook(Hooks.INSPECT_COMPONENT, handler, PluginPermission.COMPONENTS)
   }
 
-  getComponentBounds (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS]>) {
+  getComponentBounds(handler: Handler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS]>) {
     this.hook(Hooks.GET_COMPONENT_BOUNDS, handler, PluginPermission.COMPONENTS)
   }
 
-  getComponentName (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_NAME]>) {
+  getComponentName(handler: Handler<HookPayloads[Hooks.GET_COMPONENT_NAME]>) {
     this.hook(Hooks.GET_COMPONENT_NAME, handler, PluginPermission.COMPONENTS)
   }
 
-  getComponentInstances (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES]>) {
+  getComponentInstances(handler: Handler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES]>) {
     this.hook(Hooks.GET_COMPONENT_INSTANCES, handler, PluginPermission.COMPONENTS)
   }
 
-  getElementComponent (handler: Handler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT]>) {
+  getElementComponent(handler: Handler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT]>) {
     this.hook(Hooks.GET_ELEMENT_COMPONENT, handler, PluginPermission.COMPONENTS)
   }
 
-  getComponentRootElements (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS]>) {
+  getComponentRootElements(handler: Handler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS]>) {
     this.hook(Hooks.GET_COMPONENT_ROOT_ELEMENTS, handler, PluginPermission.COMPONENTS)
   }
 
-  editComponentState (handler: Handler<HookPayloads[Hooks.EDIT_COMPONENT_STATE]>) {
+  editComponentState(handler: Handler<HookPayloads[Hooks.EDIT_COMPONENT_STATE]>) {
     this.hook(Hooks.EDIT_COMPONENT_STATE, handler, PluginPermission.COMPONENTS)
   }
 
-  getComponentDevtoolsOptions (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS]>) {
+  getComponentDevtoolsOptions(handler: Handler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS]>) {
     this.hook(Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS, handler, PluginPermission.COMPONENTS)
   }
 
-  getComponentRenderCode (handler: Handler<HookPayloads[Hooks.GET_COMPONENT_RENDER_CODE]>) {
+  getComponentRenderCode(handler: Handler<HookPayloads[Hooks.GET_COMPONENT_RENDER_CODE]>) {
     this.hook(Hooks.GET_COMPONENT_RENDER_CODE, handler, PluginPermission.COMPONENTS)
   }
 
-  inspectTimelineEvent (handler: Handler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT]>) {
+  inspectTimelineEvent(handler: Handler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT]>) {
     this.hook(Hooks.INSPECT_TIMELINE_EVENT, handler, PluginPermission.TIMELINE)
   }
 
-  timelineCleared (handler: Handler<HookPayloads[Hooks.TIMELINE_CLEARED]>) {
+  timelineCleared(handler: Handler<HookPayloads[Hooks.TIMELINE_CLEARED]>) {
     this.hook(Hooks.TIMELINE_CLEARED, handler, PluginPermission.TIMELINE)
   }
 
-  getInspectorTree (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_TREE]>) {
+  getInspectorTree(handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_TREE]>) {
     this.hook(Hooks.GET_INSPECTOR_TREE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }
 
-  getInspectorState (handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_STATE]>) {
+  getInspectorState(handler: Handler<HookPayloads[Hooks.GET_INSPECTOR_STATE]>) {
     this.hook(Hooks.GET_INSPECTOR_STATE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }
 
-  editInspectorState (handler: Handler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE]>) {
+  editInspectorState(handler: Handler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE]>) {
     this.hook(Hooks.EDIT_INSPECTOR_STATE, handler, PluginPermission.CUSTOM_INSPECTOR)
   }
 
-  setPluginSettings (handler: Handler<HookPayloads[Hooks.SET_PLUGIN_SETTINGS]>) {
+  setPluginSettings(handler: Handler<HookPayloads[Hooks.SET_PLUGIN_SETTINGS]>) {
     this.hook(Hooks.SET_PLUGIN_SETTINGS, handler)
   }
 }

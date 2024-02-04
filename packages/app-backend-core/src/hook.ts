@@ -8,35 +8,41 @@
  *
  * @param {Window|global} target
  */
-export function installHook (target, isIframe = false) {
+export function installHook(target, isIframe = false) {
   const devtoolsVersion = '6.0'
   let listeners = {}
 
-  function injectIframeHook (iframe) {
-    if ((iframe as any).__vdevtools__injected) return
+  function injectIframeHook(iframe) {
+    if ((iframe as any).__vdevtools__injected) {
+      return
+    }
     try {
       (iframe as any).__vdevtools__injected = true
       const inject = () => {
         try {
           (iframe.contentWindow as any).__VUE_DEVTOOLS_IFRAME__ = iframe
           const script = iframe.contentDocument.createElement('script')
-          script.textContent = ';(' + installHook.toString() + ')(window, true)'
+          script.textContent = `;(${installHook.toString()})(window, true)`
           iframe.contentDocument.documentElement.appendChild(script)
           script.parentNode.removeChild(script)
-        } catch (e) {
+        }
+        catch (e) {
           // Ignore
         }
       }
       inject()
       iframe.addEventListener('load', () => inject())
-    } catch (e) {
+    }
+    catch (e) {
       // Ignore
     }
   }
 
   let iframeChecks = 0
-  function injectToIframes () {
-    if (typeof window === 'undefined') return
+  function injectToIframes() {
+    if (typeof window === 'undefined') {
+      return
+    }
 
     const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe:not([data-vue-devtools-ignore])')
     for (const iframe of iframes) {
@@ -62,15 +68,17 @@ export function installHook (target, isIframe = false) {
   let hook
 
   if (isIframe) {
-    const sendToParent = cb => {
+    const sendToParent = (cb) => {
       try {
         const hook = (window.parent as any).__VUE_DEVTOOLS_GLOBAL_HOOK__
         if (hook) {
           return cb(hook)
-        } else {
+        }
+        else {
           console.warn('[Vue Devtools] No hook in parent window')
         }
-      } catch (e) {
+      }
+      catch (e) {
         console.warn('[Vue Devtools] Failed to send message to parent window', e)
       }
     }
@@ -78,36 +86,41 @@ export function installHook (target, isIframe = false) {
     hook = {
       devtoolsVersion,
       // eslint-disable-next-line accessor-pairs
-      set Vue (value) {
-        sendToParent(hook => { hook.Vue = value })
+      set Vue(value) {
+        sendToParent((hook) => {
+          hook.Vue = value
+        })
       },
 
       // eslint-disable-next-line accessor-pairs
-      set enabled (value) {
-        sendToParent(hook => { hook.enabled = value })
+      set enabled(value) {
+        sendToParent((hook) => {
+          hook.enabled = value
+        })
       },
 
-      on (event, fn) {
+      on(event, fn) {
         sendToParent(hook => hook.on(event, fn))
       },
 
-      once (event, fn) {
+      once(event, fn) {
         sendToParent(hook => hook.once(event, fn))
       },
 
-      off (event, fn) {
+      off(event, fn) {
         sendToParent(hook => hook.off(event, fn))
       },
 
-      emit (event, ...args) {
+      emit(event, ...args) {
         sendToParent(hook => hook.emit(event, ...args))
       },
 
-      cleanupBuffer (matchArg) {
+      cleanupBuffer(matchArg) {
         return sendToParent(hook => hook.cleanupBuffer(matchArg)) ?? false
       },
     }
-  } else {
+  }
+  else {
     hook = {
       devtoolsVersion,
       Vue: null,
@@ -121,7 +134,7 @@ export function installHook (target, isIframe = false) {
       flushStoreModules: null,
       apps: [],
 
-      _replayBuffer (event) {
+      _replayBuffer(event) {
         const buffer = this._buffer
         this._buffer = []
         this._bufferMap.clear()
@@ -136,17 +149,18 @@ export function installHook (target, isIframe = false) {
         }
       },
 
-      on (event, fn) {
-        const $event = '$' + event
+      on(event, fn) {
+        const $event = `$${event}`
         if (listeners[$event]) {
           listeners[$event].push(fn)
-        } else {
+        }
+        else {
           listeners[$event] = [fn]
           this._replayBuffer(event)
         }
       },
 
-      once (event, fn) {
+      once(event, fn) {
         const on = (...args) => {
           this.off(event, on)
           return fn.apply(this, args)
@@ -154,16 +168,18 @@ export function installHook (target, isIframe = false) {
         this.on(event, on)
       },
 
-      off (event, fn) {
-        event = '$' + event
+      off(event, fn) {
+        event = `$${event}`
         if (!arguments.length) {
           listeners = {}
-        } else {
+        }
+        else {
           const cbs = listeners[event]
           if (cbs) {
             if (!fn) {
               listeners[event] = null
-            } else {
+            }
+            else {
               for (let i = 0, l = cbs.length; i < l; i++) {
                 const cb = cbs[i]
                 if (cb === fn || cb.fn === fn) {
@@ -176,8 +192,8 @@ export function installHook (target, isIframe = false) {
         }
       },
 
-      emit (event, ...args) {
-        const $event = '$' + event
+      emit(event, ...args) {
+        const $event = `$${event}`
         let cbs = listeners[$event]
         if (cbs) {
           cbs = cbs.slice()
@@ -185,17 +201,19 @@ export function installHook (target, isIframe = false) {
             try {
               const result = cbs[i].apply(this, args)
               if (typeof result?.catch === 'function') {
-                result.catch(e => {
+                result.catch((e) => {
                   console.error(`[Hook] Error in async event handler for ${event} with args:`, args)
                   console.error(e)
                 })
               }
-            } catch (e) {
+            }
+            catch (e) {
               console.error(`[Hook] Error in event handler for ${event} with args:`, args)
               console.error(e)
             }
           }
-        } else {
+        }
+        else {
           const buffered = [Date.now(), event, ...args]
           this._buffer.push(buffered)
 
@@ -213,7 +231,7 @@ export function installHook (target, isIframe = false) {
        * Remove buffered events with any argument that is equal to the given value.
        * @param matchArg Given value to match.
        */
-      cleanupBuffer (matchArg) {
+      cleanupBuffer(matchArg) {
         const inBuffer = this._bufferMap.has(matchArg)
         if (inBuffer) {
           // Mark event for removal
@@ -222,7 +240,7 @@ export function installHook (target, isIframe = false) {
         return inBuffer
       },
 
-      _cleanupBuffer () {
+      _cleanupBuffer() {
         const now = Date.now()
         // Clear buffer events that are older than 10 seconds or marked for removal
         this._buffer = this._buffer.filter(args => !this._bufferToRemove.has(args) && now - args[0] < 10_000)
@@ -235,7 +253,7 @@ export function installHook (target, isIframe = false) {
       hook._cleanupBuffer()
     }, 10_000)
 
-    hook.once('init', Vue => {
+    hook.once('init', (Vue) => {
       hook.Vue = Vue
 
       if (Vue) {
@@ -256,11 +274,11 @@ export function installHook (target, isIframe = false) {
       hook.emit('app:add', appRecord)
     })
 
-    hook.once('vuex:init', store => {
+    hook.once('vuex:init', (store) => {
       hook.store = store
       hook.initialState = clone(store.state)
       const origReplaceState = store.replaceState.bind(store)
-      store.replaceState = state => {
+      store.replaceState = (state) => {
         hook.initialState = clone(state)
         origReplaceState(state)
       }
@@ -270,7 +288,9 @@ export function installHook (target, isIframe = false) {
         hook.storeModules = []
         origRegister = store.registerModule.bind(store)
         store.registerModule = (path, module, options) => {
-          if (typeof path === 'string') path = [path]
+          if (typeof path === 'string') {
+            path = [path]
+          }
           hook.storeModules.push({ path, module, options })
           origRegister(path, module, options)
           if (process.env.NODE_ENV !== 'production') {
@@ -280,10 +300,14 @@ export function installHook (target, isIframe = false) {
         }
         origUnregister = store.unregisterModule.bind(store)
         store.unregisterModule = (path) => {
-          if (typeof path === 'string') path = [path]
+          if (typeof path === 'string') {
+            path = [path]
+          }
           const key = path.join('/')
           const index = hook.storeModules.findIndex(m => m.path.join('/') === key)
-          if (index !== -1) hook.storeModules.splice(index, 1)
+          if (index !== -1) {
+            hook.storeModules.splice(index, 1)
+          }
           origUnregister(path)
           if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console
@@ -303,7 +327,7 @@ export function installHook (target, isIframe = false) {
   }
 
   Object.defineProperty(target, '__VUE_DEVTOOLS_GLOBAL_HOOK__', {
-    get () {
+    get() {
       return hook
     },
   })
@@ -313,7 +337,8 @@ export function installHook (target, isIframe = false) {
     try {
       target.__VUE_DEVTOOLS_HOOK_REPLAY__.forEach(cb => cb(hook))
       target.__VUE_DEVTOOLS_HOOK_REPLAY__ = []
-    } catch (e) {
+    }
+    catch (e) {
       console.error('[vue-devtools] Error during hook replay', e)
     }
   }
@@ -338,7 +363,7 @@ export function installHook (target, isIframe = false) {
   /**
    * @enum
    *
-   * @const {Object} SUPPORTS
+   * @const {object} SUPPORTS
    *
    * @property {boolean} SYMBOL_PROPERTIES are symbol properties supported
    * @property {boolean} WEAKSET is WeakSet supported
@@ -362,8 +387,8 @@ export function installHook (target, isIframe = false) {
     }
 
     const object = create({
-      add: (value) => object._values.push(value),
-      has: (value) => !!~object._values.indexOf(value),
+      add: value => object._values.push(value),
+      has: value => !!~object._values.indexOf(value),
     })
 
     object._values = []
@@ -386,7 +411,7 @@ export function installHook (target, isIframe = false) {
       return create(null)
     }
 
-    // eslint-disable-next-line no-proto
+    // eslint-disable-next-line no-proto, no-restricted-properties
     const prototype = object.__proto__ || getPrototypeOf(object)
 
     if (object.constructor === realm.Object) {
@@ -396,7 +421,8 @@ export function installHook (target, isIframe = false) {
     if (~toStringFunction.call(object.constructor).indexOf('[native code]')) {
       try {
         return new object.constructor()
-      } catch (e) {
+      }
+      catch (e) {
         // Error
       }
     }
@@ -530,7 +556,9 @@ export function installHook (target, isIframe = false) {
   const { isArray } = Array
 
   const GLOBAL_THIS = (() => {
+    // eslint-disable-next-line no-restricted-globals
     if (typeof self !== 'undefined') {
+      // eslint-disable-next-line no-restricted-globals
       return self
     }
 
@@ -538,8 +566,8 @@ export function installHook (target, isIframe = false) {
       return window
     }
 
-    if (typeof global !== 'undefined') {
-      return global
+    if (typeof globalThis !== 'undefined') {
+      return globalThis
     }
 
     if (console && console.error) {
@@ -566,7 +594,7 @@ export function installHook (target, isIframe = false) {
    * @param [options.realm] the realm (this) object the object is copied from
    * @returns the copied object
    */
-  function clone (object, options = null) {
+  function clone(object, options = null) {
     // manually coalesced instead of default parameters for performance
     const isStrict = !!(options && options.isStrict)
     const realm = (options && options.realm) || GLOBAL_THIS
@@ -696,13 +724,13 @@ export function installHook (target, isIframe = false) {
       // if the object cannot / should not be cloned, don't
       if (
         // promise-like
-        (hasOwnProperty.call(object, 'then') && typeof object.then === 'function') ||
+        (hasOwnProperty.call(object, 'then') && typeof object.then === 'function')
         // errors
-        object instanceof Error ||
+        || object instanceof Error
         // weakmaps
-        (realm.WeakMap && object instanceof realm.WeakMap) ||
+        || (realm.WeakMap && object instanceof realm.WeakMap)
         // weaksets
-        (realm.WeakSet && object instanceof realm.WeakSet)
+        || (realm.WeakSet && object instanceof realm.WeakSet)
       ) {
         return object
       }

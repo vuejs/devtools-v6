@@ -1,19 +1,22 @@
-import { stringify, BridgeEvents, parse, SharedData, createThrottleQueue } from '@vue-devtools/shared-utils'
-import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
+import { BridgeEvents, SharedData, createThrottleQueue, parse, stringify } from '@vue-devtools/shared-utils'
+import type { AppRecord, BackendContext } from '@vue-devtools/app-backend-api'
+import { BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
+import type { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
 import { getAppRecord } from './app'
-import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
 
 const MAX_$VM = 10
 const $vmQueue = []
 
-export async function sendComponentTreeData (appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, recursively = false, ctx: BackendContext) {
-  if (!instanceId || appRecord !== ctx.currentAppRecord) return
+export async function sendComponentTreeData(appRecord: AppRecord, instanceId: string, filter = '', maxDepth: number = null, recursively = false, ctx: BackendContext) {
+  if (!instanceId || appRecord !== ctx.currentAppRecord) {
+    return
+  }
 
   // Flush will send all components in the tree
   // So we skip individiual tree updates
   if (
-    instanceId !== '_root' &&
-    ctx.currentAppRecord.backend.options.features.includes(BuiltinBackendFeature.FLUSH)
+    instanceId !== '_root'
+    && ctx.currentAppRecord.backend.options.features.includes(BuiltinBackendFeature.FLUSH)
   ) {
     return
   }
@@ -25,8 +28,11 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
       treeData: null,
       notFound: true,
     })
-  } else {
-    if (filter) filter = filter.toLowerCase()
+  }
+  else {
+    if (filter) {
+      filter = filter.toLowerCase()
+    }
     if (maxDepth == null) {
       maxDepth = instance === ctx.currentAppRecord.rootInstance ? 2 : 1
     }
@@ -39,15 +45,18 @@ export async function sendComponentTreeData (appRecord: AppRecord, instanceId: s
   }
 }
 
-export async function sendSelectedComponentData (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
-  if (!instanceId || appRecord !== ctx.currentAppRecord) return
+export async function sendSelectedComponentData(appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
+  if (!instanceId || appRecord !== ctx.currentAppRecord) {
+    return
+  }
   const instance = getComponentInstance(appRecord, instanceId, ctx)
   if (!instance) {
     sendEmptyComponentData(instanceId, ctx)
-  } else {
+  }
+  else {
     // Expose instance on window
     if (typeof window !== 'undefined') {
-      const win = (window as any)
+      const win = window as any
       win.$vm = instance
 
       // $vm0, $vm1, $vm2, ...
@@ -76,20 +85,22 @@ export async function sendSelectedComponentData (appRecord: AppRecord, instanceI
   }
 }
 
-export function markSelectedInstance (instanceId: string, ctx: BackendContext) {
+export function markSelectedInstance(instanceId: string, ctx: BackendContext) {
   ctx.currentInspectedComponentId = instanceId
   ctx.currentAppRecord.lastInspectedComponentId = instanceId
 }
 
-export function sendEmptyComponentData (instanceId: string, ctx: BackendContext) {
+export function sendEmptyComponentData(instanceId: string, ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_SELECTED_DATA, {
     instanceId,
     data: null,
   })
 }
 
-export async function editComponentState (instanceId: string, dotPath: string, type: string, state: EditStatePayload, ctx: BackendContext) {
-  if (!instanceId) return
+export async function editComponentState(instanceId: string, dotPath: string, type: string, state: EditStatePayload, ctx: BackendContext) {
+  if (!instanceId) {
+    return
+  }
   const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
   if (instance) {
     if ('value' in state && state.value != null) {
@@ -100,14 +111,19 @@ export async function editComponentState (instanceId: string, dotPath: string, t
   }
 }
 
-export async function getComponentId (app: App, uid: number, instance: ComponentInstance, ctx: BackendContext) {
+export async function getComponentId(app: App, uid: number, instance: ComponentInstance, ctx: BackendContext) {
   try {
-    if (instance.__VUE_DEVTOOLS_UID__) return instance.__VUE_DEVTOOLS_UID__
+    if (instance.__VUE_DEVTOOLS_UID__) {
+      return instance.__VUE_DEVTOOLS_UID__
+    }
     const appRecord = await getAppRecord(app, ctx)
-    if (!appRecord) return null
+    if (!appRecord) {
+      return null
+    }
     const isRoot = appRecord.rootInstance === instance
     return `${appRecord.id}:${isRoot ? 'root' : uid}`
-  } catch (e) {
+  }
+  catch (e) {
     if (SharedData.debugInfo) {
       console.error(e)
     }
@@ -115,7 +131,7 @@ export async function getComponentId (app: App, uid: number, instance: Component
   }
 }
 
-export function getComponentInstance (appRecord: AppRecord, instanceId: string, ctx: BackendContext) {
+export function getComponentInstance(appRecord: AppRecord, instanceId: string, _ctx: BackendContext) {
   if (instanceId === '_root') {
     instanceId = `${appRecord.id}:root`
   }
@@ -126,15 +142,19 @@ export function getComponentInstance (appRecord: AppRecord, instanceId: string, 
   return instance
 }
 
-export async function refreshComponentTreeSearch (ctx: BackendContext) {
-  if (!ctx.currentAppRecord.componentFilter) return
+export async function refreshComponentTreeSearch(ctx: BackendContext) {
+  if (!ctx.currentAppRecord.componentFilter) {
+    return
+  }
   await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, false, ctx)
 }
 
 const updateTrackingQueue = createThrottleQueue(500)
 
-export function sendComponentUpdateTracking (instanceId: string, time: number, ctx: BackendContext) {
-  if (!instanceId) return
+export function sendComponentUpdateTracking(instanceId: string, time: number, ctx: BackendContext) {
+  if (!instanceId) {
+    return
+  }
 
   updateTrackingQueue.add(instanceId, () => {
     const payload = {

@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('node:fs')
 const inquirer = require('inquirer')
 const semver = require('semver')
 const pkg = require('./package.json')
@@ -43,7 +43,8 @@ const curVersion = pkg.version
       manifest.version = `${baseVersion}.${betaVersion}`
       manifest.version_name = `${baseVersion} beta ${betaVersion}`
       applyIcons(manifest, '-beta')
-    } else {
+    }
+    else {
       manifest.version = newVersion
       manifest.version_name = newVersion
       applyIcons(manifest)
@@ -63,13 +64,14 @@ const curVersion = pkg.version
       fs.writeFileSync('./packages/api/package.json', JSON.stringify(pkg, null, 2))
     }
     fs.writeFileSync('./packages/shell-chrome/manifest.json', JSON.stringify(manifest, null, 2))
-  } else {
+  }
+  else {
     process.exit(1)
   }
 })()
 
-function applyIcons (manifest, suffix = '') {
-  [16, 48, 128].forEach(size => {
+function applyIcons(manifest, suffix = '') {
+  [16, 48, 128].forEach((size) => {
     manifest.icons[size] = `icons/${size}${suffix}.png`
   })
 }

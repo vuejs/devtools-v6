@@ -1,9 +1,3 @@
-<template>
-  <PropagateDisable :disabled="propagateDisabled">
-    <slot />
-  </PropagateDisable>
-</template>
-
 <script>
 import { computed, defineComponent, h } from 'vue'
 import { useDisabledChild, useDisabledParent } from '../composables/useDisabled'
@@ -18,7 +12,7 @@ export default defineComponent({
           default: false,
         },
       },
-      setup (props, { slots }) {
+      setup(props, { slots }) {
         useDisabledParent(props)
         return () => h('div', { class: 'vue-ui-disable' }, slots)
       },
@@ -34,7 +28,7 @@ export default defineComponent({
       default: false,
     },
   },
-  setup (props) {
+  setup(props) {
     const { finalDisabled } = useDisabledChild(props)
     const propagateDisabled = computed(() => {
       return props.stopPropagation ? props.disabled : finalDisabled.value
@@ -46,3 +40,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<template>
+  <PropagateDisable :disabled="propagateDisabled">
+    <slot />
+  </PropagateDisable>
+</template>

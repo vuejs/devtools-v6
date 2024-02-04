@@ -1,4 +1,6 @@
-import { RouteLocationNormalized, RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router'
+import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import { BuiltinTabs, getStorage, setStorage } from '@vue-devtools/shared-utils'
 import ComponentsInspector from './features/components/ComponentsInspector.vue'
 import CustomInspector from './features/inspector/custom/CustomInspector.vue'
 import Timeline from './features/timeline/Timeline.vue'
@@ -6,7 +8,6 @@ import Plugins from './features/plugin/Plugins.vue'
 import PluginHome from './features/plugin/PluginHome.vue'
 import PluginDetails from './features/plugin/PluginDetails.vue'
 import GlobalSettings from './features/settings/GlobalSettings.vue'
-import { BuiltinTabs, getStorage, setStorage } from '@vue-devtools/shared-utils'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -89,7 +90,7 @@ const routes: RouteRecordRaw[] = [
 
 const STORAGE_ROUTE = 'route'
 
-export function createRouterInstance () {
+export function createRouterInstance() {
   const router = createRouter({
     history: createWebHashHistory('/'),
     routes,

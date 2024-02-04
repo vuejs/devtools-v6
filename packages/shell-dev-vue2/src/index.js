@@ -40,11 +40,11 @@ const app = new Vue({
   },
   data: {
     obj: {
-      items: items,
+      items,
       circular,
     },
   },
-  render (h) {
+  render(h) {
     return h('div', null, [
       h(Counter),
       h(Target, { props: { msg: 'hi', ins: new MyClass() } }),
@@ -68,7 +68,7 @@ window.addEventListener('load', () => {
 })
 
 const app2 = new Vue({
-  render (h) {
+  render(h) {
     return h('div', null, [
       h('h1', 'App 2'),
       h(Other),
@@ -84,7 +84,7 @@ if (ce.attachShadow) {
 
   const ceVM = new Vue({
     name: 'ShadowDom',
-    render (h) {
+    render(h) {
       return h('h2', 'Inside Shadow DOM!')
     },
   }).$mount()

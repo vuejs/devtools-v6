@@ -1,20 +1,17 @@
 <script lang="ts">
-import AppHistoryNav from './AppHistoryNav.vue'
-import AppSelect from '../apps/AppSelect.vue'
-import AppHeaderSelect from './AppHeaderSelect.vue'
-import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
-import PluginSourceDescription from '../plugin/PluginSourceDescription.vue'
-
-import { computed, ref, watch, defineComponent } from 'vue'
-import type { RouteLocationRaw, RouteLocation } from 'vue-router'
+import { computed, defineComponent, ref, watch } from 'vue'
+import type { RouteLocation, RouteLocationRaw } from 'vue-router'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useRoute } from 'vue-router'
 import { useBridge } from '@front/features/bridge'
 import { useInspectors } from '@front/features/inspector/custom/composable'
-import { useTabs } from './tabs'
-import { showAppsSelector } from './header'
+import PluginSourceDescription from '../plugin/PluginSourceDescription.vue'
+import AppSelect from '../apps/AppSelect.vue'
 import { useOrientation } from '../layout/orientation'
 import { type Plugin, usePlugins } from '../plugin/index'
+import { useTabs } from './tabs'
+import { showAppsSelector } from './header'
+import AppHistoryNav from './AppHistoryNav.vue'
 
 interface HeaderRoute {
   icon: string
@@ -29,12 +26,10 @@ export default defineComponent({
   components: {
     AppHistoryNav,
     AppSelect,
-    AppHeaderSelect,
-    PluginSourceIcon,
     PluginSourceDescription,
   },
 
-  setup () {
+  setup() {
     const route = useRoute()
 
     // Plugins
@@ -43,7 +38,7 @@ export default defineComponent({
       plugins,
     } = usePlugins()
 
-    function getPlugin (pluginId: string) {
+    function getPlugin(pluginId: string) {
       return plugins.value.find(p => p.id === pluginId)
     }
 
@@ -91,13 +86,13 @@ export default defineComponent({
     const currentHeaderRoute = computed(() => headerRoutes.value.find(r => r.matchRoute(route)))
 
     const lastHeaderRoute = ref(null)
-    watch(currentHeaderRoute, value => {
+    watch(currentHeaderRoute, (value) => {
       if (value) {
         lastHeaderRoute.value = value
       }
     })
 
-    function shouldDisplayLogo (item: HeaderRoute) {
+    function shouldDisplayLogo(item: HeaderRoute) {
       if (item.pluginId?.startsWith('org.vuejs')) {
         return false
       }
@@ -108,7 +103,7 @@ export default defineComponent({
     const { currentTab } = useTabs()
     const { bridge } = useBridge()
 
-    watch(currentTab, value => {
+    watch(currentTab, (value) => {
       bridge.send(BridgeEvents.TO_BACK_TAB_SWITCH, value)
     }, {
       immediate: true,
@@ -133,12 +128,13 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="flex items-center border-r border-gray-200 dark:border-gray-700 p-0.5"
+  <div
+    class="flex items-center border-r border-gray-200 dark:border-gray-700 p-0.5"
     :class="{
       'flex-col': orientation === 'landscape',
     }"
   >
-    <AppSelect v-if="showAppsSelector"/>
+    <AppSelect v-if="showAppsSelector" />
     <img
       v-else
       src="~@front/assets/vue-logo.svg"
@@ -152,7 +148,7 @@ export default defineComponent({
         vertical: orientation === 'landscape',
       }"
       indicator
-      @update:modelValue="(route: HeaderRoute) => route && $router.push(route.targetRoute)"
+      @update:model-value="(route: HeaderRoute) => route && $router.push(route.targetRoute)"
     >
       <VTooltip
         v-for="(item, index) of headerRoutes"
@@ -170,11 +166,13 @@ export default defineComponent({
             :src="item.plugin.logo"
             class="w-4 h-4"
             @error="logoErrors.add(item.pluginId)"
-          />
+          >
         </VueGroupButton>
 
         <template #popper>
-          <div class="font-bold">{{ item.label }}</div>
+          <div class="font-bold">
+            {{ item.label }}
+          </div>
           <PluginSourceDescription
             v-if="item.pluginId"
             :plugin-id="item.pluginId"
@@ -202,7 +200,7 @@ export default defineComponent({
 
       <VueDropdownButton
         :to="{
-          name: 'global-settings'
+          name: 'global-settings',
         }"
         icon-left="settings"
       >
@@ -211,7 +209,7 @@ export default defineComponent({
 
       <VueDropdownButton
         :to="{
-          name: 'plugins'
+          name: 'plugins',
         }"
         icon-left="extension"
       >

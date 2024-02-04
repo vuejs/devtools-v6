@@ -1,4 +1,5 @@
-import { computed, Ref, ref } from 'vue'
+import type { Ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const reactiveNow = ref(Date.now())
 
@@ -6,7 +7,7 @@ setInterval(() => {
   reactiveNow.value = Date.now()
 }, 100)
 
-export function useTimeAgo (time: Ref<number>) {
+export function useTimeAgo(time: Ref<number>) {
   return {
     timeAgo: computed(() => {
       const diff = reactiveNow.value - time.value

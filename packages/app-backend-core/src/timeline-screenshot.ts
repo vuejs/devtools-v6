@@ -1,5 +1,5 @@
-import { BackendContext } from '@vue-devtools/app-backend-api'
-import { ID, ScreenshotOverlayRenderContext } from '@vue/devtools-api'
+import type { BackendContext } from '@vue-devtools/app-backend-api'
+import type { ID, ScreenshotOverlayRenderContext } from '@vue/devtools-api'
 import { SharedData } from '@vue-devtools/shared-utils'
 import { JobQueue } from './util/queue'
 import { builtinLayers } from './timeline-builtins'
@@ -17,7 +17,7 @@ interface Screenshot {
   events: ID[]
 }
 
-export async function showScreenshot (screenshot: Screenshot, ctx: BackendContext) {
+export async function showScreenshot(screenshot: Screenshot, ctx: BackendContext) {
   await jobQueue.queue('showScreenshot', async () => {
     if (screenshot) {
       if (!container) {
@@ -53,11 +53,13 @@ export async function showScreenshot (screenshot: Screenshot, ctx: BackendContex
             if (result !== false) {
               if (typeof result === 'string') {
                 container.innerHTML += result
-              } else {
+              }
+              else {
                 container.appendChild(result)
               }
             }
-          } catch (e) {
+          }
+          catch (e) {
             if (SharedData.debugInfo) {
               console.error(e)
             }
@@ -66,13 +68,14 @@ export async function showScreenshot (screenshot: Screenshot, ctx: BackendContex
       }
 
       showElement()
-    } else {
+    }
+    else {
       hideElement()
     }
   })
 }
 
-function createElements () {
+function createElements() {
   overlay = document.createElement('div')
   overlay.style.position = 'fixed'
   overlay.style.zIndex = '9999999999999'
@@ -102,14 +105,14 @@ function createElements () {
   document.head.appendChild(style)
 }
 
-function showElement () {
+function showElement() {
   if (!overlay.parentNode) {
     document.body.appendChild(overlay)
     document.body.classList.add('__vuedevtools_no-scroll')
   }
 }
 
-function hideElement () {
+function hideElement() {
   if (overlay && overlay.parentNode) {
     overlay.parentNode.removeChild(overlay)
 
@@ -119,7 +122,7 @@ function hideElement () {
   }
 }
 
-function clearContent () {
+function clearContent() {
   while (container.firstChild) {
     container.removeChild(container.lastChild)
   }

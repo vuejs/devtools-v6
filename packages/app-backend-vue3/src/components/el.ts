@@ -1,20 +1,24 @@
 import { inDoc, isBrowser } from '@vue-devtools/shared-utils'
 import { isFragment } from './util'
 
-export function getComponentInstanceFromElement (element) {
+export function getComponentInstanceFromElement(element) {
   return element.__vueParentComponent
 }
 
-export function getRootElementsFromComponentInstance (instance) {
+export function getRootElementsFromComponentInstance(instance) {
   if (isFragment(instance)) {
     return getFragmentRootElements(instance.subTree)
   }
-  if (!instance.subTree) return []
+  if (!instance.subTree) {
+    return []
+  }
   return [instance.subTree.el]
 }
 
-function getFragmentRootElements (vnode): any[] {
-  if (!vnode.children) return []
+function getFragmentRootElements(vnode): any[] {
+  if (!vnode.children) {
+    return []
+  }
 
   const list = []
 
@@ -22,7 +26,8 @@ function getFragmentRootElements (vnode): any[] {
     const childVnode = vnode.children[i]
     if (childVnode.component) {
       list.push(...getRootElementsFromComponentInstance(childVnode.component))
-    } else if (childVnode.el) {
+    }
+    else if (childVnode.el) {
       list.push(childVnode.el)
     }
   }
@@ -34,9 +39,9 @@ function getFragmentRootElements (vnode): any[] {
  * Get the client rect for an instance.
  *
  * @param {Vue|Vnode} instance
- * @return {Object}
+ * @return {object}
  */
-export function getInstanceOrVnodeRect (instance) {
+export function getInstanceOrVnodeRect(instance) {
   const el = instance.subTree.el
 
   if (!isBrowser) {
@@ -49,26 +54,28 @@ export function getInstanceOrVnodeRect (instance) {
 
   if (isFragment(instance)) {
     return addIframePosition(getFragmentRect(instance.subTree), getElWindow(el))
-  } else if (el.nodeType === 1) {
+  }
+  else if (el.nodeType === 1) {
     return addIframePosition(el.getBoundingClientRect(), getElWindow(el))
-  } else if (instance.subTree.component) {
+  }
+  else if (instance.subTree.component) {
     return getInstanceOrVnodeRect(instance.subTree.component)
   }
 }
 
-function createRect () {
+function createRect() {
   const rect = {
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    get width () { return rect.right - rect.left },
-    get height () { return rect.bottom - rect.top },
+    get width() { return rect.right - rect.left },
+    get height() { return rect.bottom - rect.top },
   }
   return rect
 }
 
-function mergeRects (a, b) {
+function mergeRects(a, b) {
   if (!a.top || b.top < a.top) {
     a.top = b.top
   }
@@ -91,29 +98,37 @@ let range
  * @param {Text} node
  * @return {Rect}
  */
-function getTextRect (node) {
-  if (!isBrowser) return
-  if (!range) range = document.createRange()
+function getTextRect(node) {
+  if (!isBrowser) {
+    return
+  }
+  if (!range) {
+    range = document.createRange()
+  }
 
   range.selectNode(node)
 
   return range.getBoundingClientRect()
 }
 
-function getFragmentRect (vnode) {
+function getFragmentRect(vnode) {
   const rect = createRect()
-  if (!vnode.children) return rect
+  if (!vnode.children) {
+    return rect
+  }
 
   for (let i = 0, l = vnode.children.length; i < l; i++) {
     const childVnode = vnode.children[i]
     let childRect
     if (childVnode.component) {
       childRect = getInstanceOrVnodeRect(childVnode.component)
-    } else if (childVnode.el) {
+    }
+    else if (childVnode.el) {
       const el = childVnode.el
       if (el.nodeType === 1 || el.getBoundingClientRect) {
         childRect = el.getBoundingClientRect()
-      } else if (el.nodeType === 3 && el.data.trim()) {
+      }
+      else if (el.nodeType === 3 && el.data.trim()) {
         childRect = getTextRect(el)
       }
     }
@@ -125,11 +140,11 @@ function getFragmentRect (vnode) {
   return rect
 }
 
-function getElWindow (el: HTMLElement) {
+function getElWindow(el: HTMLElement) {
   return el.ownerDocument.defaultView
 }
 
-function addIframePosition (bounds, win: any) {
+function addIframePosition(bounds, win: any) {
   if (win.__VUE_DEVTOOLS_IFRAME__) {
     const rect = mergeRects(createRect(), bounds)
     const iframeBounds = win.__VUE_DEVTOOLS_IFRAME__.getBoundingClientRect()

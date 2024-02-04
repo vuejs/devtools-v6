@@ -1,5 +1,4 @@
 <script setup>
-// eslint-disable-next-line no-undef
 defineEmits([
   'foo',
 ])

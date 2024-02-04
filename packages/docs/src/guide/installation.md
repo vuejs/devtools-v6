@@ -85,7 +85,6 @@ If you need to use the devtools in incognito mode, you need to change the extens
 
 ![Firefox Settings 3](../assets/firefox-settings3.png)
 
-
 ## Edge
 
 Install the extension on the Edge Store:

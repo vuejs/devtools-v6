@@ -20,7 +20,7 @@ export default defineConfig({
     algolia: {
       appId: 'CFRGFZ1IGJ',
       apiKey: '6c814da38002372317bcbefd73e60bbf',
-      indexName: 'devtools-vuejs'
+      indexName: 'devtools-vuejs',
     },
 
     nav: [
@@ -30,7 +30,7 @@ export default defineConfig({
         items: [
           { text: 'Plugin development guide', link: '/plugin/plugins-guide' },
           { text: 'API Reference', link: '/plugin/api-reference' },
-        ]
+        ],
       },
       {
         text: '💚️ Sponsor',

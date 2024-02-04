@@ -1,3 +1,22 @@
+<script>
+import Hello from './Hello.vue'
+import Child from './Child.vue'
+
+export default {
+  components: {
+    Hello,
+    Child,
+  },
+
+  data() {
+    return {
+      count: 0,
+      msg: 'Hello',
+    }
+  },
+}
+</script>
+
 <template>
   <h1>App 3</h1>
 
@@ -9,22 +28,3 @@
 
   <Child />
 </template>
-
-<script>
-import Hello from './Hello.vue'
-import Child from './Child.vue'
-
-export default {
-  components: {
-    Hello,
-    Child,
-  },
-
-  data () {
-    return {
-      count: 0,
-      msg: 'Hello',
-    }
-  },
-}
-</script>

@@ -3,7 +3,7 @@ import { initDevTools } from '@front'
 import { Bridge } from '@vue-devtools/shared-utils'
 
 const port = window.process.env.PORT || 8098
-const socket = io('http://localhost:' + port)
+const socket = io(`http://localhost:${port}`)
 const $ = document.querySelector.bind(document)
 const $intro = $('#intro')
 
@@ -24,15 +24,17 @@ socket.on('vue-devtools-init', () => {
   socket.off('vue-message')
 
   // If new page is opened reload devtools
-  if (reload) return reload()
+  if (reload) {
+    return reload()
+  }
 
   initDevTools({
-    connect (callback) {
+    connect(callback) {
       const wall = {
-        listen (fn) {
+        listen(fn) {
           socket.on('vue-message', data => fn(data))
         },
-        send (data) {
+        send(data) {
           if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console
             console.log('%cdevtools -> backend', 'color:#888;', data)
@@ -44,7 +46,7 @@ socket.on('vue-devtools-init', () => {
 
       callback(bridge)
     },
-    onReload (fn) {
+    onReload(fn) {
       reload = fn
     },
   })

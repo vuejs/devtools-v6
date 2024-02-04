@@ -3,8 +3,10 @@ import { defineComponent } from 'vue'
 import { SharedData } from '@vue-devtools/shared-utils'
 
 export default defineComponent({
-  setup (props, { emit }) {
-    function requestPermission () {
+  emits: ['close', 'success'],
+
+  setup(props, { emit }) {
+    function requestPermission() {
       chrome.permissions.request({
         permissions: ['activeTab'],
         origins: [
@@ -12,18 +14,19 @@ export default defineComponent({
           'https://*/*',
           'file:///*',
         ],
-      }, granted => {
+      }, (granted) => {
         if (granted) {
           SharedData.timelineScreenshots = true
           emit('success')
           emit('close')
-        } else {
+        }
+        else {
           cancel()
         }
       })
     }
 
-    function cancel () {
+    function cancel() {
       SharedData.timelineScreenshots = false
       emit('close')
     }

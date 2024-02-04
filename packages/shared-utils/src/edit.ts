@@ -1,7 +1,7 @@
-import { EditStatePayload } from '@vue/devtools-api'
+import type { EditStatePayload } from '@vue/devtools-api'
 
 export class StateEditor {
-  set (object, path, value, cb = null) {
+  set(object, path, value, cb = null) {
     const sections = Array.isArray(path) ? path : path.split('.')
     while (sections.length > 1) {
       object = object[sections.shift()]
@@ -12,14 +12,16 @@ export class StateEditor {
     const field = sections[0]
     if (cb) {
       cb(object, field, value)
-    } else if (this.isRef(object[field])) {
+    }
+    else if (this.isRef(object[field])) {
       this.setRefValue(object[field], value)
-    } else {
+    }
+    else {
       object[field] = value
     }
   }
 
-  get (object, path) {
+  get(object, path) {
     const sections = Array.isArray(path) ? path : path.split('.')
     for (let i = 0; i < sections.length; i++) {
       object = object[sections[i]]
@@ -33,7 +35,7 @@ export class StateEditor {
     return object
   }
 
-  has (object, path, parent = false) {
+  has(object, path, parent = false) {
     if (typeof object === 'undefined') {
       return false
     }
@@ -49,12 +51,13 @@ export class StateEditor {
     return object != null && Object.prototype.hasOwnProperty.call(object, sections[0])
   }
 
-  createDefaultSetCallback (state: EditStatePayload) {
+  createDefaultSetCallback(state: EditStatePayload) {
     return (obj, field, value) => {
       if (state.remove || state.newKey) {
         if (Array.isArray(obj)) {
           obj.splice(field, 1)
-        } else {
+        }
+        else {
           delete obj[field]
         }
       }
@@ -62,23 +65,24 @@ export class StateEditor {
         const target = obj[state.newKey || field]
         if (this.isRef(target)) {
           this.setRefValue(target, value)
-        } else {
+        }
+        else {
           obj[state.newKey || field] = value
         }
       }
     }
   }
 
-  isRef (ref: any): boolean {
+  isRef(_ref: any): boolean {
     // To implement in subclass
     return false
   }
 
-  setRefValue (ref:any, value: any): void {
+  setRefValue(_ref: any, _value: any): void {
     // To implement in subclass
   }
 
-  getRefValue (ref: any): any {
+  getRefValue(ref: any): any {
     // To implement in subclass
     return ref
   }

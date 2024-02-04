@@ -1,22 +1,22 @@
 import io from 'socket.io-client'
 import { initBackend } from '@back'
 import { installToast } from '@back/toast'
-import { Bridge, target, chunk } from '@vue-devtools/shared-utils'
+import { Bridge, chunk, target } from '@vue-devtools/shared-utils'
 
 const host = target.__VUE_DEVTOOLS_HOST__ || 'http://localhost'
 const port = target.__VUE_DEVTOOLS_PORT__ !== undefined ? target.__VUE_DEVTOOLS_PORT__ : 8098
-const fullHost = port ? host + ':' + port : host
+const fullHost = port ? `${host}:${port}` : host
 const createSocket = target.__VUE_DEVTOOLS_SOCKET__ || io
 const socket = createSocket(fullHost)
 const MAX_DATA_CHUNK = 2000
 
-const connectedMessage = () => {
+function connectedMessage() {
   if (target.__VUE_DEVTOOLS_TOAST__) {
     target.__VUE_DEVTOOLS_TOAST__('Remote Devtools Connected', 'normal')
   }
 }
 
-const disconnectedMessage = () => {
+function disconnectedMessage() {
   if (target.__VUE_DEVTOOLS_TOAST__) {
     target.__VUE_DEVTOOLS_TOAST__('Remote Devtools Disconnected', 'error')
   }
@@ -24,6 +24,7 @@ const disconnectedMessage = () => {
 
 socket.on('connect', () => {
   connectedMessage()
+  // eslint-disable-next-line ts/no-use-before-define
   initBackend(bridge)
   socket.emit('vue-devtools-init')
 })
@@ -42,10 +43,10 @@ socket.on('vue-devtools-disconnect-backend', () => {
 })
 
 const bridge = new Bridge({
-  listen (fn) {
+  listen(fn) {
     socket.on('vue-message', data => fn(data))
   },
-  send (data) {
+  send(data) {
     const chunks = chunk(data, MAX_DATA_CHUNK)
 
     for (const chunk of chunks) {

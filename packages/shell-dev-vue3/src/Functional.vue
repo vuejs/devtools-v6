@@ -1,7 +1,7 @@
 <script>
 import { h } from 'vue'
 
-const Functional = (props, context) => {
+function Functional(props, context) {
   return h('div', context.attrs, props.msg)
 }
 Functional.props = {

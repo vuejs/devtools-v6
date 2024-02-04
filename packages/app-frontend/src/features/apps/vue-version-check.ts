@@ -1,9 +1,9 @@
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import semver from 'semver'
 
 const packageData = ref<any>(null)
 
-export function useVueVersionCheck () {
+export function useVueVersionCheck() {
   onMounted(async () => {
     if (!packageData.value) {
       try {
@@ -14,7 +14,8 @@ export function useVueVersionCheck () {
         })
         const data = await response.json()
         packageData.value = data
-      } catch (e) {
+      }
+      catch (e) {
         if (process.env.NODE_ENV !== 'development') {
           console.error(e)
         }
@@ -22,7 +23,7 @@ export function useVueVersionCheck () {
     }
   })
 
-  function getLatestVersion (currentVersion: string): string {
+  function getLatestVersion(currentVersion: string): string {
     if (packageData.value && packageData.value.versions) {
       return semver.maxSatisfying(Object.keys(packageData.value.versions), `^${currentVersion}`)
     }

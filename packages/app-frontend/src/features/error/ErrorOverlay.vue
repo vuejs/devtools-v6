@@ -3,7 +3,7 @@ import { defineComponent } from 'vue'
 import { useError } from '.'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const {
       error,
       clearError,

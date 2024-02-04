@@ -13,13 +13,13 @@ export default {
     },
   },
 
-  data () {
+  data() {
     return {
       childRefs: [],
     }
   },
 
-  beforeUpdate () {
+  beforeUpdate() {
     this.childRefs = []
   },
 }

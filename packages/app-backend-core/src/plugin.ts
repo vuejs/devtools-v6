@@ -1,9 +1,10 @@
-import { PluginQueueItem } from '@vue/devtools-api'
-import { Plugin, BackendContext, DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
+import type { PluginQueueItem } from '@vue/devtools-api'
+import type { BackendContext, Plugin } from '@vue-devtools/app-backend-api'
+import { DevtoolsPluginApiInstance } from '@vue-devtools/app-backend-api'
 import { BridgeEvents, SharedData, target } from '@vue-devtools/shared-utils'
 import { getAppRecord, getAppRecordId } from './app'
 
-export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendContext) {
+export async function addPlugin(pluginQueueItem: PluginQueueItem, ctx: BackendContext) {
   const { pluginDescriptor, setupFn } = pluginQueueItem
 
   const plugin: Plugin = {
@@ -14,14 +15,18 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   ctx.currentPlugin = plugin
   try {
     const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
-    if (!appRecord) return
+    if (!appRecord) {
+      return
+    }
     const api = new DevtoolsPluginApiInstance(plugin, appRecord, ctx)
     if (pluginQueueItem.proxy) {
       await pluginQueueItem.proxy.setRealTarget(api)
-    } else {
+    }
+    else {
       setupFn(api)
     }
-  } catch (e) {
+  }
+  catch (e) {
     plugin.error = e
     if (SharedData.debugInfo) {
       console.error(e)
@@ -40,7 +45,7 @@ export async function addPlugin (pluginQueueItem: PluginQueueItem, ctx: BackendC
   })
 }
 
-export async function addQueuedPlugins (ctx: BackendContext) {
+export async function addQueuedPlugins(ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_PLUGINS__)) {
     for (const queueItem of target.__VUE_DEVTOOLS_PLUGINS__) {
       await addPlugin(queueItem, ctx)
@@ -49,7 +54,7 @@ export async function addQueuedPlugins (ctx: BackendContext) {
   }
 }
 
-export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
+export async function addPreviouslyRegisteredPlugins(ctx: BackendContext) {
   if (target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__ && Array.isArray(target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__)) {
     for (const queueItem of target.__VUE_DEVTOOLS_REGISTERED_PLUGINS__) {
       await addPlugin(queueItem, ctx)
@@ -57,13 +62,13 @@ export async function addPreviouslyRegisteredPlugins (ctx: BackendContext) {
   }
 }
 
-export async function sendPluginList (ctx: BackendContext) {
+export async function sendPluginList(ctx: BackendContext) {
   ctx.bridge.send(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_LIST, {
     plugins: await Promise.all(ctx.plugins.map(p => serializePlugin(p))),
   })
 }
 
-export async function serializePlugin (plugin: Plugin) {
+export async function serializePlugin(plugin: Plugin) {
   return {
     id: plugin.descriptor.id,
     label: plugin.descriptor.label,

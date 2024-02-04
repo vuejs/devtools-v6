@@ -45,7 +45,7 @@ setupDevtoolsPlugin({
   componentStateTypes: [
     stateType
   ]
-}, api => {
+}, (api) => {
   // Use the API here
 })
 ```
@@ -65,7 +65,7 @@ The `payload` argument:
 Example:
 
 ```js
-api.on.visitComponentTree(payload => {
+api.on.visitComponentTree((payload) => {
   const node = payload.treeNode
   if (node.name === 'MyApp') {
     node.tags.push({
@@ -73,7 +73,8 @@ api.on.visitComponentTree(payload => {
       textColor: 0x000000,
       backgroundColor: 0xFF984F
     })
-  } else {
+  }
+  else {
     node.tags.push({
       label: 'test',
       textColor: 0xFFAAAA,
@@ -126,7 +127,7 @@ When you add new sections with the `type` property, you should declare them in t
 Example:
 
 ```js
-api.on.inspectComponent(payload => {
+api.on.inspectComponent((payload) => {
   if (payload.instanceData) {
     payload.instanceData.state.push({
       type: stateType,
@@ -164,7 +165,7 @@ If you mark a field as `editable: true`, you should also use this hook to apply 
 You have to put a condition in the callback to target only your field type:
 
 ```js
-api.on.editComponentState(payload => {
+api.on.editComponentState((payload) => {
   if (payload.type === stateType) {
     // Edit logic here
   }
@@ -184,7 +185,7 @@ The `payload` argument:
 Example:
 
 ```js
-api.on.editComponentState(payload => {
+api.on.editComponentState((payload) => {
   if (payload.type === stateType) {
     payload.set(myState)
   }
@@ -198,7 +199,7 @@ const myState = {
   foo: 'bar'
 }
 
-api.on.inspectComponent(payload => {
+api.on.inspectComponent((payload) => {
   if (payload.instanceData) {
     payload.instanceData.state.push({
       type: stateType,
@@ -209,7 +210,7 @@ api.on.inspectComponent(payload => {
   }
 })
 
-api.on.editComponentState(payload => {
+api.on.editComponentState((payload) => {
   if (payload.type === stateType) {
     payload.set(myState)
   }
@@ -280,7 +281,7 @@ api.addInspector({
     {
       icon: 'star',
       tooltip: 'Test node custom action',
-      action: (nodeId) => console.log('Node action:', nodeId)
+      action: nodeId => console.log('Node action:', nodeId)
     }
   ]
 })
@@ -297,7 +298,7 @@ This hook is called when the devtools wants to load the tree of any custom inspe
 You have to put a condition in the callback to target only your inspector:
 
 ```js
-api.on.getInspectorTree(payload => {
+api.on.getInspectorTree((payload) => {
   if (payload.inspectorId === 'test-inspector') {
     // Your logic here
   }
@@ -323,7 +324,7 @@ Each node can have those properties:
 Example:
 
 ```js
-api.on.getInspectorTree(payload => {
+api.on.getInspectorTree((payload) => {
   if (payload.inspectorId === 'test-inspector') {
     payload.rootNodes = [
       {
@@ -341,7 +342,7 @@ api.on.getInspectorTree(payload => {
               },
               {
                 label: 'test',
-                textColor: 0xffffff,
+                textColor: 0xFFFFFF,
                 backgroundColor: 0x000000
               }
             ]
@@ -360,7 +361,7 @@ This hook is called when the devtools needs to load the state for the currently 
 You have to put a condition in the callback to target only your inspector:
 
 ```js
-api.on.getInspectorState(payload => {
+api.on.getInspectorState((payload) => {
   if (payload.inspectorId === 'test-inspector') {
     // Your logic here
   }
@@ -398,7 +399,7 @@ You can also use a [Custom value](#custom-value).
 Example:
 
 ```js
-api.on.getInspectorState(payload => {
+api.on.getInspectorState((payload) => {
   if (payload.inspectorId === 'test-inspector') {
     if (payload.nodeId === 'root') {
       payload.state = {
@@ -414,7 +415,8 @@ api.on.getInspectorState(payload => {
           }
         ]
       }
-    } else {
+    }
+    else {
       payload.state = {
         'child info': [
           {
@@ -441,7 +443,7 @@ If you mark a field as `editable: true`, you should also use this hook to apply 
 You have to put a condition in the callback to target only your inspector:
 
 ```js
-api.on.editInspectorState(payload => {
+api.on.editInspectorState((payload) => {
   if (payload.inspectorId === 'test-inspector') {
     // Edit logic here
   }
@@ -463,7 +465,7 @@ The `payload` argument:
 Example:
 
 ```js
-api.on.editInspectorState(payload => {
+api.on.editInspectorState((payload) => {
   if (payload.inspectorId === 'test-inspector') {
     if (payload.nodeId === 'root') {
       payload.set(myState)
@@ -579,7 +581,7 @@ This hook is called when a timline event is selected. It's useful if you want to
 You have to put a condition in the callback to target only your timeline layer:
 
 ```js
-api.on.inspectTimelineEvent(payload => {
+api.on.inspectTimelineEvent((payload) => {
   if (payload.layerId === 'test-layer') {
     // Your logic here
   }
@@ -589,10 +591,10 @@ api.on.inspectTimelineEvent(payload => {
 Example:
 
 ```js
-api.on.inspectTimelineEvent(payload => {
+api.on.inspectTimelineEvent((payload) => {
   if (payload.layerId === 'test-layer') {
     // Async operation example
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         payload.data = {
           ...payload.data,
@@ -642,10 +644,15 @@ Payload properties:
 
 ```js
 // Plugin settings change
-api.on.setPluginSettings(payload => {
-  console.log('plugin settings changed', payload.settings,
+api.on.setPluginSettings((payload) => {
+  console.log(
+    'plugin settings changed',
+    payload.settings,
     // Info about the change
-    payload.key, payload.newValue, payload.oldValue)
+    payload.key,
+    payload.newValue,
+    payload.oldValue
+  )
 })
 ```
 
@@ -664,7 +671,7 @@ let componentInstances = []
 api.on.getInspectorTree(async (payload) => {
   if (payload.inspectorId === 'test-inspector') { // e.g. custom inspector
     componentInstances = await api.getComponentInstances(app)
-      for (const instance of instances) {
+    for (const instance of instances) {
       payload.rootNodes.push({
         id: instance.uid.toString(),
         label: `Component ${instance.uid}`
@@ -683,18 +690,20 @@ Computes the component bounds on the page.
 Example:
 
 ```js
-api.on.inspectComponent(async payload => {
+api.on.inspectComponent(async (payload) => {
   if (payload.instanceData) {
     const bounds = await api.getComponentBounds(payload.componentInstance)
     payload.instanceData.state.push({
       type: stateType,
       key: 'bounds',
-      value: bounds ? {
-        left: bounds.left,
-        top: bounds.top,
-        width: bounds.width,
-        height: bounds.height
-      } : null
+      value: bounds
+        ? {
+            left: bounds.left,
+            top: bounds.top,
+            width: bounds.width,
+            height: bounds.height
+          }
+        : null
     })
   }
 })
@@ -707,7 +716,7 @@ Retrieves the component name.
 Example:
 
 ```js
-api.on.inspectComponent(async payload => {
+api.on.inspectComponent(async (payload) => {
   if (payload.instanceData) {
     const componentName = await api.getComponentName(payload.componentInstance)
     payload.instanceData.state.push({
@@ -727,9 +736,9 @@ Highlight the element of the component.
 Example:
 
 ```js
-let componentInstances = [] // keeped component instance of the Vue app (e.g. `getComponentInstances`)
+const componentInstances = [] // keeped component instance of the Vue app (e.g. `getComponentInstances`)
 
-api.on.getInspectorState(payload => {
+api.on.getInspectorState((payload) => {
   if (payload.inspectorId === 'test-inspector') { // e.g. custom inspector
     // find component instance from custom inspector node
     const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
@@ -751,9 +760,9 @@ Unhighlight the element.
 Example:
 
 ```js
-let componentInstances = [] // keeped component instance of the Vue app (e.g. `getComponentInstances`)
+const componentInstances = [] // keeped component instance of the Vue app (e.g. `getComponentInstances`)
 
-api.on.getInspectorState(payload => {
+api.on.getInspectorState((payload) => {
   if (payload.inspectorId === 'test-inspector') { // e.g. custom inspector
     // find component instance from custom inspector node
     const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)

@@ -1,3 +1,63 @@
+<script lang="ts">
+import type { ComponentInternalInstance } from 'vue'
+import { computed, defineComponent, provide, ref } from 'vue'
+
+export default defineComponent({
+  name: 'VueSelect',
+  props: {
+    placeholder: {
+      type: String,
+      default: 'Select...',
+    },
+    iconRight: {
+      type: String,
+      default: 'keyboard_arrow_down',
+    },
+    modelValue: {
+      type: String,
+      required: true,
+    },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const currentChild = ref<ComponentInternalInstance | null>(null)
+
+    function setCurrentChild(vm) {
+      currentChild.value = vm
+    }
+
+    provide('VueSelect', {
+      setCurrentChild,
+      getCurrentChild: () => currentChild.value,
+    })
+
+    const model = computed({
+      get() { return props.modelValue },
+      set(value: string) { emit('update:modelValue', value) },
+    })
+
+    const displayedLabel = computed(() => {
+      if (currentChild.value) {
+        return currentChild.value.props.label
+      }
+      else if (props.placeholder) {
+        return props.placeholder
+      }
+      else {
+        return model.value
+      }
+    })
+
+    return {
+      model,
+      currentChild,
+      setCurrentChild,
+      displayedLabel,
+    }
+  },
+})
+</script>
+
 <template>
   <VueDropdown
     class="vue-ui-select"
@@ -24,60 +84,3 @@
     </VueGroup>
   </VueDropdown>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, provide, ref, ComponentInternalInstance } from 'vue'
-
-export default defineComponent({
-  name: 'VueSelect',
-  props: {
-    placeholder: {
-      type: String,
-      default: 'Select...',
-    },
-    iconRight: {
-      type: String,
-      default: 'keyboard_arrow_down',
-    },
-    modelValue: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['update:modelValue'],
-  setup (props, { emit }) {
-    const currentChild = ref<ComponentInternalInstance | null>(null)
-
-    function setCurrentChild (vm) {
-      currentChild.value = vm
-    }
-
-    provide('VueSelect', {
-      setCurrentChild,
-      getCurrentChild: () => currentChild.value,
-    })
-
-    const model = computed({
-      get () { return props.modelValue },
-      set (value: string) { emit('update:modelValue', value) },
-    })
-
-    const displayedLabel = computed(() => {
-      if (currentChild.value) {
-        return currentChild.value.props.label
-      } else if (props.placeholder) {
-        return props.placeholder
-      } else {
-        return model.value
-      }
-    })
-
-    return {
-      model,
-      currentChild,
-      setCurrentChild,
-      displayedLabel,
-    }
-  },
-})
-</script>

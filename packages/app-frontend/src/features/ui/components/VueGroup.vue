@@ -1,48 +1,13 @@
-<template>
-  <div
-    ref="root"
-    class="vue-ui-group"
-    :class="{
-      'has-indicator': indicator,
-    }"
-  >
-    <div class="content-wrapper">
-      <div class="content">
-        <slot />
-      </div>
-      <resize-observer
-        v-if="indicator"
-        @notify="updateIndicator()"
-      />
-    </div>
-
-    <div
-      v-if="indicator && indicatorStyle"
-      class="indicator"
-      :style="{
-        top: `${indicatorStyle.top}px`,
-        left: `${indicatorStyle.left}px`,
-        width: `${indicatorStyle.width}px`,
-        height: `${indicatorStyle.height}px`,
-      }"
-    >
-      <div class="content">
-        <slot name="indicator" />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts">
 import {
+  computed,
+  defineComponent,
+  nextTick,
   onMounted,
   provide,
   ref,
-  watch,
-  nextTick,
   useSlots,
-  computed,
-  defineComponent,
+  watch,
 } from 'vue'
 
 export default defineComponent({
@@ -58,7 +23,7 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
 
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     const indicatorStyle = ref<null | {
       top: number
       left: number
@@ -68,12 +33,12 @@ export default defineComponent({
 
     const model = computed({
       get: () => props.modelValue,
-      set: (value) => emit('update:modelValue', value),
+      set: value => emit('update:modelValue', value),
     })
 
     provide('VueGroup', {
       data: model,
-      setValue: (value) => (model.value = value),
+      setValue: value => (model.value = value),
     })
 
     const root = ref<null | HTMLElement>(null)
@@ -129,3 +94,38 @@ export default defineComponent({
   },
 })
 </script>
+
+<template>
+  <div
+    ref="root"
+    class="vue-ui-group"
+    :class="{
+      'has-indicator': indicator,
+    }"
+  >
+    <div class="content-wrapper">
+      <div class="content">
+        <slot />
+      </div>
+      <resize-observer
+        v-if="indicator"
+        @notify="updateIndicator()"
+      />
+    </div>
+
+    <div
+      v-if="indicator && indicatorStyle"
+      class="indicator"
+      :style="{
+        top: `${indicatorStyle.top}px`,
+        left: `${indicatorStyle.left}px`,
+        width: `${indicatorStyle.width}px`,
+        height: `${indicatorStyle.height}px`,
+      }"
+    >
+      <div class="content">
+        <slot name="indicator" />
+      </div>
+    </div>
+  </div>
+</template>

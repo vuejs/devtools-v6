@@ -1,12 +1,12 @@
-import { AppRecord } from './app-record'
+import type { AppRecord } from './app-record'
 import { DevtoolsApi } from './api'
-import { BackendContext } from './backend-context'
+import type { BackendContext } from './backend-context'
 
 export enum BuiltinBackendFeature {
   /**
    * @deprecated
    */
-  FLUSH = 'flush'
+  FLUSH = 'flush',
 }
 
 export interface DevtoolsBackendOptions {
@@ -16,7 +16,7 @@ export interface DevtoolsBackendOptions {
   setupApp?: (api: DevtoolsApi, app: AppRecord) => void
 }
 
-export function defineBackend (options: DevtoolsBackendOptions) {
+export function defineBackend(options: DevtoolsBackendOptions) {
   return options
 }
 
@@ -25,7 +25,7 @@ export interface DevtoolsBackend {
   api: DevtoolsApi
 }
 
-export function createBackend (options: DevtoolsBackendOptions, ctx: BackendContext): DevtoolsBackend {
+export function createBackend(options: DevtoolsBackendOptions, ctx: BackendContext): DevtoolsBackend {
   const backend: DevtoolsBackend = {
     options,
     api: null,

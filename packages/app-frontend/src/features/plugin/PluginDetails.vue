@@ -1,10 +1,10 @@
 <script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 import SplitPane from '@front/features/layout/SplitPane.vue'
+import { computed, defineComponent } from 'vue'
 import PluginPermission from './PluginPermission.vue'
 import PluginSettings from './PluginSettings.vue'
 
-import { computed, defineComponent } from 'vue'
 import { usePlugins } from '.'
 
 export default defineComponent({
@@ -22,7 +22,7 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const { plugins } = usePlugins()
     const plugin = computed(() => plugins.value.find(p => p.id === props.pluginId))
 

@@ -5,7 +5,7 @@ const icons = require.context(
 )
 
 export default {
-  install () {
+  install() {
     const sprites = ['']
     let spriteIndex = 0
     // Load all the SVG symbols
@@ -29,6 +29,6 @@ export default {
   },
 }
 
-export function generateHtmlIcon (icon: string) {
+export function generateHtmlIcon(icon: string) {
   return `<div class="vue-ui-icon"><svg><use href="#ic_${icon}_standard"></use></svg></div>`
 }

@@ -21,15 +21,17 @@ In your Vue project, install the [launch-editor-middleware](https://github.com/y
 1. Import the package:
 
 ```js
-var openInEditor = require('launch-editor-middleware')
+const openInEditor = require('launch-editor-middleware')
 ```
 
 2. In the `devServer` option, register the `/__open-in-editor` HTTP route:
 
 ```js
-devServer: {
-  before (app) {
-    app.use('/__open-in-editor', openInEditor())
+export default {
+  devServer: {
+    before(app) {
+      app.use('/__open-in-editor', openInEditor())
+    }
   }
 }
 ```
@@ -51,7 +53,7 @@ You can use the [launch-editor](https://github.com/yyx990803/launch-editor#usage
 You can change the request host (default `/`) with the following code in your frontend app:
 
 ```js
-if (process.env.NODE_ENV !== 'production')
+if (process.env.NODE_ENV !== 'production') {
   // App served from port 4000
   // Webpack dev server on port 9000
   window.VUE_DEVTOOLS_CONFIG = {

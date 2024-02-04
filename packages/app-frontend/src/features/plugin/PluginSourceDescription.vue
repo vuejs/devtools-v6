@@ -11,7 +11,7 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const {
       plugins,
     } = usePlugins()
@@ -19,7 +19,7 @@ export default defineComponent({
     const plugin = computed(() => plugins.value.find(p => p.id === props.pluginId))
 
     const router = useRouter()
-    function go () {
+    function go() {
       router.push({
         name: 'plugin-details',
         params: {

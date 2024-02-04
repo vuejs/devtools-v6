@@ -1,3 +1,21 @@
+<script>
+export default {
+  components: {
+    TestComponent: {
+      render(h) {
+        return h('div', {}, this.$slots.default)
+      },
+    },
+  },
+  data() {
+    return {
+      show: true,
+      count: 5,
+    }
+  },
+}
+</script>
+
 <template>
   <div>
     <div data-test-id="transition">
@@ -23,7 +41,7 @@
         tag="p"
       >
         <component
-          :is="'TestComponent'"
+          is="TestComponent"
           v-for="item in count"
           :key="item"
           class="list-item"
@@ -34,24 +52,6 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  components: {
-    TestComponent: {
-      render (h) {
-        return h('div', {}, this.$slots.default)
-      },
-    },
-  },
-  data () {
-    return {
-      show: true,
-      count: 5,
-    }
-  },
-}
-</script>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {

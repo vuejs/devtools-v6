@@ -1,15 +1,15 @@
-import { TimelineLayerOptions } from '@vue/devtools-api'
+import type { TimelineLayerOptions } from '@vue/devtools-api'
 
 export const builtinLayers: TimelineLayerOptions[] = [
   {
     id: 'mouse',
     label: 'Mouse',
     color: 0xA451AF,
-    screenshotOverlayRender (event, { events }) {
+    screenshotOverlayRender(event, { events }) {
       const samePositionEvent = events.find(e => e !== event && e.renderMeta.textEl && e.data.x === event.data.x && e.data.y === event.data.y)
       if (samePositionEvent) {
         const text = document.createElement('div')
-        text.innerText = event.data.type
+        text.textContent = event.data.type
         samePositionEvent.renderMeta.textEl.appendChild(text)
         return false
       }
@@ -24,7 +24,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
       div.style.backgroundColor = 'rgba(164, 81, 175, 0.5)'
 
       const text = document.createElement('div')
-      text.innerText = event.data.type
+      text.textContent = event.data.type
       text.style.color = '#541e5b'
       text.style.fontFamily = 'monospace'
       text.style.fontSize = '9px'
@@ -52,10 +52,10 @@ export const builtinLayers: TimelineLayerOptions[] = [
     color: 0x41B883,
     screenshotOverlayRender: (event, { events }) => {
       if (!event.meta.bounds || events.some(e => e !== event && e.layerId === event.layerId && e.renderMeta.drawn && (e.meta.componentId === event.meta.componentId || (
-        e.meta.bounds.left === event.meta.bounds.left &&
-        e.meta.bounds.top === event.meta.bounds.top &&
-        e.meta.bounds.width === event.meta.bounds.width &&
-        e.meta.bounds.height === event.meta.bounds.height
+        e.meta.bounds.left === event.meta.bounds.left
+        && e.meta.bounds.top === event.meta.bounds.top
+        && e.meta.bounds.width === event.meta.bounds.width
+        && e.meta.bounds.height === event.meta.bounds.height
       )))) {
         return false
       }
@@ -83,7 +83,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
       text.style.padding = '1px'
       text.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'
       text.style.borderRadius = '3px'
-      text.innerText = event.data.event
+      text.textContent = event.data.event
       div.appendChild(text)
 
       event.renderMeta.drawn = true
@@ -94,7 +94,7 @@ export const builtinLayers: TimelineLayerOptions[] = [
   {
     id: 'performance',
     label: 'Performance',
-    color: 0x41b86a,
+    color: 0x41B86A,
     groupsOnly: true,
     skipScreenshots: true,
     ignoreNoDurationGroups: true,

@@ -6,24 +6,24 @@ import type { ID } from './util.js'
 
 export interface DevtoolsPluginApi<TSettings> {
   on: Hookable<Context>
-  notifyComponentUpdate (instance?: ComponentInstance): void
-  addTimelineLayer (options: TimelineLayerOptions): void
-  addTimelineEvent (options: TimelineEventOptions): void
-  addInspector (options: CustomInspectorOptions): void
-  sendInspectorTree (inspectorId: string): void
-  sendInspectorState (inspectorId: string): void
-  selectInspectorNode (inspectorId: string, nodeId: string): void
-  getComponentBounds (instance: ComponentInstance): Promise<ComponentBounds>
-  getComponentName (instance: ComponentInstance): Promise<string>
-  getComponentInstances (app: App): Promise<ComponentInstance[]>
-  highlightElement (instance: ComponentInstance): void
-  unhighlightElement (): void
-  getSettings (pluginId?: string): TSettings
-  now (): number
+  notifyComponentUpdate: (instance?: ComponentInstance) => void
+  addTimelineLayer: (options: TimelineLayerOptions) => void
+  addTimelineEvent: (options: TimelineEventOptions) => void
+  addInspector: (options: CustomInspectorOptions) => void
+  sendInspectorTree: (inspectorId: string) => void
+  sendInspectorState: (inspectorId: string) => void
+  selectInspectorNode: (inspectorId: string, nodeId: string) => void
+  getComponentBounds: (instance: ComponentInstance) => Promise<ComponentBounds>
+  getComponentName: (instance: ComponentInstance) => Promise<string>
+  getComponentInstances: (app: App) => Promise<ComponentInstance[]>
+  highlightElement: (instance: ComponentInstance) => void
+  unhighlightElement: () => void
+  getSettings: (pluginId?: string) => TSettings
+  now: () => number
   /**
-   * @private Not implemented yet
+   * @private
    */
-  setSettings (values: TSettings): void
+  setSettings: (values: TSettings) => void
 }
 
 export interface AppRecord {

@@ -1,18 +1,17 @@
 <script lang="ts">
-import AppSelectPaneItem from './AppSelectPaneItem.vue'
-
-import { watch, defineComponent, ref, computed } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
-import { useApps, pendingSelectAppId, scanLegacyApps } from '@front/features/apps'
+import { pendingSelectAppId, scanLegacyApps, useApps } from '@front/features/apps'
 import { useRouter } from 'vue-router'
 import { useBridge } from '../bridge'
+import AppSelectPaneItem from './AppSelectPaneItem.vue'
 
 export default defineComponent({
   components: {
     AppSelectPaneItem,
   },
 
-  setup () {
+  setup() {
     const router = useRouter()
     const { bridge } = useBridge()
 
@@ -23,7 +22,7 @@ export default defineComponent({
       selectApp,
     } = useApps()
 
-    watch(currentAppId, value => {
+    watch(currentAppId, (value) => {
       if (pendingSelectAppId.value !== value) {
         pendingSelectAppId.value = value
         bridge.send(BridgeEvents.TO_BACK_APP_SELECT, value)
@@ -40,7 +39,8 @@ export default defineComponent({
         if (SharedData.pageConfig?.defaultSelectedAppId) {
           targetId = SharedData.pageConfig.defaultSelectedAppId
           initDefaultAppId = true
-        } else if (currentAppId.value !== apps.value[0].id) {
+        }
+        else if (currentAppId.value !== apps.value[0].id) {
           targetId = apps.value[0].id
         }
         if (targetId) {
@@ -59,9 +59,11 @@ export default defineComponent({
     // Search
     const search = ref('')
     const filteredApps = computed(() => {
-      if (!search.value) return apps.value
+      if (!search.value) {
+        return apps.value
+      }
       const searchValue = search.value.toLowerCase()
-      return apps.value.filter(app => {
+      return apps.value.filter((app) => {
         return app.name.toLowerCase().includes(searchValue)
       })
     })

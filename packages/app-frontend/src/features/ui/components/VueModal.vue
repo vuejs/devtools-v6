@@ -1,3 +1,48 @@
+<script lang="ts">
+/* eslint-disable vue/no-unused-refs */
+
+import { defineComponent, nextTick, onMounted, ref } from 'vue'
+import { useDisableScroll } from '../composables/useDisableScroll'
+
+export default defineComponent({
+  name: 'VueModal',
+
+  props: {
+    locked: {
+      type: Boolean,
+      default: false,
+    },
+
+    title: {
+      type: String,
+      default: null,
+    },
+  },
+
+  emits: ['close'],
+
+  setup(props, { emit }) {
+    const rootElement = ref<HTMLElement | null>(null)
+    onMounted(async () => {
+      await nextTick()
+      rootElement.value.focus()
+    })
+
+    useDisableScroll()
+
+    const close = () => {
+      if (!props.locked) {
+        emit('close')
+      }
+    }
+
+    return {
+      close,
+    }
+  },
+})
+</script>
+
 <template>
   <transition
     ref="rootElement"
@@ -53,44 +98,3 @@
     </div>
   </transition>
 </template>
-
-<script lang="ts">
-import { defineComponent, nextTick, onMounted, ref } from 'vue'
-import { useDisableScroll } from '../composables/useDisableScroll'
-
-export default defineComponent({
-  name: 'VueModal',
-
-  props: {
-    locked: {
-      type: Boolean,
-      default: false,
-    },
-
-    title: {
-      type: String,
-      default: null,
-    },
-  },
-
-  setup (props, { emit }) {
-    const rootElement = ref<HTMLElement | null>(null)
-    onMounted(async () => {
-      await nextTick()
-      rootElement.value.focus()
-    })
-
-    useDisableScroll()
-
-    const close = () => {
-      if (!props.locked) {
-        emit('close')
-      }
-    }
-
-    return {
-      close,
-    }
-  },
-})
-</script>

@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const { createConfig } = require('@vue-devtools/build-tools')
 
 const target = {
@@ -12,7 +12,7 @@ module.exports = createConfig({
   target: 'node',
   externals: {
     // from https://socket.io/docs/v4/client-with-bundlers/
-    bufferutil: 'bufferutil',
+    'bufferutil': 'bufferutil',
     'utf-8-validate': 'utf-8-validate',
   },
   entry: {

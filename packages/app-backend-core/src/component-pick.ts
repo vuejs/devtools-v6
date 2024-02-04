@@ -1,14 +1,14 @@
-import { isBrowser, BridgeEvents } from '@vue-devtools/shared-utils'
-import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
+import { BridgeEvents, isBrowser } from '@vue-devtools/shared-utils'
+import type { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
+import type { ComponentInstance } from '@vue/devtools-api'
 import { highlight, unHighlight } from './highlighter'
-import { ComponentInstance } from '@vue/devtools-api'
 
 export default class ComponentPicker {
   ctx: BackendContext
   selectedInstance: ComponentInstance
   selectedBackend: DevtoolsBackend
 
-  constructor (ctx: BackendContext) {
+  constructor(ctx: BackendContext) {
     this.ctx = ctx
     this.bindMethods()
   }
@@ -16,8 +16,10 @@ export default class ComponentPicker {
   /**
    * Adds event listeners for mouseover and mouseup
    */
-  startSelecting () {
-    if (!isBrowser) return
+  startSelecting() {
+    if (!isBrowser) {
+      return
+    }
     window.addEventListener('mouseover', this.elementMouseOver, true)
     window.addEventListener('click', this.elementClicked, true)
     window.addEventListener('mouseout', this.cancelEvent, true)
@@ -30,8 +32,10 @@ export default class ComponentPicker {
   /**
    * Removes event listeners
    */
-  stopSelecting () {
-    if (!isBrowser) return
+  stopSelecting() {
+    if (!isBrowser) {
+      return
+    }
     window.removeEventListener('mouseover', this.elementMouseOver, true)
     window.removeEventListener('click', this.elementClicked, true)
     window.removeEventListener('mouseout', this.cancelEvent, true)
@@ -46,7 +50,7 @@ export default class ComponentPicker {
   /**
    * Highlights a component on element mouse over
    */
-  async elementMouseOver (e: MouseEvent) {
+  async elementMouseOver(e: MouseEvent) {
     this.cancelEvent(e)
 
     const el = e.target
@@ -60,7 +64,7 @@ export default class ComponentPicker {
     }
   }
 
-  async selectElementComponent (el) {
+  async selectElementComponent(el) {
     for (const backend of this.ctx.backends) {
       const instance = await backend.api.getElementComponent(el)
       if (instance) {
@@ -76,13 +80,14 @@ export default class ComponentPicker {
   /**
    * Selects an instance in the component view
    */
-  async elementClicked (e: MouseEvent) {
+  async elementClicked(e: MouseEvent) {
     this.cancelEvent(e)
 
     if (this.selectedInstance && this.selectedBackend) {
       const parentInstances = await this.selectedBackend.api.walkComponentParents(this.selectedInstance)
       this.ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_PICK, { id: this.selectedInstance.__VUE_DEVTOOLS_UID__, parentIds: parentInstances.map(i => i.__VUE_DEVTOOLS_UID__) })
-    } else {
+    }
+    else {
       this.ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_PICK_CANCELED, null)
     }
 
@@ -92,7 +97,7 @@ export default class ComponentPicker {
   /**
    * Cancel a mouse event
    */
-  cancelEvent (e: MouseEvent) {
+  cancelEvent(e: MouseEvent) {
     e.stopImmediatePropagation()
     e.preventDefault()
   }
@@ -100,7 +105,7 @@ export default class ComponentPicker {
   /**
    * Bind class methods to the class scope to avoid rebind for event listeners
    */
-  bindMethods () {
+  bindMethods() {
     this.startSelecting = this.startSelecting.bind(this)
     this.stopSelecting = this.stopSelecting.bind(this)
     this.elementMouseOver = this.elementMouseOver.bind(this)

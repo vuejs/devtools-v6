@@ -15,9 +15,9 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const router = useRouter()
-    function go () {
+    function go() {
       router.push({
         name: 'plugin-details',
         params: {

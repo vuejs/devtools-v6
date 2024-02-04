@@ -7,7 +7,7 @@ import { installHook } from '@back/hook'
 const STORAGE_URL = 'vue-devtools.dev-iframe.url'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const src = ref(localStorage.getItem(STORAGE_URL) ?? 'target.html')
     const url = ref(src.value)
     const iframe = ref<HTMLIFrameElement | null>(null)
@@ -18,7 +18,7 @@ export default defineComponent({
       localStorage.setItem(STORAGE_URL, value)
     })
 
-    function inject (src, done) {
+    function inject(src, done) {
       if (!src || src === 'false') {
         return done()
       }
@@ -32,7 +32,7 @@ export default defineComponent({
       iframe.value.contentDocument.body.appendChild(script)
     }
 
-    function onLoad () {
+    function onLoad() {
       loading.value = false
 
       if (!iframe.value?.contentWindow) {
@@ -47,7 +47,7 @@ export default defineComponent({
         // 2. init devtools
         console.log('%cInit devtools...', 'color:#42B983;')
         initDevTools({
-          connect (cb) {
+          connect(cb) {
             // 3. called by devtools: inject backend
             console.log('%cInjecting backend...', 'color:#42B983;')
             inject('$ORIGIN/target/backend.js', () => {
@@ -55,16 +55,16 @@ export default defineComponent({
               console.log('%cInit bridge...', 'color:#42B983;')
               cb(
                 new Bridge({
-                  listen (fn) {
+                  listen(fn) {
                     if (!iframe.value) {
                       throw new Error('Cant find iframe.')
                     }
                     (iframe.value.contentWindow as Window).parent.addEventListener(
                       'message',
-                      (evt) => fn(evt.data),
+                      evt => fn(evt.data),
                     )
                   },
-                  send (data) {
+                  send(data) {
                     if (process.env.NODE_ENV !== 'production') {
                       console.log('%cdevtools -> backend', 'color:#888;', data)
                     }
@@ -77,26 +77,30 @@ export default defineComponent({
               )
             })
           },
-          onReload (reloadFn) {
+          onReload(reloadFn) {
             loadListener = reloadFn
           },
         })
 
         iframe.value?.contentWindow?.addEventListener('unload', () => {
-          if (loadListener) loadListener()
+          if (loadListener) {
+            loadListener()
+          }
           loading.value = true
         })
-      } catch (e) {
+      }
+      catch (e) {
         console.error(e)
         error.value = true
       }
     }
 
-    function openUrl () {
+    function openUrl() {
       let value = url.value
       if (value === src.value) {
         reload()
-      } else {
+      }
+      else {
         if (!value.startsWith('http')) {
           value = `http://${value}`
         }
@@ -105,11 +109,11 @@ export default defineComponent({
       }
     }
 
-    function reload () {
+    function reload() {
       iframe.value?.contentWindow?.location.reload()
     }
 
-    function reset () {
+    function reset() {
       src.value = 'target.html'
     }
 

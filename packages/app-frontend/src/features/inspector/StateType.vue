@@ -1,10 +1,10 @@
 <script lang="ts">
-import StateFields from './StateFields.vue'
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
 
 import { computed, defineComponent } from 'vue'
 import { useComponentStateTypePlugin } from '@front/features/plugin'
 import { useOrientation } from '@front/features/layout/orientation'
+import StateFields from './StateFields.vue'
 
 export default defineComponent({
   components: {
@@ -49,13 +49,15 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  emits: ['toggle', 'editState'],
+
+  setup(props) {
     const { getStateTypePlugin } = useComponentStateTypePlugin()
     const plugin = computed(() => getStateTypePlugin(props.dataType))
 
     const { orientation } = useOrientation()
 
-    function toDisplayType (dataType, asClass) {
+    function toDisplayType(dataType, asClass?) {
       return dataType === 'undefined'
         ? 'data'
         : asClass
@@ -80,20 +82,19 @@ export default defineComponent({
 
 <template>
   <div
-    :class="[
-      'data-el',
+    class="data-el" :class="[
       toDisplayType(dataType, true),
       {
         'high-density': highDensity,
-        dim: dimAfter !== -1 && index >= dimAfter
-      }
+        'dim': dimAfter !== -1 && index >= dimAfter,
+      },
     ]"
   >
     <div
       v-tooltip="{
         content: $t('StateInspector.dataType.tooltip'),
         html: true,
-        placement: orientation === 'landscape' ? 'left' : 'top'
+        placement: orientation === 'landscape' ? 'left' : 'top',
       }"
       class="data-type selectable-item"
       @click="$emit('toggle', dataType, isExpanded, $event)"
@@ -106,7 +107,7 @@ export default defineComponent({
         <span class="relative key-label">
           <slot
             name="key"
-            :dataType="dataType"
+            :data-type="dataType"
           >
             {{ toDisplayType(dataType) }}
           </slot>
@@ -122,7 +123,7 @@ export default defineComponent({
       v-show="isExpanded"
       :fields="state[dataType]"
       :force-collapse="forceCollapse"
-      @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+      @edit-state="(path, payload) => $emit('editState', path, payload)"
     />
   </div>
 </template>
@@ -181,5 +182,4 @@ export default defineComponent({
     padding-top 0
     @media (max-height: $tall)
       margin-bottom 4px
-
 </style>

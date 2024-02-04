@@ -1,17 +1,17 @@
 import { installToast } from '@back/toast'
 
-function sendMessage (message) {
+function sendMessage(message) {
   window.postMessage({
     key: '_vue-devtools-send-message',
     message,
   })
 }
 
-function detect () {
+function detect() {
   let delay = 1000
   let detectRemainingTries = 10
 
-  function runDetect () {
+  function runDetect() {
     // Method 1: Check Nuxt.js
     const nuxtDetected = !!(window.__NUXT__ || window.$nuxt)
 
@@ -23,8 +23,8 @@ function detect () {
       }
 
       sendMessage({
-        devtoolsEnabled: (/* Vue 2 */ Vue && Vue.config.devtools) ||
-          (/* Vue 3.2.14+ */ window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled),
+        devtoolsEnabled: (/* Vue 2 */ Vue && Vue.config.devtools)
+        || (/* Vue 3.2.14+ */ window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && window.__VUE_DEVTOOLS_GLOBAL_HOOK__.enabled),
         vueDetected: true,
         nuxtDetected: true,
       }, '*')

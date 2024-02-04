@@ -3,7 +3,7 @@ export class Queue<T = any> {
   private firstItem: QueueItem<T> | null = null
   private lastItem: QueueItem<T> | null = null
 
-  add (value: T) {
+  add(value: T) {
     if (!this.existsMap.has(value)) {
       this.existsMap.set(value, true)
       const item = {
@@ -20,7 +20,7 @@ export class Queue<T = any> {
     }
   }
 
-  shift (): T | null {
+  shift(): T | null {
     if (this.firstItem) {
       const item = this.firstItem
       this.firstItem = item.next
@@ -33,11 +33,11 @@ export class Queue<T = any> {
     return null
   }
 
-  isEmpty () {
+  isEmpty() {
     return !this.firstItem
   }
 
-  has (value: T) {
+  has(value: T) {
     return this.existsMap.has(value)
   }
 }

@@ -1,3 +1,23 @@
+<script>
+import { reactive } from 'vue'
+import FormSection from './FormSection.vue'
+
+export default {
+  components: {
+    FormSection,
+  },
+
+  setup() {
+    const inputs = reactive({
+      foo: '',
+      bar: '',
+    })
+
+    return { inputs }
+  },
+}
+</script>
+
 <template>
   <form>
     <FormSection>
@@ -12,23 +32,3 @@
     >
   </form>
 </template>
-
-<script>
-import { reactive } from 'vue'
-import FormSection from './FormSection.vue'
-
-export default {
-  components: {
-    FormSection,
-  },
-
-  setup () {
-    const inputs = reactive({
-      foo: '',
-      bar: '',
-    })
-
-    return { inputs }
-  },
-}
-</script>

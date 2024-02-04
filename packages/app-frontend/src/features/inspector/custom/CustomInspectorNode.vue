@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { onKeyDown } from '@front/util/keyboard'
 import { useCurrentInspector } from './composable'
@@ -21,7 +21,9 @@ export default defineComponent({
     },
   },
 
-  setup (props, { emit }) {
+  emits: ['selectNextSibling', 'selectPreviousSibling'],
+
+  setup(props, { emit }) {
     const {
       currentInspector: inspector,
       selectNode,
@@ -29,7 +31,7 @@ export default defineComponent({
 
     const expanded = computed({
       get: () => !!inspector.value.expandedMap[props.node.id],
-      set: value => {
+      set: (value) => {
         inspector.value.expandedMap[props.node.id] = value
       },
     })
@@ -39,18 +41,18 @@ export default defineComponent({
       expanded.value = inspector.value.expandedMap[props.node.id] ?? props.depth < DEFAULT_EXPAND_DEPTH
     }
 
-    function toggle () {
+    function toggle() {
       expanded.value = !expanded.value
     }
 
-    function select () {
+    function select() {
       selectNode(props.node)
     }
 
     const selected = computed(() => inspector.value?.selectedNodeId === props.node.id)
 
     // Init selection if an id is set but the selection wasn't loaded yet
-    watch(() => selected.value && inspector.value.selectedNode !== props.node, value => {
+    watch(() => selected.value && inspector.value.selectedNode !== props.node, (value) => {
       if (value) {
         selectNode(props.node)
       }
@@ -62,7 +64,7 @@ export default defineComponent({
 
     const toggleEl = ref()
 
-    function autoScroll () {
+    function autoScroll() {
       if (selected.value && toggleEl.value) {
         /** @type {HTMLElement} */
         const el = toggleEl.value
@@ -80,7 +82,7 @@ export default defineComponent({
 
     // Keyboard
 
-    onKeyDown(event => {
+    onKeyDown((event) => {
       if (selected.value) {
         requestAnimationFrame(() => {
           switch (event.key) {
@@ -100,40 +102,45 @@ export default defineComponent({
               if (expanded.value && props.node.children?.length) {
                 // Select first child
                 selectNode(props.node.children[0])
-              } else {
-                emit('select-next-sibling')
+              }
+              else {
+                emit('selectNextSibling')
               }
               break
             }
             case 'ArrowUp': {
-              emit('select-previous-sibling')
+              emit('selectPreviousSibling')
             }
           }
         })
       }
     })
 
-    function selectNextSibling (index) {
+    function selectNextSibling(index) {
       if (index + 1 >= props.node.children.length) {
-        emit('select-next-sibling')
-      } else {
+        emit('selectNextSibling')
+      }
+      else {
         selectNode(props.node.children[index + 1])
       }
     }
 
-    function selectPreviousSibling (index) {
+    function selectPreviousSibling(index) {
       if (index === 0 || !props.node.children.length) {
         if (selected.value) {
-          emit('select-previous-sibling')
-        } else {
+          emit('selectPreviousSibling')
+        }
+        else {
           select()
         }
-      } else {
+      }
+      else {
         let child = props.node.children[index - 1]
         while (child) {
           if (child.children.length && child.expanded) {
             child = child.children[child.children.length - 1]
-          } else {
+          }
+          else {
             selectNode(child)
             child = null
           }
@@ -160,10 +167,10 @@ export default defineComponent({
       ref="toggleEl"
       class="font-mono cursor-pointer relative z-10 rounded whitespace-nowrap flex items-center pr-2 text-sm select-none selectable-item"
       :class="{
-        selected
+        selected,
       }"
       :style="{
-        paddingLeft: depth * 15 + 4 + 'px'
+        paddingLeft: `${depth * 15 + 4}px`,
       }"
       @click="select()"
       @dblclick="toggle()"
@@ -172,13 +179,13 @@ export default defineComponent({
       <span
         class="w-4 h-4 flex items-center justify-center"
         :class="{
-          'invisible': !node.children || !node.children.length
+          invisible: !node.children || !node.children.length,
         }"
         @click.stop="toggle()"
       >
         <span
           :class="{
-            'transform rotate-90': expanded
+            'transform rotate-90': expanded,
           }"
           class="arrow right"
         />
@@ -193,7 +200,7 @@ export default defineComponent({
         :key="index"
         v-tooltip="{
           content: tag.tooltip,
-          html: true
+          html: true,
         }"
         :style="{
           color: `#${tag.textColor.toString(16).padStart(6, '0')}`,

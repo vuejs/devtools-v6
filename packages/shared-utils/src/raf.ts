@@ -1,4 +1,3 @@
-
 let pendingCallbacks: Array<(time: number) => void> = []
 
 /**

@@ -1,4 +1,4 @@
-import { Bridge } from './bridge'
+import type { Bridge } from './bridge'
 
 export interface Shell {
   connect: (cb: ((bridge: Bridge) => void | Promise<void>)) => void

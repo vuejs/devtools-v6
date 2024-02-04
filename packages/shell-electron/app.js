@@ -1,13 +1,13 @@
 // Start middleware server
 require('./server')
 
+const path = require('node:path')
+const url = require('node:url')
 const { app, BrowserWindow } = require('electron')
-const path = require('path')
-const url = require('url')
 
 let mainWindow = null
 
-function createWindow () {
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,

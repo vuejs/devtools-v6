@@ -1,9 +1,3 @@
-<template>
-  <div id="init">
-    <p>Inited: {{ inited }}</p>
-  </div>
-</template>
-
 <script>
 import { mapState } from 'vuex'
 
@@ -13,8 +7,14 @@ export default {
       inited: state => state.inited,
     }),
   },
-  created () {
+  created() {
     this.$store.commit('TEST_INIT')
   },
 }
 </script>
+
+<template>
+  <div id="init">
+    <p>Inited: {{ inited }}</p>
+  </div>
+</template>

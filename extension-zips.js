@@ -1,7 +1,9 @@
 // require modules
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
+const process = require('node:process')
 const archiver = require('archiver')
+
 const IS_CI = !!(process.env.CIRCLECI || process.env.GITHUB_ACTIONS)
 const ProgressBar = !IS_CI ? require('progress') : {}
 const readDirGlob = !IS_CI ? require('readdir-glob') : {}
@@ -18,18 +20,20 @@ const INCLUDE_GLOBS = [
 // SKIP_GLOBS makes glob searches more efficient
 const SKIP_DIR_GLOBS = ['node_modules', 'src']
 
-function bytesToSize (bytes) {
+function bytesToSize(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  if (bytes === 0) return '0 Byte'
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
-  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
+  if (bytes === 0) {
+    return '0 Byte'
+  }
+  const i = Number.parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
+  return `${Math.round(bytes / 1024 ** i, 2)} ${sizes[i]}`
 }
 
 (async () => {
   await writeZip('devtools-chrome.zip', 'shell-chrome')
   await writeZip('devtools-firefox.zip', 'shell-chrome')
 
-  async function writeZip (fileName, packageDir) {
+  async function writeZip(fileName, packageDir) {
     // create a file to stream archive data to.
     const output = fs.createWriteStream(path.join(__dirname, 'dist', fileName))
     const archive = archiver('zip', {
@@ -45,14 +49,15 @@ function bytesToSize (bytes) {
         tSize: '0 Bytes',
       }
 
-      async function parseFileStats () {
+      async function parseFileStats() {
         return new Promise((resolve, reject) => {
-          const globber = readDirGlob(path.join('packages', packageDir),
-            { pattern: INCLUDE_GLOBS, skip: SKIP_DIR_GLOBS, mark: true, stat: true })
-          globber.on('match', match => {
-            if (!match.stat.isDirectory()) status.total++
+          const globber = readDirGlob(path.join('packages', packageDir), { pattern: INCLUDE_GLOBS, skip: SKIP_DIR_GLOBS, mark: true, stat: true })
+          globber.on('match', (match) => {
+            if (!match.stat.isDirectory()) {
+              status.total++
+            }
           })
-          globber.on('error', err => {
+          globber.on('error', (err) => {
             reject(err)
           })
           globber.on('end', () => {
@@ -60,7 +65,7 @@ function bytesToSize (bytes) {
           })
         })
       }
-      await parseFileStats().catch(err => {
+      await parseFileStats().catch((err) => {
         console.error(err)
         process.exit(1)
       })
@@ -77,7 +82,7 @@ function bytesToSize (bytes) {
           const n = entry.name
           status.written++
           status.cFile = n.length > 14
-            ? '...' + n.slice(n.length - 11)
+            ? `...${n.slice(n.length - 11)}`
             : n
           status.cSize = bytesToSize(entry.stats.size)
           status.tBytes += entry.stats.size
@@ -101,12 +106,12 @@ function bytesToSize (bytes) {
     // This event is fired when the data source is drained no matter what was the data source.
     // It is not part of this library but rather from the NodeJS Stream API.
     // @see: https://nodejs.org/api/stream.html#stream_event_end
-    output.on('end', function () {
+    output.on('end', () => {
       'nothing'
     })
 
     // good practice to catch warnings (ie stat failures and other non-blocking errors)
-    archive.on('warning', function (err) {
+    archive.on('warning', (err) => {
       if (err.code !== 'ENOENT') {
         // throw error
         console.error(err)
@@ -115,7 +120,7 @@ function bytesToSize (bytes) {
     })
 
     // good practice to catch this error explicitly
-    archive.on('error', function (err) {
+    archive.on('error', (err) => {
       console.error(err)
       process.exit(1)
     })
@@ -123,7 +128,7 @@ function bytesToSize (bytes) {
     // pipe archive data to the file
     archive.pipe(output)
 
-    INCLUDE_GLOBS.forEach(glob => {
+    INCLUDE_GLOBS.forEach((glob) => {
       // append files from a glob pattern
       archive.glob(glob, { cwd: path.join('packages', packageDir), skip: SKIP_DIR_GLOBS })
     })

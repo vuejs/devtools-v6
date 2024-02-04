@@ -7,7 +7,7 @@ export default {
     Nested,
   },
 
-  setup () {
+  setup() {
     const count = ref(2)
 
     return {

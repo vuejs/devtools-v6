@@ -63,7 +63,7 @@ suite('components tab', () => {
     cy.get('.data-el.props .data-field:nth-child(2)').contains('msg:"hi"')
     cy.get('.data-el.props .data-field:nth-child(3)').contains('obj:undefined')
     // Regexp
-    cy.get('.data-el.data .data-field:nth-child(8)').then(el => {
+    cy.get('.data-el.data .data-field:nth-child(8)').then((el) => {
       expect(el.text()).to.include('regex:/(a\\w+b)/g')
     })
     // Literals
@@ -106,7 +106,7 @@ suite('components tab', () => {
         .click({ force: true })
     })
     cy.get('.action-header .title').contains('Mine')
-    cy.get('.tree').then(el => {
+    cy.get('.tree').then((el) => {
       expect(el.text()).to.include('<Mine>')
     })
   })

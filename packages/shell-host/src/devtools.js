@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import DevIframe from './DevIframe.vue'
 import { setupPlugins } from '@front/plugins'
+import DevIframe from './DevIframe.vue'
 
 const app = createApp(DevIframe)
 setupPlugins(app)

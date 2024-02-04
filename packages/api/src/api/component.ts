@@ -56,7 +56,7 @@ export interface ComponentCustomState extends ComponentStateBase {
   value: CustomState
 }
 
-export type CustomState = {
+export interface CustomState {
   _custom: {
     type: ComponentBuiltinCustomStateTypes | string
     objectType?: string

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-const path = require('path')
-const fs = require('fs')
+const path = require('node:path')
+const fs = require('node:fs')
 const execa = require('execa')
 
 const credFile = path.resolve(__dirname, '.amo.env.json')
@@ -21,12 +21,18 @@ const creds = JSON.parse(fs.readFileSync(credFile, {
 
 const child = execa('web-ext', [
   'sign',
-  '--api-key', creds.apiKey,
-  '--api-secret', creds.apiSecret,
-  '-s', 'packages/shell-chrome',
-  '-a', 'dist',
-  '-i', 'src',
-  '--id', '{c087fa6e-b59f-475d-b08d-f03fef34fa7f}',
+  '--api-key',
+  creds.apiKey,
+  '--api-secret',
+  creds.apiSecret,
+  '-s',
+  'packages/shell-chrome',
+  '-a',
+  'dist',
+  '-i',
+  'src',
+  '--id',
+  '{c087fa6e-b59f-475d-b08d-f03fef34fa7f}',
 ], {
   shell: true,
   stdio: ['inherit', 'inherit', 'inherit'],

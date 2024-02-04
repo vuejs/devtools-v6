@@ -3,14 +3,15 @@
 
 const ports = {}
 
-chrome.runtime.onConnect.addListener(port => {
+chrome.runtime.onConnect.addListener((port) => {
   let tab
   let name
   if (isNumeric(port.name)) {
     tab = port.name
     name = 'devtools'
     installProxy(+port.name)
-  } else {
+  }
+  else {
     tab = port.sender.tab.id
     name = 'backend'
   }
@@ -28,32 +29,33 @@ chrome.runtime.onConnect.addListener(port => {
   }
 })
 
-function isNumeric (str) {
-  return +str + '' === str
+function isNumeric(str) {
+  return `${+str}` === str
 }
 
-function installProxy (tabId) {
+function installProxy(tabId) {
   chrome.scripting.executeScript({
     target: { tabId },
     files: ['build/proxy.js'],
-  }, function (res) {
+  }, (res) => {
     if (!res) {
       ports[tabId].devtools.postMessage('proxy-fail')
-    } else {
+    }
+    else {
       if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
-        console.log('injected proxy to tab ' + tabId)
+        console.log(`injected proxy to tab ${tabId}`)
       }
     }
   })
 }
 
-function doublePipe (id, one, two) {
+function doublePipe(id, one, two) {
   one.onMessage.addListener(lOne)
-  function lOne (message) {
+  function lOne(message) {
     if (message.event === 'log') {
       // eslint-disable-next-line no-console
-      return console.log('tab ' + id, message.payload)
+      return console.log(`tab ${id}`, message.payload)
     }
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
@@ -62,10 +64,10 @@ function doublePipe (id, one, two) {
     two.postMessage(message)
   }
   two.onMessage.addListener(lTwo)
-  function lTwo (message) {
+  function lTwo(message) {
     if (message.event === 'log') {
       // eslint-disable-next-line no-console
-      return console.log('tab ' + id, message.payload)
+      return console.log(`tab ${id}`, message.payload)
     }
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
@@ -73,10 +75,10 @@ function doublePipe (id, one, two) {
     }
     one.postMessage(message)
   }
-  function shutdown () {
+  function shutdown() {
     if (process.env.NODE_ENV !== 'production') {
       // eslint-disable-next-line no-console
-      console.log('tab ' + id + ' disconnected.')
+      console.log(`tab ${id} disconnected.`)
     }
     one.onMessage.removeListener(lOne)
     two.onMessage.removeListener(lTwo)
@@ -88,7 +90,7 @@ function doublePipe (id, one, two) {
   two.onDisconnect.addListener(shutdown)
   if (process.env.NODE_ENV !== 'production') {
     // eslint-disable-next-line no-console
-    console.log('tab ' + id + ' connected.')
+    console.log(`tab ${id} connected.`)
   }
 }
 
@@ -117,7 +119,7 @@ chrome.runtime.onMessage.addListener((req, sender) => {
   if (req.action === 'vue-take-screenshot' && sender.envType === 'devtools_child') {
     browser.tabs.captureVisibleTab({
       format: 'png',
-    }).then(dataUrl => {
+    }).then((dataUrl) => {
       browser.runtime.sendMessage({
         action: 'vue-screenshot-result',
         id: req.id,

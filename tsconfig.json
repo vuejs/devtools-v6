@@ -1,40 +1,40 @@
 {
   "compilerOptions": {
+    "target": "ES2019",
+    "jsx": "preserve",
     "baseUrl": ".",
+    "moduleResolution": "node",
     "paths": {
       "@back/*": [
         "packages/app-backend-core/src/*"
       ],
       "@front/*": [
         "packages/app-frontend/src/*"
-      ],
+      ]
     },
-    "outDir": "lib",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "resolveJsonModule": true,
     "types": [
       "chrome",
       "node",
-      "webpack-env",
+      "webpack-env"
     ],
     "allowJs": true,
-    "target": "ES2019",
-    "jsx": "preserve",
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
     // Strict
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "alwaysStrict": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "skipLibCheck": true,
+    "outDir": "lib",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": [
     "packages/app-frontend/src/**/*",
-    "packages/shared-utils/src/**/*",
+    "packages/shared-utils/src/**/*"
   ],
   "exclude": [
     "node_modules"
-  ],
+  ]
 }

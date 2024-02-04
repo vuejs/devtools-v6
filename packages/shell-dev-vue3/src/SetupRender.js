@@ -1,9 +1,9 @@
-import { defineComponent, reactive, h } from 'vue'
+import { defineComponent, h, reactive } from 'vue'
 
 export default defineComponent({
   name: 'SetupRender',
 
-  setup () {
+  setup() {
     const state = reactive({
       name: 'Foo bar',
     })

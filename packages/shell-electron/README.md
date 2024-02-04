@@ -37,7 +37,7 @@ Or if you want to debug your device remotely:
 <script src="http://<your-local-ip>:8098"></script>
 ```
 
-To the `<head>` section of your app. 
+To the `<head>` section of your app.
 **(Don't forget to remove it before deploying to production!)**
 
 `<your-local-ip>` usually looks like this: `192.168.x.x`.
@@ -117,13 +117,14 @@ import devtools from '@vue/devtools'
 import Vue from 'vue'
 // ...
 
-function onDeviceReady () {
+function onDeviceReady() {
   devtools.connect('http://192.168.xx.yy') // use your IP
 }
 
 if (window.location.protocol === 'file:') {
   document.addEventListener('deviceready', onDeviceReady, false)
-} else {
+}
+else {
   onDeviceReady()
 }
 ```

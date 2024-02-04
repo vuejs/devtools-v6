@@ -5,11 +5,11 @@ interface ThrottleQueueItem {
   key: string
 }
 
-export function createThrottleQueue (wait: number) {
+export function createThrottleQueue(wait: number) {
   const queue: ThrottleQueueItem[] = []
   const tracker: Map<string, ThrottleQueueItem> = new Map()
 
-  function flush () {
+  function flush() {
     for (const item of queue) {
       item.fn()
       tracker.delete(item.key)
@@ -19,13 +19,14 @@ export function createThrottleQueue (wait: number) {
 
   const throttledFlush = throttle(flush, wait)
 
-  function add (key: string, fn: Function) {
+  function add(key: string, fn: Function) {
     if (!tracker.has(key)) {
       const item = { key, fn }
       queue.push(item)
       tracker.set(key, item)
       throttledFlush()
-    } else {
+    }
+    else {
       const item = tracker.get(key)!
       item.fn = fn
     }

@@ -1,17 +1,17 @@
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import 'vue-resize/dist/vue-resize.css'
 
-import { App } from 'vue'
-import VueUi, { generateHtmlIcon } from '../features/ui'
+import type { App } from 'vue'
 import VueVirtualScroller from 'vue-virtual-scroller'
 import { keys } from '@vue-devtools/shared-utils'
 import VueSafeTeleport from 'vue-safe-teleport'
+import VueResize from 'vue-resize'
+import VueUi, { generateHtmlIcon } from '../features/ui'
 import VI18n from './i18n'
 import Responsive from './responsive'
 import GlobalRefs from './global-refs'
-import VueResize from 'vue-resize'
 
-export function setupPlugins (app: App) {
+export function setupPlugins(app: App) {
   app.use(VueSafeTeleport)
   app.use(VueUi)
   app.use(VueResize)
@@ -34,7 +34,7 @@ export function setupPlugins (app: App) {
     },
     replacer: (text: string) => {
       for (const replacer of replacers) {
-        // @ts-ignore
+        // @ts-expect-error meow
         text = text.replace(replacer.reg, replacer.replace)
       }
       return text

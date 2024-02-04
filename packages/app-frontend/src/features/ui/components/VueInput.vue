@@ -1,82 +1,14 @@
-<template>
-  <div
-    class="vue-ui-input"
-    :class="[
-      `type-${type}`,
-      {
-        focused,
-        'show-suggestion': showSuggestion,
-        [`status-${status}`]: status,
-      },
-      $attrs.class,
-    ]"
-    @click="focus()"
-  >
-    <div class="content">
-      <VueLoadingIndicator
-        v-if="loadingLeft"
-        class="small left"
-      />
-
-      <VueIcon
-        v-else-if="iconLeft"
-        :icon="iconLeft"
-        class="input-icon left"
-      />
-
-      <slot name="left" />
-
-      <div class="input-wrapper">
-        <component
-          :is="type === 'textarea' ? type : 'input'"
-          ref="input"
-          class="input"
-          :type="type"
-          :value.prop="modelValue"
-          :placeholder="placeholder"
-          v-bind="$attrs"
-          @input="model = $event.currentTarget.value"
-          @focus="onFocus"
-          @blur="onBlur"
-          @keydown.tab="onKeyTab"
-        />
-
-        <input
-          v-if="showSuggestion"
-          class="input suggestion"
-          :value="suggestion"
-          disabled
-        >
-      </div>
-
-      <slot name="right" />
-
-      <VueIcon
-        v-if="iconRight"
-        :icon="iconRight"
-        class="input-icon right"
-      />
-
-      <VueLoadingIndicator
-        v-if="loadingRight"
-        class="small right"
-      />
-
-      <!-- Focus animation -->
-      <div class="border" />
-    </div>
-  </div>
-</template>
-
 <script lang="ts">
-import {
-  inject,
-  defineComponent,
-  ref,
-  computed,
-  watch,
+import type {
   UnwrapNestedRefs,
+} from 'vue'
+import {
+  computed,
+  defineComponent,
+  inject,
   reactive,
+  ref,
+  watch,
 } from 'vue'
 
 export default defineComponent({
@@ -125,7 +57,7 @@ export default defineComponent({
   },
   emits: ['blur', 'focus', 'update:modelValue'],
 
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     const vueFormField = inject<{
       data: UnwrapNestedRefs<{
         focused: boolean
@@ -148,10 +80,10 @@ export default defineComponent({
 
     const showSuggestion = computed(
       () =>
-        props.suggestion !== null &&
-        props.suggestion !== model.value &&
-        focused.value &&
-        model.value,
+        props.suggestion !== null
+        && props.suggestion !== model.value
+        && focused.value
+        && model.value,
     )
 
     watch(
@@ -232,6 +164,76 @@ export default defineComponent({
   },
 })
 </script>
+
+<template>
+  <div
+    class="vue-ui-input"
+    :class="[
+      `type-${type}`,
+      {
+        focused,
+        'show-suggestion': showSuggestion,
+        [`status-${status}`]: status,
+      },
+      $attrs.class,
+    ]"
+    @click="focus()"
+  >
+    <div class="content">
+      <VueLoadingIndicator
+        v-if="loadingLeft"
+        class="small left"
+      />
+
+      <VueIcon
+        v-else-if="iconLeft"
+        :icon="iconLeft"
+        class="input-icon left"
+      />
+
+      <slot name="left" />
+
+      <div class="input-wrapper">
+        <component
+          :is="type === 'textarea' ? type : 'input'"
+          ref="input"
+          class="input"
+          :type="type"
+          :value.prop="modelValue"
+          :placeholder="placeholder"
+          v-bind="$attrs"
+          @input="model = $event.currentTarget.value"
+          @focus="onFocus"
+          @blur="onBlur"
+          @keydown.tab="onKeyTab"
+        />
+
+        <input
+          v-if="showSuggestion"
+          class="input suggestion"
+          :value="suggestion"
+          disabled
+        >
+      </div>
+
+      <slot name="right" />
+
+      <VueIcon
+        v-if="iconRight"
+        :icon="iconRight"
+        class="input-icon right"
+      />
+
+      <VueLoadingIndicator
+        v-if="loadingRight"
+        class="small right"
+      />
+
+      <!-- Focus animation -->
+      <div class="border" />
+    </div>
+  </div>
+</template>
 
 <style lang="stylus">
 @import '~@vue/ui/src/style/imports'

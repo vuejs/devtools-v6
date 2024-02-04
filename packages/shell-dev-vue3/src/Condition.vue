@@ -3,14 +3,14 @@ export default {
   components: {
     InIf: {
       name: 'InIf',
-      mounted () {
+      mounted() {
         this.$emit('hi')
       },
       template: '<div>Inside v-if</div>',
     },
   },
 
-  data () {
+  data() {
     return {
       show1: false,
       show2: true,

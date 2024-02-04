@@ -1,16 +1,19 @@
-import { camelize, getComponentName, getCustomRefDetails, StateEditor, SharedData } from '@vue-devtools/shared-utils'
-import { ComponentState, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
-import { functionalVnodeMap, instanceMap } from './tree'
+import type { StateEditor } from '@vue-devtools/shared-utils'
+import { SharedData, camelize, getComponentName, getCustomRefDetails } from '@vue-devtools/shared-utils'
+import type { ComponentState, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
+import { getFunctionalVnodeMap, getInstanceMap } from './tree'
 import 'core-js/modules/es.object.entries'
 
 /**
  * Get the detailed information of an inspected instance.
  */
-export function getInstanceDetails (instance): InspectedComponentData {
+export function getInstanceDetails(instance): InspectedComponentData {
   if (instance.__VUE_DEVTOOLS_FUNCTIONAL_LEGACY__) {
     const vnode = findInstanceOrVnode(instance.__VUE_DEVTOOLS_UID__)
 
-    if (!vnode) return null
+    if (!vnode) {
+      return null
+    }
 
     const fakeInstance = {
       $options: vnode.fnOptions,
@@ -42,15 +45,14 @@ export function getInstanceDetails (instance): InspectedComponentData {
     file: null,
   }
 
-  let i
-  if ((i = instance.$vnode) && (i = i.componentOptions) && (i = i.Ctor) && (i = i.options)) {
-    data.file = i.__file || null
+  if (instance.$vnode?.componentOptions?.Ctor?.options) {
+    data.file = instance.$vnode.componentOptions.Ctor.options.__file || null
   }
 
   return data
 }
 
-function getInstanceState (instance): ComponentState[] {
+function getInstanceState(instance): ComponentState[] {
   return processProps(instance).concat(
     processState(instance),
     processSetupState(instance),
@@ -65,11 +67,11 @@ function getInstanceState (instance): ComponentState[] {
   )
 }
 
-function getFunctionalInstanceState (instance): ComponentState[] {
+function getFunctionalInstanceState(instance): ComponentState[] {
   return processProps(instance)
 }
 
-export function getCustomInstanceDetails (instance) {
+export function getCustomInstanceDetails(instance) {
   const state = getInstanceState(instance)
   return {
     _custom: {
@@ -85,7 +87,7 @@ export function getCustomInstanceDetails (instance) {
   }
 }
 
-export function reduceStateList (list) {
+export function reduceStateList(list) {
   if (!list.length) {
     return undefined
   }
@@ -100,9 +102,11 @@ export function reduceStateList (list) {
 /**
  * Get the appropriate display name for an instance.
  */
-export function getInstanceName (instance): string {
+export function getInstanceName(instance): string {
   const name = getComponentName(instance.$options || instance.fnOptions || {})
-  if (name) return name
+  if (name) {
+    return name
+  }
   return instance.$root === instance
     ? 'Root'
     : 'Anonymous Component'
@@ -113,7 +117,7 @@ export function getInstanceName (instance): string {
  * Make sure return a plain object because window.postMessage()
  * will throw an Error if the passed object contains Functions.
  */
-function processProps (instance): ComponentState[] {
+function processProps(instance): ComponentState[] {
   const props = instance.$options.props
   const propsData = []
   for (let key in props) {
@@ -137,7 +141,7 @@ function processProps (instance): ComponentState[] {
   return propsData
 }
 
-function processAttrs (instance): ComponentState[] {
+function processAttrs(instance): ComponentState[] {
   return Object.entries(instance.$attrs || {}).map(([key, value]) => {
     return {
       type: '$attrs',
@@ -152,7 +156,7 @@ const fnTypeRE = /^(?:function|class) (\w+)/
 /**
  * Convert prop type constructor to string.
  */
-function getPropType (type) {
+function getPropType(type) {
   if (Array.isArray(type)) {
     return type.map(t => getPropType(t)).join(' or ')
   }
@@ -170,15 +174,15 @@ function getPropType (type) {
  * with a JSON dance. This removes functions which can cause
  * errors during structured clone used by window.postMessage.
  */
-function processState (instance): ComponentState[] {
+function processState(instance): ComponentState[] {
   const props = instance.$options.props
-  const getters =
-    instance.$options.vuex &&
-    instance.$options.vuex.getters
+  const getters
+    = instance.$options.vuex
+    && instance.$options.vuex.getters
   return Object.keys(instance._data)
     .filter(key => (
-      !(props && key in props) &&
-      !(getters && key in getters)
+      !(props && key in props)
+      && !(getters && key in getters)
     ))
     .map(key => ({
       key,
@@ -188,7 +192,7 @@ function processState (instance): ComponentState[] {
     }))
 }
 
-function processSetupState (instance) {
+function processSetupState(instance) {
   const state = instance._setupProxy || instance
   const raw = instance._setupState
   if (!raw) {
@@ -197,7 +201,7 @@ function processSetupState (instance) {
 
   return Object.keys(raw)
     .filter(key => !key.startsWith('__'))
-    .map(key => {
+    .map((key) => {
       const value = returnError(() => toRaw(state[key]))
 
       const rawData = raw[key]
@@ -219,7 +223,8 @@ function processSetupState (instance) {
           editable: isState && !info.readonly,
           type: isOther ? 'setup (other)' : 'setup',
         }
-      } else {
+      }
+      else {
         result = {
           type: 'setup',
         }
@@ -233,38 +238,39 @@ function processSetupState (instance) {
     })
 }
 
-function returnError (cb: () => any) {
+function returnError(cb: () => any) {
   try {
     return cb()
-  } catch (e) {
+  }
+  catch (e) {
     return e
   }
 }
 
-function isRef (raw: any): boolean {
+function isRef(raw: any): boolean {
   return !!raw.__v_isRef
 }
 
-function isComputed (raw: any): boolean {
+function isComputed(raw: any): boolean {
   return isRef(raw) && !!raw.effect
 }
 
-function isReactive (raw: any): boolean {
+function isReactive(raw: any): boolean {
   return !!raw.__ob__
 }
 
-function isReadOnly (raw: any): boolean {
+function isReadOnly(raw: any): boolean {
   return !!raw.__v_isReadonly
 }
 
-function toRaw (value: any) {
+function toRaw(value: any) {
   if (value?.__v_raw) {
     return value.__v_raw
   }
   return value
 }
 
-function getSetupStateInfo (raw: any) {
+function getSetupStateInfo(raw: any) {
   return {
     ref: isRef(raw),
     computed: isComputed(raw),
@@ -273,7 +279,7 @@ function getSetupStateInfo (raw: any) {
   }
 }
 
-export function getCustomObjectDetails (object: any, proto: string): CustomState | undefined {
+export function getCustomObjectDetails(object: any, _proto: string): CustomState | undefined {
   const info = getSetupStateInfo(object)
 
   const isState = info.ref || info.computed || info.reactive
@@ -295,7 +301,7 @@ export function getCustomObjectDetails (object: any, proto: string): CustomState
 /**
  * Process refs
  */
-function processRefs (instance): ComponentState[] {
+function processRefs(instance): ComponentState[] {
   return Object.keys(instance.$refs)
     .filter(key => instance.$refs[key])
     .map(key => getCustomRefDetails(instance, key, instance.$refs[key]))
@@ -304,7 +310,7 @@ function processRefs (instance): ComponentState[] {
 /**
  * Process the computed properties of an instance.
  */
-function processComputed (instance): ComponentState[] {
+function processComputed(instance): ComponentState[] {
   const computed = []
   const defs = instance.$options.computed || {}
   // use for...in here because if 'computed' is not defined
@@ -325,7 +331,8 @@ function processComputed (instance): ComponentState[] {
         key,
         value: instance[key],
       }
-    } catch (e) {
+    }
+    catch (e) {
       computedProp = {
         type,
         key,
@@ -342,18 +349,19 @@ function processComputed (instance): ComponentState[] {
 /**
  * Process Vuex getters.
  */
-function processInjected (instance): ComponentState[] {
+function processInjected(instance): ComponentState[] {
   const injected = instance.$options.inject
 
   if (injected) {
-    return Object.keys(injected).map(key => {
+    return Object.keys(injected).map((key) => {
       return {
         key,
         type: 'injected',
         value: instance[key],
       }
     })
-  } else {
+  }
+  else {
     return []
   }
 }
@@ -361,16 +369,24 @@ function processInjected (instance): ComponentState[] {
 /**
  * Process possible vue-router $route context
  */
-function processRouteContext (instance): ComponentState[] {
+function processRouteContext(instance): ComponentState[] {
   try {
     const route = instance.$route
     if (route) {
       const { path, query, params } = route
       const value: any = { path, query, params }
-      if (route.fullPath) value.fullPath = route.fullPath
-      if (route.hash) value.hash = route.hash
-      if (route.name) value.name = route.name
-      if (route.meta) value.meta = route.meta
+      if (route.fullPath) {
+        value.fullPath = route.fullPath
+      }
+      if (route.hash) {
+        value.hash = route.hash
+      }
+      if (route.name) {
+        value.name = route.name
+      }
+      if (route.meta) {
+        value.meta = route.meta
+      }
       return [{
         key: '$route',
         type: 'route',
@@ -383,7 +399,8 @@ function processRouteContext (instance): ComponentState[] {
         },
       }]
     }
-  } catch (e) {
+  }
+  catch (e) {
     // Invalid $router
   }
   return []
@@ -392,19 +409,20 @@ function processRouteContext (instance): ComponentState[] {
 /**
  * Process Vuex getters.
  */
-function processVuexGetters (instance): ComponentState[] {
-  const getters =
-    instance.$options.vuex &&
-    instance.$options.vuex.getters
+function processVuexGetters(instance): ComponentState[] {
+  const getters
+    = instance.$options.vuex
+    && instance.$options.vuex.getters
   if (getters) {
-    return Object.keys(getters).map(key => {
+    return Object.keys(getters).map((key) => {
       return {
         type: 'vuex getters',
         key,
         value: instance[key],
       }
     })
-  } else {
+  }
+  else {
     return []
   }
 }
@@ -412,17 +430,18 @@ function processVuexGetters (instance): ComponentState[] {
 /**
  * Process Firebase bindings.
  */
-function processFirebaseBindings (instance): ComponentState[] {
+function processFirebaseBindings(instance): ComponentState[] {
   const refs = instance.$firebaseRefs
   if (refs) {
-    return Object.keys(refs).map(key => {
+    return Object.keys(refs).map((key) => {
       return {
         type: 'firebase bindings',
         key,
         value: instance[key],
       }
     })
-  } else {
+  }
+  else {
     return []
   }
 }
@@ -430,31 +449,32 @@ function processFirebaseBindings (instance): ComponentState[] {
 /**
  * Process vue-rx observable bindings.
  */
-function processObservables (instance): ComponentState[] {
+function processObservables(instance): ComponentState[] {
   const obs = instance.$observables
   if (obs) {
-    return Object.keys(obs).map(key => {
+    return Object.keys(obs).map((key) => {
       return {
         type: 'observables',
         key,
         value: instance[key],
       }
     })
-  } else {
+  }
+  else {
     return []
   }
 }
 
-export function findInstanceOrVnode (id) {
+export function findInstanceOrVnode(id) {
   if (/:functional:/.test(id)) {
     const [refId] = id.split(':functional:')
-    const map = functionalVnodeMap.get(refId)
+    const map = getFunctionalVnodeMap()?.get(refId)
     return map && map[id]
   }
-  return instanceMap.get(id)
+  return getInstanceMap()?.get(id)
 }
 
-export function editState (
+export function editState(
   {
     componentInstance,
     path,
@@ -463,7 +483,9 @@ export function editState (
   }: HookPayloads[Hooks.EDIT_COMPONENT_STATE],
   stateEditor: StateEditor,
 ) {
-  if (!['data', 'props', 'computed', 'setup'].includes(type)) return
+  if (!['data', 'props', 'computed', 'setup'].includes(type)) {
+    return
+  }
 
   let target: any
   const targetPath: string[] = path.slice()
@@ -471,9 +493,10 @@ export function editState (
   if (stateEditor.has(componentInstance._props, path, !!state.newKey)) {
     // props
     target = componentInstance._props
-  } else if (
-    componentInstance._setupState &&
-    Object.keys(componentInstance._setupState).includes(path[0])
+  }
+  else if (
+    componentInstance._setupState
+    && Object.keys(componentInstance._setupState).includes(path[0])
   ) {
     // setup
     target = componentInstance._setupProxy
@@ -481,9 +504,12 @@ export function editState (
     const currentValue = stateEditor.get(target, path)
     if (currentValue != null) {
       const info = getSetupStateInfo(currentValue)
-      if (info.readonly) return
+      if (info.readonly) {
+        return
+      }
     }
-  } else {
+  }
+  else {
     target = componentInstance._data
   }
 

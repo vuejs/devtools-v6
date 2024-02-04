@@ -1,10 +1,10 @@
 <script>
-import { ref, computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 export default {
   name: 'Child',
 
-  setup () {
+  setup() {
     const answer = ref(42)
 
     const doubleAnswer = computed(() => answer.value * 2)
@@ -22,7 +22,7 @@ export default {
 
     reactiveObject.map.set('foo', ref('bar'))
 
-    function myMethodFromSetup () {
+    function myMethodFromSetup() {
       console.log('foobar')
     }
 
@@ -30,7 +30,7 @@ export default {
 
     const writableComputed = computed({
       get: () => internalComputed.value,
-      set: value => {
+      set: (value) => {
         internalComputed.value = value
       },
     })
@@ -44,28 +44,28 @@ export default {
     }
   },
 
-  data () {
+  data() {
     return {
       classicAnswer: 42,
     }
   },
 
   computed: {
-    classicDoubleAnswer () {
+    classicDoubleAnswer() {
       return this.classicAnswer * 2
     },
 
     classicEditableComputed: {
-      get () {
+      get() {
         return this.classicAnswer
       },
-      set (value) {
+      set(value) {
         this.classicAnswer = value
       },
     },
   },
 
-  mounted () {
+  mounted() {
     this.$emit('child mounted', 'bar')
   },
 }

@@ -1,7 +1,7 @@
-import { DevtoolsBackend } from '@vue-devtools/app-backend-api'
-import { ComponentInstance } from '@vue/devtools-api'
+import type { DevtoolsBackend } from '@vue-devtools/app-backend-api'
+import type { ComponentInstance } from '@vue/devtools-api'
 
-export async function flashComponent (instance: ComponentInstance, backend: DevtoolsBackend) {
+export async function flashComponent(instance: ComponentInstance, backend: DevtoolsBackend) {
   const bounds = await backend.api.getComponentBounds(instance)
   if (bounds) {
     let overlay: HTMLDivElement = instance.__VUE_DEVTOOLS_FLASH
@@ -18,10 +18,10 @@ export async function flashComponent (instance: ComponentInstance, backend: Devt
     }
     overlay.style.opacity = '1'
     overlay.style.transition = null
-    overlay.style.width = Math.round(bounds.width) + 'px'
-    overlay.style.height = Math.round(bounds.height) + 'px'
-    overlay.style.left = Math.round(bounds.left) + 'px'
-    overlay.style.top = Math.round(bounds.top) + 'px'
+    overlay.style.width = `${Math.round(bounds.width)}px`
+    overlay.style.height = `${Math.round(bounds.height)}px`
+    overlay.style.left = `${Math.round(bounds.left)}px`
+    overlay.style.top = `${Math.round(bounds.top)}px`
     requestAnimationFrame(() => {
       overlay.style.transition = 'opacity 1s'
       overlay.style.opacity = '0'

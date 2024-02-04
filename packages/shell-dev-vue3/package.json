@@ -19,7 +19,7 @@
     "cross-env": "^5.2.0",
     "launch-editor-middleware": "^2.2.1",
     "mini-css-extract-plugin": "^1.5.0",
-    "webpack": "^5.35.1",
-    "webpack-cli": "^4.6.0"
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
   }
 }

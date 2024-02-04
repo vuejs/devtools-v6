@@ -1,11 +1,11 @@
 <script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
+import { defineComponent, onMounted, provide, ref } from 'vue'
+import { onKeyDown } from '@front/util/keyboard'
 import ComponentTreeNode from './ComponentTreeNode.vue'
 import SelectedComponentPane from './SelectedComponentPane.vue'
 
-import { onMounted, ref, provide, defineComponent } from 'vue'
-import { onKeyDown } from '@front/util/keyboard'
-import { useComponentPick, useComponents, loadComponent } from './composable'
+import { loadComponent, useComponentPick, useComponents } from './composable'
 
 export default defineComponent({
   components: {
@@ -14,7 +14,7 @@ export default defineComponent({
     SelectedComponentPane,
   },
 
-  setup () {
+  setup() {
     const {
       rootInstances,
       requestComponentTree,
@@ -41,18 +41,21 @@ export default defineComponent({
       stopPickingComponent,
     } = useComponentPick()
 
-    onKeyDown(event => {
+    onKeyDown((event) => {
       // ƒ,ß,® - these are the result keys in Mac with altKey pressed
       if ((event.key === 'f' || event.key === 'ƒ') && event.altKey) {
         treeFilterInput.value.focus()
         return false
-      } else if ((event.key === 's' || event.key === 'ß') && event.altKey && !pickingComponent.value) {
+      }
+      else if ((event.key === 's' || event.key === 'ß') && event.altKey && !pickingComponent.value) {
         startPickingComponent()
         return false
-      } else if (event.key === 'Escape' && pickingComponent.value) {
+      }
+      else if (event.key === 'Escape' && pickingComponent.value) {
         stopPickingComponent()
         return false
-      } else if ((event.key === 'r' || event.key === '®') && (event.ctrlKey || event.metaKey) && event.altKey) {
+      }
+      else if ((event.key === 'r' || event.key === '®') && (event.ctrlKey || event.metaKey) && event.altKey) {
         refresh()
         return false
       }
@@ -63,7 +66,7 @@ export default defineComponent({
     const animateRefresh = ref(false)
     let animateRefreshTimer
 
-    function refresh () {
+    function refresh() {
       requestComponentTree(null)
       loadComponent(selectedComponentId.value)
 
@@ -111,7 +114,7 @@ export default defineComponent({
               v-model="treeFilter"
               v-tooltip="{
                 content: $t('ComponentTree.filter.tooltip'),
-                html: true
+                html: true,
               }"
               icon-left="search"
               placeholder="Find components..."
@@ -122,7 +125,7 @@ export default defineComponent({
             <VueButton
               v-tooltip="{
                 content: $t('ComponentTree.select.tooltip'),
-                html: true
+                html: true,
               }"
               class="icon-button flat"
               icon-left="gps_fixed"
@@ -132,7 +135,7 @@ export default defineComponent({
             <VueButton
               v-tooltip="{
                 content: $t('ComponentTree.refresh.tooltip'),
-                html: true
+                html: true,
               }"
               class="icon-button flat"
               :class="{

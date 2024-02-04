@@ -18,7 +18,9 @@ export default {
     },
   },
 
-  data () {
+  emits: ['editState'],
+
+  data() {
     return {
       limit: 30,
       fieldErrors: {},
@@ -26,14 +28,15 @@ export default {
   },
 
   computed: {
-    isFieldsArray () {
+    isFieldsArray() {
       return Array.isArray(this.fields)
     },
 
-    displayedFields () {
+    displayedFields() {
       if (this.isFieldsArray) {
         return this.fields.slice(0, this.limit)
-      } else {
+      }
+      else {
         return Object.keys(this.fields)
           .slice(0, this.limit)
           .reduce((obj, key) => {
@@ -43,31 +46,32 @@ export default {
       }
     },
 
-    fieldsCount () {
+    fieldsCount() {
       if (this.isFieldsArray) {
         return this.fields.length
-      } else {
+      }
+      else {
         return Object.keys(this.fields).length
       }
     },
   },
 
   watch: {
-    fields () {
+    fields() {
       this.fieldErrors = {}
     },
   },
 
-  errorCaptured (err, vm) {
+  errorCaptured(err, vm) {
     this.fieldErrors[vm.field.key] = err.message
   },
 
   methods: {
-    isStateField (field) {
+    isStateField(field) {
       return field && field.type === 'state'
     },
 
-    showMore () {
+    showMore() {
       this.limit += 20
     },
   },
@@ -102,7 +106,7 @@ export default {
           :editable="field.editable"
           :force-collapse="forceCollapse"
           :is-state-field="isStateField(field)"
-          @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+          @edit-state="(path, payload) => $emit('editState', path, payload)"
         />
       </template>
     </template>
@@ -128,7 +132,7 @@ export default {
           :depth="0"
           :path="key.toString()"
           :editable="false"
-          @edit-state="(path, payload) => $emit('edit-state', path, payload)"
+          @edit-state="(path, payload) => $emit('editState', path, payload)"
         />
       </template>
     </template>

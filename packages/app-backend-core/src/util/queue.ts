@@ -7,13 +7,13 @@ export class JobQueue {
   jobs: Job[] = []
   currentJob: Job
 
-  queue (id: string, fn: Job['fn']) {
+  queue(id: string, fn: Job['fn']) {
     const job: Job = {
       id,
       fn,
     }
 
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       const onDone = () => {
         this.currentJob = null
         const nextJob = this.jobs.shift()
@@ -25,7 +25,7 @@ export class JobQueue {
 
       const run = () => {
         this.currentJob = job
-        return job.fn().then(onDone).catch(e => {
+        return job.fn().then(onDone).catch((e) => {
           console.error(`Job ${job.id} failed:`)
           console.error(e)
         })
@@ -36,7 +36,8 @@ export class JobQueue {
           id: job.id,
           fn: () => run(),
         })
-      } else {
+      }
+      else {
         run()
       }
     })

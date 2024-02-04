@@ -1,5 +1,5 @@
-
-import { DevtoolsBackendOptions, DevtoolsBackend, createBackend, BackendContext } from '@vue-devtools/app-backend-api'
+import type { BackendContext, DevtoolsBackend, DevtoolsBackendOptions } from '@vue-devtools/app-backend-api'
+import { createBackend } from '@vue-devtools/app-backend-api'
 
 import { backend as backendVue1 } from '@vue-devtools/app-backend-vue1'
 import { backend as backendVue2 } from '@vue-devtools/app-backend-vue2'
@@ -15,7 +15,7 @@ export const availableBackends = [
 
 const enabledBackends: Map<DevtoolsBackendOptions, DevtoolsBackend> = new Map()
 
-export function getBackend (backendOptions: DevtoolsBackendOptions, ctx: BackendContext) {
+export function getBackend(backendOptions: DevtoolsBackendOptions, ctx: BackendContext) {
   let backend: DevtoolsBackend
   if (!enabledBackends.has(backendOptions)) {
     // Create backend
@@ -23,7 +23,8 @@ export function getBackend (backendOptions: DevtoolsBackendOptions, ctx: Backend
     handleAddPerformanceTag(backend, ctx)
     enabledBackends.set(backendOptions, backend)
     ctx.backends.push(backend)
-  } else {
+  }
+  else {
     backend = enabledBackends.get(backendOptions)
   }
   return backend

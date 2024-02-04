@@ -1,1 +1,1 @@
-export function connect(host?: string, port?: number|string): void
+export function connect(host?: string, port?: number | string): void

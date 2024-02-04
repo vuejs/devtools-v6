@@ -1,4 +1,5 @@
 <script>
+import { createApp, h } from 'vue'
 import Child from './Child.vue'
 import NestedMore from './NestedMore.vue'
 import NativeTypes from './NativeTypes.vue'
@@ -12,7 +13,7 @@ import VModelExample from './VModelExample.vue'
 import Ghost from './Ghost.vue'
 import Other from './Other.vue'
 import SetupRender from './SetupRender.js'
-import Form from './Form.vue'
+import MyForm from './Form.vue'
 import Functional from './Functional.vue'
 import Heavy from './Heavy.vue'
 import Mixins from './Mixins.vue'
@@ -23,7 +24,6 @@ import SetupTSScriptProps from './SetupTSScriptProps.vue'
 import DomOrder from './DomOrder.vue'
 import IndexComponent from './IndexComponent/index.vue'
 
-import { h, createApp } from 'vue'
 import SimplePlugin from './devtools-plugin/simple'
 
 export default {
@@ -43,7 +43,7 @@ export default {
     Ghost,
     Other,
     SetupRender,
-    Form,
+    MyForm,
     Functional,
     Heavy,
     Mixins,
@@ -53,12 +53,12 @@ export default {
     SetupTSScriptProps,
     DomOrder,
     IndexComponent,
-    inline: {
+    Inline: {
       render: () => h('h3', 'Inline component definition'),
     },
   },
 
-  data () {
+  data() {
     return {
       count: 0,
       text: 'Meow',
@@ -67,28 +67,28 @@ export default {
   },
 
   methods: {
-    createApp () {
+    createApp() {
       const app = createApp(Child)
       app.use(SimplePlugin)
       app.mount('#nested-app')
     },
 
-    startTimer () {
+    startTimer() {
       this.stopTimer()
       this.timer = setInterval(() => {
         this.time++
       }, 1)
     },
 
-    stopTimer () {
+    stopTimer() {
       clearInterval(this.timer)
     },
 
-    onFoo (...args) {
+    onFoo(...args) {
       console.log('on foo', ...args)
     },
 
-    onBar (...args) {
+    onBar(...args) {
       console.log('on bar', ...args)
     },
   },
@@ -141,14 +141,14 @@ export default {
   <Ghost />
   <Other />
   <SetupRender />
-  <Form />
+  <MyForm />
   <Functional msg="I am functional" />
   <Mixins />
   <SetupScript />
   <SetupDataLike />
   <SetupTSScriptProps my-prop="42" />
   <DomOrder />
-  <inline />
+  <Inline />
   <global />
 
   <h2>Store</h2>

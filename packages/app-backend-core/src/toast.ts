@@ -1,3 +1,3 @@
-export function installToast () {
+export function installToast() {
   // @TODO
 }

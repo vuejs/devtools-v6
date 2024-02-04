@@ -1,4 +1,4 @@
-window.addEventListener('message', function (event) {
+window.addEventListener('message', (event) => {
   if (event.data.key === '_vue-devtools-send-message') {
     chrome.runtime.sendMessage(event.data.message)
   }

@@ -21,7 +21,6 @@ The repository is a monorepo with several nested packages:
 [shell-dev-vue2](https://github.com/vuejs/devtools/tree/main/packages/shell-dev-vue2) | Demo app for development (Vue 2) |
 [shell-dev-vue3](https://github.com/vuejs/devtools/tree/main/packages/shell-dev-vue3) | Demo app for development (Vue 3) |
 
-
 ## Development
 
 1. Clone [this repo](https://github.com/vuejs/devtools)

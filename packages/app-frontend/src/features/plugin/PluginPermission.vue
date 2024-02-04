@@ -1,6 +1,8 @@
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue'
-import { hasPluginPermission, PluginPermission, setPluginPermission } from '@vue-devtools/shared-utils'
+import type { PropType } from 'vue'
+import { computed, defineComponent } from 'vue'
+import type { PluginPermission } from '@vue-devtools/shared-utils'
+import { hasPluginPermission, setPluginPermission } from '@vue-devtools/shared-utils'
 
 export default defineComponent({
   props: {
@@ -20,12 +22,12 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const model = computed({
-      get () {
+      get() {
         return hasPluginPermission(props.pluginId, props.permission)
       },
-      set (value: boolean) {
+      set(value: boolean) {
         setPluginPermission(props.pluginId, props.permission, value)
       },
     })

@@ -1,10 +1,10 @@
 import { useCurrentApp } from '@front/features/apps'
 import { computed, watch } from 'vue'
-import { markersAllApps, markersPerApp } from './store'
 import { getBridge } from '@front/features/bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { markersAllApps, markersPerApp } from './store'
 
-export function useMarkers () {
+export function useMarkers() {
   const { currentAppId } = useCurrentApp()
   const currentAppMarkers = computed(() => markersAllApps.value.concat(markersPerApp.value[currentAppId.value] ?? []))
 
@@ -19,6 +19,6 @@ export function useMarkers () {
   }
 }
 
-function loadMarkers () {
+function loadMarkers() {
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LOAD_MARKERS)
 }

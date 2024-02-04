@@ -4,24 +4,26 @@ let panelShown = !isChrome
 let pendingAction: (() => void | Promise<void>) | null = null
 
 if (isChrome) {
-  chrome.runtime.onMessage.addListener(request => {
+  chrome.runtime.onMessage.addListener((request) => {
     if (request === 'vue-panel-shown') {
       onPanelShown()
-    } else if (request === 'vue-panel-hidden') {
+    }
+    else if (request === 'vue-panel-hidden') {
       onPanelHidden()
     }
   })
 }
 
-export function ensurePaneShown (cb: () => void | Promise<void>) {
+export function ensurePaneShown(cb: () => void | Promise<void>) {
   if (panelShown) {
     cb()
-  } else {
+  }
+  else {
     pendingAction = cb
   }
 }
 
-function onPanelShown () {
+function onPanelShown() {
   panelShown = true
   if (pendingAction) {
     pendingAction()
@@ -29,6 +31,6 @@ function onPanelShown () {
   }
 }
 
-function onPanelHidden () {
+function onPanelHidden() {
   panelShown = false
 }

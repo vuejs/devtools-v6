@@ -1,9 +1,5 @@
-<template>
-  <Inject />
-</template>
-
 <script>
-import { provide, inject } from 'vue'
+import { inject, provide } from 'vue'
 
 const symbolForInject = Symbol('inject')
 const symbolForSetup = Symbol('setup')
@@ -26,7 +22,7 @@ export default {
         },
       },
       inject: ['injectedData', symbolForInject],
-      setup () {
+      setup() {
         return {
           comingFromSetup: inject('fromSetup'),
           comingFromSymbol: inject(symbolForSetup),
@@ -36,16 +32,20 @@ export default {
     },
   },
 
-  provide () {
+  provide() {
     return {
       injectedData: 'bar',
       [symbolForInject]: 'foo',
     }
   },
 
-  setup () {
+  setup() {
     provide('fromSetup', 'Setup!!')
     provide(symbolForSetup, 'Symbol from Setup')
   },
 }
 </script>
+
+<template>
+  <Inject />
+</template>

@@ -1,3 +1,4 @@
+// eslint-disable-next-line unicorn/prefer-node-protocol
 import { EventEmitter } from 'events'
 import { raf } from './raf'
 
@@ -11,14 +12,15 @@ export class Bridge extends EventEmitter {
   _sending: boolean
   _timer: NodeJS.Timeout
 
-  constructor (wall) {
+  constructor(wall) {
     super()
-    this.setMaxListeners(Infinity)
+    this.setMaxListeners(Number.POSITIVE_INFINITY)
     this.wall = wall
-    wall.listen(messages => {
+    wall.listen((messages) => {
       if (Array.isArray(messages)) {
         messages.forEach(message => this._emit(message))
-      } else {
+      }
+      else {
         this._emit(messages)
       }
     })
@@ -28,11 +30,12 @@ export class Bridge extends EventEmitter {
     this._sending = false
   }
 
-  on (event: string | symbol, listener: (...args: any[]) => void): this {
+  on(event: string | symbol, listener: (...args: any[]) => void): this {
     const wrappedListener = async (...args) => {
       try {
         await listener(...args)
-      } catch (e) {
+      }
+      catch (e) {
         console.error(`[Bridge] Error in listener for event ${event.toString()} with args:`, args)
         console.error(e)
       }
@@ -40,7 +43,7 @@ export class Bridge extends EventEmitter {
     return super.on(event, wrappedListener)
   }
 
-  send (event: string, payload?: any) {
+  send(event: string, payload?: any) {
     this._batchingQueue.push({
       event,
       payload,
@@ -55,45 +58,52 @@ export class Bridge extends EventEmitter {
    * Log a message to the devtools background page.
    */
 
-  log (message: string) {
+  log(message: string) {
     this.send('log', message)
   }
 
-  _flush () {
-    if (this._batchingQueue.length) this._send(this._batchingQueue)
+  _flush() {
+    if (this._batchingQueue.length) {
+      this._send(this._batchingQueue)
+    }
     clearTimeout(this._timer)
     this._timer = null
     this._batchingQueue = []
   }
 
   // @TODO types
-  _emit (message) {
+  _emit(message) {
     if (typeof message === 'string') {
       this.emit(message)
-    } else if (message._chunk) {
+    }
+    else if (message._chunk) {
       this._receivingQueue.push(message._chunk)
       if (message.last) {
         this.emit(message.event, this._receivingQueue)
         this._receivingQueue = []
       }
-    } else if (message.event) {
+    }
+    else if (message.event) {
       this.emit(message.event, message.payload)
     }
   }
 
   // @TODO types
-  _send (messages) {
+  _send(messages) {
     this._sendingQueue.push(messages)
     this._nextSend()
   }
 
-  _nextSend () {
-    if (!this._sendingQueue.length || this._sending) return
+  _nextSend() {
+    if (!this._sendingQueue.length || this._sending) {
+      return
+    }
     this._sending = true
     const messages = this._sendingQueue.shift()
     try {
       this.wall.send(messages)
-    } catch (err) {
+    }
+    catch (err) {
       if (err.message === 'Message length exceeded maximum allowed length.') {
         this._sendingQueue.splice(0, 0, messages.map(message => [message]))
       }

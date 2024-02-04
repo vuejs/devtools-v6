@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useVueVersionCheck } from './vue-version-check'
 
 export default defineComponent({
@@ -15,7 +15,7 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const { getLatestVersion } = useVueVersionCheck()
     const latestVersion = computed(() => getLatestVersion(props.app.version))
     const hasNewVersion = computed(() => latestVersion.value !== props.app.version)

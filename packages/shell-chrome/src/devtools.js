@@ -15,7 +15,7 @@ initDevTools({
    * @param {Function} cb
    */
 
-  connect (cb) {
+  connect(cb) {
     // 1. inject backend code into page
     injectScript(chrome.runtime.getURL('build/backend.js'), () => {
       // 2. connect to background to setup proxy
@@ -23,12 +23,12 @@ initDevTools({
 
       const onMessageHandlers = []
 
-      function connect () {
+      function connect() {
         try {
           clearTimeout(retryConnectTimer)
           connectCount++
           port = chrome.runtime.connect({
-            name: '' + chrome.devtools.inspectedWindow.tabId,
+            name: `${chrome.devtools.inspectedWindow.tabId}`,
           })
           disconnected = false
           port.onDisconnect.addListener(() => {
@@ -42,7 +42,8 @@ initDevTools({
           if (connectCount > 1) {
             onMessageHandlers.forEach(fn => port.onMessage.addListener(fn))
           }
-        } catch (e) {
+        }
+        catch (e) {
           console.error(e)
           disconnected = true
           setAppConnected(false)
@@ -54,11 +55,11 @@ initDevTools({
       connect()
 
       const bridge = new Bridge({
-        listen (fn) {
+        listen(fn) {
           port.onMessage.addListener(fn)
           onMessageHandlers.push(fn)
         },
-        send (data) {
+        send(data) {
           if (!disconnected) {
             // if (process.env.NODE_ENV !== 'production') {
             //   console.log('[chrome] devtools -> backend', data)
@@ -83,7 +84,7 @@ initDevTools({
    * @param {Function} reloadFn
    */
 
-  onReload (reloadFn) {
+  onReload(reloadFn) {
     chrome.devtools.network.onNavigated.addListener(reloadFn)
   },
 })
@@ -92,11 +93,11 @@ initDevTools({
  * Inject a globally evaluated script, in the same context with the actual
  * user app.
  *
- * @param {String} scriptName
+ * @param {string} scriptName
  * @param {Function} cb
  */
 
-function injectScript (scriptName, cb) {
+function injectScript(scriptName, cb) {
   const src = `
     (function() {
       var script = document.constructor.prototype.createElement.call(document, 'script');
@@ -105,7 +106,7 @@ function injectScript (scriptName, cb) {
       script.parentNode.removeChild(script);
     })()
   `
-  chrome.devtools.inspectedWindow.eval(src, function (res, err) {
+  chrome.devtools.inspectedWindow.eval(src, (res, err) => {
     if (err) {
       console.error(err)
     }

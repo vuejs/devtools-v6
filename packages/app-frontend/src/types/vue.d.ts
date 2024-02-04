@@ -1,4 +1,4 @@
-import {
+import type {
   SharedData,
   keys,
 } from '@vue-devtools/shared-utils'

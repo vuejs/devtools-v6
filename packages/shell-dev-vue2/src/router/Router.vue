@@ -1,3 +1,17 @@
+<script>
+import RouteOne from './RouteOne.vue'
+
+export default {
+  methods: {
+    addRoutes() {
+      this.$router.addRoutes([
+        { path: '/new-route', component: RouteOne },
+      ])
+    },
+  },
+}
+</script>
+
 <template>
   <div>
     <p>
@@ -75,17 +89,3 @@
     </p>
   </div>
 </template>
-
-<script>
-import RouteOne from './RouteOne.vue'
-
-export default {
-  methods: {
-    addRoutes () {
-      this.$router.addRoutes([
-        { path: '/new-route', component: RouteOne },
-      ])
-    },
-  },
-}
-</script>

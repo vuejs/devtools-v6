@@ -38,7 +38,7 @@ const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', 
 
       <VueButton
         :to="{
-          name: 'plugins'
+          name: 'plugins',
         }"
         icon-left="extension"
         icon-right="arrow_forward"

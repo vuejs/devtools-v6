@@ -1,16 +1,16 @@
-import { Bridge } from '@vue-devtools/shared-utils'
-import {
-  TimelineLayerOptions,
+import type { Bridge } from '@vue-devtools/shared-utils'
+import type {
   CustomInspectorOptions,
-  TimelineEventOptions,
-  WithId,
   ID,
+  TimelineEventOptions,
+  TimelineLayerOptions,
   TimelineMarkerOptions,
+  WithId,
 } from '@vue/devtools-api'
-import { AppRecord } from './app-record'
-import { Plugin } from './plugin'
-import { DevtoolsHook } from './global-hook'
-import { DevtoolsBackend } from './backend'
+import type { AppRecord } from './app-record'
+import type { Plugin } from './plugin'
+import type { DevtoolsHook } from './global-hook'
+import type { DevtoolsBackend } from './backend'
 
 export interface BackendContext {
   bridge: Bridge
@@ -52,7 +52,7 @@ export interface CreateBackendContextOptions {
   hook: DevtoolsHook
 }
 
-export function createBackendContext (options: CreateBackendContextOptions): BackendContext {
+export function createBackendContext(options: CreateBackendContextOptions): BackendContext {
   return {
     bridge: options.bridge,
     hook: options.hook,

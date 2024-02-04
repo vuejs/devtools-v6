@@ -1,6 +1,7 @@
+import type { App as VueApp } from 'vue'
+import { createApp as createVueApp } from 'vue'
+import { BridgeEvents, SharedData, destroySharedData, initEnv, initSharedData, isChrome } from '@vue-devtools/shared-utils'
 import App from './features/App.vue'
-import { App as VueApp, createApp as createVueApp } from 'vue'
-import { isChrome, initEnv, SharedData, initSharedData, destroySharedData, BridgeEvents } from '@vue-devtools/shared-utils'
 import { createRouterInstance } from './router'
 import { getBridge, setBridge } from './features/bridge'
 import { setAppConnected, setAppInitializing } from './features/connection'
@@ -14,7 +15,7 @@ import { setupPlugins } from './plugins'
 // Capture and log devtool errors when running as actual extension
 // so that we can debug it by inspecting the background page.
 // We do want the errors to be thrown in the dev shell though.
-export function createApp () {
+export function createApp() {
   const router = createRouterInstance()
 
   const app = createVueApp(App)
@@ -38,16 +39,17 @@ export function createApp () {
  * Connect then init the app. We need to reconnect on every reload, because a
  * new backend will be injected.
  */
-export function connectApp (app: VueApp, shell) {
-  shell.connect(async bridge => {
+export function connectApp(app: VueApp, shell) {
+  shell.connect(async (bridge) => {
     setBridge(bridge)
     // @TODO remove
-    // @ts-ignore
+    // @ts-expect-error custom prop on window
     window.bridge = bridge
 
     if (app.config.globalProperties.$shared) {
       destroySharedData()
-    } else {
+    }
+    else {
       Object.defineProperty(app.config.globalProperties, '$shared', {
         get: () => SharedData,
       })

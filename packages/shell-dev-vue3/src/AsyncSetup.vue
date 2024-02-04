@@ -1,21 +1,14 @@
-<template>
-  <div>
-    Async setup:<br>
-    <pre>{{ message }}</pre>
-  </div>
-</template>
-
 <script>
-import { ref, onMounted, getCurrentInstance } from 'vue'
+import { getCurrentInstance, onMounted, ref } from 'vue'
 
 export default {
-  setup () {
+  setup() {
     const vm = getCurrentInstance()
     onMounted(() => {
       console.log('Im alive', vm)
     })
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         const message = ref('Async setup')
 
@@ -27,3 +20,10 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div>
+    Async setup:<br>
+    <pre>{{ message }}</pre>
+  </div>
+</template>

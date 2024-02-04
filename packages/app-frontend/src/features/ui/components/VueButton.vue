@@ -1,3 +1,75 @@
+<script lang="ts">
+import type { PropType } from 'vue'
+import { computed, defineComponent, useAttrs } from 'vue'
+import { useDisabledChild } from '../composables/useDisabled'
+
+export default defineComponent({
+  props: {
+    iconLeft: {
+      type: String,
+      default: '',
+    },
+    iconRight: {
+      type: String,
+      default: '',
+    },
+    label: {
+      type: String,
+      default: '',
+    },
+    loading: Boolean,
+    loadingSecondary: Boolean,
+    type: {
+      type: String as PropType<'button' | 'submit' | 'reset'>,
+      default: 'button',
+    },
+    tag: {
+      type: [String, Number],
+      default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['click'],
+  setup(props, { emit }) {
+    const attrs = useAttrs()
+    const { finalDisabled } = useDisabledChild(props)
+    const component = computed(() => {
+      if (attrs.to) {
+        return 'router-link'
+      }
+      else if (attrs.href) {
+        return 'a'
+      }
+      else {
+        return 'button'
+      }
+    })
+    const ghost = computed(() => {
+      return finalDisabled.value || props.loading || props.loadingSecondary
+    })
+    const handleClick = (event: MouseEvent) => {
+      if (ghost.value) {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+      }
+      else {
+        emit('click', event)
+      }
+    }
+    return {
+      attrs,
+      component,
+      ghost,
+      handleClick,
+    }
+  },
+})
+</script>
+
 <template>
   <component
     :is="component"
@@ -49,71 +121,3 @@
     </span>
   </component>
 </template>
-
-<script lang="ts">
-import { PropType, useAttrs, computed, defineComponent } from 'vue'
-import { useDisabledChild } from '../composables/useDisabled'
-
-export default defineComponent({
-  props: {
-    iconLeft: {
-      type: String,
-      default: '',
-    },
-    iconRight: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-    loading: Boolean,
-    loadingSecondary: Boolean,
-    type: {
-      type: String as PropType<'button' | 'submit' | 'reset'>,
-      default: 'button',
-    },
-    tag: {
-      type: [String, Number],
-      default: null,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['click'],
-  setup (props, { emit }) {
-    const attrs = useAttrs()
-    const { finalDisabled } = useDisabledChild(props)
-    const component = computed(() => {
-      if (attrs.to) {
-        return 'router-link'
-      } else if (attrs.href) {
-        return 'a'
-      } else {
-        return 'button'
-      }
-    })
-    const ghost = computed(() => {
-      return finalDisabled.value || props.loading || props.loadingSecondary
-    })
-    const handleClick = (event: MouseEvent) => {
-      if (ghost.value) {
-        event.preventDefault()
-        event.stopPropagation()
-        event.stopImmediatePropagation()
-      } else {
-        emit('click', event)
-      }
-    }
-    return {
-      attrs,
-      component,
-      ghost,
-      handleClick,
-    }
-  },
-})
-</script>

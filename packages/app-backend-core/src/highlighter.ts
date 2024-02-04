@@ -1,14 +1,16 @@
 import { isBrowser } from '@vue-devtools/shared-utils'
-import { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
-import { ComponentBounds, ComponentInstance } from '@vue/devtools-api'
+import type { BackendContext, DevtoolsBackend } from '@vue-devtools/app-backend-api'
+import type { ComponentBounds, ComponentInstance } from '@vue/devtools-api'
 import { JobQueue } from './util/queue'
 
 let overlay: HTMLDivElement
 let overlayContent: HTMLDivElement
 let currentInstance
 
-function createOverlay () {
-  if (overlay || !isBrowser) return
+function createOverlay() {
+  if (overlay || !isBrowser) {
+    return
+  }
   overlay = document.createElement('div')
   overlay.style.backgroundColor = 'rgba(65, 184, 131, 0.35)'
   overlay.style.position = 'fixed'
@@ -34,9 +36,11 @@ function createOverlay () {
 // This prevents "sticky" highlights that are not removed because highlight is async
 const jobQueue = new JobQueue()
 
-export async function highlight (instance: ComponentInstance, backend: DevtoolsBackend, ctx: BackendContext) {
+export async function highlight(instance: ComponentInstance, backend: DevtoolsBackend, ctx: BackendContext) {
   await jobQueue.queue('highlight', async () => {
-    if (!instance) return
+    if (!instance) {
+      return
+    }
 
     const bounds = await backend.api.getComponentBounds(instance)
     if (bounds) {
@@ -46,14 +50,14 @@ export async function highlight (instance: ComponentInstance, backend: DevtoolsB
       const name = (await backend.api.getComponentName(instance)) || 'Anonymous'
       const pre = document.createElement('span')
       pre.style.opacity = '0.6'
-      pre.innerText = '<'
+      pre.textContent = '<'
       const text = document.createElement('span')
       text.style.fontWeight = 'bold'
       text.style.color = '#09ab56'
-      text.innerText = name
+      text.textContent = name
       const post = document.createElement('span')
       post.style.opacity = '0.6'
-      post.innerText = '>'
+      post.textContent = '>'
 
       // Size
       const size = document.createElement('span')
@@ -62,7 +66,7 @@ export async function highlight (instance: ComponentInstance, backend: DevtoolsB
       size.appendChild(document.createTextNode((Math.round(bounds.width * 100) / 100).toString()))
       const multiply = document.createElement('span')
       multiply.style.marginLeft = multiply.style.marginRight = '2px'
-      multiply.innerText = '×'
+      multiply.textContent = '×'
       size.appendChild(multiply)
       size.appendChild(document.createTextNode((Math.round(bounds.height * 100) / 100).toString()))
 
@@ -75,7 +79,7 @@ export async function highlight (instance: ComponentInstance, backend: DevtoolsB
   })
 }
 
-export async function unHighlight () {
+export async function unHighlight() {
   await jobQueue.queue('unHighlight', async () => {
     overlay?.parentNode?.removeChild(overlay)
     overlayContent?.parentNode?.removeChild(overlayContent)
@@ -85,8 +89,10 @@ export async function unHighlight () {
   })
 }
 
-function showOverlay (bounds: ComponentBounds, children: Node[] = null) {
-  if (!isBrowser || !children.length) return
+function showOverlay(bounds: ComponentBounds, children: Node[] = null) {
+  if (!isBrowser || !children.length) {
+    return
+  }
 
   positionOverlay(bounds)
   document.body.appendChild(overlay)
@@ -98,21 +104,22 @@ function showOverlay (bounds: ComponentBounds, children: Node[] = null) {
   positionOverlayContent(bounds)
 }
 
-function positionOverlay ({ width = 0, height = 0, top = 0, left = 0 }) {
-  overlay.style.width = Math.round(width) + 'px'
-  overlay.style.height = Math.round(height) + 'px'
-  overlay.style.left = Math.round(left) + 'px'
-  overlay.style.top = Math.round(top) + 'px'
+function positionOverlay({ width = 0, height = 0, top = 0, left = 0 }) {
+  overlay.style.width = `${Math.round(width)}px`
+  overlay.style.height = `${Math.round(height)}px`
+  overlay.style.left = `${Math.round(left)}px`
+  overlay.style.top = `${Math.round(top)}px`
 }
 
-function positionOverlayContent ({ height = 0, top = 0, left = 0 }) {
+function positionOverlayContent({ height = 0, top = 0, left = 0 }) {
   // Content position (prevents overflow)
   const contentWidth = overlayContent.offsetWidth
   const contentHeight = overlayContent.offsetHeight
   let contentLeft = left
   if (contentLeft < 0) {
     contentLeft = 0
-  } else if (contentLeft + contentWidth > window.innerWidth) {
+  }
+  else if (contentLeft + contentWidth > window.innerWidth) {
     contentLeft = window.innerWidth - contentWidth
   }
   let contentTop = top - contentHeight - 2
@@ -121,14 +128,15 @@ function positionOverlayContent ({ height = 0, top = 0, left = 0 }) {
   }
   if (contentTop < 0) {
     contentTop = 0
-  } else if (contentTop + contentHeight > window.innerHeight) {
+  }
+  else if (contentTop + contentHeight > window.innerHeight) {
     contentTop = window.innerHeight - contentHeight
   }
-  overlayContent.style.left = ~~contentLeft + 'px'
-  overlayContent.style.top = ~~contentTop + 'px'
+  overlayContent.style.left = `${~~contentLeft}px`
+  overlayContent.style.top = `${~~contentTop}px`
 }
 
-async function updateOverlay (backend: DevtoolsBackend, ctx: BackendContext) {
+async function updateOverlay(backend: DevtoolsBackend, _ctx: BackendContext) {
   if (currentInstance) {
     const bounds = await backend.api.getComponentBounds(currentInstance)
     if (bounds) {
@@ -146,7 +154,7 @@ async function updateOverlay (backend: DevtoolsBackend, ctx: BackendContext) {
 
 let updateTimer
 
-function startUpdateTimer (backend: DevtoolsBackend, ctx: BackendContext) {
+function startUpdateTimer(backend: DevtoolsBackend, ctx: BackendContext) {
   stopUpdateTimer()
   updateTimer = setInterval(() => {
     jobQueue.queue('updateOverlay', async () => {
@@ -155,6 +163,6 @@ function startUpdateTimer (backend: DevtoolsBackend, ctx: BackendContext) {
   }, 1000 / 30) // 30fps
 }
 
-function stopUpdateTimer () {
+function stopUpdateTimer() {
   clearInterval(updateTimer)
 }

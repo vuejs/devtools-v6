@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
-import { AppRecordOptions } from './app-record'
+import type { AppRecordOptions } from './app-record'
 
 export interface DevtoolsHook {
   emit: (event: string, ...payload: any[]) => void

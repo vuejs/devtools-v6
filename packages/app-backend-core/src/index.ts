@@ -1,57 +1,63 @@
-import {
-  createBackendContext,
+import type {
+  AppRecord,
   BackendContext,
   Plugin,
-  BuiltinBackendFeature,
-  AppRecord,
 } from '@vue-devtools/app-backend-api'
 import {
+  BuiltinBackendFeature,
+  createBackendContext,
+} from '@vue-devtools/app-backend-api'
+import type {
   Bridge,
-  HookEvents,
+} from '@vue-devtools/shared-utils'
+import {
   BridgeEvents,
-  BuiltinTabs,
-  initSharedData,
   BridgeSubscriptions,
+  BuiltinTabs,
+  HookEvents,
+  SharedData,
+  createThrottleQueue,
+  getPluginSettings,
+  initSharedData,
+  isBrowser,
   parse,
+  raf,
   revive,
   target,
-  getPluginSettings,
-  SharedData,
-  isBrowser,
-  raf,
-  createThrottleQueue,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
-import throttle from 'lodash/throttle'
+import type { CustomInspectorOptions, PluginDescriptor, SetupFunction, TimelineEventOptions, TimelineLayerOptions } from '@vue/devtools-api'
+import { Hooks, now } from '@vue/devtools-api'
 import { hook } from './global-hook'
-import { subscribe, unsubscribe, isSubscribed } from './util/subscriptions'
+import { isSubscribed, subscribe, unsubscribe } from './util/subscriptions'
 import { highlight, unHighlight } from './highlighter'
-import { setupTimeline, sendTimelineLayers, addTimelineEvent, clearTimeline, sendTimelineEventData, sendTimelineLayerEvents } from './timeline'
+import { addTimelineEvent, clearTimeline, sendTimelineEventData, sendTimelineLayerEvents, sendTimelineLayers, setupTimeline } from './timeline'
 import ComponentPicker from './component-pick'
 import {
-  sendComponentTreeData,
-  sendSelectedComponentData,
-  sendEmptyComponentData,
-  getComponentId,
   editComponentState,
+  getComponentId,
   getComponentInstance,
   refreshComponentTreeSearch,
+  sendComponentTreeData,
   sendComponentUpdateTracking,
+  sendEmptyComponentData,
+  sendSelectedComponentData,
 } from './component'
-import { addQueuedPlugins, addPlugin, sendPluginList, addPreviouslyRegisteredPlugins } from './plugin'
-import { PluginDescriptor, SetupFunction, TimelineLayerOptions, TimelineEventOptions, CustomInspectorOptions, Hooks, now } from '@vue/devtools-api'
-import { registerApp, selectApp, waitForAppsRegistration, sendApps, _legacy_getAndRegisterApps, getAppRecord, removeApp } from './app'
-import { sendInspectorTree, getInspector, getInspectorWithAppId, sendInspectorState, editInspectorState, sendCustomInspectors, selectInspectorNode } from './inspector'
+import { addPlugin, addPreviouslyRegisteredPlugins, addQueuedPlugins, sendPluginList } from './plugin'
+import { _legacy_getAndRegisterApps, getAppRecord, registerApp, removeApp, selectApp, sendApps, waitForAppsRegistration } from './app'
+import { editInspectorState, getInspector, getInspectorWithAppId, selectInspectorNode, sendCustomInspectors, sendInspectorState, sendInspectorTree } from './inspector'
 import { showScreenshot } from './timeline-screenshot'
 import { performanceMarkEnd, performanceMarkStart } from './perf'
 import { initOnPageConfig } from './page-config'
-import { sendTimelineMarkers, addTimelineMarker } from './timeline-marker'
+import { addTimelineMarker, sendTimelineMarkers } from './timeline-marker'
 import { flashComponent } from './flash.js'
 
 let ctx: BackendContext = target.__vdevtools_ctx ?? null
 let connected = target.__vdevtools_connected ?? false
 
-export async function initBackend (bridge: Bridge) {
+let pageTitleObserver: MutationObserver
+
+export async function initBackend(bridge: Bridge) {
   await initSharedData({
     bridge,
     persist: false,
@@ -79,19 +85,20 @@ export async function initBackend (bridge: Bridge) {
       SharedData.legacyApps = true
     })
 
-    hook.on(HookEvents.APP_ADD, async app => {
+    hook.on(HookEvents.APP_ADD, async (app) => {
       await registerApp(app, ctx)
       connect()
     })
 
     // Add apps that already sent init
     if (hook.apps.length) {
-      hook.apps.forEach(app => {
+      hook.apps.forEach((app) => {
         registerApp(app, ctx)
         connect()
       })
     }
-  } else {
+  }
+  else {
     // Reconnect
     ctx.bridge = bridge
     connectBridge()
@@ -99,7 +106,7 @@ export async function initBackend (bridge: Bridge) {
   }
 }
 
-async function connect () {
+async function connect() {
   if (connected) {
     return
   }
@@ -113,7 +120,7 @@ async function connect () {
 
   // Apps
 
-  hook.on(HookEvents.APP_UNMOUNT, async app => {
+  hook.on(HookEvents.APP_UNMOUNT, async (app) => {
     await removeApp(app, ctx)
   })
 
@@ -123,7 +130,9 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
     try {
-      if (!app || (typeof uid !== 'number' && !uid) || !component) return
+      if (!app || (typeof uid !== 'number' && !uid) || !component) {
+        return
+      }
       const now = Date.now()
 
       let id: string
@@ -131,28 +140,22 @@ async function connect () {
       if (app && uid != null) {
         id = await getComponentId(app, uid, component, ctx)
         appRecord = await getAppRecord(app, ctx)
-      } else {
+      }
+      else {
         id = ctx.currentInspectedComponentId
         appRecord = ctx.currentAppRecord
       }
 
       throttleQueue.add(`update:${id}`, async () => {
         try {
-          const time = performance.now()
-
-          const trackUpdateNow = performance.now()
           if (SharedData.trackUpdates) {
             sendComponentUpdateTracking(id, now, ctx)
           }
-          const trackUpdateTime = performance.now() - trackUpdateNow
 
-          const flashNow = performance.now()
           if (SharedData.flashUpdates) {
             await flashComponent(component, appRecord.backend)
           }
-          const flashTime = performance.now() - flashNow
 
-          const sendUpdateNow = performance.now()
           // Update component inspector
           if (ctx.currentInspectedComponentId === id) {
             await sendSelectedComponentData(appRecord, ctx.currentInspectedComponentId, ctx)
@@ -162,15 +165,15 @@ async function connect () {
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, id)) {
             await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, false, ctx)
           }
-          const sendUpdateTime = performance.now() - sendUpdateNow
-          // console.log('COMPONENT_UPDATED', id, Math.round(performance.now() - time) + 'ms', { trackUpdateTime, flashTime, sendUpdateTime, updatedData: ctx.currentInspectedComponentId === id })
-        } catch (e) {
+        }
+        catch (e) {
           if (SharedData.debugInfo) {
             console.error(e)
           }
         }
       })
-    } catch (e) {
+    }
+    catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
       }
@@ -179,13 +182,14 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
-      if (!app || (typeof uid !== 'number' && !uid) || !component) return
+      if (!app || (typeof uid !== 'number' && !uid) || !component) {
+        return
+      }
       const now = Date.now()
       const id = await getComponentId(app, uid, component, ctx)
 
       throttleQueue.add(`add:${id}`, async () => {
         try {
-          const time = performance.now()
           const appRecord = await getAppRecord(app, ctx)
           if (component) {
             if (component.__VUE_DEVTOOLS_UID__ == null) {
@@ -230,14 +234,15 @@ async function connect () {
           }
 
           await refreshComponentTreeSearch(ctx)
-          // console.log('COMPONENT_ADDED', id, Math.round(performance.now() - time) + 'ms')
-        } catch (e) {
+        }
+        catch (e) {
           if (SharedData.debugInfo) {
             console.error(e)
           }
         }
       })
-    } catch (e) {
+    }
+    catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
       }
@@ -246,12 +251,13 @@ async function connect () {
 
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     try {
-      if (!app || (typeof uid !== 'number' && !uid) || !component) return
+      if (!app || (typeof uid !== 'number' && !uid) || !component) {
+        return
+      }
       const id = await getComponentId(app, uid, component, ctx)
 
       throttleQueue.add(`remove:${id}`, async () => {
         try {
-          const time = performance.now()
           const appRecord = await getAppRecord(app, ctx)
           if (parentUid != null && appRecord) {
             const parentInstances = await appRecord.backend.api.walkComponentParents(component)
@@ -265,7 +271,8 @@ async function connect () {
                     if (appRecord) {
                       sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
                     }
-                  } catch (e) {
+                  }
+                  catch (e) {
                     if (SharedData.debugInfo) {
                       console.error(e)
                     }
@@ -284,14 +291,15 @@ async function connect () {
           }
 
           await refreshComponentTreeSearch(ctx)
-          // console.log('COMPONENT_REMOVED', id, Math.round(performance.now() - time) + 'ms')
-        } catch (e) {
+        }
+        catch (e) {
           if (SharedData.debugInfo) {
             console.error(e)
           }
         }
       })
-    } catch (e) {
+    }
+    catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
       }
@@ -318,7 +326,7 @@ async function connect () {
 
   // Highlighter
 
-  hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
+  hook.on(HookEvents.COMPONENT_HIGHLIGHT, (instanceId) => {
     highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
@@ -367,7 +375,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       await sendInspectorTree(inspector, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -376,7 +385,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       await sendInspectorState(inspector, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -385,7 +395,8 @@ async function connect () {
     const inspector = getInspector(inspectorId, plugin.descriptor.app, ctx)
     if (inspector) {
       await selectInspectorNode(inspector, nodeId, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -394,13 +405,15 @@ async function connect () {
 
   try {
     await addPreviouslyRegisteredPlugins(ctx)
-  } catch (e) {
+  }
+  catch (e) {
     console.error(`Error adding previously registered plugins:`)
     console.error(e)
   }
   try {
     await addQueuedPlugins(ctx)
-  } catch (e) {
+  }
+  catch (e) {
     console.error(`Error adding queued plugins:`)
     console.error(e)
   }
@@ -435,13 +448,14 @@ async function connect () {
       color: 0x41B883,
       all: true,
     }, ctx)
-  } catch (e) {
+  }
+  catch (e) {
     console.error(`Error while adding devtools connected timeline marker:`)
     console.error(e)
   }
 }
 
-function connectBridge () {
+function connectBridge() {
   // Subscriptions
 
   ctx.bridge.on(BridgeEvents.TO_BACK_SUBSCRIBE, ({ type, key }) => {
@@ -454,7 +468,7 @@ function connectBridge () {
 
   // Tabs
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async tab => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_TAB_SWITCH, async (tab) => {
     ctx.currentTab = tab
     await unHighlight()
   })
@@ -465,12 +479,15 @@ function connectBridge () {
     await sendApps(ctx)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async id => {
-    if (id == null) return
+  ctx.bridge.on(BridgeEvents.TO_BACK_APP_SELECT, async (id) => {
+    if (id == null) {
+      return
+    }
     const record = ctx.appRecords.find(r => r.id === id)
     if (record) {
       await selectApp(record, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`App with id ${id} not found`)
     }
   })
@@ -502,7 +519,6 @@ function connectBridge () {
     if (instance) {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
       if (el) {
-        // @ts-ignore
         target.__VUE_DEVTOOLS_INSPECT_TARGET__ = el
         ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_INSPECT_DOM, null)
       }
@@ -510,7 +526,9 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, async ({ instanceId }) => {
-    if (!isBrowser) return
+    if (!isBrowser) {
+      return
+    }
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const [el] = await ctx.currentAppRecord.backend.api.getComponentRootElements(instance)
@@ -521,7 +539,8 @@ function connectBridge () {
             block: 'center',
             inline: 'center',
           })
-        } else {
+        }
+        else {
           // Handle nodes that don't implement scrollIntoView
           const bounds = await ctx.currentAppRecord.backend.api.getComponentBounds(instance)
           const scrollTarget = document.createElement('div')
@@ -549,7 +568,9 @@ function connectBridge () {
   })
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, async ({ instanceId }) => {
-    if (!isBrowser) return
+    if (!isBrowser) {
+      return
+    }
     const instance = getComponentInstance(ctx.currentAppRecord, instanceId, ctx)
     if (instance) {
       const { code } = await ctx.currentAppRecord.backend.api.getComponentRenderCode(instance)
@@ -566,17 +587,19 @@ function connectBridge () {
     if (action) {
       try {
         await action()
-      } catch (e) {
+      }
+      catch (e) {
         console.error(e)
       }
-    } else {
+    }
+    else {
       console.warn(`Couldn't revive action ${actionIndex} from`, value)
     }
   })
 
   // Highlighter
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, async instanceId => {
+  ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_MOUSE_OVER, async (instanceId) => {
     await highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
@@ -633,7 +656,8 @@ function connectBridge () {
     if (inspector) {
       inspector.treeFilter = treeFilter
       sendInspectorTree(inspector, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -643,7 +667,8 @@ function connectBridge () {
     if (inspector) {
       inspector.selectedNodeId = nodeId
       sendInspectorState(inspector, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -654,7 +679,8 @@ function connectBridge () {
       await editInspectorState(inspector, nodeId, path, type, payload, ctx)
       inspector.selectedNodeId = nodeId
       await sendInspectorState(inspector, ctx)
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -665,12 +691,14 @@ function connectBridge () {
       const action = inspector[actionType ?? 'actions'][actionIndex]
       try {
         await action.action(...(args ?? []))
-      } catch (e) {
+      }
+      catch (e) {
         if (SharedData.debugInfo) {
           console.error(e)
         }
       }
-    } else if (SharedData.debugInfo) {
+    }
+    else if (SharedData.debugInfo) {
       console.warn(`Inspector ${inspectorId} not found`)
     }
   })
@@ -681,7 +709,8 @@ function connectBridge () {
     let value = payload.value
     if (payload.serialized) {
       value = parse(value, payload.revive)
-    } else if (payload.revive) {
+    }
+    else if (payload.revive) {
       value = revive(value)
     }
     // eslint-disable-next-line no-console
@@ -716,10 +745,8 @@ function connectBridge () {
     }
     pageTitleObserver = new MutationObserver((mutations) => {
       const title = mutations[0].target as HTMLTitleElement
-      ctx.bridge.send(BridgeEvents.TO_FRONT_TITLE, { title: title.innerText })
+      ctx.bridge.send(BridgeEvents.TO_FRONT_TITLE, { title: title.textContent })
     })
     pageTitleObserver.observe(titleEl, { subtree: true, characterData: true, childList: true })
   }
 }
-
-let pageTitleObserver: MutationObserver

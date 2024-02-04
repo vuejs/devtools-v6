@@ -2,17 +2,31 @@
   "name": "@vue/devtools",
   "version": "6.5.1",
   "description": "StandAlone vue-devtools",
+  "author": "",
+  "license": "MIT",
   "repository": {
     "url": "https://github.com/vuejs/vue-devtools.git",
     "type": "git",
     "directory": "packages/shell-electron"
   },
+  "sideEffects": false,
+  "main": "index.js",
+  "types": "types/index.d.ts",
   "bin": {
     "vue-devtools": "./bin.js"
   },
-  "main": "index.js",
-  "types": "types/index.d.ts",
-  "sideEffects": false,
+  "files": [
+    "README.md",
+    "app.html",
+    "app.js",
+    "bin.js",
+    "build",
+    "build-node",
+    "icons",
+    "index.js",
+    "server.js",
+    "types"
+  ],
   "scripts": {
     "start": "node bin.js",
     "dev:client": "webpack --watch",
@@ -21,8 +35,6 @@
     "build:client": "rimraf ./build && cross-env NODE_ENV=production webpack",
     "build:node": "rimraf ./build-node && cross-env NODE_ENV=production webpack --config webpack.node.config.js"
   },
-  "author": "",
-  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
@@ -41,19 +53,7 @@
     "@vue-devtools/build-tools": "^0.0.0",
     "@vue-devtools/shared-utils": "^0.0.0",
     "rimraf": "^3.0.2",
-    "webpack": "^5.35.1",
-    "webpack-cli": "^4.6.0"
-  },
-  "files": [
-    "build",
-    "build-node",
-    "icons",
-    "types",
-    "app.html",
-    "app.js",
-    "bin.js",
-    "index.js",
-    "README.md",
-    "server.js"
-  ]
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
+  }
 }

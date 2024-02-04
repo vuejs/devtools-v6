@@ -5,7 +5,7 @@ import { Bridge } from '@vue-devtools/shared-utils'
 
 window.addEventListener('message', handshake)
 
-function sendListening () {
+function sendListening() {
   window.postMessage({
     source: 'vue-devtools-backend-injection',
     payload: 'listening',
@@ -13,14 +13,14 @@ function sendListening () {
 }
 sendListening()
 
-function handshake (e) {
+function handshake(e) {
   if (e.data.source === 'vue-devtools-proxy' && e.data.payload === 'init') {
     window.removeEventListener('message', handshake)
 
     let listeners = []
     const bridge = new Bridge({
-      listen (fn) {
-        const listener = evt => {
+      listen(fn) {
+        const listener = (evt) => {
           if (evt.data.source === 'vue-devtools-proxy' && evt.data.payload) {
             fn(evt.data.payload)
           }
@@ -28,7 +28,7 @@ function handshake (e) {
         window.addEventListener('message', listener)
         listeners.push(listener)
       },
-      send (data) {
+      send(data) {
         // if (process.env.NODE_ENV !== 'production') {
         //   console.log('[chrome] backend -> devtools', data)
         // }
@@ -40,7 +40,7 @@ function handshake (e) {
     })
 
     bridge.on('shutdown', () => {
-      listeners.forEach(l => {
+      listeners.forEach((l) => {
         window.removeEventListener('message', l)
       })
       listeners = []
@@ -48,7 +48,8 @@ function handshake (e) {
     })
 
     initBackend(bridge)
-  } else {
+  }
+  else {
     sendListening()
   }
 }

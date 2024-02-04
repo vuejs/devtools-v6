@@ -1,21 +1,21 @@
-name: "\U0001F680 New feature proposal"
+name: 🚀 New feature proposal
 description: Suggest an idea for this project
-labels: [":sparkles: feature request"]
+labels: [':sparkles: feature request']
 body:
   - type: markdown
     attributes:
       value: |
-       **Before You Start...**
+        **Before You Start...**
 
-        This form is only for submitting feature requests. If you have a usage question
-        or are unsure if this is really a bug, make sure to:
+         This form is only for submitting feature requests. If you have a usage question
+         or are unsure if this is really a bug, make sure to:
 
-        - Read the [docs](https://devtools.vuejs.org/)
-        - Read the [FAQ](https://devtools.vuejs.org/guide/faq.html)
-        - Ask on [GitHub Discussions](https://github.com/vuejs/devtools/discussions)
-        - Ask on [Discord Chat](https://chat.vuejs.org/)
+         - Read the [docs](https://devtools.vuejs.org/)
+         - Read the [FAQ](https://devtools.vuejs.org/guide/faq.html)
+         - Ask on [GitHub Discussions](https://github.com/vuejs/devtools/discussions)
+         - Ask on [Discord Chat](https://chat.vuejs.org/)
 
-        Also try to search for your issue - another user may have already requested something similar!
+         Also try to search for your issue - another user may have already requested something similar!
 
   - type: textarea
     id: problem-description

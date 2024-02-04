@@ -3,9 +3,9 @@
  * Allow disabling an entire tree of components implementing the DisabledChild mixin.
  */
 
-import { provide, reactive, watch, inject, computed } from 'vue'
+import { computed, inject, provide, reactive, watch } from 'vue'
 
-export const useDisabledParent = (props: { disabled?: boolean }) => {
+export function useDisabledParent(props: { disabled?: boolean }) {
   const injectedDisableData = reactive({
     value: props.disabled || false,
   })
@@ -17,12 +17,14 @@ export const useDisabledParent = (props: { disabled?: boolean }) => {
   watch(
     () => props.disabled,
     (value, oldValue) => {
-      if (value !== oldValue) injectedDisableData.value = value
+      if (value !== oldValue) {
+        injectedDisableData.value = value
+      }
     },
   )
 }
 
-export const useDisabledChild = (props: { disabled?: boolean }) => {
+export function useDisabledChild(props: { disabled?: boolean }) {
   const injectDisable = inject<{ data: { value: boolean } } | undefined>(
     'VueDisableMixin',
     null,

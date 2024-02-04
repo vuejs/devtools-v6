@@ -1,11 +1,24 @@
 {
   "name": "vue-devtools",
   "version": "6.5.1",
-  "description": "devtools for Vue.js!",
   "private": true,
+  "description": "devtools for Vue.js!",
   "workspaces": [
     "packages/*"
   ],
+  "author": "Evan You",
+  "license": "MIT",
+  "homepage": "https://github.com/vuejs/vue-devtools#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/vue-devtools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vuejs/vue-devtools/issues"
+  },
+  "engines": {
+    "node": ">=8.10"
+  },
   "scripts": {
     "dev:vue2": "concurrently \"cd packages/shell-dev-vue2 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
     "dev:vue3": "concurrently \"cd packages/shell-dev-vue3 && yarn dev\" \"cd packages/shell-host && yarn dev\"",
@@ -14,7 +27,7 @@
     "dev:electron": "cd packages/shell-electron && npm run dev",
     "build": "lerna run build",
     "build:watch": "lerna run build --scope @vue-devtools/app-backend* --scope @vue-devtools/shared-* --scope @vue/devtools-api && lerna run build:watch --stream --no-sort --concurrency 99",
-    "lint": "eslint --ext .js,.ts,.vue .",
+    "lint": "eslint .",
     "run:firefox": "web-ext run -s packages/shell-chrome -a dist -i src",
     "zip": "node ./extension-zips.js",
     "sign:firefox": "node ./sign-firefox.js",
@@ -32,36 +45,17 @@
     "docs:build": "cd packages/docs && vitepress build src",
     "docs:serve": "cd packages/docs && vitepress serve src"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vuejs/vue-devtools.git"
-  },
-  "author": "Evan You",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vuejs/vue-devtools/issues"
-  },
-  "homepage": "https://github.com/vuejs/vue-devtools#readme",
   "devDependencies": {
+    "@antfu/eslint-config": "^2.6.4",
     "@tailwindcss/postcss7-compat": "^2.0.4",
     "@types/chrome": "^0.0.139",
     "@types/speakingurl": "^13.0.3",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
-    "@vue/eslint-config-standard": "^6.0.0",
-    "@vue/eslint-config-typescript": "^7.0.0",
     "archiver": "^5.3.0",
     "autoprefixer": "^9.1.5",
     "concurrently": "^5.1.0",
     "cross-env": "^5.2.0",
     "cypress": "^3.1.0",
-    "eslint": "^7.26.0",
-    "eslint-plugin-cypress": "^2.0.1",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-standard": "^5.0.0",
-    "eslint-plugin-vue": "^9.17.0",
+    "eslint": "^8.56.0",
     "execa": "^4.0.3",
     "inquirer": "^6.2.0",
     "lerna": "^4.0.0",
@@ -69,16 +63,13 @@
     "rimraf": "^3.0.2",
     "semver": "^5.5.1",
     "start-server-and-test": "^1.7.1",
+    "svg-inline-loader": "^0.8.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "vue-loader": "^17.2.2",
-    "webpack-dev-server": "^4.0.0-beta.0",
-    "svg-inline-loader": "^0.8.2"
+    "webpack-dev-server": "^4.15.1"
   },
   "resolutions": {
     "cypress": "=3.4.1",
-    "webpack-dev-server": "=4.0.0-rc.0"
-  },
-  "engines": {
-    "node": ">=8.10"
+    "webpack-dev-server": "^4.15.1"
   }
 }

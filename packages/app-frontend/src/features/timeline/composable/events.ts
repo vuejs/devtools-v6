@@ -1,26 +1,28 @@
-import { onUnmounted, computed, watch } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
 import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { formatTime } from '@front/util/format'
+import { addNonReactiveProperties } from '@front/util/reactivity'
+import type {
+  Layer,
+  TimelineEvent,
+} from './store'
 import {
-  timelineIsEmpty,
-  minTime,
-  maxTime,
-  startTime,
   endTime,
-  selectedEvent,
   inspectedEvent,
   inspectedEventData,
   inspectedEventPendingId,
-  TimelineEvent,
-  Layer,
+  maxTime,
+  minTime,
+  selectedEvent,
   selectedLayer,
+  startTime,
+  timelineIsEmpty,
 } from './store'
 import { resetTime } from './reset'
 import { takeScreenshot } from './screenshot'
 import { addGroupAroundPosition } from './layers'
-import { EventGroup } from '.'
-import { addNonReactiveProperties } from '@front/util/reactivity'
+import type { EventGroup } from '.'
 
 const AUTOSCROLL_DURATION = 10_000_000
 
@@ -28,21 +30,25 @@ type AddEventCb = (event: TimelineEvent) => void
 
 const addEventCbs: AddEventCb[] = []
 
-export function onEventAdd (cb: AddEventCb) {
+export function onEventAdd(cb: AddEventCb) {
   onUnmounted(() => {
     const index = addEventCbs.indexOf(cb)
-    if (index !== -1) addEventCbs.splice(index, 1)
+    if (index !== -1) {
+      addEventCbs.splice(index, 1)
+    }
   })
 
   addEventCbs.push(cb)
 }
 
-export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Layer) {
+export function addEvent(appId: string, eventOptions: TimelineEvent, layer: Layer) {
   // Non-reactive content
   const event = {} as TimelineEvent
   addNonReactiveProperties(event, eventOptions)
 
-  if (layer.eventsMap[event.id]) return
+  if (layer.eventsMap[event.id]) {
+    return
+  }
 
   if (timelineIsEmpty.value) {
     timelineIsEmpty.value = false
@@ -98,7 +104,8 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
       if (startTime.value !== minTime.value) {
         // Autoscroll
         startTime.value = scrollTime - (endTime.value - startTime.value)
-      } else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
+      }
+      else if (endTime.value - startTime.value > AUTOSCROLL_DURATION) {
         // Autoscroll
         startTime.value = scrollTime - AUTOSCROLL_DURATION
       }
@@ -114,15 +121,15 @@ export function addEvent (appId: string, eventOptions: TimelineEvent, layer: Lay
   }
 }
 
-export function useSelectedEvent () {
+export function useSelectedEvent() {
   return {
     selectedEvent: computed(() => selectedEvent.value),
     selectedGroupEvents: computed(() => selectedEvent.value?.group?.events ?? []),
   }
 }
 
-export function useInspectedEvent () {
-  watch(inspectedEvent, event => {
+export function useInspectedEvent() {
+  watch(inspectedEvent, (event) => {
     if (event) {
       loadEvent(event.id)
       event.layer.lastInspectedEvent = event
@@ -139,13 +146,15 @@ export function useInspectedEvent () {
   }
 }
 
-function loadEvent (id: TimelineEvent['id']) {
-  if (id == null || inspectedEventPendingId.value === id) return
+function loadEvent(id: TimelineEvent['id']) {
+  if (id == null || inspectedEventPendingId.value === id) {
+    return
+  }
   inspectedEventPendingId.value = id
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_EVENT_DATA, { id })
 }
 
-export function selectEvent (event: TimelineEvent) {
+export function selectEvent(event: TimelineEvent) {
   selectedEvent.value = inspectedEvent.value = event
   selectedLayer.value = event.layer
   setStorage('selected-layer-id', event.layer.id)

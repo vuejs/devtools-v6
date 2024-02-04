@@ -1,17 +1,19 @@
 export const dynamic = {
   namespaced: true,
-  state () {
+  state() {
     return {
       dynamic: true,
     }
   },
   getters: {
-    notDynamic: state => {
-      if (state) return !state.dynamic
+    notDynamic: (state) => {
+      if (state) {
+        return !state.dynamic
+      }
     },
   },
   mutations: {
-    TOGGLE: state => {
+    TOGGLE: (state) => {
       state.dynamic = !state.dynamic
     },
   },
@@ -19,18 +21,20 @@ export const dynamic = {
 
 export const nested = {
   namespaced: true,
-  state () {
+  state() {
     return {
       nested: true,
     }
   },
   getters: {
-    notNested: state => {
-      if (state) return !state.nested
+    notNested: (state) => {
+      if (state) {
+        return !state.nested
+      }
     },
   },
   mutations: {
-    TOGGLE_NESTED: state => {
+    TOGGLE_NESTED: (state) => {
       state.nested = !state.nested
     },
   },
@@ -41,7 +45,7 @@ export const deeplyNested = {
   modules: {
     child: {
       namespaced: true,
-      state () {
+      state() {
         return {
           childMessage: 'hello from child',
         }

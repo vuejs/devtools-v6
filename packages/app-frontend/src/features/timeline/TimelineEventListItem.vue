@@ -1,7 +1,9 @@
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import type { PropType } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { formatTime } from '@front/util/format'
-import { useInspectedEvent, TimelineEvent } from './composable'
+import type { TimelineEvent } from './composable'
+import { useInspectedEvent } from './composable'
 
 export default defineComponent({
   props: {
@@ -16,7 +18,9 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  emits: ['inspect', 'select'],
+
+  setup(props) {
     const time = computed(() => formatTime(props.event.time / 1000))
 
     const {
@@ -38,7 +42,7 @@ export default defineComponent({
     class="event flex items-center space-x-2 pl-3 pr-2 text-xs cursor-pointer select-none"
     :class="{
       'inspected bg-green-500 text-white': isInspected,
-      'hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-800 dark:text-gray-200': !isInspected
+      'hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-800 dark:text-gray-200': !isInspected,
     }"
     @click="$emit('inspect')"
     @dblclick="$emit('select')"
@@ -58,7 +62,7 @@ export default defineComponent({
           class="w-4 h-4 ml-1"
           :class="{
             'text-red-500': !isInspected,
-            'text-white': isInspected
+            'text-white': isInspected,
           }"
         />
 
@@ -68,7 +72,7 @@ export default defineComponent({
           class="w-4 h-4 ml-1"
           :class="{
             'text-yellow-500': !isInspected,
-            'text-white': isInspected
+            'text-white': isInspected,
           }"
         />
       </span>
@@ -85,7 +89,7 @@ export default defineComponent({
       class="flex-none text-2xs px-1 py-0.5 leading-none rounded-full text-green-500 border"
       :class="{
         'bg-white border-transparent': isInspected,
-        'bg-green-100 dark:bg-green-900 border-green-200 dark:border-green-800': !isInspected
+        'bg-green-100 dark:bg-green-900 border-green-200 dark:border-green-800': !isInspected,
       }"
     >
       selected

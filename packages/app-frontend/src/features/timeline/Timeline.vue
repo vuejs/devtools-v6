@@ -1,6 +1,12 @@
 <script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import PluginSourceIcon from '@front/features/plugin/PluginSourceIcon.vue'
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
+import { SharedData, getStorage } from '@vue-devtools/shared-utils'
+import { onSharedDataChange } from '@front/util/shared-data'
+import { formatTime } from '@front/util/format'
+import { useFonts } from '@front/util/fonts'
 import TimelineView from './TimelineView.vue'
 import TimelineScrollbar from './TimelineScrollbar.vue'
 import LayerItem from './LayerItem.vue'
@@ -8,20 +14,14 @@ import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
-import { computed, onMounted, ref, watch, defineComponent, onUnmounted, nextTick } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
-import { getStorage, SharedData } from '@vue-devtools/shared-utils'
-import { onSharedDataChange } from '@front/util/shared-data'
-import { formatTime } from '@front/util/format'
-import { useFonts } from '@front/util/fonts'
 import {
-  useTime,
-  useLayers,
   resetTimeline,
-  useCursor,
-  useSelectedEvent,
-  useScreenshots,
   supportsScreenshot,
+  useCursor,
+  useLayers,
+  useScreenshots,
+  useSelectedEvent,
+  useTime,
 } from './composable'
 
 export default defineComponent({
@@ -36,7 +36,7 @@ export default defineComponent({
     PluginSourceIcon,
   },
 
-  setup () {
+  setup() {
     const {
       layers,
       vScroll,
@@ -49,7 +49,7 @@ export default defineComponent({
     } = useLayers()
     const layersEl = ref()
 
-    function applyScroll () {
+    function applyScroll() {
       if (layersEl.value && layersEl.value.scrollTop !== vScroll.value) {
         layersEl.value.scrollTop = vScroll.value
       }
@@ -65,7 +65,7 @@ export default defineComponent({
       applyScroll()
     })
 
-    function onLayersScroll (event: UIEvent) {
+    function onLayersScroll(event: UIEvent) {
       const target = event.currentTarget as HTMLElement
       if (target.scrollTop !== vScroll.value) {
         vScroll.value = target.scrollTop
@@ -86,19 +86,22 @@ export default defineComponent({
     } = useSelectedEvent()
 
     // Auto scroll to selected event
-    watch(selectedEvent, event => {
-      if (!event) return
+    watch(selectedEvent, (event) => {
+      if (!event) {
+        return
+      }
 
       const size = endTime.value - startTime.value
 
       let isEventInViewPort: boolean
       if (event.layer.groupsOnly) {
         isEventInViewPort = (
-          (event.group.firstEvent.time >= startTime.value && event.group.firstEvent.time <= endTime.value) ||
-          (event.group.lastEvent.time >= startTime.value && event.group.lastEvent.time <= endTime.value) ||
-          (event.group.firstEvent.time <= startTime.value && event.group.lastEvent.time >= endTime.value)
+          (event.group.firstEvent.time >= startTime.value && event.group.firstEvent.time <= endTime.value)
+          || (event.group.lastEvent.time >= startTime.value && event.group.lastEvent.time <= endTime.value)
+          || (event.group.firstEvent.time <= startTime.value && event.group.lastEvent.time >= endTime.value)
         )
-      } else {
+      }
+      else {
         isEventInViewPort = event.time >= startTime.value && event.time <= endTime.value
       }
 
@@ -138,7 +141,7 @@ export default defineComponent({
             'https://*/*',
             'file:///*',
           ],
-        }, granted => {
+        }, (granted) => {
           if (!granted) {
             /* Ask modal disabled for now */
             // askScreenshotPermission.value = true
@@ -153,8 +156,10 @@ export default defineComponent({
       showScreenshot,
     } = useScreenshots()
 
-    watch(cursorTime, value => {
-      if (!SharedData.timelineScreenshots) return
+    watch(cursorTime, (value) => {
+      if (!SharedData.timelineScreenshots) {
+        return
+      }
 
       let choice = null
       if (value != null) {
@@ -162,7 +167,8 @@ export default defineComponent({
         for (const screenshot of screenshots.value) {
           if (screenshot.time > value + 50) {
             break
-          } else {
+          }
+          else {
             choice = screenshot
           }
         }
@@ -175,7 +181,7 @@ export default defineComponent({
     let zoomTimer: ReturnType<typeof setTimeout>
     let zoomDelayTimer: ReturnType<typeof setTimeout>
 
-    function zoom (delta: number) {
+    function zoom(delta: number) {
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
       const viewWidth = wrapper.offsetWidth
       const size = endTime.value - startTime.value
@@ -199,7 +205,7 @@ export default defineComponent({
       endTime.value = end
     }
 
-    function zoomIn () {
+    function zoomIn() {
       zoom(-50)
       zoomDelayTimer = setTimeout(() => {
         zoomTimer = setInterval(() => {
@@ -209,7 +215,7 @@ export default defineComponent({
       window.addEventListener('mouseup', () => stopZoom())
     }
 
-    function zoomOut () {
+    function zoomOut() {
       zoom(50)
       zoomDelayTimer = setTimeout(() => {
         zoomTimer = setInterval(() => {
@@ -219,7 +225,7 @@ export default defineComponent({
       window.addEventListener('mouseup', () => stopZoom())
     }
 
-    function stopZoom () {
+    function stopZoom() {
       clearInterval(zoomTimer)
       clearTimeout(zoomDelayTimer)
     }
@@ -233,7 +239,7 @@ export default defineComponent({
     let moveTimer: ReturnType<typeof setTimeout>
     let moveDelayTimer: ReturnType<typeof setTimeout>
 
-    function move (delta: number) {
+    function move(delta: number) {
       const wrapper: HTMLDivElement = document.querySelector('[data-id="timeline-view-wrapper"]')
       const viewWidth = wrapper.offsetWidth
       const size = endTime.value - startTime.value
@@ -251,7 +257,7 @@ export default defineComponent({
       endTime.value = end
     }
 
-    function moveLeft () {
+    function moveLeft() {
       move(-25)
       moveDelayTimer = setTimeout(() => {
         moveTimer = setInterval(() => {
@@ -261,7 +267,7 @@ export default defineComponent({
       window.addEventListener('mouseup', () => stopMove())
     }
 
-    function moveRight () {
+    function moveRight() {
       move(25)
       moveDelayTimer = setTimeout(() => {
         moveTimer = setInterval(() => {
@@ -271,7 +277,7 @@ export default defineComponent({
       window.addEventListener('mouseup', () => stopMove())
     }
 
-    function stopMove () {
+    function stopMove() {
       clearInterval(moveTimer)
       clearTimeout(moveDelayTimer)
     }
@@ -286,7 +292,7 @@ export default defineComponent({
 
     // Restore layer selection
 
-    watch(layers, value => {
+    watch(layers, (value) => {
       if (!selectedLayer.value && value.length) {
         const layerId = getStorage('selected-layer-id')
         if (layerId) {
@@ -309,7 +315,8 @@ export default defineComponent({
         nextTick(() => {
           if (old?.[0]) {
             hideTimelineCanvas.value = false
-          } else {
+          }
+          else {
             hideEvents.value = false
           }
         })
@@ -383,13 +390,13 @@ export default defineComponent({
                     :key="layer.id"
                     :model-value="!isLayerHidden(layer)"
                     class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
-                    @update:modelValue="value => setLayerHidden(layer, !value)"
+                    @update:model-value="value => setLayerHidden(layer, !value)"
                   >
                     <div class="flex items-center space-x-2 max-w-xs">
                       <div
                         class="flex-none w-3 h-3 rounded-full"
                         :style="{
-                          backgroundColor: `#${layer.color.toString(16).padStart(6, '0')}`
+                          backgroundColor: `#${layer.color.toString(16).padStart(6, '0')}`,
                         }"
                       />
 

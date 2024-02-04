@@ -1,4 +1,5 @@
-import { Plugin } from 'vue'
+import type { Plugin } from 'vue'
+import FloatingVue from 'floating-vue'
 import VueIcons from './components/icons'
 import VueDisable from './components/VueDisable.vue'
 import VueButton from './components/VueButton.vue'
@@ -15,12 +16,12 @@ import VueSwitch from './components/VueSwitch.vue'
 import VueSelect from './components/VueSelect.vue'
 import VueSelectButton from './components/VueSelectButton.vue'
 import VueModal from './components/VueModal.vue'
-import FloatingVue from 'floating-vue'
 import 'floating-vue/dist/style.css'
+
 export { generateHtmlIcon } from './components/icons'
 
 const ui: Plugin = {
-  install (app) {
+  install(app) {
     app.use(VueIcons)
     app.component('VueButton', VueButton)
     app.component('VueDisable', VueDisable)

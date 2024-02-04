@@ -1,11 +1,11 @@
 <script lang="ts">
 import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
-import RenderCode from './RenderCode.vue'
 
-import { defineComponent, ref, watch, computed } from 'vue'
-import { copyToClipboard, getComponentDisplayName, SharedData } from '@vue-devtools/shared-utils'
+import { computed, defineComponent, ref, watch } from 'vue'
+import { SharedData, copyToClipboard, getComponentDisplayName } from '@vue-devtools/shared-utils'
 import { onKeyDown } from '@front/util/keyboard'
+import RenderCode from './RenderCode.vue'
 import { useSelectedComponent } from './composable'
 
 export default defineComponent({
@@ -15,7 +15,7 @@ export default defineComponent({
     RenderCode,
   },
 
-  setup () {
+  setup() {
     const selectedComponent = useSelectedComponent()
     const displayName = computed(() => getComponentDisplayName(selectedComponent.data.value?.name ?? '', SharedData.componentNameStyle))
 
@@ -32,7 +32,7 @@ export default defineComponent({
 
     // State filter
     const stateFilterInput = ref()
-    onKeyDown(event => {
+    onKeyDown((event) => {
       // ∂ - the result key in Mac with altKey pressed
       if ((event.key === 'd' || event.key === '∂') && event.altKey) {
         stateFilterInput.value.focus()
@@ -45,7 +45,7 @@ export default defineComponent({
     // Copy component name
     const showCopiedName = ref(false)
     let copiedNameTimeout
-    function copyName () {
+    function copyName() {
       copyToClipboard(displayName.value)
       showCopiedName.value = true
       clearTimeout(copiedNameTimeout)
@@ -97,7 +97,7 @@ export default defineComponent({
         v-model="stateFilter"
         v-tooltip="{
           content: $t('StateInspector.filter.tooltip'),
-          html: true
+          html: true,
         }"
         icon-left="search"
         placeholder="Filter state..."
@@ -130,7 +130,7 @@ export default defineComponent({
         v-if="fileIsPath"
         v-tooltip="{
           content: $t('ComponentInspector.openInEditor.tooltip', { file: data.file }),
-          html: true
+          html: true,
         }"
         icon-left="launch"
         class="flat icon-button flex-none"
@@ -149,7 +149,7 @@ export default defineComponent({
       :state="state"
       class="flex-1 overflow-y-auto"
       :class="{
-        'grayscale': data && data.id !== selectedComponentId
+        grayscale: data && data.id !== selectedComponentId,
       }"
       @edit-state="editState"
     />

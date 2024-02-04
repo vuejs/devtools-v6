@@ -10,24 +10,30 @@ export const BACKSPACE = 'Backspace'
 
 const activeInstances = []
 
-function processEvent (event, type) {
+function processEvent(event, type) {
   if (
-    event.target.tagName === 'INPUT' ||
-    event.target.tagName === 'TEXTAREA'
+    event.target.tagName === 'INPUT'
+    || event.target.tagName === 'TEXTAREA'
   ) {
     return
   }
   const modifiers: string[] = []
-  if (event.ctrlKey || event.metaKey) modifiers.push('ctrl')
-  if (event.shiftKey) modifiers.push('shift')
-  if (event.altKey) modifiers.push('alt')
+  if (event.ctrlKey || event.metaKey) {
+    modifiers.push('ctrl')
+  }
+  if (event.shiftKey) {
+    modifiers.push('shift')
+  }
+  if (event.altKey) {
+    modifiers.push('alt')
+  }
   const info = {
     key: event.key,
     code: event.code,
     modifiers: modifiers.join('+'),
   }
   let result = true
-  activeInstances.forEach(opt => {
+  activeInstances.forEach((opt) => {
     if (opt[type]) {
       const r = opt[type].call(opt.vm, info)
       if (r === false) {
@@ -46,13 +52,13 @@ document.addEventListener('keydown', (event) => {
 
 export default function (options) {
   return defineComponent({
-    mounted () {
+    mounted() {
       activeInstances.push({
         vm: this,
         ...options,
       })
     },
-    unmounted () {
+    unmounted() {
       const i = activeInstances.findIndex(
         o => o.vm === this,
       )

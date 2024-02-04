@@ -1,22 +1,25 @@
-import { Bridge, BridgeEvents, parse } from '@vue-devtools/shared-utils'
+import type { Bridge } from '@vue-devtools/shared-utils'
+import { BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { getApps } from '@front/features/apps'
+import type {
+  MarkerFromBackend,
+  TimelineEvent,
+  TimelineMarker,
+} from './store'
 import {
   inspectedEvent,
   inspectedEventData,
   inspectedEventPendingId,
-  TimelineEvent,
   markersAllApps,
   markersPerApp,
-  MarkerFromBackend,
-  TimelineMarker,
 } from './store'
-import { getLayers, fetchLayers, layerFactory } from './layers'
+import { fetchLayers, getLayers, layerFactory } from './layers'
 import { addEvent } from './events'
 import { resetTimeline } from './reset'
 
 const pendingEvents: Record<string, TimelineEvent[]> = {}
 
-export function setupTimelineBridgeEvents (bridge: Bridge) {
+export function setupTimelineBridgeEvents(bridge: Bridge) {
   resetTimeline(false)
 
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_EVENT, ({ appId, layerId, event }) => {
@@ -104,7 +107,8 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
       }
       if (marker.all) {
         allList.push(result)
-      } else {
+      }
+      else {
         appList.push(result)
       }
     }
@@ -117,7 +121,8 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     let targetList: TimelineMarker[]
     if (marker.all) {
       targetList = markersAllApps.value
-    } else {
+    }
+    else {
       if (!markersPerApp.value[appId]) {
         markersPerApp.value[appId] = []
       }
@@ -132,7 +137,8 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     const index = targetList.findIndex(m => m.id === marker.id)
     if (index !== -1) {
       targetList.splice(index, 1, result)
-    } else {
+    }
+    else {
       targetList.push(result)
     }
   })

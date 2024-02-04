@@ -2,15 +2,15 @@
 export default {
   extends: {
     extends: {
-      data () {
+      data() {
         return {
           dataFromExtendsExtends: 'hey',
         }
       },
 
       computed: {
-        computedFromExtendsExtends () {
-          return 'extends extends:' + this.dataFromMixinExtends
+        computedFromExtendsExtends() {
+          return `extends extends:${this.dataFromMixinExtends}`
         },
       },
 
@@ -24,73 +24,73 @@ export default {
 
     mixins: [
       {
-        data () {
+        data() {
           return {
             dataFromExtendsMixin: 'cat',
           }
         },
 
         computed: {
-          computedFromExtendsMixin () {
-            return 'extends mixin:' + this.dataFromMixinMixin
+          computedFromExtendsMixin() {
+            return `extends mixin:${this.dataFromMixinMixin}`
           },
         },
       },
     ],
 
-    data () {
+    data() {
       return {
         dataFromExtends: 'meow',
       }
     },
 
     computed: {
-      computedFromExtends () {
-        return 'extends:' + this.dataFromExtends
+      computedFromExtends() {
+        return `extends:${this.dataFromExtends}`
       },
     },
   },
   mixins: [
     {
       extends: {
-        data () {
+        data() {
           return {
             dataFromMixinExtends: 'cheese',
           }
         },
 
         computed: {
-          computedFromMixinExtends () {
-            return 'mixin extends:' + this.dataFromMixinExtends
+          computedFromMixinExtends() {
+            return `mixin extends:${this.dataFromMixinExtends}`
           },
         },
       },
 
       mixins: [
         {
-          data () {
+          data() {
             return {
               dataFromMixinMixin: 'waf',
             }
           },
 
           computed: {
-            computedFromMixinMixin () {
-              return 'mixin mixin:' + this.dataFromMixinMixin
+            computedFromMixinMixin() {
+              return `mixin mixin:${this.dataFromMixinMixin}`
             },
           },
         },
       ],
 
-      data () {
+      data() {
         return {
           dataFromMixin: '42',
         }
       },
 
       computed: {
-        computedFromMixin () {
-          return 'mixin:' + this.dataFromMixin
+        computedFromMixin() {
+          return `mixin:${this.dataFromMixin}`
         },
       },
     },

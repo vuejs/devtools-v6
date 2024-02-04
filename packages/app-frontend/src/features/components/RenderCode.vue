@@ -21,7 +21,9 @@ export default {
     },
   },
 
-  setup (props) {
+  emits: ['close'],
+
+  setup(props) {
     const {
       onBridge,
       bridge,
@@ -33,7 +35,7 @@ export default {
 
     let pendingId
 
-    watch(() => props.instanceId, value => {
+    watch(() => props.instanceId, (value) => {
       pendingId = value
       bridge.send(BridgeEvents.TO_BACK_COMPONENT_RENDER_CODE, { instanceId: value })
     }, { immediate: true })
@@ -70,8 +72,8 @@ export default {
       :options="{
         readOnly: true,
         minimap: {
-          enabled: false
-        }
+          enabled: false,
+        },
       }"
       :theme="darkMode ? 'github-dark' : 'github-light'"
       language="javascript"

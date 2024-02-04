@@ -5,7 +5,7 @@ export default {
   components: {
     Child: {
       name: 'Child',
-      render () {
+      render() {
         return h('div', 'Child')
       },
     },

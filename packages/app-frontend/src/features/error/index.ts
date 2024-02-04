@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export interface ErrorMessage {
   message: string
@@ -7,7 +7,7 @@ export interface ErrorMessage {
 
 const errors = ref<ErrorMessage[]>([])
 
-export function putError (message: string, icon: string = null) {
+export function putError(message: string, icon: string = null) {
   // Dedupe
   if (errors.value.find(e => e.message === message)) {
     return
@@ -19,11 +19,11 @@ export function putError (message: string, icon: string = null) {
   })
 }
 
-export function clearError () {
+export function clearError() {
   errors.value.shift()
 }
 
-export function useError () {
+export function useError() {
   const error = computed(() => errors.value[0])
 
   return {

@@ -92,7 +92,7 @@ export enum BridgeEvents {
   TO_FRONT_CUSTOM_INSPECTOR_SELECT_NODE = 'f:custom-inspector:select-node',
 
   // Custom state
-  TO_BACK_CUSTOM_STATE_ACTION = 'b:custom-state:action'
+  TO_BACK_CUSTOM_STATE_ACTION = 'b:custom-state:action',
 }
 
 export enum BridgeSubscriptions {

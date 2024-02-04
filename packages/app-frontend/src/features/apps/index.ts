@@ -1,5 +1,6 @@
-import { ref, computed } from 'vue'
-import { BridgeEvents, Bridge } from '@vue-devtools/shared-utils'
+import { computed, ref } from 'vue'
+import type { Bridge } from '@vue-devtools/shared-utils'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchLayers } from '../timeline/composable'
@@ -13,7 +14,7 @@ export interface AppRecord {
 
 const apps = ref<AppRecord[]>([])
 
-export function useCurrentApp () {
+export function useCurrentApp() {
   const route = useRoute()
   const currentAppId = computed(() => route.params.appId as string)
   const currentApp = computed(() => apps.value.find(a => currentAppId.value === a.id))
@@ -24,7 +25,7 @@ export function useCurrentApp () {
   }
 }
 
-export function useApps () {
+export function useApps() {
   const router = useRouter()
 
   const {
@@ -32,7 +33,7 @@ export function useApps () {
     currentApp,
   } = useCurrentApp()
 
-  function selectApp (id: string) {
+  function selectApp(id: string) {
     if (currentAppId.value !== id) {
       router.push({
         params: {
@@ -51,23 +52,23 @@ export function useApps () {
   }
 }
 
-function addApp (app: AppRecord) {
+function addApp(app: AppRecord) {
   removeApp(app.id)
   apps.value.push(app)
 }
 
-function removeApp (appId: string) {
+function removeApp(appId: string) {
   const index = apps.value.findIndex(app => app.id === appId)
   if (index !== -1) {
     apps.value.splice(index, 1)
   }
 }
 
-export function getApps () {
+export function getApps() {
   return apps.value
 }
 
-function fetchApps () {
+function fetchApps() {
   getBridge().send(BridgeEvents.TO_BACK_APP_LIST, {})
 }
 
@@ -75,21 +76,22 @@ export const pendingSelectAppId = ref<string | null>(null)
 
 const pendingSelectPromises: (() => void)[] = []
 
-export function waitForAppSelect (): Promise<void> {
+export function waitForAppSelect(): Promise<void> {
   if (!pendingSelectAppId.value) {
     return Promise.resolve()
-  } else {
-    return new Promise(resolve => {
+  }
+  else {
+    return new Promise((resolve) => {
       pendingSelectPromises.push(resolve)
     })
   }
 }
 
-export function scanLegacyApps () {
+export function scanLegacyApps() {
   getBridge().send(BridgeEvents.TO_BACK_SCAN_LEGACY_APPS, {})
 }
 
-export function setupAppsBridgeEvents (bridge: Bridge) {
+export function setupAppsBridgeEvents(bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_APP_ADD, ({ appRecord }) => {
     addApp(appRecord)
     fetchLayers()

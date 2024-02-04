@@ -1,7 +1,7 @@
-const path = require('path')
-const fs = require('fs')
+const path = require('node:path')
+const fs = require('node:fs')
+const { createServer } = require('node:http')
 const app = require('express')()
-const { createServer } = require('http')
 const { Server } = require('socket.io')
 
 const port = process.env.PORT || 8098
@@ -13,14 +13,14 @@ const io = new Server(httpServer, {
   },
 })
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   const hookContent = fs.readFileSync(path.join(__dirname, '/build/hook.js'), 'utf8')
   const backendContent = fs.readFileSync(path.join(__dirname, '/build/backend.js'), 'utf8')
   res.send([hookContent, backendContent].join('\n'))
 })
 
 // Middleman
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
   // Disconnect any previously connected apps
   socket.broadcast.emit('vue-devtools-disconnect-backend')
 
@@ -34,12 +34,12 @@ io.on('connection', function (socket) {
     }
   })
 
-  socket.on('vue-message', data => {
+  socket.on('vue-message', (data) => {
     socket.broadcast.emit('vue-message', data)
   })
 })
 
 httpServer.listen(port, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log('listening on 0.0.0.0:' + port)
+  console.log(`listening on 0.0.0.0:${port}`)
 })

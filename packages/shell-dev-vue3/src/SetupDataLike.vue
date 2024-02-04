@@ -1,6 +1,6 @@
 <script>
 export default {
-  setup () {
+  setup() {
     return {
       msg: 'hello from script src!',
     }

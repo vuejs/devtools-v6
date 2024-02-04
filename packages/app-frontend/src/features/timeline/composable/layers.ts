@@ -2,22 +2,24 @@ import { computed } from 'vue'
 import { BridgeEvents, setStorage } from '@vue-devtools/shared-utils'
 import { useApps, waitForAppSelect } from '@front/features/apps'
 import { getBridge } from '@front/features/bridge'
-import {
-  layersPerApp,
-  hiddenLayersPerApp,
-  selectedLayer,
-  vScrollPerApp,
-  hoverLayerId,
-  LayerFromBackend,
-  Layer,
-  selectedEvent,
-  inspectedEvent,
-  EventGroup,
-} from './store'
 import { useRouter } from 'vue-router'
 import { addNonReactiveProperties } from '@front/util/reactivity'
+import type {
+  EventGroup,
+  Layer,
+  LayerFromBackend,
+} from './store'
+import {
+  hiddenLayersPerApp,
+  hoverLayerId,
+  inspectedEvent,
+  layersPerApp,
+  selectedEvent,
+  selectedLayer,
+  vScrollPerApp,
+} from './store'
 
-export function layerFactory (options: LayerFromBackend): Layer {
+export function layerFactory(options: LayerFromBackend): Layer {
   const result = {} as Layer
   addNonReactiveProperties(result, {
     ...options,
@@ -36,7 +38,7 @@ export function layerFactory (options: LayerFromBackend): Layer {
   return result
 }
 
-export function getLayers (appId: string) {
+export function getLayers(appId: string) {
   let layers = layersPerApp.value[appId]
   if (!layers) {
     layers = []
@@ -46,7 +48,7 @@ export function getLayers (appId: string) {
   return layers
 }
 
-function getHiddenLayers (appId: string) {
+function getHiddenLayers(appId: string) {
   let layers = hiddenLayersPerApp.value[appId]
   if (!layers) {
     layers = []
@@ -56,17 +58,17 @@ function getHiddenLayers (appId: string) {
   return layers
 }
 
-export function useLayers () {
+export function useLayers() {
   const { currentAppId } = useApps()
 
   const allLayers = computed(() => getLayers(currentAppId.value))
 
-  function isLayerHidden (layer: Layer) {
+  function isLayerHidden(layer: Layer) {
     const list = getHiddenLayers(currentAppId.value)
     return list.includes(layer.id)
   }
 
-  function resetSelectedStatus () {
+  function resetSelectedStatus() {
     selectedLayer.value = null
     inspectedEvent.value = null
     selectedEvent.value = null
@@ -74,7 +76,7 @@ export function useLayers () {
     setStorage('selected-layer-id', '')
   }
 
-  function setLayerHidden (layer: Layer, hidden: boolean) {
+  function setLayerHidden(layer: Layer, hidden: boolean) {
     const list = getHiddenLayers(currentAppId.value)
     const index = list.indexOf(layer.id)
 
@@ -84,7 +86,8 @@ export function useLayers () {
 
     if (hidden && index === -1) {
       list.push(layer.id)
-    } else if (!hidden && index !== -1) {
+    }
+    else if (!hidden && index !== -1) {
       list.splice(index, 1)
     }
     setStorage('hidden-layers', hiddenLayersPerApp.value)
@@ -94,13 +97,15 @@ export function useLayers () {
 
   const router = useRouter()
 
-  function selectLayer (layer: Layer) {
+  function selectLayer(layer: Layer) {
     let event = selectedLayer.value !== layer ? layer.lastInspectedEvent : null
 
     selectedLayer.value = layer
     setStorage('selected-layer-id', layer.id)
 
-    if (!event) event = layer.events.length ? layer.events[layer.events.length - 1] : null
+    if (!event) {
+      event = layer.events.length ? layer.events[layer.events.length - 1] : null
+    }
     inspectedEvent.value = event
     selectedEvent.value = event
 
@@ -129,12 +134,12 @@ export function useLayers () {
   }
 }
 
-export async function fetchLayers () {
+export async function fetchLayers() {
   await waitForAppSelect()
   getBridge().send(BridgeEvents.TO_BACK_TIMELINE_LAYER_LIST, {})
 }
 
-export function getGroupsAroundPosition (layer: Layer, startPosition: number, endPosition: number): EventGroup[] {
+export function getGroupsAroundPosition(layer: Layer, startPosition: number, endPosition: number): EventGroup[] {
   const result = new Set<EventGroup>()
   let key = Math.round(startPosition / 100_000)
   const endKey = Math.round(endPosition / 100_000)
@@ -150,7 +155,7 @@ export function getGroupsAroundPosition (layer: Layer, startPosition: number, en
   return Array.from(result)
 }
 
-export function addGroupAroundPosition (layer: Layer, group: EventGroup, newPosition: number) {
+export function addGroupAroundPosition(layer: Layer, group: EventGroup, newPosition: number) {
   let key = Math.round(group.lastEvent.time / 100_000)
   const endKey = Math.round(newPosition / 100_000)
 

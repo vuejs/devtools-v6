@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, onUnmounted, defineComponent, computed } from 'vue'
+import { computed, defineComponent, onUnmounted, ref } from 'vue'
 
 export default defineComponent({
   props: {
@@ -24,7 +24,7 @@ export default defineComponent({
     },
   },
   emits: ['update:start', 'update:end'],
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     const startRatio = computed(() => (props.start - props.min) / (props.max - props.min))
     const endRatio = computed(() => (props.max - props.end) / (props.max - props.min))
 
@@ -36,7 +36,7 @@ export default defineComponent({
 
     const moving = ref(false)
 
-    function onMainBarMouseDown (event: MouseEvent) {
+    function onMainBarMouseDown(event: MouseEvent) {
       mouseStartX = event.clientX
       initialValue = props.start
       moving.value = true
@@ -44,25 +44,26 @@ export default defineComponent({
       window.addEventListener('mouseup', onMainBarMouseUp)
     }
 
-    function onMainBarMouseMove (event: MouseEvent) {
+    function onMainBarMouseMove(event: MouseEvent) {
       let start = props.start
       const size = props.end - props.start
       start = initialValue + (event.clientX - mouseStartX) / el.value.offsetWidth * (props.max - props.min)
       if (start < props.min) {
         start = props.min
-      } else if (start > props.max - size) {
+      }
+      else if (start > props.max - size) {
         start = props.max - size
       }
       emit('update:start', Math.round(start))
       emit('update:end', Math.round(start + size))
     }
 
-    function onMainBarMouseUp () {
+    function onMainBarMouseUp() {
       moving.value = false
       removeMainBarEvents()
     }
 
-    function removeMainBarEvents () {
+    function removeMainBarEvents() {
       window.removeEventListener('mousemove', onMainBarMouseMove)
       window.removeEventListener('mouseup', onMainBarMouseUp)
     }
@@ -73,29 +74,30 @@ export default defineComponent({
 
     // Start resize handle
 
-    function onStartHandleMouseDown (event: MouseEvent) {
+    function onStartHandleMouseDown(event: MouseEvent) {
       mouseStartX = event.clientX
       initialValue = props.start
       window.addEventListener('mousemove', onStartHandleMouseMove)
       window.addEventListener('mouseup', onStartHandleMouseUp)
     }
 
-    function onStartHandleMouseMove (event: MouseEvent) {
+    function onStartHandleMouseMove(event: MouseEvent) {
       let start = props.start
       start = initialValue + (event.clientX - mouseStartX) / el.value.offsetWidth * (props.max - props.min)
       if (start < props.min) {
         start = props.min
-      } else if (start > props.end - 1) {
+      }
+      else if (start > props.end - 1) {
         start = props.end - 1
       }
       emit('update:start', Math.round(start))
     }
 
-    function onStartHandleMouseUp () {
+    function onStartHandleMouseUp() {
       removeStartHandleEvents()
     }
 
-    function removeStartHandleEvents () {
+    function removeStartHandleEvents() {
       window.removeEventListener('mousemove', onStartHandleMouseMove)
       window.removeEventListener('mouseup', onStartHandleMouseUp)
     }
@@ -106,29 +108,30 @@ export default defineComponent({
 
     // End resize handle
 
-    function onEndHandleMouseDown (event: MouseEvent) {
+    function onEndHandleMouseDown(event: MouseEvent) {
       mouseStartX = event.clientX
       initialValue = props.end
       window.addEventListener('mousemove', onEndHandleMouseMove)
       window.addEventListener('mouseup', onEndHandleMouseUp)
     }
 
-    function onEndHandleMouseMove (event: MouseEvent) {
+    function onEndHandleMouseMove(event: MouseEvent) {
       let end = props.end
       end = initialValue + (event.clientX - mouseStartX) / el.value.offsetWidth * (props.max - props.min)
       if (end < props.start + 1) {
         end = props.start + 1
-      } else if (end > props.max) {
+      }
+      else if (end > props.max) {
         end = props.max
       }
       emit('update:end', Math.round(end))
     }
 
-    function onEndHandleMouseUp () {
+    function onEndHandleMouseUp() {
       removeEndHandleEvents()
     }
 
-    function removeEndHandleEvents () {
+    function removeEndHandleEvents() {
       window.removeEventListener('mousemove', onEndHandleMouseMove)
       window.removeEventListener('mouseup', onEndHandleMouseUp)
     }
@@ -159,11 +162,11 @@ export default defineComponent({
     <div
       class="absolute h-full top-0 bg-green-200 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 cursor-move"
       :class="{
-        'bg-green-100 dark:bg-green-800': moving
+        'bg-green-100 dark:bg-green-800': moving,
       }"
       :style="{
         left: `calc(${(start - min) / (max - min) * 100}% - 1px)`,
-        width: `calc(${(end - start) / (max - min) * 100}% + 1px)`
+        width: `calc(${(end - start) / (max - min) * 100}% + 1px)`,
       }"
       @mousedown="onMainBarMouseDown"
     />
@@ -173,7 +176,7 @@ export default defineComponent({
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
         left: `calc(${startRatio * 100}% - ${startRatio < 0.05 ? 0 : 4}px)`,
-        width: '4px'
+        width: '4px',
       }"
       @mousedown="onStartHandleMouseDown"
     />
@@ -183,7 +186,7 @@ export default defineComponent({
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
         right: `calc(${endRatio * 100}% - ${endRatio < 0.05 ? 0 : 4}px)`,
-        width: '4px'
+        width: '4px',
       }"
       @mousedown="onEndHandleMouseDown"
     />

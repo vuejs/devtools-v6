@@ -1,35 +1,3 @@
-<template>
-  <div
-    class="vue-ui-form-field"
-    :class="{
-      focused: injectedData.focused,
-      [`status-${injectedData.status}`]: injectedData.status,
-    }"
-  >
-    <div class="wrapper">
-      <div class="title">
-        <slot name="title">
-          <span v-html="title" />
-        </slot>
-      </div>
-      <div class="content">
-        <slot />
-      </div>
-      <div
-        class="subtitle"
-        :class="{
-          [`vue-ui-text ${injectedData.status}`]: injectedData.status,
-        }"
-      >
-        <VueIcon v-if="subtitleIconId" :icon="subtitleIconId" />
-        <slot name="subtitle">
-          <span v-html="subtitle" />
-        </slot>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts">
 import { computed, defineComponent, provide, reactive } from 'vue'
 
@@ -60,7 +28,7 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const injectedData = reactive({
       focused: false,
       status: null,
@@ -92,3 +60,35 @@ export default defineComponent({
   },
 })
 </script>
+
+<template>
+  <div
+    class="vue-ui-form-field"
+    :class="{
+      focused: injectedData.focused,
+      [`status-${injectedData.status}`]: injectedData.status,
+    }"
+  >
+    <div class="wrapper">
+      <div class="title">
+        <slot name="title">
+          <span v-html="title" />
+        </slot>
+      </div>
+      <div class="content">
+        <slot />
+      </div>
+      <div
+        class="subtitle"
+        :class="{
+          [`vue-ui-text ${injectedData.status}`]: injectedData.status,
+        }"
+      >
+        <VueIcon v-if="subtitleIconId" :icon="subtitleIconId" />
+        <slot name="subtitle">
+          <span v-html="subtitle" />
+        </slot>
+      </div>
+    </div>
+  </div>
+</template>

@@ -2,12 +2,12 @@ import { onMounted, onUnmounted } from 'vue'
 
 type KeyboardHandler = (event: KeyboardEvent) => boolean | void | Promise<boolean | void>
 
-function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler, force: boolean) {
-  function handler (event: KeyboardEvent) {
+function handleKeyboard(type: 'keyup' | 'keydown', cb: KeyboardHandler, force: boolean) {
+  function handler(event: KeyboardEvent) {
     if (!force && (
       typeof HTMLElement !== 'undefined' && event.target instanceof HTMLElement && (
-        event.target.tagName === 'INPUT' ||
-        event.target.tagName === 'TEXTAREA'
+        event.target.tagName === 'INPUT'
+        || event.target.tagName === 'TEXTAREA'
       )
     )) {
       return
@@ -28,10 +28,10 @@ function handleKeyboard (type: 'keyup' | 'keydown', cb: KeyboardHandler, force: 
   })
 }
 
-export function onKeyUp (cb: KeyboardHandler, force = false) {
+export function onKeyUp(cb: KeyboardHandler, force = false) {
   handleKeyboard('keyup', cb, force)
 }
 
-export function onKeyDown (cb: KeyboardHandler, force = false) {
+export function onKeyDown(cb: KeyboardHandler, force = false) {
   handleKeyboard('keydown', cb, force)
 }

@@ -3,12 +3,15 @@ import * as PIXI from 'pixi.js-legacy'
 
 let installedFonts = false
 
-export async function installFonts () {
-  if (installedFonts) return
+export async function installFonts() {
+  if (installedFonts) {
+    return
+  }
 
   try {
     await document.fonts.load('10px "Roboto Mono"')
-  } catch (e) {
+  }
+  catch (e) {
     console.error(e)
   }
 
@@ -31,10 +34,10 @@ export async function installFonts () {
   installedFonts = true
 }
 
-export function useFonts () {
+export function useFonts() {
   const loaded = ref(installedFonts)
 
-  async function _load () {
+  async function _load() {
     await installFonts()
     loaded.value = true
   }

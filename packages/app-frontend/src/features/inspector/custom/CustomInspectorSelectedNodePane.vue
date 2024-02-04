@@ -1,11 +1,11 @@
 <script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
-import { watch, defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
-import { useCurrentInspector } from './composable'
 import StateInspector from '../StateInspector.vue'
+import { useCurrentInspector } from './composable'
 
 export default defineComponent({
   components: {
@@ -13,7 +13,7 @@ export default defineComponent({
     EmptyPane,
   },
 
-  setup () {
+  setup() {
     const {
       currentInspector: inspector,
       filteredState,
@@ -21,7 +21,7 @@ export default defineComponent({
       editState,
     } = useCurrentInspector()
 
-    watch(() => inspector.value?.selectedNodeId, value => {
+    watch(() => inspector.value?.selectedNodeId, (value) => {
       if (value && !inspector.value.state) {
         refreshState()
       }
@@ -39,7 +39,7 @@ export default defineComponent({
       bridge,
     } = useBridge()
 
-    function executeCustomAction (index: number) {
+    function executeCustomAction(index: number) {
       bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, {
         inspectorId: inspector.value.id,
         appId: inspector.value.appId,

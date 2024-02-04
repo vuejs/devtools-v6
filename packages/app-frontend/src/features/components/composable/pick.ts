@@ -1,20 +1,20 @@
 import { ref } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
-import { useComponentRequests, setComponentOpen } from '.'
+import { setComponentOpen, useComponentRequests } from '.'
 
-export function useComponentPick () {
+export function useComponentPick() {
   const { bridge, onBridge } = useBridge()
   const { selectComponent, requestComponentTree } = useComponentRequests()
 
   const pickingComponent = ref(false)
 
-  function startPickingComponent () {
+  function startPickingComponent() {
     pickingComponent.value = true
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_PICK)
   }
 
-  function stopPickingComponent () {
+  function stopPickingComponent() {
     pickingComponent.value = false
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_PICK_CANCELED)
   }
@@ -22,9 +22,11 @@ export function useComponentPick () {
   onBridge(BridgeEvents.TO_FRONT_COMPONENT_PICK, ({ id, parentIds }) => {
     pickingComponent.value = false
     selectComponent(id)
-    parentIds.reverse().forEach(id => {
+    parentIds.reverse().forEach((id) => {
       // Ignore root
-      if (id.endsWith('root')) return
+      if (id.endsWith('root')) {
+        return
+      }
       setComponentOpen(id, true)
       requestComponentTree(id)
     })

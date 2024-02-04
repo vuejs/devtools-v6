@@ -1,12 +1,12 @@
 <script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
-import TimelineEventListItem from './TimelineEventListItem.vue'
 
-import { computed, ref, watch, defineComponent } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyDown } from '@front/util/keyboard'
-import { useInspectedEvent, useSelectedEvent, selectEvent, useLayers } from './composable'
+import TimelineEventListItem from './TimelineEventListItem.vue'
+import { selectEvent, useInspectedEvent, useLayers, useSelectedEvent } from './composable'
 
 const itemHeight = 34
 
@@ -18,7 +18,7 @@ export default defineComponent({
     EmptyPane,
   },
 
-  setup () {
+  setup() {
     const route = useRoute()
     const router = useRouter()
 
@@ -39,7 +39,7 @@ export default defineComponent({
 
     const tabId = computed({
       get: () => route.query.tabId,
-      set: value => {
+      set: (value) => {
         setStorage(STORAGE_TAB_ID, value)
         router.push({
           query: {
@@ -54,7 +54,7 @@ export default defineComponent({
       tabId.value = getStorage(STORAGE_TAB_ID, 'all')
     }
 
-    watch(selectedEvent, value => {
+    watch(selectedEvent, (value) => {
       if (value && !value.group && tabId.value === 'group') {
         tabId.value = 'all'
       }
@@ -79,10 +79,11 @@ export default defineComponent({
       if (rawFilter) {
         const reg = new RegExp(rawFilter, 'i')
         return displayedEvents.value.filter(event =>
-          (event.title && reg.test(event.title)) ||
-          (event.subtitle && reg.test(event.subtitle)),
+          (event.title && reg.test(event.title))
+          || (event.subtitle && reg.test(event.subtitle)),
         )
-      } else {
+      }
+      else {
         return displayedEvents.value
       }
     })
@@ -93,12 +94,12 @@ export default defineComponent({
 
     const isAtScrollBottom = ref(false)
 
-    function onScroll () {
+    function onScroll() {
       const scrollerEl = scroller.value.$el
       isAtScrollBottom.value = scrollerEl.scrollTop + scrollerEl.clientHeight >= scrollerEl.scrollHeight - 400
     }
 
-    watch(scroller, value => {
+    watch(scroller, (value) => {
       if (value) {
         onScroll()
       }
@@ -108,8 +109,10 @@ export default defineComponent({
       checkScrollToInspectedEvent()
     }, { immediate: true })
 
-    function scrollToInspectedEvent () {
-      if (!scroller.value) return
+    function scrollToInspectedEvent() {
+      if (!scroller.value) {
+        return
+      }
 
       const scrollerEl = scroller.value.$el
 
@@ -125,9 +128,11 @@ export default defineComponent({
       checkScrollToInspectedEvent()
     }, { immediate: true })
 
-    function checkScrollToInspectedEvent () {
+    function checkScrollToInspectedEvent() {
       requestAnimationFrame(() => {
-        if (!scroller.value) return
+        if (!scroller.value) {
+          return
+        }
 
         const scrollerEl = scroller.value.$el
 
@@ -143,9 +148,11 @@ export default defineComponent({
 
     // Auto bottom scroll
 
-    function scrollToBottom () {
+    function scrollToBottom() {
       requestAnimationFrame(() => {
-        if (!scroller.value) return
+        if (!scroller.value) {
+          return
+        }
         const scrollerEl = scroller.value.$el
         scrollerEl.scrollTop = scrollerEl.scrollHeight
       })
@@ -160,23 +167,25 @@ export default defineComponent({
 
     // List interactions
 
-    function inspectEvent (event) {
+    function inspectEvent(event) {
       inspectedEvent.value = event
     }
 
     // Keyboard
 
-    onKeyDown(event => {
+    onKeyDown((event) => {
       const index = filteredEvents.value.indexOf(inspectedEvent.value)
       if (event.key === 'ArrowDown') {
         if (index < filteredEvents.value.length - 1) {
           inspectEvent(filteredEvents.value[index + 1])
         }
-      } else if (event.key === 'ArrowUp') {
+      }
+      else if (event.key === 'ArrowUp') {
         if (index > 0) {
           inspectEvent(filteredEvents.value[index - 1])
         }
-      } else if (event.key === 'Enter' || event.key === ' ') {
+      }
+      else if (event.key === 'Enter' || event.key === ' ') {
         if (inspectedEvent.value) {
           selectEvent(inspectedEvent.value)
         }

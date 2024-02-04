@@ -1,7 +1,8 @@
-import type { ComponentTreeNode, InspectedComponentData, ComponentInstance, ComponentDevtoolsOptions } from './component.js'
+import type { ComponentDevtoolsOptions, ComponentInstance, ComponentTreeNode, InspectedComponentData } from './component.js'
 import type { App } from './app.js'
 import type { CustomInspectorNode, CustomInspectorState, TimelineEvent } from './api.js'
 
+// eslint-disable-next-line no-restricted-syntax
 export const enum Hooks {
   TRANSFORM_CALL = 'transformCall',
   GET_APP_RECORD_NAME = 'getAppRecordName',
@@ -34,7 +35,7 @@ export interface ComponentBounds {
   height: number
 }
 
-export type HookPayloads = {
+export interface HookPayloads {
   [Hooks.TRANSFORM_CALL]: {
     callName: string
     inArgs: any[]
@@ -161,26 +162,26 @@ export type EditStatePayload = {
 export type HookHandler<TPayload, TContext> = (payload: TPayload, ctx: TContext) => void | Promise<void>
 
 export interface Hookable<TContext> {
-  transformCall (handler: HookHandler<HookPayloads[Hooks.TRANSFORM_CALL], TContext>)
-  getAppRecordName (handler: HookHandler<HookPayloads[Hooks.GET_APP_RECORD_NAME], TContext>)
-  getAppRootInstance (handler: HookHandler<HookPayloads[Hooks.GET_APP_ROOT_INSTANCE], TContext>)
-  registerApplication (handler: HookHandler<HookPayloads[Hooks.REGISTER_APPLICATION], TContext>)
-  walkComponentTree (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_TREE], TContext>)
-  visitComponentTree (handler: HookHandler<HookPayloads[Hooks.VISIT_COMPONENT_TREE], TContext>)
-  walkComponentParents (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS], TContext>)
-  inspectComponent (handler: HookHandler<HookPayloads[Hooks.INSPECT_COMPONENT], TContext>)
-  getComponentBounds (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS], TContext>)
-  getComponentName (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_NAME], TContext>)
-  getComponentInstances (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES], TContext>)
-  getElementComponent (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT], TContext>)
-  getComponentRootElements (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS], TContext>)
-  editComponentState (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>)
-  getComponentDevtoolsOptions (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS], TContext>)
-  getComponentRenderCode (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_RENDER_CODE], TContext>)
-  inspectTimelineEvent (handler: HookHandler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT], TContext>)
-  timelineCleared (handler: HookHandler<HookPayloads[Hooks.TIMELINE_CLEARED], TContext>)
-  getInspectorTree (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>)
-  getInspectorState (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>)
-  editInspectorState (handler: HookHandler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE], TContext>)
-  setPluginSettings (handler: HookHandler<HookPayloads[Hooks.SET_PLUGIN_SETTINGS], TContext>)
+  transformCall: (handler: HookHandler<HookPayloads[Hooks.TRANSFORM_CALL], TContext>) => any
+  getAppRecordName: (handler: HookHandler<HookPayloads[Hooks.GET_APP_RECORD_NAME], TContext>) => any
+  getAppRootInstance: (handler: HookHandler<HookPayloads[Hooks.GET_APP_ROOT_INSTANCE], TContext>) => any
+  registerApplication: (handler: HookHandler<HookPayloads[Hooks.REGISTER_APPLICATION], TContext>) => any
+  walkComponentTree: (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_TREE], TContext>) => any
+  visitComponentTree: (handler: HookHandler<HookPayloads[Hooks.VISIT_COMPONENT_TREE], TContext>) => any
+  walkComponentParents: (handler: HookHandler<HookPayloads[Hooks.WALK_COMPONENT_PARENTS], TContext>) => any
+  inspectComponent: (handler: HookHandler<HookPayloads[Hooks.INSPECT_COMPONENT], TContext>) => any
+  getComponentBounds: (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_BOUNDS], TContext>) => any
+  getComponentName: (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_NAME], TContext>) => any
+  getComponentInstances: (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_INSTANCES], TContext>) => any
+  getElementComponent: (handler: HookHandler<HookPayloads[Hooks.GET_ELEMENT_COMPONENT], TContext>) => any
+  getComponentRootElements: (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_ROOT_ELEMENTS], TContext>) => any
+  editComponentState: (handler: HookHandler<HookPayloads[Hooks.EDIT_COMPONENT_STATE], TContext>) => any
+  getComponentDevtoolsOptions: (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_DEVTOOLS_OPTIONS], TContext>) => any
+  getComponentRenderCode: (handler: HookHandler<HookPayloads[Hooks.GET_COMPONENT_RENDER_CODE], TContext>) => any
+  inspectTimelineEvent: (handler: HookHandler<HookPayloads[Hooks.INSPECT_TIMELINE_EVENT], TContext>) => any
+  timelineCleared: (handler: HookHandler<HookPayloads[Hooks.TIMELINE_CLEARED], TContext>) => any
+  getInspectorTree: (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_TREE], TContext>) => any
+  getInspectorState: (handler: HookHandler<HookPayloads[Hooks.GET_INSPECTOR_STATE], TContext>) => any
+  editInspectorState: (handler: HookHandler<HookPayloads[Hooks.EDIT_INSPECTOR_STATE], TContext>) => any
+  setPluginSettings: (handler: HookHandler<HookPayloads[Hooks.SET_PLUGIN_SETTINGS], TContext>) => any
 }

@@ -1,6 +1,6 @@
-import { DevtoolsApi } from '@vue-devtools/app-backend-api'
+import type { DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { HookEvents, SharedData } from '@vue-devtools/shared-utils'
-import { instanceMap } from './tree'
+import { getInstanceMap } from './tree'
 
 const COMPONENT_HOOKS = {
   beforeCreate: { start: 'create' },
@@ -13,20 +13,22 @@ const COMPONENT_HOOKS = {
   destroyed: { end: 'destroy' },
 }
 
-export function initPerf (api: DevtoolsApi, app, Vue) {
+export function initPerf(api: DevtoolsApi, app, Vue) {
   // Global mixin
   Vue.mixin({
-    beforeCreate () {
+    beforeCreate() {
       applyPerfHooks(api, this, app)
     },
   })
 
   // Apply to existing components
-  instanceMap?.forEach(vm => applyPerfHooks(api, vm, app))
+  getInstanceMap()?.forEach(vm => applyPerfHooks(api, vm, app))
 }
 
-export function applyPerfHooks (api: DevtoolsApi, vm, app) {
-  if (vm.$options.$_devtoolsPerfHooks) return
+export function applyPerfHooks(api: DevtoolsApi, vm, app) {
+  if (vm.$options.$_devtoolsPerfHooks) {
+    return
+  }
   vm.$options.$_devtoolsPerfHooks = true
 
   for (const hook in COMPONENT_HOOKS) {
@@ -46,9 +48,11 @@ export function applyPerfHooks (api: DevtoolsApi, vm, app) {
     const currentValue = vm.$options[hook]
     if (Array.isArray(currentValue)) {
       vm.$options[hook] = [handler, ...currentValue]
-    } else if (typeof currentValue === 'function') {
+    }
+    else if (typeof currentValue === 'function') {
       vm.$options[hook] = [handler, currentValue]
-    } else {
+    }
+    else {
       vm.$options[hook] = [handler]
     }
   }

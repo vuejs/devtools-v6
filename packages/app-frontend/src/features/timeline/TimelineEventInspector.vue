@@ -4,7 +4,7 @@ import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 import { computed, defineComponent } from 'vue'
 import { useDarkMode } from '@front/util/theme'
-import { toStrHex, dimColor, boostColor } from '@front/util/color'
+import { boostColor, dimColor, toStrHex } from '@front/util/color'
 import { useInspectedEvent, useSelectedEvent } from './composable'
 
 export default defineComponent({
@@ -13,7 +13,7 @@ export default defineComponent({
     EmptyPane,
   },
 
-  setup () {
+  setup() {
     const {
       inspectedEvent,
       inspectedEventState,
@@ -57,7 +57,7 @@ export default defineComponent({
         class="flex-none w-2.5 h-2.5 rounded-full border-2"
         :style="{
           borderColor: `#${isSelected ? boostedColor : color}`,
-          backgroundColor: `#${isSelected ? dimmedColor : color}`
+          backgroundColor: `#${isSelected ? dimmedColor : color}`,
         }"
       />
 
@@ -65,7 +65,7 @@ export default defineComponent({
         <span
           class="font-medium"
           :style="{
-            color: `#${boostedColor}`
+            color: `#${boostedColor}`,
           }"
         >
           {{ inspectedEvent.title || 'Event' }}
@@ -121,15 +121,15 @@ export default defineComponent({
             duration: {
               _custom: {
                 value: inspectedEvent.group.duration,
-                display: `${inspectedEvent.group.duration / 1000} ms`
-              }
-            }
-          }
-        } : {}
+                display: `${inspectedEvent.group.duration / 1000} ms`,
+              },
+            },
+          },
+        } : {},
       }"
       class="flex-1 overflow-x-auto"
       :class="{
-        'grayscale': loading
+        grayscale: loading,
       }"
     />
   </div>

@@ -1,18 +1,9 @@
-<template>
-  <div>
-    Other {{ id }}
-    <mine />
-  </div>
-</template>
-
 <script>
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 // this computed property should be visible
 // even if component has no 'computed' defined
 const computedPropMixin = {
   computed: {
-    computedPropFromMixin () {
+    computedPropFromMixin() {
       return null
     },
   },
@@ -21,13 +12,13 @@ const computedPropMixin = {
 export default {
   name: 'OtherWithMine',
   components: {
-    mine: {
+    Mine: {
       inject: ['foo', 'noop', 'answer'],
       render: h => h('div', { class: 'mine' }, 'mine'),
-      data () {
+      data() {
         return {
           // testing all data types
-          a: function () {},
+          a() {},
           b: /123/,
           c: document.createElement('div'),
           d: null,
@@ -40,25 +31,32 @@ export default {
     },
   },
   mixins: [computedPropMixin],
-  inheritAttrs: false,
   provide: {
     foo: 'bar',
     noop: (a, b, c) => {},
     answer: 42,
   },
+  inheritAttrs: false,
   props: ['id'],
-  data () {
-    const a = { c: function () {} }
+  data() {
+    const a = { c() {} }
     a.a = a
     const b = []
     b[0] = b
     return {
-      a: a,
-      b: b,
+      a,
+      b,
     }
   },
 }
 </script>
+
+<template>
+  <div>
+    Other {{ id }}
+    <Mine />
+  </div>
+</template>
 
 <style lang="stylus">
 .mine

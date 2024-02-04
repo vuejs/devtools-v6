@@ -1,13 +1,13 @@
 <script lang="ts">
 import SplitPane from '@front/features/layout/SplitPane.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
-import CustomInspectorNode from './CustomInspectorNode.vue'
-import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
-import PluginSourceIcon from '../../plugin/PluginSourceIcon.vue'
 
-import { watch, ref, provide, defineComponent } from 'vue'
+import { defineComponent, provide, ref, watch } from 'vue'
 import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { useBridge } from '@front/features/bridge'
+import PluginSourceIcon from '../../plugin/PluginSourceIcon.vue'
+import CustomInspectorSelectedNodePane from './CustomInspectorSelectedNodePane.vue'
+import CustomInspectorNode from './CustomInspectorNode.vue'
 import { useCurrentInspector } from './composable'
 
 export default defineComponent({
@@ -19,7 +19,7 @@ export default defineComponent({
     PluginSourceIcon,
   },
 
-  setup () {
+  setup() {
     const {
       currentInspector: inspector,
       refreshInspector,
@@ -44,13 +44,13 @@ export default defineComponent({
 
     // Keyboard
 
-    function selectNextChild (index: number) {
+    function selectNextChild(index: number) {
       if (index + 1 < inspector.value.rootNodes.length) {
         selectNode(inspector.value.rootNodes[index + 1])
       }
     }
 
-    function selectPreviousChild (index: number) {
+    function selectPreviousChild(index: number) {
       if (index - 1 >= 0) {
         selectNode(inspector.value.rootNodes[index - 1])
       }
@@ -61,7 +61,7 @@ export default defineComponent({
       bridge,
     } = useBridge()
 
-    function executeCustomAction (index: number) {
+    function executeCustomAction(index: number) {
       bridge.send(BridgeEvents.TO_BACK_CUSTOM_INSPECTOR_ACTION, {
         inspectorId: inspector.value.id,
         appId: inspector.value.appId,

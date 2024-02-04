@@ -1,7 +1,3 @@
-<template>
-  <BeAsync />
-</template>
-
 <script>
 import { defineAsyncComponent } from 'vue'
 
@@ -9,7 +5,7 @@ const BeAsync = defineAsyncComponent(() => new Promise((resolve) => {
   setTimeout(() => {
     resolve({
       name: 'BeAsync',
-      data () {
+      data() {
         return {
           message: 'I am async!',
         }
@@ -25,3 +21,7 @@ export default {
   },
 }
 </script>
+
+<template>
+  <BeAsync />
+</template>

@@ -12,7 +12,7 @@
   "devDependencies": {
     "@vue-devtools/build-tools": "^0.0.0",
     "rimraf": "^3.0.2",
-    "webpack": "^5.35.1",
-    "webpack-cli": "^4.6.0"
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
   }
 }

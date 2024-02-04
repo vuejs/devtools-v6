@@ -6,7 +6,7 @@ export default defineComponent({
     'hide',
   ],
 
-  setup () {
+  setup() {
     const step = ref(0)
     const content = ref<HTMLDivElement>()
 
@@ -199,7 +199,7 @@ export default defineComponent({
           <div
             class="h-[2px] bg-green-500 transition-all duration-500 ease-out"
             :style="{
-              width: `${step / stepMax * 100}%`
+              width: `${step / stepMax * 100}%`,
             }"
           />
         </div>

@@ -1,13 +1,13 @@
-const path = require('path')
+const path = require('node:path')
 const openInEditor = require('launch-editor-middleware')
 const { createConfig } = require('@vue-devtools/build-tools')
 
 module.exports = createConfig({
   context: __dirname,
   entry: {
-    backend: require.resolve('@vue-devtools/shell-host/src/backend.js'),
-    hook: require.resolve('@vue-devtools/shell-host/src/hook.js'),
-    target: './src/main.js',
+    'backend': require.resolve('@vue-devtools/shell-host/src/backend.js'),
+    'hook': require.resolve('@vue-devtools/shell-host/src/hook.js'),
+    'target': './src/main.js',
     'iframe-app': './src/iframe-app.js',
   },
   output: {
@@ -20,7 +20,7 @@ module.exports = createConfig({
   },
   devServer: {
     port: 8090,
-    onBeforeSetupMiddleware ({ app }) {
+    onBeforeSetupMiddleware({ app }) {
       app.use('/__open-in-editor', openInEditor())
     },
     proxy: {

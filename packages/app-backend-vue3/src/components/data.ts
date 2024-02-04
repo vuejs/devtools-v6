@@ -1,8 +1,9 @@
-import { BackendContext } from '@vue-devtools/app-backend-api'
-import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, StateEditor, SharedData, kebabize } from '@vue-devtools/shared-utils'
-import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
+import type { BackendContext } from '@vue-devtools/app-backend-api'
+import type { StateEditor } from '@vue-devtools/shared-utils'
+import { SharedData, camelize, kebabize } from '@vue-devtools/shared-utils'
+import type { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
+import { getInstanceName, getUniqueComponentId } from './util'
 
 const vueBuiltins = [
   'nextTick',
@@ -61,7 +62,7 @@ const vueBuiltins = [
 /**
  * Get the detailed information of an inspected instance.
  */
-export function getInstanceDetails (instance: any, ctx: BackendContext): InspectedComponentData {
+export function getInstanceDetails(instance: any, ctx: BackendContext): InspectedComponentData {
   return {
     id: getUniqueComponentId(instance, ctx),
     name: getInstanceName(instance),
@@ -70,7 +71,7 @@ export function getInstanceDetails (instance: any, ctx: BackendContext): Inspect
   }
 }
 
-function getInstanceState (instance) {
+function getInstanceState(instance) {
   const mergedType = resolveMergedOptions(instance)
   return processProps(instance).concat(
     processState(instance),
@@ -92,7 +93,7 @@ function getInstanceState (instance) {
  * @param {Vue} instance
  * @return {Array}
  */
-function processProps (instance) {
+function processProps(instance) {
   const propsData = []
   const propDefinitions = instance.type.props
 
@@ -126,7 +127,7 @@ const fnTypeRE = /^(?:function|class) (\w+)/
 /**
  * Convert prop type constructor to string.
  */
-function getPropType (type) {
+function getPropType(type) {
   if (Array.isArray(type)) {
     return type.map(t => getPropType(t)).join(' or ')
   }
@@ -148,12 +149,12 @@ function getPropType (type) {
  * @return {Array}
  */
 
-function processState (instance) {
+function processState(instance) {
   const type = instance.type
   const props = type.props
-  const getters =
-    type.vuex &&
-    type.vuex.getters
+  const getters
+    = type.vuex
+    && type.vuex.getters
   const computedDefs = type.computed
 
   const data = {
@@ -163,9 +164,9 @@ function processState (instance) {
 
   return Object.keys(data)
     .filter(key => (
-      !(props && key in props) &&
-      !(getters && key in getters) &&
-      !(computedDefs && key in computedDefs)
+      !(props && key in props)
+      && !(getters && key in getters)
+      && !(computedDefs && key in computedDefs)
     ))
     .map(key => ({
       key,
@@ -175,7 +176,7 @@ function processState (instance) {
     }))
 }
 
-function processSetupState (instance) {
+function processSetupState(instance) {
   const raw = instance.devtoolsRawSetupState
   const combinedSetupState = (Object.keys(instance.setupState).length
     ? instance.setupState
@@ -184,17 +185,17 @@ function processSetupState (instance) {
 
   return Object.keys(combinedSetupState)
     .filter(key => !vueBuiltins.includes(key) && key.split(/(?=[A-Z])/)[0] !== 'use')
-    .map(key => {
+    .map((key) => {
       const value = returnError(() => toRaw(combinedSetupState[key]))
 
       const rawData = raw[key]
 
       let result: any
 
-      let isOther = typeof value === 'function' ||
-        typeof value?.render === 'function' ||
-        typeof value?.__asyncLoader === 'function' ||
-        typeof value === 'object' && ('setup' in value || 'props' in value)
+      let isOther = typeof value === 'function'
+        || typeof value?.render === 'function'
+        || typeof value?.__asyncLoader === 'function'
+        || (typeof value === 'object' && ('setup' in value || 'props' in value))
 
       if (rawData) {
         const info = getSetupStateInfo(rawData)
@@ -225,30 +226,30 @@ function processSetupState (instance) {
     })
 }
 
-function isRef (raw: any): boolean {
+function isRef(raw: any): boolean {
   return !!raw.__v_isRef
 }
 
-function isComputed (raw: any): boolean {
+function isComputed(raw: any): boolean {
   return isRef(raw) && !!raw.effect
 }
 
-function isReactive (raw: any): boolean {
+function isReactive(raw: any): boolean {
   return !!raw.__v_isReactive
 }
 
-function isReadOnly (raw: any): boolean {
+function isReadOnly(raw: any): boolean {
   return !!raw.__v_isReadonly
 }
 
-function toRaw (value: any) {
+function toRaw(value: any) {
   if (value?.__v_raw) {
     return value.__v_raw
   }
   return value
 }
 
-function getSetupStateInfo (raw: any) {
+function getSetupStateInfo(raw: any) {
   return {
     ref: isRef(raw),
     computed: isComputed(raw),
@@ -257,7 +258,7 @@ function getSetupStateInfo (raw: any) {
   }
 }
 
-export function getCustomObjectDetails (object: any, proto: string): CustomState | undefined {
+export function getCustomObjectDetails(object: any, _proto: string): CustomState | undefined {
   const info = getSetupStateInfo(object)
 
   const isState = info.ref || info.computed || info.reactive
@@ -291,7 +292,7 @@ export function getCustomObjectDetails (object: any, proto: string): CustomState
  * @param {Vue} instance
  * @return {Array}
  */
-function processComputed (instance, mergedType) {
+function processComputed(instance, mergedType) {
   const type = mergedType
   const computed = []
   const defs = type.computed || {}
@@ -315,7 +316,7 @@ function processComputed (instance, mergedType) {
   return computed
 }
 
-function processAttrs (instance) {
+function processAttrs(instance) {
   return Object.keys(instance.attrs)
     .map(key => ({
       type: 'attrs',
@@ -324,7 +325,7 @@ function processAttrs (instance) {
     }))
 }
 
-function processProvide (instance) {
+function processProvide(instance) {
   return Reflect.ownKeys(instance.provides)
     .map(key => ({
       type: 'provided',
@@ -333,8 +334,10 @@ function processProvide (instance) {
     }))
 }
 
-function processInject (instance, mergedType) {
-  if (!mergedType?.inject) return []
+function processInject(instance, mergedType) {
+  if (!mergedType?.inject) {
+    return []
+  }
   let keys = []
   let defaultValue
   if (Array.isArray(mergedType.inject)) {
@@ -342,13 +345,15 @@ function processInject (instance, mergedType) {
       key,
       originalKey: key,
     }))
-  } else {
-    keys = Reflect.ownKeys(mergedType.inject).map(key => {
+  }
+  else {
+    keys = Reflect.ownKeys(mergedType.inject).map((key) => {
       const value = mergedType.inject[key]
       let originalKey
       if (typeof value === 'string' || typeof value === 'symbol') {
         originalKey = value
-      } else {
+      }
+      else {
         originalKey = value.from
         defaultValue = value.default
       }
@@ -361,11 +366,11 @@ function processInject (instance, mergedType) {
   return keys.map(({ key, originalKey }) => ({
     type: 'injected',
     key: originalKey && key !== originalKey ? `${originalKey.toString()} ➞ ${key.toString()}` : key.toString(),
-    value: returnError(() => instance.ctx.hasOwnProperty(key) ? instance.ctx[key] : instance.provides.hasOwnProperty(originalKey) ? instance.provides[originalKey] : defaultValue),
+    value: returnError(() => Object.prototype.hasOwnProperty.call(instance.ctx, key) ? instance.ctx[key] : Object.prototype.hasOwnProperty.call(instance.provides, originalKey) ? instance.provides[originalKey] : defaultValue),
   }))
 }
 
-function processRefs (instance) {
+function processRefs(instance) {
   return Object.keys(instance.refs)
     .map(key => ({
       type: 'refs',
@@ -374,7 +379,7 @@ function processRefs (instance) {
     }))
 }
 
-function processEventListeners (instance) {
+function processEventListeners(instance) {
   const emitsDefinition = instance.type.emits
   const declaredEmits = Array.isArray(emitsDefinition) ? emitsDefinition : Object.keys(emitsDefinition ?? {})
   const declaredEmitsMap = declaredEmits.reduce((emitsMap, key) => {
@@ -403,24 +408,30 @@ function processEventListeners (instance) {
   return result
 }
 
-export function editState ({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor, ctx: BackendContext) {
-  if (!['data', 'props', 'computed', 'setup'].includes(type)) return
+export function editState({ componentInstance, path, state, type }: HookPayloads[Hooks.EDIT_COMPONENT_STATE], stateEditor: StateEditor, _ctx: BackendContext) {
+  if (!['data', 'props', 'computed', 'setup'].includes(type)) {
+    return
+  }
   let target: any
   const targetPath: string[] = path.slice()
 
   if (Object.keys(componentInstance.props).includes(path[0])) {
     // Props
     target = componentInstance.props
-  } else if (componentInstance.devtoolsRawSetupState && Object.keys(componentInstance.devtoolsRawSetupState).includes(path[0])) {
+  }
+  else if (componentInstance.devtoolsRawSetupState && Object.keys(componentInstance.devtoolsRawSetupState).includes(path[0])) {
     // Setup
     target = componentInstance.devtoolsRawSetupState
 
     const currentValue = stateEditor.get(componentInstance.devtoolsRawSetupState, path)
     if (currentValue != null) {
       const info = getSetupStateInfo(currentValue)
-      if (info.readonly) return
+      if (info.readonly) {
+        return
+      }
     }
-  } else {
+  }
+  else {
     target = componentInstance.proxy
   }
 
@@ -429,7 +440,7 @@ export function editState ({ componentInstance, path, state, type }: HookPayload
   }
 }
 
-function reduceStateList (list) {
+function reduceStateList(list) {
   if (!list.length) {
     return undefined
   }
@@ -441,8 +452,10 @@ function reduceStateList (list) {
   }, {})
 }
 
-export function getCustomInstanceDetails (instance) {
-  if (instance._) instance = instance._
+export function getCustomInstanceDetails(instance) {
+  if (instance._) {
+    instance = instance._
+  }
   const state = getInstanceState(instance)
   return {
     _custom: {
@@ -458,20 +471,22 @@ export function getCustomInstanceDetails (instance) {
   }
 }
 
-function resolveMergedOptions (
+function resolveMergedOptions(
   instance: ComponentInstance,
 ) {
   const raw = instance.type
   const { mixins, extends: extendsOptions } = raw
   const globalMixins = instance.appContext.mixins
-  if (!globalMixins.length && !mixins && !extendsOptions) return raw
+  if (!globalMixins.length && !mixins && !extendsOptions) {
+    return raw
+  }
   const options = {}
   globalMixins.forEach(m => mergeOptions(options, m, instance))
   mergeOptions(options, raw, instance)
   return options
 }
 
-function mergeOptions (
+function mergeOptions(
   to: any,
   from: any,
   instance: ComponentInstance,
@@ -480,21 +495,24 @@ function mergeOptions (
     from = from.options
   }
 
-  if (!from) return to
+  if (!from) {
+    return to
+  }
 
   const { mixins, extends: extendsOptions } = from
 
   extendsOptions && mergeOptions(to, extendsOptions, instance)
-  mixins &&
-    mixins.forEach((m) =>
-      mergeOptions(to, m, instance),
-    )
+  mixins
+  && mixins.forEach(m =>
+    mergeOptions(to, m, instance),
+  )
 
   for (const key of ['computed', 'inject']) {
     if (Object.prototype.hasOwnProperty.call(from, key)) {
       if (!to[key]) {
         to[key] = from[key]
-      } else {
+      }
+      else {
         to[key] = Object.assign(Object.create(null), to[key], from[key])
       }
     }

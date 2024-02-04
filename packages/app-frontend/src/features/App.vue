@@ -1,4 +1,14 @@
 <script lang="ts">
+import { defineComponent, onMounted } from 'vue'
+import {
+  SharedData,
+  getStorage,
+  isChrome,
+  onSharedDataInit,
+  setStorage,
+  watchSharedData,
+} from '@vue-devtools/shared-utils'
+import { darkMode } from '@front/util/theme'
 import AppHeader from './header/AppHeader.vue'
 import AppConnecting from './connection/AppConnecting.vue'
 import AppDisconnected from './connection/AppDisconnected.vue'
@@ -6,16 +16,6 @@ import ErrorOverlay from './error/ErrorOverlay.vue'
 import SplitPane from './layout/SplitPane.vue'
 import AppSelectPane from './apps/AppSelectPane.vue'
 
-import { onMounted, defineComponent } from 'vue'
-import {
-  isChrome,
-  setStorage,
-  getStorage,
-  SharedData,
-  watchSharedData,
-  onSharedDataInit,
-} from '@vue-devtools/shared-utils'
-import { darkMode } from '@front/util/theme'
 import { useAppConnection } from './connection'
 import { showAppsSelector } from './header/header'
 import { useOrientation } from './layout/orientation'
@@ -36,22 +36,24 @@ export default defineComponent({
     AppSelectPane,
   },
 
-  setup () {
+  setup() {
     const { isConnected, isInitializing } = useAppConnection()
 
-    function updateTheme (theme: string) {
+    function updateTheme(theme: string) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
         document.body.classList.add('vue-ui-dark-mode')
         document.body.classList.add('dark')
         darkMode.value = true
-      } else {
+      }
+      else {
         document.body.classList.remove('vue-ui-dark-mode')
         document.body.classList.remove('dark')
         darkMode.value = false
       }
       if (theme === 'high-contrast') {
         document.body.classList.add('vue-ui-high-contrast')
-      } else {
+      }
+      else {
         document.body.classList.remove('vue-ui-high-contrast')
       }
       setStorage(STORAGE_PREVIOUS_SESSION_THEME, theme)

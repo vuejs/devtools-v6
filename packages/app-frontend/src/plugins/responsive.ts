@@ -1,6 +1,7 @@
-import { Plugin, computed, ComputedRef, Ref, reactive, toRefs, inject } from 'vue'
+import type { ComputedRef, Plugin, Ref } from 'vue'
+import { computed, inject, reactive, toRefs } from 'vue'
 
-export type Responsive = {
+export interface Responsive {
   wide: ComputedRef<boolean>
   tall: ComputedRef<boolean>
   width: Ref<number>
@@ -10,8 +11,8 @@ export type Responsive = {
 const responsiveKey = Symbol('responsive')
 
 export default {
-  install (app) {
-    function buildResponsive () {
+  install(app) {
+    function buildResponsive() {
       const data = reactive({
         width: window.innerWidth,
         height: window.innerHeight,

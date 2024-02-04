@@ -1,18 +1,7 @@
-<template>
-  <div>
-    <button
-      class="btn-emit-event-cond"
-      @click="emitLogEvent"
-    >
-      Emit from cond
-    </button>
-  </div>
-</template>
-
 <script>
 export default {
   methods: {
-    emitLogEvent () {
+    emitLogEvent() {
       const data = {
         componentName: 'EventChild1',
         string: 'Lorem ipsum',
@@ -30,3 +19,14 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div>
+    <button
+      class="btn-emit-event-cond"
+      @click="emitLogEvent"
+    >
+      Emit from cond
+    </button>
+  </div>
+</template>

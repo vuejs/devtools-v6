@@ -69,7 +69,8 @@ export default {
             textColor: 0x000000,
             backgroundColor: 0xFF984F,
           })
-        } else {
+        }
+        else {
           node.tags.push({
             label: 'test',
             textColor: 0xFFAAAA,
@@ -111,7 +112,7 @@ export default {
             value: reactive({ n: ref(0) }),
           })
 
-          return api.getComponentBounds(payload.componentInstance).then(bounds => {
+          return api.getComponentBounds(payload.componentInstance).then((bounds) => {
             payload.instanceData.state.push({
               type: stateType,
               key: 'bounds',
@@ -125,7 +126,7 @@ export default {
                 : null,
             })
           }).then(() => api.getComponentName(payload.componentInstance))
-            .then(name => {
+            .then((name) => {
               payload.instanceData.state.push({
                 type: stateType,
                 key: 'component name',
@@ -135,7 +136,7 @@ export default {
         }
       })
 
-      api.on.editComponentState(payload => {
+      api.on.editComponentState((payload) => {
         if (payload.type === stateType) {
           payload.set(componentState)
         }
@@ -173,9 +174,9 @@ export default {
         })
       }
 
-      api.on.inspectTimelineEvent(payload => {
+      api.on.inspectTimelineEvent((payload) => {
         if (payload.layerId === 'test-layer') {
-          return new Promise(resolve => {
+          return new Promise((resolve) => {
             payload.data = {
               ...payload.data,
               hey: 'hello',
@@ -224,7 +225,7 @@ export default {
 
       let componentInstances = []
 
-      api.on.getInspectorTree(payload => {
+      api.on.getInspectorTree((payload) => {
         if (payload.inspectorId === 'test-inspector') {
           payload.rootNodes = [
             {
@@ -242,7 +243,7 @@ export default {
                     },
                     {
                       label: 'test',
-                      textColor: 0xffffff,
+                      textColor: 0xFFFFFF,
                       backgroundColor: 0x000000,
                     },
                   ],
@@ -250,7 +251,8 @@ export default {
               ],
             },
           ]
-        } else if (payload.inspectorId === 'test-inspector2') {
+        }
+        else if (payload.inspectorId === 'test-inspector2') {
           return api.getComponentInstances(app).then((instances) => {
             componentInstances = instances
             for (const instance of instances) {
@@ -267,7 +269,7 @@ export default {
         foo: 'bar',
       }
 
-      api.on.getInspectorState(payload => {
+      api.on.getInspectorState((payload) => {
         if (payload.inspectorId === 'test-inspector') {
           if (payload.nodeId === 'root') {
             payload.state = {
@@ -283,7 +285,8 @@ export default {
                 },
               ],
             }
-          } else {
+          }
+          else {
             payload.state = {
               'child info': [
                 {
@@ -299,7 +302,8 @@ export default {
               ],
             }
           }
-        } else if (payload.inspectorId === 'test-inspector2') {
+        }
+        else if (payload.inspectorId === 'test-inspector2') {
           const instance = componentInstances.find(instance => instance.uid.toString() === payload.nodeId)
           if (instance) {
             api.unhighlightElement()
@@ -308,7 +312,7 @@ export default {
         }
       })
 
-      api.on.editInspectorState(payload => {
+      api.on.editInspectorState((payload) => {
         if (payload.inspectorId === 'test-inspector') {
           if (payload.nodeId === 'root') {
             payload.set(myState)
@@ -317,14 +321,14 @@ export default {
       })
 
       // Plugin settings change
-      api.on.setPluginSettings(payload => {
+      api.on.setPluginSettings((payload) => {
         console.log('plugin settings changed', payload)
       })
     })
 
     // Outside of setupDevtoolsPlugin
 
-    window.addEventListener('mouseup', event => {
+    window.addEventListener('mouseup', (event) => {
       devtoolsApi && devtoolsApi.addTimelineEvent({
         layerId: 'test-layer',
         event: {
@@ -339,7 +343,7 @@ export default {
       })
     })
 
-    window.addEventListener('keydown', event => {
+    window.addEventListener('keydown', (event) => {
       devtoolsApi && devtoolsApi.addTimelineEvent({
         layerId: 'test-layer',
         event: {

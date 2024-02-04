@@ -13,24 +13,25 @@ port.onDisconnect.addListener(handleDisconnect)
 
 sendMessageToBackend('init')
 
-function sendMessageToBackend (payload) {
+function sendMessageToBackend(payload) {
   window.postMessage({
     source: 'vue-devtools-proxy',
-    payload: payload,
+    payload,
   }, '*')
 }
 
-function sendMessageToDevtools (e) {
+function sendMessageToDevtools(e) {
   if (e.data && e.data.source === 'vue-devtools-backend') {
     port.postMessage(e.data.payload)
-  } else if (e.data && e.data.source === 'vue-devtools-backend-injection') {
+  }
+  else if (e.data && e.data.source === 'vue-devtools-backend-injection') {
     if (e.data.payload === 'listening') {
       sendMessageToBackend('init')
     }
   }
 }
 
-function handleDisconnect () {
+function handleDisconnect() {
   window.removeEventListener('message', sendMessageToDevtools)
   sendMessageToBackend('shutdown')
 }

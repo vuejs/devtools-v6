@@ -1,13 +1,14 @@
 <script lang="ts">
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
-import PluginSettingsItem from './PluginSettingsItem.vue'
 
-import { defineComponent, computed, PropType } from 'vue'
-import { getPluginSettings, setPluginSettings, getPluginDefaultSettings } from '@vue-devtools/shared-utils'
+import type { PropType } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { getPluginDefaultSettings, getPluginSettings, setPluginSettings } from '@vue-devtools/shared-utils'
 import cloneDeep from 'lodash/cloneDeep'
-import { Plugin } from '.'
-import { getBridge } from '../bridge'
 import { BridgeEvents } from '@vue-devtools/shared-utils/src'
+import { getBridge } from '../bridge'
+import PluginSettingsItem from './PluginSettingsItem.vue'
+import type { Plugin } from '.'
 
 export default defineComponent({
   components: {
@@ -22,12 +23,12 @@ export default defineComponent({
     },
   },
 
-  setup (props) {
+  setup(props) {
     const defaultValues = computed(() => getPluginDefaultSettings(props.plugin.settingsSchema))
 
     const currentValues = computed(() => getPluginSettings(props.plugin.id, defaultValues.value))
 
-    function updateValue (id: string, value: any) {
+    function updateValue(id: string, value: any) {
       const oldValue = cloneDeep(currentValues.value[id])
       setPluginSettings(props.plugin.id, {
         ...currentValues.value,

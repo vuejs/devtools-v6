@@ -33,14 +33,14 @@ export default new Vuex.Store({
       state.count--
       state.lastCountPayload = payload
     },
-    UPDATE_DATE: state => {
+    UPDATE_DATE: (state) => {
       state.date = new Date()
     },
-    TEST_COMPONENT: state => { /* noop */ },
-    TEST_SET: state => {
+    TEST_COMPONENT: (state) => { /* noop */ },
+    TEST_SET: (state) => {
       state.set.add(Math.random())
     },
-    TEST_MAP: state => {
+    TEST_MAP: (state) => {
       state.map.set(`mykey_${state.map.size}`, state.map.size)
     },
   },
@@ -59,9 +59,9 @@ export default new Vuex.Store({
     },
   },
   modules: {
-    nested: {
+    'nested': {
       namespaced: true,
-      state () {
+      state() {
         return {
           foo: 'bar',
         }
@@ -83,7 +83,7 @@ export default new Vuex.Store({
       },
       modules: {
         nestedNested: {
-          state () {
+          state() {
             return {
               answer: 42,
             }
@@ -97,8 +97,8 @@ export default new Vuex.Store({
         },
       },
     },
-    notNamespaced: {
-      state () {
+    'notNamespaced': {
+      state() {
         return {
           hello: 'world',
         }
@@ -108,7 +108,7 @@ export default new Vuex.Store({
       },
     },
     'use/in/name': {
-      state () {
+      state() {
         return {
           meow: 'MEOW',
         }
@@ -120,8 +120,8 @@ export default new Vuex.Store({
   },
 })
 
-function wait (ms) {
-  return new Promise(resolve => {
+function wait(ms) {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }

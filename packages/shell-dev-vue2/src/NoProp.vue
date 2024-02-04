@@ -1,13 +1,13 @@
-<template>
-  <div>{{ someArray }}</div>
-</template>
-
 <script>
 export default {
-  data () {
+  data() {
     return {
       someArray: [1, 2],
     }
   },
 }
 </script>
+
+<template>
+  <div>{{ someArray }}</div>
+</template>

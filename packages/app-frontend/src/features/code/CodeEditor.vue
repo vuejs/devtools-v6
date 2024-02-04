@@ -3,13 +3,14 @@
 import * as monaco from 'monaco-editor'
 import assign from 'lodash/merge'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line ts/no-var-requires, ts/no-require-imports
 monaco.editor.defineTheme('github-light', require('@front/assets/github-theme/light.json'))
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line ts/no-var-requires, ts/no-require-imports
 monaco.editor.defineTheme('github-dark', require('@front/assets/github-theme/dark.json'))
 
 export default {
   name: 'MonacoEditor',
+
   props: {
     original: {
       type: String,
@@ -36,11 +37,13 @@ export default {
       default: false,
     },
   },
-  emits: ['update:modelValue'],
+
+  emits: ['update:modelValue', 'editorWillMount', 'editorDidMount'],
+
   watch: {
     options: {
       deep: true,
-      handler (options) {
+      handler(options) {
         if (this.editor) {
           const editor = this.getModifiedEditor()
           editor.updateOptions(options)
@@ -48,7 +51,7 @@ export default {
       },
     },
 
-    modelValue (newValue) {
+    modelValue(newValue) {
       if (this.editor) {
         const editor = this.getModifiedEditor()
         if (newValue !== editor.getValue()) {
@@ -57,7 +60,7 @@ export default {
       }
     },
 
-    original (newValue) {
+    original(newValue) {
       if (this.editor && this.diffEditor) {
         const editor = this.getOriginalEditor()
         if (newValue !== editor.getValue()) {
@@ -66,33 +69,33 @@ export default {
       }
     },
 
-    language (newVal) {
+    language(newVal) {
       if (this.editor) {
         const editor = this.getModifiedEditor()
         this.monaco.editor.setModelLanguage(editor.getModel(), newVal)
       }
     },
 
-    theme (newVal) {
+    theme(newVal) {
       if (this.editor) {
         this.monaco.editor.setTheme(newVal)
       }
     },
   },
 
-  mounted () {
+  mounted() {
     this.monaco = monaco
     this.$nextTick(() => {
       this.initMonaco(monaco)
     })
   },
 
-  beforeUnmount () {
+  beforeUnmount() {
     this.editor && this.editor.dispose()
   },
 
   methods: {
-    initMonaco (monaco) {
+    initMonaco(monaco) {
       this.$emit('editorWillMount', this.monaco)
 
       const options = assign(
@@ -119,13 +122,14 @@ export default {
           original: originalModel,
           modified: modifiedModel,
         })
-      } else {
+      }
+      else {
         this.editor = monaco.editor.create(root, options)
       }
 
       // @event `change`
       const editor = this.getModifiedEditor()
-      editor.onDidChangeModelContent(event => {
+      editor.onDidChangeModelContent((event) => {
         const value = editor.getValue()
         if (this.modelValue !== value) {
           this.$emit('update:modelValue', value, event)
@@ -136,23 +140,23 @@ export default {
     },
 
     /** @deprecated */
-    getMonaco () {
+    getMonaco() {
       return this.editor
     },
 
-    getEditor () {
+    getEditor() {
       return this.editor
     },
 
-    getModifiedEditor () {
+    getModifiedEditor() {
       return this.diffEditor ? this.editor.getModifiedEditor() : this.editor
     },
 
-    getOriginalEditor () {
+    getOriginalEditor() {
       return this.diffEditor ? this.editor.getOriginalEditor() : this.editor
     },
 
-    focus () {
+    focus() {
       this.editor.focus()
     },
   },

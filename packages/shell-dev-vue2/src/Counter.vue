@@ -1,3 +1,136 @@
+<script>
+import { mapGetters, mapMutations, mapState } from 'vuex'
+import { deeplyNested, dynamic, nested } from './dynamic-module'
+import NoProp from './NoProp.vue'
+
+export default {
+  components: {
+    NoProp,
+  },
+  computed: {
+    test() { return 1 },
+
+    ...mapState({
+      count: state => state.count,
+    }),
+
+    ...mapState('nested', [
+      'foo',
+    ]),
+
+    ...mapGetters('nested', [
+      'twoFoos',
+    ]),
+  },
+  watch: {
+    count(value) {
+      console.log('%ccount new value', 'font-weight: bold;', value)
+    },
+  },
+
+  created() {
+  // simulate firebase binding
+    this.$firebaseRefs = {
+      hello: 'world',
+    }
+
+    this.$store.registerModule('instant', {
+      namespaced: true,
+      state: () => ({
+        hey: 'hi',
+      }),
+      getters: {
+        ho: state => `${state.hey} ho`,
+      },
+    })
+    console.log('registered instant')
+
+    this.addDynamicNestedModule(true)
+    this.removeDynamicNestedModule()
+    this.removeDynamicModule()
+  },
+
+  methods: {
+    increment() {
+      this.$store.commit('INCREMENT', { a: 1, b: { c: 3 } })
+    },
+
+    asyncIncrement() {
+      this.$store.dispatch('ASYNC_INCREMENT')
+    },
+
+    decrement() {
+      this.$store.commit('DECREMENT', 2)
+    },
+
+    doLotMutations() {
+      for (let i = 0; i < 10000; i++) {
+        this.increment()
+      }
+      for (let i = 0; i < 10000; i++) {
+        this.decrement()
+      }
+    },
+
+    startMutationStream() {
+      this.$_mutationTimer = setInterval(this.increment, 1000)
+    },
+
+    stopMutationStream() {
+      clearInterval(this.$_mutationTimer)
+    },
+
+    ...mapMutations('nested', {
+      addBar: 'ADD_BAR',
+      removeBar: 'REMOVE_BAR',
+    }),
+
+    addDynamicModule() {
+      this.$store.registerModule('dynamic', dynamic)
+    },
+
+    removeDynamicModule() {
+      this.$store.unregisterModule('dynamic')
+    },
+
+    toggleDynamic() {
+      this.$store.commit('dynamic/TOGGLE')
+    },
+
+    addDynamicNestedModule(force = false) {
+      if (force) {
+        this.$store.registerModule(['dynamic'], {})
+      }
+      this.$store.registerModule(['dynamic', 'nested'], nested)
+    },
+
+    removeDynamicNestedModule() {
+      this.$store.unregisterModule(['dynamic', 'nested'])
+    },
+
+    toggleDynamicNested() {
+      this.$store.commit('dynamic/nested/TOGGLE_NESTED')
+    },
+
+    addWrongModule() {
+      this.$store.registerModule(['wrong'], {
+        a: 1,
+        b: 2,
+        c: 3,
+      })
+    },
+
+    addDeeplyNestedModule() {
+      this.$store.registerModule('deeplyNested', deeplyNested)
+    },
+
+    removeDeeplyNestedModule() {
+      this.$store.unregisterModule('deeplyNested')
+    },
+  },
+}
+</script>
+
 <template>
   <div id="counter">
     <p>{{ count }}</p>
@@ -122,133 +255,3 @@
     <NoProp />
   </div>
 </template>
-
-<script>
-import { mapState, mapGetters, mapMutations } from 'vuex'
-import { dynamic, nested, deeplyNested } from './dynamic-module'
-import NoProp from './NoProp.vue'
-
-export default {
-  components: {
-    NoProp,
-  },
-
-  created () {
-    // simulate firebase binding
-    this.$firebaseRefs = {
-      hello: 'world',
-    }
-
-    this.$store.registerModule('instant', {
-      namespaced: true,
-      state: () => ({
-        hey: 'hi',
-      }),
-      getters: {
-        ho: state => state.hey + ' ho',
-      },
-    })
-    console.log('registered instant')
-
-    this.addDynamicNestedModule(true)
-    this.removeDynamicNestedModule()
-    this.removeDynamicModule()
-  },
-  computed: {
-    test () { return 1 },
-
-    ...mapState({
-      count: state => state.count,
-    }),
-
-    ...mapState('nested', [
-      'foo',
-    ]),
-
-    ...mapGetters('nested', [
-      'twoFoos',
-    ]),
-  },
-  watch: {
-    count (value) {
-      console.log('%ccount new value', 'font-weight: bold;', value)
-    },
-  },
-  methods: {
-    increment () {
-      this.$store.commit('INCREMENT', { a: 1, b: { c: 3 } })
-    },
-
-    asyncIncrement () {
-      this.$store.dispatch('ASYNC_INCREMENT')
-    },
-
-    decrement () {
-      this.$store.commit('DECREMENT', 2)
-    },
-
-    doLotMutations () {
-      for (let i = 0; i < 10000; i++) {
-        this.increment()
-      }
-      for (let i = 0; i < 10000; i++) {
-        this.decrement()
-      }
-    },
-
-    startMutationStream () {
-      this.$_mutationTimer = setInterval(this.increment, 1000)
-    },
-
-    stopMutationStream () {
-      clearInterval(this.$_mutationTimer)
-    },
-
-    ...mapMutations('nested', {
-      addBar: 'ADD_BAR',
-      removeBar: 'REMOVE_BAR',
-    }),
-
-    addDynamicModule () {
-      this.$store.registerModule('dynamic', dynamic)
-    },
-
-    removeDynamicModule () {
-      this.$store.unregisterModule('dynamic')
-    },
-
-    toggleDynamic () {
-      this.$store.commit('dynamic/TOGGLE')
-    },
-
-    addDynamicNestedModule (force = false) {
-      if (force) {
-        this.$store.registerModule(['dynamic'], {})
-      }
-      this.$store.registerModule(['dynamic', 'nested'], nested)
-    },
-
-    removeDynamicNestedModule () {
-      this.$store.unregisterModule(['dynamic', 'nested'])
-    },
-
-    toggleDynamicNested () {
-      this.$store.commit('dynamic/nested/TOGGLE_NESTED')
-    },
-
-    addWrongModule () {
-      this.$store.registerModule(['wrong'], {
-        a: 1, b: 2, c: 3,
-      })
-    },
-
-    addDeeplyNestedModule () {
-      this.$store.registerModule('deeplyNested', deeplyNested)
-    },
-
-    removeDeeplyNestedModule () {
-      this.$store.unregisterModule('deeplyNested')
-    },
-  },
-}
-</script>

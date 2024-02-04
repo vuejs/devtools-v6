@@ -1,4 +1,4 @@
-export function suite (description, tests) {
+export function suite(description, tests) {
   describe(description, () => {
     before(() => {
       cy.visit('/')

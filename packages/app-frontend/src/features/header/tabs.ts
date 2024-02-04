@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-export function useTabs () {
+export function useTabs() {
   const route = useRoute()
   const currentTab = computed<string>(() => {
     let fromMeta = route.meta.tab

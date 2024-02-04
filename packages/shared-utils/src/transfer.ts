@@ -1,6 +1,6 @@
 const MAX_SERIALIZED_SIZE = 512 * 1024 // 1MB
 
-function encode (data, replacer, list, seen) {
+function encode(data, replacer, list, seen) {
   let stored, key, value, i, l
   const seenIndex = seen.get(data)
   if (seenIndex != null) {
@@ -17,32 +17,40 @@ function encode (data, replacer, list, seen) {
       key = keys[i]
       try {
         value = data[key]
-        if (replacer) value = replacer.call(data, key, value)
-      } catch (e) {
+        if (replacer) {
+          value = replacer.call(data, key, value)
+        }
+      }
+      catch (e) {
         value = e
       }
       stored[key] = encode(value, replacer, list, seen)
     }
-  } else if (proto === '[object Array]') {
+  }
+  else if (proto === '[object Array]') {
     stored = []
     seen.set(data, index)
     list.push(stored)
     for (i = 0, l = data.length; i < l; i++) {
       try {
         value = data[i]
-        if (replacer) value = replacer.call(data, i, value)
-      } catch (e) {
+        if (replacer) {
+          value = replacer.call(data, i, value)
+        }
+      }
+      catch (e) {
         value = e
       }
       stored[i] = encode(value, replacer, list, seen)
     }
-  } else {
+  }
+  else {
     list.push(data)
   }
   return index
 }
 
-function decode (list, reviver) {
+function decode(list, reviver) {
   let i = list.length
   let j, k, data, key, value, proto
   while (i--) {
@@ -53,27 +61,32 @@ function decode (list, reviver) {
       for (j = 0, k = keys.length; j < k; j++) {
         key = keys[j]
         value = list[data[key]]
-        if (reviver) value = reviver.call(data, key, value)
+        if (reviver) {
+          value = reviver.call(data, key, value)
+        }
         data[key] = value
       }
-    } else if (proto === '[object Array]') {
+    }
+    else if (proto === '[object Array]') {
       for (j = 0, k = data.length; j < k; j++) {
         value = list[data[j]]
-        if (reviver) value = reviver.call(data, j, value)
+        if (reviver) {
+          value = reviver.call(data, j, value)
+        }
         data[j] = value
       }
     }
   }
 }
 
-export function stringifyCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
+export function stringifyCircularAutoChunks(data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
   let result
   try {
     result = arguments.length === 1
       ? JSON.stringify(data)
-      // @ts-ignore
       : JSON.stringify(data, replacer, space)
-  } catch (e) {
+  }
+  catch (e) {
     result = stringifyStrictCircularAutoChunks(data, replacer, space)
   }
   if (result.length > MAX_SERIALIZED_SIZE) {
@@ -87,7 +100,7 @@ export function stringifyCircularAutoChunks (data: any, replacer: (this: any, ke
   return result
 }
 
-export function parseCircularAutoChunks (data: any, reviver: (this: any, key: string, value: any) => any = null) {
+export function parseCircularAutoChunks(data: any, reviver: (this: any, key: string, value: any) => any = null) {
   if (Array.isArray(data)) {
     data = data.join('')
   }
@@ -95,19 +108,19 @@ export function parseCircularAutoChunks (data: any, reviver: (this: any, key: st
   if (!hasCircular) {
     return arguments.length === 1
       ? JSON.parse(data)
-      // @ts-ignore
       : JSON.parse(data, reviver)
-  } else {
+  }
+  else {
     const list = JSON.parse(data)
     decode(list, reviver)
     return list[0]
   }
 }
 
-export function stringifyStrictCircularAutoChunks (data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
+export function stringifyStrictCircularAutoChunks(data: any, replacer: (this: any, key: string, value: any) => any = null, space: number = null) {
   const list = []
   encode(data, replacer, list, new Map())
   return space
-    ? ' ' + JSON.stringify(list, null, space)
-    : ' ' + JSON.stringify(list)
+    ? ` ${JSON.stringify(list, null, space)}`
+    : ` ${JSON.stringify(list)}`
 }

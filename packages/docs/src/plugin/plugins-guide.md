@@ -79,8 +79,8 @@ If you are using TS, your `package.json` file should look similar to this:
     "vue": "^3.1.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.22",
-    "typescript": "^4.1.3",
+    "@types/node": "^20.11.16",
+    "typescript": "^5.3.3",
     "vue": "^3.1.0"
   }
 }
@@ -183,7 +183,7 @@ Add the main fields, `exports` and `scripts` to your `package.json`:
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js"
   }
-  ...
+  // ...
 }
 ```
 
@@ -241,7 +241,6 @@ And add the `types` field to your `package.json` file:
 ```
 
 See [TypeScript](#typescript) for a `tsconfig.json` example.
-
 
 <!--
 ### esbuild
@@ -358,8 +357,8 @@ import { setupDevtoolsPlugin } from '@vue/devtools-api'
 Then we export a function to setup our Vue Devtools plugin:
 
 ```js
-export function setupDevtools () {
-  setupDevtoolsPlugin({ /* Options... */}, api => {
+export function setupDevtools() {
+  setupDevtoolsPlugin({ /* Options... */}, (api) => {
     // Logic...
   })
 }
@@ -413,7 +412,7 @@ We can now import and use our `setupDevtools` function in our Vue plugin:
 import { setupDevtools } from './devtools'
 
 export default {
-  install (app, options = {}) {
+  install(app, options = {}) {
     // Our Vue plugin logic
 
     setupDevtools(app)
@@ -429,9 +428,9 @@ In a Vue 2 app, you need to pass the root component instance as the `app` parame
 import { setupDevtools } from './devtools'
 
 export default {
-  install (Vue) {
+  install(Vue) {
     Vue.mixin({
-      beforeCreate () {
+      beforeCreate() {
         if (this.$options.myPlugin) {
           setupDevtools(this)
         }
@@ -512,7 +511,7 @@ setupDevtoolsPlugin({
       defaultValue: ''
     }
   },
-}, api => {
+}, (api) => {
   // Use `api.getSettings()` to get the current settings for the plugin
   console.log(api.getSettings())
 })
@@ -523,7 +522,7 @@ setupDevtoolsPlugin({
 You can listen for changes made to the settings by the user with the [`api.on.setPluginSettings`](./api-reference.md#on-setpluginsettings) hook:
 
 ```js
-api.on.setPluginSettings(payload => {
+api.on.setPluginSettings((payload) => {
   // Do something...
 })
 ```
@@ -631,9 +630,9 @@ Colors in the Vue Devtools API are encoded as numbers instead of strings. You ca
 
 ```js
 0x000000 // black
-0xffffff // white
-0xff984f // orange
-0x41b86a // green
+0xFFFFFF // white
+0xFF984F // orange
+0x41B86A // green
 ```
 
 Example:
@@ -763,7 +762,7 @@ payload.instanceData.state.push({
 You can then handle the edition submit with the [`editComponentState`](./api-reference.md#on-editcomponentstate) hook:
 
 ```js
-api.on.editComponentState(payload => {
+api.on.editComponentState((payload) => {
   // ...
 })
 ```
@@ -932,7 +931,8 @@ api.on.getInspectorState((payload, context) => {
           }
         ]
       }
-    } else if (payload.nodeId === 'child-2') {
+    }
+    else if (payload.nodeId === 'child-2') {
       payload.state = {
         'my section': [
           {

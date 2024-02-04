@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
-const path = require('path')
+const path = require('node:path')
 const base = require('../../tailwind.config.js')
 
 base.purge.content.push(

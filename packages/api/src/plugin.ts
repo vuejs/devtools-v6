@@ -35,17 +35,17 @@ export type PluginSettingsItem = {
 })
 
 type InferSettingsType<
-  T extends PluginSettingsItem
+  T extends PluginSettingsItem,
 > = [T] extends [{ type: 'boolean' }]
   ? boolean
   : [T] extends [{ type: 'choice' }]
-  ? T['options'][number]['value']
-  : [T] extends [{ type: 'text' }]
-  ? string
-  : unknown
+      ? T['options'][number]['value']
+      : [T] extends [{ type: 'text' }]
+          ? string
+          : unknown
 
 export type ExtractSettingsTypes<
-  O extends Record<string, PluginSettingsItem>
+  O extends Record<string, PluginSettingsItem>,
 > = {
   [K in keyof O]: InferSettingsType<O[K]>
 }

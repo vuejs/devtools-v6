@@ -1,12 +1,12 @@
-import { DevtoolsApi } from '@vue-devtools/app-backend-api'
+import type { DevtoolsApi } from '@vue-devtools/app-backend-api'
 import { HookEvents, SharedData } from '@vue-devtools/shared-utils'
 import throttle from 'lodash/throttle'
 import { getUniqueId } from './util.js'
 
-export function initUpdateTracking (api: DevtoolsApi, Vue) {
+export function initUpdateTracking(api: DevtoolsApi, Vue) {
   // Global mixin
   Vue.mixin({
-    beforeCreate () {
+    beforeCreate() {
       applyTrackingUpdateHook(api, this)
     },
   })
@@ -17,8 +17,10 @@ const COMPONENT_HOOKS = [
   'updated',
 ]
 
-export function applyTrackingUpdateHook (api: DevtoolsApi, vm) {
-  if (vm.$options.$_devtoolsUpdateTrackingHooks) return
+export function applyTrackingUpdateHook(api: DevtoolsApi, vm) {
+  if (vm.$options.$_devtoolsUpdateTrackingHooks) {
+    return
+  }
   vm.$options.$_devtoolsUpdateTrackingHooks = true
 
   const handler = throttle(async function (this: any) {
@@ -39,9 +41,11 @@ export function applyTrackingUpdateHook (api: DevtoolsApi, vm) {
     const currentValue = vm.$options[hook]
     if (Array.isArray(currentValue)) {
       vm.$options[hook] = [handler, ...currentValue]
-    } else if (typeof currentValue === 'function') {
+    }
+    else if (typeof currentValue === 'function') {
       vm.$options[hook] = [handler, currentValue]
-    } else {
+    }
+    else {
       vm.$options[hook] = [handler]
     }
   }

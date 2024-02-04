@@ -10,22 +10,24 @@ chrome.devtools.network.onNavigated.addListener(createPanelIfHasVue)
 const checkVueInterval = setInterval(createPanelIfHasVue, 1000)
 createPanelIfHasVue()
 
-function createPanelIfHasVue () {
+function createPanelIfHasVue() {
   if (created || checkCount++ > 10) {
     clearInterval(checkVueInterval)
     return
   }
   chrome.devtools.inspectedWindow.eval(
     '!!(window.__VUE_DEVTOOLS_GLOBAL_HOOK__ && (window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue || window.__VUE_DEVTOOLS_GLOBAL_HOOK__.apps.length))',
-    function (hasVue) {
+    (hasVue) => {
       if (!hasVue || created) {
         return
       }
       clearInterval(checkVueInterval)
       created = true
       chrome.devtools.panels.create(
-        'Vue', 'icons/128.png', 'devtools.html',
-        panel => {
+        'Vue',
+        'icons/128.png',
+        'devtools.html',
+        (panel) => {
           // panel loaded
           panel.onShown.addListener(onPanelShown)
           panel.onHidden.addListener(onPanelHidden)
@@ -37,10 +39,10 @@ function createPanelIfHasVue () {
 
 // Manage panel visibility
 
-function onPanelShown () {
+function onPanelShown() {
   chrome.runtime.sendMessage('vue-panel-shown')
 }
 
-function onPanelHidden () {
+function onPanelHidden() {
   chrome.runtime.sendMessage('vue-panel-hidden')
 }

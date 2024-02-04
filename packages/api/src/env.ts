@@ -1,5 +1,5 @@
-import type { PluginDescriptor, SetupFunction } from './index.js'
 import type { ApiProxy } from './proxy.js'
+import type { PluginDescriptor, SetupFunction } from './index.js'
 
 export interface PluginQueueItem {
   pluginDescriptor: PluginDescriptor
@@ -12,16 +12,16 @@ interface GlobalTarget {
   __VUE_DEVTOOLS_PLUGIN_API_AVAILABLE__?: boolean
 }
 
-export function getDevtoolsGlobalHook (): any {
+export function getDevtoolsGlobalHook(): any {
   return (getTarget() as any).__VUE_DEVTOOLS_GLOBAL_HOOK__
 }
 
-export function getTarget (): GlobalTarget {
-  // @ts-ignore
+export function getTarget(): GlobalTarget {
+  // @ts-expect-error navigator and windows are not available in all environments
   return (typeof navigator !== 'undefined' && typeof window !== 'undefined')
     ? window
-    : typeof global !== 'undefined'
-      ? global
+    : typeof globalThis !== 'undefined'
+      ? globalThis
       : {}
 }
 

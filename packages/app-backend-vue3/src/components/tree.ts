@@ -1,7 +1,7 @@
-import { isBeingDestroyed, getUniqueComponentId, getInstanceName, getRenderKey, isFragment } from './util'
+import type { BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
+import type { ComponentTreeNode } from '@vue/devtools-api'
+import { getInstanceName, getRenderKey, getUniqueComponentId, isBeingDestroyed, isFragment } from './util'
 import { ComponentFilter } from './filter'
-import { BackendContext, DevtoolsApi } from '@vue-devtools/app-backend-api'
-import { ComponentTreeNode } from '@vue/devtools-api'
 import { getRootElementsFromComponentInstance } from './el'
 
 export class ComponentWalker {
@@ -14,7 +14,7 @@ export class ComponentWalker {
   // Some instances may be both on a component and on a child abstract/functional component
   captureIds: Map<string, undefined>
 
-  constructor (maxDepth: number, filter: string, recursively: boolean, api: DevtoolsApi, ctx: BackendContext) {
+  constructor(maxDepth: number, filter: string, recursively: boolean, api: DevtoolsApi, ctx: BackendContext) {
     this.ctx = ctx
     this.api = api
     this.maxDepth = maxDepth
@@ -22,16 +22,17 @@ export class ComponentWalker {
     this.componentFilter = new ComponentFilter(filter)
   }
 
-  getComponentTree (instance: any): Promise<ComponentTreeNode[]> {
+  getComponentTree(instance: any): Promise<ComponentTreeNode[]> {
     this.captureIds = new Map()
     return this.findQualifiedChildren(instance, 0)
   }
 
-  getComponentParents (instance: any) {
+  getComponentParents(instance: any) {
     this.captureIds = new Map()
     const parents = []
     this.captureId(instance)
     let parent = instance
+    // eslint-disable-next-line no-cond-assign
     while ((parent = parent.parent)) {
       this.captureId(parent)
       parents.push(parent)
@@ -47,16 +48,18 @@ export class ComponentWalker {
    * @param {Vue|Vnode} instance
    * @return {Vue|Array}
    */
-  private async findQualifiedChildren (instance: any, depth: number): Promise<ComponentTreeNode[]> {
+  private async findQualifiedChildren(instance: any, depth: number): Promise<ComponentTreeNode[]> {
     if (this.componentFilter.isQualified(instance) && !instance.type.devtools?.hide) {
       return [await this.capture(instance, null, depth)]
-    } else if (instance.subTree) {
+    }
+    else if (instance.subTree) {
       // TODO functional components
       const list = this.isKeepAlive(instance)
         ? this.getKeepAliveCachedInstances(instance)
         : this.getInternalInstanceChildren(instance.subTree)
       return this.findQualifiedChildrenFromList(list, depth)
-    } else {
+    }
+    else {
       return []
     }
   }
@@ -70,12 +73,13 @@ export class ComponentWalker {
    * @param {Array} instances
    * @return {Array}
    */
-  private async findQualifiedChildrenFromList (instances, depth: number): Promise<ComponentTreeNode[]> {
+  private async findQualifiedChildrenFromList(instances, depth: number): Promise<ComponentTreeNode[]> {
     instances = instances
       .filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
     if (!this.componentFilter.filter) {
       return Promise.all(instances.map((child, index, list) => this.capture(child, list, depth)))
-    } else {
+    }
+    else {
       return Array.prototype.concat.apply([], await Promise.all(instances.map(i => this.findQualifiedChildren(i, depth))))
     }
   }
@@ -83,19 +87,22 @@ export class ComponentWalker {
   /**
    * Get children from a component instance.
    */
-  private getInternalInstanceChildren (subTree, suspense = null) {
+  private getInternalInstanceChildren(subTree, suspense = null) {
     const list = []
     if (subTree) {
       if (subTree.component) {
         !suspense ? list.push(subTree.component) : list.push({ ...subTree.component, suspense })
-      } else if (subTree.suspense) {
+      }
+      else if (subTree.suspense) {
         const suspenseKey = !subTree.suspense.isInFallback ? 'suspense default' : 'suspense fallback'
         list.push(...this.getInternalInstanceChildren(subTree.suspense.activeBranch, { ...subTree.suspense, suspenseKey }))
-      } else if (Array.isArray(subTree.children)) {
-        subTree.children.forEach(childSubTree => {
+      }
+      else if (Array.isArray(subTree.children)) {
+        subTree.children.forEach((childSubTree) => {
           if (childSubTree.component) {
             !suspense ? list.push(childSubTree.component) : list.push({ ...childSubTree.component, suspense })
-          } else {
+          }
+          else {
             list.push(...this.getInternalInstanceChildren(childSubTree, suspense))
           }
         })
@@ -104,8 +111,10 @@ export class ComponentWalker {
     return list.filter(child => !isBeingDestroyed(child) && !child.type.devtools?.hide)
   }
 
-  private captureId (instance): string {
-    if (!instance) return null
+  private captureId(instance): string {
+    if (!instance) {
+      return null
+    }
 
     // instance.uid is not reliable in devtools as there
     // may be 2 roots with same uid which causes unexpected
@@ -116,7 +125,8 @@ export class ComponentWalker {
     // Dedupe
     if (this.captureIds.has(id)) {
       return
-    } else {
+    }
+    else {
       this.captureIds.set(id, undefined)
     }
 
@@ -129,10 +139,12 @@ export class ComponentWalker {
    * Capture the meta information of an instance. (recursive)
    *
    * @param {Vue} instance
-   * @return {Object}
+   * @return {object}
    */
-  private async capture (instance: any, list: any[], depth: number): Promise<ComponentTreeNode> {
-    if (!instance) return null
+  private async capture(instance: any, list: any[], depth: number): Promise<ComponentTreeNode> {
+    if (!instance) {
+      return null
+    }
 
     const id = this.captureId(instance)
 
@@ -160,7 +172,7 @@ export class ComponentWalker {
             {
               label: 'functional',
               textColor: 0x555555,
-              backgroundColor: 0xeeeeee,
+              backgroundColor: 0xEEEEEE,
             },
           ],
       autoOpen: this.recursively,
@@ -200,15 +212,16 @@ export class ComponentWalker {
         el = el.parentElement
       } while (el.parentElement && parentRootElements.length && !parentRootElements.includes(el))
       treeNode.domOrder = indexList.reverse()
-    } else {
+    }
+    else {
       treeNode.domOrder = [-1]
     }
 
     if (instance.suspense?.suspenseKey) {
       treeNode.tags.push({
         label: instance.suspense.suspenseKey,
-        backgroundColor: 0xe492e4,
-        textColor: 0xffffff,
+        backgroundColor: 0xE492E4,
+        textColor: 0xFFFFFF,
       })
       // update instanceMap
       this.mark(instance, true)
@@ -222,18 +235,18 @@ export class ComponentWalker {
    *
    * @param {Vue} instance
    */
-  private mark (instance, force = false) {
+  private mark(instance, force = false) {
     const instanceMap = this.ctx.currentAppRecord.instanceMap
     if (force || !instanceMap.has(instance.__VUE_DEVTOOLS_UID__)) {
       instanceMap.set(instance.__VUE_DEVTOOLS_UID__, instance)
     }
   }
 
-  private isKeepAlive (instance) {
+  private isKeepAlive(instance) {
     return instance.type.__isKeepAlive && instance.__v_cache
   }
 
-  private getKeepAliveCachedInstances (instance) {
+  private getKeepAliveCachedInstances(instance) {
     return Array.from(instance.__v_cache.values()).map((vnode: any) => vnode.component).filter(Boolean)
   }
 }

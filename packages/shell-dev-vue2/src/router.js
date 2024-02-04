@@ -14,7 +14,7 @@ import ChildRoute from './router/ChildRoute.vue'
 Vue.use(VueRouter)
 
 const DynamicComponent = {
-  render: (h) => h('div', 'Hello from dynamic component'),
+  render: h => h('div', 'Hello from dynamic component'),
 }
 
 const routes = [

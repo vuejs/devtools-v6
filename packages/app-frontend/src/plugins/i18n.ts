@@ -1,17 +1,17 @@
 import { simpleGet } from '@vue-devtools/shared-utils'
-import { Plugin } from 'vue'
+import type { Plugin } from 'vue'
 
 const reg = /\{\{\s*([\w_.-]+)\s*\}\}/g
 
-type StringMap = { [key: string]: string | StringMap }
-type ValuesMap = { [key: string]: any }
+interface StringMap { [key: string]: string | StringMap }
+interface ValuesMap { [key: string]: any }
 type Replacer = (text: string) => string
 
 let strings: StringMap
 let defaultValues: ValuesMap
 let replacer: Replacer
 
-export function translate (path: string | string[], values: ValuesMap = {}) {
+export function translate(path: string | string[], values: ValuesMap = {}) {
   values = Object.assign({}, defaultValues, values)
   let text = simpleGet(strings, path)
   text = text.replace(reg, (substring, matched) => {
@@ -29,7 +29,7 @@ interface Options {
 }
 
 export default {
-  install (app, options: Options) {
+  install(app, options: Options) {
     strings = options.strings || {}
     defaultValues = options.defaultValues || {}
     replacer = options.replacer

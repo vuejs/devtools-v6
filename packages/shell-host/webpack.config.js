@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const { createConfig } = require('@vue-devtools/build-tools')
 const openInEditor = require('launch-editor-middleware')
 
@@ -13,7 +13,7 @@ module.exports = createConfig({
   },
   devServer: {
     port: 8091,
-    onBeforeSetupMiddleware ({ app }) {
+    onBeforeSetupMiddleware({ app }) {
       app.use('/__open-in-editor', openInEditor())
     },
   },

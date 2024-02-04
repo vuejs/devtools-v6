@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
-import { PluginDescriptor } from '@vue/devtools-api'
-import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
+import type { PluginDescriptor } from '@vue/devtools-api'
+import type { Bridge } from '@vue-devtools/shared-utils'
+import { BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
 import { useCurrentApp } from '@front/features/apps'
 
@@ -21,7 +22,7 @@ interface PluginsPerApp {
 
 const pluginsPerApp = ref<PluginsPerApp>({})
 
-function getPlugins (appId: string) {
+function getPlugins(appId: string) {
   let plugins = pluginsPerApp.value[appId]
   if (!plugins) {
     plugins = []
@@ -32,11 +33,11 @@ function getPlugins (appId: string) {
   return plugins
 }
 
-function fetchPlugins () {
+function fetchPlugins() {
   getBridge().send(BridgeEvents.TO_BACK_DEVTOOLS_PLUGIN_LIST, {})
 }
 
-export function usePlugins () {
+export function usePlugins() {
   const { currentAppId } = useCurrentApp()
 
   const plugins = computed(() => getPlugins(currentAppId.value))
@@ -46,10 +47,10 @@ export function usePlugins () {
   }
 }
 
-export function useComponentStateTypePlugin () {
+export function useComponentStateTypePlugin() {
   const { plugins } = usePlugins()
 
-  function getStateTypePlugin (type: string) {
+  function getStateTypePlugin(type: string) {
     return plugins.value.find(p => p.componentStateTypes?.includes(type))
   }
 
@@ -58,17 +59,18 @@ export function useComponentStateTypePlugin () {
   }
 }
 
-function addPlugin (plugin: Plugin) {
+function addPlugin(plugin: Plugin) {
   const list = getPlugins(plugin.appId)
   const index = list.findIndex(p => p.id === plugin.id)
   if (index !== -1) {
     list.splice(index, 1, plugin)
-  } else {
+  }
+  else {
     list.push(plugin)
   }
 }
 
-export function setupPluginsBridgeEvents (bridge: Bridge) {
+export function setupPluginsBridgeEvents(bridge: Bridge) {
   bridge.on(BridgeEvents.TO_FRONT_DEVTOOLS_PLUGIN_ADD, async ({ plugin }) => {
     await addPlugin(plugin)
   })

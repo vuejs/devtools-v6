@@ -1,9 +1,9 @@
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
-export function useDefer (count = 10) {
+export function useDefer(count = 10) {
   const displayPriority = ref(0)
 
-  function step () {
+  function step() {
     requestAnimationFrame(() => {
       displayPriority.value++
       if (displayPriority.value < count) {
@@ -12,11 +12,11 @@ export function useDefer (count = 10) {
     })
   }
 
-  function runDisplayPriority () {
+  function runDisplayPriority() {
     step()
   }
 
-  function defer (priority) {
+  function defer(priority) {
     return displayPriority.value >= priority
   }
 

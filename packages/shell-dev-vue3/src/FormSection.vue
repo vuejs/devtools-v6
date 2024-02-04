@@ -1,7 +1,6 @@
 <script>
 export default {
-  // eslint-disable-next-line vue/name-property-casing
-  name: 'form-section',
+  name: 'FormSection',
 }
 </script>
 

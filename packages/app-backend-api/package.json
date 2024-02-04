@@ -10,12 +10,12 @@
     "ts": "tsc -d -outDir lib"
   },
   "dependencies": {
-    "@vue/devtools-api": "^6.0.0-beta.1",
-    "@vue-devtools/shared-utils": "^0.0.0"
+    "@vue-devtools/shared-utils": "^0.0.0",
+    "@vue/devtools-api": "^6.0.0-beta.1"
   },
   "devDependencies": {
-    "@types/node": "^13.9.1",
+    "@types/node": "^20.11.16",
     "@types/webpack-env": "^1.15.1",
-    "typescript": "^4.5.2"
+    "typescript": "^5.3.3"
   }
 }
