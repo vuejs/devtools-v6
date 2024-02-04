@@ -2,7 +2,7 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import 'vue-resize/dist/vue-resize.css'
 
 import { App } from 'vue'
-import VueUi, { generateHtmlIcon } from '../features/components/ui'
+import VueUi, { generateHtmlIcon } from '../features/ui'
 import VueVirtualScroller from 'vue-virtual-scroller'
 import { keys } from '@vue-devtools/shared-utils'
 import VueSafeTeleport from 'vue-safe-teleport'
