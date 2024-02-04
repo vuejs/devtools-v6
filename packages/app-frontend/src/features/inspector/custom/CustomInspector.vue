@@ -157,14 +157,12 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .search {
-  >>> {
-    .input {
-      height: 39px !important;
-    }
+  :deep(.input) {
+    height: 39px !important;
+  }
 
-    .content {
-      border: none !important;
-    }
+  :deep(.content) {
+    border: none !important;
   }
 }
 

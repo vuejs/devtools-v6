@@ -88,7 +88,7 @@ export default defineComponent({
 </template>
 
 <style scoped>
-.vue-ui-icon /deep/ svg {
+.vue-ui-icon :deep(svg) {
   fill: currentColor;
 }
 </style>

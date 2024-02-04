@@ -537,7 +537,7 @@ export default defineComponent({
 
 .zoom-btn {
   @apply rounded-none;
-  /deep/ .vue-ui-icon {
+  :deep(.vue-ui-icon) {
     @apply w-3.5 h-3.5 mr-0 left-0 right-0 !important;
   }
 }

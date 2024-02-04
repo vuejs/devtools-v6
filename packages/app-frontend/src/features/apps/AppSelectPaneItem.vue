@@ -90,7 +90,7 @@ export default defineComponent({
 .app-button {
   @apply rounded-none text-left h-auto py-1.5;
 
-  > >>> .content {
+  > :deep(.content) {
     @apply min-w-full justify-start;
 
     > .default-slot {

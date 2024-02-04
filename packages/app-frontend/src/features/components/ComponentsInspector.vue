@@ -239,19 +239,17 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .search {
-  >>> {
-    .input {
-      height: 32px !important;
-    }
+  :deep(.input) {
+    height: 32px !important;
+  }
 
-    .content {
-      border: none !important;
-    }
+  :deep(.content) {
+    border: none !important;
   }
 }
 
 .animate-icon {
-  >>> .vue-ui-icon {
+  :deep(.vue-ui-icon) {
     animation: refresh 1s ease-out;
   }
 }

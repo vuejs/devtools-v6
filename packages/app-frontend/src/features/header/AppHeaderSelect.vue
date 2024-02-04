@@ -240,18 +240,18 @@ export default defineComponent({
     @apply bg-gray-700 text-gray-100 !important;
   }
 
-  >>> svg {
+  :deep(svg) {
     fill: currentColor !important;
   }
 }
 
-.vue-ui-dropdown-button /deep/ {
+.vue-ui-dropdown-button {
   min-height: 32px;
   height: auto;
   padding-top: 6px;
   padding-bottom: 6px;
 
-  .default-slot {
+  :deep(.default-slot) {
     flex: 1;
   }
 }

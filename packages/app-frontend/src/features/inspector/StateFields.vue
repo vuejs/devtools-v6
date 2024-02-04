@@ -146,7 +146,7 @@ export default {
 .more
   width 20px
   height @width
-  >>> .vue-ui-icon
+  :deep(.vue-ui-icon)
     width 16px
     height @width
 </style>
