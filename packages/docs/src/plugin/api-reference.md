@@ -713,7 +713,7 @@ api.on.inspectComponent(async payload => {
     payload.instanceData.state.push({
       type: stateType,
       key: 'component name',
-      value: name
+      value: componentName
     })
   }
 })
