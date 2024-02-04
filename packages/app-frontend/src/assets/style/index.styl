@@ -79,39 +79,12 @@ button:focus
 
 // Popover
 
-$arrow-color = rgba(100, 100, 100, 0.5)
-
-.arrow
-  display inline-block
-  width 0
-  height 0
-  &.up
-    border-left 4px solid transparent
-    border-right 4px solid transparent
-    border-bottom 6px solid $arrow-color
-  &.down
-    border-left 4px solid transparent
-    border-right 4px solid transparent
-    border-top 6px solid $arrow-color
-  &.right
-    border-top 4px solid transparent
-    border-bottom 4px solid transparent
-    border-left 6px solid $arrow-color
-  &.left
-    border-top 4px solid transparent
-    border-bottom 4px solid transparent
-    border-right 6px solid $arrow-color
-
+.v-popper--theme-dropdown
   .vue-ui-dark-mode &
-    $arrow-color = rgba($vue-ui-color-light-neutral, .4)
-    &.up
-      border-bottom-color $arrow-color
-    &.down
-      border-top-color $arrow-color
-    &.right
-      border-left-color $arrow-color
-    &.left
-      border-right-color $arrow-color
+    .v-popper__inner,
+    .v-popper__arrow-inner,
+    .v-popper__arrow-outer
+      border-color $vue-ui-gray-900
 
 // Tooltips
 
@@ -156,3 +129,9 @@ $arrow-color = rgba(100, 100, 100, 0.5)
 .right-icon-reveal:not(:hover)
   .vue-ui-icon.right
     opacity 0
+
+.v-popper--theme-tooltip
+  .vue-ui-dark-mode &
+    .v-popper__arrow-inner,
+    .v-popper__arrow-outer
+      border-color $vue-ui-white
