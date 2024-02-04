@@ -80,9 +80,7 @@ export function useComponents () {
       }
 
       if (value != null) {
-        unsub = subscribe(BridgeSubscriptions.SELECTED_COMPONENT_DATA, {
-          instanceId: value,
-        })
+        unsub = subscribe(BridgeSubscriptions.SELECTED_COMPONENT_DATA, value)
       }
     }, {
       immediate: true,
@@ -168,9 +166,7 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
       }
 
       if (value != null) {
-        unsub = subscribe(BridgeSubscriptions.COMPONENT_TREE, {
-          instanceId: value,
-        })
+        unsub = subscribe(BridgeSubscriptions.COMPONENT_TREE, value)
       }
     }, {
       immediate: true,

@@ -1,4 +1,4 @@
-import { stringify, BridgeEvents, parse, SharedData } from '@vue-devtools/shared-utils'
+import { stringify, BridgeEvents, parse, SharedData, createThrottleQueue } from '@vue-devtools/shared-utils'
 import { AppRecord, BackendContext, BuiltinBackendFeature } from '@vue-devtools/app-backend-api'
 import { getAppRecord } from './app'
 import { App, ComponentInstance, EditStatePayload } from '@vue/devtools-api'
@@ -131,11 +131,16 @@ export async function refreshComponentTreeSearch (ctx: BackendContext) {
   await sendComponentTreeData(ctx.currentAppRecord, '_root', ctx.currentAppRecord.componentFilter, null, false, ctx)
 }
 
-export async function sendComponentUpdateTracking (instanceId: string, ctx: BackendContext) {
+const updateTrackingQueue = createThrottleQueue(500)
+
+export function sendComponentUpdateTracking (instanceId: string, time: number, ctx: BackendContext) {
   if (!instanceId) return
-  const payload = {
-    instanceId,
-    time: Date.now(), // Use normal date
-  }
-  ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_UPDATED, payload)
+
+  updateTrackingQueue.add(instanceId, () => {
+    const payload = {
+      instanceId,
+      time,
+    }
+    ctx.bridge.send(BridgeEvents.TO_FRONT_COMPONENT_UPDATED, payload)
+  })
 }

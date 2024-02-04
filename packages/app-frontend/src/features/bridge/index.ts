@@ -3,6 +3,11 @@ import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 
 let bridge: Bridge
 
+interface Sub {
+  type: string
+  key: string
+}
+
 export function useBridge () {
   const cbs = []
 
@@ -11,18 +16,18 @@ export function useBridge () {
     bridge.on(event, cb)
   }
 
-  const subs = []
+  const subs: Sub[] = []
 
-  function subscribe (type: string, payload: any) {
-    const sub = { type, payload }
+  function subscribe (type: string, key: string) {
+    const sub = { type, key }
     subs.push(sub)
-    bridge.send(BridgeEvents.TO_BACK_SUBSCRIBE, sub)
+    bridge.send(BridgeEvents.TO_BACK_SUBSCRIBE, key)
     return () => {
       const index = subs.indexOf(sub)
       if (index !== -1) {
         subs.splice(index, 1)
       }
-      bridge.send(BridgeEvents.TO_BACK_UNSUBSCRIBE, sub)
+      bridge.send(BridgeEvents.TO_BACK_UNSUBSCRIBE, key)
     }
   }
 
@@ -32,7 +37,7 @@ export function useBridge () {
     }
 
     for (const sub of subs) {
-      bridge.send(BridgeEvents.TO_BACK_UNSUBSCRIBE, sub)
+      bridge.send(BridgeEvents.TO_BACK_UNSUBSCRIBE, sub.key)
     }
   })
 

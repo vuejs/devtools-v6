@@ -19,6 +19,7 @@ import {
   SharedData,
   isBrowser,
   raf,
+  createThrottleQueue,
 } from '@vue-devtools/shared-utils'
 import debounce from 'lodash/debounce'
 import throttle from 'lodash/throttle'
@@ -118,27 +119,13 @@ async function connect () {
 
   // Components
 
-  const sendComponentUpdate = throttle(async (appRecord: AppRecord, id: string) => {
-    try {
-      // Update component inspector
-      if (ctx.currentInspectedComponentId === id) {
-        await sendSelectedComponentData(appRecord, ctx.currentInspectedComponentId, ctx)
-      }
-
-      // Update tree (tags)
-      if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === id)) {
-        await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, false, ctx)
-      }
-    } catch (e) {
-      if (SharedData.debugInfo) {
-        console.error(e)
-      }
-    }
-  }, 100)
+  const throttleQueue = createThrottleQueue(500)
 
   hook.on(HookEvents.COMPONENT_UPDATED, async (app, uid, parentUid, component) => {
     try {
       if (!app || (typeof uid !== 'number' && !uid) || !component) return
+      const now = Date.now()
+
       let id: string
       let appRecord: AppRecord
       if (app && uid != null) {
@@ -149,15 +136,40 @@ async function connect () {
         appRecord = ctx.currentAppRecord
       }
 
-      if (SharedData.trackUpdates) {
-        await sendComponentUpdateTracking(id, ctx)
-      }
+      throttleQueue.add(`update:${id}`, async () => {
+        try {
+          const time = performance.now()
 
-      if (SharedData.flashUpdates) {
-        await flashComponent(component, appRecord.backend)
-      }
+          const trackUpdateNow = performance.now()
+          if (SharedData.trackUpdates) {
+            sendComponentUpdateTracking(id, now, ctx)
+          }
+          const trackUpdateTime = performance.now() - trackUpdateNow
 
-      await sendComponentUpdate(appRecord, id)
+          const flashNow = performance.now()
+          if (SharedData.flashUpdates) {
+            await flashComponent(component, appRecord.backend)
+          }
+          const flashTime = performance.now() - flashNow
+
+          const sendUpdateNow = performance.now()
+          // Update component inspector
+          if (ctx.currentInspectedComponentId === id) {
+            await sendSelectedComponentData(appRecord, ctx.currentInspectedComponentId, ctx)
+          }
+
+          // Update tree (tags)
+          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, id)) {
+            await sendComponentTreeData(appRecord, id, appRecord.componentFilter, 0, false, ctx)
+          }
+          const sendUpdateTime = performance.now() - sendUpdateNow
+          // console.log('COMPONENT_UPDATED', id, Math.round(performance.now() - time) + 'ms', { trackUpdateTime, flashTime, sendUpdateTime, updatedData: ctx.currentInspectedComponentId === id })
+        } catch (e) {
+          if (SharedData.debugInfo) {
+            console.error(e)
+          }
+        }
+      })
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -168,51 +180,63 @@ async function connect () {
   hook.on(HookEvents.COMPONENT_ADDED, async (app, uid, parentUid, component) => {
     try {
       if (!app || (typeof uid !== 'number' && !uid) || !component) return
+      const now = Date.now()
       const id = await getComponentId(app, uid, component, ctx)
-      const appRecord = await getAppRecord(app, ctx)
-      if (component) {
-        if (component.__VUE_DEVTOOLS_UID__ == null) {
-          component.__VUE_DEVTOOLS_UID__ = id
-        }
-        if (appRecord?.instanceMap) {
-          if (!appRecord.instanceMap.has(id)) {
-            appRecord.instanceMap.set(id, component)
-          }
-        }
-      }
 
-      if (parentUid != null && appRecord?.instanceMap) {
-        const parentInstances = await appRecord.backend.api.walkComponentParents(component)
-        if (parentInstances.length) {
-          // Check two parents level to update `hasChildren
-          for (let i = 0; i < parentInstances.length; i++) {
-            const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
-            if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-              raf(() => {
-                sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
-              })
+      throttleQueue.add(`add:${id}`, async () => {
+        try {
+          const time = performance.now()
+          const appRecord = await getAppRecord(app, ctx)
+          if (component) {
+            if (component.__VUE_DEVTOOLS_UID__ == null) {
+              component.__VUE_DEVTOOLS_UID__ = id
             }
-
-            if (SharedData.trackUpdates) {
-              await sendComponentUpdateTracking(parentId, ctx)
+            if (appRecord?.instanceMap) {
+              if (!appRecord.instanceMap.has(id)) {
+                appRecord.instanceMap.set(id, component)
+              }
             }
           }
+
+          if (parentUid != null && appRecord?.instanceMap) {
+            const parentInstances = await appRecord.backend.api.walkComponentParents(component)
+            if (parentInstances.length) {
+              // Check two parents level to update `hasChildren
+              for (let i = 0; i < parentInstances.length; i++) {
+                const parentId = await getComponentId(app, parentUid, parentInstances[i], ctx)
+                if (i < 2 && isSubscribed(BridgeSubscriptions.COMPONENT_TREE, parentId)) {
+                  raf(() => {
+                    sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
+                  })
+                }
+
+                if (SharedData.trackUpdates) {
+                  sendComponentUpdateTracking(parentId, now, ctx)
+                }
+              }
+            }
+          }
+
+          if (ctx.currentInspectedComponentId === id) {
+            await sendSelectedComponentData(appRecord, id, ctx)
+          }
+
+          if (SharedData.trackUpdates) {
+            sendComponentUpdateTracking(id, now, ctx)
+          }
+
+          if (SharedData.flashUpdates) {
+            await flashComponent(component, appRecord.backend)
+          }
+
+          await refreshComponentTreeSearch(ctx)
+          // console.log('COMPONENT_ADDED', id, Math.round(performance.now() - time) + 'ms')
+        } catch (e) {
+          if (SharedData.debugInfo) {
+            console.error(e)
+          }
         }
-      }
-
-      if (ctx.currentInspectedComponentId === id) {
-        await sendSelectedComponentData(appRecord, id, ctx)
-      }
-
-      if (SharedData.trackUpdates) {
-        await sendComponentUpdateTracking(id, ctx)
-      }
-
-      if (SharedData.flashUpdates) {
-        await flashComponent(component, appRecord.backend)
-      }
-
-      await refreshComponentTreeSearch(ctx)
+      })
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -223,39 +247,50 @@ async function connect () {
   hook.on(HookEvents.COMPONENT_REMOVED, async (app, uid, parentUid, component) => {
     try {
       if (!app || (typeof uid !== 'number' && !uid) || !component) return
-      const appRecord = await getAppRecord(app, ctx)
-      if (parentUid != null && appRecord) {
-        const parentInstances = await appRecord.backend.api.walkComponentParents(component)
-        if (parentInstances.length) {
-          const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
-          if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
-            raf(async () => {
-              try {
-                const appRecord = await getAppRecord(app, ctx)
+      const id = await getComponentId(app, uid, component, ctx)
 
-                if (appRecord) {
-                  sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
-                }
-              } catch (e) {
-                if (SharedData.debugInfo) {
-                  console.error(e)
-                }
+      throttleQueue.add(`remove:${id}`, async () => {
+        try {
+          const time = performance.now()
+          const appRecord = await getAppRecord(app, ctx)
+          if (parentUid != null && appRecord) {
+            const parentInstances = await appRecord.backend.api.walkComponentParents(component)
+            if (parentInstances.length) {
+              const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
+              if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, parentId)) {
+                raf(async () => {
+                  try {
+                    const appRecord = await getAppRecord(app, ctx)
+
+                    if (appRecord) {
+                      sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
+                    }
+                  } catch (e) {
+                    if (SharedData.debugInfo) {
+                      console.error(e)
+                    }
+                  }
+                })
               }
-            })
+            }
+          }
+
+          if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, id)) {
+            await sendEmptyComponentData(id, ctx)
+          }
+
+          if (appRecord) {
+            appRecord.instanceMap.delete(id)
+          }
+
+          await refreshComponentTreeSearch(ctx)
+          // console.log('COMPONENT_REMOVED', id, Math.round(performance.now() - time) + 'ms')
+        } catch (e) {
+          if (SharedData.debugInfo) {
+            console.error(e)
           }
         }
-      }
-
-      const id = await getComponentId(app, uid, component, ctx)
-      if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        await sendEmptyComponentData(id, ctx)
-      }
-
-      if (appRecord) {
-        appRecord.instanceMap.delete(id)
-      }
-
-      await refreshComponentTreeSearch(ctx)
+      })
     } catch (e) {
       if (SharedData.debugInfo) {
         console.error(e)
@@ -264,7 +299,7 @@ async function connect () {
   })
 
   hook.on(HookEvents.TRACK_UPDATE, (id, ctx) => {
-    sendComponentUpdateTracking(id, ctx)
+    sendComponentUpdateTracking(id, Date.now(), ctx)
   })
 
   hook.on(HookEvents.FLASH_UPDATE, (instance, backend) => {
@@ -273,22 +308,22 @@ async function connect () {
 
   // Component perf
 
-  hook.on(HookEvents.PERFORMANCE_START, async (app, uid, vm, type, time) => {
-    await performanceMarkStart(app, uid, vm, type, time, ctx)
+  hook.on(HookEvents.PERFORMANCE_START, (app, uid, vm, type, time) => {
+    performanceMarkStart(app, uid, vm, type, time, ctx)
   })
 
-  hook.on(HookEvents.PERFORMANCE_END, async (app, uid, vm, type, time) => {
-    await performanceMarkEnd(app, uid, vm, type, time, ctx)
+  hook.on(HookEvents.PERFORMANCE_END, (app, uid, vm, type, time) => {
+    performanceMarkEnd(app, uid, vm, type, time, ctx)
   })
 
   // Highlighter
 
-  hook.on(HookEvents.COMPONENT_HIGHLIGHT, async instanceId => {
-    await highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
+  hook.on(HookEvents.COMPONENT_HIGHLIGHT, instanceId => {
+    highlight(ctx.currentAppRecord.instanceMap.get(instanceId), ctx.currentAppRecord.backend, ctx)
   })
 
-  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, async () => {
-    await unHighlight()
+  hook.on(HookEvents.COMPONENT_UNHIGHLIGHT, () => {
+    unHighlight()
   })
 
   // Timeline
@@ -409,12 +444,12 @@ async function connect () {
 function connectBridge () {
   // Subscriptions
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_SUBSCRIBE, ({ type, payload }) => {
-    subscribe(type, payload)
+  ctx.bridge.on(BridgeEvents.TO_BACK_SUBSCRIBE, ({ type, key }) => {
+    subscribe(type, key)
   })
 
-  ctx.bridge.on(BridgeEvents.TO_BACK_UNSUBSCRIBE, ({ type, payload }) => {
-    unsubscribe(type, payload)
+  ctx.bridge.on(BridgeEvents.TO_BACK_UNSUBSCRIBE, ({ type, key }) => {
+    unsubscribe(type, key)
   })
 
   // Tabs
@@ -450,7 +485,7 @@ function connectBridge () {
 
   ctx.bridge.on(BridgeEvents.TO_BACK_COMPONENT_TREE, async ({ instanceId, filter, recursively }) => {
     ctx.currentAppRecord.componentFilter = filter
-    subscribe(BridgeSubscriptions.COMPONENT_TREE, { instanceId })
+    subscribe(BridgeSubscriptions.COMPONENT_TREE, instanceId)
     await sendComponentTreeData(ctx.currentAppRecord, instanceId, filter, null, recursively, ctx)
   })
 
