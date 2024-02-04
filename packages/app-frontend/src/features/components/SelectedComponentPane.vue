@@ -33,7 +33,7 @@ export default defineComponent({
     // State filter
     const stateFilterInput = ref()
     onKeyDown(event => {
-      if (event.key === 'd' && event.altKey) {
+      if (event.code === 'KeyD' && event.altKey) {
         stateFilterInput.value.focus()
         return false
       }
