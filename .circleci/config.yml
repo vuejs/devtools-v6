@@ -5,6 +5,7 @@ jobs:
       # specify the version you desire here
       - image: node:current
       - image: vuejs/ci
+    resource_class: medium+
 
     working_directory: ~/repo
 
