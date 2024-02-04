@@ -121,7 +121,7 @@ async function connect () {
   const sendComponentUpdate = throttle(async (appRecord: AppRecord, id: string) => {
     try {
       // Update component inspector
-      if (ctx.currentInspectedComponentId) {
+      if (ctx.currentInspectedComponentId === id) {
         await sendSelectedComponentData(appRecord, ctx.currentInspectedComponentId, ctx)
       }
 
