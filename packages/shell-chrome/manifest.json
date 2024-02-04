@@ -3,13 +3,13 @@
   "version": "6.5.1",
   "version_name": "6.5.1",
   "description": "Browser DevTools extension for debugging Vue.js applications.",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "16": "icons/16.png",
     "48": "icons/48.png",
     "128": "icons/128.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "16": "icons/16-gray.png",
       "48": "icons/48-gray.png",
@@ -19,20 +19,31 @@
     "default_popup": "popups/not-found.html"
   },
   "web_accessible_resources": [
-    "devtools.html",
-    "devtools-background.html",
-    "build/backend.js"
+    {
+      "resources": [
+        "devtools.html",
+        "devtools-background.html",
+        "build/backend.js",
+        "build/proxy.js",
+        "build/hook-exec.js",
+        "build/detector-exec.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "extension_ids": []
+    }
   ],
   "devtools_page": "devtools-background.html",
   "background": {
-    "scripts": [
-      "build/background.js"
-    ],
-    "persistent": true
+    "service_worker": "build/service-worker.js"
   },
   "permissions": [
-    "<all_urls>",
-    "storage"
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "content_scripts": [
     {
@@ -54,5 +65,7 @@
       "run_at": "document_idle"
     }
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }
