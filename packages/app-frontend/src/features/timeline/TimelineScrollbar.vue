@@ -153,7 +153,7 @@ export default defineComponent({
 <template>
   <div
     ref="el"
-    class="h-6 bg-gray-200 dark:bg-gray-900 relative select-none"
+    class="h-6 bg-gray-200 dark:bg-gray-900 rounded relative select-none"
   >
     <!-- Main Bar -->
     <div
@@ -162,8 +162,8 @@ export default defineComponent({
         'bg-green-100 dark:bg-green-800': moving
       }"
       :style="{
-        left: `${(start - min) / (max - min) * 100}%`,
-        width: `${(end - start) / (max - min) * 100}%`
+        left: `calc(${(start - min) / (max - min) * 100}% - 1px)`,
+        width: `calc(${(end - start) / (max - min) * 100}% + 1px)`
       }"
       @mousedown="onMainBarMouseDown"
     />
@@ -172,8 +172,8 @@ export default defineComponent({
     <div
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
-        left: `calc(${startRatio * 100}% - ${startRatio < 0.05 ? 0 : 6}px)`,
-        width: '6px'
+        left: `calc(${startRatio * 100}% - ${startRatio < 0.05 ? 0 : 4}px)`,
+        width: '4px'
       }"
       @mousedown="onStartHandleMouseDown"
     />
@@ -182,8 +182,8 @@ export default defineComponent({
     <div
       class="absolute h-full rounded top-0 bg-green-300 dark:bg-green-700 cursor-ew-resize"
       :style="{
-        right: `calc(${endRatio * 100}% - ${endRatio < 0.05 ? 0 : 6}px)`,
-        width: '6px'
+        right: `calc(${endRatio * 100}% - ${endRatio < 0.05 ? 0 : 4}px)`,
+        width: '4px'
       }"
       @mousedown="onEndHandleMouseDown"
     />
