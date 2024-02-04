@@ -1,6 +1,6 @@
 import { BackendContext } from '@vue-devtools/app-backend-api'
 import { getInstanceName, getUniqueComponentId } from './util'
-import { camelize, StateEditor, SharedData } from '@vue-devtools/shared-utils'
+import { camelize, StateEditor, SharedData, kebabize } from '@vue-devtools/shared-utils'
 import { ComponentInstance, CustomState, HookPayloads, Hooks, InspectedComponentData } from '@vue/devtools-api'
 import { returnError } from '../util'
 
@@ -371,20 +371,24 @@ function processRefs (instance) {
 function processEventListeners (instance) {
   const emitsDefinition = instance.type.emits
   const declaredEmits = Array.isArray(emitsDefinition) ? emitsDefinition : Object.keys(emitsDefinition ?? {})
+  const declaredEmitsMap = declaredEmits.reduce((emitsMap, key) => {
+    emitsMap[kebabize(key)] = key
+    return emitsMap
+  }, {})
   const keys = Object.keys(instance.vnode.props ?? {})
   const result = []
   for (const key of keys) {
     const [prefix, ...eventNameParts] = key.split(/(?=[A-Z])/)
     if (prefix === 'on') {
       const eventName = eventNameParts.join('-').toLowerCase()
-      const isDeclared = declaredEmits.includes(eventName)
+      const normalizedEventName = declaredEmitsMap[eventName]
       result.push({
         type: 'event listeners',
-        key: eventName,
+        key: normalizedEventName || eventName,
         value: {
           _custom: {
-            display: isDeclared ? '✅ Declared' : '⚠️ Not declared',
-            tooltip: !isDeclared ? `The event <code>${eventName}</code> is not declared in the <code>emits</code> option. It will leak into the component's attributes (<code>$attrs</code>).` : null,
+            display: normalizedEventName ? '✅ Declared' : '⚠️ Not declared',
+            tooltip: !normalizedEventName ? `The event <code>${eventName}</code> is not declared in the <code>emits</code> option. It will leak into the component's attributes (<code>$attrs</code>).` : null,
           },
         },
       })
