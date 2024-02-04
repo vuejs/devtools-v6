@@ -117,6 +117,9 @@ export function setupPlugin (api: DevtoolsApi, app: App, Vue) {
         if (payload.inspectorId === VUEX_INSPECTOR_ID) {
           const modulePath = payload.nodeId
           const { module, getterPath } = getStoreModule(store._modules, modulePath)
+          if (!module) {
+            return
+          }
           // Access the getters prop to init getters cache (which is lazy)
           // eslint-disable-next-line no-unused-expressions
           module.context.getters
@@ -497,9 +500,7 @@ function getStoreModule (moduleMap, path) {
   return names.reduce(
     ({ module, getterPath }, moduleName, i) => {
       const child = module[moduleName === VUEX_ROOT_PATH ? 'root' : moduleName]
-      if (!child) {
-        throw new Error(`Missing module "${moduleName}" for path "${path}".`)
-      }
+      if (!child) return null
       return {
         module: i === names.length - 1 ? child : child._children,
         getterPath: child._rawModule.namespaced

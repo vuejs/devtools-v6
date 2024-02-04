@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { useRouter } from '@front/util/router'
+import { useRouter } from 'vue-router'
 import { usePlugins } from '.'
 
 export default defineComponent({

@@ -30,6 +30,9 @@
 
     <h3>BigInt</h3>
     <pre>{{ bigInt }}</pre>
+
+    <h3>Date</h3>
+    <pre>{{ localDate }}</pre>
   </div>
 </template>
 

@@ -227,7 +227,7 @@ function replacerForInternal (key) {
       // special handling of native type
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
     } else if (proto === '[object Date]') {
-      return `[native Date ${Date.prototype.toString.call(val)}]`
+      return getCustomDateDetails(val)
     } else if (proto === '[object Error]') {
       return `[native Error ${val.message}<>${val.stack}]`
     } else if (val.state && val._vm) {
@@ -342,11 +342,30 @@ export function getCustomBigIntDetails (val) {
   }
 }
 
+export function getCustomDateDetails (val: Date) {
+  const dateCopy = new Date(val.getTime())
+  dateCopy.setMinutes(dateCopy.getMinutes() - dateCopy.getTimezoneOffset())
+
+  const displayedTime = Date.prototype.toString.call(val)
+  return {
+    _custom: {
+      type: 'date',
+      display: displayedTime,
+      value: dateCopy.toISOString().slice(0, -1),
+      skipSerialize: true,
+    },
+  }
+}
+
 // Use a custom basename functions instead of the shimed version
 // because it doesn't work on Windows
-function basename (filename, ext) {
+export function basename (filename, ext) {
+  filename = filename.replace(/\\/g, '/')
+  if (filename.includes(`/index${ext}`)) {
+    filename = filename.replace(`/index${ext}`, ext)
+  }
   return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
+    filename.replace(/^[a-zA-Z]:/, ''),
     ext,
   )
 }
@@ -512,6 +531,8 @@ export function revive (val) {
       return reviveSet(val)
     } else if (custom.type === 'bigint') {
       return BigInt(custom.value)
+    } else if (custom.type === 'date') {
+      return new Date(custom.value)
     } else if (custom._reviveId) {
       return reviveCache.read(custom._reviveId)
     } else {

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useRouter } from '@front/util/router'
+import { useRouter } from 'vue-router'
 import PluginSourceDescription from './PluginSourceDescription.vue'
 
 export default defineComponent({

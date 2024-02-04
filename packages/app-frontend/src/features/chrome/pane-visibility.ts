@@ -1,7 +1,7 @@
 import { isChrome } from '@vue-devtools/shared-utils'
 
 let panelShown = !isChrome
-let pendingAction = null
+let pendingAction: (() => void | Promise<void>) | null = null
 
 if (isChrome) {
   chrome.runtime.onMessage.addListener(request => {

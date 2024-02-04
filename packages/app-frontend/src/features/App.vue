@@ -122,7 +122,7 @@ export default defineComponent({
       </SplitPane>
     </template>
 
-    <portal-target name="root" />
+    <TeleportTarget id="root" />
 
     <ErrorOverlay />
   </div>

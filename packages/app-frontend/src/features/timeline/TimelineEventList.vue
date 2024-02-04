@@ -4,7 +4,7 @@ import TimelineEventListItem from './TimelineEventListItem.vue'
 
 import { computed, ref, watch, defineComponent } from 'vue'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
-import { useRoute, useRouter } from '@front/util/router'
+import { useRoute, useRouter } from 'vue-router'
 import { onKeyDown } from '@front/util/keyboard'
 import { useInspectedEvent, useSelectedEvent, selectEvent, useLayers } from './composable'
 
@@ -38,19 +38,19 @@ export default defineComponent({
     // Tabs
 
     const tabId = computed({
-      get: () => route.value.query.tabId,
+      get: () => route.query.tabId,
       set: value => {
         setStorage(STORAGE_TAB_ID, value)
         router.push({
           query: {
-            ...route.value.query,
+            ...route.query,
             tabId: value,
           },
         })
       },
     })
 
-    if (!route.value.query.tabId) {
+    if (!route.query.tabId) {
       tabId.value = getStorage(STORAGE_TAB_ID, 'all')
     }
 
@@ -144,9 +144,8 @@ export default defineComponent({
     // Auto bottom scroll
 
     function scrollToBottom () {
-      if (!scroller.value) return
-
       requestAnimationFrame(() => {
+        if (!scroller.value) return
         const scrollerEl = scroller.value.$el
         scrollerEl.scrollTop = scrollerEl.scrollHeight
       })
@@ -239,7 +238,7 @@ export default defineComponent({
       :items="filteredEvents"
       :item-size="itemHeight"
       class="flex-1"
-      @scroll.native.passive="onScroll()"
+      @scroll.passive="onScroll()"
     >
       <template #default="{ item: event }">
         <TimelineEventListItem

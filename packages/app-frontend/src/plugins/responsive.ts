@@ -1,39 +1,43 @@
-export let responsive
+import { Plugin, computed, ComputedRef, Ref, reactive, toRefs, inject } from 'vue'
 
-interface Base {
-  width: number
-  height: number
+export type Responsive = {
+  wide: ComputedRef<boolean>
+  tall: ComputedRef<boolean>
+  width: Ref<number>
+  height: Ref<number>
 }
 
-interface Options {
-  computed: {
-    [key: string]: (this: Base) => boolean
-  }
-}
+const responsiveKey = Symbol('responsive')
 
 export default {
-  install (Vue, options: Options) {
-    const finalOptions = Object.assign({}, {
-      computed: {},
-    }, options)
+  install (app) {
+    function buildResponsive () {
+      const data = reactive({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
 
-    responsive = new Vue({
-      data () {
-        return {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        }
-      },
-      computed: finalOptions.computed,
-    })
+      const wide = computed(() => data.width >= 1050)
+      const tall = computed(() => data.height >= 350)
 
-    Object.defineProperty(Vue.prototype, '$responsive', {
-      get: () => responsive,
-    })
+      return {
+        ...toRefs(data),
+        wide,
+        tall,
+      }
+    }
+
+    const responsive = buildResponsive()
+
+    app.config.globalProperties.$responsive = responsive
+
+    app.provide(responsiveKey, responsive)
 
     window.addEventListener('resize', () => {
-      responsive.width = window.innerWidth
-      responsive.height = window.innerHeight
+      responsive.width.value = window.innerWidth
+      responsive.height.value = window.innerHeight
     })
   },
-}
+} as Plugin
+
+export const useResponsive = () => inject<Responsive>(responsiveKey)

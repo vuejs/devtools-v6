@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { RouteLocationNormalized, RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router'
 import ComponentsInspector from './features/components/ComponentsInspector.vue'
 import CustomInspector from './features/inspector/custom/CustomInspector.vue'
 import Timeline from './features/timeline/Timeline.vue'
@@ -9,27 +8,21 @@ import PluginDetails from './features/plugin/PluginDetails.vue'
 import GlobalSettings from './features/settings/GlobalSettings.vue'
 import { BuiltinTabs, getStorage, setStorage } from '@vue-devtools/shared-utils'
 
-Vue.use(VueRouter)
-
-const RouterView = {
-  render: h => h('router-view'),
-}
-
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: {
-      name: 'inspector-components',
+      // An error will be thrown if param id is not provided, provide a default value to avoid this.
+      // Ref: https://github.com/vuejs/router/issues/845
+      path: '/app/init/inspector/components',
     },
   },
   {
     path: '/app/:appId',
-    component: RouterView,
     children: [
       {
         path: 'inspector',
         name: 'inspector',
-        component: RouterView,
         children: [
           {
             path: 'components/:componentId?',
@@ -44,7 +37,7 @@ const routes = [
             name: 'custom-inspector',
             component: CustomInspector,
             meta: {
-              tab: route => `custom-inspector:${route.params.inspectorId}`,
+              tab: (route: RouteLocationNormalized) => `custom-inspector:${route.params.inspectorId}`,
             },
           },
         ],
@@ -89,15 +82,16 @@ const routes = [
     ],
   },
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     redirect: '/',
   },
 ]
 
 const STORAGE_ROUTE = 'route'
 
-export function createRouter () {
-  const router = new VueRouter({
+export function createRouterInstance () {
+  const router = createRouter({
+    history: createWebHashHistory('/'),
     routes,
   })
 
@@ -106,7 +100,7 @@ export function createRouter () {
     router.push(previousRoute)
   }
 
-  router.afterEach(to => {
+  router.afterEach((to) => {
     setStorage(STORAGE_ROUTE, to.fullPath)
   })
 

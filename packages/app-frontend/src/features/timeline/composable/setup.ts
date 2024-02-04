@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { Bridge, BridgeEvents, parse } from '@vue-devtools/shared-utils'
 import { getApps } from '@front/features/apps'
 import {
@@ -111,7 +110,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
     }
 
     markersAllApps.value = allList
-    Vue.set(markersPerApp.value, appId, appList)
+    markersPerApp.value[appId] = appList
   })
 
   bridge.on(BridgeEvents.TO_FRONT_TIMELINE_MARKER, ({ marker, appId }: { marker: MarkerFromBackend, appId: string }) => {
@@ -120,7 +119,7 @@ export function setupTimelineBridgeEvents (bridge: Bridge) {
       targetList = markersAllApps.value
     } else {
       if (!markersPerApp.value[appId]) {
-        Vue.set(markersPerApp.value, appId, [])
+        markersPerApp.value[appId] = []
       }
       targetList = markersPerApp.value[appId]
     }

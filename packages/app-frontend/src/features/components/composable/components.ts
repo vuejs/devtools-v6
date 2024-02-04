@@ -1,4 +1,4 @@
-import Vue, { ref, computed, watch, Ref, onMounted } from 'vue'
+import { ref, computed, watch, Ref, onMounted } from 'vue'
 import { ComponentTreeNode, EditStatePayload, InspectedComponentData } from '@vue/devtools-api'
 import groupBy from 'lodash/groupBy'
 import {
@@ -12,16 +12,16 @@ import {
 } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
 import { AppRecord, waitForAppSelect, useCurrentApp } from '@front/features/apps'
-import { useRoute, useRouter } from '@front/util/router'
+import { useRoute, useRouter } from 'vue-router'
 
 export const rootInstances = ref<ComponentTreeNode[]>([])
 export const componentsMap = ref<Record<ComponentTreeNode['id'], ComponentTreeNode>>({})
 let componentsParent: Record<ComponentTreeNode['id'], ComponentTreeNode['id']> = {}
 const treeFilter = ref('')
-export const selectedComponentId = ref<ComponentTreeNode['id']>(null)
-export const selectedComponentData = ref<InspectedComponentData>(null)
+export const selectedComponentId = ref<ComponentTreeNode['id'] | null>(null)
+export const selectedComponentData = ref<InspectedComponentData | null>(null)
 const selectedComponentStateFilter = ref('')
-export const selectedComponentPendingId = ref<ComponentTreeNode['id']>(null)
+export const selectedComponentPendingId = ref<ComponentTreeNode['id'] | null>(null)
 let lastSelectedApp: AppRecord = null
 export const lastSelectedComponentId: Record<AppRecord['id'], ComponentTreeNode['id']> = {}
 export const expandedMap = ref<Record<ComponentTreeNode['id'], boolean>>({})
@@ -61,8 +61,8 @@ export function useComponents () {
     requestComponentTree()
   })
 
-  watch(() => route.value.params.componentId, () => {
-    const value = route.value.params.componentId
+  watch(() => route.params.componentId, () => {
+    const value = route.params.componentId as string
     if (value && getAppIdFromComponentId(value) === currentAppId.value) {
       selectedComponentId.value = value
       loadComponent(value)
@@ -197,10 +197,10 @@ export function useComponent (instance: Ref<ComponentTreeNode>) {
 }
 
 export function setComponentOpen (id: ComponentTreeNode['id'], isOpen: boolean) {
-  Vue.set(expandedMap.value, id, isOpen)
+  expandedMap.value[id] = isOpen
 }
 
-export function isComponentOpen (id) {
+export function isComponentOpen (id: ComponentTreeNode['id']) {
   return !!expandedMap.value[id]
 }
 
@@ -240,7 +240,7 @@ export function useSelectedComponent () {
 
   function editState (dotPath: string, payload: EditStatePayload, type?: string) {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_EDIT_STATE, {
-      instanceId: data.value.id,
+      instanceId: data.value?.id,
       dotPath,
       type,
       ...payload,
@@ -249,7 +249,7 @@ export function useSelectedComponent () {
 
   function scrollToComponent () {
     bridge.send(BridgeEvents.TO_BACK_COMPONENT_SCROLL_TO, {
-      instanceId: data.value.id,
+      instanceId: data.value?.id,
     })
   }
 
@@ -278,7 +278,7 @@ export const requestedComponentTree = new Set()
 
 let requestComponentTreeRetryDelay = 500
 
-export async function requestComponentTree (instanceId: ComponentTreeNode['id'] = null, recursively = false) {
+export async function requestComponentTree (instanceId: ComponentTreeNode['id'] | null = null, recursively = false) {
   if (!instanceId) {
     instanceId = '_root'
   }
@@ -340,10 +340,10 @@ function updateComponentsMapData (data: ComponentTreeNode) {
     if (key === 'children') {
       if (!data.hasChildren || data.children.length) {
         const children = ensureComponentsMapChildren(component.id, data.children)
-        Vue.set(component, key, children)
+        component[key] = children
       }
     } else {
-      Vue.set(component, key, data[key])
+      component[key] = data[key]
     }
   }
   return component
@@ -413,10 +413,10 @@ export function addUpdateTrackingEvent (instanceId: string, time: number) {
     event.count++
     event.time = time
   } else {
-    Vue.set(updateTrackingEvents.value, instanceId, {
+    updateTrackingEvents.value[instanceId] = {
       instanceId,
       time,
       count: 1,
-    })
+    }
   }
 }

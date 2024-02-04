@@ -121,8 +121,8 @@ async function connect () {
   const sendComponentUpdate = throttle(async (appRecord: AppRecord, id: string) => {
     try {
       // Update component inspector
-      if (id && isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
-        await sendSelectedComponentData(appRecord, id, ctx)
+      if (ctx.currentInspectedComponentId) {
+        await sendSelectedComponentData(appRecord, ctx.currentInspectedComponentId, ctx)
       }
 
       // Update tree (tags)
@@ -174,12 +174,14 @@ async function connect () {
         if (component.__VUE_DEVTOOLS_UID__ == null) {
           component.__VUE_DEVTOOLS_UID__ = id
         }
-        if (!appRecord.instanceMap.has(id)) {
-          appRecord.instanceMap.set(id, component)
+        if (appRecord?.instanceMap) {
+          if (!appRecord.instanceMap.has(id)) {
+            appRecord.instanceMap.set(id, component)
+          }
         }
       }
 
-      if (parentUid != null) {
+      if (parentUid != null && appRecord?.instanceMap) {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           // Check two parents level to update `hasChildren
@@ -222,14 +224,18 @@ async function connect () {
     try {
       if (!app || (typeof uid !== 'number' && !uid) || !component) return
       const appRecord = await getAppRecord(app, ctx)
-      if (parentUid != null) {
+      if (parentUid != null && appRecord) {
         const parentInstances = await appRecord.backend.api.walkComponentParents(component)
         if (parentInstances.length) {
           const parentId = await getComponentId(app, parentUid, parentInstances[0], ctx)
           if (isSubscribed(BridgeSubscriptions.COMPONENT_TREE, sub => sub.payload.instanceId === parentId)) {
             raf(async () => {
               try {
-                sendComponentTreeData(await getAppRecord(app, ctx), parentId, appRecord.componentFilter, null, false, ctx)
+                const appRecord = await getAppRecord(app, ctx)
+
+                if (appRecord) {
+                  sendComponentTreeData(appRecord, parentId, appRecord.componentFilter, null, false, ctx)
+                }
               } catch (e) {
                 if (SharedData.debugInfo) {
                   console.error(e)
@@ -244,7 +250,10 @@ async function connect () {
       if (isSubscribed(BridgeSubscriptions.SELECTED_COMPONENT_DATA, sub => sub.payload.instanceId === id)) {
         await sendEmptyComponentData(id, ctx)
       }
-      appRecord.instanceMap.delete(id)
+
+      if (appRecord) {
+        appRecord.instanceMap.delete(id)
+      }
 
       await refreshComponentTreeSearch(ctx)
     } catch (e) {
@@ -288,13 +297,15 @@ async function connect () {
 
   hook.on(HookEvents.TIMELINE_LAYER_ADDED, async (options: TimelineLayerOptions, plugin: Plugin) => {
     const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
-    ctx.timelineLayers.push({
-      ...options,
-      appRecord,
-      plugin,
-      events: [],
-    })
-    ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
+    if (appRecord) {
+      ctx.timelineLayers.push({
+        ...options,
+        appRecord,
+        plugin,
+        events: [],
+      })
+      ctx.bridge.send(BridgeEvents.TO_FRONT_TIMELINE_LAYER_ADD, {})
+    }
   })
 
   hook.on(HookEvents.TIMELINE_EVENT_ADDED, async (options: TimelineEventOptions, plugin: Plugin) => {
@@ -305,14 +316,16 @@ async function connect () {
 
   hook.on(HookEvents.CUSTOM_INSPECTOR_ADD, async (options: CustomInspectorOptions, plugin: Plugin) => {
     const appRecord = await getAppRecord(plugin.descriptor.app, ctx)
-    ctx.customInspectors.push({
-      ...options,
-      appRecord,
-      plugin,
-      treeFilter: '',
-      selectedNodeId: null,
-    })
-    ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
+    if (appRecord) {
+      ctx.customInspectors.push({
+        ...options,
+        appRecord,
+        plugin,
+        treeFilter: '',
+        selectedNodeId: null,
+      })
+      ctx.bridge.send(BridgeEvents.TO_FRONT_CUSTOM_INSPECTOR_ADD, {})
+    }
   })
 
   hook.on(HookEvents.CUSTOM_INSPECTOR_SEND_TREE, async (inspectorId: string, plugin: Plugin) => {

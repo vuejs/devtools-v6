@@ -7,11 +7,14 @@
   },
   "dependencies": {
     "@vue-devtools/shell-host": "^0.0.0",
+    "vue": "^2.7.10",
+    "vue-router": "^3.6.5",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue-devtools/build-tools": "^0.0.0",
     "cross-env": "^5.2.0",
+    "vue-loader": "^15.7.1",
     "launch-editor-middleware": "^2.2.1",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0"

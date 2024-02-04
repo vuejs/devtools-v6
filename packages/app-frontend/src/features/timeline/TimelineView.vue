@@ -3,13 +3,14 @@ import * as PIXI from 'pixi.js-legacy'
 import { install as installUnsafeEval } from '@pixi/unsafe-eval'
 import { EventSystem, FederatedPointerEvent, FederatedWheelEvent } from '@pixi/events'
 import { Renderer } from '@pixi/core'
-import Vue, {
+import {
   ref,
   onMounted,
   onUnmounted,
   watch,
   watchEffect,
   defineComponent,
+  nextTick as nextTickVue,
 } from 'vue'
 import { SharedData, isMac } from '@vue-devtools/shared-utils'
 import {
@@ -221,7 +222,7 @@ export default defineComponent({
      * This prevents flashing when the user is scrolling at the same time
      */
     async function interactionDraw () {
-      await Vue.nextTick()
+      await nextTickVue()
       if (!interactionDrawBlocked) {
         interactionDrawScheduled = false
         draw()
@@ -439,6 +440,7 @@ export default defineComponent({
     }
 
     function drawLayerBackground (layerId: Layer['id'], alpha = 1) {
+      if (!layersMap[layerId]) return
       const { layer } = layersMap[layerId]
       layerHoverEffect.beginFill(layer.color, alpha)
       layerHoverEffect.drawRect(0, getLayerY(layer), getAppWidth(), (layer.height + 1) * LAYER_SIZE)
@@ -1202,8 +1204,6 @@ export default defineComponent({
 
     watch(startTime, () => queueCameraUpdate())
     watch(endTime, () => queueCameraUpdate())
-
-    let isShifPressed: boolean
 
     onMounted(() => {
       queueCameraUpdate()

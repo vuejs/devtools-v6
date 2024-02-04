@@ -1,3 +1,5 @@
+import { App } from 'vue'
+
 export const isBrowser = typeof navigator !== 'undefined'
 export const target: any = isBrowser
   ? window
@@ -18,10 +20,10 @@ export const keys = {
   esc: 'Esc',
 }
 
-export function initEnv (Vue) {
-  if (Vue.prototype.hasOwnProperty('$isChrome')) return
+export function initEnv (app: App) {
+  if (app.config.globalProperties.hasOwnProperty('$isChrome')) return
 
-  Object.defineProperties(Vue.prototype, {
+  Object.defineProperties(app.config.globalProperties, {
     $isChrome: { get: () => isChrome },
     $isFirefox: { get: () => isFirefox },
     $isWindows: { get: () => isWindows },

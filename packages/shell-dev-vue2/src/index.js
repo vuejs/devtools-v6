@@ -83,7 +83,7 @@ if (ce.attachShadow) {
   const shadowRoot = ce.attachShadow({ mode: 'open' })
 
   const ceVM = new Vue({
-    name: 'Shadow',
+    name: 'ShadowDom',
     render (h) {
       return h('h2', 'Inside Shadow DOM!')
     },

@@ -44,13 +44,13 @@ export default defineComponent({
 
     // Keyboard
 
-    function selectNextChild (index) {
+    function selectNextChild (index: number) {
       if (index + 1 < inspector.value.rootNodes.length) {
         selectNode(inspector.value.rootNodes[index + 1])
       }
     }
 
-    function selectPreviousChild (index) {
+    function selectPreviousChild (index: number) {
       if (index - 1 >= 0) {
         selectNode(inspector.value.rootNodes[index - 1])
       }
@@ -121,8 +121,8 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="header-end">
-      <template v-if="inspector.actions">
+    <SafeTeleport to="#header-end">
+      <template v-if="inspector?.actions">
         <VueButton
           v-for="(action, index) of inspector.actions"
           :key="index"
@@ -138,7 +138,7 @@ export default defineComponent({
         icon-left="refresh"
         @click="refreshInspector()"
       />
-    </portal>
+    </SafeTeleport>
   </div>
   <EmptyPane
     v-else
@@ -157,14 +157,12 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .search {
-  >>> {
-    .input {
-      height: 39px !important;
-    }
+  :deep(.input) {
+    height: 39px !important;
+  }
 
-    .content {
-      border: none !important;
-    }
+  :deep(.content) {
+    border: none !important;
   }
 }
 

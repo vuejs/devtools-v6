@@ -1,5 +1,4 @@
-import { classify } from '@vue-devtools/shared-utils'
-import { basename } from '../util'
+import { classify, basename } from '@vue-devtools/shared-utils'
 import { ComponentInstance, App } from '@vue/devtools-api'
 import { BackendContext } from '@vue-devtools/app-backend-api'
 

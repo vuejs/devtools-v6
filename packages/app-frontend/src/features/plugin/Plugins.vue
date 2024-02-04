@@ -73,7 +73,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="header-end">
+    <SafeTeleport to="#header-end">
       <VueButton
         :to="{
           name: 'global-settings'
@@ -83,12 +83,12 @@ export default defineComponent({
       >
         Global settings
       </VueButton>
-    </portal>
+    </SafeTeleport>
   </div>
 </template>
 
 <style scoped>
-.vue-ui-icon /deep/ svg {
+.vue-ui-icon :deep(svg) {
   fill: currentColor;
 }
 </style>

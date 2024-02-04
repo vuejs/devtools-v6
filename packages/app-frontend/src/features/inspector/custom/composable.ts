@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { useRoute } from '@front/util/router'
+import { useRoute } from 'vue-router'
 import { useApps } from '@front/features/apps'
 import { BridgeEvents, parse, searchDeepInObject, getStorage, setStorage, Bridge } from '@vue-devtools/shared-utils'
 import { getBridge, useBridge } from '@front/features/bridge'
@@ -65,23 +65,23 @@ export function useCurrentInspector () {
   const { inspectors } = useInspectors()
   const { bridge } = useBridge()
 
-  const currentInspector = computed(() => inspectors.value.find(i => i.id === route.value.params.inspectorId))
+  const currentInspector = computed(() => inspectors.value.find(i => i.id === route.params.inspectorId))
 
   const filteredState = computed(() => {
-    if (currentInspector.value.stateFilter) {
+    if (currentInspector.value?.stateFilter) {
       const result = {}
       for (const groupKey in currentInspector.value.state) {
         const group = currentInspector.value.state[groupKey]
         const groupFields = group.filter(el => searchDeepInObject({
           [el.key]: el.value,
-        }, currentInspector.value.stateFilter))
+        }, currentInspector.value?.stateFilter))
         if (groupFields.length) {
           result[groupKey] = groupFields
         }
       }
       return result
     } else {
-      return currentInspector.value.state
+      return currentInspector.value?.state
     }
   })
 
