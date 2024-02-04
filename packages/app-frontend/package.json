@@ -10,12 +10,11 @@
     "@vue/ui": "^0.12.5",
     "circular-json-es6": "^2.0.2",
     "d3": "^5.16.0",
-    "floating-vue": "^2.0.0-beta.24",
+    "floating-vue": "^5.2.2",
     "lodash": "^4.17.15",
     "lru-cache": "^5.1.1",
     "monaco-editor": "^0.24.0",
     "pixi.js-legacy": "^6.2.0",
-    "portal-vue": "^3.0.0-beta.0",
     "scroll-into-view-if-needed": "^2.2.28",
     "semver": "^7.3.5",
     "stylus": "^0.54.7",
@@ -24,6 +23,7 @@
     "vue": "^3.3.4",
     "vue-resize": "^2.0.0-alpha.1",
     "vue-router": "^4.2.5",
+    "vue-safe-teleport": "^0.1.2",
     "vue-virtual-scroller": "^2.0.0-alpha.1"
   },
   "devDependencies": {

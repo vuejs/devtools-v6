@@ -450,7 +450,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <Teleport to="#header-end">
+    <SafeTeleport to="#header-end">
       <VueDropdown>
         <template #trigger>
           <VueButton
@@ -501,9 +501,9 @@ export default defineComponent({
         icon-left="delete_sweep"
         @click="resetTimeline()"
       />
-    </Teleport>
+    </SafeTeleport>
 
-    <portal to="more-menu">
+    <SafeTeleport to="#more-menu">
       <VueSwitch
         v-model="$shared.timelineTimeGrid"
         class="w-full px-3 py-1 extend-left"
@@ -520,7 +520,7 @@ export default defineComponent({
       </VueSwitch>
 
       <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
-    </portal>
+    </SafeTeleport>
 
     <AskScreenshotPermission
       v-if="askScreenshotPermission"

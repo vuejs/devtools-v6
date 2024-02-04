@@ -5,14 +5,14 @@ import { App } from 'vue'
 import VueUi, { generateHtmlIcon } from '../features/components/ui'
 import VueVirtualScroller from 'vue-virtual-scroller'
 import { keys } from '@vue-devtools/shared-utils'
-import PortalVue from 'portal-vue'
+import VueSafeTeleport from 'vue-safe-teleport'
 import VI18n from './i18n'
 import Responsive from './responsive'
 import GlobalRefs from './global-refs'
 import VueResize from 'vue-resize'
 
 export function setupPlugins (app: App) {
-  app.use(PortalVue)
+  app.use(VueSafeTeleport)
   app.use(VueUi)
   app.use(VueResize)
   app.use(VueVirtualScroller)

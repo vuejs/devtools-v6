@@ -156,7 +156,7 @@ export default defineComponent({
     <div class="flex-1" />
 
     <div class="flex items-center">
-      <div
+      <TeleportTarget
         id="header-end"
         class="flex items-center"
       />
@@ -170,7 +170,7 @@ export default defineComponent({
           />
         </template>
 
-        <portal-target name="more-menu" />
+        <TeleportTarget id="more-menu" />
 
         <VueDropdownButton
           :to="{

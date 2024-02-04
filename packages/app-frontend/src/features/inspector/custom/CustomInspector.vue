@@ -121,7 +121,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <Teleport to="#header-end">
+    <SafeTeleport to="#header-end">
       <template v-if="inspector?.actions">
         <VueButton
           v-for="(action, index) of inspector.actions"
@@ -138,7 +138,7 @@ export default defineComponent({
         icon-left="refresh"
         @click="refreshInspector()"
       />
-    </Teleport>
+    </SafeTeleport>
   </div>
   <EmptyPane
     v-else

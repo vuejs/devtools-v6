@@ -73,7 +73,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <Teleport to="#header-end">
+    <SafeTeleport to="#header-end">
       <VueButton
         :to="{
           name: 'global-settings'
@@ -83,7 +83,7 @@ export default defineComponent({
       >
         Global settings
       </VueButton>
-    </Teleport>
+    </SafeTeleport>
   </div>
 </template>
 
