@@ -229,7 +229,7 @@ export default defineComponent({
         v-model="filter"
         icon-left="search"
         :placeholder="`Filter ${selectedLayer.label}`"
-        class="search flat"
+        class="search flat h-[31px]"
       />
     </div>
 

@@ -361,7 +361,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="h-8 flex-none border-b border-gray-200 dark:border-gray-800 box-content flex items-center">
+          <div class="h-8 flex-none border-b border-gray-200 dark:border-gray-800 flex items-center">
             <VueDropdown>
               <template #trigger>
                 <VueButton
