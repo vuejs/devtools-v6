@@ -359,9 +359,13 @@ export function getCustomDateDetails (val: Date) {
 
 // Use a custom basename functions instead of the shimed version
 // because it doesn't work on Windows
-function basename (filename, ext) {
+export function basename (filename, ext) {
+  filename = filename.replace(/\\/g, '/')
+  if (filename.includes(`/index${ext}`)) {
+    filename = filename.replace(`/index${ext}`, ext)
+  }
   return path.basename(
-    filename.replace(/^[a-zA-Z]:/, '').replace(/\\/g, '/'),
+    filename.replace(/^[a-zA-Z]:/, ''),
     ext,
   )
 }
