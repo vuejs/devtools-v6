@@ -188,7 +188,8 @@ function processSetupState (instance) {
 
       let isOther = typeof value === 'function' ||
         typeof value?.render === 'function' ||
-        typeof value?.__asyncLoader === 'function'
+        typeof value?.__asyncLoader === 'function' ||
+        typeof value === 'object' && ('setup' in value || 'props' in value)
 
       if (rawData) {
         const info = getSetupStateInfo(rawData)
