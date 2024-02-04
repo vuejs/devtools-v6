@@ -96,8 +96,26 @@ export default defineComponent({
               class="search flat !min-w-0 flex-1 mr-2"
             />
 
+            <template v-if="inspector?.actions">
+              <VueButton
+                v-for="(action, index) of inspector.actions"
+                :key="index"
+                v-tooltip="action.tooltip"
+                class="icon-button flat"
+                :icon-left="action.icon"
+                @click="executeCustomAction(index)"
+              />
+            </template>
+            <VueButton
+              v-tooltip="'Refresh'"
+              class="icon-button flat"
+              icon-left="refresh"
+              @click="refreshInspector()"
+            />
+
             <PluginSourceIcon
               :plugin-id="inspector.pluginId"
+              class="ml-2"
             />
           </div>
 
@@ -120,25 +138,6 @@ export default defineComponent({
         <CustomInspectorSelectedNodePane />
       </template>
     </SplitPane>
-
-    <SafeTeleport to="#header-end">
-      <template v-if="inspector?.actions">
-        <VueButton
-          v-for="(action, index) of inspector.actions"
-          :key="index"
-          v-tooltip="action.tooltip"
-          class="icon-button flat"
-          :icon-left="action.icon"
-          @click="executeCustomAction(index)"
-        />
-      </template>
-      <VueButton
-        v-tooltip="'Refresh'"
-        class="icon-button flat"
-        icon-left="refresh"
-        @click="refreshInspector()"
-      />
-    </SafeTeleport>
   </div>
   <EmptyPane
     v-else

@@ -86,30 +86,14 @@ export default defineComponent({
   >
     <template #trigger>
       <VueButton
-        class="flat"
-        icon-left="wysiwyg"
-        :icon-right="orientation === 'landscape' ? 'arrow_drop_down' : null"
-        :class="{
-          'icon-button': orientation === 'portrait'
-        }"
+        class="flat icon-button"
       >
-        <div class="flex items-center space-x-2">
-          <template v-if="orientation === 'landscape'">
-            <span v-if="currentApp">
-              {{ currentApp.name }}
-            </span>
-            <span
-              v-else
-              class="opacity-50"
-            >
-              No app
-            </span>
-          </template>
-
+        <div class="flex items-center space-x-2 relative">
+          <img src="~@front/assets/vue-logo.svg" class="w-8 h-8">
           <VueIcon
             v-if="hasNewVueVersion"
             icon="new_releases"
-            class="text-green-500"
+            class="text-green-400 absolute right-0 bottom-0 w-4 h-4"
           />
         </div>
       </VueButton>

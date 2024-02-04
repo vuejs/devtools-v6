@@ -105,18 +105,101 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <VueInput
-            ref="treeFilterInput"
-            v-model="treeFilter"
-            v-tooltip="{
-              content: $t('ComponentTree.filter.tooltip'),
-              html: true
-            }"
-            icon-left="search"
-            placeholder="Find components..."
-            select-all
-            class="search flat border-b border-gray-200 dark:border-gray-800 !min-w-0"
-          />
+          <div class="flex items-center border-b border-gray-200 dark:border-gray-800">
+            <VueInput
+              ref="treeFilterInput"
+              v-model="treeFilter"
+              v-tooltip="{
+                content: $t('ComponentTree.filter.tooltip'),
+                html: true
+              }"
+              icon-left="search"
+              placeholder="Find components..."
+              select-all
+              class="search flat !min-w-0 flex-1"
+            />
+
+            <VueButton
+              v-tooltip="{
+                content: $t('ComponentTree.select.tooltip'),
+                html: true
+              }"
+              class="icon-button flat"
+              icon-left="gps_fixed"
+              @click="startPickingComponent()"
+            />
+
+            <VueButton
+              v-tooltip="{
+                content: $t('ComponentTree.refresh.tooltip'),
+                html: true
+              }"
+              class="icon-button flat"
+              :class="{
+                'animate-icon': animateRefresh,
+              }"
+              icon-left="refresh"
+              @click="refresh()"
+            />
+
+            <VueDropdown
+              placement="bottom-end"
+            >
+              <template #trigger>
+                <VueButton
+                  icon-left="more_vert"
+                  class="icon-button flat"
+                />
+              </template>
+
+              <div class="space-y-1 px-3 py-2 text-sm">
+                <div>Component names:</div>
+
+                <VueGroup
+                  v-model="$shared.componentNameStyle"
+                >
+                  <VueGroupButton
+                    value="original"
+                    label="Original"
+                  />
+                  <VueGroupButton
+                    value="class"
+                    label="PascalCase"
+                  />
+                  <VueGroupButton
+                    value="kebab"
+                    label="kebab-case"
+                  />
+                </VueGroup>
+              </div>
+
+              <div class="space-y-1 px-3 py-2 text-sm">
+                <VueSwitch v-model="$shared.editableProps">
+                  Editable props
+                </VueSwitch>
+                <div class="flex items-center space-x-1 text-xs opacity-50">
+                  <VueIcon
+                    icon="warning"
+                    class="w-4 h-4 flex-none"
+                  />
+                  <span>May print warnings in the console</span>
+                </div>
+              </div>
+
+              <div class="space-y-1 px-3 py-2 text-sm">
+                <VueSwitch v-model="$shared.flashUpdates">
+                  Highlight updates
+                </VueSwitch>
+                <div class="flex items-center space-x-1 text-xs opacity-50">
+                  <VueIcon
+                    icon="warning"
+                    class="w-4 h-4 flex-none"
+                  />
+                  <span>Don't enable if you are sensitive to flashing</span>
+                </div>
+              </div>
+            </VueDropdown>
+          </div>
 
           <div
             ref="treeScroller"
@@ -135,82 +218,6 @@ export default defineComponent({
         <SelectedComponentPane />
       </template>
     </SplitPane>
-
-    <SafeTeleport to="#more-menu">
-      <div class="space-y-1 px-3 py-2 text-sm">
-        <div>Component names:</div>
-
-        <VueGroup
-          v-model="$shared.componentNameStyle"
-        >
-          <VueGroupButton
-            value="original"
-            label="Original"
-          />
-          <VueGroupButton
-            value="class"
-            label="PascalCase"
-          />
-          <VueGroupButton
-            value="kebab"
-            label="kebab-case"
-          />
-        </VueGroup>
-      </div>
-
-      <div class="space-y-1 px-3 py-2 text-sm">
-        <VueSwitch v-model="$shared.editableProps">
-          Editable props
-        </VueSwitch>
-        <div class="flex items-center space-x-1 text-xs opacity-50">
-          <VueIcon
-            icon="warning"
-            class="w-4 h-4 flex-none"
-          />
-          <span>May print warnings in the console</span>
-        </div>
-      </div>
-
-      <div class="space-y-1 px-3 py-2 text-sm">
-        <VueSwitch v-model="$shared.flashUpdates">
-          Highlight updates
-        </VueSwitch>
-        <div class="flex items-center space-x-1 text-xs opacity-50">
-          <VueIcon
-            icon="warning"
-            class="w-4 h-4 flex-none"
-          />
-          <span>Don't enable if you are sensitive to flashing</span>
-        </div>
-      </div>
-
-      <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
-    </SafeTeleport>
-
-    <SafeTeleport to="#header-end">
-      <VueButton
-        v-tooltip="{
-          content: $t('ComponentTree.select.tooltip'),
-          html: true
-        }"
-        class="icon-button flat"
-        icon-left="gps_fixed"
-        @click="startPickingComponent()"
-      />
-
-      <VueButton
-        v-tooltip="{
-          content: $t('ComponentTree.refresh.tooltip'),
-          html: true
-        }"
-        class="icon-button flat"
-        :class="{
-          'animate-icon': animateRefresh,
-        }"
-        icon-left="refresh"
-        @click="refresh()"
-      />
-    </SafeTeleport>
 
     <SafeTeleport to="#root">
       <div

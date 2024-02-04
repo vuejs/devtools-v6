@@ -47,14 +47,25 @@ export default defineComponent({
     >
       <template #left>
         <div class="h-full flex flex-col">
-          <div class="flex-none">
+          <div class="flex-none flex items-center border-b border-gray-200 dark:border-gray-800">
             <VueInput
               v-model="search"
               icon-left="search"
               placeholder="Filter devtools plugins..."
               select-all
-              class="w-full flat border-b border-gray-200 dark:border-gray-800"
+              class="flex-1 w-0 flat"
             />
+
+            <VueButton
+              :to="{
+                name: 'global-settings'
+              }"
+              icon-left="settings"
+              icon-right="arrow_forward"
+              class="flat"
+            >
+              Global settings
+            </VueButton>
           </div>
           <div class="overflow-y-auto">
             <PluginListItem
@@ -72,18 +83,6 @@ export default defineComponent({
         </div>
       </template>
     </SplitPane>
-
-    <SafeTeleport to="#header-end">
-      <VueButton
-        :to="{
-          name: 'global-settings'
-        }"
-        icon-left="settings"
-        class="flat"
-      >
-        Global settings
-      </VueButton>
-    </SafeTeleport>
   </div>
 </template>
 

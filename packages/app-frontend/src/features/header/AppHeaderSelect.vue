@@ -157,7 +157,7 @@ export default defineComponent({
 <template>
   <VueDropdown
     v-model="isShown"
-    placement="bottom-start"
+    :placement="orientation === 'landscape' ? 'right-start' : 'bottom-start'"
     :triggers="[]"
     :offset="[0, 0]"
     :delay="0"

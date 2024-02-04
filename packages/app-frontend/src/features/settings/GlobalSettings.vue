@@ -1,20 +1,49 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { supportsScreenshot } from '../timeline/composable/screenshot'
 
-// import NewTag from './NewTag.vue'
+type Tab = 'global' | 'components' | 'timeline'
 
-// export default {
-//   components: {
-//     NewTag
-//   }
-// }
-
-export default defineComponent({})
+const tab = ref<Tab>('global')
 </script>
 
 <template>
-  <div class="global-preferences">
-    <div class="preferences">
+  <div class="global-preferences p-6">
+    <nav class="flex items-center gap-2 pb-4">
+      <VueGroup
+        v-model="tab"
+        indicator
+      >
+        <VueGroupButton
+          value="global"
+          label="Global"
+          class="flat"
+        />
+        <VueGroupButton
+          value="components"
+          label="Components"
+          class="flat"
+        />
+        <VueGroupButton
+          value="timeline"
+          label="Timeline"
+          class="flat"
+        />
+      </VueGroup>
+
+      <VueButton
+        :to="{
+          name: 'plugins'
+        }"
+        icon-left="extension"
+        icon-right="arrow_forward"
+        class="flat"
+      >
+        Plugin settings
+      </VueButton>
+    </nav>
+
+    <div v-if="tab === 'global'" class="preferences flex flex-wrap gap-8">
       <VueFormField title="Theme">
         <VueGroup
           v-model="$shared.theme"
@@ -81,16 +110,80 @@ export default defineComponent({})
       </VueFormField>
     </div>
 
-    <SafeTeleport to="#header-end">
-      <VueButton
-        :to="{
-          name: 'plugins'
-        }"
-        icon-left="extension"
-        class="flat"
+    <div v-if="tab === 'components'" class="preferences flex flex-wrap gap-8">
+      <VueFormField
+        title="Component names"
       >
-        Plugin settings
-      </VueButton>
-    </SafeTeleport>
+        <VueGroup
+          v-model="$shared.componentNameStyle"
+        >
+          <VueGroupButton
+            value="original"
+            label="Original"
+          />
+          <VueGroupButton
+            value="class"
+            label="PascalCase"
+          />
+          <VueGroupButton
+            value="kebab"
+            label="kebab-case"
+          />
+        </VueGroup>
+      </VueFormField>
+
+      <VueFormField
+        title="Editable props"
+      >
+        <VueSwitch v-model="$shared.editableProps">
+          Enable
+        </VueSwitch>
+        <template #subtitle>
+          May print warnings in the console
+        </template>
+      </VueFormField>
+
+      <VueFormField
+        title="Highlight updates"
+      >
+        <VueSwitch v-model="$shared.flashUpdates">
+          Enable
+        </VueSwitch>
+        <template #subtitle>
+          Don't enable if you are sensitive to flashing
+        </template>
+      </VueFormField>
+    </div>
+
+    <div v-if="tab === 'timeline'" class="preferences flex flex-wrap gap-8">
+      <VueFormField
+        title="Time grid"
+      >
+        <VueSwitch v-model="$shared.timelineTimeGrid">
+          Enable
+        </VueSwitch>
+      </VueFormField>
+
+      <VueFormField
+        v-if="supportsScreenshot"
+        title="Screenshots"
+      >
+        <VueSwitch v-model="$shared.timelineScreenshots">
+          Enable
+        </VueSwitch>
+      </VueFormField>
+    </div>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.preferences {
+
+  .vue-ui-form-field {
+    > .wrapper > .content {
+      min-height: 32px;
+      justify-content: center;
+    }
+  }
+}
+</style>

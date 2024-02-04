@@ -337,7 +337,88 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="h-4 flex-none border-b border-gray-200 dark:border-gray-800 box-content" />
+          <div class="h-8 flex-none border-b border-gray-200 dark:border-gray-800 box-content flex items-center">
+            <VueDropdown>
+              <template #trigger>
+                <VueButton
+                  v-tooltip="'Select layers'"
+                  class="flat"
+                  icon-left="layers"
+                >
+                  {{ layers.length }} layer{{ layers.length === 1 ? '' : 's' }}
+                </VueButton>
+              </template>
+
+              <div
+                style="max-height: 250px;"
+                class="overflow-x-hidden overflow-y-auto"
+              >
+                <div class="flex flex-col">
+                  <VueSwitch
+                    v-for="layer of allLayers"
+                    :key="layer.id"
+                    :model-value="!isLayerHidden(layer)"
+                    class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
+                    @update:modelValue="value => setLayerHidden(layer, !value)"
+                  >
+                    <div class="flex items-center space-x-2 max-w-xs">
+                      <div
+                        class="flex-none w-3 h-3 rounded-full"
+                        :style="{
+                          backgroundColor: `#${layer.color.toString(16).padStart(6, '0')}`
+                        }"
+                      />
+
+                      <div class="flex-1 truncate">
+                        {{ layer.label }}
+                      </div>
+
+                      <PluginSourceIcon
+                        v-if="layer.pluginId"
+                        :plugin-id="layer.pluginId"
+                        class="flex-none"
+                      />
+                    </div>
+                  </VueSwitch>
+                </div>
+              </div>
+            </VueDropdown>
+
+            <VueButton
+              v-tooltip="'Clear all timelines'"
+              class="icon-button flat"
+              icon-left="delete_sweep"
+              @click="resetTimeline()"
+            />
+
+            <div class="flex-1" />
+
+            <VueDropdown
+              placement="bottom-end"
+            >
+              <template #trigger>
+                <VueButton
+                  icon-left="more_vert"
+                  class="icon-button flat"
+                />
+              </template>
+
+              <VueSwitch
+                v-model="$shared.timelineTimeGrid"
+                class="w-full px-3 py-1 extend-left"
+              >
+                Time grid
+              </VueSwitch>
+
+              <VueSwitch
+                v-if="supportsScreenshot"
+                v-model="$shared.timelineScreenshots"
+                class="w-full px-3 py-1 extend-left"
+              >
+                Screenshots
+              </VueSwitch>
+            </VueDropdown>
+          </div>
 
           <div
             ref="layersEl"
@@ -371,7 +452,7 @@ export default defineComponent({
         >
           <template #left>
             <div class="h-full flex flex-col select-none">
-              <div class="flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
+              <div class="h-8 flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
                 <VueButton
                   icon-left="arrow_left"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
@@ -449,78 +530,6 @@ export default defineComponent({
         </SplitPane>
       </template>
     </SplitPane>
-
-    <SafeTeleport to="#header-end">
-      <VueDropdown>
-        <template #trigger>
-          <VueButton
-            v-tooltip="'Select layers'"
-            class="icon-button flat"
-            icon-left="layers"
-          />
-        </template>
-
-        <div
-          style="max-height: 250px;"
-          class="overflow-x-hidden overflow-y-auto"
-        >
-          <div class="flex flex-col">
-            <VueSwitch
-              v-for="layer of allLayers"
-              :key="layer.id"
-              :model-value="!isLayerHidden(layer)"
-              class="extend-left px-2 py-1 hover:bg-green-100 dark:hover:bg-green-900"
-              @update:modelValue="value => setLayerHidden(layer, !value)"
-            >
-              <div class="flex items-center space-x-2 max-w-xs">
-                <div
-                  class="flex-none w-3 h-3 rounded-full"
-                  :style="{
-                    backgroundColor: `#${layer.color.toString(16).padStart(6, '0')}`
-                  }"
-                />
-
-                <div class="flex-1 truncate">
-                  {{ layer.label }}
-                </div>
-
-                <PluginSourceIcon
-                  v-if="layer.pluginId"
-                  :plugin-id="layer.pluginId"
-                  class="flex-none"
-                />
-              </div>
-            </VueSwitch>
-          </div>
-        </div>
-      </VueDropdown>
-
-      <VueButton
-        v-tooltip="'Clear all timelines'"
-        class="icon-button flat"
-        icon-left="delete_sweep"
-        @click="resetTimeline()"
-      />
-    </SafeTeleport>
-
-    <SafeTeleport to="#more-menu">
-      <VueSwitch
-        v-model="$shared.timelineTimeGrid"
-        class="w-full px-3 py-1 extend-left"
-      >
-        Time grid
-      </VueSwitch>
-
-      <VueSwitch
-        v-if="supportsScreenshot"
-        v-model="$shared.timelineScreenshots"
-        class="w-full px-3 py-1 extend-left"
-      >
-        Screenshots
-      </VueSwitch>
-
-      <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
-    </SafeTeleport>
 
     <AskScreenshotPermission
       v-if="askScreenshotPermission"

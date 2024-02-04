@@ -18,6 +18,7 @@ import {
 import { darkMode } from '@front/util/theme'
 import { useAppConnection } from './connection'
 import { showAppsSelector } from './header/header'
+import { useOrientation } from './layout/orientation'
 
 const chromeTheme = isChrome ? chrome.devtools.panels.themeName : undefined
 
@@ -72,10 +73,13 @@ export default defineComponent({
       }
     })
 
+    const { orientation } = useOrientation()
+
     return {
       isConnected,
       isInitializing,
       showAppsSelector,
+      orientation,
     }
   },
 })
@@ -83,9 +87,10 @@ export default defineComponent({
 
 <template>
   <div
-    class="app w-full h-full flex flex-col relative outline-none"
+    class="app w-full h-full flex relative outline-none"
     :class="{
-      'disconnected pointer-events-none': !isInitializing && !isConnected
+      'disconnected pointer-events-none': !isInitializing && !isConnected,
+      'flex-col': orientation === 'portrait',
     }"
     tabindex="0"
   >

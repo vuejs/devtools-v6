@@ -153,13 +153,13 @@ export default defineComponent({
 <template>
   <div
     ref="el"
-    class="h-4 bg-gray-200 dark:bg-black relative select-none"
+    class="h-6 bg-gray-200 dark:bg-gray-900 relative select-none"
   >
     <!-- Main Bar -->
     <div
-      class="absolute h-full top-0 bg-white dark:bg-gray-800 hover:bg-green-200 dark:hover:bg-green-800 cursor-move"
+      class="absolute h-full top-0 bg-green-200 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 cursor-move"
       :class="{
-        'bg-green-200 dark:bg-green-800': moving
+        'bg-green-100 dark:bg-green-800': moving
       }"
       :style="{
         left: `${(start - min) / (max - min) * 100}%`,
