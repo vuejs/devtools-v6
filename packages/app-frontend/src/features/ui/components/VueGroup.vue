@@ -76,11 +76,11 @@ export default defineComponent({
       setValue: (value) => (model.value = value),
     })
 
-    const rootEl = ref<null | HTMLElement>(null)
+    const root = ref<null | HTMLElement>(null)
 
     const updateIndicator = async () => {
       await nextTick()
-      const el = rootEl.value?.querySelector('.selected') as HTMLElement
+      const el = root.value?.querySelector('.selected') as HTMLElement
       if (!el) {
         indicatorStyle.value = null
         return
@@ -92,7 +92,7 @@ export default defineComponent({
         height: el.offsetHeight,
       }
       let parent = el.offsetParent as HTMLElement
-      while (parent && parent !== rootEl.value) {
+      while (parent && parent !== root.value) {
         offset.top += parent.offsetTop
         offset.left += parent.offsetLeft
         parent = parent.offsetParent as HTMLElement
@@ -122,7 +122,7 @@ export default defineComponent({
     })
 
     return {
-      rootEl,
+      root,
       indicatorStyle,
       updateIndicator,
     }
