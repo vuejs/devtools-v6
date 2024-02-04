@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, toRaw } from 'vue'
 import {
   BridgeEvents,
   isPlainObject,
@@ -297,14 +297,14 @@ export default defineComponent({
     logToConsole (level = 'log') {
       getBridge().send(BridgeEvents.TO_BACK_LOG, {
         level,
-        value: this.field.value,
+        value: toRaw(this.field.value),
         revive: true,
       })
     },
 
     executeCustomAction (index: number) {
       getBridge().send(BridgeEvents.TO_BACK_CUSTOM_STATE_ACTION, {
-        value: this.field.value,
+        value: toRaw(this.field.value),
         actionIndex: index,
       })
     },
@@ -324,10 +324,11 @@ export default defineComponent({
       }"
       class="self"
       placement="left"
-      :offset="[0, 24]"
-      @click.native="onClick"
-      @mouseenter.native="onContextMenuMouseEnter"
-      @mouseleave.native="onContextMenuMouseLeave"
+      :distance="0"
+      :skidding="24"
+      @click="onClick"
+      @mouseenter="onContextMenuMouseEnter"
+      @mouseleave="onContextMenuMouseLeave"
     >
       <span
         v-show="isExpandableType"
@@ -492,14 +493,14 @@ export default defineComponent({
 
           <!-- Context menu -->
           <VueDropdown
-            :open.sync="contextMenuOpen"
+            v-model="contextMenuOpen"
           >
-            <VueButton
-              slot="trigger"
-              icon-left="more_vert"
-              class="icon-button flat"
-            />
-
+            <template #trigger>
+              <VueButton
+                icon-left="more_vert"
+                class="icon-button flat"
+              />
+            </template>
             <div
               class="context-menu-dropdown"
               @mouseenter="onContextMenuMouseEnter"
@@ -626,11 +627,11 @@ export default defineComponent({
       user-select none
       width 20px
       height @width
-    .icon-button >>> .vue-ui-icon,
+    .icon-button :deep(.vue-ui-icon),
     .small-icon
       width 16px
       height @width
-    .warning >>> svg
+    .warning :deep(svg)
       fill $orange
   &:hover,
   &.force-toolbar
@@ -678,7 +679,7 @@ export default defineComponent({
   &.string, &.native
     color $red
   &.string
-    >>> span
+    :deep(span)
       color $black
       .vue-ui-dark-mode &
         color $red
@@ -686,7 +687,7 @@ export default defineComponent({
     color #999
   &.literal
     color $vividBlue
-  &.raw-boolean >>> .value-formatted-ouput
+  &.raw-boolean :deep(.value-formatted-ouput)
     width 36px
     display inline-block
   &.native.Error
@@ -709,7 +710,7 @@ export default defineComponent({
         content '>'
     &.type-function
       font-style italic
-      >>> span
+      :deep(span)
         color $vividBlue
         font-family dejavu sans mono, monospace
         .platform-mac &
@@ -720,11 +721,11 @@ export default defineComponent({
           color $purple
     &.type-component-definition
       color $green
-      >>> span
+      :deep(span)
         color $darkerGrey
     &.type-reference
         opacity 0.5
-      >>> .attr-title
+      :deep(.attr-title)
         color #800080
         .vue-ui-dark-mode &
           color #e36eec
@@ -781,7 +782,7 @@ export default defineComponent({
 .more
   width 20px
   height @width
-  >>> .vue-ui-icon
+  :deep(.vue-ui-icon)
     width 16px
     height @width
 </style>

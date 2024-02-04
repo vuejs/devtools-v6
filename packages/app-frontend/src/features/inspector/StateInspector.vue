@@ -1,7 +1,5 @@
 <script>
 import StateType from './StateType.vue'
-
-import Vue from 'vue'
 import { useDefer } from '@front/util/defer'
 import { getStorage, setStorage } from '@vue-devtools/shared-utils'
 
@@ -99,13 +97,13 @@ export default {
         this.setExpandToAll(!currentExpanded)
         return
       }
-      Vue.set(this.expandedState, dataType, !currentExpanded)
+      this.expandedState[dataType] = !currentExpanded
     },
 
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
         this.forceCollapse = value ? 'expand' : 'collapse'
-        Vue.set(this.expandedState, key, value)
+        this.expandedState[key] = value
       })
       this.$emit(value ? 'expand-all' : 'collapse-all')
       setStorage(STORAGE_COLLAPSE_ALL, !value)

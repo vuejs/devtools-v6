@@ -1,4 +1,4 @@
-import { computed, ref, set } from 'vue'
+import { computed, ref } from 'vue'
 import { PluginDescriptor } from '@vue/devtools-api'
 import { Bridge, BridgeEvents } from '@vue-devtools/shared-utils'
 import { getBridge } from '@front/features/bridge'
@@ -25,7 +25,7 @@ function getPlugins (appId: string) {
   let plugins = pluginsPerApp.value[appId]
   if (!plugins) {
     plugins = []
-    set(pluginsPerApp.value, appId, plugins)
+    pluginsPerApp.value[appId] = plugins
     // Read the property again to make it reactive
     plugins = pluginsPerApp.value[appId]
   }

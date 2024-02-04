@@ -17,6 +17,8 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "vue": "^2.7.10",
+    "vue-loader": "^15.7.1",
     "@types/node": "^13.9.1",
     "@types/webpack-env": "^1.15.1",
     "core-js": "^3.20.2",

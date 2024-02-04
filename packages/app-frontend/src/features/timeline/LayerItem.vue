@@ -27,7 +27,7 @@ export default defineComponent({
       default: false,
     },
   },
-
+  emits: ['select', 'hide'],
   setup (props, { emit }) {
     function select () {
       emit('select')
@@ -106,7 +106,7 @@ export default defineComponent({
           <PluginSourceIcon
             v-if="layer.pluginId"
             :plugin-id="layer.pluginId"
-            @click.native.stop
+            @click.stop
           />
         </div>
 

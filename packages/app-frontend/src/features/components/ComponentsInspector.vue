@@ -135,7 +135,7 @@ export default defineComponent({
       </template>
     </SplitPane>
 
-    <portal to="more-menu">
+    <SafeTeleport to="#more-menu">
       <div class="space-y-1 px-3 py-2 text-sm">
         <div>Component names:</div>
 
@@ -184,9 +184,9 @@ export default defineComponent({
       </div>
 
       <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
-    </portal>
+    </SafeTeleport>
 
-    <portal to="header-end">
+    <SafeTeleport to="#header-end">
       <VueButton
         v-tooltip="{
           content: $t('ComponentTree.select.tooltip'),
@@ -209,9 +209,9 @@ export default defineComponent({
         icon-left="refresh"
         @click="refresh()"
       />
-    </portal>
+    </SafeTeleport>
 
-    <portal to="root">
+    <SafeTeleport to="#root">
       <div
         v-if="pickingComponent"
         class="absolute inset-0 bg-white bg-opacity-75 dark:bg-black dark:bg-opacity-75 z-100 flex items-center justify-center"
@@ -233,25 +233,23 @@ export default defineComponent({
           </div>
         </div>
       </div>
-    </portal>
+    </SafeTeleport>
   </div>
 </template>
 
 <style lang="postcss" scoped>
 .search {
-  >>> {
-    .input {
-      height: 32px !important;
-    }
+  :deep(.input) {
+    height: 32px !important;
+  }
 
-    .content {
-      border: none !important;
-    }
+  :deep(.content) {
+    border: none !important;
   }
 }
 
 .animate-icon {
-  >>> .vue-ui-icon {
+  :deep(.vue-ui-icon) {
     animation: refresh 1s ease-out;
   }
 }

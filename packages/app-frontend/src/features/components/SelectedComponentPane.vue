@@ -23,7 +23,7 @@ export default defineComponent({
 
     // Auto scroll
     const { selectedComponentId } = selectedComponent
-    const inspector = ref()
+    const inspector = ref<typeof StateInspector>()
     watch(selectedComponentId, () => {
       if (inspector.value?.$el) {
         inspector.value.$el.scrollTop = 0
@@ -78,7 +78,7 @@ export default defineComponent({
         :triggers="[]"
         :delay="0"
         class="flex items-baseline cursor-pointer"
-        @click.native="copyName()"
+        @click="copyName()"
       >
         <span class="text-gray-500">&lt;</span>
         <span class="text-green-500">

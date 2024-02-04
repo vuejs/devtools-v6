@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue'
+import { ref, computed, defineComponent } from 'vue'
 import { SharedData } from '@vue-devtools/shared-utils'
 import { useOrientation } from '@front/features/layout/orientation'
 
@@ -20,7 +20,7 @@ export default defineComponent({
       default: null,
     },
   },
-
+  emits: ['select'],
   setup (props, { emit }) {
     /* Open/Close */
 
@@ -156,11 +156,10 @@ export default defineComponent({
 
 <template>
   <VueDropdown
+    v-model="isShown"
     placement="bottom-start"
     :triggers="[]"
     :offset="[0, 0]"
-    :shown.sync="isShown"
-    :show-group="`header-select-${_uid}`"
     :delay="0"
     :auto-hide="false"
     @apply-show="isShowApplied = true"
@@ -241,18 +240,18 @@ export default defineComponent({
     @apply bg-gray-700 text-gray-100 !important;
   }
 
-  >>> svg {
+  :deep(svg) {
     fill: currentColor !important;
   }
 }
 
-.vue-ui-dropdown-button /deep/ {
+.vue-ui-dropdown-button {
   min-height: 32px;
   height: auto;
   padding-top: 6px;
   padding-bottom: 6px;
 
-  .default-slot {
+  :deep(.default-slot) {
     flex: 1;
   }
 }

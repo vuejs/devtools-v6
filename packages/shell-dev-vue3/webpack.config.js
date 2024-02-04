@@ -1,6 +1,4 @@
 const path = require('path')
-const { VueLoaderPlugin } = require('vue-loader')
-const vueLoaderPath = require.resolve('vue-loader')
 const openInEditor = require('launch-editor-middleware')
 const { createConfig } = require('@vue-devtools/build-tools')
 
@@ -18,19 +16,7 @@ module.exports = createConfig({
     filename: '[name].js',
   },
   resolve: {
-    alias: {
-      vue$: require.resolve('vue/dist/vue.esm-bundler.js'),
-    },
     symlinks: false,
-  },
-  module: {
-    rules: [
-      {
-        test: /\.vue$/,
-        loader: vueLoaderPath,
-        options: {},
-      },
-    ],
   },
   devServer: {
     port: 8090,
@@ -49,5 +35,3 @@ module.exports = createConfig({
     },
   },
 })
-
-module.exports.plugins[0] = new VueLoaderPlugin()

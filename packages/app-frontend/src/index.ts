@@ -15,7 +15,7 @@ export { setAppConnected } from './features/connection'
 export async function initDevTools (shell: Shell) {
   await initStorage()
   const app = createApp()
-  app.$mount('#app')
+  app.mount('#app')
   connectApp(app, shell)
   shell.onReload(() => {
     setAppConnected(false)
