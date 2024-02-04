@@ -64,7 +64,7 @@ export default defineComponent({
               icon-right="arrow_forward"
               class="flat"
             >
-              Global settings
+              Settings
             </VueButton>
           </div>
           <div class="overflow-y-auto">

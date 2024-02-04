@@ -93,28 +93,6 @@ const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', 
       </VueFormField>
 
       <VueFormField
-        title="Performance monitoring"
-      >
-        <VueSwitch v-model="$shared.performanceMonitoringEnabled">
-          Enable
-        </VueSwitch>
-        <template #subtitle>
-          Turn off if your app is slowed down
-        </template>
-      </VueFormField>
-
-      <VueFormField
-        title="Update tracking"
-      >
-        <VueSwitch v-model="$shared.trackUpdates">
-          Enable
-        </VueSwitch>
-        <template #subtitle>
-          Turn off if your app is slowed down
-        </template>
-      </VueFormField>
-
-      <VueFormField
         title="Debugging info"
       >
         <VueSwitch v-model="$shared.debugInfo">
@@ -143,6 +121,28 @@ const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', 
             label="kebab-case"
           />
         </VueGroup>
+      </VueFormField>
+
+      <VueFormField
+        title="Performance monitoring"
+      >
+        <VueSwitch v-model="$shared.performanceMonitoringEnabled">
+          Enable
+        </VueSwitch>
+        <template #subtitle>
+          Turn off if your app is slowed down
+        </template>
+      </VueFormField>
+
+      <VueFormField
+        title="Update tracking"
+      >
+        <VueSwitch v-model="$shared.trackUpdates">
+          Enable
+        </VueSwitch>
+        <template #subtitle>
+          Turn off if your app is slowed down
+        </template>
       </VueFormField>
 
       <VueFormField

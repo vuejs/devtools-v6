@@ -174,6 +174,24 @@ export default defineComponent({
               </div>
 
               <div class="space-y-1 px-3 py-2 text-sm">
+                <VueSwitch v-model="$shared.performanceMonitoringEnabled">
+                  Performance monitoring
+                </VueSwitch>
+                <div class="flex items-center space-x-1 text-xs opacity-50">
+                  <span>Turn off if your app is slowed down</span>
+                </div>
+              </div>
+
+              <div class="space-y-1 px-3 py-2 text-sm">
+                <VueSwitch v-model="$shared.trackUpdates">
+                  Update tracking
+                </VueSwitch>
+                <div class="flex items-center space-x-1 text-xs opacity-50">
+                  <span>Turn off if your app is slowed down</span>
+                </div>
+              </div>
+
+              <div class="space-y-1 px-3 py-2 text-sm">
                 <VueSwitch v-model="$shared.editableProps">
                   Editable props
                 </VueSwitch>
