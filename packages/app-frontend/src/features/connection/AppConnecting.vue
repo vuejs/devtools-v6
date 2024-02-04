@@ -1,5 +1,5 @@
 <template>
-  <div class="app-connecting">
+  <div class="app-connecting w-full h-full flex items-center justify-center bg-white dark:bg-gray-800">
     <div class="animation-outer">
       <div class="animation-inner">
         <img
@@ -13,17 +13,6 @@
 </template>
 
 <style lang="stylus" scoped>
-.app-connecting
-  width 100%
-  height 100%
-  display flex
-  align-items center
-  justify-content center
-  background white
-
-  .vue-ui-dark-mode &
-    background $vue-ui-color-almost-black
-
 .animation-inner
   padding 28px 24px 16px
   background rgba($vue-ui-color-primary, .1)

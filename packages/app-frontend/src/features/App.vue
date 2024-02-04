@@ -80,6 +80,7 @@ export default defineComponent({
       isInitializing,
       showAppsSelector,
       orientation,
+      isChrome,
     }
   },
 })
@@ -105,7 +106,7 @@ export default defineComponent({
     />
 
     <template v-else>
-      <AppHeader class="flex-none relative z-10 border-b border-gray-200 dark:border-gray-800" />
+      <AppHeader class="flex-none relative z-10 border-b border-gray-200 dark:border-gray-700" />
 
       <SplitPane
         save-id="app-select-pane"

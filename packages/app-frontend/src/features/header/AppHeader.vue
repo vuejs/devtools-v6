@@ -133,7 +133,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="flex items-center border-r border-gray-200 dark:border-gray-800 p-0.5"
+  <div class="flex items-center border-r border-gray-200 dark:border-gray-700 p-0.5"
     :class="{
       'flex-col': orientation === 'landscape',
     }"
@@ -218,7 +218,7 @@ export default defineComponent({
         Devtools plugins
       </VueDropdownButton>
 
-      <div class="border-t border-gray-200 dark:border-gray-800 my-1" />
+      <div class="border-t border-gray-200 dark:border-gray-700 my-1" />
 
       <VueDropdownButton
         href="https://devtools.vuejs.org"
@@ -255,7 +255,7 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .vue-ui-group :deep(.indicator) {
-  @apply !p-0.5;
+  @apply !p-px;
   .content {
     @apply !border !border-green-500/30 rounded-md bg-green-500/10;
   }

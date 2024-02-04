@@ -214,7 +214,7 @@ export default defineComponent({
 
         <div
           v-if="$shared.showMenuScrollTip"
-          class="text-xs flex items-center space-x-2 text-gray-500 pl-4 pr-1 py-1 border-t border-gray-200 dark:border-gray-800 group"
+          class="text-xs flex items-center space-x-2 text-gray-500 pl-4 pr-1 py-1 border-t border-gray-200 dark:border-gray-700 group"
         >
           <span>Scroll to switch</span>
           <VueIcon icon="mouse" />

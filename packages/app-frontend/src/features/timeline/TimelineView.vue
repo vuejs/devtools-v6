@@ -254,7 +254,7 @@ export default defineComponent({
 
     function updateBackground () {
       if (nonReactiveState.darkMode.value) {
-        app && (app.renderer.backgroundColor = 0x0b1015)
+        app && (app.renderer.backgroundColor = 0x262626)
       } else {
         app && (app.renderer.backgroundColor = 0xffffff)
       }

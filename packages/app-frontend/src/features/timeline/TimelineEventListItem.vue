@@ -35,10 +35,10 @@ export default defineComponent({
 
 <template>
   <div
-    class="event border-gray-100 dark:border-gray-900 border-b flex items-center space-x-2 pl-3 pr-2 text-xs cursor-pointer select-none"
+    class="event flex items-center space-x-2 pl-3 pr-2 text-xs cursor-pointer select-none"
     :class="{
       'inspected bg-green-500 text-white': isInspected,
-      'hover:bg-blue-100 dark:hover:bg-blue-900 text-bluegray-800 dark:text-bluegray-200': !isInspected
+      'hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-800 dark:text-gray-200': !isInspected
     }"
     @click="$emit('inspect')"
     @dblclick="$emit('select')"

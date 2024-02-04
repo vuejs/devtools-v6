@@ -155,7 +155,7 @@ export default defineComponent({
       padding 0 9px 0 21px
 
   .data-type
-    color $blueishGrey
+    color theme('colors.gray.600')
     position relative
     cursor pointer
     border-radius 3px
@@ -165,7 +165,7 @@ export default defineComponent({
     user-select none
 
     .vue-ui-dark-mode &
-      color lighten(#486887, 30%)
+      color theme('colors.gray.400')
 
     .arrow
       transition transform .1s ease

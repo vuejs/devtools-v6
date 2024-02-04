@@ -361,7 +361,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="h-8 flex-none border-b border-gray-200 dark:border-gray-800 flex items-center">
+          <div class="h-8 flex-none border-b border-gray-200 dark:border-gray-700 flex items-center">
             <VueDropdown>
               <template #trigger>
                 <VueButton
@@ -490,7 +490,7 @@ export default defineComponent({
         >
           <template #left>
             <div class="h-full flex flex-col select-none">
-              <div class="h-8 flex items-center flex-none border-b border-gray-200 dark:border-gray-800">
+              <div class="h-8 flex items-center flex-none border-b border-gray-200 dark:border-gray-700">
                 <VueButton
                   icon-left="arrow_left"
                   class="flex-none w-4 h-4 p-0 flat zoom-btn"
@@ -533,7 +533,7 @@ export default defineComponent({
               <div class="absolute top-0 left-0 w-full pointer-events-none flex items-center justify-center">
                 <div
                   v-if="formattedCursorTime"
-                  class="text-gray-700 dark:text-gray-300 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 px-1 py-0.5 rounded-full text-2xs font-mono leading-none mt-1 flex items-center space-x-0.5"
+                  class="text-gray-700 dark:text-gray-300 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 px-1 py-0.5 rounded-full text-2xs font-mono leading-none mt-1 flex items-center space-x-0.5"
                 >
                   <VueIcon
                     icon="schedule"

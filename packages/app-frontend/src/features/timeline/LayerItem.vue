@@ -55,7 +55,7 @@ export default defineComponent({
     @click="select()"
   >
     <div
-      class="border-b border-gray-200 dark:border-gray-800"
+      class="border-b border-gray-200 dark:border-gray-700"
       :style="{
         height: `${(layer.height + 1) * 16}px`
       }"

@@ -25,7 +25,7 @@ export default defineComponent({
 
 <template>
   <div class="bg-white/50 dark:bg-black/50 p-4 flex items-center justify-center">
-    <div class="bg-white dark:bg-black rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 h-full w-[620px] max-w-full flex flex-col">
+    <div class="bg-white dark:bg-black rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 h-full w-[620px] max-w-full flex flex-col">
       <div
         ref="content"
         class="flex-1 overflow-auto p-4"
@@ -249,7 +249,7 @@ img {
   }
 
   &:not(.logo) {
-    @apply border border-gray-200 dark:border-gray-800 rounded-md;
+    @apply border border-gray-200 dark:border-gray-700 rounded-md;
   }
 }
 

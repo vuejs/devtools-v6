@@ -164,7 +164,7 @@ export default defineComponent({
       class="relative top-0 left-0 overflow-hidden"
       :class="{
         'pointer-events-none': dragging,
-        'border-r border-gray-200 dark:border-gray-800': orientation === 'landscape' && !leftCollapsed && !rightCollapsed,
+        'border-r border-gray-200 dark:border-gray-700': orientation === 'landscape' && !leftCollapsed && !rightCollapsed,
       }"
       :style="leftStyle"
     >
@@ -194,7 +194,7 @@ export default defineComponent({
       >
         <button
           v-tooltip="rightCollapsed ? `Expand ${orientation === 'landscape' ? 'Right' : 'Bottom'} pane` : `Collapse ${orientation === 'landscape' ? 'Left' : 'Top'} pane`"
-          class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center w-2.5 h-6 rounded overflow-hidden pointer-events-auto opacity-70 hover:opacity-100"
+          class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 flex items-center justify-center w-2.5 h-6 rounded overflow-hidden pointer-events-auto opacity-70 hover:opacity-100"
           :class="{
             'rounded-r-none border-r-0': orientation === 'landscape',
             'rounded-b-none border-b-0': orientation === 'portrait',
@@ -212,7 +212,7 @@ export default defineComponent({
       class="relative bottom-0 right-0"
       :class="{
         'pointer-events-none': dragging,
-        'border-t border-gray-200 dark:border-gray-800': orientation === 'portrait'
+        'border-t border-gray-200 dark:border-gray-700': orientation === 'portrait'
       }"
       :style="rightStyle"
     >
@@ -226,7 +226,7 @@ export default defineComponent({
       >
         <button
           v-tooltip="leftCollapsed ? `Expand ${orientation === 'landscape' ? 'Left' : 'Top'} pane` : `Collapse ${orientation === 'landscape' ? 'Right' : 'Bottom'} pane`"
-          class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center w-2.5 h-6 rounded overflow-hidden pointer-events-auto opacity-70 hover:opacity-100"
+          class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 flex items-center justify-center w-2.5 h-6 rounded overflow-hidden pointer-events-auto opacity-70 hover:opacity-100"
           :class="{
             'rounded-l-none border-l-0': orientation === 'landscape',
             'rounded-t-none border-t-0': orientation === 'portrait',

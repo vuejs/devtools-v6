@@ -88,7 +88,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="border-b border-gray-200 dark:border-gray-800 flex items-center pr-2 h-8 box-content">
+          <div class="border-b border-gray-200 dark:border-gray-700 flex items-center pr-2 h-8 box-content">
             <VueInput
               v-model="inspector.treeFilter"
               icon-left="search"

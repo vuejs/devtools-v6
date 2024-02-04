@@ -47,7 +47,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="h-full flex flex-col">
-          <div class="flex-none flex items-center border-b border-gray-200 dark:border-gray-800">
+          <div class="flex-none flex items-center border-b border-gray-200 dark:border-gray-700">
             <VueInput
               v-model="search"
               icon-left="search"

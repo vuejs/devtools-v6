@@ -105,7 +105,7 @@ export default defineComponent({
     >
       <template #left>
         <div class="flex flex-col h-full">
-          <div class="flex items-center border-b border-gray-200 dark:border-gray-800">
+          <div class="flex items-center border-b border-gray-200 dark:border-gray-700">
             <VueInput
               ref="treeFilterInput"
               v-model="treeFilter"

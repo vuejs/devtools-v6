@@ -1,3 +1,114 @@
+html, body, #app {
+  @apply dark:!bg-gray-800;
+}
+
+.vue-ui-high-contrast {
+  #app {
+    @apply !bg-black;
+  }
+}
+
+/* Poppers */
+
 .v-popper__popper.v-popper--theme-tooltip code {
   @apply bg-gray-500/50 rounded px-1 text-[11px] font-mono;
+}
+
+.v-popper--theme-dropdown {
+  .vue-ui-dark-mode & {
+    .v-popper__inner,
+    .v-popper__arrow-outer {
+      @apply border-gray-900;
+    }
+
+    .v-popper__inner {
+      @apply bg-gray-800;
+    }
+
+    .v-popper__arrow-inner {
+      @apply border-gray-800;
+    }
+  }
+}
+
+/* Scrollbars */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track-piece {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-track:hover {
+  @apply bg-gray-600/5 dark:bg-gray-600/10;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 hover:bg-gray-600 border-[3px] border-transparent bg-clip-padding rounded dark:bg-gray-700 dark:hover:bg-gray-500;
+}
+
+.vue-ui-dark-mode {
+  scrollbar-color: theme('colors.gray.800') theme('colors.black');
+
+  .selectable-item {
+    @apply bg-gray-800 hover:bg-gray-900;
+
+    &.selected {
+      @apply hover:bg-green-600;
+    }
+  }
+}
+
+/* Buttons */
+
+.vue-ui-button:not(.flat):not(.vue-ui-dropdown-button) {
+  @apply dark:bg-gray-700 dark:hover:!bg-gray-600;
+}
+
+.vue-ui-button.flat,
+.vue-ui-dropdown-button {
+  @apply hover:!bg-green-500/30;
+}
+
+.vue-ui-dark-mode {
+  .vue-ui-group {
+    .vue-ui-button:not(.flat) {
+      @apply !bg-gray-700 hover:!bg-gray-600;
+
+      &.selected {
+        @apply !bg-green-700;
+      }
+    }
+  }
+}
+
+/* Switch */
+
+.vue-ui-dark-mode {
+  .vue-ui-switch {
+    > .content > .wrapper {
+      @apply bg-gray-700;
+    }
+    &.selected {
+      > .content > .wrapper {
+        @apply bg-green-600;
+      }
+    }
+  }
+}
+
+/* Tab */
+
+.vue-ui-dark-mode {
+  .vue-ui-group {
+    .indicator .content {
+      @apply !border-b-green-500;
+    }
+    .vue-ui-button.selected {
+      @apply text-green-500;
+    }
+  }
 }

@@ -251,7 +251,7 @@ colors($color)
           fill rgba($color, .8)
 
 .vue-ui-input
-  $lightened = $vue-ui-gray-500
+  $lightened = theme('colors.gray.500')
   display inline-block
   vertical-align middle
   box-sizing border-box
@@ -268,7 +268,7 @@ colors($color)
     transition background .3s
     position relative
     .vue-ui-dark-mode &
-      border-color $vue-ui-gray-700
+      border-color theme('colors.gray.700')
       color $vue-ui-white
 
     > .input-wrapper
