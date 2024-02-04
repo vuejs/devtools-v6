@@ -227,7 +227,7 @@ function replacerForInternal (key) {
       // special handling of native type
       return `[native RegExp ${RegExp.prototype.toString.call(val)}]`
     } else if (proto === '[object Date]') {
-      return `[native Date ${Date.prototype.toString.call(val)}]`
+      return getCustomDateDetails(val)
     } else if (proto === '[object Error]') {
       return `[native Error ${val.message}<>${val.stack}]`
     } else if (val.state && val._vm) {
@@ -338,6 +338,21 @@ export function getCustomBigIntDetails (val) {
       type: 'bigint',
       display: `BigInt(${stringifiedBigInt})`,
       value: stringifiedBigInt,
+    },
+  }
+}
+
+export function getCustomDateDetails (val: Date) {
+  const dateCopy = new Date(val.getTime())
+  dateCopy.setMinutes(dateCopy.getMinutes() - dateCopy.getTimezoneOffset())
+
+  const displayedTime = Date.prototype.toString.call(val)
+  return {
+    _custom: {
+      type: 'date',
+      display: displayedTime,
+      value: dateCopy.toISOString().slice(0, -1),
+      skipSerialize: true,
     },
   }
 }
@@ -512,6 +527,8 @@ export function revive (val) {
       return reviveSet(val)
     } else if (custom.type === 'bigint') {
       return BigInt(custom.value)
+    } else if (custom.type === 'date') {
+      return new Date(custom.value)
     } else if (custom._reviveId) {
       return reviveCache.read(custom._reviveId)
     } else {
