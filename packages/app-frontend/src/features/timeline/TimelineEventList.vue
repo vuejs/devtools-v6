@@ -234,6 +234,7 @@ export default defineComponent({
     </div>
 
     <RecycleScroller
+      :key="tabId"
       ref="scroller"
       :items="filteredEvents"
       :item-size="itemHeight"
