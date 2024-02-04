@@ -73,7 +73,7 @@ async function createAppRecord (options: AppRecordOptions, backend: DevtoolsBack
       instanceMap: new Map(),
       rootInstance,
       perfGroupIds: new Map(),
-      iframe: isBrowser && document !== el.ownerDocument ? el.ownerDocument?.location?.pathname : null,
+      iframe: isBrowser && document !== el?.ownerDocument ? el?.ownerDocument?.location?.pathname : null,
       meta: options.meta ?? {},
     }
 
