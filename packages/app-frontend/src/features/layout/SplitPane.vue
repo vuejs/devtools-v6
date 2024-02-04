@@ -1,7 +1,7 @@
 <script lang="ts">
 import { ref, computed, defineComponent, PropType, watch } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { useOrientation } from './orientation'
-import { useSavedRef } from '@front/util/reactivity'
 
 export default defineComponent({
   props: {
@@ -45,19 +45,9 @@ export default defineComponent({
   setup (props, { emit }) {
     const { orientation } = useOrientation()
 
-    const split = ref(props.defaultSplit)
-    const leftCollapsed = ref(false)
-    const rightCollapsed = ref(false)
-
-    if (props.saveId) {
-      useSavedRef(split, `split-pane-${props.saveId}`)
-      if (props.collapsableLeft) {
-        useSavedRef(leftCollapsed, `split-pane-collapsed-left-${props.saveId}`)
-      }
-      if (props.collapsableRight) {
-        useSavedRef(rightCollapsed, `split-pane-collapsed-right-${props.saveId}`)
-      }
-    }
+    const split = props.saveId ? useLocalStorage(`split-pane-${props.saveId}`, props.defaultSplit) : ref(props.defaultSplit)
+    const leftCollapsed = props.saveId ? useLocalStorage(`split-pane-collapsed-left-${props.saveId}`, false) : ref(false)
+    const rightCollapsed = props.saveId ? useLocalStorage(`split-pane-collapsed-right-${props.saveId}`, false) : ref(false)
 
     watch(leftCollapsed, value => {
       emit('left-collapsed', value)

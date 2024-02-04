@@ -8,7 +8,8 @@ import TimelineEventList from './TimelineEventList.vue'
 import TimelineEventInspector from './TimelineEventInspector.vue'
 import AskScreenshotPermission from './AskScreenshotPermission.vue'
 
-import { computed, onMounted, ref, watch, defineComponent, onUnmounted } from 'vue'
+import { computed, onMounted, ref, watch, defineComponent, onUnmounted, nextTick } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { getStorage, SharedData } from '@vue-devtools/shared-utils'
 import { onSharedDataChange } from '@front/util/shared-data'
 import { formatTime } from '@front/util/format'
@@ -297,6 +298,27 @@ export default defineComponent({
       }
     })
 
+    // Layout settings
+
+    const hideTimelineCanvas = useLocalStorage('split-pane-collapsed-left-timeline-right', false)
+    const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', false)
+
+    // We shouldn't hide both at the same time
+    watch(() => [hideTimelineCanvas.value, hideEvents.value], ([a, b], old) => {
+      if (a && a === b) {
+        nextTick(() => {
+          if (old?.[0]) {
+            hideTimelineCanvas.value = false
+          } else {
+            hideEvents.value = false
+          }
+        })
+      }
+    }, {
+      immediate: true,
+      deep: true,
+    })
+
     return {
       fontsLoaded,
       startTime,
@@ -322,6 +344,8 @@ export default defineComponent({
       zoomOut,
       moveLeft,
       moveRight,
+      hideTimelineCanvas,
+      hideEvents,
     }
   },
 })
@@ -402,6 +426,20 @@ export default defineComponent({
                   class="icon-button flat"
                 />
               </template>
+
+              <VueSwitch
+                v-model="hideTimelineCanvas"
+                class="w-full px-3 py-1 extend-left"
+              >
+                Hide timeline canvas
+              </VueSwitch>
+
+              <VueSwitch
+                v-model="hideEvents"
+                class="w-full px-3 py-1 extend-left"
+              >
+                Hide events explorer
+              </VueSwitch>
 
               <VueSwitch
                 v-model="$shared.timelineTimeGrid"

@@ -1,10 +1,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { supportsScreenshot } from '../timeline/composable/screenshot'
 
 type Tab = 'global' | 'components' | 'timeline'
 
 const tab = ref<Tab>('global')
+
+const hideAppSelector = useLocalStorage('split-pane-collapsed-left-app-select-pane', false)
+const hideTimelineCanvas = useLocalStorage('split-pane-collapsed-left-timeline-right', false)
+const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', false)
 </script>
 
 <template>
@@ -66,6 +71,14 @@ const tab = ref<Tab>('global')
             label="High contrast"
           />
         </VueGroup>
+      </VueFormField>
+
+      <VueFormField
+        title="Main layout"
+      >
+        <VueSwitch v-model="hideAppSelector">
+          Collapse app selector
+        </VueSwitch>
       </VueFormField>
 
       <VueFormField
@@ -156,6 +169,17 @@ const tab = ref<Tab>('global')
     </div>
 
     <div v-if="tab === 'timeline'" class="preferences flex flex-wrap gap-8">
+      <VueFormField
+        title="Layout"
+      >
+        <VueSwitch v-model="hideTimelineCanvas">
+          Hide timeline canvas
+        </VueSwitch>
+        <VueSwitch v-model="hideEvents">
+          Hide events explorer
+        </VueSwitch>
+      </VueFormField>
+
       <VueFormField
         title="Time grid"
       >
