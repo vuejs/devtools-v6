@@ -416,6 +416,18 @@ export default defineComponent({
             </VueDropdown>
 
             <VueButton
+              v-tooltip="$shared.timelineRecording ? 'Stop recording' : 'Start recording'"
+              class="icon-button flat"
+              :class="{
+                'recording-btn': $shared.timelineRecording,
+              }"
+              icon-left="fiber_manual_record"
+              @click="$shared.timelineRecording = !$shared.timelineRecording"
+            >
+              <div v-if="$shared.timelineRecording" class="absolute inset-2.5 rounded-full recording-shadow" />
+            </VueButton>
+
+            <VueButton
               v-tooltip="'Clear all timelines'"
               class="icon-button flat"
               icon-left="delete_sweep"
@@ -423,6 +435,10 @@ export default defineComponent({
             />
 
             <div class="flex-1" />
+
+            <div v-if="!$shared.timelineRecording" class="text-gray-500 dark:text-gray-400 text-xs px-2">
+              Not recording
+            </div>
 
             <VueDropdown
               placement="bottom-end"
@@ -594,5 +610,19 @@ export default defineComponent({
   :deep(.vue-ui-icon) {
     @apply w-3.5 h-3.5 mr-0 left-0 right-0 !important;
   }
+}
+
+.recording-btn {
+  :deep(.vue-ui-icon) {
+    @apply animate-pulse duration-1000;
+
+    svg {
+      fill: theme('colors.red.500') !important;
+    }
+  }
+}
+
+.recording-shadow {
+  box-shadow: theme('colors.red.500') 0 0 8px;
 }
 </style>

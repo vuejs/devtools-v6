@@ -138,6 +138,9 @@ export async function sendTimelineLayers(ctx: BackendContext) {
 }
 
 export async function addTimelineEvent(options: TimelineEventOptions, app: App, ctx: BackendContext) {
+  if (!SharedData.timelineRecording) {
+    return
+  }
   const appId = app ? getAppRecordId(app) : null
   const isAllApps = options.all || !app || appId == null
 
@@ -195,6 +198,9 @@ export async function clearTimeline(ctx: BackendContext) {
 }
 
 export async function sendTimelineEventData(id: ID, ctx: BackendContext) {
+  if (!SharedData.timelineRecording) {
+    return
+  }
   let data = null
   const eventData = ctx.timelineEventMap.get(id)
   if (eventData) {
@@ -224,6 +230,9 @@ export function removeLayersForApp(app: App, ctx: BackendContext) {
 }
 
 export function sendTimelineLayerEvents(appId: string, layerId: string, ctx: BackendContext) {
+  if (!SharedData.timelineRecording) {
+    return
+  }
   const app = ctx.appRecords.find(ar => ar.id === appId)?.options.app
   if (!app) {
     return

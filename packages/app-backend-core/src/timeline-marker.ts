@@ -1,10 +1,13 @@
 import type { BackendContext, TimelineMarker } from '@vue-devtools/app-backend-api'
-import { BridgeEvents } from '@vue-devtools/shared-utils'
+import { BridgeEvents, SharedData } from '@vue-devtools/shared-utils'
 import type { TimelineMarkerOptions } from '@vue/devtools-api'
 import { isPerformanceSupported } from '@vue/devtools-api'
 import { dateThreshold, perfTimeDiff } from './timeline'
 
 export async function addTimelineMarker(options: TimelineMarkerOptions, ctx: BackendContext) {
+  if (!SharedData.timelineRecording) {
+    return
+  }
   if (!ctx.currentAppRecord) {
     options.all = true
   }
@@ -20,6 +23,9 @@ export async function addTimelineMarker(options: TimelineMarkerOptions, ctx: Bac
 }
 
 export async function sendTimelineMarkers(ctx: BackendContext) {
+  if (!SharedData.timelineRecording) {
+    return
+  }
   if (!ctx.currentAppRecord) {
     return
   }
