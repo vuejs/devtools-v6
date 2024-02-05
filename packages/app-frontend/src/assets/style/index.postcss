@@ -112,3 +112,15 @@ html, body, #app {
     }
   }
 }
+
+/* Arrows */
+
+.arrow {
+  @apply inline-block w-0 h-0 transition-transform duration-150 ease-out text-gray-500;
+
+  &.right {
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid currentColor;
+  }
+}
