@@ -40,9 +40,8 @@ export function layerFactory(options: LayerFromBackend): Layer {
 
 export function getLayers(appId: string) {
   let layers = layersPerApp.value[appId]
-  if (!layers) {
-    layers = []
-    layersPerApp.value[appId] = layers
+  if (!layers || !Array.isArray(layers)) {
+    layersPerApp.value[appId] = []
     layers = layersPerApp.value[appId]
   }
   return layers
@@ -50,9 +49,8 @@ export function getLayers(appId: string) {
 
 function getHiddenLayers(appId: string) {
   let layers = hiddenLayersPerApp.value[appId]
-  if (!layers) {
-    layers = []
-    hiddenLayersPerApp.value[appId] = layers
+  if (!layers || !Array.isArray(layers)) {
+    hiddenLayersPerApp.value[appId] = []
     layers = hiddenLayersPerApp.value[appId]
   }
   return layers
