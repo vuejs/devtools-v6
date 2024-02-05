@@ -407,15 +407,19 @@ async function connect() {
     await addPreviouslyRegisteredPlugins(ctx)
   }
   catch (e) {
-    console.error(`Error adding previously registered plugins:`)
-    console.error(e)
+    if (SharedData.debugInfo) {
+      console.error(`Error adding previously registered plugins:`)
+      console.error(e)
+    }
   }
   try {
     await addQueuedPlugins(ctx)
   }
   catch (e) {
-    console.error(`Error adding queued plugins:`)
-    console.error(e)
+    if (SharedData.debugInfo) {
+      console.error(`Error adding queued plugins:`)
+      console.error(e)
+    }
   }
 
   hook.on(HookEvents.SETUP_DEVTOOLS_PLUGIN, async (pluginDescriptor: PluginDescriptor, setupFn: SetupFunction) => {
@@ -450,8 +454,10 @@ async function connect() {
     }, ctx)
   }
   catch (e) {
-    console.error(`Error while adding devtools connected timeline marker:`)
-    console.error(e)
+    if (SharedData.debugInfo) {
+      console.error(`Error while adding devtools connected timeline marker:`)
+      console.error(e)
+    }
   }
 }
 
@@ -589,10 +595,12 @@ function connectBridge() {
         await action()
       }
       catch (e) {
-        console.error(e)
+        if (SharedData.debugInfo) {
+          console.error(e)
+        }
       }
     }
-    else {
+    else if (SharedData.debugInfo) {
       console.warn(`Couldn't revive action ${actionIndex} from`, value)
     }
   })

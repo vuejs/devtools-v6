@@ -272,8 +272,10 @@ export function _legacy_getAndRegisterApps(ctx: BackendContext, clear = false) {
       })
     }
     catch (e) {
-      console.error(`Error scanning for legacy apps:`)
-      console.error(e)
+      if (SharedData.debugInfo) {
+        console.error(`Error scanning for legacy apps:`)
+        console.error(e)
+      }
     }
   }, 0)
 }

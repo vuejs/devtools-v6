@@ -1,4 +1,4 @@
-import { PluginPermission, hasPluginPermission } from '@vue-devtools/shared-utils'
+import { PluginPermission, SharedData, hasPluginPermission } from '@vue-devtools/shared-utils'
 import type { HookHandler, HookPayloads, Hookable } from '@vue/devtools-api'
 import { Hooks } from '@vue/devtools-api'
 import type { BackendContext } from './backend-context'
@@ -59,8 +59,10 @@ export class DevtoolsHookable implements Hookable<BackendContext> {
           await handler(payload, ctx)
         }
         catch (e) {
-          console.error(`An error occurred in hook '${eventType}'${plugin ? ` registered by plugin '${plugin.descriptor.id}'` : ''} with payload:`, payload)
-          console.error(e)
+          if (SharedData.debugInfo) {
+            console.error(`An error occurred in hook '${eventType}'${plugin ? ` registered by plugin '${plugin.descriptor.id}'` : ''} with payload:`, payload)
+            console.error(e)
+          }
         }
       }
     }
