@@ -28,7 +28,7 @@
     "build": "lerna run build",
     "build:watch": "lerna run build --scope @vue-devtools/app-backend* --scope @vue-devtools/shared-* --scope @vue/devtools-api && lerna run build:watch --stream --no-sort --concurrency 99",
     "lint": "eslint .",
-    "run:firefox": "web-ext run -s packages/shell-chrome -a dist -i src",
+    "run:firefox": "web-ext run -s packages/shell-firefox -a dist -i src -u http://localhost:8090/target.html",
     "zip": "node ./extension-zips.js",
     "sign:firefox": "node ./sign-firefox.js",
     "release": "npm run test && node release.js && npm run build && npm run zip && npm run pub",

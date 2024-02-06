@@ -31,7 +31,7 @@ function bytesToSize(bytes) {
 
 (async () => {
   await writeZip('devtools-chrome.zip', 'shell-chrome')
-  await writeZip('devtools-firefox.zip', 'shell-chrome')
+  await writeZip('devtools-firefox.zip', 'shell-firefox')
 
   async function writeZip(fileName, packageDir) {
     // create a file to stream archive data to.
