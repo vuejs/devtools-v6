@@ -129,7 +129,7 @@ export default defineComponent({
 
 <template>
   <div
-    class="flex items-center border-r border-gray-200 dark:border-gray-700 p-0.5"
+    class="flex items-center border-r border-gray-200 dark:border-gray-700 p-0.5 overflow-y-auto"
     :class="{
       'flex-col': orientation === 'landscape',
     }"
