@@ -36,7 +36,7 @@ initDevTools({
             setAppConnected(false)
 
             // Retry
-            retryConnectTimer = setTimeout(connect, 1000)
+            retryConnectTimer = setTimeout(connect, 500)
           })
 
           if (connectCount > 1) {
@@ -49,7 +49,7 @@ initDevTools({
           setAppConnected(false)
 
           // Retry
-          retryConnectTimer = setTimeout(connect, 5000)
+          retryConnectTimer = setTimeout(connect, 1000)
         }
       }
       connect()

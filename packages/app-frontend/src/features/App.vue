@@ -37,7 +37,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { isConnected, isInitializing } = useAppConnection()
+    const { isConnected, isInitializing, showDisplayDisconnected } = useAppConnection()
 
     function updateTheme(theme: string) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
@@ -80,6 +80,7 @@ export default defineComponent({
     return {
       isConnected,
       isInitializing,
+      showDisplayDisconnected,
       showAppsSelector,
       orientation,
       isChrome,
@@ -103,7 +104,7 @@ export default defineComponent({
     />
 
     <AppDisconnected
-      v-else-if="!isConnected"
+      v-else-if="showDisplayDisconnected"
       class="absolute inset-0"
     />
 

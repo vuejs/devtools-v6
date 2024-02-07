@@ -19,7 +19,7 @@ export async function initDevTools(shell: Shell) {
   app.mount('#app')
   connectApp(app, shell)
   shell.onReload(() => {
-    setAppConnected(false)
+    setAppConnected(false, true)
     getBridge()?.removeAllListeners()
     connectApp(app, shell)
   })
