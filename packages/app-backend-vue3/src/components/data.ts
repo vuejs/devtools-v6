@@ -193,9 +193,10 @@ function processSetupState(instance) {
       let result: any
 
       let isOther = typeof value === 'function'
-        || typeof value?.render === 'function'
-        || typeof value?.__asyncLoader === 'function'
-        || (typeof value === 'object' && value && ('setup' in value || 'props' in value))
+        || typeof value?.render === 'function' // Components
+        || typeof value?.__asyncLoader === 'function' // Components
+        || (typeof value === 'object' && value && ('setup' in value || 'props' in value)) // Components
+        || /^v[A-Z]/.test(key) // Directives
 
       if (rawData) {
         const info = getSetupStateInfo(rawData)
