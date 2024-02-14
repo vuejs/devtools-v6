@@ -3,6 +3,7 @@ const inquirer = require('inquirer')
 const semver = require('semver')
 const pkg = require('./package.json')
 const manifest = require('./packages/shell-chrome/manifest.json')
+const manifestFirefox = require('./packages/shell-firefox/manifest.json')
 
 const IS_CI = !!(process.env.CIRCLECI || process.env.GITHUB_ACTIONS)
 
@@ -50,6 +51,9 @@ const curVersion = pkg.version
       applyIcons(manifest)
     }
 
+    manifestFirefox.version = manifest.version
+    manifestFirefox.version_name = manifest.version_name
+
     fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2))
     {
       // Electron package
@@ -64,6 +68,7 @@ const curVersion = pkg.version
       fs.writeFileSync('./packages/api/package.json', JSON.stringify(pkg, null, 2))
     }
     fs.writeFileSync('./packages/shell-chrome/manifest.json', JSON.stringify(manifest, null, 2))
+    fs.writeFileSync('./packages/shell-firefox/manifest.json', JSON.stringify(manifestFirefox, null, 2))
   }
   else {
     process.exit(1)
