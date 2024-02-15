@@ -31,4 +31,13 @@ module.exports = antfu({
   rules: {
     'no-console': 'off',
   },
+}, {
+  files: [
+    'package.json',
+    'packages/*/package.json',
+    'packages/*/manifest.json',
+  ],
+  rules: {
+    'style/eol-last': 'off',
+  },
 })
