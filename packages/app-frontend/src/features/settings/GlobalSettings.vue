@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import { clearStorage } from '@vue-devtools/shared-utils'
 import { supportsScreenshot } from '../timeline/composable/screenshot'
 
 type Tab = 'global' | 'components' | 'timeline'
@@ -10,6 +11,8 @@ const tab = ref<Tab>('global')
 const hideAppSelector = useLocalStorage('split-pane-collapsed-left-app-select-pane', false)
 const hideTimelineCanvas = useLocalStorage('split-pane-collapsed-left-timeline-right', false)
 const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', false)
+
+const confirmClearStorage = ref(false)
 </script>
 
 <template>
@@ -98,6 +101,12 @@ const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', 
         <VueSwitch v-model="$shared.debugInfo">
           Enable
         </VueSwitch>
+
+        <VueButton
+          @click="confirmClearStorage = true"
+        >
+          Clear storage
+        </VueButton>
       </VueFormField>
     </div>
 
@@ -197,6 +206,31 @@ const hideEvents = useLocalStorage('split-pane-collapsed-right-timeline-right', 
         </VueSwitch>
       </VueFormField>
     </div>
+
+    <VueModal
+      v-if="confirmClearStorage"
+      title="Clear storage"
+      @close="confirmClearStorage = false"
+    >
+      <div class="p-6 space-y-6">
+        <p>
+          Are you sure you want to clear all storage?
+        </p>
+        <div class="flex justify-end gap-2">
+          <VueButton
+            @click="confirmClearStorage = false"
+          >
+            Cancel
+          </VueButton>
+          <VueButton
+            class="danger"
+            @click="clearStorage();confirmClearStorage = false"
+          >
+            Clear
+          </VueButton>
+        </div>
+      </div>
+    </VueModal>
   </div>
 </template>
 

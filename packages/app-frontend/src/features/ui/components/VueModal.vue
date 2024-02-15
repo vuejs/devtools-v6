@@ -25,7 +25,7 @@ export default defineComponent({
     const rootElement = ref<HTMLElement | null>(null)
     onMounted(async () => {
       await nextTick()
-      rootElement.value.focus()
+      rootElement.value?.focus()
     })
 
     useDisableScroll()
