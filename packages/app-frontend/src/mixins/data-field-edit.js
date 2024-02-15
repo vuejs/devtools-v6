@@ -204,13 +204,13 @@ export default {
     submitEdit() {
       if (this.editValid) {
         this.editing = false
-        let value = this.customField.skipSerialize ? this.editedValue : this.transformSpecialTokens(this.editedValue, false)
+        let value = this.customField?.skipSerialize ? this.editedValue : this.transformSpecialTokens(this.editedValue, false)
         // We need to send the entire custom value data object
         if (this.valueType === 'custom') {
           value = JSON.stringify({
             _custom: {
               ...this.customField,
-              value: this.customField.skipSerialize ? value : JSON.parse(value), // Input
+              value: this.customField?.skipSerialize ? value : JSON.parse(value), // Input
             },
           })
         }

@@ -62,7 +62,8 @@ export default {
     },
   },
 
-  errorCaptured(err, vm) {
+  errorCaptured(err, vm, info) {
+    console.error(err, vm, info)
     this.fieldErrors[vm.field.key] = err.message
   },
 
