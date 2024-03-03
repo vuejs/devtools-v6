@@ -87,7 +87,7 @@ This is useful when you want to build the extension with the source repo to get 
 
 2. Clone this repo
 3. run `yarn install`
-4. then run `yarn run build:watch` and `yarn run dev:chrome` in parallel
+4. then run `yarn run build:watch` and `yarn run dev:firefox` in parallel
 5. run `yarn run:firefox`
 
 ## Docs development
