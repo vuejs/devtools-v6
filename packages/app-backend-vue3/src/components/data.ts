@@ -177,7 +177,7 @@ function processState(instance) {
 }
 
 function processSetupState(instance) {
-  const raw = instance.devtoolsRawSetupState
+  const raw = instance.devtoolsRawSetupState || {}
   const combinedSetupState = (Object.keys(instance.setupState).length
     ? instance.setupState
     : instance.exposed
