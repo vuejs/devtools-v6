@@ -499,7 +499,7 @@ export function editState(
     && Object.keys(componentInstance._setupState).includes(path[0])
   ) {
     // setup
-    target = componentInstance._setupProxy
+    target = componentInstance._setupProxy || componentInstance
 
     const currentValue = stateEditor.get(target, path)
     if (currentValue != null) {
