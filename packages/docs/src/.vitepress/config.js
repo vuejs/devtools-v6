@@ -19,7 +19,7 @@ export default defineConfig({
 
     algolia: {
       appId: 'CFRGFZ1IGJ',
-      apiKey: '6c814da38002372317bcbefd73e60bbf',
+      apiKey: 'cf7b3ddb7b310746c27c1a71ff7d4fe2',
       indexName: 'devtools-vuejs',
     },
 
