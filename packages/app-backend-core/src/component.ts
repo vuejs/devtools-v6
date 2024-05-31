@@ -136,8 +136,11 @@ export function getComponentInstance(appRecord: AppRecord, instanceId: string, _
     instanceId = `${appRecord.id}:root`
   }
   const instance = appRecord.instanceMap.get(instanceId)
-  if (!instance && SharedData.debugInfo) {
-    console.warn(`Instance uid=${instanceId} not found`)
+  if (!instance) {
+    appRecord.missingInstanceQueue.add(instanceId)
+    if (SharedData.debugInfo) {
+      console.warn(`Instance uid=${instanceId} not found`)
+    }
   }
   return instance
 }

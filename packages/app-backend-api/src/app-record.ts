@@ -20,6 +20,7 @@ export interface AppRecord {
   perfGroupIds: Map<string, { groupId: number, time: number }>
   iframe: string
   meta: any
+  missingInstanceQueue: Set<string>
 }
 
 /**

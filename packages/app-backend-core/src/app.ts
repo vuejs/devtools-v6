@@ -13,6 +13,7 @@ import { scan } from './legacy/scan'
 import { addBuiltinLayers, removeLayersForApp } from './timeline'
 import { availableBackends, getBackend } from './backend'
 import { hook } from './global-hook.js'
+import { sendComponentTreeData, sendSelectedComponentData } from './component.js'
 
 const jobs = new JobQueue()
 
@@ -64,17 +65,39 @@ async function createAppRecord(options: AppRecordOptions, backend: DevtoolsBacke
 
     const [el]: HTMLElement[] = await backend.api.getComponentRootElements(rootInstance)
 
+    const instanceMapRaw = new Map<string, any>()
+
     const record: AppRecord = {
       id,
       name,
       options,
       backend,
       lastInspectedComponentId: null,
-      instanceMap: new Map(),
+      instanceMap: new Proxy(instanceMapRaw, {
+        get(target, key: string) {
+          if (key === 'set') {
+            return (instanceId: string, instance: any) => {
+              target.set(instanceId, instance)
+              // The component was requested by the frontend before it was registered
+              if (record.missingInstanceQueue.has(instanceId)) {
+                record.missingInstanceQueue.delete(instanceId)
+                if (ctx.currentAppRecord === record) {
+                  sendComponentTreeData(record, instanceId, record.componentFilter, null, false, ctx)
+                  if (record.lastInspectedComponentId === instanceId) {
+                    sendSelectedComponentData(record, instanceId, ctx)
+                  }
+                }
+              }
+            }
+          }
+          return target[key].bind(target)
+        },
+      }),
       rootInstance,
       perfGroupIds: new Map(),
       iframe: isBrowser && document !== el?.ownerDocument ? el?.ownerDocument?.location?.pathname : null,
       meta: options.meta ?? {},
+      missingInstanceQueue: new Set(),
     }
 
     options.app.__VUE_DEVTOOLS_APP_RECORD__ = record
