@@ -400,7 +400,7 @@ export function basename(filename, ext) {
     filename = filename.replace(`/index${ext}`, ext)
   }
   return path.basename(
-    filename.replace(/^[a-zA-Z]:/, ''),
+    filename.replace(/^[a-z]:/i, ''),
     ext,
   )
 }
@@ -544,7 +544,7 @@ export function parse(data: any, revive = false) {
     : parseCircularAutoChunks(data)
 }
 
-const specialTypeRE = /^\[native (\w+) (.*?)(<>((.|\s)*))?\]$/
+const specialTypeRE = /^\[native (\w+) (.*?)(?:<>[.\s]*)?\]$/
 const symbolRE = /^\[native Symbol Symbol\((.*)\)\]$/
 
 function reviver(key, val) {

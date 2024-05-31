@@ -1,7 +1,7 @@
 import { simpleGet } from '@vue-devtools/shared-utils'
 import type { Plugin } from 'vue'
 
-const reg = /\{\{\s*([\w_.-]+)\s*\}\}/g
+const reg = /\{\{\s*([\w.-]+)\s*\}\}/g
 
 interface StringMap { [key: string]: string | StringMap }
 interface ValuesMap { [key: string]: any }

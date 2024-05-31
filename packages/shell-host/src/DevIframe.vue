@@ -35,7 +35,6 @@ export default defineComponent({
     let init = false
     let loadListener
 
-
     function onLoad() {
       loading.value = false
       if (init) {
