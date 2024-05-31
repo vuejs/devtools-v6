@@ -37,7 +37,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { isConnected, isInitializing, showDisplayDisconnected } = useAppConnection()
+    const { isConnected, isInitializing, showDisplayDisconnected, connectedTimes } = useAppConnection()
 
     function updateTheme(theme: string) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
@@ -81,6 +81,7 @@ export default defineComponent({
       isConnected,
       isInitializing,
       showDisplayDisconnected,
+      connectedTimes,
       showAppsSelector,
       orientation,
       isChrome,
@@ -91,10 +92,9 @@ export default defineComponent({
 
 <template>
   <div
-    class="app w-full h-full flex relative outline-none"
+    class="app w-full h-full relative outline-none"
     :class="{
       'disconnected pointer-events-none': !isInitializing && !isConnected,
-      'flex-col': orientation === 'portrait',
     }"
     tabindex="0"
   >
@@ -108,7 +108,14 @@ export default defineComponent({
       class="absolute inset-0"
     />
 
-    <template v-else>
+    <div
+      v-else
+      :key="connectedTimes"
+      class="w-full h-full flex"
+      :class="{
+        'flex-col': orientation === 'portrait',
+      }"
+    >
       <AppHeader class="flex-none relative z-10 border-b border-gray-200 dark:border-gray-700" />
 
       <SplitPane
@@ -129,7 +136,7 @@ export default defineComponent({
           <router-view class="h-full overflow-auto" />
         </template>
       </SplitPane>
-    </template>
+    </div>
 
     <TeleportTarget id="root" />
 

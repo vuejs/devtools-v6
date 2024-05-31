@@ -4,6 +4,7 @@ import { useNow } from '@vueuse/core'
 const isConnected = ref(false)
 const isInitializing = ref(true)
 const lastDisconnect = ref(0)
+const connectedTimes = ref(0)
 
 export function useAppConnection() {
   const now = useNow({
@@ -25,6 +26,7 @@ export function useAppConnection() {
     isInitializing,
     lastDisconnect,
     showDisplayDisconnected,
+    connectedTimes,
   }
 }
 
@@ -36,6 +38,9 @@ export function setAppConnected(value: boolean, force = false) {
     lastDisconnect.value = Date.now()
   }
   isConnected.value = value
+  if (value) {
+    connectedTimes.value++
+  }
 }
 
 export function setAppInitializing(value: boolean) {
