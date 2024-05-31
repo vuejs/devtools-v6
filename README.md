@@ -1,3 +1,13 @@
+# Try the next iteration of Vue Devtools
+
+We have a brand new version of Devtools being developed at [vuejs/devtools-next](https://github.com/vuejs/devtools-next).
+
+It only supports Vue 3 and must be used in the form of a Vite plugin or an Electron app. **If you are using Vue 3 + Vite, we strongly recommend [giving it a try](https://devtools-next.vuejs.org/).**
+
+Browser extension for devtools-next is being worked on and will be available in the future.
+
+---
+
 # vue-devtools
 
 ![screenshot](./media/screenshot-shadow.png)
