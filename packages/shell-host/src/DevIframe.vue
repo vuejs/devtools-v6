@@ -32,8 +32,19 @@ export default defineComponent({
       iframe.value.contentDocument.body.appendChild(script)
     }
 
+    let init = false
+    let loadListener
+
+
     function onLoad() {
       loading.value = false
+      if (init) {
+        if (loadListener) {
+          loadListener()
+        }
+        return
+      }
+      init = true
 
       if (!iframe.value?.contentWindow) {
         throw new Error('Cant find iframe contentWindow')
@@ -41,8 +52,6 @@ export default defineComponent({
       try {
         console.log('%cInstalling hook...', 'color:#42B983;')
         installHook(iframe.value.contentWindow)
-
-        let loadListener
 
         // 2. init devtools
         console.log('%cInit devtools...', 'color:#42B983;')
