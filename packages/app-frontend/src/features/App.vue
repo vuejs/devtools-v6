@@ -37,7 +37,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { isConnected, isInitializing, showDisplayDisconnected, connectedTimes } = useAppConnection()
+    const { isConnected, isInitializing, showDisplayDisconnected, reloadTimes } = useAppConnection()
 
     function updateTheme(theme: string) {
       if (theme === 'dark' || theme === 'high-contrast' || (theme === 'auto' && chromeTheme === 'dark')) {
@@ -81,7 +81,7 @@ export default defineComponent({
       isConnected,
       isInitializing,
       showDisplayDisconnected,
-      connectedTimes,
+      reloadTimes,
       showAppsSelector,
       orientation,
       isChrome,
@@ -110,7 +110,7 @@ export default defineComponent({
 
     <div
       v-else
-      :key="connectedTimes"
+      :key="reloadTimes"
       class="w-full h-full flex"
       :class="{
         'flex-col': orientation === 'portrait',
