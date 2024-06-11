@@ -4,6 +4,8 @@ import { useNow } from '@vueuse/core'
 const isConnected = ref(false)
 const isInitializing = ref(true)
 const lastDisconnect = ref(0)
+const reloadTimes = ref(0)
+let reloadRegistered = false
 
 export function useAppConnection() {
   const now = useNow({
@@ -25,10 +27,16 @@ export function useAppConnection() {
     isInitializing,
     lastDisconnect,
     showDisplayDisconnected,
+    reloadTimes,
   }
 }
 
-export function setAppConnected(value: boolean, force = false) {
+export function setAppConnected(value: boolean, force = false, fromReload = false) {
+  // We got disconnected from a page reload
+  if (!value) {
+    reloadRegistered = fromReload
+  }
+
   if (force) {
     lastDisconnect.value = 0
   }
@@ -36,6 +44,11 @@ export function setAppConnected(value: boolean, force = false) {
     lastDisconnect.value = Date.now()
   }
   isConnected.value = value
+
+  // We are reconnected after a page reload
+  if (value && reloadRegistered) {
+    reloadTimes.value++
+  }
 }
 
 export function setAppInitializing(value: boolean) {

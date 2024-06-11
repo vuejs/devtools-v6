@@ -8,8 +8,8 @@ import {
   specialTokenToString,
 } from '@vue-devtools/shared-utils'
 
-const rawTypeRE = /^\[object (\w+)]$/
-const specialTypeRE = /^\[native (\w+) (.*?)(<>((.|\s)*))?\]$/
+const rawTypeRE = /^\[object (\w+)\]$/
+const specialTypeRE = /^\[native (\w+) (.*?)(?:<>[.\s]*)?\]$/
 
 export function valueType(value, raw = true) {
   const type = typeof value

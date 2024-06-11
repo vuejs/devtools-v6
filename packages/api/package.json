@@ -1,6 +1,6 @@
 {
   "name": "@vue/devtools-api",
-  "version": "6.6.1",
+  "version": "6.6.3",
   "description": "Interact with the Vue devtools from the page",
   "author": {
     "name": "Guillaume Chau"
