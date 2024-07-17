@@ -43,11 +43,11 @@ export default defineComponent({
 
     onKeyDown((event) => {
       // ƒ,ß,® - these are the result keys in Mac with altKey pressed
-      if ((event.key === 'f' || event.key === 'ƒ') && event.altKey) {
+      if (((['f', 'ƒ', 'а']).includes(event.key)) && event.altKey) {
         treeFilterInput.value.focus()
         return false
       }
-      else if ((event.key === 's' || event.key === 'ß') && event.altKey && !pickingComponent.value) {
+      else if ((['s', 'ß', 'ы']).includes(event.key) && event.altKey && !pickingComponent.value) {
         startPickingComponent()
         return false
       }

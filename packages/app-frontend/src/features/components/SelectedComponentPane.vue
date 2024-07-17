@@ -34,7 +34,7 @@ export default defineComponent({
     const stateFilterInput = ref()
     onKeyDown((event) => {
       // ∂ - the result key in Mac with altKey pressed
-      if ((event.key === 'd' || event.key === '∂') && event.altKey) {
+      if ((['d', '∂', 'в'].includes(event.key)) && event.altKey) {
         stateFilterInput.value.focus()
         return false
       }
