@@ -29,9 +29,14 @@ const openInEditor = require('launch-editor-middleware')
 ```js
 export default {
   devServer: {
-    before(app) {
-      app.use('/__open-in-editor', openInEditor())
-    }
+    setupMiddlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined')
+      }
+      devServer.app.use('/__open-in-editor', openInEditor())
+
+      return middlewares
+    },
   }
 }
 ```
