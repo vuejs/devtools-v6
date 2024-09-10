@@ -90,27 +90,46 @@ devtools.connect(/* host */, 8000)
 
 **2. How to remotely inspect page on the server?**
 
-For that you can use `ngrok` proxy. You can download it [here](https://ngrok.com/).
+For this you can use either `Tunnelmole` or `ngrok` tunneling tools. 
 
-Once you start vue-devtools run:
+**Using Tunnelmole**
+
+[Tunnelmole](https://github.com/robbie-cahill/tunnelmole-client) is an open source tunnelling tool.
+
+Run tunnelmole with
+```
+npx tmole 8098
+```
+(or install it first with `npm install -g tunnelmole`, then you can just run `tmole 8098`)
+
+And update your host and port with the HTTPS url in the output:
+```
+devtools.connect('https://example.tunnelmole.io', null)
+```
+
+**Using ngrok**
+
+`ngrok` is a popular closed source tunneling tool. You can download it [here](https://ngrok.com/).
+
+First, start `ngrok`:
 ```
 ngrok http 8098
 ```
 
-Then update your host and port accordingly:
+Then, update your host and port:
 ```
 devtools.connect('https://example.ngrok.io', null)
 ```
 
-Make sure to set port to `null` or `false`, because ngrok host already proxies to proper port that we defined in the first command.
+Please note to set port to `null` or `false` for either option, as the host (Tunnelmole or ngrok) already proxies to the proper port that we defined.
 
 **3. How to inspect page served through `HTTPS`?**
 
-For that you can also use ngrok, as it automatically proxies https requests to http. Take a look at question number 2 for instructions.
+For that, you can use either Tunnelmole or ngrok, as both automatically proxy HTTPS requests to HTTP. Take a look at question number 2 for instructions.
 
 **4. How to inspect cordova applications?**
 
-Make sure that the page under `http://your-ip:8098` is returning a javascript coode on your device/simulator. If it doesn't - make sure to check your anti-virus or router/firewall settings. If it works - please follow the instructions, and connect to devtools using your IP. For example:
+Make sure that the page under `http://your-ip:8098` is returning a JavaScript code on your device/simulator. If it doesn't - make sure to check your anti-virus or router/firewall settings. If it works - you can connect to devtools using your IP. For example:
 
 ```js
 import devtools from '@vue/devtools'
@@ -129,7 +148,7 @@ else {
 }
 ```
 
-This will only work on `development` build of your app.
+Please note that this will work only on `development` build of your app.
 
 ### :beers: Development
 
@@ -142,15 +161,15 @@ npm install
 ```
 npm run dev
 ```
-This will watch `src` folder and compile files on change
+This will watch the `src` folder and compile files on change
 
 3. Run:
 ```
 npm start
 ```
-This will open electron app with devtools
+This will open the electron app with devtools
 
-4. Follow **Usage** section to connect any app to your development version of `vue-remote-devtools`
+4. Follow the **Usage** section to connect any app to your development version of `vue-remote-devtools`
 
 ### :lock: License
 
