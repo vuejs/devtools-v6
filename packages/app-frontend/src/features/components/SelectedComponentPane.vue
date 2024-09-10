@@ -3,7 +3,7 @@ import StateInspector from '@front/features/inspector/StateInspector.vue'
 import EmptyPane from '@front/features/layout/EmptyPane.vue'
 
 import { computed, defineComponent, ref, watch } from 'vue'
-import { SharedData, copyToClipboard, getComponentDisplayName } from '@vue-devtools/shared-utils'
+import { SharedData, copyToClipboard, getComponentDisplayName, openInEditor } from '@vue-devtools/shared-utils'
 import { onKeyDown } from '@front/util/keyboard'
 import RenderCode from './RenderCode.vue'
 import { useSelectedComponent } from './composable'
@@ -34,8 +34,16 @@ export default defineComponent({
     const stateFilterInput = ref()
     onKeyDown((event) => {
       // ∂ - the result key in Mac with altKey pressed
-      if ((event.key === 'd' || event.key === '∂') && event.altKey) {
+      if ((['d', '∂', 'в'].includes(event.key)) && event.altKey) {
         stateFilterInput.value.focus()
+        return false
+      }
+
+      if ((['o', 'o', 'щ']).includes(event.key) && event.altKey) {
+        const file = selectedComponent.data.value?.file
+        if (file) {
+          openInEditor(file)
+        }
         return false
       }
     }, true)

@@ -70,7 +70,7 @@ export default {
   },
   ComponentInspector: {
     openInEditor: {
-      tooltip: 'Open <mono><<insert_drive_file>>{{file}}</mono> in editor',
+      tooltip: '[[{{keys.alt}}]] + [[O]] Open <mono><<insert_drive_file>>{{file}}</mono> in editor',
     },
   },
   EventsHistory: {
