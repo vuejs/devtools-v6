@@ -1,8 +1,8 @@
 {
-  "name": "Vue.js devtools",
+  "name": "Vue.js devtools (v5)",
   "version": "5.3.4",
   "version_name": "5.3.4",
-  "description": "DevTools extension for debugging Vue.js applications. This is version 5.",
+  "description": "This version is provided for legacy users and will not be updated in the future.",
   "manifest_version": 3,
   "icons": {
     "16": "icons/16.png",
@@ -28,9 +28,7 @@
         "build/hook-exec.js",
         "build/detector-exec.js"
       ],
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "extension_ids": []
     }
   ],
@@ -38,30 +36,17 @@
   "background": {
     "service_worker": "build/service-worker.js"
   },
-  "permissions": [
-    "storage",
-    "scripting"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["storage", "scripting"],
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "build/hook.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["build/hook.js"],
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "build/detector.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["build/detector.js"],
       "run_at": "document_idle"
     }
   ],
