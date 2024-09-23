@@ -49,7 +49,7 @@ function handshake(e) {
 
     initBackend(bridge)
   }
-  else {
+  else if (e.data.source !== 'vue-devtools-backend-injection') {
     sendListening()
   }
 }
