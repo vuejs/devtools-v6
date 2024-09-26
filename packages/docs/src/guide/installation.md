@@ -150,9 +150,9 @@ Or if you want to debug your device remotely:
 Then start your development server like you are used to, *without* killing the `vue-devtools` command (for example, open a new terminal). Both need to run in parallel.
 
 ```bash
-yarn dev
+npm run dev
 #or
-yarn serve
+npm run serve
 ```
 
 ### Using dependency package
