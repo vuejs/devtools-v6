@@ -63,7 +63,7 @@ Thank you for your code contribution! Before opening a PR, please make sure to r
 This is useful when you want to build the extension with the source repo to get not-yet-released features.
 
 1. Clone this repo
-2. `cd devtools` the newly created folder
+2. `cd devtools-v6` the newly created folder
 3. run `yarn install`
 4. then run `yarn run build:watch` & `yarn run dev:chrome` in parallel
 5. Open the Chrome extension page (currently under `Menu` > `More Tools` > `Extensions`)
@@ -93,6 +93,6 @@ This is useful when you want to build the extension with the source repo to get 
 ## Docs development
 
 1. Clone this repo
-2. `cd devtools` the newly created folder
+2. `cd devtools-v6` the newly created folder
 3. run `yarn install`
 4. run `docs:dev`

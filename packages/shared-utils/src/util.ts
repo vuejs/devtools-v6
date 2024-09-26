@@ -803,7 +803,7 @@ export function openInEditor(file) {
       } else {
         console.log('%c' + msg, 'color:red')
       }
-      console.log('Check the setup of your project, see https://devtools.vuejs.org/guide/open-in-editor.html')
+      console.log('Check the setup of your project, see https://devtools-v6.vuejs.org/guide/open-in-editor.html')
     }
   })`
   if (isChrome) {
