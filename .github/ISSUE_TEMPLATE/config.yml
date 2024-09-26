@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: I have a performance issue
-    url: https://devtools.vuejs.org/guide/devtools-perf.html
+    url: https://devtools-v6.vuejs.org/guide/devtools-perf.html
     about: Follow the guide to share performance profiling data with us!
   - name: Questions & Discussions
     url: https://github.com/vuejs/devtools/discussions

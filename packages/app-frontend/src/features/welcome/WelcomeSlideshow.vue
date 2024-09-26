@@ -102,7 +102,7 @@ export default defineComponent({
         <template v-if="step === 5">
           <p>
             Any Vue plugin and library can now integrate with the devtools via its <a
-              href="https://devtools.vuejs.org/plugin/plugins-guide.html"
+              href="https://devtools-v6.vuejs.org/plugin/plugins-guide.html"
               target="_blank"
             >Plugin API</a>.
           </p>
@@ -144,7 +144,7 @@ export default defineComponent({
         <template v-if="step === 8">
           <p>
             Using the <a
-              href="https://devtools.vuejs.org/plugin/plugins-guide.html"
+              href="https://devtools-v6.vuejs.org/plugin/plugins-guide.html"
               target="_blank"
             >Devtools Plugin API</a>, third-party libraries can also add layers and events to the Timeline.
           </p>
@@ -184,7 +184,7 @@ export default defineComponent({
 
           <p>
             In case something doesn't work with your project, you can use the <a
-              href="https://devtools.vuejs.org/guide/installation.html#legacy"
+              href="https://devtools-v6.vuejs.org/guide/installation.html#legacy"
               target="_blank"
             >Legacy version</a> and <a
               href="https://github.com/vuejs/devtools/issues/new/choose"

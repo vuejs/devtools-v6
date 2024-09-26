@@ -32,7 +32,7 @@ export default defineComponent({
     </div>
 
     <VueButton
-      href="https://devtools.vuejs.org/plugin/plugins-guide.html"
+      href="https://devtools-v6.vuejs.org/plugin/plugins-guide.html"
       target="_blank"
       class="primary"
     >

@@ -10,8 +10,8 @@ body:
          This form is only for submitting feature requests. If you have a usage question
          or are unsure if this is really a bug, make sure to:
 
-         - Read the [docs](https://devtools.vuejs.org/)
-         - Read the [FAQ](https://devtools.vuejs.org/guide/faq.html)
+         - Read the [docs](https://devtools-v6.vuejs.org/)
+         - Read the [FAQ](https://devtools-v6.vuejs.org/guide/faq.html)
          - Ask on [GitHub Discussions](https://github.com/vuejs/devtools/discussions)
          - Ask on [Discord Chat](https://chat.vuejs.org/)
 
