@@ -8,7 +8,7 @@ We have a brand new version of Devtools being developed at [vuejs/devtools-next]
 
 ![screenshot](./media/screenshot-shadow.png)
 
-[Documentation](https://devtools.vuejs.org/) | [Install the extension](https://devtools.vuejs.org/guide/installation.html)
+[Documentation](https://devtools.vuejs.org/) | [Install the extension](https://devtools.vuejs.org/guide/browser-extension)
 
 ## Monorepo
 
