@@ -1,6 +1,8 @@
-# Try the next iteration of Vue Devtools!
+# This is an old version of the Vue Devtools
 
-We have a brand new version of Devtools being developed at [vuejs/devtools-next](https://github.com/vuejs/devtools-next). It is now in beta, please help us [test it out](https://devtools-next.vuejs.org/getting-started/installation)!
+The new version of Vue Devtools (v7 and higher) lives at [vuejs/devtools](https://github.com/vuejs/devtools).
+
+This repository contains the code for Vue Devtools v3 - v6.
 
 ---
 
