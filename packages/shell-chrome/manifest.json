@@ -51,9 +51,10 @@
         "<all_urls>"
       ],
       "js": [
-        "build/hook.js"
+        "build/hook-exec.js"
       ],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "world": "MAIN"
     },
     {
       "matches": [
